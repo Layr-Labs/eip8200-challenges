@@ -29,8 +29,8 @@ noncomputable def rows_steps (s : State)
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)) (hsnap : StagedOperand.Snapshot mem pa n) :
     GasSteps
       (TnM128Setup.outState s (mpZeroed s mem n) pb n 0 (UInt256.ofNat 3533)
-        (TnM128Setup.l1Target n) inv m0
-        (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
+        (TnM128Setup.l1Target n) m32 m64 m0
+        (tl :: m96 :: inv :: TnM128Setup.zeroTn :: aEnd :: dst :: ret :: rest))
       (framed {s with memory := CarryRowModel.rowsCarry (mpZeroed s mem n) pa pb n n}
         (UInt256.ofNat 4156) (dst :: ret :: rest)) := by
   let z : CacheState := ⟨mpZeroed s mem n, UInt256.ofNat 0⟩
@@ -46,8 +46,8 @@ noncomputable def rows_steps (s : State)
     tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact hpa hpb (by omega)
     (Or.inl (by omega)) ha hz
   have hstart : TnM128Setup.outState s (mpZeroed s mem n) pb n 0 (UInt256.ofNat 3533)
-      (TnM128Setup.l1Target n) inv m0
-      (tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest) =
+      (TnM128Setup.l1Target n) m32 m64 m0
+      (tl :: m96 :: inv :: TnM128Setup.zeroTn :: aEnd :: dst :: ret :: rest) =
       rowState s z pb n 0 tl inv m0 aEnd m96 m64 m32 dst ret rest := by
     rcases hn with rfl | rfl <;>
       simp [TnM128Setup.outState, TnM128Setup.l1Target,

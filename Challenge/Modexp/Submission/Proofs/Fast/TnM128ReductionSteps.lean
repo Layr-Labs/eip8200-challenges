@@ -25,12 +25,12 @@ noncomputable def reduction_steps (s : State)
     (hjd : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     GasSteps
       (framed {s with memory := q.memory} (UInt256.ofNat (middlePC n))
-        ([q.carry,bi,pbi,hd,pb,ent,tn,allOnes,m128,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest))
+        ([q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn n).memory}
         (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd else UInt256.ofNat 4128)
         (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
-          (TnCacheSquareModel.fromL1 q tn n).tn m128 inv
-          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
+          m32 m128 m64
+          (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn n).tn :: aEnd :: dst :: ret :: rest))) := by
   by_cases h4 : n = 4
   · subst n
     exact TnM128R4Reduction.reduction_steps s env q bi tn pbi hd pb ent m128 tl inv m0

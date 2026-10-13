@@ -21,8 +21,8 @@ def rowState (s : State) (z : CacheState) (pb n i : Nat)
   framed {s with memory := z.memory}
     (if i < n then UInt256.ofNat 3533 else UInt256.ofNat 4128)
     (TnCacheFrameOps.frame (pointer pb n i) (UInt256.ofNat 3533) (UInt256.ofNat (pb-32))
-      (UInt256.ofNat (l1PC n)) z.tn (MachineState.readWord z.memory 128) inv
-      (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
+      (UInt256.ofNat (l1PC n)) m32 (MachineState.readWord z.memory 128) m64
+      (m0 :: tl :: m96 :: inv :: z.tn :: aEnd :: dst :: ret :: rest))
 
 theorem result_eq_row (z : CacheState) (pa pb n i : Nat)
     (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 2816) (hi : i < n) :

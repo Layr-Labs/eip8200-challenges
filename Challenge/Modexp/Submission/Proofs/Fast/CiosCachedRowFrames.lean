@@ -20,12 +20,13 @@ def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
-/-- Row head `i`: the program counter is the frame's own row head `hd`. -/
+/-- Row head `i`: the program counter is the frame's own row head `hd`.  P1: the fifth word
+`w5` is modulus[32] (the carry cache starts at zero inside `rest`). -/
 def outState (s : State) (mem : ByteArray) (pb n i : Nat)
-    (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
+    (hd ent w5 pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := hd
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, UInt256.ofNat 0, allOnes, MachineState.readWord mem 128, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, w5, allOnes, MachineState.readWord mem 128, pdst, ret] ++ rest
            memory := mem }
 
 /-- After the first loop, at the middle block's `JUMPDEST` (pc 4583): the carry and

@@ -249,7 +249,9 @@ private theorem run_zeroPrefix (s : State) (w : UInt256)
     hc19, hc20, hc21, hc22, hc23]
 
 /-- The whole slot-zero cell: seven-byte fused prefix, then `macFusedPostProgram`
-through the public `run_post`.  Thirty-two bytes, one less than slots one and two. -/
+through the public `run_post`.  Thirty-two bytes, one less than slots one and two.
+The cell reads neither the fifteenth nor the sixteenth frame word, so `hc` may describe any
+middle and low words. -/
 theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
     (hx : x.toNat = 32*(n-2-k))
@@ -259,7 +261,7 @@ theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArr
     (pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 998)
     (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
-    (hc : ExtraCache mem m96 m64 m32) :
+    {w64 w32 : UInt256} (hc : ExtraCache mem m96 w64 w32) :
     runInstructions (extraProgramZeroNarrow loadAddr storeAddr)
       (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn target2 inv
         (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
@@ -276,7 +278,7 @@ theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArr
       st.activeWords := by simpa only [st,hloadAddr] using hactT
   have hW : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat storeAddr.toNat 32) =
       st.activeWords := by simpa only [st,hstoreAddr] using hactW
-  have hvalue : (cacheWord 0 m96 m64 m32) = MachineState.readWord st.memory x.toNat := by
+  have hvalue : (cacheWord 0 m96 w64 w32) = MachineState.readWord st.memory x.toNat := by
     rw [hselect]
     exact (hc.l2 mu c0 n k hn).choose 0
   have hm96 : m96 = MachineState.readWord st.memory x.toNat := hvalue
@@ -313,7 +315,58 @@ theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArr
     l2Step, hx, hloadAddr, hstoreAddr, hpc, allOnes_value,
     List.cons_append, List.nil_append] using hall
 
+/-- Slot two (modulus[32]) as `run_legacyExtraStep`, for a frame whose fifteenth word is not
+the cached modulus[64]: the cell never reads that word, so `hc` may describe any middle word. -/
+theorem run_extraStepTwo (template : State) (pc : UInt256) (mem : ByteArray)
+    (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
+    (hx : x.toNat = 32*(n-2-k))
+    (hselect : x.toNat = cacheAddress 2)
+    (hloadAddr : loadAddr.toNat = 2112+32*(n-2-k))
+    (hstoreAddr : storeAddr.toNat = 2112+32*(n-1-k))
+    (pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 998)
+    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hk : k+1 < n)
+    {w64 : UInt256} (hc : ExtraCache mem m96 w64 m32) :
+    runInstructions (extraProgram 2 loadAddr storeAddr)
+      (TnCacheL2Trace.state template pc mem bi mu c0 n k pbi paEnd pbEnd flag tn target2 inv
+        (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) =
+    some (TnCacheL2Trace.state template (pc+UInt256.ofNat 33) mem bi mu c0 n (k+1)
+      pbi paEnd pbEnd flag tn target2 inv (m0 :: cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)) := by
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112+32*(n-2-k)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  have hactW : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112+32*(n-1-k)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  let st : State := { template with memory := (l2Step mem mu c0 n k).memory }
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat loadAddr.toNat 32) =
+      st.activeWords := by simpa only [st,hloadAddr] using hactT
+  have hW : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat storeAddr.toNat 32) =
+      st.activeWords := by simpa only [st,hstoreAddr] using hactW
+  have hword : cacheWord 2 m96 m64 m32 = cacheWord 2 m96 w64 m32 := rfl
+  have hvalue : (cacheWord 2 m96 w64 m32) = MachineState.readWord st.memory x.toNat := by
+    rw [hselect]
+    exact (hc.l2 mu c0 n k hn).choose 2
+  have hl := run_extraLoad 2 st pc (l2Step mem mu c0 n k).carry mu bi
+    pbi paEnd pbEnd flag tn target2 cachedTL inv m0 aEnd m96 m64 m32 dst ret rest hrest
+  rw [hword,hvalue,allOnes_value] at hl
+  have hpc2 : pc.succ.succ = pc+UInt256.ofNat 2 := by
+    simp [succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+  rw [hpc2] at hl
+  have hf := CiosCachedFused.run_fused st (pc+UInt256.ofNat 2)
+    (MachineState.readWord st.memory x.toNat) mu (l2Step mem mu c0 n k).carry loadAddr storeAddr
+    ([bi,pbi,paEnd,pbEnd,flag,tn,allOnes,target2,inv,m0] ++
+      (cachedTL :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
+    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) hT hW
+  have hall := runInstructions_append_some _ _ _ _ _ hl hf
+  have hpc : (pc+UInt256.ofNat 2)+UInt256.ofNat 31 = pc+UInt256.ofNat 33 := by
+    simp [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+  change runInstructions (extraLoad 2 ++ CiosCached.macFusedProgram loadAddr storeAddr) _ = _
+  simpa only [st,TnCacheL2Trace.state,framed,extendedStack,l2Step,hx,hloadAddr,hstoreAddr,hpc,
+    List.cons_append,List.nil_append] using hall
+
 #print axioms run_extraLoad
 #print axioms run_extraStepZeroNarrow
 #print axioms run_extraStep
+#print axioms run_extraStepTwo
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheExtraTrace

@@ -49,16 +49,18 @@ def PRE_DINV : Nat := 1664
 def hitMem (mem input : ByteArray) (n : Nat) : ByteArray :=
   ShiftProducerCanonical.hitMemory mem input n
 
-/-- Memory and carry after `j` limbs of the negation loop. -/
+/-- Memory and flag after `j` limbs of the negation loop.  The flag is `1` before limb 0
+and `0` afterwards: the loop adds it to `NOT m_j` and then pushes a fresh zero.  With an
+odd low limb the first sum never carries (`negStep_invariant`). -/
 def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
   | 0 => ⟨mem, UInt256.ofNat 1⟩
   | j + 1 =>
       let prev := negStep mem n j
       let md := MachineState.readWord prev.memory (32 * (n - 1 - j))
-      let sum := prev.flag + UInt256.lnot md
+      let sum := UInt256.lnot md + prev.flag
       { memory := MachineState.writeBytes prev.memory
           (Data.Bytes.natToBytesPadded sum.toNat 32) (NEG + 32 * (n - 1 - j))
-        flag := UInt256.lt sum prev.flag }
+        flag := UInt256.ofNat 0 }
 
 /-! ## Phase 3: the per-modulus estimator words -/
 
@@ -343,17 +345,43 @@ theorem negStep_lowValue_stable (mem : ByteArray) (n j : Nat) (hj : j < n) :
 
 theorem negStep_readWord_new (mem : ByteArray) (n j : Nat) :
     MachineState.readWord (negStep mem n (j + 1)).memory (NEG + 32 * (n - 1 - j)) =
-      (negStep mem n j).flag +
-        UInt256.lnot (MachineState.readWord (negStep mem n j).memory (32 * (n - 1 - j))) := by
+      UInt256.lnot (MachineState.readWord (negStep mem n j).memory (32 * (n - 1 - j))) +
+        (negStep mem n j).flag := by
   simp only [negStep]
   exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
 
 theorem negStep_flag_succ (mem : ByteArray) (n j : Nat) :
-    (negStep mem n (j + 1)).flag =
-      UInt256.lt ((negStep mem n j).flag +
-        UInt256.lnot (MachineState.readWord (negStep mem n j).memory (32 * (n - 1 - j))))
-        (negStep mem n j).flag := by
+    (negStep mem n (j + 1)).flag = UInt256.ofNat 0 := by
   simp only [negStep]
+
+theorem ofNat_zero_toNat : (UInt256.ofNat 0 : UInt256).toNat = 0 := by
+  decide
+
+/-- Only the initial flag is set. -/
+theorem negStep_flag_pos (mem : ByteArray) (n j : Nat)
+    (h : (negStep mem n j).flag.toNat = 1) : j = 0 := by
+  cases j with
+  | zero => rfl
+  | succ j =>
+      rw [negStep_flag_succ, ofNat_zero_toNat] at h
+      exact absurd h (by decide)
+
+/-- The parity of a block value is the parity of its low limb. -/
+theorem lowValue_mod_two (memory : ByteArray) (ptr n : Nat) :
+    ∀ j, 1 ≤ j → Csub.lowValue memory ptr n j % 2 =
+      (MachineState.readWord memory (ptr + 32 * (n - 1))).toNat % 2
+  | 0, h => absurd h (by decide)
+  | 1, _ => by
+      show Csub.lowValue memory ptr n (0 + 1) % 2 = _
+      rw [Csub.lowValue_succ memory ptr n 0, Csub.lowValue_zero, Nat.sub_zero, pow_zero,
+        Nat.mul_one, Nat.zero_add]
+  | j + 2, _ => by
+      show Csub.lowValue memory ptr n (j + 1 + 1) % 2 = _
+      rw [Csub.lowValue_succ memory ptr n (j + 1),
+        ← lowValue_mod_two memory ptr n (j + 1) (by omega)]
+      obtain ⟨k, hk⟩ : 2 ∣ Limbs.radix ^ (j + 1) :=
+        dvd_pow Model.two_dvd_radix (by omega)
+      rw [hk, Nat.mul_left_comm, Nat.add_mul_mod_self_left]
 
 private theorem neg_algebra {L S F M x c P R : Nat}
     (hspec : S + F * R + x + 1 = c + R) (hinv : L + c * P + M = P) :
@@ -363,7 +391,8 @@ private theorem neg_algebra {L S F M x c P R : Nat}
 
 /-- `I_NEG(j)`: the low `j` limbs of `NEG` plus the carry complement the low
 `j` limbs of `m` to `radix ^ j`. -/
-theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
+theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8)
+    (hodd0 : (MachineState.readWord mem (32 * (n - 1))).toNat % 2 = 1) :
     ∀ j, j ≤ n →
       Csub.lowValue (negStep mem n j).memory NEG n j +
           (negStep mem n j).flag.toNat * Limbs.radix ^ j +
@@ -382,31 +411,46 @@ theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) :
         negStep_readWord_disjoint mem n _ (Or.inl (by unfold NEG; omega)) j (by omega)
       have hx : (MachineState.readWord mem (32 * (n - 1 - j))).toNat < 2 ^ 256 :=
         (MachineState.readWord mem (32 * (n - 1 - j))).val.isLt
-      have hspec := add_carry_spec (negStep mem n j).flag
-        (UInt256.lnot (MachineState.readWord mem (32 * (n - 1 - j))))
+      have hfx : (negStep mem n j).flag.toNat = 1 →
+          1 ≤ (MachineState.readWord mem (32 * (n - 1 - j))).toNat := by
+        intro hf
+        have hj0 := negStep_flag_pos mem n j hf
+        subst hj0
+        rw [Nat.sub_zero]
+        omega
+      have hspec := add_carry_spec'
+        (UInt256.lnot (MachineState.readWord mem (32 * (n - 1 - j)))) (negStep mem n j).flag
       rw [lnot_toNat] at hspec
       rw [Csub.lowValue_succ (negStep mem n (j + 1)).memory NEG n j,
         negStep_lowValue_stable mem n j (by omega),
         negStep_readWord_new, negStep_flag_succ, hxm,
         Csub.lowValue_succ mem 0 n j, pow_succ]
       simp only [Nat.zero_add]
-      refine ⟨?_, hspec.2⟩
-      have hspec' : ((negStep mem n j).flag +
-          UInt256.lnot (MachineState.readWord mem (32 * (n - 1 - j)))).toNat +
-          (UInt256.lt ((negStep mem n j).flag +
-            UInt256.lnot (MachineState.readWord mem (32 * (n - 1 - j))))
-            (negStep mem n j).flag).toNat * Limbs.radix +
+      refine ⟨?_, by rw [ofNat_zero_toNat]; omega⟩
+      have hspec' : (UInt256.lnot (MachineState.readWord mem (32 * (n - 1 - j))) +
+          (negStep mem n j).flag).toNat +
+          (UInt256.ofNat 0 : UInt256).toNat * Limbs.radix +
           (MachineState.readWord mem (32 * (n - 1 - j))).toNat + 1 =
           (negStep mem n j).flag.toNat + Limbs.radix := by
-        rw [radix_eq] at hspec ⊢; omega
+        rw [ofNat_zero_toNat]
+        rw [radix_eq] at hspec ⊢
+        obtain ⟨h1, h2⟩ := hspec
+        by_cases hf : (negStep mem n j).flag.toNat = 1
+        · have h3 := hfx hf
+          omega
+        · omega
       exact neg_algebra hspec' ihEq
 
 theorem neg_represents (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
+    (hmpos : 0 < mm) (hodd : mm % 2 = 1) (hmod : Model.FastRepresents mem 0 n mm) :
     Model.FastRepresents (negStep mem n n).memory NEG n (Limbs.radix ^ n - mm) := by
-  obtain ⟨hinv, hle⟩ := negStep_invariant mem n hn32 n le_rfl
   have hM : Csub.lowValue mem 0 n n = mm := by
     rw [Csub.lowValue_full]; exact Model.value_of_fastRepresents hmod
+  have hodd0 : (MachineState.readWord mem (32 * (n - 1))).toNat % 2 = 1 := by
+    have h := lowValue_mod_two mem 0 n n hn
+    rw [hM, Nat.zero_add] at h
+    omega
+  obtain ⟨hinv, hle⟩ := negStep_invariant mem n hn32 hodd0 n le_rfl
   rw [hM] at hinv
   have hlt := Csub.lowValue_lt (negStep mem n n).memory NEG n n
   have hflag : (negStep mem n n).flag.toNat = 0 := by

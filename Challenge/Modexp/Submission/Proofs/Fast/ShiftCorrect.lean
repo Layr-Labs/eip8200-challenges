@@ -97,7 +97,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     unfold m2Of preMem
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
     exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
-      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
+      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   have hbase2 : Model.FastRepresents (m2Of mem input n) 2112 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) := by
     unfold m2Of preMem

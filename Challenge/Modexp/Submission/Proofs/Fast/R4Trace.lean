@@ -73,26 +73,26 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win] at *) <;> omega))
 
 theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4927 = true :=
-  Artifact.isValidJumpDest_index 3919 (by rfl)
+  Artifact.isValidJumpDest_index 3837 (by rfl)
 
 theorem jd4903 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4687 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3707 (by rfl)
+  Artifact.isValidJumpDest_index 3625 (by rfl)
 
 theorem jd5020 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4799 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3807 (by rfl)
+  Artifact.isValidJumpDest_index 3725 (by rfl)
 
 theorem jd5108 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4882 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3880 (by rfl)
+  Artifact.isValidJumpDest_index 3798 (by rfl)
 
 theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (5031 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 4023 (by rfl)
+  Artifact.isValidJumpDest_index 3941 (by rfl)
 
-theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4240 = true :=
-  Artifact.isValidJumpDest_index 3363 (by rfl)
+theorem jd4379 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4234 = true :=
+  Artifact.isValidJumpDest_index 3279 (by rfl)
 
 section
 variable (s : State)
@@ -159,7 +159,7 @@ def gasSteps_row1 (P : W5) (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4927 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r1h (run_r1h s (hcap := by lenOK) (ha1 := ha1) (ha0 := ha0) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3713 4697 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3631 4697 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r1d (run_r1d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r1c2 (run_r1c2 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -180,7 +180,7 @@ def gasSteps_row2 (P : W5) (k n0 n1 n2 n3 np a1 a2 a3 : UInt256) (rest : List UI
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4927 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r2h (run_r2h s (hcap := by lenOK) (ha2 := ha2) (ha1 := ha1) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3813 4809 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3731 4809 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r2d (run_r2d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r2c3 (run_r2c3 s (hcap := by lenOK) (ha3 := ha3) (hact := hact) ..)
@@ -198,7 +198,7 @@ def gasSteps_row3 (P : W5) (k n0 n1 n2 n3 np a2 a3 : UInt256) (rest : List UInt2
                  win (row3 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win]
   seg block_r3h (run_r3h s (hcap := by lenOK) (ha3 := ha3) (ha2 := ha2) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3886 4892 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3804 4892 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r3d (run_r3d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   exact SquareRow.stepsOf block_r3e (run_r3e s (hcap := by lenOK) ..) rfl hcode hfork hrun hnp
@@ -208,7 +208,7 @@ end
 /-! ## 整个例程 -/
 
 /-- **R4**：帧 `e0..e12 ++ rest` 在 4820 → 同一栈在 `sq_exit`（4379），内存为 `r4Mem`。
-帧槽：`e5 = k`，`e7 = np`，`e8 = n0`，`e11 = n1`，`e12 = n2`。 -/
+帧槽（P1）：`e4 = n2`，`e5 = k`，`e7 = n1`，`e8 = n0`，`e11 = np`，`e12` 为进位缓存。 -/
 def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 990)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -217,17 +217,17 @@ def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat)
     (hk : e5 = Monpro.maxWord)
-    (hminv : (e8.toNat * e7.toNat + 1) % 2^256 = 0)
-    (hguard : e7 ≠ UInt256.ofNat 1) :
+    (hminv : (e8.toNat * e11.toNat + 1) % 2^256 = 0)
+    (hguard : e11 ≠ UInt256.ofNat 1) :
     GasSteps
       { s with pc := UInt256.ofNat 4579,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest }
-      { s with pc := UInt256.ofNat 4240,
+      { s with pc := UInt256.ofNat 4234,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest,
-               memory := r4Mem s.memory (r4Final s.memory e5 e8 e11 e12 e7) } := by
+               memory := r4Mem s.memory (r4Final s.memory e5 e8 e7 e4 e11) } := by
   have hj (r : UInt256) (h : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode r.toNat = true) :
       Decode.isValidJumpDest s.executionEnv.code r.toNat = true := by rw [hcode]; exact h
-  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4240 = true := by rw [hcode]; exact jd4379
+  have hj4379 : Decode.isValidJumpDest s.executionEnv.code 4234 = true := by rw [hcode]; exact jd4379
   -- 名字
   generalize ha0 : MachineState.readWord s.memory 2464 = a0
   generalize ha1 : MachineState.readWord s.memory 2432 = a1
@@ -236,28 +236,28 @@ def gasSteps_r4 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt256
   generalize hn3 : MachineState.readWord s.memory 0 = n3
   let E := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest
   have hE : E.length ≤ 1003 := by simp only [E, List.length_cons]; omega
-  let K := fun (tail : List UInt256) => e5 :: e8 :: e11 :: e12 :: n3 :: e7 :: tail
-  let W1 := red e8 e11 e12 n3 e7 e5 (row0 a0 a1 a2 a3 e5) ⟨0⟩
+  let K := fun (tail : List UInt256) => e5 :: e8 :: e7 :: e4 :: n3 :: e11 :: tail
+  let W1 := red e8 e7 e4 n3 e11 e5 (row0 a0 a1 a2 a3 e5) ⟨0⟩
   let R1 := row1 a0 a1 a2 a3 e5 W1
-  let W2 := red e8 e11 e12 n3 e7 e5 R1.1 R1.2
+  let W2 := red e8 e7 e4 n3 e11 e5 R1.1 R1.2
   let R2 := row2 a1 a2 a3 e5 W2
-  let W3 := red e8 e11 e12 n3 e7 e5 R2.1 R2.2
+  let W3 := red e8 e7 e4 n3 e11 e5 R2.1 R2.2
   let R3 := row3 a2 a3 e5 W3
-  let W4 := red e8 e11 e12 n3 e7 e5 R3.1 R3.2
+  let W4 := red e8 e7 e4 n3 e11 e5 R3.1 R3.2
   have g0 := SquareRow.stepsOf block_prodiag
     (run_prodiag s e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 a0 rest (by omega) hn3 ha0 hact) rfl
     hcode hfork hrun hnp
-  have g1 := gasSteps_row0 s hcode hfork hrun hnp e5 e8 e11 e12 n3 e7 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
-  have g2 := gasSteps_red s hcode hfork hrun hnp 4687 ⟨0⟩ (row0 a0 a1 a2 a3 e5) e5 e8 e11 e12 n3 e7 E hE
+  have g1 := gasSteps_row0 s hcode hfork hrun hnp e5 e8 e7 e4 n3 e11 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
+  have g2 := gasSteps_red s hcode hfork hrun hnp 4687 ⟨0⟩ (row0 a0 a1 a2 a3 e5) e5 e8 e7 e4 n3 e11 E hE
     (hj _ jd4903) hk hminv hguard
-  have g3 := gasSteps_row1 (hk := hk) s hcode hfork hrun hnp W1 e5 e8 e11 e12 n3 e7 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
-  have g4 := gasSteps_red s hcode hfork hrun hnp 4799 R1.2 R1.1 e5 e8 e11 e12 n3 e7 E hE (hj _ jd5020) hk hminv hguard
-  have g5 := gasSteps_row2 (hk := hk) s hcode hfork hrun hnp W2 e5 e8 e11 e12 n3 e7 a1 a2 a3 E hE hact ha1 ha2 ha3
-  have g6 := gasSteps_red s hcode hfork hrun hnp 4882 R2.2 R2.1 e5 e8 e11 e12 n3 e7 E hE (hj _ jd5108) hk hminv hguard
-  have g7 := gasSteps_row3 (hk := hk) s hcode hfork hrun hnp W3 e5 e8 e11 e12 n3 e7 a2 a3 E hE hact ha2 ha3
-  have g8 := gasSteps_red s hcode hfork hrun hnp 5031 R3.2 R3.1 e5 e8 e11 e12 n3 e7 E hE (hj _ jd5274) hk hminv hguard
+  have g3 := gasSteps_row1 (hk := hk) s hcode hfork hrun hnp W1 e5 e8 e7 e4 n3 e11 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
+  have g4 := gasSteps_red s hcode hfork hrun hnp 4799 R1.2 R1.1 e5 e8 e7 e4 n3 e11 E hE (hj _ jd5020) hk hminv hguard
+  have g5 := gasSteps_row2 (hk := hk) s hcode hfork hrun hnp W2 e5 e8 e7 e4 n3 e11 a1 a2 a3 E hE hact ha1 ha2 ha3
+  have g6 := gasSteps_red s hcode hfork hrun hnp 4882 R2.2 R2.1 e5 e8 e7 e4 n3 e11 E hE (hj _ jd5108) hk hminv hguard
+  have g7 := gasSteps_row3 (hk := hk) s hcode hfork hrun hnp W3 e5 e8 e7 e4 n3 e11 a2 a3 E hE hact ha2 ha3
+  have g8 := gasSteps_red s hcode hfork hrun hnp 5031 R3.2 R3.1 e5 e8 e7 e4 n3 e11 E hE (hj _ jd5274) hk hminv hguard
   have g9 := SquareRow.stepsOf block_exit
-    (run_exit s W4.t3 W4.t2 W4.t1 W4.t0 W4.t4 e5 e8 e11 e12 n3 e7 E
+    (run_exit s W4.t3 W4.t2 W4.t1 W4.t0 W4.t4 e5 e8 e7 e4 n3 e11 E
       (le_trans hE (by norm_num)) hact hj4379) rfl
     hcode hfork hrun hnp
   refine (((((((((g0.trans g1).trans g2).trans g3).trans g4).trans g5).trans g6).trans g7).trans

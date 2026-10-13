@@ -30,26 +30,27 @@ noncomputable def suffix_steps (s : State)
     GasSteps
       (TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat l2PC)
         q.memory (UInt256.lt (tn+q.carry) q.carry) (rowMu q.memory 8) (rowC0 q.memory 8)
-        8 0 pbi hd pb ent (tn+q.carry) m128 inv
-        (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))
+        8 0 pbi hd pb ent m32 m128 m64
+        (m0 :: tl :: m96 :: inv :: (tn+q.carry) :: aEnd :: dst :: ret :: rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
       (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd
        else UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8+51))
       (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
-        (TnCacheSquareModel.fromL1 q tn 8).tn m128 inv
-        (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
+        m32 m128 m64
+        (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn 8).tn :: aEnd :: dst :: ret :: rest))) := by
   let st : State := {s with memory := q.memory}
   let flag := UInt256.lt (tn+q.carry) q.carry
   let mem2 := (l2Step q.memory (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)).memory
   let carry2 := (l2Step q.memory (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)).carry
-  let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
-  have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
+  let tl4 := aEnd :: dst :: ret :: rest
+  have htl4 : tl4.length ≤ 1001 := by simp only [tl4, List.length_cons]; omega
+  let tail := m0 :: tl :: m96 :: inv :: (tn+q.carry) :: tl4
   have hreduce := TnMod128Chain.run_full st (l2PC) q.memory flag (rowMu q.memory 8)
     (rowC0 q.memory 8) 8 (Or.inr rfl) pbi hd pb ent (tn+q.carry) m128
     tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache (fun _ => hm0)
   have htailrun := TnCacheRowTrace.run_tail ((l2PC)+TnMod128Chain.fullSize 8)
-    {s with memory := mem2} carry2 flag pbi hd pb ent (tn+q.carry)
-    m128 inv tail htail hact hjd
+    {s with memory := mem2} carry2 flag pbi hd pb ent m32
+    m128 m64 m0 tl m96 inv (tn+q.carry) tl4 htl4 hact hjd
   have hflag : UInt256.lt (tn+q.carry+carry2) carry2+flag =
       flag+UInt256.lt (tn+q.carry+carry2) carry2 := by
     apply Challenge.EvmProof.Word.word_ext
@@ -58,26 +59,26 @@ noncomputable def suffix_steps (s : State)
   have hlast : runInstructions TnCacheRowTrace.tail
       (TnCacheLastTrace.lastState st (UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8))
         q.memory flag (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
-        pbi hd pb ent (tn+q.carry) m128 inv tail) =
+        pbi hd pb ent m32 m128 m64 tail) =
       some (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
         (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb) then hd
          else UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8+51))
         (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
-          (TnCacheSquareModel.fromL1 q tn 8).tn m128 inv tail)) := by
-    simpa only [TnCacheLastTrace.lastState, st, framed, mem2, carry2,
-      TnCacheSquareModel.fromL1, flag] using htailrun
+          m32 m128 m64 (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn 8).tn :: tl4))) := by
+    simpa only [TnCacheLastTrace.lastState, tail, tl4, st, framed, mem2, carry2,
+      TnCacheSquareModel.fromL1, flag, List.cons_append, List.nil_append] using htailrun
   have g1 : GasSteps
       (TnCacheL2Trace.state st (UInt256.ofNat (l2PC)) q.memory flag
-        (rowMu q.memory 8) (rowC0 q.memory 8) 8 0 pbi hd pb ent (tn+q.carry)
-        m128 inv tail)
+        (rowMu q.memory 8) (rowC0 q.memory 8) 8 0 pbi hd pb ent m32
+        m128 m64 tail)
       (TnCacheLastTrace.lastState st (UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8))
         q.memory flag (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
-        pbi hd pb ent (tn+q.carry) m128 inv tail) := by
+        pbi hd pb ent m32 m128 m64 tail) := by
     exact TnM128CandidateBlocks.l2Eight.steps (env.transfer rfl rfl) rfl hreduce
   have hpc : (TnCacheLastTrace.lastState st
       (UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8)) q.memory flag
       (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
-      pbi hd pb ent (tn+q.carry) m128 inv tail).pc =
+      pbi hd pb ent m32 m128 m64 tail).pc =
       UInt256.ofNat 4077 := by
     change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8) = UInt256.ofNat 4077
     rfl
@@ -85,9 +86,9 @@ noncomputable def suffix_steps (s : State)
     (s := TnCacheLastTrace.lastState st
       (UInt256.ofNat (l2PC+TnMod128Chain.fullSize 8)) q.memory flag
       (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
-      pbi hd pb ent (tn+q.carry) m128 inv tail)
+      pbi hd pb ent m32 m128 m64 tail)
     (env.transfer rfl rfl) hpc hlast
-  simpa only [st, tail] using g1.trans g2
+  simpa only [st, tail, tl4] using g1.trans g2
 
 #print axioms suffix_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128R8SuffixSteps

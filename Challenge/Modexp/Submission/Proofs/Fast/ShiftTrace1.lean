@@ -30,32 +30,32 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2163 = 2670 := by
+@[simp] private theorem followupPC2635 : Artifact.submissionArtifact.instructionPC 2083 = 2670 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2169 = 2677 := by
+@[simp] private theorem followupPC2641 : Artifact.submissionArtifact.instructionPC 2089 = 2677 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2175 = 2684 := by
+@[simp] private theorem followupPC2647 : Artifact.submissionArtifact.instructionPC 2095 = 2684 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2181 = 2691 := by
+@[simp] private theorem followupPC2653 : Artifact.submissionArtifact.instructionPC 2101 = 2691 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2187 = 2698 := by
+@[simp] private theorem followupPC2659 : Artifact.submissionArtifact.instructionPC 2107 = 2698 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2193 = 2705 := by
+@[simp] private theorem followupPC2665 : Artifact.submissionArtifact.instructionPC 2113 = 2705 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- The `DUP2` that ends `blk2982`; the E5 cache block starts at the next index (1872, pc 2531). -/
-@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2203 = 2717 := by
+@[simp] private theorem followupPC1871 : Artifact.submissionArtifact.instructionPC 2123 = 2717 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -183,7 +183,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk2892`: back from `CSUB`, push the carry `1` and the limb-0 pointer. -/
+/-- `blk2892`: back from `CSUB`, push the limb-0 pointer and the flag `1` on top. -/
 theorem run_negEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
@@ -208,8 +208,8 @@ theorem run_negEntry (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk2896a`: store limb `j` of `NEG := -m`, up to the exit test.  The loop
-pointer `p` stays abstract; only its value is needed. -/
+/-- `blk2896a`: store limb `j` of `NEG := -m` as `NOT m_j + flag` and push the cleared
+flag, up to the exit test.  The loop pointer `p` stays abstract; only its value is needed. -/
 theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize msize j : Nat)
     (hn32 : n ≤ 8) (hj : j < n) (hpv : p.toNat = 32 * (n - 1 - j))
     (hact : 88 ≤ s.activeWords.toNat)
@@ -217,10 +217,10 @@ theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2896a
       { s with pc := UInt256.ofNat pcNegLoop
-               stack := p :: (negStep mem n j).flag :: outer n bsize esize msize
+               stack := (negStep mem n j).flag :: p :: outer n bsize esize msize
                memory := (negStep mem n j).memory } =
       some { s with pc := UInt256.ofNat pcNegMid
-                    stack := p :: (negStep mem n (j + 1)).flag :: outer n bsize esize msize
+                    stack := (negStep mem n (j + 1)).flag :: p :: outer n bsize esize msize
                     memory := (negStep mem n (j + 1)).memory } := by
   have hdst : (1280 + 32 * (n - 1 - j)) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       1280 + 32 * (n - 1 - j) := Nat.mod_eq_of_lt (by omega)
@@ -236,7 +236,7 @@ theorem run_negBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       pcNegLoop, pcNegMid, negStep, NEG,
-      outer, Exp.outer, hcode, hrun, hpv, hdst, hawL, hawS,
+      outer, Exp.outer, hcode, hrun, hpv, hdst, hawL, hawS, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -250,10 +250,10 @@ theorem run_negTail (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2896b
       { s with pc := UInt256.ofNat pcNegMid
-               stack := p :: c :: outer n bsize esize msize
+               stack := c :: p :: outer n bsize esize msize
                memory := m } =
       some { s with pc := UInt256.ofNat pcNegLoop
-                    stack := (UInt256.lnot (31 : UInt256) + p) :: c :: outer n bsize esize msize
+                    stack := c :: (UInt256.lnot (31 : UInt256) + p) :: outer n bsize esize msize
                     memory := m } := by
   simp (config := { maxSteps := 200000 })
     [blk2896b, opAt, pushAt, wfOp,
@@ -274,10 +274,10 @@ theorem run_negExit (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk2896b
       { s with pc := UInt256.ofNat pcNegMid
-               stack := p :: c :: outer n bsize esize msize
+               stack := c :: p :: outer n bsize esize msize
                memory := m } =
       some { s with pc := UInt256.ofNat pcNegDone
-                    stack := (UInt256.lnot (31 : UInt256) + p) :: c :: outer n bsize esize msize
+                    stack := c :: (UInt256.lnot (31 : UInt256) + p) :: outer n bsize esize msize
                     memory := m } := by
   simp (config := { maxSteps := 200000 })
     [blk2896b, opAt, pushAt, wfOp,
@@ -291,7 +291,7 @@ theorem run_negExit (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk2919`: drop the loop words, store `L`, `dodd`, `X`, `Bmod`. -/
+/-- `blk2919`: run the four pads, drop the loop words, store `L`, `dodd`, `X`, `Bmod`. -/
 theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

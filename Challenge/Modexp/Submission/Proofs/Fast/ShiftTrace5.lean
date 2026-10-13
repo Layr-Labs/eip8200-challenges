@@ -96,29 +96,29 @@ theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n
 
 /-! ## The shift loop -/
 
-def gasSteps_shiftLoop (s : State) (mem : ByteArray) (n bsize esize msize mm minv r : Nat)
+def gasSteps_shiftLoop (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize mm minv r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n) (e : Env s) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
     (hfast : n = 4 ∨ n = 8) :
-    Challenge.EvmProof.GasSteps (shiftLoopState s mem n bsize esize msize n)
-      (shiftLoopState s (stepMems mem n mm n) n bsize esize msize 0) :=
+    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize n)
+      (shiftLoopState z s (stepMems mem n mm n) n bsize esize msize 0) :=
   Challenge.EvmProof.GasSteps.cast
     (Challenge.EvmProof.GasSteps.iterateBounded
-      (I := fun i => shiftLoopState s (stepMems mem n mm i) n bsize esize msize (n - i)) n
+      (I := fun i => shiftLoopState z s (stepMems mem n mm i) n bsize esize msize (n - i)) n
       (fun i hi =>
         have invI := stepInv_stepMems (by omega) hn32 inv i
         have hbaseI := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
           hbase hr inv.pre i
         Challenge.EvmProof.GasSteps.cast
-          (gasSteps_step s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
+          (gasSteps_step z s (stepMems mem n mm i) n bsize esize msize (n - i) mm minv
             (by omega) (by omega) hn hn32 hbs hmpos hmm htop e invI hbaseI (Nat.mod_lt _ hmpos)
             (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
               invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
           rfl (by
-            show shiftLoopState s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
-              (n - i - 1) = shiftLoopState s (stepMems mem n mm (i + 1)) n bsize esize msize
+            show shiftLoopState z s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
+              (n - i - 1) = shiftLoopState z s (stepMems mem n mm (i + 1)) n bsize esize msize
               (n - (i + 1))
             rw [show n - i - 1 = n - (i + 1) from by omega]
             rfl)))
@@ -152,7 +152,7 @@ def hitFinalMem (mem input : ByteArray) (n mm : Nat) : ByteArray :=
 The `MCOPY` at the loop exit copies that word block into `R1`, and on this route
 `TopBitSet` makes `radix^n - mm` equal to `radix^n % mm`. -/
 theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
+    (hmpos : 0 < mm) (hodd : mm % 2 = 1) (hmod : Model.FastRepresents mem 0 n mm) :
     Model.FastRepresents (hitFinalMem mem input n mm) NEG n (Limbs.radix ^ n - mm) := by
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
@@ -163,7 +163,7 @@ theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
     unfold m2Of preMem
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
     exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
-      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
+      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
 
 /-- The base value the first `CSUB` leaves in the retained `TS`: `b mod m`. -/
@@ -207,7 +207,7 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
 
 /-- The step invariant at the shift loop entry. -/
 theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
-    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hframe : Exp.Frame mem n bsize minv) (hmod : Model.FastRepresents mem 0 n mm) :
     StepInv (m2Of mem input n) n bsize mm minv := by
   have hm2high : ∀ addr, 2688 ≤ addr →
@@ -235,7 +235,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     unfold m2Of preMem
     refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
     exact fastRepresents_preMemOf _ _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
-      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hmod1)
+      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n,
     PreOK_cacheMem _ n (PreOK_preMem _)⟩
 

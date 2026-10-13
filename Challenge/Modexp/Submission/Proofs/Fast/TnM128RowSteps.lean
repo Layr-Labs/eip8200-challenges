@@ -18,12 +18,12 @@ def l1PC (n : Nat) : Nat := if n = 4 then 5309 else 3562
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4250 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2832 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4168 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2752 (by rfl)
 
 theorem row_jump :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat 3533).toNat = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 2803 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 2723 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (pbi : UInt256) :
     TnCacheRowModel.CacheState :=
@@ -47,19 +47,19 @@ noncomputable def row_steps (s : State)
     GasSteps
       (framed s (UInt256.ofNat 3533)
         (TnCacheFrameOps.frame pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n))
-          tn m128 inv
-          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest)))
+          m32 m128 m64
+          (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)))
       (framed {s with memory := (result s.memory tn pa n pbi).memory}
         (if UInt256.isTrue (UInt256.gt (negative32+pbi) pb)
          then UInt256.ofNat 3533 else UInt256.ofNat 4128)
         (TnCacheFrameOps.frame (negative32+pbi) (UInt256.ofNat 3533) pb
-          (UInt256.ofNat (l1PC n)) (result s.memory tn pa n pbi).tn
-          m128 inv
-          (m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest))) := by
+          (UInt256.ofNat (l1PC n)) m32
+          m128 m64
+          (m0 :: tl :: m96 :: inv :: (result s.memory tn pa n pbi).tn :: aEnd :: dst :: ret :: rest))) := by
   let bi := MachineState.readWord s.memory pbi.toNat
   let q1 := l1Step s.memory bi pa n 1
   let qn := l1Step s.memory bi pa n n
-  let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
+  let tail := m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest
   have hn' : 1 ≤ n ∧ n ≤ 8 := by omega
   have ht : tl.toNat = 2112+32*(n-1) := by
     rw [hc.lowAddress, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -70,29 +70,29 @@ noncomputable def row_steps (s : State)
   have hhd : Decode.isValidJumpDest s.executionEnv.code
       (UInt256.ofNat 3533).toNat = true := by rw [env.code]; exact row_jump
   have hhead := TnCacheHeadTrace.run_head s 3533 pa n pbi (UInt256.ofNat 3533) pb
-    (UInt256.ofNat (l1PC n)) tn m128 tl inv m0 aEnd m96 m64 m32
+    (UInt256.ofNat (l1PC n)) m32 m128 tl m64 m0 aEnd m96 inv tn
     dst ret rest hcap hn' hact hpbi hpa ha ht hj
   have g0 := TnM128L1Blocks.head.steps
     (s := framed s (UInt256.ofNat 3533)
       (TnCacheFrameOps.frame pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n))
-        tn m128 inv tail)) (env.transfer rfl rfl) rfl hhead
+        m32 m128 m64 tail)) (env.transfer rfl rfl) rfl hhead
   have hs1 : Snapshot q1.memory pa n := by
     exact Snapshot.l1StepOn_pres_stage
       (q := l1Step s.memory bi pa n 0) hs bi 0 hn'.2 hpa (by omega)
   have g1 : GasSteps
       (TnCacheL1Trace.qState s (UInt256.ofNat (l1PC n)) q1 bi
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) tn m128 inv tail)
+        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) m32 m128 m64 tail)
       (TnCacheL1Trace.qState s (UInt256.ofNat (middlePC n)) (l1Run q1 bi pa n 1 (n-1)) bi
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) tn m128 inv tail) := by
+        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC n)) m32 m128 m64 tail) := by
     by_cases h4 : n = 4
     · subst n
       exact TnM128L1Steps.private_steps s env q1 bi pa
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 4)) tn m128 inv tail
+        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 4)) m32 m128 m64 tail
         (by simp only [tail, List.length_cons]; omega) hact hpa hs1
     · have h8 : n = 8 := hn.resolve_left h4
       subst n
       exact TnM128L1Steps.suffix_steps s env q1 bi pa 8 1 7 (by decide)
-        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 8)) tn m128 inv tail
+        pbi (UInt256.ofNat 3533) pb (UInt256.ofNat (l1PC 8)) m32 m128 m64 tail
         (by simp only [tail, List.length_cons]; omega) hact (by decide) (by decide) hpa hs1
   have hqn : l1Run q1 bi pa n 1 (n-1) = qn := by
     simp only [q1, qn, StagedOperand.l1Run_l1Step, show 1+(n-1) = n from by omega]

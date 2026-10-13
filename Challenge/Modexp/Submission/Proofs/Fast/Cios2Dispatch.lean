@@ -51,22 +51,22 @@ def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
 /-- The `mul entry` JUMPDEST (instruction 3190, pc 4013 = 0x0f50). -/
 theorem jumpDest4012 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3383 = true := by
-  exact Artifact.isValidJumpDest_index 2699 (by rfl)
+  exact Artifact.isValidJumpDest_index 2619 (by rfl)
 
 /-- The `common` JUMPDEST (instruction 3190, pc 4132 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3387 = true := by
-  exact Artifact.isValidJumpDest_index 2701 (by rfl)
+  exact Artifact.isValidJumpDest_index 2621 (by rfl)
 
 /-- The multiply row head (instruction 2703, pc 3543). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3533 = true := by
-  exact Artifact.isValidJumpDest_index 2803 (by rfl)
+  exact Artifact.isValidJumpDest_index 2723 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3275, pc 4268). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4258 = true := by
-  exact Artifact.isValidJumpDest_index 3373 (by rfl)
+  exact Artifact.isValidJumpDest_index 3291 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -152,7 +152,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3388 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2702 58 3388 TnM128Setup.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2622 58 3388 TnM128Setup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -166,7 +166,7 @@ def environment (s : State)
 
 /-- The preclear trampoline (instruction 4412, pc 5466). -/
 def preclear : Block Artifact.submissionArtifact .Osaka 5466 TnM128Setup.preclearProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4382 10 5466 TnM128Setup.preclearProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4300 10 5466 TnM128Setup.preclearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- trampoline → `mul entry` → `common` with `hd = 3533`; the product block is cleared. -/
@@ -212,7 +212,9 @@ opaque gasSteps_common (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat
 
 
 /-- The kernel `setup` (pc 4151 → `hd`): stages `a` at 2368, zeroes `t` and builds the
-row-0 frame `[pbi, hd, pb-32, l1Target n, …, inv, m0, tl, m96, m64, m32, aEnd, pdst, ret]`. -/
+row-0 frame `[pbi, hd, pb-32, l1Target n, m32, …, m64, m0, tl, m96, inv, 0, aEnd, pdst, ret]`
+(P1: modulus[32] in the fifth word, modulus[64] in the eighth, the Montgomery inverse in the
+twelfth and the zero carry cache in the thirteenth). -/
 opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -234,9 +236,9 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stage mem pa n)) pb n 0 hd
         (CiosCached.l1Target n)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
+        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
@@ -268,9 +270,9 @@ opaque gasSteps_commonSetup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb 
       (commonState s (mpZeroed s mem n) hd pa pb pdst ret rest)
       (CiosCached.outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd
         (CiosCached.l1Target n)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
+        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
   have hn8 : n ≤ 8 := by rcases hn with rfl | rfl <;> omega
   have hr (addr : Nat) (h : addr + 32 ≤ 2048 ∨ 2368 ≤ addr) :
@@ -320,9 +322,9 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stage mem pa n)) pb n 0 hd
         (UInt256.ofNat 3562)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
+        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
@@ -352,9 +354,9 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stage mem pa n)) pb n 0 hd
         (UInt256.ofNat 3562)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
+        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
   have hwidth : MachineState.readWord mem 2688 = UInt256.ofNat 128 ∨
       MachineState.readWord mem 2688 = UInt256.ofNat 256 := by
@@ -391,9 +393,9 @@ opaque gasSteps_commonSetupInputSq (s : State) (mem : ByteArray) (hd : UInt256) 
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.inputMemory mem pa n)) pb n 0 hd
         (UInt256.ofNat 3562)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (16 * n + 32))
+        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
   have hin : StagedOperand.inputMemory mem pa n = StagedOperand.stage mem pa n := by
     unfold StagedOperand.inputMemory

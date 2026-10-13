@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneTableBuild
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInit
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLoop
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneReturn
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowPrecopyRoute
 
 set_option warningAsError true
 
@@ -10,54 +11,23 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCore
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
-def returnedState (template : State) (base modulus exponent : UInt256)
+/-- The returned state of the precopy route (`WindowPrecopyRoute`). -/
+abbrev returnedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
-  WindowTwentyOneReturn.returned finish (UInt256.ofNat 2377)
-    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 finish.stack.tail
-
-theorem run_finish (template : State) (base modulus exponent : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions WindowTwentyOneReturn.program
-      (WindowTwentyOneLoop.finishState template base modulus exponent rest) =
-    some (returnedState template base modulus exponent rest) := by
-  let finish := WindowTwentyOneLoop.finishState template base modulus exponent rest
-  have htail : finish.stack.tail.length + 3 < 1024 := by
-    simp only [finish, WindowTwentyOneLoop.finishState, WindowTwentyOneLoop.postStateLast,
-      WindowTwentyOneLastGroup.outState,
-      WindowTwentyOneLookup.framed, List.nil_append, List.cons_append,
-      List.tail_cons, List.length_cons]
-    omega
-  have h := WindowTwentyOneReturn.run_return finish (UInt256.ofNat 2372)
-    (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18 (by decide) rfl
-    finish.stack.tail htail
-  have hpc : advancePC 5 (UInt256.ofNat 2372) = UInt256.ofNat 2377 := by decide
-  simpa only [returnedState, finish, WindowTwentyOneReturn.framed, WindowTwentyOneLoop.finishState,
-    WindowTwentyOneLoop.postStateLast,
-    WindowTwentyOneLastGroup.outState, WindowTwentyOneLookup.framed,
-    List.nil_append, List.cons_append, List.tail_cons, hpc] using h
+  WindowPrecopyRoute.returnedState template base modulus exponent rest
 
 theorem core_result (template : State) (base modulus exponent : UInt256)
     (hmodulus : 0 < modulus.toNat) (rest : List UInt256) :
     (returnedState template base modulus exponent rest).toResult =
-      .returned (Precompile.natToBytes (base.toNat ^ exponent.toNat % modulus.toNat) 32) := by
-  unfold returnedState
-  rw [WindowTwentyOneReturn.returned_result]
-  have he : exponent.toNat < 16 ^ 64 := by
-    change exponent.toNat < 2 ^ 256
-    exact exponent.val.isLt
-  have h := WindowTwentyOneMath.three_bodies_toNat base modulus exponent.toNat hmodulus he
-  rw [h]
+      .returned (Precompile.natToBytes (base.toNat ^ exponent.toNat % modulus.toNat) 32) :=
+  WindowPrecopyRoute.core_result template base modulus exponent hmodulus rest
 
 /-- With a zero modulus every `MULMOD` of the last step yields zero, so the
 window core returns the precompile's zero word without a separate exit. -/
 theorem core_result_zero (template : State) (base modulus exponent : UInt256)
     (hmodulus : modulus.toNat = 0) (rest : List UInt256) :
     (returnedState template base modulus exponent rest).toResult =
-      .returned (Precompile.natToBytes 0 32) := by
-  unfold returnedState
-  rw [WindowTwentyOneReturn.returned_result]
-  have h := WindowTwentyOneMath.accumulator_zero base modulus exponent.toNat hmodulus
-  rw [h]
+      .returned (Precompile.natToBytes 0 32) :=
+  WindowPrecopyRoute.core_result_zero template base modulus exponent hmodulus rest
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCore

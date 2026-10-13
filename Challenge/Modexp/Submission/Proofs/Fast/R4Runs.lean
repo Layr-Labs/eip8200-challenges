@@ -22,7 +22,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast.R4Blocks Challenge.Modexp.Submission.Proofs.Fast.R4Math
 
 def prog_pd0 : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨7, by decide⟩), .push 0 0, .op .MLOAD, .op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨12, by decide⟩)]
+  [.op .JUMPDEST, .op (.Dup ⟨11, by decide⟩), .push 0 0, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨12, by decide⟩)]
 
 theorem run_pd0 (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 n3 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005)
@@ -30,7 +30,7 @@ theorem run_pd0 (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 n3 : UInt
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prog_pd0
       { s with pc := UInt256.ofNat 4579, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } =
-    some { s with pc := UInt256.ofNat 4586, stack := x8 :: x11 :: x12 :: n3 :: x7 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } := by
+    some { s with pc := UInt256.ofNat 4586, stack := x8 :: x7 :: x4 :: n3 :: x11 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } := by
   have hc0 : rest.length < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -142,19 +142,19 @@ theorem run_prodiag (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 a0
       { s with pc := UInt256.ofNat 4579,
                stack := e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest } =
     some { s with pc := UInt256.ofNat 4608,
-                  stack := dHi a0 e5 :: (a0 * a0) :: (a0 + a0) :: e5 :: e8 :: e11 :: e12 :: n3 :: e7 ::
+                  stack := dHi a0 e5 :: (a0 * a0) :: (a0 + a0) :: e5 :: e8 :: e7 :: e4 :: n3 :: e11 ::
                     e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest } := by
   have hs : prog_prodiag = prog_pd0 ++ (prog_pd1 ++ (prog_pd2 ++ prog_pd3)) := rfl
   rw [hs]
   have g0 := run_pd0 s e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 rest (by omega) hn3 hact
   have g1 := run_pd1 s a0
-    (e8 :: e11 :: e12 :: n3 :: e7 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest)
+    (e8 :: e7 :: e4 :: n3 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest)
     (by simp only [List.length_cons]; omega) ha0 hact
-  have g2 := run_pd2 s a0 a0 (a0 + a0) a0 e8 e11 e12 n3 e7 e0 e1 e2 e3 e4 e5
+  have g2 := run_pd2 s a0 a0 (a0 + a0) a0 e8 e7 e4 n3 e11 e0 e1 e2 e3 e4 e5
     (e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest)
     (by simp only [List.length_cons]; omega)
   have g3 := run_pd3 s (UInt256.mulMod a0 a0 e5) (UInt256.mulMod a0 a0 e5) (a0 * a0)
-    ((a0 + a0) :: e5 :: e8 :: e11 :: e12 :: n3 :: e7 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest)
+    ((a0 + a0) :: e5 :: e8 :: e7 :: e4 :: n3 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest)
     (by simp only [List.length_cons]; omega)
   have g23 := runInstructions_append_some _ _ _ _ _ g2 g3
   have g123 := runInstructions_append_some _ _ _ _ _ g1 g23
@@ -1613,19 +1613,19 @@ theorem run_exit_3 (s : State) (x0 : UInt256) (rest : List UInt256)
   simp [hc0, hz0, prog_exit_3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hc2, hc3, hc4, hc5, hc6]
 
 def prog_exit_4 : List Instr :=
-  [.push 2 4240, .op .JUMP]
+  [.push 2 4234, .op .JUMP]
 
 theorem run_exit_4 (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1022)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 4240 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 4234 = true) :
     runInstructions prog_exit_4
       { s with pc := UInt256.ofNat 5058, stack := rest } =
-    some { s with pc := (4240 : UInt256),
+    some { s with pc := (4234 : UInt256),
                   stack := rest } := by
   have hc0 : rest.length < 1024 := by omega
   have hz0 : (⟨0⟩ : UInt256).toNat = 0 := rfl
   have hc1 : rest.length + 1 < 1024 := by omega
-  have hl4379 : (4240 : UInt256).toNat = 4240 := rfl
+  have hl4379 : (4234 : UInt256).toNat = 4234 := rfl
   simp [hc0, hz0, prog_exit_4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, hc1, hl4379, hjd]
 
 /-- Two writes to disjoint windows commute (same statement and proof as
@@ -1674,10 +1674,10 @@ theorem prog_exit_split : prog_exit = prog_exit_0 ++ (prog_exit_1 ++ (prog_exit_
 theorem run_exit (s : State) (p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1010)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 4240 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 4234 = true) :
     runInstructions prog_exit
       { s with pc := UInt256.ofNat 5031, stack := p3 :: p2 :: p1 :: p0 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 4240,
+    some { s with pc := UInt256.ofNat 4234,
                   stack := rest,
                   memory := (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes s.memory
           (Data.Bytes.natToBytesPadded p0.toNat 32) 2208)

@@ -11,21 +11,24 @@ open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
-/-- Eight-limb kernel exit: carry reset, row pointer `+ 0x100`, `PUSH2 5062`, then the shared
-counter block `pcC`. -/
+/-- Eight-limb kernel exit: carry reset, row pointer `+ 0x100`, `PUSH2 5062`, then falls into the
+eight-limb counter `pcC` (no `JUMPDEST`). -/
 def pcSqExit : Nat := 4198
-/-- Shared counter block, entered by fall-through (n = 8) or from `pcE4` (n = 4). -/
+/-- Eight-limb counter, reached only by fall-through from `pcSqExit`. -/
 def pcC : Nat := 4209
-def pcLast : Nat := 4228
+/-- `last`, reached by fall-through from `pcC` (n = 8) or from the four-limb tail jump (n = 4). -/
+def pcLast : Nat := 4221
 /-- Eight-limb CSUB return: the next square's row-0 head. -/
 def pcH2 : Nat := 5062
-/-- Four-limb kernel exit: push the R4 return 4579 and jump to `pcC`. -/
-def pcE4 : Nat := 4240
+/-- Four-limb kernel exit: push the R4 return 4579, then the same stack counter. -/
+def pcE4 : Nat := 4234
+/-- Four-limb `last` trampoline. -/
+def pcE4Tail : Nat := 4250
 
 def frameStack (tn m128 : UInt256) (_n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 4258, UInt256.ofNat 2336, ent, tn, allOnes,
-   m128, inv, m0, tl, m96, m64, m32,
+  [pbi, UInt256.ofNat 4258, UInt256.ofNat 2336, ent, m32, allOnes,
+   m128, m64, m0, tl, m96, inv, tn,
    aprev, pdst, ret] ++ rest
 
 def frameAt (tn m128 : UInt256) (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
@@ -33,67 +36,59 @@ def frameAt (tn m128 : UInt256) (pc : Nat) (s : State) (mem : ByteArray) (n : Na
   framed {s with memory := mem} (UInt256.ofNat pc)
     (frameStack tn m128 n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
 
-def countMem (mem : ByteArray) (c : Nat) : ByteArray :=
-  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded c 32) 2624
-
-/-- The shared counter block at `pcC`: decrement the square counter and call the CSUB guard
-with `[pdst, r]` on top of the frame, where `r` is the return pushed by the entry. -/
+/-- The square counter lives in the frame's `pdst` slot (dead during the square loop; pc 3471
+overwrites it).  With `[r, frame]` on the stack the block reads `pdst` (`DUP16`), stores
+`pdst - 1` back (`DUP8` is `allOnes`, `SWAP16`), and calls the CSUB guard with `[2368, r]`
+when the old value is nonzero. -/
 def cProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 2368, .push 2 2624, .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩),
-   .push 2 2624, .op .MSTORE, .push 2 4518, .op .JUMPI]
+  [.op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .ADD,
+   .op (.Swap ⟨15, by decide⟩), .push 2 2368, .op (.Swap ⟨0, by decide⟩),
+   .push 2 4518, .op .JUMPI]
 
 def sqExitProgram : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op (.Swap ⟨4, by decide⟩), .op .POP,
+  [.op .JUMPDEST, .push 0 0, .op (.Swap ⟨12, by decide⟩), .op .POP,
    .push 2 256, .op .ADD, .push 2 5062] ++ cProgram
 
 def e4Program : List Instr :=
-  [.op .JUMPDEST, .push 2 4579, .push 2 4209, .op .JUMP]
+  [.op .JUMPDEST, .push 2 4579] ++ cProgram
+
+def e4TailProgram : List Instr :=
+  [.push 6 4221, .op .JUMP]
 
 def lastProgram : List Instr :=
-  [.op .POP, .op .POP, .push 2 3471, .push 2 2368, .push 2 4518, .op .JUMP]
+  [.op .JUMPDEST, .op .POP, .op .POP, .push 2 3471, .push 2 2368, .push 2 4518, .op .JUMP]
 
 def sqExitBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4198 sqExitProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3339 18 4198 sqExitProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3257 15 4198 sqExitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def cBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4209 cProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3346 11 4209 cProgram
+def e4Block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4234 e4Program :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3279 10 4234 e4Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-def e4Block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4240 e4Program :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3363 4 4240 e4Program
+def e4TailBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4250 e4TailProgram :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3289 2 4250 e4TailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4228 lastProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3357 6 4228 lastProgram
+def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4221 lastProgram :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3272 7 4221 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDestC : Decode.isValidJumpDest TnM128Candidate.bytecode 4209 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3346 (by rfl)
+theorem jumpDestLast : Decode.isValidJumpDest TnM128Candidate.bytecode 4221 = true :=
+  TnM128CandidateArtifact.isValidJumpDest_index 3272 (by rfl)
 
-theorem jumpDestE4 : Decode.isValidJumpDest TnM128Candidate.bytecode 4240 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3363 (by rfl)
+theorem jumpDestE4 : Decode.isValidJumpDest TnM128Candidate.bytecode 4234 = true :=
+  TnM128CandidateArtifact.isValidJumpDest_index 3279 (by rfl)
 
 theorem jumpDestLazy : Decode.isValidJumpDest TnM128Candidate.bytecode 4518 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3574 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3492 (by rfl)
 
 abbrev environment := TnM128SquareSteps.environment
 
-private theorem sub_one (c : Nat) (hc : c + 1 < 2 ^ 256) :
-    UInt256.ofNat (c + 1) - UInt256.ofNat 1 = UInt256.ofNat c := by
-  simpa using Challenge.EvmProof.Word.ofNat_sub_ofNat (a := c + 1) (b := 1) (by omega) hc
-
-private theorem activeWords9280 (s : State) (hact : 88 ≤ s.activeWords.toNat) :
-    UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2624 32) =
-      s.activeWords := by
-  have hnat : MachineState.activeWordsAfter s.activeWords.toNat 2624 32 =
-      s.activeWords.toNat := by
-    unfold MachineState.activeWordsAfter
-    simp only [show (32 : Nat) ≠ 0 by decide, if_false]
-    exact Nat.max_eq_left (by omega)
-  rw [hnat]
-  exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
+/-- `allOnes + (c + 1) = c` for the counter range. -/
+private theorem dec_succ (c : Nat) (hc : c ≤ 14) :
+    allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := by
+  interval_cases c <;> decide
 
 /-- The `last` entry: the retained frame under the unused CSUB call pair `[pdst, pcH2]`. -/
 def lazyCsubState (s : State) (mem : ByteArray) (dst ret : UInt256)
@@ -107,76 +102,64 @@ def lastAt (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
              frameStack tn m128 n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest
            memory := mem }
 
-/-- `sq_exit` with a counter above one: reset the carry slot, advance the row pointer to the
-next square's row 0, store `c` and call the CSUB guard as a subroutine with `[pdst, 5062]` on
-top of the reset frame. -/
+/-- `sq_exit` with the counter slot at `c + 1`: reset the carry slot, advance the row pointer to
+the next square's row 0, leave `c` in the counter slot and call the CSUB guard as a subroutine
+with `[2368, 5062]` on top of the reset frame.  Memory is unchanged. -/
 theorem run_sqExit_more (tn m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
-    (ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
-    (hact : 88 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat (c + 1)) :
+    (hc15 : c + 1 ≤ 15) :
     runInstructions sqExitProgram
-      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev pdst ret
-        rest) =
-    some (lazyCsubState s (countMem mem c) (UInt256.ofNat 2368) (UInt256.ofNat 5062)
-      (frameStack (UInt256.ofNat 0) m128 n (UInt256.ofNat 2592) ent tl inv m0 m96 m64 m32 aprev pdst
-        ret rest)) := by
+      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev
+        (UInt256.ofNat (c + 1)) ret rest) =
+    some (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 5062)
+      (frameStack (UInt256.ofNat 0) m128 n (UInt256.ofNat 2592) ent tl inv m0 m96 m64 m32 aprev
+        (UInt256.ofNat c) ret rest)) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
   have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hc15 : c ≤ 15 := by omega
-  have hdec : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := by
-    interval_cases c <;> decide
-  have hcNat : (UInt256.ofNat c).toNat = c := by
+  have hdec : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := dec_succ c (by omega)
+  have hcNat : (UInt256.ofNat (c + 1)).toNat = c + 1 := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have htrue : UInt256.isTrue (UInt256.ofNat c) := by
-    show (UInt256.ofNat c).toNat ≠ 0
+  have htrue : UInt256.isTrue (UInt256.ofNat (c + 1)) := by
+    show (UInt256.ofNat (c + 1)).toNat ≠ 0
     rw [hcNat]; omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4518 = true := by
     rw [hcode]; exact jumpDestLazy
-  have h9280 : (2624 : UInt256).toNat = 2624 := by decide
   have hptr : UInt256.ofNat 256 + UInt256.ofNat 2336 = UInt256.ofNat 2592 := by decide
   simp [sqExitProgram, cProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, pcSqExit, lazyCsubState, framed, countMem, hcount, hdec, hcNat, htrue, hjd, h9280,
-    hptr,
-    State.activeWordsAfterUInt256, activeWords9280 s hact,
-    hc16', hc17, hc18, hc19, hc20, hc21, List.exchange,
+    frameAt, frameStack, pcSqExit, lazyCsubState, framed, hdec, hcNat, htrue, hjd, hptr,
+    hc16', hc17, hc18, hc19, hc20, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
 
-/-- `sq_exit` with the counter at one: reset the carry slot, advance the row pointer, store
-zero and fall through to `last`. -/
+/-- `sq_exit` with the counter slot at zero: reset the carry slot, advance the row pointer,
+leave `allOnes` in the (dead) counter slot and fall through to `last`. -/
 theorem run_sqExit_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
-    (ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat 1) :
+    (ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1000) :
     runInstructions sqExitProgram
-      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev pdst ret
-        rest) =
-    some (lastAt (UInt256.ofNat 0) m128 s (countMem mem 0) n (UInt256.ofNat 2592) ent tl inv m0 m96
-      m64 m32 aprev pdst ret rest) := by
+      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev
+        (UInt256.ofNat 0) ret rest) =
+    some (lastAt (UInt256.ofNat 0) m128 s mem n (UInt256.ofNat 2592) ent tl inv m0 m96
+      m64 m32 aprev allOnes ret rest) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
   have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hdec : allOnes + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hdec : allOnes + UInt256.ofNat 0 = allOnes := by decide
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
-  have h9280 : (2624 : UInt256).toNat = 2624 := by decide
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
   have hptr : UInt256.ofNat 256 + UInt256.ofNat 2336 = UInt256.ofNat 2592 := by decide
   simp [sqExitProgram, cProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, lastAt, pcSqExit, pcLast, pcH2, countMem, hcount, hdec, hzero,
-    hfalse, h9280, hptr,
-    State.activeWordsAfterUInt256, activeWords9280 s hact,
-    hc16', hc17, hc18, hc19, hc20, hc21, List.exchange,
+    frameAt, framed, frameStack, lastAt, pcSqExit, pcLast, pcH2, hdec, hzero,
+    hfalse, hptr,
+    hc16', hc17, hc18, hc19, hc20, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
@@ -204,47 +187,43 @@ theorem run_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
 
 /-! ## The loop's blocks as gas steps -/
 
-/-- `sq_exit` with a counter above one: straight into the CSUB guard, returning to 5062. -/
+/-- `sq_exit` with the counter slot above zero: straight into the CSUB guard, returning to 5062. -/
 def gasSteps_sqExitMore (tn m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
-    (ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat) (hcpos : 0 < c) (hc16 : c + 1 ≤ 16)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat (c + 1)) :
+    (hc15 : c + 1 ≤ 15) :
     Challenge.EvmProof.GasSteps
-      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev pdst ret
-        rest)
-      (lazyCsubState s (countMem mem c) (UInt256.ofNat 2368) (UInt256.ofNat 5062)
+      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev
+        (UInt256.ofNat (c + 1)) ret rest)
+      (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 5062)
         (frameStack (UInt256.ofNat 0) m128 n (UInt256.ofNat 2592) ent tl inv m0 m96 m64 m32 aprev
-          pdst ret rest)) :=
+          (UInt256.ofNat c) ret rest)) :=
   sqExitBlock.steps
     (environment (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32
-      aprev pdst ret rest) hcode hfork hrun hnp) rfl
-    (run_sqExit_more tn m128 s mem n c ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode
-      hact hcpos hc16 hcount)
+      aprev (UInt256.ofNat (c + 1)) ret rest) hcode hfork hrun hnp) rfl
+    (run_sqExit_more tn m128 s mem n c ent tl inv m0 m96 m64 m32 aprev ret rest hcap hcode hc15)
 
-/-- `sq_exit` with the counter at one. -/
+/-- `sq_exit` with the counter slot at zero. -/
 def gasSteps_sqExitLast (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
-    (ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
+    (ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hcount : MachineState.readWord mem 2624 = UInt256.ofNat 1) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
-      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev pdst ret
-        rest)
-      (lastAt (UInt256.ofNat 0) m128 s (countMem mem 0) n (UInt256.ofNat 2592) ent tl inv m0 m96 m64
-        m32 aprev pdst ret rest) :=
+      (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32 aprev
+        (UInt256.ofNat 0) ret rest)
+      (lastAt (UInt256.ofNat 0) m128 s mem n (UInt256.ofNat 2592) ent tl inv m0 m96 m64
+        m32 aprev allOnes ret rest) :=
   sqExitBlock.steps
     (environment (frameAt tn m128 pcSqExit s mem n (UInt256.ofNat 2336) ent tl inv m0 m96 m64 m32
-      aprev pdst ret rest) hcode hfork hrun hnp) rfl
-    (run_sqExit_last tn m128 s mem n ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hact hcount)
+      aprev (UInt256.ofNat 0) ret rest) hcode hfork hrun hnp) rfl
+    (run_sqExit_last tn m128 s mem n ent tl inv m0 m96 m64 m32 aprev ret rest hcap)
 
 /-- `last`: drop the call pair, rewrite the frame's `ret` slot to `after_sq` and jump to
 `nx`. -/

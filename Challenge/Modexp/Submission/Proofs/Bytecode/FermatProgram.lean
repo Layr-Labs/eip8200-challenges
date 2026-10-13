@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneReturn
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -51,59 +52,78 @@ private theorem zero_lt_eq_double_isZero (x : UInt256) :
     simp [h, hzero, Nat.not_le_of_gt hp]
 
 
-/-- Fermat exit at 92: load the base word at calldata 96, normalize it by the
-declared base width (depth three under the modulus word), reduce it modulo the
-prime and return `0 < base mod p`. -/
+/-- Fermat exit at 90: load the base word at calldata 96, shift it right by the
+width amount `s` kept at depth three under the modulus word (`s = 8 * (32 - baseSize)`),
+reduce it modulo the prime and compute `0 < base mod p`. -/
 def valueProgram : List Instr :=
-  [.push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨3, by decide⟩),
-   .push 1 32, .op .SUB, .push 1 3, .op .SHL, .op .SHR,
+  [.push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨3, by decide⟩), .op .SHR,
    .op .MOD, .push 0 0, .op .LT]
 
-def returnProgram : List Instr := valueProgram ++ WindowTwentyOneReturn.program
+/-- 98: store the result word at 0 and return `MSIZE` (one word) bytes from 0. -/
+def exitProgram : List Instr :=
+  [.push 0 0, .op .MSTORE, .op .MSIZE, .push 0 0, .op .RETURN]
 
-private theorem run_value (template : State) (modulus : UInt256) (rest : List UInt256)
-    (baseSize : Nat) (hwidth : baseSize ≤ 32)
-    (hrest : rest.length ≤ 999) (hbase : rest[1]? = some (UInt256.ofNat baseSize)) :
-    runInstructions valueProgram (framed template (UInt256.ofNat 92) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 106)
+def returnProgram : List Instr := valueProgram ++ exitProgram
+
+private theorem run_value (template : State) (modulus shift : UInt256) (rest : List UInt256)
+    (hrest : rest.length ≤ 999) (hshift : rest[1]? = some shift) :
+    runInstructions valueProgram (framed template (UInt256.ofNat 90) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 98)
       (UInt256.isZero (UInt256.isZero (UInt256.mod
-        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
-          (UInt256.ofNat ((32 - baseSize) * 8))) modulus)) :: rest)) := by
+        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift)
+          modulus)) :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hwidth (by decide : 32 < 2 ^ 256)
-  have hshift : UInt256.shiftLeft (UInt256.ofNat 32 - UInt256.ofNat baseSize)
-      (UInt256.ofNat 3) = UInt256.ofNat ((32 - baseSize) * 8) := by
-    rw [hsub, Challenge.EvmProof.Word.shiftLeft_ofNat (by omega) (by decide) (by omega)]
-    congr 1
   have h96 : (UInt256.ofNat 96).toNat = 96 := by decide
   simp (config := { maxSteps := 500000 }) [valueProgram,
-    runInstructions, framed, hbase, hshift, h96,
-    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
+    runInstructions, framed, hshift, h96,
+    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3,
     Challenge.EvmProof.Word.literal_eq_ofNat, zero_lt_eq_double_isZero,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
 
-theorem run_return (template : State) (modulus : UInt256) (rest : List UInt256)
-    (baseSize : Nat) (hwidth : baseSize ≤ 32)
-    (hrest : rest.length ≤ 999) (hbase : rest[1]? = some (UInt256.ofNat baseSize))
-    (active : Nat) (hsmall : active ≤ 16)
-    (hactive : template.activeWords = UInt256.ofNat active) :
-    runInstructions returnProgram (framed template (UInt256.ofNat 92) (modulus :: rest)) =
-    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 111)
+/-- The exit on untouched memory: `MSIZE` reads exactly one word after the store. -/
+theorem run_exit (template : State) (pc word : UInt256)
+    (hactive : template.activeWords = UInt256.ofNat 0)
+    (rest : List UInt256) (hrest : rest.length + 3 < 1024) :
+    WindowTwentyOneMsize.runInstructionsX exitProgram
+      (WindowTwentyOneReturn.framed template pc (word :: rest)) =
+    some (WindowTwentyOneReturn.returned template (advancePC 4 pc) word 0 rest) := by
+  have hcap0 : rest.length < 1024 := by omega
+  have hcap1 : rest.length + 1 < 1024 := by omega
+  have hcap2 : rest.length + 2 < 1024 := by omega
+  have hzero : ({ val := 0 } : UInt256).toNat = 0 := rfl
+  have ha : (UInt256.ofNat 0).toNat = 0 := rfl
+  simp [WindowTwentyOneMsize.runInstructionsX, WindowTwentyOneMsize.runInstrX_msize,
+    exitProgram, WindowTwentyOneReturn.framed, WindowTwentyOneReturn.returned,
+    Challenge.EvmProof.Stepper.runInstr,
+    hcap0, hcap1, hcap2, hzero, hactive, ha, WindowTableMemory.storeWord,
+    State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    advancePC, succ_eq_add, word_add_assoc]
+
+theorem run_return (template : State) (modulus shift : UInt256) (rest : List UInt256)
+    (hrest : rest.length ≤ 999) (hshift : rest[1]? = some shift)
+    (hactive : template.activeWords = UInt256.ofNat 0) :
+    WindowTwentyOneMsize.runInstructionsX returnProgram
+      (framed template (UInt256.ofNat 90) (modulus :: rest)) =
+    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 102)
       (UInt256.isZero (UInt256.isZero (UInt256.mod
-        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
-          (UInt256.ofNat ((32 - baseSize) * 8))) modulus))) active rest) := by
+        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift)
+          modulus))) 0 rest) := by
   let word := UInt256.isZero (UInt256.isZero (UInt256.mod
-    (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96)
-      (UInt256.ofNat ((32 - baseSize) * 8))) modulus))
-  have hv := run_value template modulus rest baseSize hwidth hrest hbase
-  have hr := WindowTwentyOneReturn.run_return template (UInt256.ofNat 106) word active
-    (by omega) hactive rest (by omega)
-  have both := runInstructions_append_some _ _ _ _ _ hv hr
-  have hpc : advancePC 5 (UInt256.ofNat 106) = UInt256.ofNat 111 := by decide
+    (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift)
+      modulus))
+  have hv := run_value template modulus shift rest hrest hshift
+  have hvx : WindowTwentyOneMsize.runInstructionsX valueProgram
+      (framed template (UInt256.ofNat 90) (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 98) (word :: rest)) := by
+    rw [WindowTwentyOneMsize.runInstructionsX_eq valueProgram (by decide)]
+    exact hv
+  have hr := run_exit template (UInt256.ofNat 98) word hactive rest (by omega)
+  have both := WindowTwentyOneMsize.runInstructionsX_append_some _ _ _ _ _ hvx hr
+  have hpc : advancePC 4 (UInt256.ofNat 98) = UInt256.ofNat 102 := by decide
   simpa only [returnProgram, hpc, word] using both
 
 

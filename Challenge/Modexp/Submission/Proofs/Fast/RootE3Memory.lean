@@ -209,7 +209,7 @@ theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
       Model.FastRepresents out 256 n (a * Limbs.radix ^ (2 * k) % mm) ∧
       Model.FastRepresents out 768 n 0 := by
   dsimp only
-  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hframe hmod
+  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod
   have invPrep := flagSet_inv _ (UInt256.ofNat 1) n bsize mm minv hn8 inv0
   have hbase2 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
   have hbasePrep := flagSet_preserves _ (UInt256.ofNat 1) 2112 n _ (Or.inr (by omega)) hbase2
@@ -276,7 +276,7 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
       Model.FastRepresents out 256 n (base % mm) ∧
       Model.FastRepresents out 768 n 0 := by
   dsimp only
-  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hframe hmod
+  have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod
   have invPrep := flagSet_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
   have invFinal := stepInv_stepMems (by omega) hn8 invPrep n
   have hbase2 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0

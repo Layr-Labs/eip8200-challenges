@@ -80,7 +80,69 @@ theorem run_tail (pc0 : Nat) (s : State) (c f pbi hd pb ent tn target inv : UInt
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod]
 
+/-- P1: `middle` with the carry cache in the fifteenth word below the carry (`DUP15`, `SWAP15`). -/
+def middle15 : List Instr :=
+  [.op (.Dup ⟨14, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .op .GT,
+   .op (.Swap ⟨0, by decide⟩), .op .POP]
+
+/-- P1: `tail` with the carry cache read by `DUP16` and written back by `SWAP13`. -/
+def tail16 : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .push 2 2112, .op .MSTORE,
+   .op .LT, .op .ADD, .op (.Swap ⟨12, by decide⟩), .op .POP]
+
+theorem run_middle15 (pc0 : Nat) (s : State)
+    (c bi pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1001) :
+    runInstructions middle15
+      (framed s (UInt256.ofNat (pc0 + 0))
+        ([c,bi,pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,tn] ++ rest)) =
+    some (framed s (UInt256.ofNat (pc0 + 7))
+      ([UInt256.lt (tn+c) c,pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,tn+c] ++ rest)) := by
+  have h13 : rest.length + 13 < 1024 := by omega
+  have h14 : rest.length + 14 < 1024 := by omega
+  have h15 : rest.length + 15 < 1024 := by omega
+  have h16 : rest.length + 16 < 1024 := by omega
+  have h17 : rest.length + 17 < 1024 := by omega
+  have h18 : rest.length + 18 < 1024 := by omega
+  simp (config := {maxSteps := 100000})
+    [middle15, carry_gt, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
+     h13,h14,h15,h16,h17,h18, List.exchange, Nat.add_assoc,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.word_toNat_ofNat,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.ofNat_add_mod]
+
+theorem run_tail16 (pc0 : Nat) (s : State)
+    (c f pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions tail16
+      (framed s (UInt256.ofNat (pc0 + 0))
+        ([c,f,pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,tn] ++ rest)) =
+    some (framed {s with memory := (MachineState.writeBytes s.memory
+      (Data.Bytes.natToBytesPadded (tn+c).toNat 32) 2112)} (UInt256.ofNat (pc0 + 12))
+      ([pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,UInt256.lt (tn+c) c+f] ++ rest)) := by
+  have h13 : rest.length + 13 < 1024 := by omega
+  have h14 : rest.length + 14 < 1024 := by omega
+  have h15 : rest.length + 15 < 1024 := by omega
+  have h16 : rest.length + 16 < 1024 := by omega
+  have h17 : rest.length + 17 < 1024 := by omega
+  have h18 : rest.length + 18 < 1024 := by omega
+  have hactT := activeWords_fix s 2112 32 (by decide) (by omega) hact
+  have ht : (2112 : UInt256).toNat = 2112 := by decide
+  simp (config := {maxSteps := 100000})
+    [tail16, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
+     h13,h14,h15,h16,h17,h18, List.exchange, Nat.add_assoc, ht, hactT,
+     State.activeWordsAfterUInt256,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.word_toNat_ofNat,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.ofNat_add_mod]
+
 #print axioms carry_gt
 #print axioms run_middle
 #print axioms run_tail
+#print axioms run_middle15
+#print axioms run_tail16
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheStoreAt

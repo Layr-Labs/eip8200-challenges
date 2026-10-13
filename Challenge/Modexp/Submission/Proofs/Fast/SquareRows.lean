@@ -56,8 +56,8 @@ theorem sqTb_eq_prev (a0 : UInt256) (M0 : ByteArray) (n i : Nat) (hi : i < n) (h
 
 def rowState (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) (i : Nat) : State :=
-  outState s (sqRowsCarry M0 n i) 2368 n i (UInt256.ofNat 4258) (UInt256.ofNat (sqEnt n i)) inv m0
-    (tl :: m96 :: m64 :: m32 :: sqPrev a0 M0 n i :: pdst :: ret :: rest)
+  outState s (sqRowsCarry M0 n i) 2368 n i (UInt256.ofNat 4258) (UInt256.ofNat (sqEnt n i)) m32 m64 m0
+    (tl :: m96 :: inv :: UInt256.ofNat 0 :: sqPrev a0 M0 n i :: pdst :: ret :: rest)
 
 theorem sqEnt_succ (n i : Nat) : sqEnt n i + 37 = sqEnt n (i + 1) := by
   unfold sqEnt; omega

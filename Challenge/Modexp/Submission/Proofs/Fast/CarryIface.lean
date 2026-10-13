@@ -48,7 +48,7 @@ structure RowLemmas : Type where
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hi : i < n)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816),
     Challenge.EvmProof.GasSteps
-      (outState s mem pb n i (UInt256.ofNat 3533) ent pdst ret rest)
+      (outState s mem pb n i (UInt256.ofNat 3533) ent (UInt256.ofNat 0) pdst ret rest)
       (firstAt 3546 s mem (rowBi mem pb n i) pb n i (UInt256.ofNat 3533) ent pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_commonFirst`. -/
   gasSteps_commonFirst : ∀ (s : State) (mem : ByteArray) (bi : UInt256)
@@ -63,8 +63,8 @@ structure RowLemmas : Type where
     (htl : tl = UInt256.ofNat (2080+32*n))
     (hAend : aEnd = UInt256.ofNat (pa+32*n-32)),
     Challenge.EvmProof.GasSteps
-      (firstAt 3546 s mem bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
-      (l1At 3570 s mem bi pa pb n i 1 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (firstAt 3546 s mem bi pb n i hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l1At 3570 s mem bi pa pb n i 1 hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l1MulFour`. -/
   gasSteps_l1MulFour : ∀ (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb i : Nat) (hd pdst ret : UInt256) (rest : List UInt256)
@@ -105,9 +105,9 @@ structure RowLemmas : Type where
     (hminv : inverseInvariant mem n)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0),
     Challenge.EvmProof.GasSteps
-      (midState s mem c bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (midState s mem c bi pb n i hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
       (l2At 3851 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
-        (rowC0 mem n) pb n i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+        (rowC0 mem n) pb n i 0 hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_midCopy`: the four-limb middle block inside
   the private ladder copy, 5290 -> 5310. -/
   gasSteps_midCopy : ∀ (s : State) (mem : ByteArray) (c bi : UInt256)
@@ -121,9 +121,9 @@ structure RowLemmas : Type where
     (hminv : inverseInvariant mem n)
     (hc : CiosReadonly.ReadonlyCache mem n tl inv m0),
     Challenge.EvmProof.GasSteps
-      (midStateAt 5430 s mem c bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (midStateAt 5430 s mem c bi pb n i hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
       (l2At 5450 s (midMem1 mem c) (overflow mem c) (rowMu mem n)
-        (rowC0 mem n) pb n i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+        (rowC0 mem n) pb n i 0 hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l2Four`. -/
   gasSteps_l2Four : ∀ (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -135,9 +135,9 @@ structure RowLemmas : Type where
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32),
     Challenge.EvmProof.GasSteps
-      (l2At 5450 s mid bi mu c0 pb 4 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 5450 s mid bi mu c0 pb 4 i 0 hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 4 3).memory
-        (l2Step mid mu c0 4 3).carry mu bi pb 4 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+        (l2Step mid mu c0 4 3).carry mu bi pb 4 i hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_l2Eight`. -/
   gasSteps_l2Eight : ∀ (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -149,9 +149,9 @@ structure RowLemmas : Type where
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : CiosReadonlyExtra.ExtraCache mid m96 m64 m32),
     Challenge.EvmProof.GasSteps
-      (l2At 3851 s mid bi mu c0 pb 8 i 0 hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (l2At 3851 s mid bi mu c0 pb 8 i 0 hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
       (tailState s (l2Step mid mu c0 8 7).memory
-        (l2Step mid mu c0 8 7).carry mu bi pb 8 i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+        (l2Step mid mu c0 8 7).carry mu bi pb 8 i hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
   /-- Statement of WP-K `CarryRowGas.gasSteps_tailNext`. -/
   gasSteps_tailNext : ∀ (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
@@ -165,7 +165,7 @@ structure RowLemmas : Type where
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true),
     Challenge.EvmProof.GasSteps
       (tailState s mem c mu bi pb n i hd ent pdst ret rest)
-      (outState s (tailCarry mem c bi) pb n (i + 1) hd ent pdst ret rest)
+      (outState s (tailCarry mem c bi) pb n (i + 1) hd ent (UInt256.ofNat 0) pdst ret rest)
   /-- Statement of WP-K `CarryRowGas.gasSteps_tailLast`. -/
   gasSteps_tailLast : ∀ (s : State) (mem : ByteArray) (c mu bi : UInt256)
     (pb n i : Nat) (hd ent tl inv m0 aEnd m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
@@ -179,7 +179,7 @@ structure RowLemmas : Type where
     (hhd : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode hd.toNat = true)
     (hne : hd ≠ UInt256.ofNat 4258),
     Challenge.EvmProof.GasSteps
-      (tailState s mem c mu bi pb n i hd ent inv m0 (tl :: m96 :: m64 :: m32 :: aEnd :: pdst :: ret :: rest))
+      (tailState s mem c mu bi pb n i hd ent m64 m0 (tl :: m96 :: inv :: m32 :: aEnd :: pdst :: ret :: rest))
       (mpCsubState s (tailCarry mem c bi) pdst ret rest)
 
 set_option linter.unusedVariables false in
@@ -223,9 +223,9 @@ structure EntryLemmas : Type where
     Challenge.EvmProof.GasSteps
       (Cios2Dispatch.commonState s (mpZeroed s mem n) hd pa pb pdst ret rest)
       (outState s (mpZeroed s (StagedOperand.stage mem pa n) n) pb n 0 hd (l1Target n)
-        (MachineState.readWord mem 2720) (MachineState.readWord mem (16*n+32))
+        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
         (MachineState.readWord mem 2784 :: MachineState.readWord mem 96 ::
-          MachineState.readWord mem 64 :: MachineState.readWord mem 32 ::
+          MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa+32*n-32) :: pdst :: ret :: rest))
   -- The generic-MONPRO field is gone: the strengthened entry test admits only four or eight
   -- limbs, so "every other width" is unreachable from here.
@@ -235,6 +235,6 @@ structure EntryLemmas : Type where
 theorem jumpDest_rowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3533).toNat = true := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
-  exact Artifact.isValidJumpDest_index 2803 (by rfl)
+  exact Artifact.isValidJumpDest_index 2723 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CarryIface

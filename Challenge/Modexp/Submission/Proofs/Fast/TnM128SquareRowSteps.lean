@@ -33,8 +33,8 @@ def rowState (s : State) (z : CacheState) (n i : Nat) (aprev : UInt256)
   framed {s with memory := z.memory}
     (if i < n then UInt256.ofNat 4258 else UInt256.ofNat 4128)
     (TnCacheFrameOps.frame (pointer 2368 n i) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
-      (UInt256.ofNat (sqEnt n i)) z.tn (MachineState.readWord z.memory 128) inv
-      (m0 :: tl :: m96 :: m64 :: m32 :: aprev :: dst :: ret :: rest))
+      (UInt256.ofNat (sqEnt n i)) m32 (MachineState.readWord z.memory 128) m64
+      (m0 :: tl :: m96 :: inv :: z.tn :: aprev :: dst :: ret :: rest))
 
 /-- One complete square row, including its shrinking first loop, full reduction,
 and real next-row branch, with arbitrary incoming cached carry and previous limb. -/
@@ -51,7 +51,7 @@ noncomputable def step (s : State)
   let q0 := sqPro z.memory n i tb
   let b2 := sqB2 (sqX z.memory n i) tb
   let q1 := sqL1 z.memory n i tb
-  let tail := m0 :: tl :: m96 :: m64 :: m32 :: sqX z.memory n i :: dst :: ret :: rest
+  let tail := m0 :: tl :: m96 :: inv :: z.tn :: sqX z.memory n i :: dst :: ret :: rest
   have hn8 : n ≤ 8 := by omega
   have he := sqEnt_suffix n i hn8 hi
   have hj : Decode.isValidJumpDest TnM128Candidate.bytecode (sqEnt n i) = true := by
@@ -59,13 +59,13 @@ noncomputable def step (s : State)
   have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4258).toNat = true := by
     change Decode.isValidJumpDest s.executionEnv.code 4258 = true
     rw [env.code]; exact TnM128L1Jumps.square_jump
-  have g0 := TnM128SquareSteps.prologue_steps s z.memory z.tn (MachineState.readWord z.memory 128) n i (sqEnt n i)
-    inv m0 tl m96 m64 m32 aprev (dst :: ret :: rest)
+  have g0 := TnM128SquareSteps.prologue_steps s z.memory m32 (MachineState.readWord z.memory 128) n i (sqEnt n i)
+    m64 m0 tl m96 inv z.tn aprev (dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) env.running env.code env.forkEq env.noPrecompile
     hact hi hn8 hj (by unfold sqEnt; omega)
   have g1 := TnM128L1Steps.suffix_steps s env q0 b2 2368 n (i+1) (n-1-i) (by omega)
     (pointer 2368 n i) (UInt256.ofNat 4258) (UInt256.ofNat 2336)
-    (UInt256.ofNat (sqEnt n i+37)) z.tn (MachineState.readWord z.memory 128) inv tail
+    (UInt256.ofNat (sqEnt n i+37)) m32 (MachineState.readWord z.memory 128) m64 tail
     (by simp only [tail, List.length_cons]; omega) hact hn8 (by omega)
     (Or.inr rfl) (by intro j _; rfl)
   rw [← he] at g1

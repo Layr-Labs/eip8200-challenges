@@ -33,15 +33,19 @@ private theorem miss_eq (input : ByteArray) :
 
 def handled (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     WindowRoute.Handled input := by
-  obtain ⟨final, ⟨trace⟩, done, result⟩ := FermatGas.handled
-    Artifact.fermatPaths Artifact.twentyOnePaths (Main.headerState input) (environment input) rfl input hmatch
-    (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
   have guard := WindowTwentyOneGasRoute.steps_hit Artifact.twentyOnePaths
     (Main.headerState input) (environment input) input hmatch
+  have gen := FermatGas.genSteps Artifact.fermatPaths (Main.headerState input) (environment input)
+    input hmatch.1 ((routeStack input).drop 2) (by simp [routeStack])
+  obtain ⟨final, ⟨trace⟩, done, result⟩ := FermatGas.handled
+    Artifact.fermatPaths Artifact.twentyOnePaths (Main.headerState input) (environment input) rfl
+    input (UInt256.ofNat (32 - baseSize input) :: (routeStack input).drop 2)
+    (by simp [routeStack]) hmatch
+    (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
   refine ⟨final, ⟨?_⟩, done, result⟩
   change Challenge.EvmProof.GasSteps (Dispatch.wordRouteEntryState input) final
   rw [← entry_eq]
-  exact guard.trans trace
+  exact (guard.trans gen).trans trace
 
 def route : WindowRoute.Route where
   enter := Dispatch.gasSteps_wordRouteEnter

@@ -18,16 +18,16 @@ def clearProgram : List Instr :=
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY]
 
 def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3471 prefixProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2761 36 3471 prefixProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2681 36 3471 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3523 clearProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2797 6 3523 clearProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2717 6 3523 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
-  TnM128Setup.outState s mem 256 n 0 (UInt256.ofNat 3533) (TnM128Setup.l1Target n) inv m0
-    (tl :: m96 :: m64 :: m32 :: UInt256.ofNat (2368+32*n-32) ::
+  TnM128Setup.outState s mem 256 n 0 (UInt256.ofNat 3533) (TnM128Setup.l1Target n) m32 m64 m0
+    (tl :: m96 :: inv :: TnM128Setup.zeroTn :: UInt256.ofNat (2368+32*n-32) ::
       UInt256.ofNat 256 :: UInt256.ofNat 772 :: rest)
 
 def prefixState (s : State) (mem : ByteArray) (n : Nat)
@@ -44,8 +44,8 @@ theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   rcases hn with rfl | rfl <;> subst tl <;>
     exact TnM128FusionFrame.run_prefix (s := {s with memory := mem}) (p := pbi)
       (oldHead := UInt256.ofNat 4258) (oldEnd := UInt256.ofNat (2368-32))
-      (ent := ent) (neg := tn) (mask := allOnes) (ent2 := MachineState.readWord mem 128)
-      (inv := inv) (m0 := m0) (tl := _) (m96 := m96) (m64 := m64) (m32 := m32)
+      (ent := ent) (neg := m32) (mask := allOnes) (ent2 := MachineState.readWord mem 128)
+      (inv := m64) (m0 := m0) (tl := _) (m96 := m96) (m64 := inv) (m32 := tn)
       (aprev := aprev) (dst := pdst) (ret := ret) (head := UInt256.ofNat 3533)
       (finish := UInt256.ofNat 772) (rest := rest) (by omega)
 

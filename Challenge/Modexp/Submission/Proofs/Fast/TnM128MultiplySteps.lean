@@ -21,24 +21,24 @@ noncomputable def finish_steps (s : State)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps (rowState s z pb n n tl inv m0 aEnd m96 m64 m32 dst ret rest)
       (framed {s with memory := lift z.memory z.tn} (UInt256.ofNat 4156) (dst :: ret :: rest)) := by
-  let tail := m0 :: tl :: m96 :: m64 :: m32 :: aEnd :: dst :: ret :: rest
+  let tail := m0 :: tl :: m96 :: inv :: z.tn :: aEnd :: dst :: ret :: rest
   let st : State := {s with memory := z.memory}
   let aft : State := {s with memory := lift z.memory z.tn}
   let stack := TnCacheFrameOps.frame (pointer pb n n) (UInt256.ofNat 3533)
-    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) z.tn (MachineState.readWord z.memory 128) inv tail
+    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) m32 (MachineState.readWord z.memory 128) m64 tail
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hf := TnCacheFrameOps.run_flush 4128 st (pointer pb n n) (UInt256.ofNat 3533)
-    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) z.tn (MachineState.readWord z.memory 128) inv
-    tail htail hact
+  have hf := TnCacheFrameOps.run_flush13 4128 st (pointer pb n n) (UInt256.ofNat 3533)
+    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) m32 (MachineState.readWord z.memory 128) m64
+    m0 tl m96 inv z.tn (aEnd :: dst :: ret :: rest) (by simp only [List.length_cons]; omega) hact
   have g0 := TnM128CandidateBlocks.flush.steps
     (s := framed st (UInt256.ofNat 4128) stack) (env.transfer rfl rfl) rfl hf
   have hg := TnCacheExitTrace.run_guard aft 4133 (pointer pb n n)
-    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) z.tn (MachineState.readWord z.memory 128) inv tail htail
+    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) m32 (MachineState.readWord z.memory 128) m64 tail htail
   have g1 := TnM128L1Blocks.guard.steps
     (s := framed aft (UInt256.ofNat 4133) stack) (env.transfer rfl rfl) rfl hg
   have hd := TnCacheExitTrace.run_drop aft 4142 (pointer pb n n) (UInt256.ofNat 3533)
-    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) z.tn (MachineState.readWord z.memory 128) inv
-    m0 tl m96 m64 m32 aEnd dst ret rest hcap
+    (UInt256.ofNat (pb-32)) (UInt256.ofNat (l1PC n)) m32 (MachineState.readWord z.memory 128) m64
+    m0 tl m96 inv z.tn aEnd dst ret rest hcap
   have g2 := TnM128L1Blocks.drop.steps
     (s := framed aft (UInt256.ofNat 4142) stack) (env.transfer rfl rfl) rfl hd
   simpa only [rowState, if_neg (Nat.lt_irrefl n), st, aft, stack, tail] using (g0.trans g1).trans g2

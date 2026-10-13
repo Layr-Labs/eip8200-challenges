@@ -33,14 +33,14 @@ set" statement.  It pins each site where the site is used, through the `pc` in t
 that block's `run_*` theorem.  The table below is that pinning, one row per data-dependent site.
 Rows marked *(pinned)* carry the successor as a literal, or as a frame word the callers seed from
 an in-image `PUSH`, which `noLiteralPush_window` excludes.  The one site inside the conversion
-section — instruction 2328, pc 2898, the E6 entry `DUP5 JUMP` — is pinned in Lean by
+section — instruction 2248, pc 2898, the E6 entry `DUP5 JUMP` — is pinned in Lean by
 `M9MacChain.entryPC_avoids`, and is the only data-dependent jump whose block the M9 exit feeds.
 
 | instruction | pc | site | successor pinned by |
 |---|---|---|---|
 | 333 | 483  | compact-unsigned multiply tail `POP JUMP` | `BigCUMulRun.run_m9`: `retPc`, the caller's return literal |
 | 388 | 552  | compact-unsigned decide tail `POP JUMP` | `BigCUUnsignedRun.run_decide_*` then the `0x2000` return literal |
-| 2328 | 2898 | E6 conversion entry `DUP5 JUMP` | `M9MacChain.gasSteps_entry`: `entryPC n ∈ {2899, 3032}` — *(pinned, `entryPC_avoids`)* |
+| 2248 | 2898 | E6 conversion entry `DUP5 JUMP` | `M9MacChain.gasSteps_entry`: `entryPC n ∈ {2899, 3032}` — *(pinned, `entryPC_avoids`)* |
 | 2775 | 3466 | kernel `setup` row jump | the `htl` word at `0xae0`, `= 2080 + 32n` (`TnM128Setup`) |
 | 2849 | 3561 | row head `DUP6 JUMP` | `TnCacheHeadTrace.run_head`: `ent`, the caller's row-head literal |
 | 3309 | 4127 | row tail `DUP3 JUMPI` | `TnCacheRowTrace.run_tail`: `pc0 + 51 = 4128`, or `hd` |
@@ -49,6 +49,7 @@ section — instruction 2328, pc 2898, the E6 entry `DUP5 JUMP` — is pinned in
 | 3614 | 4550 | early-`CSUB` copy tail | `CsubFixed`: the `0x10e3` literal |
 | 4041 | 5029 | RED tail return | `R4Runs.run_redt`: `ret`, the caller's return literal |
 | 4276 | 5308 | retained-`T` return | `RetainedTEntry.run_tail`: `ret`, the caller's return literal |
+| 4299 | 5465 | shift cleanup tail `PUSH2 0989 ADD JUMP` | `ShiftTrace3.run_cleanup`: `2441 + z`, the last riding slot (`0` from `E5`, `30` after the E3 phase switch) — *(pinned)* |
 
 The closed end-to-end statement is the backstop for the rows that are not *(pinned)*:
 `Challenge.Modexp.Benchmark.candidate : Challenge.Modexp.Correct bytecode` has no hypotheses, so
@@ -106,25 +107,25 @@ def pushImmediates : List Nat :=
     | _ => none
 
 theorem jumpSites_eq : jumpSites =
-    [16, 31, 42, 70, 75, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233, 256,
-     263, 273, 282, 297, 301, 317, 321, 326, 333, 375, 378, 383, 388, 398, 413, 422,
-     432, 456, 477, 553, 567, 570, 578, 592, 615, 619, 2009, 2012, 2018, 2023, 2032, 2035,
-     2045, 2057, 2064, 2071, 2083, 2090, 2119, 2264, 2328, 2566, 2571, 2578, 2612, 2624, 2631, 2668,
-     2676, 2683, 2695, 2698, 2759, 2831, 3289, 3297, 3322, 3324, 3337, 3356, 3362, 3366, 3419, 3427,
-     3435, 3564, 3566, 3578, 3585, 3592, 3608, 3610, 3706, 3806, 3879, 4021, 4041, 4247, 4249, 4361,
-     4381, 4391] := by decide
+    [10, 16, 28, 39, 60, 75, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233,
+     256, 263, 273, 282, 297, 301, 317, 321, 326, 333, 375, 378, 383, 388, 398, 413,
+     422, 432, 456, 477, 553, 567, 570, 578, 592, 615, 619, 1892, 1929, 1932, 1938, 1951,
+     1955, 1965, 1977, 1984, 1991, 2003, 2010, 2035, 2184, 2248, 2486, 2491, 2498, 2532, 2544, 2551,
+     2588, 2596, 2603, 2617, 2679, 2751, 3207, 3215, 3240, 3242, 3255, 3271, 3278, 3288, 3290, 3337,
+     3345, 3353, 3482, 3484, 3496, 3503, 3510, 3526, 3528, 3624, 3724, 3797, 3939, 3959, 4165, 4167,
+     4279, 4299, 4309] := by decide
 
 theorem literalJumpTargets_eq : literalJumpTargets =
-    [127, 866, 866, 22, 599, 153, 186, 156, 222, 2397, 193, 273, 301, 396, 413, 388,
-     413, 312, 484, 477, 484, 469, 484, 421, 494, 548, 488, 570, 238, 843, 784, 790,
-     790, 2545, 795, 238, 553, 553, 135, 112, 2402, 212, 2478, 790, 790, 2498, 790, 3387,
-     2498, 5466, 790, 4308, 2589, 3346, 3208, 2811, 3287, 3220, 3214, 3198, 3284, 3266, 5444, 2811,
-     2441, 4198, 4527, 4323, 4434, 4518, 4518, 4209, 5307, 4177, 4538, 4527, 4323, 4579, 5062, 4927,
-     4927, 4927, 4240, 3843, 3977, 3378, 3383] := by decide
+    [599, 103, 872, 872, 238, 31, 153, 186, 156, 222, 2397, 193, 273, 301, 396, 413,
+     388, 413, 312, 484, 477, 484, 469, 484, 421, 494, 548, 488, 570, 238, 843, 784,
+     790, 790, 2545, 795, 238, 553, 553, 135, 103, 5483, 2402, 212, 2478, 790, 2498, 790,
+     3387, 2498, 5466, 790, 4308, 2589, 3346, 3208, 2811, 3287, 3220, 3214, 3198, 3284, 3266, 5444,
+     2811, 4198, 4527, 4323, 4434, 4518, 4518, 4518, 4221, 5307, 4177, 4538, 4527, 4323, 4579, 5062,
+     4927, 4927, 4927, 4234, 3843, 3977, 3383] := by decide
 
-/-- The eleven sites whose destination is a stack word, in program order. -/
+/-- The twelve sites whose destination is a stack word, in program order. -/
 theorem dataDependentJumpSites_eq : dataDependentJumpSites =
-    [333, 388, 2328, 2759, 2831, 3289, 3419, 3585, 3592, 4021, 4249] := by decide
+    [333, 388, 2248, 2679, 2751, 3207, 3337, 3503, 3510, 3939, 4167, 4299] := by decide
 
 /-- **No literal jump destination is the M9 exit.**  None of the 88 destinations the image
 names with a `PUSH` immediate is pc 3168, 3169 or 3170. -/
@@ -142,14 +143,14 @@ theorem noLiteralPush_window :
 /-- The widened `PUSH5 2080` is at instruction 2546,
 and the fixup's `SWAP3 POP` is at instructions 2557 and 2558. -/
 theorem m9Exit_is_jumpdest :
-    Artifact.submissionInstructions[2546]? = some (.push 5 2080) ∧
-      Artifact.submissionInstructions[2557]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
-      Artifact.submissionInstructions[2558]? = some (.op .POP) :=
+    Artifact.submissionInstructions[2466]? = some (.push 5 2080) ∧
+      Artifact.submissionInstructions[2477]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
+      Artifact.submissionInstructions[2478]? = some (.op .POP) :=
   ⟨by rfl, by rfl, by rfl⟩
 
 /-- The program counter the exit `PUSH5 2080` sits at: 3168. -/
 theorem m9Exit_pcs :
-    Artifact.instructionPC 2546 = 3168 := by decide
+    Artifact.instructionPC 2466 = 3168 := by decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.ShiftJumpTargets
 

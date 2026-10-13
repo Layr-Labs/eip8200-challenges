@@ -21,8 +21,29 @@ def quotientBV1 : List Instr :=
   [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .push 1 224, .op .MLOAD, .op .MULMOD, .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
 
+/-- P1a: the quotient reads the Montgomery inverse from the thirteenth `endFrame` word
+(`DUP13`); the ninth now holds modulus[64]. -/
+def quotientA13 : List Instr :=
+  [.op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD, .op .MUL]
+
 def exitProgram (destination : UInt256) : List Instr :=
-  (quotientA ++ quotientBV1) ++ quotientJump destination
+  (quotientA13 ++ quotientBV1) ++ quotientJump destination
+
+theorem run_quotientA13 (s : State)
+    (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    let t0 := MachineState.readWord s.memory 2336
+    runInstructions quotientA13
+      { s with pc := pc, stack := endFrame flag P hd tt next stride M target m64 m0 m96 inv m32 x rest } =
+    some { s with pc := advancePC 4 pc,
+                  stack := (t0*inv) :: endFrame flag P hd tt next stride M target m64 m0 m96 inv m32 x rest } := by
+  have h15 : rest.length + 15 < 1024 := by omega
+  have h16 : rest.length + 16 < 1024 := by omega
+  have h17 : rest.length + 17 < 1024 := by omega
+  have ht : (UInt256.ofNat 2336).toNat = 2336 := by decide
+  have hT := activeWords_fix s 2336 32 (by decide) (by decide) hact
+  simp [quotientA13, endFrame, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, h15, h16, h17, State.activeWordsAfterUInt256, ht, hT, advancePC]
 
 theorem run_quotientBV1 (s : State)
     (pc mu flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
@@ -69,16 +90,16 @@ theorem run_exit (s : State)
     let t0 := MachineState.readWord s.memory 2336
     let mu := t0*inv
     runInstructions (exitProgram destination)
-      {s with pc := pc, stack := endFrame flag P hd tt next tn M m128 inv m0 m96 m64 m32 x rest} =
+      {s with pc := pc, stack := endFrame flag P hd tt next tn M m128 m64 m0 m96 inv m32 x rest} =
     some {s with pc := destination,
                  stack := UInt256.addMod t0 (UInt256.mulMod (MachineState.readWord s.memory 224) mu M) M :: mu ::
-                   endFrame flag P hd tt next tn M m128 inv m0 m96 m64 m32 x rest} := by
+                   endFrame flag P hd tt next tn M m128 m64 m0 m96 inv m32 x rest} := by
   let t0 := MachineState.readWord s.memory 2336
-  have h0 := run_quotientA s pc flag P hd tt next tn M m128 inv m0 m96 m64 m32 x rest hcap hact
-  have h1 := run_quotientBV1 s (advancePC 4 pc) (t0*inv) flag P hd tt next tn M m128 inv m0 m96 m64 m32 x rest hcap hact
+  have h0 := run_quotientA13 s pc flag P hd tt next tn M m128 inv m0 m96 m64 m32 x rest hcap hact
+  have h1 := run_quotientBV1 s (advancePC 4 pc) (t0*inv) flag P hd tt next tn M m128 m64 m0 m96 inv m32 x rest hcap hact
   have h2 := run_quotientJump s (advancePC 10 (advancePC 4 pc))
     (UInt256.addMod t0 (UInt256.mulMod (MachineState.readWord s.memory 224) (t0*inv) M) M) (t0*inv)
-    flag P hd tt next tn M m128 inv m0 m96 m64 m32 x destination rest hcap hjump
+    flag P hd tt next tn M m128 m64 m0 m96 inv m32 x destination rest hcap hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   exact runInstructions_append_some _ _ _ _ _ h01 h2
 
@@ -181,18 +202,18 @@ theorem run_cellsV1 (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
 (storing `t[1..7]` directly), and the 3-byte suffix swaps the carry with
 `tn = 0` and drops `bi`. -/
 def finishStoreNarrow : List Instr :=
-  [.op (.Swap ⟨5, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .POP]
+  [.op (.Swap ⟨13, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .POP]
 
 theorem run_finishStoreNarrow (s : State)
-    (pc c bi P hd tt next tn M target inv m0 tl m96 m64 m32 x : UInt256)
+    (pc c bi P hd tt next w7 M target w10 m0 tl m96 w14 tn x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) :
     runInstructions finishStoreNarrow
-      {s with pc := pc, stack := c :: bi :: P :: hd :: tt :: next :: tn :: M ::
-        target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest} =
+      {s with pc := pc, stack := c :: bi :: P :: hd :: tt :: next :: w7 :: M ::
+        target :: w10 :: m0 :: tl :: m96 :: w14 :: tn :: x :: rest} =
     some {s with
       pc := advancePC 3 pc
-      stack := tn :: P :: hd :: tt :: next :: c :: M ::
-        target :: inv :: m0 :: tl :: m96 :: m64 :: m32 :: x :: rest} := by
+      stack := tn :: P :: hd :: tt :: next :: w7 :: M ::
+        target :: w10 :: m0 :: tl :: m96 :: w14 :: c :: x :: rest} := by
   have h14 : rest.length + 14 < 1024 := by omega
   have h15 : rest.length + 15 < 1024 := by omega
   have h16 : rest.length + 16 < 1024 := by omega
@@ -213,7 +234,7 @@ def result (s : State) (hd next m128 destination inv m0 m96 m64 m32 : UInt256)
     memory := q.memory
     stack := UInt256.addMod t0 (UInt256.mulMod (MachineState.readWord q.memory 224) mu maxWord) maxWord :: mu ::
       endFrame (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336)
-        next q.carry maxWord m128 inv m0 m96 m64 m32
+        next m32 maxWord m128 m64 m0 m96 inv q.carry
         (MachineState.readWord s.memory 2592) rest}
 
 /-- The complete specialized first row for arbitrary incoming scratch memory
@@ -223,29 +244,29 @@ theorem run_program (s : State)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
     (hjump : Decode.isValidJumpDest s.executionEnv.code destination.toNat = true) :
     runInstructions (program next destination)
-      (initial s pc hd ent (UInt256.ofNat 0) m128 inv m0 m96 m64 m32 aprev rest) =
+      (initial s pc hd ent m32 m128 m64 m0 m96 inv (UInt256.ofNat 0) aprev rest) =
       some (result s hd next m128 destination inv m0 m96 m64 m32 rest) := by
   let x := MachineState.readWord s.memory 2592
   let bi := x + x
-  have h0 := run_diagonalM128 s pc hd ent next (UInt256.ofNat 0) m128 inv m0 (UInt256.ofNat 2336)
-    m96 m64 m32 aprev rest hcap hact
-  have h1 := run_cellsV1 s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next (UInt256.ofNat 0)
+  have h0 := run_diagonalM128 s pc hd ent next m32 m128 m64 m0 (UInt256.ofNat 2336)
+    m96 inv (UInt256.ofNat 0) aprev rest hcap hact
+  have h1 := run_cellsV1 s (advancePC 30 pc) bi (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m32
     (diagonal s.memory)
-    (m128 :: inv :: m0 :: UInt256.ofNat 2336 :: m96 :: m64 :: m32 :: x :: rest)
+    (m128 :: m64 :: m0 :: UInt256.ofNat 2336 :: m96 :: inv :: UInt256.ofNat 0 :: x :: rest)
     (by simp only [List.length_cons]; omega) hact
   have hpc1 : advancePC 194 (advancePC 30 pc) = advancePC 224 pc := by
     rw [← advancePC_add]
   rw [hpc1] at h1
   have h2 := run_finishStoreNarrow {s with memory := (firstProduct s.memory).memory} (advancePC 224 pc)
     (firstProduct s.memory).carry bi
-    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next (UInt256.ofNat 0) maxWord m128 inv m0
-    (UInt256.ofNat 2336) m96 m64 m32 x rest hcap
+    (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next m32 maxWord m128 m64 m0
+    (UInt256.ofNat 2336) m96 inv (UInt256.ofNat 0) x rest hcap
   have hpc2 : advancePC 3 (advancePC 224 pc) = advancePC 227 pc := by
     rw [← advancePC_add]
   rw [hpc2] at h2
   have h3 := run_exit {s with memory := (firstProduct s.memory).memory} (advancePC 227 pc)
     (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336) next
-    (firstProduct s.memory).carry maxWord m128 inv m0 m96 m64 m32 x destination rest hcap hact hjump
+    m32 maxWord m128 inv m0 m96 m64 (firstProduct s.memory).carry x destination rest hcap hact hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
@@ -254,10 +275,11 @@ theorem run_program (s : State)
 /-- Binding to the exact preferred 5314-byte research runtime. -/
 def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5062
     (program (UInt256.ofNat 3599) (UInt256.ofNat 3843)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4042 206 5062
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3960 206 5062
     (program (UInt256.ofNat 3599) (UInt256.ofNat 3843))
     (by decide) (by rfl) (by rfl) (by decide)
 
+#print axioms run_quotientA13
 #print axioms run_exit
 #print axioms run_program
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128R8FirstRow
