@@ -32,7 +32,7 @@ def bind (h : Compression.HashState) (q : ScheduledTailRaw.Input) : ScheduledTai
 def high (x : UInt256) : UInt32 := toUInt32 (UInt256.shiftRight x (UInt256.ofNat 144))
 def combine (h : Compression.HashState) (q : ScheduledTailRaw.Input) : Compression.HashState :=
   {h0 := h.h1 + toUInt32 q.lc + high q.rd,
-   h1 := h.h2 + toUInt32 q.ld + high q.re,
+   h1 := h.h2 + toUInt32 (Paired144WordRound.wordShift q.ld 23) + high q.re,
    h2 := h.h3 + toUInt32 q.le + high q.ra,
    h3 := h.h4 + toUInt32 q.la + high q.rb,
    h4 := h.h0 + toUInt32 q.lb + high q.rc}
@@ -57,7 +57,7 @@ private theorem raw_toUInt32_add (x y : UInt256) :
 theorem tail_result (h : Compression.HashState) (q : ScheduledTailRaw.Input)
     (rho : List UInt256) :
     ScheduledTailRaw.stack4 (bind h q) rho = frame (combine h q) q.off q.limit rho := by
-  simp only [ScheduledTailRaw.stack4, bind, frame, combine, high,
+  simp only [ScheduledTailRaw.stack4, bind, frame, combine, high, Paired144WordRound.wordShift,
     lower_left, lower_right, mask32_eq_ofUInt32, raw_toUInt32_add, toUInt32_ofUInt32,
     List.cons_append, List.nil_append,
     List.cons.injEq, and_true, true_and]

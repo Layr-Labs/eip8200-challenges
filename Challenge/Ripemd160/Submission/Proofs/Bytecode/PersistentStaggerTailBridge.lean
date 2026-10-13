@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft79
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerFunctional
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentTailSite
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentBootstrapBridge
@@ -19,13 +20,14 @@ def tailInput (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
    h4 := Word.ofUInt32 h.h4, h1 := Word.ofUInt32 h.h1, h2 := Word.ofUInt32 h.h2,
    h3 := Word.ofUInt32 h.h3, h0 := Word.ofUInt32 h.h0, off := off, limit := limit}
 
-theorem combine_eq (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
+theorem combine_eq (memory : ByteArray) (h : Compression.HashState) (q r : WordLane)
     (off limit : UInt256) :
-    StaggerPersistentFrame.combine h (tailInput memory h l r off limit) = combine h l r := by
+    StaggerPersistentFrame.combine h (tailInput memory h (StaggerCoreLeft79.epilogueRaw memory q) r off limit) =
+      combine h (StaggerCoreModel.epilogue memory q) r := by
   simp only [StaggerPersistentFrame.combine, tailInput, combine,
     PairedCompressionBridge.combineLanes, Paired80Compression.unpackLeft,
     StaggerFinalMemory.unpackRight, StaggerPersistentFrame.high,
-    StaggerFinalMemory.high32, Paired80Compression.low32, Word.toUInt32]
+    StaggerFinalMemory.high32, Paired80Compression.low32, Word.toUInt32, StaggerCoreLeft79.epilogueRaw, StaggerCoreModel.epilogue, StaggerCoreLeft79.left79Raw_a, StaggerCoreLeft79.left79Raw_b, StaggerCoreLeft79.left79Raw_c, StaggerCoreLeft79.left79Raw_e, StaggerCoreLeft79.left79Raw_d_shift]
   congr 1 <;> apply UInt32.eq_of_toBitVec_eq <;>
     simp only [UInt32.toBitVec_add] <;> ac_rfl
 
@@ -37,8 +39,8 @@ theorem suffix_eq (s : State) (h : Compression.HashState) (q : WordLane)
     (off limit : UInt256) (rho : List UInt256) :
     StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho) =
-    {s with pc := UInt256.ofNat 4501, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h
-        (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)) rho} := by
+    {s with pc := UInt256.ofNat 4500, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h
+        (tailInput s.memory h (StaggerCoreLeft79.epilogueRaw s.memory q) q off limit)) rho} := by
   rw [initial_eq]
   rfl
 
@@ -50,10 +52,10 @@ def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (StaggerCore.suffixState s (initial h).e q
       (StaggerPersistentPackBridge.suffix (initial h) off limit rho))
-      {s with pc := UInt256.ofNat 4551, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
+      {s with pc := UInt256.ofNat 4559, stack := StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
   rw [suffix_eq]
   have g := StaggerPersistentTailSite.gasSteps s off limit h
-    (tailInput s.memory h (StaggerCoreModel.epilogue s.memory q) q off limit)
+    (tailInput s.memory h (StaggerCoreLeft79.epilogueRaw s.memory q) q off limit)
     rho hs hr hcode hfork hnp
   rw [combine_eq] at g
   exact g

@@ -21,7 +21,7 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 198),
     .op .MLOAD,
     .op .ADD,
-    .push ⟨22, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
+    .push ⟨23, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
     .op (.Swap ⟨7, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨5, by decide⟩),

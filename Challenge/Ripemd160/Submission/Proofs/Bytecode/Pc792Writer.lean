@@ -31,7 +31,7 @@ def template0 : List Instr := [
   .push ⟨2, by decide⟩ (UInt256.ofNat 882),
   .op .MSTORE,
   .op (.Dup ⟨4, by decide⟩),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 126),
   .op .MSTORE,
   .op (.Dup ⟨4, by decide⟩),
   .push ⟨2, by decide⟩ (UInt256.ofNat 864),
@@ -52,7 +52,7 @@ def memory0 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
   writeChain memory (writes0 words)
 theorem run_chunk0 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 607) :
+    (hactive : 35 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 606) :
     runInstrSeq template0 {s with pc := pc, stack := stack0 words rho} =
       some {s with
         pc := pcAfter pc template0
@@ -338,11 +338,11 @@ theorem run_chunk4 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 #print axioms run_chunk4
 
 def template5 : List Instr := [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 18),
   .op .MSTORE,
   .push ⟨2, by decide⟩ (UInt256.ofNat 360),
   .op .MSTORE,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 198),
   .op .MSTORE,
   .push ⟨2, by decide⟩ (UInt256.ofNat 324),
   .op .MSTORE,
@@ -398,7 +398,7 @@ theorem run_chunk5 (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : L
 
 theorem run_chunk0_of_small (s : State) (pc : UInt256) (words : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 607) :
+    (hactive : 34 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 606) :
     runInstrSeq template0 {s with pc := pc, stack := stack0 words rho} =
       some {s with
         pc := pcAfter pc template0
@@ -529,7 +529,7 @@ theorem memory_eq (memory : ByteArray) (words : Nat → UInt256) :
 
 theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 898) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 607) :
+    (hactive : 35 ≤ s.activeWords.toNat) (hpc : pc = UInt256.ofNat 606) :
     runInstrSeq writerTemplate {s with
       pc := pc
       stack := Pair13PoolRaw.poolStack words (ret :: UInt256.ofNat 4294967295 :: rest)} =
@@ -583,7 +583,7 @@ theorem run_writer (s : State) (pc ret : UInt256) (words : Nat → UInt256) (res
 
 theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256) (rest : List UInt256)
     (hstack : rest.length ≤ 898) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 34) (hpc : pc = UInt256.ofNat 607) :
+    (hactive : s.activeWords = UInt256.ofNat 34) (hpc : pc = UInt256.ofNat 606) :
     runInstrSeq writerTemplate {s with
       pc := pc
       stack := Pair13PoolRaw.poolStack words (ret :: UInt256.ofNat 4294967295 :: rest)} =
@@ -637,8 +637,8 @@ theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256)
     outputStack3, outputStack4, outputStack5, List.nil_append, hmem] using h05
 #print axioms run_writer_grow
 
-theorem exact_bytes : PcEncoding.assembleBytes writerTemplate = [128,97,3,132,82,134,97,3,240,82,130,97,3,114,82,132,96,126,82,132,97,3,96,82,130,97,3,78,82,128,97,3,60,82,131,97,3,168,82,131,97,2,46,82,135,97,2,28,82,133,96,108,82,141,97,2,172,82,143,88,82,141,97,1,158,82,97,2,244,82,128,97,2,10,82,141,96,90,82,135,96,72,82,96,54,82,133,97,1,248,82,131,97,4,56,82,131,97,1,230,82,136,97,4,38,82,97,3,204,82,136,97,0,216,82,131,97,2,136,82,136,97,2,118,82,131,98,0,2,100,82,88,82,136,97,1,32,82,117,255,255,255,255,0,0,0,0,0,0,0,0,0,0,0,0,0,0,255,255,255,255,22,97,2,82,82,136,97,4,20,82,97,2,208,82,97,1,14,82,129,97,1,140,82,128,88,82,97,1,212,82,96,18,82,97,1,104,82,96,198,82,97,1,68,82,96,252,82,95,82,97,1,194,82,96,162,82] := by decide
-theorem end_pc : pcAfter (UInt256.ofNat 607) writerTemplate = UInt256.ofNat 824 := by decide
+theorem exact_bytes : PcEncoding.assembleBytes writerTemplate = [128, 97, 3, 132, 82, 134, 97, 3, 240, 82, 130, 97, 3, 114, 82, 132, 97, 0, 126, 82, 132, 97, 3, 96, 82, 130, 97, 3, 78, 82, 128, 97, 3, 60, 82, 131, 97, 3, 168, 82, 131, 97, 2, 46, 82, 135, 97, 2, 28, 82, 133, 96, 108, 82, 141, 97, 2, 172, 82, 143, 88, 82, 141, 97, 1, 158, 82, 97, 2, 244, 82, 128, 97, 2, 10, 82, 141, 96, 90, 82, 135, 96, 72, 82, 96, 54, 82, 133, 97, 1, 248, 82, 131, 97, 4, 56, 82, 131, 97, 1, 230, 82, 136, 97, 4, 38, 82, 97, 3, 204, 82, 136, 97, 0, 216, 82, 131, 97, 2, 136, 82, 136, 97, 2, 118, 82, 131, 98, 0, 2, 100, 82, 88, 82, 136, 97, 1, 32, 82, 117, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 22, 97, 2, 82, 82, 136, 97, 4, 20, 82, 97, 2, 208, 82, 97, 1, 14, 82, 129, 97, 1, 140, 82, 128, 88, 82, 97, 1, 212, 82, 97, 0, 18, 82, 97, 1, 104, 82, 97, 0, 198, 82, 97, 1, 68, 82, 96, 252, 82, 95, 82, 97, 1, 194, 82, 96, 162, 82] := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 606) writerTemplate = UInt256.ofNat 826 := by decide
 #print axioms memory_eq
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc792Writer

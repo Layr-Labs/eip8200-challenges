@@ -43,7 +43,7 @@ def bind (h : Compression.HashState) (q : StaggerPersistentTailRaw.Input) : Stag
 def high (x : UInt256) : UInt32 := toUInt32 (UInt256.shiftRight x (UInt256.ofNat 144))
 def combine (h : Compression.HashState) (q : StaggerPersistentTailRaw.Input) : Compression.HashState :=
   {h0 := h.h1 + toUInt32 q.lc + high q.rd,
-   h1 := h.h2 + toUInt32 q.ld + high q.re,
+   h1 := h.h2 + toUInt32 (Paired144WordRound.wordShift q.ld 23) + high q.re,
    h2 := h.h3 + toUInt32 q.le + high q.ra,
    h3 := h.h4 + toUInt32 q.la + high q.rb,
    h4 := h.h0 + toUInt32 q.lb + high q.rc}

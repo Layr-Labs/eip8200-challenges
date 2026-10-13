@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Paired144WordRound
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Word
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
@@ -193,14 +194,17 @@ theorem run_template (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
 #print axioms run_template
 /-- Tail entry stack once the last left round has folded the scratch word away. -/
 def entryStack (q : Input) (rho : List UInt256) : List UInt256 := [ q.lb,
+    q.lc,
+    q.ld,
+    q.la,
     q.rd,
     q.ra,
     q.literal72,
-    q.ld,
-    q.lc,
+    Paired144WordRound.pairWord,
+    Paired144WordRound.upperWord,
     q.re,
     q.rc,
-    q.la,
+    (UInt256.ofNat 23),
     q.le,
     q.rb,
     q.factor,
