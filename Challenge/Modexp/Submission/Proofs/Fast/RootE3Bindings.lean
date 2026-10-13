@@ -21,15 +21,15 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 5444), switch at idx 2604 (pc 3357, jump back to 2811). -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2597 2 3346
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2596 2 3346
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2599 5 3348
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2598 5 3348
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2604 14 3357
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2603 14 3357
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest2811 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2811 = true :=
-  Artifact.isValidJumpDest_index 2180 (by rfl)
+  Artifact.isValidJumpDest_index 2177 (by rfl)
 
 /-- The inherited loop guard consumes no memory and reaches the phase-exit head. -/
 def headSteps (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)

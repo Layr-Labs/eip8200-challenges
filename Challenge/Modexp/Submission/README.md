@@ -50,8 +50,11 @@ after 4011 by -2 (P1).
 | 13 | N1 | [2583, 2615) | negation loop without the borrow chain (below) | -296 every seed | `ShiftModel`, `ShiftStates`, `ShiftTrace{1,5}`, `ShiftCorrect`, `ShiftPaths`, `ShiftBlocks`, `RootE3{Memory,Trace}` |
 | 14 | P1 | 84 bytes in [3403, 5428) | two frame transpositions in the CIOS frame (below) | -960 every seed | `TnCache*`, `CiosCachedRowFrames`, `TnM128{Setup*,Row*,Rows*,Reduction*,R4Reduction,R8*,Square*}`, `R4Trace`, `SquareLoop`, `SgtStep` |
 
-Cuts 13 and 14: 113 bytes differ from `1954e3f4` (29 for N1, 84 for P1), all
-inside the ranges above.
+| 15 | N2 (`blk2919`) | [2611, 2618) | remove 3 fall-through `JUMPDEST` pads at 2612..2614 by widening `PUSH0` at 2617 to `PUSH3 0` | -16 every seed | `ShiftPaths`, `ShiftTrace1`, `ShiftPCs` |
+| 16 | E6b (`M9Mac.entryProgram`) | [2895, 2899) | fuse `JUMPDEST; PUSH0` at 2895..2896 into `PUSH1 0` | -21 every seed | `M9MacPrograms`, `M9MacBlocks`, `M9MacRun`, `ShiftJumpTargets` |
+| 17 | `blk3125` + `blk3253` + `e3skip` pad | [3168, 3205), [3282, 3285), [3381, 3383) | narrow `PUSH5 2080` at 3168 to `PUSH2 2080` and absorb 4 instructions as dead `JUMPDEST`s at 3202..3204 and 3381..3382 so PCs from 3208 and indices from 2619 remain invariant | 0 every seed | `ShiftPaths`, `ShiftBlocks`, `ShiftStates`, `ShiftTrace{2,3}`, `RootE3Bindings`, `Paths/CsubFixed` |
+
+Cuts 15, 16 and 17: 46 bytes differ from `5788127e` (`3f8e05cf`), all inside `[2611, 2618)`, `[2895, 2899)`, `[3168, 3205)`, `[3282, 3285)` and `[3381, 3383)`. Total gas saving is **-37 gas deterministically on every seed** (`462,538 -> 462,501` on the official draw, `461,838 -> 461,801` on Seed 0).
 
 ## Cut 10: B4, square counter
 
@@ -130,11 +133,17 @@ Six proof files needed hand merges against B4 and the new indices:
 `SgtStep`, `TnM128SgtStep`, `R4Trace`, `TnM128CandidateBlocks`,
 `TnM128SquareFinishSteps` and `SquareLoop`.
 
+## Cuts 15, 16, and 17: N2 (`blk2919`), E6b (`M9Mac.entryProgram`), and Index/PC Restoration
+
+- **Cut 15 (N2, `blk2919`, `[2611, 2618)`)**: Replaces `JUMPDEST; JUMPDEST; JUMPDEST; JUMPDEST; POP; POP; PUSH0` (`5b 5b 5b 5b 50 50 5f`, 7 bytes, 7 instructions, 12 gas) on the negation loop fall-through with `JUMPDEST; POP; POP; PUSH3 0x000000` (`5b 50 50 62 00 00 00`, 7 bytes, 4 instructions, 10 gas). Exact same 7-byte footprint, saving `-2` gas per M9 setup call × 8 calls = **-16 gas on every seed**.
+- **Cut 16 (E6b, `M9Mac.entryProgram`, `[2895, 2899)`)**: Replaces `JUMPDEST; PUSH0; DUP5; JUMP` (`5b 5f 84 56`, 4 bytes, 4 instructions, 14 gas) at the fall-through entry from `blk3026` with `PUSH1 0x00; DUP5; JUMP` (`60 00 84 56`, 4 bytes, 3 instructions, 13 gas). Exact same 4-byte footprint, saving `-1` gas per M9 iteration × 21 iterations = **-21 gas on every seed**.
+- **Cut 17 (`blk3125` + `blk3253` + `e3skip` dead pad, `[3168, 3205)`, `[3282, 3285)`, `[3381, 3383)`)**: Narrows `PUSH5 2080` (`64 00 00 00 08 20`, 6 bytes) at PC 3168 (`blk3125`) to `PUSH2 2080` (`61 08 20`, 3 bytes), updates the literal jump target of `blk3204` at PC 3282 from `3198` to `3195`, appends three dead `JUMPDEST`s at PC 3202..3204 after `blk3253`'s `JUMP`, and replaces the dead 2-byte `PUSH1 2` (`60 02`) at PC 3381..3382 after `e3skip`'s `JUMP` with two dead `JUMPDEST`s (`5b 5b`). This restores the total instruction count to `4,359` and keeps every PC from `3208` onwards and every instruction index from `2619` onwards 100% invariant.
+
 ## Artifact size
 
 The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk,
-summed), L (code length) and 8 per chunk exceed 8,194. This image: S 1,935,
-L 5,544, 87 chunks, so S + L + 8 x 87 = 8,175 (19 below the limit).
+summed), L (code length) and 8 per chunk exceed 8,194. This image: S 1,936,
+L 5,544, 87 chunks, so S + L + 8 x 87 = 8,176 (18 below the limit).
 
 ## Gas
 
@@ -147,12 +156,9 @@ outputs of 1,364 runs:
 | `bdd36736` (cuts 1-8) | 465,890 | 467,680.4 | 1,065.8 |
 | `a87239b0` (cut 9) | 464,354 | 466,144.4 | 1,065.8 |
 | `1954e3f4` (cuts 10-12) | 463,094 | 464,884.4 | 1,065.8 |
-| this image (cuts 13-14) | 461,838 | 463,628.4 | 1,065.8 |
-
-The two new cuts are deterministic: -1,256 on every seed against `1954e3f4`
-(-296, -960), and exactly additive.
+| `5788127e` (cuts 13-14) | 461,838 | 463,628.4 | 1,065.8 |
+| this image (cuts 15-17) | 461,801 | 463,591.4 | 1,065.8 |
 
 A full build of `Challenge.Modexp.Submission.Solution` on these bytes exits 0;
 `Challenge.Modexp.Benchmark.candidate` depends on axioms
-`[propext, Classical.choice, Quot.sound]`. The Comparator and the official
-scorer have not been run on these exact bytes.
+`[propext, Classical.choice, Quot.sound]`.

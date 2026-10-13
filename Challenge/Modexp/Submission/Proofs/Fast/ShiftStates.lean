@@ -63,7 +63,7 @@ def pcSubInner : Nat := 3293
 def pcSubTail : Nat := 3332
 /-- The subtract body after `OR`, before the pointer step and exit test. -/
 def pcSubMid : Nat := 3317
-def pcCsubCall : Nat := 3198
+def pcCsubCall : Nat := 3195
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
 def pcUnc : Nat := 3208
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block

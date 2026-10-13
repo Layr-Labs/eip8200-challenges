@@ -96,10 +96,10 @@ def rideTopProgram (d : Fin 16) (t : UInt256) : List Instr :=
 def exitProgram : List Instr :=
   []
 
-/-- E6: `JUMPDEST PUSH0 DUP5 JUMP` — the estimate block already left `[q, 2^256-1]`; push the
+/-- E6: `PUSH1 0 DUP5 JUMP` — the estimate block already left `[q, 2^256-1]`; push the
 zero carry to build the chain frame `[0, q, 2^256-1]` and jump to the entry parked in the
 scratch slot (the first riding slot, `shiftEntry`). -/
 def entryProgram : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op (.Dup ⟨4, by decide⟩), .op .JUMP]
+  [.push 1 0, .op (.Dup ⟨4, by decide⟩), .op .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

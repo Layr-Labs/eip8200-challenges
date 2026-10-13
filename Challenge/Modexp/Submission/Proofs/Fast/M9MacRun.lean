@@ -537,7 +537,7 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hent]
   let st : State := { template with memory := um }
   have hs1 : runInstructions
-      [.op .JUMPDEST, .push 0 0]
+      [.push 1 0]
       (setupState template pc um bi (maxWord :: rest)) =
       some (framed st (pc + UInt256.ofNat 2)
         (UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
@@ -545,8 +545,9 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
       Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
       List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
       List.cons_append, List.nil_append, succ_eq_add, word_add_assoc,
-      Challenge.EvmProof.Word.ofNat_add_mod, notZero_maxWord,
+      Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, notZero_maxWord,
       notZeroOfNat_maxWord, push0_ofNat]
+    rfl
   have hs2 : runInstructions [.op (.Dup ⟨4, by decide⟩)]
       (framed st (pc + UInt256.ofNat 2) (UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
       some (framed st (pc + UInt256.ofNat 3)
