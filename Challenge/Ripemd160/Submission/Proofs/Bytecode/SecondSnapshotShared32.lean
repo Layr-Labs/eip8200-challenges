@@ -60,7 +60,7 @@ theorem run_table (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     s3, s2, s1, scratch, Shared32Table.tableMemory, BackwardSnapshotMemory.resultMemory,
     BackwardSnapshotMemory.fanMemory, rest, stk] using h123
 
-theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 826 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 495) template = UInt256.ofNat 824 := by decide
 
 #print axioms run_table
 #print axioms end_pc

@@ -79,7 +79,7 @@ def gasSteps_table (s : State) (e : Env s)
     GasSteps
       (atState {s with memory := writeWord s.memory 162 highWord} 495
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
-      (atState {s with memory := Shared32Table.tableMemory s.memory, activeWords := UInt256.ofNat 35} 826
+      (atState {s with memory := Shared32Table.tableMemory s.memory, activeWords := UInt256.ofNat 35} 824
         (stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho)) := by
   let s1 : State := {s with memory := writeWord s.memory 162 highWord}
   have e1 : Env s1 := ⟨e.code, e.fork, e.run, e.np⟩
