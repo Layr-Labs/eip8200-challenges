@@ -49,10 +49,10 @@ def sizePrefix : List Located :=
   [opAt 6 .CALLDATASIZE,
    pushAt 7 2 1000,
    opAt 8 .SUB,
-   pushAt 9 2 4841]
+   pushAt 9 2 4601]
 
 /-- Anchor gate: `97 + 255 * calldata[0] != 0` (first word is not the repeated
-`0x61` word) jumps straight to the recogniser's long-length entry at 4601 (the size is
+`0x61` word) jumps straight to the recogniser's long-length entry at 4805 (the size is
 already known to be 1000 here). -/
 def anchorPrefix : List Located :=
   [pushAt 11 0 0,
@@ -61,9 +61,9 @@ def anchorPrefix : List Located :=
    opAt 14 .MUL,
    pushAt 15 1 97,
    opAt 16 .ADD,
-   pushAt 17 2 4601]
+   pushAt 17 2 4805]
 
-def entryDest : Located := opAt 147 .JUMPDEST
+def entryDest : Located := opAt 172 .JUMPDEST
 
 /-- The reference word and the tail word seed the accumulator. -/
 def checkEntryPath : List Located :=
@@ -76,52 +76,52 @@ def checkEntryPath : List Located :=
    opAt 25 .XOR]
 
 def loopPath : List Located :=
-  [opAt 26 .JUMPDEST,
-   pushAt 27 1 32,
-   opAt 28 (.Dup ⟨2, by decide⟩),
-   opAt 29 .SUB,
-   opAt 30 .CALLDATALOAD,
-   opAt 31 (.Dup ⟨3, by decide⟩),
-   opAt 32 .XOR,
-   opAt 33 .OR,
-   pushAt 34 1 64,
-   opAt 35 (.Dup ⟨2, by decide⟩),
-   opAt 36 .SUB,
-   opAt 37 .CALLDATALOAD,
-   opAt 38 (.Dup ⟨3, by decide⟩),
-   opAt 39 .XOR,
-   opAt 40 .OR,
-   pushAt 41 1 96,
-   opAt 42 (.Dup ⟨2, by decide⟩),
-   opAt 43 .SUB,
-   opAt 44 (.Swap ⟨1, by decide⟩),
-   opAt 45 .CALLDATALOAD,
-   opAt 46 (.Dup ⟨3, by decide⟩),
-   opAt 47 .XOR,
-   opAt 48 .OR,
-   opAt 49 (.Dup ⟨1, by decide⟩),
-   pushAt 50 1 44,
-   opAt 51 .JUMPI]
+  [opAt 135 .JUMPDEST,
+   pushAt 136 1 32,
+   opAt 137 (.Dup ⟨2, by decide⟩),
+   opAt 138 .SUB,
+   opAt 139 .CALLDATALOAD,
+   opAt 140 (.Dup ⟨3, by decide⟩),
+   opAt 141 .XOR,
+   opAt 142 .OR,
+   pushAt 143 1 64,
+   opAt 144 (.Dup ⟨2, by decide⟩),
+   opAt 145 .SUB,
+   opAt 146 .CALLDATALOAD,
+   opAt 147 (.Dup ⟨3, by decide⟩),
+   opAt 148 .XOR,
+   opAt 149 .OR,
+   pushAt 150 1 96,
+   opAt 151 (.Dup ⟨2, by decide⟩),
+   opAt 152 .SUB,
+   opAt 153 (.Swap ⟨1, by decide⟩),
+   opAt 154 .CALLDATALOAD,
+   opAt 155 (.Dup ⟨3, by decide⟩),
+   opAt 156 .XOR,
+   opAt 157 .OR,
+   opAt 158 (.Dup ⟨1, by decide⟩),
+   pushAt 159 1 200,
+   opAt 160 .JUMPI]
 
 /-- Branch on the accumulator directly. The generic implementation carries the
 zero counter and anchor below it as a suffix. -/
 def tailPath : List Located :=
-  [pushAt 52 1 246,
-   opAt 53 .JUMPI]
+  [pushAt 161 1 247,
+   opAt 162 .JUMPI]
 
 /-- Off the measured path: the divert lands on the generic arm's entry. -/
 def fallbackPath : List Located :=
   [entryDest]
 
 def returnPath : List Located :=
-  [pushAt 54 20 972889429405991776604892044862621566948497025487,
-   opAt 55 .JUMPDEST,
-   pushAt 56 0 0,
-   opAt 57 .MSTORE]
+  [pushAt 3503 20 972889429405991776604892044862621566948497025487,
+   opAt 3504 .JUMPDEST,
+   pushAt 3505 0 0,
+   opAt 3506 .MSTORE]
 
 def returnFinishPath : List Located :=
-  [pushAt 59 0 0,
-   opAt 60 .RETURN]
+  [pushAt 3508 0 0,
+   opAt 3509 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -151,26 +151,37 @@ def spentCells (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat 0, referenceWord input]
 
 def fallbackState (input : ByteArray) : State :=
-  StackTail.append (atPC input 247) (spentCells input)
+  StackTail.append (atPC input 248) (spentCells input)
 
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 44
+    pc := UInt256.ofNat 200
     stack := [reverseAcc input n, UInt256.ofNat (960 - 96 * n), referenceWord input] }
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 74
+    pc := UInt256.ofNat 230
     stack := [reverseAcc input 10, UInt256.ofNat 0, referenceWord input] }
+
+/-- The accumulator test fell through at 233: `PUSH2 0x1270 JUMP` to the answer block in the tail. -/
+def returnHopState (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 233
+    stack := spentCells input }
+
+def returnHopPath : List Located :=
+  [pushAt 163 2 4720,
+   opAt 164 .JUMP,
+   opAt 3502 .JUMPDEST]
 
 def returnEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 77
+    pc := UInt256.ofNat 4721
     stack := spentCells input }
 
 def tailDivertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 246
+    pc := UInt256.ofNat 247
     stack := spentCells input }
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -181,7 +192,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 103
+    pc := UInt256.ofNat 4747
     stack := spentCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -190,14 +201,14 @@ def returnedState (input : ByteArray) : State :=
 
 def storedReturnState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 101
+    pc := UInt256.ofNat 4745
     stack := spentCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedReturnState (input : ByteArray) : State :=
   { storedReturnState input with
-    pc := UInt256.ofNat 102
+    pc := UInt256.ofNat 4746
     stack := UInt256.ofNat 32 :: spentCells input }
 
 abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
@@ -244,103 +255,103 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_25 : Artifact.submissionArtifact.instructionPC 25 = 43 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_26 : Artifact.submissionArtifact.instructionPC 26 = 44 := by
+@[simp] theorem pc_direct_26 : Artifact.submissionArtifact.instructionPC 135 = 200 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_27 : Artifact.submissionArtifact.instructionPC 27 = 45 := by
+@[simp] theorem pc_direct_27 : Artifact.submissionArtifact.instructionPC 136 = 201 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_28 : Artifact.submissionArtifact.instructionPC 28 = 47 := by
+@[simp] theorem pc_direct_28 : Artifact.submissionArtifact.instructionPC 137 = 203 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_29 : Artifact.submissionArtifact.instructionPC 29 = 48 := by
+@[simp] theorem pc_direct_29 : Artifact.submissionArtifact.instructionPC 138 = 204 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_30 : Artifact.submissionArtifact.instructionPC 30 = 49 := by
+@[simp] theorem pc_direct_30 : Artifact.submissionArtifact.instructionPC 139 = 205 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_31 : Artifact.submissionArtifact.instructionPC 31 = 50 := by
+@[simp] theorem pc_direct_31 : Artifact.submissionArtifact.instructionPC 140 = 206 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_32 : Artifact.submissionArtifact.instructionPC 32 = 51 := by
+@[simp] theorem pc_direct_32 : Artifact.submissionArtifact.instructionPC 141 = 207 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 33 = 52 := by
+@[simp] theorem pc_direct_33 : Artifact.submissionArtifact.instructionPC 142 = 208 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_34 : Artifact.submissionArtifact.instructionPC 34 = 53 := by
+@[simp] theorem pc_direct_34 : Artifact.submissionArtifact.instructionPC 143 = 209 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 35 = 55 := by
+@[simp] theorem pc_direct_35 : Artifact.submissionArtifact.instructionPC 144 = 211 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 36 = 56 := by
+@[simp] theorem pc_direct_36 : Artifact.submissionArtifact.instructionPC 145 = 212 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 37 = 57 := by
+@[simp] theorem pc_direct_37 : Artifact.submissionArtifact.instructionPC 146 = 213 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_38 : Artifact.submissionArtifact.instructionPC 38 = 58 := by
+@[simp] theorem pc_direct_38 : Artifact.submissionArtifact.instructionPC 147 = 214 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_39 : Artifact.submissionArtifact.instructionPC 39 = 59 := by
+@[simp] theorem pc_direct_39 : Artifact.submissionArtifact.instructionPC 148 = 215 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_40 : Artifact.submissionArtifact.instructionPC 40 = 60 := by
+@[simp] theorem pc_direct_40 : Artifact.submissionArtifact.instructionPC 149 = 216 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_41 : Artifact.submissionArtifact.instructionPC 41 = 61 := by
+@[simp] theorem pc_direct_41 : Artifact.submissionArtifact.instructionPC 150 = 217 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_42 : Artifact.submissionArtifact.instructionPC 42 = 63 := by
+@[simp] theorem pc_direct_42 : Artifact.submissionArtifact.instructionPC 151 = 219 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_43 : Artifact.submissionArtifact.instructionPC 43 = 64 := by
+@[simp] theorem pc_direct_43 : Artifact.submissionArtifact.instructionPC 152 = 220 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_44 : Artifact.submissionArtifact.instructionPC 44 = 65 := by
+@[simp] theorem pc_direct_44 : Artifact.submissionArtifact.instructionPC 153 = 221 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_45 : Artifact.submissionArtifact.instructionPC 45 = 66 := by
+@[simp] theorem pc_direct_45 : Artifact.submissionArtifact.instructionPC 154 = 222 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_46 : Artifact.submissionArtifact.instructionPC 46 = 67 := by
+@[simp] theorem pc_direct_46 : Artifact.submissionArtifact.instructionPC 155 = 223 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_47 : Artifact.submissionArtifact.instructionPC 47 = 68 := by
+@[simp] theorem pc_direct_47 : Artifact.submissionArtifact.instructionPC 156 = 224 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_48 : Artifact.submissionArtifact.instructionPC 48 = 69 := by
+@[simp] theorem pc_direct_48 : Artifact.submissionArtifact.instructionPC 157 = 225 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_49 : Artifact.submissionArtifact.instructionPC 49 = 70 := by
+@[simp] theorem pc_direct_49 : Artifact.submissionArtifact.instructionPC 158 = 226 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_50 : Artifact.submissionArtifact.instructionPC 50 = 71 := by
+@[simp] theorem pc_direct_50 : Artifact.submissionArtifact.instructionPC 159 = 227 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_51 : Artifact.submissionArtifact.instructionPC 51 = 73 := by
+@[simp] theorem pc_direct_51 : Artifact.submissionArtifact.instructionPC 160 = 229 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_52 : Artifact.submissionArtifact.instructionPC 52 = 74 := by
+@[simp] theorem pc_direct_52 : Artifact.submissionArtifact.instructionPC 161 = 230 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_53 : Artifact.submissionArtifact.instructionPC 53 = 76 := by
+@[simp] theorem pc_direct_53 : Artifact.submissionArtifact.instructionPC 162 = 232 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_54 : Artifact.submissionArtifact.instructionPC 54 = 77 := by
+@[simp] theorem pc_direct_54 : Artifact.submissionArtifact.instructionPC 3503 = 4721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_55 : Artifact.submissionArtifact.instructionPC 55 = 98 := by
+@[simp] theorem pc_direct_55 : Artifact.submissionArtifact.instructionPC 3504 = 4742 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_56 : Artifact.submissionArtifact.instructionPC 56 = 99 := by
+@[simp] theorem pc_direct_56 : Artifact.submissionArtifact.instructionPC 3505 = 4743 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_57 : Artifact.submissionArtifact.instructionPC 57 = 100 := by
+@[simp] theorem pc_direct_57 : Artifact.submissionArtifact.instructionPC 3506 = 4744 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_58 : Artifact.submissionArtifact.instructionPC 58 = 101 := by
+@[simp] theorem pc_direct_58 : Artifact.submissionArtifact.instructionPC 3507 = 4745 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_59 : Artifact.submissionArtifact.instructionPC 59 = 102 := by
+@[simp] theorem pc_direct_59 : Artifact.submissionArtifact.instructionPC 3508 = 4746 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_60 : Artifact.submissionArtifact.instructionPC 60 = 103 := by
+@[simp] theorem pc_direct_60 : Artifact.submissionArtifact.instructionPC 3509 = 4747 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 61 = 104 := by
+@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 61 = 95 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 63 = 108 := by
+@[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 63 = 98 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_63 : Artifact.submissionArtifact.instructionPC 64 = 109 := by
+@[simp] theorem pc_direct_63 : Artifact.submissionArtifact.instructionPC 64 = 99 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_64 : Artifact.submissionArtifact.instructionPC 65 = 110 := by
+@[simp] theorem pc_direct_64 : Artifact.submissionArtifact.instructionPC 65 = 101 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_65 : Artifact.submissionArtifact.instructionPC 66 = 111 := by
+@[simp] theorem pc_direct_65 : Artifact.submissionArtifact.instructionPC 66 = 102 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_66 : Artifact.submissionArtifact.instructionPC 67 = 113 := by
+@[simp] theorem pc_direct_66 : Artifact.submissionArtifact.instructionPC 67 = 105 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_67 : Artifact.submissionArtifact.instructionPC 68 = 114 := by
+@[simp] theorem pc_direct_67 : Artifact.submissionArtifact.instructionPC 68 = 106 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_68 : Artifact.submissionArtifact.instructionPC 69 = 115 := by
+@[simp] theorem pc_direct_68 : Artifact.submissionArtifact.instructionPC 103 = 155 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_69 : Artifact.submissionArtifact.instructionPC 70 = 117 := by
+@[simp] theorem pc_direct_69 : Artifact.submissionArtifact.instructionPC 104 = 157 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_70 : Artifact.submissionArtifact.instructionPC 71 = 118 := by
+@[simp] theorem pc_direct_70 : Artifact.submissionArtifact.instructionPC 105 = 158 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_71 : Artifact.submissionArtifact.instructionPC 72 = 119 := by
+@[simp] theorem pc_direct_71 : Artifact.submissionArtifact.instructionPC 106 = 159 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_72 : Artifact.submissionArtifact.instructionPC 73 = 121 := by
+@[simp] theorem pc_direct_72 : Artifact.submissionArtifact.instructionPC 107 = 161 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_73 : Artifact.submissionArtifact.instructionPC 74 = 122 := by
+@[simp] theorem pc_direct_73 : Artifact.submissionArtifact.instructionPC 74 = 115 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_74 : Artifact.submissionArtifact.instructionPC 75 = 125 := by
+@[simp] theorem pc_direct_74 : Artifact.submissionArtifact.instructionPC 75 = 116 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

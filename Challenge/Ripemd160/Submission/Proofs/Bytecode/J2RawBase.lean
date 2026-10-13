@@ -155,7 +155,7 @@ def initTemplate : List Instr := [
 def firstTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 33),
     .op .CALLDATASIZE,
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4713),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4917),
     .op .JUMPI ]
 
 /-- Increment the saved offset before loading the old offset. This eliminates one
@@ -184,7 +184,7 @@ def normalTemplate : List Instr := [
 def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4687),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4891),
     .op .JUMPI ]
 
 def tailTemplate : List Instr := [
@@ -223,13 +223,13 @@ def transitionTemplate : List Instr := [
 
 def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨4, by decide⟩),
     .op .GT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4687),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4891),
     .op .JUMPI ]
 
-def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4713),
+def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4917),
     .op .JUMP ]
 
-def resultTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 246),
+def resultTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 247),
     .op .JUMPI ]
 
 

@@ -21,6 +21,22 @@ theorem run_template (s : State) (pc : UInt256) (rho : List UInt256) (dest : Nat
   simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr, hrun,
     hcap, hcap1, hvalid, List.length_cons]
 
+/-- `PUSH1 dest JUMP`, for jump targets below 256. -/
+def template1 (dest : Nat) : List Instr :=
+  [.push ⟨1, by decide⟩ (UInt256.ofNat dest), .op .JUMP]
+
+theorem run_template1 (s : State) (pc : UInt256) (rho : List UInt256) (dest : Nat)
+    (hstack : rho.length ≤ 1022) (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
+    runInstrSeq (template1 dest) {s with pc := pc, stack := rho} =
+      some {s with pc := UInt256.ofNat dest, stack := rho} := by
+  have hcap : rho.length < 1024 := by omega
+  have hcap1 : rho.length + 1 < 1024 := by omega
+  simp only [Word.word_toNat_ofNat] at hvalid
+  norm_num only at hvalid
+  simp (discharger := omega) [template1, runInstrSeq, DataStepper.runInstr, hrun,
+    hcap, hcap1, hvalid, List.length_cons]
+
 theorem run_merge (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length < 1024) (hrun : s.halt = .Running) :
     runInstrSeq [.op .JUMPDEST] {s with pc := pc, stack := rho} =
@@ -28,5 +44,6 @@ theorem run_merge (s : State) (pc : UInt256) (rho : List UInt256)
   simp [runInstrSeq, DataStepper.runInstr, hrun, hstack, UInt256.succ]
   rfl
 #print axioms run_template
+#print axioms run_template1
 #print axioms run_merge
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PadJump

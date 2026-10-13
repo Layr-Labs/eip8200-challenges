@@ -10,24 +10,46 @@ def Aligned (input : ByteArray) : Prop := input.size % 64 = 0 ∧ input.size < 2
 instance (input : ByteArray) : Decidable (Aligned input) := by
   unfold Aligned; infer_instance
 
-/-- The block-exit continuation in slot 12.  Fast-entry inputs continue at the pad-test chain
-4768 (the pad-only block then installs the output entry); every other input continues at the
-last-block test 4757. -/
-def contNat (input : ByteArray) : Nat :=
-  if input.size % 64 = 0 ∧ input.size < 256 then 4768 else 4757
+/-- Block `i` is the pad-only block of a fast-entry input. -/
+def Pad (input : ByteArray) (i : Nat) : Prop := input.size = i * 64 ∧ input.size < 256
 
-def cont (input : ByteArray) : UInt256 := UInt256.ofNat (contNat input)
+instance (input : ByteArray) (i : Nat) : Decidable (Pad input i) := by
+  unfold Pad; infer_instance
 
+/-- The continuation in slot 12 while block `i` runs.  A fast-entry input carries the PC of its
+next phase: `size - 64 i` for a message block (192 and 128 are stubs that step it down, 64 is the
+pad-only block), and the pad-only block itself is entered with 64.  Every other input carries the
+last-block test 47. -/
+def contNat (input : ByteArray) (i : Nat) : Nat :=
+  if input.size % 64 = 0 ∧ input.size < 256 then
+    (if input.size = i * 64 then 64 else input.size - 64 * i)
+  else 47
+
+def cont (input : ByteArray) (i : Nat) : UInt256 := UInt256.ofNat (contNat input i)
+
+/-- Message blocks start after the loop-head `JUMPDEST`; the pad-only block at its code at 64. -/
 def blockPC (input : ByteArray) (i : Nat) : UInt256 :=
-  UInt256.ofNat (if input.size = i * 64 ∧ input.size < 256 then 129 else 458)
+  UInt256.ofNat (if input.size = i * 64 ∧ input.size < 256 then 64 else 458)
 
-theorem cont_aligned (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) :
-    cont input = UInt256.ofNat 4768 := by
-  simp only [cont, contNat, if_pos hz]
+/-- The offset index in slot 11 while block `i` runs: the pad-only block keeps the last message
+block's offset, since it is entered by the dispatch without an advance. -/
+def offIndex (input : ByteArray) (i : Nat) : Nat :=
+  if input.size = i * 64 ∧ input.size < 256 then i - 1 else i
 
-theorem cont_cold (input : ByteArray) (hz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) :
-    cont input = UInt256.ofNat 4757 := by
+theorem cont_cold (input : ByteArray) (hz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) (i : Nat) :
+    cont input i = UInt256.ofNat 47 := by
   simp only [cont, contNat, if_neg hz]
+
+theorem cont_aligned (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) (i : Nat)
+    (hp : ¬ (input.size = i * 64 ∧ input.size < 256)) :
+    cont input i = UInt256.ofNat (input.size - 64 * i) := by
+  have hne : input.size ≠ i * 64 := fun h => hp ⟨h, hz.2⟩
+  simp only [cont, contNat, if_pos hz, if_neg hne]
+
+theorem cont_pad (input : ByteArray) (i : Nat) (hp : input.size = i * 64 ∧ input.size < 256) :
+    cont input i = UInt256.ofNat 64 := by
+  have hz : input.size % 64 = 0 ∧ input.size < 256 := ⟨by omega, hp.2⟩
+  simp only [cont, contNat, if_pos hz, if_pos hp.1]
 
 /-- The pad-only block is always the last block. -/
 theorem pad_last (input : ByteArray) (i : Nat)
@@ -46,5 +68,16 @@ theorem cold_not_pad (input : ByteArray) (hz : ¬ (input.size % 64 = 0 ∧ input
     ¬ (input.size = i * 64 ∧ input.size < 256) := by
   intro h
   exact hz ⟨by omega, h.2⟩
+
+/-- The continuation a fast-entry message block dispatches to is 192, 128 or 64; 64 exactly when
+the next block is the pad-only block. -/
+theorem aligned_cases (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) (i : Nat)
+    (hp : ¬ (input.size = i * 64 ∧ input.size < 256)) (hi : i < DriverTrace.blockCount input) :
+    (input.size - 64 * i = 192 ∧ ¬ (input.size = (i + 1) * 64 ∧ input.size < 256)) ∨
+    (input.size - 64 * i = 128 ∧ ¬ (input.size = (i + 1) * 64 ∧ input.size < 256)) ∨
+    (input.size - 64 * i = 64 ∧ (input.size = (i + 1) * 64 ∧ input.size < 256)) := by
+  unfold DriverTrace.blockCount Padding.paddedLength at hi
+  have hne : input.size ≠ i * 64 := fun h => hp ⟨h, hz.2⟩
+  omega
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.LoopCompletionControl

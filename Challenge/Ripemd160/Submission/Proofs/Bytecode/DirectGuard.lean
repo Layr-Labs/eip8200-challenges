@@ -53,7 +53,8 @@ def gasSteps_target :
     ((gasSteps_checkEntry KnownInputData.targetInput).trans
       ((gasSteps_loop KnownInputData.targetInput).trans
         ((sound tailPath run_tail_target).trans
-          (gasSteps_direct_return KnownInputData.targetInput))))
+          ((sound returnHopPath (run_return_hop KnownInputData.targetInput)).trans
+            (gasSteps_direct_return KnownInputData.targetInput)))))
 
 private theorem answerMemory_read :
     MachineState.readPadded answerMemory 0 32 = ExactGuardSpec.paddedDigest := by

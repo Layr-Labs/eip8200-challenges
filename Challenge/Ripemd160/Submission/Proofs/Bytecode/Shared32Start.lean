@@ -14,18 +14,18 @@ open Shared32Scratch Shared32Sites Paired144WordRound
 
 def maskRho : List UInt256 := [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 def frame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 4768) maskRho
+  (UInt256.ofNat 1056) (UInt256.ofNat 32) maskRho
 def entryFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 4768) maskRho
+  (UInt256.ofNat 1056) (UInt256.ofNat 32) maskRho
 /-- After the 32-byte block the continuation slot holds the output entry, so the single block finishes. -/
 def bodyFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho
+  (UInt256.ofNat 1056) (UInt256.ofNat 4748) maskRho
 
 theorem rounded_32 : PadLimitArithmetic.rounded (UInt256.ofNat 32) = UInt256.ofNat 64 := by decide
 
-theorem entry_frame_eq (input : ByteArray) (_h32 : input.size = 32) :
+theorem entry_frame_eq (input : ByteArray) (h32 : input.size = 32) :
     PaddingTrace.initialFrame input = entryFrame := by
-  simp only [PaddingTrace.initialFrame, PaddingTrace.copiedLimit]
+  simp only [PaddingTrace.initialFrame, PaddingTrace.copiedLimit, h32]
   rfl
 
 def tableState (input : ByteArray) : State :=
@@ -75,7 +75,7 @@ def gasSteps_align (input : ByteArray) (h32 : input.size = 32) :
     (by rw [PaddingTrace.initialFrame_length]; decide) h32
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 247)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 248)) :
     GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 824 bodyFrame) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
@@ -85,7 +85,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have g0 := (Main.gasSteps_initialize input entryPrefix).trans
     ((PaddingTrace.gasSteps_enterPad input).trans ((PaddingTrace.gasSteps_lengthReady input).trans
       ((PaddingTrace.gasSteps_lengthCopy input hfit).trans (PaddingTrace.gasSteps_push input))))
-  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 104 entryFrame) := by
+  have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 143 entryFrame) := by
     simpa only [PaddingTrace.padGuardTaken, PaddingTrace.padGuardMiss, hframe, atState, s] using
       gasSteps_align input h32
   have g4 := Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
@@ -93,14 +93,14 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4768) [] (by decide) hactive
-    (by rw [show s.executionEnv.calldata.size = 32 from h32]; decide) (by decide) h32
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
+    (by decide) h32
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4784) [] (by decide) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4748) [] (by decide) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)

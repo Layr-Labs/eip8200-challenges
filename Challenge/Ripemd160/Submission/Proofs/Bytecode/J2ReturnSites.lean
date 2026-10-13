@@ -12,38 +12,38 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
   decide
 namespace selector
 abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3493).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3613).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3493 actual_slice
-    (by change 3493 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3613 actual_slice
+    (by change 3613 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4736 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3493) = UInt256.ofNat 4736
+theorem site_pc : site.startPC = UInt256.ofNat 4940 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3613) = UInt256.ofNat 4940
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 4736) template = UInt256.ofNat 4753 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 4940) template = UInt256.ofNat 4957 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 4736 stack) = some t) : GasSteps (atState s 4736 stack) t :=
+    (h : runInstrSeq template (atState s 4940 stack) = some t) : GasSteps (atState s 4940 stack) t :=
   RecognitionLift.gasSteps_of_raw site _ _ e.code e.fork e.run e.np site_pc.symm form h
 end selector
 namespace returned
 abbrev template : List Instr := RecognitionSelectorRaw.finish
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3506).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3626).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3506 actual_slice
-    (by change 3506 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3626 actual_slice
+    (by change 3626 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4755 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3506) = UInt256.ofNat 4755
+theorem site_pc : site.startPC = UInt256.ofNat 4959 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3626) = UInt256.ofNat 4959
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem end_pc : pcAfter (UInt256.ofNat 4755) template = UInt256.ofNat 4757 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 4959) template = UInt256.ofNat 4961 := by decide
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 4755 stack) = some t) : GasSteps (atState s 4755 stack) t :=
+    (h : runInstrSeq template (atState s 4959 stack) = some t) : GasSteps (atState s 4959 stack) t :=
   RecognitionLift.gasSteps_of_raw site _ _ e.code e.fork e.run e.np site_pc.symm form h
 end returned
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2ReturnSites

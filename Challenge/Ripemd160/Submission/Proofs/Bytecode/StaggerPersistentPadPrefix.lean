@@ -7,16 +7,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate
 def prefixTemplate : List Instr := [.op .JUMPDEST]
 theorem prefix_slice :
-    (Artifact.submissionArtifact.instructions.drop 78).take prefixTemplate.length = prefixTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 41).take prefixTemplate.length = prefixTemplate := by rfl
 def prefixSite : GenericRoundSite Artifact.submissionArtifact .Osaka prefixTemplate :=
-  StackSiteBuilder.ofSlice prefixTemplate 78 prefix_slice
-    (by change 78 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice prefixTemplate 41 prefix_slice
+    (by change 41 + prefixTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := prefixTemplate) (by decide))
     (by decide)
-theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 129 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 78) = UInt256.ofNat 129
+theorem prefix_pc : prefixSite.startPC = UInt256.ofNat 64 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 41) = UInt256.ofNat 64
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem prefix_advances : ∀ instruction ∈ prefixTemplate.dropLast, PadLift.Advances instruction := by
   apply PadLift.advancesAll_sound
@@ -27,15 +27,15 @@ def gasSteps_prefix (s : State) (stack : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 129, stack := stack}
-      {s with pc := UInt256.ofNat 130, stack := stack} := by
-  apply PadLift.gasSteps_of_raw prefixSite {s with pc := UInt256.ofNat 129, stack := stack} _ hcode hfork hrun hnp prefix_pc.symm prefix_advances
+    GasSteps {s with pc := UInt256.ofNat 64, stack := stack}
+      {s with pc := UInt256.ofNat 65, stack := stack} := by
+  apply PadLift.gasSteps_of_raw prefixSite {s with pc := UInt256.ofNat 64, stack := stack} _ hcode hfork hrun hnp prefix_pc.symm prefix_advances
   have h1 : stack.length < 1024 := by omega
-  have h : runInstrSeq prefixTemplate {s with pc := UInt256.ofNat 129, stack := stack} =
-      some {s with pc := pcAfter (UInt256.ofNat 129) prefixTemplate, stack := stack} := by
+  have h : runInstrSeq prefixTemplate {s with pc := UInt256.ofNat 64, stack := stack} =
+      some {s with pc := pcAfter (UInt256.ofNat 64) prefixTemplate, stack := stack} := by
     simp [prefixTemplate, runInstrSeq, DataStepper.runInstr, if_pos h1, hrun]
     decide
-  have hp : pcAfter (UInt256.ofNat 129) prefixTemplate = UInt256.ofNat 130 := by rfl
+  have hp : pcAfter (UInt256.ofNat 64) prefixTemplate = UInt256.ofNat 65 := by rfl
   rw [hp] at h
   exact h
 

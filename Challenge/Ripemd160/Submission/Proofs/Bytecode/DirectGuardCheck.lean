@@ -23,7 +23,7 @@ private def sS (l : Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     [l] hcode hfork h hrun hnp
 
-/-- The straight-line seed block from PC 33 to the loop head at PC 44. -/
+/-- The straight-line seed block from PC 33 and the `PUSH1 200 JUMP` at 44 to the loop head at PC 200. -/
 def gasSteps_checkEntry (input : ByteArray) :
     GasSteps (sizeMatched input) (loopState input 0) := by
   let R := referenceWord input
@@ -50,9 +50,23 @@ def gasSteps_checkEntry (input : ByteArray) :
   have s6 := sS (opAt 25 .XOR) (PatternedScan.blockOfS _
     (PatternedScan.pcFactS input 25 43 [R, W, 960, R] (by norm_num) pc_direct_25)
     (PatternedScan.stepS_xor input 43 R W [960, R] (by simp) (by norm_num)))
-  have hend : PatternedScan.stS input (43 + 1) [UInt256.xor R W, 960, R] =
+  have p26 : Artifact.submissionArtifact.instructionPC 26 = 44 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have p27 : Artifact.submissionArtifact.instructionPC 27 = 46 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hdest : Decode.isValidJumpDest submissionBytecode 200 = true := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 135 (by rfl)
+    rw [pc_direct_26] at h
+    exact h
+  have s7 := sS (pushAt 26 1 200) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 26 44 [UInt256.xor R W, 960, R] (by norm_num) p26)
+    (PatternedScan.stepS_push input 44 1 200 [UInt256.xor R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
+  have s8 := sS (opAt 27 .JUMP) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 27 46 [200, UInt256.xor R W, 960, R] (by norm_num) p27)
+    (PatternedScan.stepS_jump input 46 200 200 [UInt256.xor R W, 960, R] (by simp) (by norm_num) rfl hdest))
+  have hend : PatternedScan.stS input 200 [UInt256.xor R W, 960, R] =
       loopState input 0 := rfl
-  rw [hend] at s6
-  exact s0.trans (s1.trans (s2.trans (s3.trans (s4.trans (s5.trans s6)))))
+  rw [hend] at s8
+  exact s0.trans (s1.trans (s2.trans (s3.trans (s4.trans (s5.trans (s6.trans (s7.trans s8)))))))
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

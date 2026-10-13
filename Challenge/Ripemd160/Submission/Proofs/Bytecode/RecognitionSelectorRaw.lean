@@ -16,8 +16,11 @@ private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 
-/-- The digest row is addressed relative to `CODESIZE`: row `(14357627 / size) % 16` sits
-`20 * row` bytes before the end of the code. -/
+/-- The digest row is addressed relative to `CODESIZE` rather than from an absolute
+`PUSH2` table base: the slot index counts *down* from the end of the code, so the
+table base never appears as an immediate.  `PUSH1 20` widens to `PUSH3 20` to keep
+the surrounding instruction indices fixed, so this template still occupies 21 bytes
+and 11 instructions. -/
 def prefixTemplate : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .push ⟨1, by decide⟩ (UInt256.ofNat 15),
