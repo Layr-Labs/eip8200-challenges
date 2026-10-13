@@ -14,11 +14,12 @@ open Shared32Scratch
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- `PUSH0 SWAP13` at 113: zero the limit slot (the single block then finishes on its own
-offset) and lift the old limit `1088` to the top. The `MSIZE ADD` that follows (115, 116) adds
-the active memory size `1088` to it, giving the sentinel value `0x880`. -/
+/-- `PUSH2 0x12b0 SWAP13` at 105: the continuation slot becomes the output entry 4784 (the single
+block then jumps straight to the output) and the fast-entry continuation `0x12a0` comes to the top.
+The `CALLDATASIZE XOR` that follows (109, 110) gives `0x1280` for 32 bytes, whose low byte is the
+sentinel `0x80`. -/
 def headTemplate : List Instr :=
-  [ .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4784),
     .op (.Swap ⟨12, by decide⟩) ]
 
 theorem run_head (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
@@ -30,49 +31,52 @@ theorem run_head (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt25
       some {s with
         pc := pcAfter pc headTemplate
         stack := lim ::
-          stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 0) rho} := by
+          stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4784) rho} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [headTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, Instr.size, UInt256.succ, stk, Nat.add_assoc,
     List.getElem?_cons_zero, List.exchange]
-  exact ⟨rfl, rfl⟩
+  rfl
 
-/-- The `ADD` at 116 that combines the active size with the lifted limit. -/
-def addTemplate : List Instr := [ .op .ADD ]
+/-- The `CALLDATASIZE XOR` at 109 that folds the length into the lifted continuation. -/
+def xorTemplate : List Instr := [ .op .CALLDATASIZE, .op .XOR ]
 
-theorem run_add (s : State) (pc a b : UInt256) (F : List UInt256)
+theorem run_xor (s : State) (pc a : UInt256) (F : List UInt256)
     (hstack : F.length ≤ 900) (hrun : s.halt = .Running) :
-    runInstrSeq addTemplate {s with pc := pc, stack := a :: b :: F} =
-      some {s with pc := pcAfter pc addTemplate, stack := (a + b) :: F} := by
+    runInstrSeq xorTemplate {s with pc := pc, stack := a :: F} =
+      some {s with pc := pcAfter pc xorTemplate, stack := (UInt256.xor (UInt256.ofNat s.executionEnv.calldata.size) a) :: F} := by
   have hcap : F.length + 1 + 1 < 1024 := by omega
-  simp [addTemplate, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, Instr.size,
+  have hcap1 : F.length + 1 < 1024 := by omega
+  simp [xorTemplate, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, hcap1, Instr.size,
     UInt256.succ, add_eq_hAdd]
 
-/-- The two sparse padding bytes: the doubled limit's low byte `0x80` at 165 and `1` at 188. -/
+/-- The two sparse padding bytes: the folded continuation's low byte `0x80` at 165 and the low
+byte `1` of the resident coefficient word in stack slot 4 at 188. -/
 def template : List Instr :=
   [ .push ⟨1, by decide⟩ (UInt256.ofNat 165),
     .op .MSTORE8,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 1),
+    .op (.Dup ⟨4, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 188),
     .op .MSTORE8 ]
 
-theorem run_sparse (s : State) (pc v : UInt256) (F : List UInt256)
-    (hstack : F.length ≤ 900) (hrun : s.halt = .Running)
+theorem run_sparse (s : State) (pc v x0 x1 x2 x3 x4 : UInt256) (G : List UInt256)
+    (hstack : G.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : s.activeWords = UInt256.ofNat 34)
-    (hbyte : UInt8.ofNat (v.toNat % 256) = 128) :
-    runInstrSeq template {s with pc := pc, stack := v :: F} =
+    (hbyte : UInt8.ofNat (v.toNat % 256) = 128)
+    (hone : UInt8.ofNat (x4.toNat % 256) = 1) :
+    runInstrSeq template {s with pc := pc, stack := v :: x0 :: x1 :: x2 :: x3 :: x4 :: G} =
       some {s with
         pc := pcAfter pc template
-        stack := F
+        stack := x0 :: x1 :: x2 :: x3 :: x4 :: G
         memory := sparseMemory s.memory} := by
-  have hcap (n : Nat) (hn : n ≤ 27) : F.length + n < 1024 := by omega
-  have hcap0 : F.length < 1024 := by omega
+  have hcap (n : Nat) (hn : n ≤ 27) : G.length + n < 1024 := by omega
+  have hcap0 : G.length < 1024 := by omega
   simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, hcap0, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
     List.getElem?_cons_zero, State.activeWordsAfterUInt256,
-    hactive, MachineState.activeWordsAfter, hbyte, sparseMemory, add_eq_hAdd]
+    hactive, MachineState.activeWordsAfter, hbyte, hone, sparseMemory, add_eq_hAdd]
 
-theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [96,165,83,96,1,96,188,83] := by decide
+theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [96,165,83,132,96,188,83] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =
@@ -81,7 +85,7 @@ theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
   exact read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
 
 #print axioms run_head
-#print axioms run_add
+#print axioms run_xor
 #print axioms run_sparse
 #print axioms bytes_exact
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32SparseRun

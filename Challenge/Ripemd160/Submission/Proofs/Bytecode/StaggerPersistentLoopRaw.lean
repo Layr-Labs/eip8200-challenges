@@ -32,8 +32,8 @@ def backTemplate : List Instr := [.op (.Swap ⟨10, by decide⟩)]
 
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
 
-/-- The pad-only block's exit mark: the resident factor word it leaves in slot 11, far above any limit. -/
-def padMark : UInt256 := Paired144WordRound.factorPlusWord
+/-- The output entry: the continuation of the pad-only block and of the 32-byte block. -/
+def outPC : Nat := 4784
 
 /-- The block entry stack: the pad-only block (`size = 64 i < 256`) starts with the advanced
 offset still on top. -/
@@ -42,14 +42,82 @@ def entryStack (input : ByteArray) (i : Nat) (h : Compression.HashState) (off li
   if input.size = i * 64 ∧ input.size < 256 then StaggerPersistentFrame.exitFrame h off limit rho
   else StaggerPersistentFrame.frame h off limit rho
 
-/-- The slot-12 word a block leaves for the exit test. -/
-def blockMark (input : ByteArray) (i : Nat) (off : UInt256) : UInt256 :=
-  if input.size = i * 64 ∧ input.size < 256 then padMark else off
+/-- The slot-11 word a block leaves: the pad-only block moves the old continuation there. -/
+def blockMark (input : ByteArray) (i : Nat) (off cont : UInt256) : UInt256 :=
+  if input.size = i * 64 ∧ input.size < 256 then cont else off
 
-theorem padMark_toNat : padMark.toNat = 158456325065422163343096938498 := by
-  unfold padMark Paired144WordRound.factorPlusWord
-  rw [Word.word_toNat_ofNat]
-  norm_num
+/-- The slot-12 continuation a block leaves: the pad-only block installs the output entry. -/
+def blockCont (input : ByteArray) (i : Nat) (cont : UInt256) : UInt256 :=
+  if input.size = i * 64 ∧ input.size < 256 then UInt256.ofNat outPC else cont
+
+/-- Block exit: `DUP13 JUMP` jumps to the continuation in slot 12. -/
+def dispatchTemplate : List Instr := [.op (.Dup ⟨12, by decide⟩), .op .JUMP]
+
+theorem run_dispatch (s : State) (pc : UInt256) (h : Compression.HashState)
+    (off cont : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code cont.toNat = true) :
+    runInstrSeq dispatchTemplate {s with pc := pc, stack := StaggerPersistentFrame.frame h off cont rho} =
+      some {s with
+        pc := cont
+        stack := StaggerPersistentFrame.frame h off cont rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [dispatchTemplate, StaggerPersistentFrame.frame,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, hvalid]
+
+/-- Generic last-block test head: `JUMPDEST DUP12 PUSH1 0x80 ADD` puts `off + 128` on top. -/
+def glHeadTemplate : List Instr :=
+  [.op .JUMPDEST, .op (.Dup ⟨11, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op .ADD]
+
+private theorem add128 (off : UInt256) :
+    UInt256.ofNat 128 + off = off + UInt256.ofNat 128 := Word.word_add_comm _ _
+
+theorem run_glHead (s : State) (pc : UInt256) (h : Compression.HashState)
+    (off cont : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
+    runInstrSeq glHeadTemplate {s with pc := pc, stack := StaggerPersistentFrame.frame h off cont rho} =
+      some {s with
+        pc := pcAfter pc glHeadTemplate
+        stack := (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [glHeadTemplate, StaggerPersistentFrame.frame,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    add_eq_hAdd, add128, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+
+/-- Generic last-block test: `LT PUSH2 0x12b0 JUMPI` leaves for the output iff `MSIZE < off + 128`. -/
+def glTestTemplate (dest : Nat) : List Instr :=
+  [.op .LT, .push ⟨2, by decide⟩ (UInt256.ofNat dest), .op .JUMPI]
+
+theorem run_glExit (s : State) (pc : UInt256) (stack : List UInt256) (m q : UInt256) (dest : Nat)
+    (hstack : stack.length ≤ 1000) (hrun : s.halt = .Running)
+    (hlt : m.toNat < q.toNat)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat dest).toNat = true) :
+    runInstrSeq (glTestTemplate dest) {s with pc := pc, stack := m :: q :: stack} =
+      some {s with pc := UInt256.ofNat dest, stack := stack} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : stack.length + n < 1024 := by omega
+  have hc : UInt256.lt m q = UInt256.ofNat 1 := by
+    unfold UInt256.lt
+    rw [if_pos hlt]
+  simp only [Word.word_toNat_ofNat] at hvalid
+  norm_num only at hvalid
+  simp (discharger := omega) [glTestTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
+    UInt256.succ, Instr.size, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    hc, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue, UInt256.isZero]
+
+theorem run_glStay (s : State) (pc : UInt256) (stack : List UInt256) (m q : UInt256) (dest : Nat)
+    (hstack : stack.length ≤ 1000) (hrun : s.halt = .Running)
+    (hge : ¬ m.toNat < q.toNat) :
+    runInstrSeq (glTestTemplate dest) {s with pc := pc, stack := m :: q :: stack} =
+      some {s with pc := pcAfter pc (glTestTemplate dest), stack := stack} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : stack.length + n < 1024 := by omega
+  have hc : UInt256.lt m q = UInt256.ofNat 0 := by
+    unfold UInt256.lt
+    rw [if_neg hge]
+  simp (discharger := omega) [glTestTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
+    UInt256.succ, Instr.size, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap,
+    hc, add_eq_hAdd, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue, UInt256.isZero]
 
 /-- The offset is past the limit: jump to the output with the frame unchanged. -/
 theorem run_gt (s : State) (pc : UInt256) (h : Compression.HashState)
@@ -168,4 +236,8 @@ theorem run_back (s : State) (pc : UInt256) (h : Compression.HashState)
 #print axioms run_le
 #print axioms run_inc
 #print axioms run_back
+#print axioms run_dispatch
+#print axioms run_glHead
+#print axioms run_glExit
+#print axioms run_glStay
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopRaw

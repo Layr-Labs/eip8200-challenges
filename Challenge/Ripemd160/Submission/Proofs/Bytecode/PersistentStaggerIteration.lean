@@ -152,9 +152,45 @@ theorem states_msize (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 <
     unfold messagePointer Padding.messageOffset DriverTrace.blockOffset at hal
     omega
 
+/-- What the generic last-block test reads after block `i` of a cold input: the active size is
+below `off + 128` exactly after the last block.  The active size covers the padded message and
+ends at most one word past it (the ninth footer byte of a 2^64-bit length). -/
+theorem states_last (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
+    (hcold : ¬ (input.size % 64 = 0 ∧ input.size < 256))
+    (i : Nat) (hi : i < DriverTrace.blockCount input) :
+    ((UInt256.ofNat (32 * (states input (i + 1)).activeWords.toNat)).toNat <
+        (DriverTrace.messageOffsetWord i + UInt256.ofNat 128).toNat ↔
+      i + 1 = DriverTrace.blockCount input) := by
+  have hsize : input.size < 2 ^ 64 := hfit
+  have hact := states_activeWords input hfit hpos (i + 1) (by omega)
+  have hentry : PadSkipEntry.entryState input = PaddingTrace.padReturned input :=
+    PaddingTrace.entryState_miss input hcold
+  have hlo := PaddingTrace.padReturned_allocated input hfit
+  have hup := PaddingTrace.padReturned_active_upper input hfit
+  have hP := DriverTrace.paddedLength_eq_blockCount input
+  have hPlt := Padding.paddedLength_lt input.size
+  have hPmod : Padding.paddedLength input.size % 64 = 0 := by unfold Padding.paddedLength; omega
+  rw [hact, hentry]
+  set aw := (PaddingTrace.padReturned input).activeWords.toNat with haw
+  unfold Padding.messageOffset at hlo hup
+  have hm : (UInt256.ofNat (32 * aw)).toNat = 32 * aw := by
+    rw [Word.word_toNat_ofNat]; exact Nat.mod_eq_of_lt (by omega)
+  have ho : (DriverTrace.messageOffsetWord i + UInt256.ofNat 128).toNat = 1056 + i * 64 + 128 := by
+    unfold DriverTrace.messageOffsetWord DriverTrace.blockOffset Padding.messageOffset
+    rw [Word.ofNat_add_ofNat (by omega), Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt (by omega)
+  rw [hm, ho]
+  constructor
+  · intro h
+    by_contra hne
+    omega
+  · intro h
+    omega
+
 #print axioms initial_context
 #print axioms states_context
 #print axioms states_activeWords
 #print axioms states_ready
 #print axioms hashArray_hashes
+#print axioms states_last
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerIteration

@@ -18,17 +18,17 @@ abbrev template : List Instr :=
     .op .JUMPI ]
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 168).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 167).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 168 actual_slice
-    (by change 168 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 167 actual_slice
+    (by change 167 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 448 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 168) = UInt256.ofNat 448
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 167) = UInt256.ofNat 448
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :

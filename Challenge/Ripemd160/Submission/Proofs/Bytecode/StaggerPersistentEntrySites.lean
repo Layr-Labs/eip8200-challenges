@@ -13,26 +13,26 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
 def dispatchCode : List Instr := StaggerPersistentLoopRaw.padTemplate 129
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3402).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3521).take dispatchCode.length = dispatchCode := by rfl
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3402 dispatch_slice
-    (by change 3402 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3521 dispatch_slice
+    (by change 3521 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide)) (by decide)
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4563 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3402) = UInt256.ofNat 4563
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4774 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3521) = UInt256.ofNat 4774
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-/-- The `MSIZE` at 4562 (instruction 3401) that reads the pad-test bound. -/
+/-- The `MSIZE` at 4773 (instruction 3520) that reads the pad-test bound. -/
 theorem msize_decoded (s : State) (stack : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka) :
-    ({s with pc := UInt256.ofNat 4562, stack := stack} : State).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3401 .MSIZE
+    ({s with pc := UInt256.ofNat 4773, stack := stack} : State).decodedOp = some .MSIZE := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3520 .MSIZE
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 4562, stack := stack} : State) 3401
+  apply Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 4773, stack := stack} : State) 3520
     hcode ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [hfork]; rfl)
-  change (UInt256.ofNat 4562).toNat = Artifact.submissionArtifact.instructionPC 3401
+  change (UInt256.ofNat 4773).toNat = Artifact.submissionArtifact.instructionPC 3520
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -42,9 +42,9 @@ def gasSteps_msize (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4562, stack := exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 4563, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} := by
-  have hcap : ({s with pc := UInt256.ofNat 4562, stack := exitFrame h off limit rho} : State).stack.length < 1024 := by
+    GasSteps {s with pc := UInt256.ofNat 4773, stack := exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4774, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} := by
+  have hcap : ({s with pc := UInt256.ofNat 4773, stack := exitFrame h off limit rho} : State).stack.length < 1024 := by
     change (exitFrame h off limit rho).length < 1024
     simp [exitFrame]; omega
   have g := Msize.step (msize_decoded s (exitFrame h off limit rho) hcode hfork) hcap hrun hnp
@@ -53,48 +53,48 @@ def gasSteps_msize (s : State) (off limit : UInt256) (h : Compression.HashState)
 
 def jumpCode : List Instr := PadJump.template 457
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 3407).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3526).take jumpCode.length = jumpCode := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 3407 jump_slice
-    (by change 3407 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 3526 jump_slice
+    (by change 3526 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4569 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3407) = UInt256.ofNat 4569
+theorem jump_pc : jumpSite.startPC = UInt256.ofNat 4780 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3526) = UInt256.ofNat 4780
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def swapCode : List Instr := StaggerPersistentLoopRaw.backTemplate
 
 theorem swap_slice :
-    (Artifact.submissionArtifact.instructions.drop 3406).take swapCode.length = swapCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3525).take swapCode.length = swapCode := by rfl
 
 def swapSite : GenericRoundSite Artifact.submissionArtifact .Osaka swapCode :=
-  StackSiteBuilder.ofSlice swapCode 3406 swap_slice
-    (by change 3406 + swapCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice swapCode 3525 swap_slice
+    (by change 3525 + swapCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := swapCode) (by decide)) (by decide)
 
-theorem swap_pc : swapSite.startPC = UInt256.ofNat 4568 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3406) = UInt256.ofNat 4568
+theorem swap_pc : swapSite.startPC = UInt256.ofNat 4779 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3525) = UInt256.ofNat 4779
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4573).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3409 = 4573 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4784).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3528 = 4784 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3409 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3528 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 4573 = true
+  change Decode.isValidJumpDest s.executionEnv.code 4784 = true
   rw [hcode]
   exact h
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 129).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 79 = 129 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 78 = 129 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 79 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 78 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 129 = true
   rw [hcode]
@@ -102,9 +102,9 @@ theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submission
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 457).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 174 = 457 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 173 = 457 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 174 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 173 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 457 = true
   rw [hcode]
@@ -117,16 +117,16 @@ def gasSteps_padMiss (s : State) (off limit : UInt256) (h : Compression.HashStat
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4562, stack := exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 4568, stack := exitFrame h off limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4773, stack := exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4779, stack := exitFrame h off limit rho} := by
   have g1 := gasSteps_msize s off limit h rho hstack hrun hcode hfork hnp
-  have g2 : GasSteps {s with pc := UInt256.ofNat 4563, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 4568, stack := exitFrame h off limit rho} := by
-    apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4563, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
+  have g2 : GasSteps {s with pc := UInt256.ofNat 4774, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4779, stack := exitFrame h off limit rho} := by
+    apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4774, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
     · exact PadLift.advancesAll_sound _ (by decide)
-    · have hr := StaggerPersistentLoopRaw.run_miss s (UInt256.ofNat 4563) h off limit rho 129 (by omega) hrun
+    · have hr := StaggerPersistentLoopRaw.run_miss s (UInt256.ofNat 4774) h off limit rho 129 (by omega) hrun
         _ hmiss
-      have he : pcAfter (UInt256.ofNat 4563) (StaggerPersistentLoopRaw.padTemplate 129) = UInt256.ofNat 4568 := by decide
+      have he : pcAfter (UInt256.ofNat 4774) (StaggerPersistentLoopRaw.padTemplate 129) = UInt256.ofNat 4779 := by decide
       rw [he] at hr
       exact hr
   exact g1.trans g2
@@ -138,14 +138,14 @@ def gasSteps_padHit (s : State) (off limit : UInt256) (h : Compression.HashState
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4562, stack := exitFrame h off limit rho}
+    GasSteps {s with pc := UInt256.ofNat 4773, stack := exitFrame h off limit rho}
       {s with pc := UInt256.ofNat 129, stack := exitFrame h off limit rho} := by
   have g1 := gasSteps_msize s off limit h rho hstack hrun hcode hfork hnp
-  have g2 : GasSteps {s with pc := UInt256.ofNat 4563, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho}
+  have g2 : GasSteps {s with pc := UInt256.ofNat 4774, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho}
       {s with pc := UInt256.ofNat 129, stack := exitFrame h off limit rho} := by
-    apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4563, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
+    apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4774, stack := UInt256.ofNat (32 * s.activeWords.toNat) :: exitFrame h off limit rho} _ hcode hfork hrun hnp dispatch_pc.symm
     · exact PadLift.advancesAll_sound _ (by decide)
-    · exact StaggerPersistentLoopRaw.run_hit s (UInt256.ofNat 4563) h off limit rho 129 (by omega) hrun
+    · exact StaggerPersistentLoopRaw.run_hit s (UInt256.ofNat 4774) h off limit rho 129 (by omega) hrun
         _ hhit (valid_pad s hcode)
   exact g1.trans g2
 
@@ -155,12 +155,12 @@ def gasSteps_swapBack (s : State) (off limit : UInt256) (h : Compression.HashSta
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4568, stack := exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 4569, stack := frame h off limit rho} := by
-  apply PadLift.gasSteps_of_raw swapSite {s with pc := UInt256.ofNat 4568, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp swap_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 4779, stack := exitFrame h off limit rho}
+      {s with pc := UInt256.ofNat 4780, stack := frame h off limit rho} := by
+  apply PadLift.gasSteps_of_raw swapSite {s with pc := UInt256.ofNat 4779, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp swap_pc.symm
   · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := StaggerPersistentLoopRaw.run_back s (UInt256.ofNat 4568) h off limit rho (by omega) hrun
-    have he : pcAfter (UInt256.ofNat 4568) StaggerPersistentLoopRaw.backTemplate = UInt256.ofNat 4569 := by decide
+  · have hr := StaggerPersistentLoopRaw.run_back s (UInt256.ofNat 4779) h off limit rho (by omega) hrun
+    have he : pcAfter (UInt256.ofNat 4779) StaggerPersistentLoopRaw.backTemplate = UInt256.ofNat 4780 := by decide
     rw [he] at hr
     exact hr
 
@@ -170,11 +170,11 @@ def gasSteps_back (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1000
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4569, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 4780, stack := rho}
       {s with pc := UInt256.ofNat 457, stack := rho} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4569, stack := rho} _ hcode hfork hrun hnp jump_pc.symm
+  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 4780, stack := rho} _ hcode hfork hrun hnp jump_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template s (UInt256.ofNat 4569) rho 457 (by omega) hrun (valid_loop s hcode)
+  · exact PadJump.run_template s (UInt256.ofNat 4780) rho 457 (by omega) hrun (valid_loop s hcode)
 
 #print axioms gasSteps_padMiss
 #print axioms gasSteps_padHit

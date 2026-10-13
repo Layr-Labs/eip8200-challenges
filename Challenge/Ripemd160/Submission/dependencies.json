@@ -1,102 +1,12 @@
 [
   {
-    "submissionId": "fc5d5ea8-02dc-4864-851b-ed41c5fdc5c7",
-    "rationale": "Accepted 649120 record (Th0rgal) supplies the round-79 epilogue protocol: left d lane left unfinished, literal 23 kept on the stack, tail combine consuming it, and the proof seam (ScheduledTail*, StaggerRawLeft79, StaggerCoreLeft79, PersistentStaggerTailBridge).",
-    "evidence": "Instruction-level diff of the fc5d5ea8 and 96e765dd bytecode and proof trees; the seam files are taken from the fc5d5ea8 tree with PCs mapped to this layout. Replica and unmodified official Scorer.lean agree on the new totals."
-  },
-  {
-    "submissionId": "a12ad85f-0917-4f14-bc90-91dfca2ecedf",
-    "rationale": "Accepted 649550 predecessor (newjordan) supplies the compression body widths, near-dense selector and the proof layout used as the base of this tree.",
-    "evidence": "Instruction-level diff against the a12ad85f image: only the round-79 epilogue and three neutral DUP edits change the compression body."
+    "submissionId": "3237115c-a44b-4ef4-a77b-c862baf9fd60",
+    "rationale": "The live record this image beats (648,941, our own submission, promoted 2026-10-13) and the base of this tree. Its compression body (pc 457 to 4551, a12ad85f's widths with Th0rgal's fc5d5ea8 round-79 epilogue and three neutral DUP repairs) is kept byte for byte, together with its proof files for the body and the recogniser.",
+    "evidence": "5,247 bytes, 3,599 instructions, decoded SHA-256 34fb74d90ceb68ff42197f9d859a817521decae7e34959e8d4bd919bc677a171, 648,941 official. This image keeps bytes 457 to 4550 identical to it and changes the prologue (pc 0 to 456) and everything from pc 4551 on: a continuation-jump block loop, the generic last-block test, and the digest selector of cb3f7647. Its K1b (pc 183 to 188) and B4601 (pc 4601) edits sit in regions this image rewrites and are not carried."
   },
   {
     "submissionId": "cb3f7647-8979-4fa0-bf18-f5d08cb84d76",
-    "rationale": "Immediate accepted/promoted649662 predecessor supplies the exact universal-proof architecture, disjoint EQ-ADD gate, signed boundary and commuted operands, inherited paired compressor and PC-backed schedule stores. The near-dense selector and gas-neutral layout are new here.",
-    "evidence": "Compared against the immutable649662 checkpoint. All fourteen retained digest values agree. All fallback paths retain computation and terminal-store memory invariants; only width and commutative-DUP changes accompany relocated control PCs. The649662 public note and remote accepted status were read before integrating this successor. This immediate dependency includes the retained gate-only649687 predecessor."
-  },
-  {
-    "submissionId": "87db96ed-63a2-482a-9184-0ba2560da28b",
-    "rationale": "Import accepted/promoted649711 round45-through64 slot transposition, restoration at round64, exact core raw/semantic wrappers and generator-sensitive Boolean reorderings from commit52da2ac2349254b739428858573552a067f0c5f4. The649662successor composes our verified gate and signed boundary, commutes sentinel DUPs and changes disjoint EQ flags OR to ADD to fit the unchanged trusted literal budget.",
-    "evidence": "Round45-64core exactly retained from the649711accepted leader. Fresh full yukon run --track ripemd160 passed on exact SHA25669daff81d04aa041d8fdbad11cbc2b2a03eb1a52c873db9d02f33e100182a757: verified649662clean/dirty gas,49/49vectors,5238bytes, Lean Comparator and default kernel accepted; universal candidate uses only propext/Classical.choice/Quot.sound."
-  },
-  {
-    "submissionId": "8c2da9bb-95ab-4b95-8a56-469593a307c4",
-    "rationale": "Verified649875 predecessor supplies the retained universal architecture, terminal masked-store memory repair, prestaging and state-independent snapshot paths. Our previously fully verified649851gate and signed boundary compose with the649711round45leader, with new disjoint-EQ ADD and boundary DUP commutation to fit the trusted renderer.",
-    "evidence": "Prior649851upload1fddf950-ddee-4f2f-8366-5ede0d922ce8 was remotely verified but frontier-rejected. The649687gate-only successor was accepted/promoted as96e765dd-1639-4d9f-b559-e497dfd7a36b; this further signed composition completed its own independent full canonical gate at649662."
-  },
-  {
-    "submissionId": "bf9e021d-c0bf-45e8-ae96-02fe89cae189",
-    "rationale": "Material accepted/promoted649900 leader supplies the round29 SWAP10 elimination, corrected DUP source slots in rounds29/30, shape30/31 transposition, round31 modular-add restoration theorem, address666 PUSH3 compensation, exact artifact chunk9/10 bytes and one-instruction suffix-index shift. These are composed with our independently verified signed recognizer rewrite and retained generator-safe rounds64-67 width arrangement.",
-    "evidence": "Remote official score649900, accepted and promoted. Comparing its parent and exact committed hex isolates19 differing bytes between2360 and2443, disjoint from our boundary. The combined installed artifact passes default trusted generation, structural artifact/count proofs, serial concrete-site closure and fresh full canonical Comparator/protected-scorer verification at649875 clean/dirty over49vectors. The cheap scorer independently returns98 correct executions."
-  },
-  {
-    "submissionId": "560a9e5a-03d5-409a-b963-92e620bc0de6",
-    "rationale": "Accepted650079 signed-prefix composition supplies the complete exact-byte proof, compression core, generator-safe width allocation and relational SDIV support. The independently fully verified650064 follow-up schedules the boundary quotient after the sentinel OR, removes one SWAP, widens shift2 toPUSH4 without moving downstream bytePCs, and rebinds later instruction indices. The current649875 composition retains these changes and adds the disjoint attributed round29-31 transposition.",
-    "evidence": "The650079 predecessor is remotely accepted at official score650079. Our subsequent650064 schedule independently completed fresh canonical Comparator and protected scorer verification, but was not uploaded because the frontier moved. The current disjoint composition also completed its own fresh canonical gate at649875, with exact decodedSHA25627d345c621125fe078034a736d1290187d683f966d4039f2cfb2145b573f7ae5."
-  },
-  {
-    "submissionId": "d67efa21-a744-4c3c-be36-81925b880660",
-    "rationale": "Immediate 650089 upload supplies the exact bytecode, multi-round64-67 prestaging, round67 alignment no-op removal, all downstream instruction-index certificates and whole-program universal proof. It passed the full local canonical gate and has since been accepted and promoted remotely at official score650089.",
-    "evidence": "The predecessor full canonical run independently replayed the Lean universal correctness theorem with Comparator, then scored 650089 over49vectors with equal clean/dirty gas. Current experimental650079 retains its hashcore and modifies only a gas-neutral PUSH-width exchange over3917..4045 and the accepted SDIV boundary-prefix region4638..4658. Remote650089 validation is accepted/promoted; the fresh650079 canonical gate passed independently at650079."
-  },
-  {
-    "submissionId": "3ddb8031-c5b8-4774-8e2b-49a9838726d8",
-    "rationale": "Accepted/promoted650152 predecessor supplies the multi-round64-67 staging extension, depth-safe round65 Boolean schedule, default-generator-compatible literal encoding and complete universal Lean proof. Its successor650089 removed the round67 alignment no-op; both changes are retained in this composition.",
-    "evidence": "The650152 predecessor was remotely accepted/promoted after full verification. The650089 successor removed the single JUMPDEST by wideningvalue21; current650079 keeps the no-op removed while reallocating one immediate byte to thevalue24 push at3917 to fit the unchanged trusted generator. Neither literal value changes."
-  },
-  {
-    "submissionId": "823357cb-d15d-4227-87d4-1a2b66bf1452",
-    "rationale": "Published architectural650278 predecessor supplies paired-round cross-operand staging, full universal Lean proof, cache representation and exact instruction layout. The intervening650152 predecessor extended the round64 seam across rounds65and66; those changes are retained here.",
-    "evidence": "Retains the leader\u2019s paired compressor, general-route hash, cache constants, dense memory layout and proof architecture. The intervening650152/650089 submissions extended round64 prestaging across65and66 and eliminated the round67 pad. Currentcomposition adds the separately accepted SDIVboundaryprefix and neutral literalwidth reallocation."
-  },
-  {
-    "submissionId": "d6846540-c9d3-427a-84e0-cbe8c1bf15ac",
-    "rationale": "Immediate accepted/promoted650681 predecessor retains the optimized normal recognizer loop, its exact-frame raw execution proof, relocated instruction-index bindings and full verified program. The new candidate changes only the boundary transition word-update prefix to use C60 SHL2 as an even-byte sentinel and C60 DIV96 MUL14 for the subtraction constant.",
-    "evidence": "The650681 predecessor passed protected Comparator default-kernel replay and49vectors with equal clean/dirty totals, and was remotely accepted/promoted at650681. Its early-offset normal loop is byte-for-byte retained at4886..4906; all general-route and schedule proofs are inherited. New J2Raw.run_transition and J2Frame.transition_next kernel-check the exact boundary frame and reachable-word recurrence."
-  },
-  {
-    "submissionId": "d48164b9-82ad-400e-adce-cdd3ec5a9551",
-    "rationale": "Immediate locally and remotely verified650861 predecessor, rejected only because another submission had already promoted the same score. Retains all four disjoint full-width scratch snapshots, backward live-lane memory proof, concrete fan-store run, exact byte artifact and whole-program proof. New work changes only the normal recognizer-loop schedule at4886..4906; scratch writer, general-route hash and schedule invariants remain inherited.",
-    "evidence": "Exact predecessor bytecode and whole-program Lean proof were retained outside4886..4906. The predecessor passed protected local Comparator at650861 and remote validation also reported650861; it was rejected only for a tied non-improving score. Its four backward-aligned snapshots and lane-based Ready proof are imported by the new candidate."
-  },
-  {
-    "submissionId": "0de279b7-dd75-4eb5-a010-f11bc5a46d10",
-    "rationale": "Immediate accepted and promoted 651113-gas candidate. Retains its PC6 recognition prefilter, source178/destination196 and source268/destination286 forward snapshots, masked terminal writer, paired compressor and whole-program proof.",
-    "evidence": "Changes only decoded byte offsets527..546 to replace the first and third 16-byte MCOPY snapshots with backward full-word MLOAD/MSTORE snapshots. The result is not generally equal as a ByteArray; new universal source-map, lane, clear, slack and terminal-bound proofs transport Ready for the actual memory image. Removes the obsolete Repeat4 recurrence premise. Transitive first-snapshot ancestor496a5db8-1e74-4c9f-907e-7b8cbc51eb6b supplies source268/destination286 snapshot and exact execution infrastructure through this descendant; it was remotely correct but frontier-rejected. This explicit ancestor attribution is consolidated here to honor the20-declaration CLI limit."
-  },
-  {
-    "submissionId": "8eb88703-c1f9-4593-9de0-8bb784b2700b",
-    "rationale": "Accepted and promoted PC792 baseline at651365, retaining the universal theorem and disjoint-store reorder.",
-    "evidence": "Retains all writer PC anchors, masked schedule image and code outside the scratch-copy interval. The two snapshot proofs compose exact final ByteArray equality and concrete normal/shared32 execution."
-  },
-  {
-    "submissionId": "7d82d5fd-6155-43ed-bbba-9397bd3eb643",
-    "rationale": "Immediate accepted and promoted 651407-gas implementation, terminal-store mask, and complete universal Lean proof.",
-    "evidence": "Retains the masked address594 store, byte610-clear removal, fused memory invariant, PC162/666/738 stores, compressor, recognition and output. The new PC792 writer is connected through exact memory equality certified by disjoint insertion-sort swaps."
-  },
-  {
-    "submissionId": "e1007b50-4dba-4580-8382-feb52b1263fc",
-    "rationale": "Immediate accepted/promoted 651491-gas base, including certified CODESIZE exit sentinel and complete universal proof.",
-    "evidence": "Retains predecessor stack-resident paired compressor, persistent schedule, recognition routes, output and digest data. New terminal mask replaces byte610 clear; all affected exact-byte, memory and concrete execution certificates are updated."
-  },
-  {
-    "submissionId": "2dfd5011-2951-4409-8536-dc925cbffc98",
-    "rationale": "Builds directly on the accepted and promoted 651512-gas candidate and its complete universal Lean proof, retaining PC162 padding and the fixed-PC writer stores.",
-    "evidence": "Retains the paired compressor, recognition, PC162/PC666/PC738 addresses and exact-byte infrastructure. Replaces only the retained fast-padding mark sentinel with CODESIZE and a gas-neutral PUSH-width redistribution in paired round41."
-  },
-  {
-    "submissionId": "33955124-ad6b-4d9f-bc55-cb0ece6152b3",
-    "rationale": "Builds directly on the accepted and promoted 651533-gas candidate, retaining both fixed-PC writer stores and the complete universal proof.",
-    "evidence": "Retains PC666 and PC738 writer schedules plus their exact-byte certificates; changes only the fast padding setup at PCs 130..184 and two neutral PUSH-width redistributions in compression rounds 21 and 33."
-  },
-  {
-    "submissionId": "9b219725-b536-4b5d-ab35-34143e78e55b",
-    "rationale": "Continues the now-promoted PC738-only candidate and its submission-local PC encoder/stepper correctness proof, adding the disjoint moved PC666 store and its execution proofs.",
-    "evidence": "Retains PC at byte738, fixed-PC writer premises and its complete universal proof. New edit moves word14 store to PC666 and compensates widths; exact executable SHA256 becomes 133fb927006677692a6e1222da300a3b5a716484cbe449ff4b96fb5d1360cee0."
-  },
-  {
-    "submissionId": "f797f38b-1ab6-4172-bf96-c7e1befcc583",
-    "rationale": "Uses the complete promoted 651617-gas bytecode and universal Lean proof as the base, retaining the predecessor's staged paired compressor and seven-SWAP feed-forward epilogue.",
-    "evidence": "Retains the paired compressor, feed-forward epilogue and universal Lean proof, with exact-byte changes in the schedule writer, two same-size PUSH-width compensations in step23 and a commutative AND operand reorder in step73. A locally proved PC encoder/stepper supports the two fixed-PC writer stores; compression and recognition behavior are retained."
+    "rationale": "Source of the CODESIZE-relative digest selector (row (14357627 / size) % 16) and its 280-byte digest data tail, which this image uses in place of the near-dense selector and 304-byte tail that 3237115c carries from a12ad85f.",
+    "evidence": "This image's last 280 bytes (pc 4947 to 5226) equal the last 280 bytes of cb3f7647 (5,238 bytes, 649,662 official). The selector code and its proof modules (RecognitionSelectorRaw, J2Payload, DirectGuardBase) follow cb3f7647's, with pcs relocated for the new layout. The near-dense selector gain of a12ad85f (112 gas on the recognised vectors) is given up; the continuation loop more than repays it."
   }
 ]

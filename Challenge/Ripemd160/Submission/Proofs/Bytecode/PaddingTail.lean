@@ -28,8 +28,7 @@ def gasSteps_push (input : ByteArray) (rho : List UInt256) (hcap : rho.length â‰
     ([DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile
-  simpa only [StackTail.append, padCopied, padFramed, initialFrame,
-    StaggerPersistentFrame.frame, List.append_assoc, List.cons_append, List.nil_append] using g
+  exact Challenge.EvmProof.GasSteps.cast g (by rfl) (by rfl)
 
 def gasSteps_prefix (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length â‰¤ 20) :

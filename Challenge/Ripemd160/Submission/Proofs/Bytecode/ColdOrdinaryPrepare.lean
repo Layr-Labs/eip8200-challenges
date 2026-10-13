@@ -20,9 +20,9 @@ def rest (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256) 
    Word.ofUInt32 h.h0, off, limit] ++ rho
 
 /-- The pad-only block: the low block (copying zeros from past the calldata at the advanced
-offset the exit left on top), then `DUP11` copies the resident factor word to the top (it stays in slot 11 as the
-exit mark) and `JUMP` goes straight to the rounds.  Only the fast entry (lengths below 256) reaches it, so the high length
-words are zero and the table is complete. -/
+offset the exit left on top), then `PUSH2 0x12b0 SWAP12 SWAP11` installs the output entry as the
+continuation (the old continuation moves to slot 11) and `JUMP` goes straight to the rounds.  Only the
+fast entry (lengths below 256) reaches it, so the high length words are zero and the table is complete. -/
 def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hsmall : s.executionEnv.calldata.size < 5247)
@@ -35,7 +35,7 @@ def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256
     GasSteps {s with pc := UInt256.ofNat 130, stack := exitFrame h off limit rho}
       {s with
         pc := UInt256.ofNat 824
-        stack := frame h StaggerPersistentLoopRaw.padMark limit rho
+        stack := frame h limit (UInt256.ofNat StaggerPersistentLoopRaw.outPC) rho
         memory := StaggerTablePad.padRealResult s.memory
           (UInt256.ofNat s.executionEnv.calldata.size)} := by
   have g1 := ColdOrdinarySites.gasSteps_low s off (rest h Paired144WordRound.factorPlusWord limit rho)
@@ -52,7 +52,7 @@ def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256
     (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
     (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
     (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)
-    (Word.ofUInt32 h.h0) Paired144WordRound.factorPlusWord (limit :: rho) (by simp only [List.length_cons]; omega)
+    (Word.ofUInt32 h.h0) Paired144WordRound.factorPlusWord limit rho (by omega)
     hrun hcode hfork hnp
   -- `n < 5247` bounds `highDirty n = 0`, which is what `padRealChain_eq` consumes.
   have heq : StaggerTablePad.padRealChain s.memory (UInt256.ofNat s.executionEnv.calldata.size)
@@ -73,7 +73,8 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
         stack := StaggerPersistentLoopRaw.entryStack input i h (DriverTrace.messageOffsetWord i) limit rho}
       {scheduledState s i with
         pc := UInt256.ofNat 824
-        stack := frame h (StaggerPersistentLoopRaw.blockMark input i (DriverTrace.messageOffsetWord i)) limit rho} := by
+        stack := frame h (StaggerPersistentLoopRaw.blockMark input i (DriverTrace.messageOffsetWord i) limit)
+          (StaggerPersistentLoopRaw.blockCont input i limit) rho} := by
   let off := DriverTrace.messageOffsetWord i
   let r := rest h off limit rho
   have hrs : r.length ≤ 896 := by simp only [r, rest, List.length_append, List.length_cons, List.length_nil]; omega
@@ -98,11 +99,12 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     let qh : State :=
       {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
     have gb' : GasSteps {s with pc := UInt256.ofNat 130, stack := exitFrame h off limit rho}
-        {qh with pc := UInt256.ofNat 824, stack := frame h StaggerPersistentLoopRaw.padMark limit rho} := by
+        {qh with pc := UInt256.ofNat 824, stack := frame h limit (UInt256.ofNat StaggerPersistentLoopRaw.outPC) rho} := by
       apply gb.cast rfl
       rfl
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh,
-      StaggerPersistentLoopRaw.entryStack, StaggerPersistentLoopRaw.blockMark] using gp.trans gb'
+      StaggerPersistentLoopRaw.entryStack, StaggerPersistentLoopRaw.blockMark,
+      StaggerPersistentLoopRaw.blockCont] using gp.trans gb'
   · change ¬ (input.size = i * 64 ∧ input.size < 256) at hh
     have hhs : ¬ (s.executionEnv.calldata.size = DriverTrace.blockOffset i ∧
         s.executionEnv.calldata.size < 256) := by
@@ -122,7 +124,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
       (by simp only [List.length_cons] at hs; omega) hr
       (messagePointer_lower i) hb hq1 hq0 hcode hfork hnp
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_neg hh, off, frame, selectedWords,
-      StaggerPersistentLoopRaw.entryStack, StaggerPersistentLoopRaw.blockMark,
+      StaggerPersistentLoopRaw.entryStack, StaggerPersistentLoopRaw.blockMark, StaggerPersistentLoopRaw.blockCont,
       PersistentMaskEndian.stk, Pair13Endian.stk, List.cons_append, List.nil_append] using gn
 
 #print axioms gasSteps_padAll

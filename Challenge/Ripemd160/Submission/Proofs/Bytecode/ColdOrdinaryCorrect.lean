@@ -14,7 +14,8 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   apply StaggerPersistentCorrect.correct_of_blocks input hfit hpositive hn32 (states input) (hashes input)
-    (states_zero input) (hashes_zero input) ?_ (fun i hi => states_msize input hfit hpositive i hi) ?_
+    (states_zero input) (hashes_zero input) ?_ (fun i hi => states_msize input hfit hpositive i hi)
+    (fun hc i hi => states_last input hfit hpositive hc i hi) ?_
     (hashArray_hashes input hfit hpositive _ (Nat.le_refl _))
     (states_callStack input _) entryPrefix
   · intro i _
@@ -22,7 +23,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       states_noPrecompile input i, states_calldata input i⟩
   · intro i hi
     exact ColdOrdinaryBlock.gasSteps (states input i) input i (hashes input i)
-      (LoopCompletionControl.limit input) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+      (LoopCompletionControl.cont input) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
       (by decide) [] rfl hfit hi
       (states_context input hfit hpositive i (Nat.le_of_lt hi))
       (states_code input i) (states_fork input i) (states_halt input i)

@@ -13,7 +13,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 130..183): copy zero calldata over the table (the copy offset is the
+/-- Pad-only low block (pc 130..181): copy zero calldata over the table (the copy offset is the
 advanced block offset the exit left on top, which is past the calldata), store the unmasked
 low bit-length word `n <<< 3` and `0x80`. The early `PUSH19` mark is
 consumed by the final memory store.
@@ -32,7 +32,7 @@ def lowTemplate : List Instr :=
     .op .PC,
     .op .MSTORE,
     .op (.Dup ⟨0, by decide⟩),
-    .push ⟨4, by decide⟩ (UInt256.ofNat 666),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
     .op .MSTORE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .MSTORE,
@@ -42,10 +42,13 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE ]
 
-/-- `DUP11 PUSH2 0338 JUMP` at 183: the resident factor word (slot 11, far above any limit) is copied to the
-top and stays in slot 11 as the loop-exit mark, so the block exit finishes, and go straight to the rounds. -/
+/-- `PUSH2 0x12b0 SWAP12 SWAP11 PUSH2 0338 JUMP` at 181: the output entry 4784 becomes the
+continuation in slot 12, the old continuation moves to slot 11 (the offset slot, which the output
+never reads), the resident factor word returns to the top, and the block goes straight to the rounds. -/
 def branchTemplate : List Instr :=
-  [ .op (.Dup ⟨10, by decide⟩),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4784),
+    .op (.Swap ⟨11, by decide⟩),
+    .op (.Swap ⟨10, by decide⟩),
     .push ⟨2, by decide⟩ (UInt256.ofNat 824),
     .op .JUMP ]
 
@@ -166,15 +169,15 @@ theorem run_high (s : State) (pc returnPC : UInt256) (rest : List UInt256)
   all_goals simp only [add_eq_hAdd]
 
 theorem run_branch_taken (s : State) (pc : UInt256)
-    (a b1 b2 b3 b4 b5 b6 b7 b8 b9 c : UInt256) (rho : List UInt256)
+    (a b1 b2 b3 b4 b5 b6 b7 b8 b9 c d : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 824).toNat = true) :
     runInstrSeq branchTemplate
-        {s with pc := pc, stack := a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: c :: rho} =
+        {s with pc := pc, stack := a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: c :: d :: rho} =
       some {s with
         pc := UInt256.ofNat 824
-        stack := c :: a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: c :: rho} := by
-  have hcap (n : Nat) (hn : n ≤ 13) : rho.length + n < 1024 := by omega
+        stack := c :: a :: b1 :: b2 :: b3 :: b4 :: b5 :: b6 :: b7 :: b8 :: b9 :: d :: UInt256.ofNat 4784 :: rho} := by
+  have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
   simp (discharger := omega) [branchTemplate, runInstrSeq, DataStepper.runInstr, hrun, hcap,

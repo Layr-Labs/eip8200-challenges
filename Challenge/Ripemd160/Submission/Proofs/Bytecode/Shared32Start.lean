@@ -14,20 +14,18 @@ open Shared32Scratch Shared32Sites Paired144WordRound
 
 def maskRho : List UInt256 := [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 def frame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 1088) maskRho
+  (UInt256.ofNat 1056) (UInt256.ofNat 4768) maskRho
 def entryFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 1088) maskRho
-/-- After the 32-byte block the limit slot holds zero, so the single block finishes. -/
+  (UInt256.ofNat 1056) (UInt256.ofNat 4768) maskRho
+/-- After the 32-byte block the continuation slot holds the output entry, so the single block finishes. -/
 def bodyFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho
+  (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho
 
 theorem rounded_32 : PadLimitArithmetic.rounded (UInt256.ofNat 32) = UInt256.ofNat 64 := by decide
 
-theorem entry_frame_eq (input : ByteArray) (h32 : input.size = 32) :
+theorem entry_frame_eq (input : ByteArray) (_h32 : input.size = 32) :
     PaddingTrace.initialFrame input = entryFrame := by
-  have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
-  simp only [PaddingTrace.initialFrame,
-    PaddingTrace.copiedLimit_aligned input hfit (by rw [h32]) (by rw [h32]; decide), h32]
+  simp only [PaddingTrace.initialFrame, PaddingTrace.copiedLimit]
   rfl
 
 def tableState (input : ByteArray) : State :=
@@ -86,8 +84,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
   have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
   have g0 := (Main.gasSteps_initialize input entryPrefix).trans
     ((PaddingTrace.gasSteps_enterPad input).trans ((PaddingTrace.gasSteps_lengthReady input).trans
-      ((PaddingTrace.gasSteps_lengthCopy input hfit).trans ((PaddingTrace.gasSteps_msize input).trans
-        (PaddingTrace.gasSteps_push input)))))
+      ((PaddingTrace.gasSteps_lengthCopy input hfit).trans (PaddingTrace.gasSteps_push input))))
   have g1 : GasSteps (PaddingTrace.padFramed input) (atState s 104 entryFrame) := by
     simpa only [PaddingTrace.padGuardTaken, PaddingTrace.padGuardMiss, hframe, atState, s] using
       gasSteps_align input h32
@@ -96,13 +93,14 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1088) [] (by decide) hactive (by decide) h32
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4768) [] (by decide) hactive
+    (by rw [show s.executionEnv.calldata.size = 32 from h32]; decide) (by decide) h32
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 0) [] (by decide) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4784) [] (by decide) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)

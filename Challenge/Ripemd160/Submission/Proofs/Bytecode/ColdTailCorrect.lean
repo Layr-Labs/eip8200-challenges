@@ -28,27 +28,25 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
   have hi : s.executionEnv.calldata = input := PadSkipEntry.entryState_calldata input
   have hm : (maskRho rho).length ≤ 880 := by simp only [maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gx : GasSteps (StackTail.append s rho)
-      {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) (maskRho rho)} := by
+      {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input) (maskRho rho)} := by
     by_cases hz : input.size % 64 = 0 ∧ input.size < 256
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PaddingTrace.copiedLimit input) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 4768) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_skip input hz]
         rfl
-      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) (maskRho rho))
+      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input) (maskRho rho))
         (by simp only [StaggerPersistentFrame.frame, maskRho, List.length_append, List.length_cons, List.length_nil]; omega) hr hc hf hn
       exact GasSteps.cast gf (by
-        rw [LoopCompletionControl.limit_aligned input hz,
-          ← PaddingTrace.copiedLimit_aligned input hfit (by omega) hpositive]
+        rw [LoopCompletionControl.cont_aligned input hz]
         exact hs.symm) rfl
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size)) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 4757) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_miss input hz]
         rfl
-      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.limit input) (maskRho rho))
+      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input) (maskRho rho))
         (by simp only [StaggerPersistentFrame.frame, maskRho, List.length_append, List.length_cons, List.length_nil]; omega) hr hc hf hn
       exact GasSteps.cast gf (by
-        rw [LoopCompletionControl.limit_cold input hz,
-          ← PadLimitArithmetic.coldRounded_input input hfit]
+        rw [LoopCompletionControl.cont_cold input hz]
         exact hs.symm) rfl
   have gp := PaddingTail.gasSteps_pad input hfit hn32 rho hcap
   have g := gp.trans gx
@@ -78,17 +76,19 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
           (DriverTrace.blockCount input) (maskRho rho)) := by
     intro i hi
     exact ColdOrdinaryBlock.gasSteps (states input i) input i (hashes input i)
-      (LoopCompletionControl.limit input) (maskRho rho) hm rho rfl hfit hi
+      (LoopCompletionControl.cont input) (maskRho rho) hm rho rfl hfit hi
       (states_context input hfit hpositive i (Nat.le_of_lt hi))
       (states_code input i) (states_fork input i) (states_halt input i)
       (states_noPrecompile input i)
   have gs := gasSteps_start input hfit hpositive hn32 rho hcap
   have gb := run_blocks input (states input) (hashes input) (maskRho rho) hfit hm hambient
-    (fun i hi => states_msize input hfit hpositive i hi) hblock
+    (fun i hi => states_msize input hfit hpositive i hi)
+    (fun hc i hi => states_last input hfit hpositive hc i hi) hblock
   let count := DriverTrace.blockCount input
   have a := hambient count (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states input count)
-    (StaggerPersistentLoopRaw.blockMark input (count - 1) (offsetWord (count - 1))) (LoopCompletionControl.limit input) (hashes input count) rho
+    (StaggerPersistentLoopRaw.blockMark input (count - 1) (offsetWord (count - 1)) (LoopCompletionControl.cont input))
+    (StaggerPersistentLoopRaw.blockCont input (count - 1) (LoopCompletionControl.cont input)) (hashes input count) rho
     (by omega) a.running a.code a.fork a.notPrecompile
   have trace := entryPrefix.trans (gs.trans (gb.trans go))
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl

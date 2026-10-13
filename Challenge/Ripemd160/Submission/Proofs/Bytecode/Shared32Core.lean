@@ -45,27 +45,27 @@ def entryState (s : State) : State :=
   {s with
     pc := UInt256.ofNat 824
     stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-      (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho}
+      (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho}
 
 def resultHash (s : State) : Compression.HashState :=
   Functional.result s.memory StackRunBridge.initialHashState
 
 def resultState (s : State) : State :=
   StaggerPersistentSerialize.result s (resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho
+    (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho
 
 def gasSteps (s : State) (e : Env s) (input : ByteArray)
     (_hcal : s.executionEnv.calldata = input) (_h32 : input.size = 32)
     (hactive : s.activeWords = UInt256.ofNat 35) :
     GasSteps (entryState s) (resultState s) := by
   have gb := gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho (by decide)
+    (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho (by decide)
     (by rw [hactive]; decide)
-  have ge := StaggerPersistentLoopSites.gasSteps_exit s (resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho (by decide) e.run
-    (by decide)
+  have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
+    (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho (by decide) e.run
+    (StaggerPersistentLoopSites.valid_out s e.code)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) (UInt256.ofNat 0)
+  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) (UInt256.ofNat 4784)
     (resultHash s) [] (by decide) e.run e.code e.fork e.np
   exact gb.trans (ge.trans go)
 
@@ -92,7 +92,7 @@ theorem returned_spec (s : State) (input : ByteArray) (h32 : input.size = 32)
       (fun k => (CompressionCorrect.schedule (Padding.paddedMessage input) 0)[k]!)) :
     (resultState s).hReturn = spec input :=
   StaggerPersistentSerialize.returned_spec_of_hashArray s input
-    (UInt256.ofNat 1056) (UInt256.ofNat 0) maskRho (resultHash s)
+    (UInt256.ofNat 1056) (UInt256.ofNat 4784) maskRho (resultHash s)
     (resultHash_spec s input h32 hready)
 
 @[simp] theorem resultState_halt (s : State) : (resultState s).halt = .Returned := rfl
