@@ -1,27 +1,15 @@
-[
-  {
-    "submissionId": "1d5fd62c-7841-417d-8d64-b0298925145c",
-    "rationale": "Immediate accepted 647948 predecessor; all hash, recognition, schedule and padding infrastructure inherited. This candidate consumes the compression continuation, changes shared cleanup and control-stub installation, and uses a gas-neutral round33 ADD reassociation for literal headroom.",
-    "evidence": "Predecessor decoded SHA256 6506a0b06b20c978a4a12873d9298bdd7166a4973c413a029a26ed8e9395d189; candidate 5241 bytes, 3626 instructions, decoded SHA256 2d64429a7c81d31f56494a5be7e1be57807737772dca7ac5235d1ef4fb830633. Fresh paired local scorer 98/98 rows each, clean and dirty 647948 to647822; exact Lean integration required separately."
-  },
-  {
-    "submissionId": "8375c07c-8aab-4cc1-8b8c-4cb8048df3b1",
-    "rationale": "Immediate promoted leader baseline, official 647969 at commit 82c124fc. All executable bytes and the complete universal proof infrastructure are retained except the one opcode at PC68 and its raw copy certificate.",
-    "evidence": "Baseline decoded SHA256 815897bac8149dd66f922b08dc13871cb648a813a0c0a8f635ef77fa0c71f12b; candidate SHA256 6506a0b06b20c978a4a12873d9298bdd7166a4973c413a029a26ed8e9395d189. DUP13 at PC68 becomes CALLDATASIZE. Both images have 5241 bytes and 3628 executable instructions."
-  },
-  {
-    "submissionId": "eac16f46-05fc-4739-a431-78252bf9e5b3",
-    "rationale": "The live record this image beats (648,560, our own submission CJW-b, accepted 2026-10-14) and the immediate base of this tree. Its compression body (pc 457 to 4550) and the CODESIZE-relative digest tail (280 data bytes) are kept byte for byte, together with its proof files for the body. Its loop-induction and recogniser proofs are adapted to the new layout.",
-    "evidence": "5,227 bytes, decoded SHA-256 a86b46edbe4aa1fd4970c65890e5dc1cf323020fb51c241533160f155537ac65, 648,560 official. This image keeps bytes 457 to 4550 and the last 280 bytes identical to it and replaces its prologue (pc 0 to 456), its continuation-jump chain and its post-body control with phase continuations: slot 12 holds the next phase (the input size for 64, 128 and 192 bytes, the generic last-block test at pc 47 for other sizes, the output entry at pc 4748 afterwards). The generic last-block test keeps the MSIZE < offset + 128 form of eac16f46."
-  },
-  {
-    "submissionId": "3237115c-a44b-4ef4-a77b-c862baf9fd60",
-    "rationale": "The 648,941 record that eac16f46 and this image extend (our own submission). It supplies the compression body (pc 457 to 4550: a12ad85f's widths, Th0rgal's fc5d5ea8 round-79 epilogue and three neutral DUP repairs) and its proof files, kept byte for byte.",
-    "evidence": "5,247 bytes, 3,599 instructions, decoded SHA-256 34fb74d90ceb68ff42197f9d859a817521decae7e34959e8d4bd919bc677a171, 648,941 official. Bytes 457 to 4550 of this image are identical to it. Its K1b (pc 183 to 188) and B4601 (pc 4601) edits sit in regions this image rewrites and are not carried."
-  },
-  {
-    "submissionId": "cb3f7647-8979-4fa0-bf18-f5d08cb84d76",
-    "rationale": "Source of the CODESIZE-relative digest selector (row (14357627 / size) % 16) and its 280-byte digest data tail, which this image uses in place of the near-dense selector and 304-byte tail of a12ad85f.",
-    "evidence": "This image's last 280 bytes (pc 4961 to 5240) equal the last 280 bytes of cb3f7647 (5,238 bytes, 649,662 official), and the selector constant 14357627 is the same. The selector code and its proof modules (RecognitionSelectorRaw, J2Payload, DirectGuardBase) follow cb3f7647's, with pcs relocated for the new layout."
-  }
-]
+{
+  "schemaVersion": 1,
+  "dependencies": [
+    {
+      "submissionId": "0961b85e-5dc3-4531-a8d0-ca307645e781",
+      "relationship": "extends",
+      "description": "Applies the 21-gas cold-ordinary StaggerPad.lowTemplate store-reordering cut at PC 85..101 on top of the 647,822-gas submission 0961b85e (28fa8fd) to reach 647,801 total gas."
+    },
+    {
+      "submissionId": "da5d0e04-f1be-4507-bd3b-5da09f10b4c0",
+      "relationship": "combines",
+      "description": "Originates the 21-gas StaggerPad.lowTemplate store-reordering cut at PC 85..101 (MSTORE8 at 0x55 via PC opcode + PUSH2 0x0043 + deferred MSTORE at 0x020a/0x00a2/0x0090, 0 byte delta)."
+    }
+  ]
+}

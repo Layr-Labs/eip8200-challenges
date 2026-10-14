@@ -75,22 +75,22 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 1 3,
   op 0x1b,
   op 0x80,
-  .push 1 162,
-  op 0x52,
-  op 0x80,
   .push 2 666,
-  op 0x52,
-  .push 1 144,
   op 0x52,
   .push 1 128,
   op 0x80,
   op 0x80,
+  op 0x58,
+  op 0x53,
+  .push 2 67,
+  op 0x53,
   .push 2 522,
   op 0x52,
-  .push 1 67,
-  op 0x53,
-  .push 1 85,
-  op 0x53,
+  op 0x80,
+  .push 1 162,
+  op 0x52,
+  .push 1 144,
+  op 0x52,
   .push 2 4748,
   op 0x9c,
   op 0x50,
@@ -159,7 +159,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x9c,
   .push 1 132,
   op 0x56,
-  op 0x01,
+  op 0x03,
   op 0x5b,
   .push 1 32,
   op 0x82,
@@ -3796,13 +3796,13 @@ theorem referenceInstructions_count : submissionInstructions.length = 3626 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
-  0x64, 0x10, 0x8c, 0x86, 0x82, 0x1c, 0x5f, 0x35, 0x16, 0x60, 0xf7, 0x57, 0x36, 0x61, 0x03, 0xe8, 0x03, 0x61, 0x11, 0xf9, 0x57, 0x5f, 0x35, 0x60, 0xff, 0x02, 0x60, 0x61, 0x01, 0x61, 0x12, 0xc5, 0x57, 0x5f, 0x35, 0x61, 0x03, 0xc0, 0x61, 0x03,
-  0xc8, 0x35, 0x82, 0x18, 0x60, 0xc8, 0x56, 0x5b, 0x60, 0x80, 0x8c, 0x01, 0x59, 0x10, 0x61, 0x12, 0x8c, 0x57, 0x60, 0x2f, 0x9c, 0x60, 0x84, 0x56, 0x5b, 0x61, 0x04, 0x3c, 0x36, 0x60, 0x1c, 0x37, 0x36, 0x60, 0x03, 0x1b, 0x80, 0x60, 0xa2, 0x52,
-  0x80, 0x61, 0x02, 0x9a, 0x52, 0x60, 0x90, 0x52, 0x60, 0x80, 0x80, 0x80, 0x61, 0x02, 0x0a, 0x52, 0x60, 0x43, 0x53, 0x60, 0x55, 0x53, 0x61, 0x12, 0x8c, 0x9c, 0x50, 0x61, 0x03, 0x38, 0x56, 0x5b, 0x60, 0x59, 0x01, 0x5b, 0x81, 0x81, 0x53, 0x60,
-  0x01, 0x01, 0x90, 0x60, 0x08, 0x60, 0xed, 0x56, 0x5b, 0x60, 0x40, 0x9c, 0x5b, 0x50, 0x9a, 0x60, 0x40, 0x01, 0x9a, 0x61, 0x01, 0xc9, 0x56, 0x5b, 0x61, 0x12, 0x8c, 0x9c, 0x50, 0x60, 0x80, 0x60, 0xa5, 0x53, 0x84, 0x60, 0xbc, 0x53, 0x36, 0x60,
-  0x20, 0x14, 0x61, 0x01, 0xee, 0x57, 0x5f, 0x60, 0x9d, 0x52, 0x60, 0x80, 0x8c, 0x36, 0x01, 0x53, 0x36, 0x60, 0x03, 0x1b, 0x36, 0x61, 0x03, 0xc8, 0x01, 0x60, 0x3f, 0x17, 0x60, 0x6f, 0x56, 0x01, 0x5b, 0x60, 0x80, 0x9c, 0x60, 0x84, 0x56, 0x01,
-  0x5b, 0x60, 0x20, 0x82, 0x03, 0x35, 0x83, 0x18, 0x17, 0x60, 0x40, 0x82, 0x03, 0x35, 0x83, 0x18, 0x17, 0x60, 0x60, 0x82, 0x03, 0x91, 0x35, 0x83, 0x18, 0x17, 0x81, 0x60, 0xc8, 0x57, 0x60, 0xf7, 0x57, 0x61, 0x12, 0x70, 0x56, 0x5b, 0x1c, 0x90,
-  0x81, 0x60, 0x73, 0x61, 0x12, 0x64, 0x56, 0x5b
+  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 247, 87, 54, 97, 3, 232, 3, 97, 17, 249, 87, 95, 53, 96, 255, 2, 96, 97, 1, 97, 18, 197, 87, 95, 53, 97, 3, 192, 97, 3,
+  200, 53, 130, 24, 96, 200, 86, 91, 96, 128, 140, 1, 89, 16, 97, 18, 140, 87, 96, 47, 156, 96, 132, 86, 91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 97, 2, 154,
+  82, 96, 128, 128, 128, 88, 83, 97, 0, 67, 83, 97, 2, 10, 82, 128, 96, 162, 82, 96, 144, 82, 97, 18, 140, 156, 80, 97, 3, 56, 86, 91, 96, 89, 1, 91, 129, 129, 83, 96,
+  1, 1, 144, 96, 8, 96, 237, 86, 91, 96, 64, 156, 91, 80, 154, 96, 64, 1, 154, 97, 1, 201, 86, 91, 97, 18, 140, 156, 80, 96, 128, 96, 165, 83, 132, 96, 188, 83, 54, 96,
+  32, 20, 97, 1, 238, 87, 95, 96, 157, 82, 96, 128, 140, 54, 1, 83, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 111, 86, 1, 91, 96, 128, 156, 96, 132, 86, 3,
+  91, 96, 32, 130, 3, 53, 131, 24, 23, 96, 64, 130, 3, 53, 131, 24, 23, 96, 96, 130, 3, 145, 53, 131, 24, 23, 129, 96, 200, 87, 96, 247, 87, 97, 18, 112, 86, 91, 28, 144,
+  129, 96, 115, 97, 18, 100, 86, 91,
 ] := by decide
 
 private theorem submissionInstructionsChunk1_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk1 = [
@@ -5996,35 +5996,35 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc89 :
-    submissionArtifact.instructionPC 50 = 79 := by
+    submissionArtifact.instructionPC 50 = 80 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci89 :
-    instructionPC 50 = 79 := by
-  change submissionArtifact.instructionPC 50 = 79
+    instructionPC 50 = 80 := by
+  change submissionArtifact.instructionPC 50 = 80
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc90 :
-    submissionArtifact.instructionPC 51 = 80 := by
+    submissionArtifact.instructionPC 51 = 81 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci90 :
-    instructionPC 51 = 80 := by
-  change submissionArtifact.instructionPC 51 = 80
+    instructionPC 51 = 81 := by
+  change submissionArtifact.instructionPC 51 = 81
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc91 :
-    submissionArtifact.instructionPC 52 = 81 := by
+    submissionArtifact.instructionPC 52 = 83 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci91 :
-    instructionPC 52 = 81 := by
-  change submissionArtifact.instructionPC 52 = 81
+    instructionPC 52 = 83 := by
+  change submissionArtifact.instructionPC 52 = 83
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -6051,24 +6051,24 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc94 :
-    submissionArtifact.instructionPC 55 = 87 := by
+    submissionArtifact.instructionPC 55 = 86 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci94 :
-    instructionPC 55 = 87 := by
-  change submissionArtifact.instructionPC 55 = 87
+    instructionPC 55 = 86 := by
+  change submissionArtifact.instructionPC 55 = 86
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc95 :
-    submissionArtifact.instructionPC 56 = 88 := by
+    submissionArtifact.instructionPC 56 = 87 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci95 :
-    instructionPC 56 = 88 := by
-  change submissionArtifact.instructionPC 56 = 88
+    instructionPC 56 = 87 := by
+  change submissionArtifact.instructionPC 56 = 87
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -6900,13 +6900,13 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cgPc60 :
-    submissionArtifact.instructionPC 59 = 92 := by
+    submissionArtifact.instructionPC 59 = 94 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci60 :
-    instructionPC 59 = 92 := by
-  change submissionArtifact.instructionPC 59 = 92
+    instructionPC 59 = 94 := by
+  change submissionArtifact.instructionPC 59 = 94
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 

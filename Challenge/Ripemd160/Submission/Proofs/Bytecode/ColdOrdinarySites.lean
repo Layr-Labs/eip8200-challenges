@@ -183,7 +183,7 @@ def gasSteps_low (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 off : UInt256) (
         memory := StaggerTablePad.padRealChain s.memory
           (UInt256.ofNat s.executionEnv.calldata.size)} := by
   apply PadLift.gasSteps_of_raw lowSite {s with pc := UInt256.ofNat 65, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: rest} _ hcode hfork hrun hnp low_pc.symm low_advances
-  have h := StaggerPad.run_low s (UInt256.ofNat 65) x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 off rest hstack hrun hactive hfit hoff
+  have h := StaggerPad.run_low s (UInt256.ofNat 65) x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 off rest hstack hrun hactive hfit hoff rfl
   rw [low_end] at h
   exact h
 
