@@ -58,7 +58,7 @@ def gasSteps_squareLoopFast (s : State) {n bsize mm minv : Nat}
     Challenge.EvmProof.GasSteps
       (square s memory n bsize esize msize count)
       (Exp.retTo s (sub.sqLoopMem count memory)
-        (UInt256.ofNat 772) (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
+        (UInt256.ofNat 747) (UInt256.ofNat count :: Exp.outer n bsize esize msize)) :=
   (FixedDirectChainTrace.gasSteps_squareCall s memory
       n bsize esize msize count hcount hcount16 hcode hfork hrun hnp).trans
     (sub.squareLoop count (UInt256.ofNat 2519)

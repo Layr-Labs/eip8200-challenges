@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory WindowTwentyOneBinding TnCacheReductionTrace
 open Challenge.EvmProof
 
-def l2PC : Nat := 3991
+def l2PC : Nat := 3779
 
 /-- The exact four-limb reduction of the modulus-cache candidate, preserving
 its cached modulus word separately from the literal reduction entry. -/
@@ -29,7 +29,7 @@ noncomputable def reduction_steps (s : State)
     (hcache : m128 = MachineState.readWord q.memory 128)
     (hjd : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     GasSteps
-      (framed {s with memory := q.memory} (UInt256.ofNat 5495)
+      (framed {s with memory := q.memory} (UInt256.ofNat 5519)
         ([q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 4).memory}
       (if UInt256.isTrue (UInt256.ofNat 32+pbi) then hd
@@ -44,21 +44,21 @@ noncomputable def reduction_steps (s : State)
   let tl4 := aEnd :: dst :: ret :: rest
   have htl4 : tl4.length ≤ 1001 := by simp only [tl4, List.length_cons]; omega
   let tail := m0 :: tl :: m96 :: inv :: (tn+q.carry) :: tl4
-  have hmid := TnCacheRowTrace.run_middle4 5495 st q.carry bi pbi hd pb ent tn
+  have hmid := TnCacheRowTrace.run_middle4 5519 st q.carry bi pbi hd pb ent tn
     m128 tl inv m0 aEnd m96 m64 m32 dst ret 4 rest hcap rfl hact hc hc.modulusLow hi
-  have hmidRun : runInstructions (TnCacheRowTrace.middle4 ++ [.push 2 3991, .op .JUMP])
-      (framed st (UInt256.ofNat 5495)
+  have hmidRun : runInstructions (TnCacheRowTrace.middle4 ++ [.push 2 3779, .op .JUMP])
+      (framed st (UInt256.ofNat 5519)
         ([q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest)) =
       some (TnCacheL2Trace.state st (UInt256.ofNat l2PC) q.memory flag
         (rowMu q.memory 4) (rowC0 q.memory 4) 4 0 pbi hd pb ent m32
         m128 m64 tail) := by
-    have hj : Decode.isValidJumpDest s.executionEnv.code 3991 = true := by
+    have hj : Decode.isValidJumpDest s.executionEnv.code 3779 = true := by
       rw [env.code]
-      exact TnM128CandidateArtifact.isValidJumpDest_index 3136 (by rfl)
+      exact TnM128CandidateArtifact.isValidJumpDest_index 2972 (by rfl)
     have h19 : rest.length+19 < 1024 := by omega
     have h20 : rest.length+20 < 1024 := by omega
-    have hjump : runInstructions [.push 2 3991, .op .JUMP]
-        (framed st (UInt256.ofNat 5518)
+    have hjump : runInstructions [.push 2 3779, .op .JUMP]
+        (framed st (UInt256.ofNat 5542)
           ([rowC0 q.memory 4,rowMu q.memory 4,flag,pbi,hd,pb,ent,m32,allOnes,
             m128,m64,m0,tl,m96,inv,tn+q.carry,aEnd,dst,ret] ++ rest)) =
         some (TnCacheL2Trace.state st (UInt256.ofNat l2PC) q.memory flag
@@ -91,7 +91,7 @@ noncomputable def reduction_steps (s : State)
     simpa only [TnCacheLastTrace.lastState, tail, tl4, st, framed, mem2, carry2,
       TnCacheSquareModel.fromL1, flag, List.cons_append, List.nil_append] using htailrun
   have g0 := TnM128CandidateBlocks.middleCopy.steps
-    (s := framed st (UInt256.ofNat 5495)
+    (s := framed st (UInt256.ofNat 5519)
       ([q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,
         m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest))
     (env.transfer rfl rfl) rfl hmidRun
@@ -107,8 +107,8 @@ noncomputable def reduction_steps (s : State)
       (UInt256.ofNat (l2PC+TnMod128Chain.fullSize 4)) q.memory flag
       (rowMu q.memory 4) (rowC0 q.memory 4) 4 (4-1)
       pbi hd pb ent m32 m128 m64 tail).pc =
-      UInt256.ofNat 4089 := by
-    change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 4) = UInt256.ofNat 4089
+      UInt256.ofNat 3877 := by
+    change UInt256.ofNat (l2PC+TnMod128Chain.fullSize 4) = UInt256.ofNat 3877
     rfl
   have g2 := TnM128CandidateBlocks.tail.steps
     (s := TnCacheLastTrace.lastState st

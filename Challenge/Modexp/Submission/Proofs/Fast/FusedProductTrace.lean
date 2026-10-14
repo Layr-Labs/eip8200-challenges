@@ -29,17 +29,17 @@ def gasSteps_rows (s : State) (mem : ByteArray) (n : Nat)
     (hw3 : n = 8 → w3 = MachineState.readWord mem 192) :
     Challenge.EvmProof.GasSteps (rowReady s (mpZeroed s mem n) n w3 ent tl inv m0 m96 m64 m32 rest)
       (mpCsubState s (rowsCarry (mpZeroed s mem n) 2368 256 n n)
-        (UInt256.ofNat 256) (UInt256.ofNat 772) rest) := by
+        (UInt256.ofNat 256) (UInt256.ofNat 747) rest) := by
   by_cases h4 : n = 4
   · subst n
     exact CarryFull.gasSteps_rowsFour s mem 2368 w3 ent tl inv m0
-      (UInt256.ofNat (2368+32*4-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 772)
+      (UInt256.ofNat (2368+32*4-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 747)
       rest hcap hrun hcode hfork hnp hact (Or.inr rfl)
       hminv hc he rfl (by intro _ _; rfl)
   · have h8 : n = 8 := hn.resolve_left h4
     subst n
     exact CarryFull.gasSteps_rowsEight s mem 2368 w3 ent tl inv m0
-      (UInt256.ofNat (2368+32*8-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 772)
+      (UInt256.ofNat (2368+32*8-32)) m96 m64 m32 (UInt256.ofNat 256) (UInt256.ofNat 747)
       rest hcap hrun hcode hfork hnp hact (Or.inr rfl)
       hminv hc he rfl (by intro _ _; rfl) (hw3 rfl)
 
@@ -61,24 +61,24 @@ def gasSteps_product (tn : UInt256) (s : State) (mem : ByteArray) (p a mm : Nat)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*(p+2)))
     (hw3 : p+2 = 8 → w3 = MachineState.readWord mem 192) :
     Challenge.EvmProof.GasSteps
-      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3487 s mem (p+2) pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      {s with pc := UInt256.ofNat 772, stack := rest, memory := StagedProduct.memory s mem (p+2)} := by
+      (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3275 s mem (p+2) pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
+      {s with pc := UInt256.ofNat 747, stack := rest, memory := StagedProduct.memory s mem (p+2)} := by
   have hn8 : p+2 ≤ 8 := by omega
   have g1 := TnM128FusedEntry.gasSteps_entry tn s mem (p+2) pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest
     (by omega) hn hrun (hcode.trans TnM128GlobalBinding.bytecode_eq) hfork hnp hact hcds htl
   have g2 := gasSteps_rows s mem (p+2) w3 ent tl inv m0 m96 m64 m32 rest hcap hn hrun hcode hfork hnp
     hact hminv hc he hw3
   have hj : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-      (UInt256.ofNat 772).toNat = true := by
-    change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 772 = true
-    exact Artifact.isValidJumpDest_index 554 (by rfl)
+      (UInt256.ofNat 747).toNat = true := by
+    change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 747 = true
+    exact Artifact.isValidJumpDest_index 535 (by rfl)
   have hread (addr : Nat) (hd : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
       MachineState.readWord (rowsCarry (mpZeroed s mem (p+2)) 2368 256 (p+2) (p+2)) addr =
         MachineState.readWord mem addr := by
     rw [readWord_rowsCarry _ 2368 256 (p+2) addr hn8 hd,
       readWord_mpZeroed s mem (p+2) addr hn8 hd]
   have g3 := gasSteps_csubAt s (rowsCarry (mpZeroed s mem (p+2)) 2368 256 (p+2) (p+2))
-    (p+2) 256 (UInt256.ofNat 772) rest (by omega) hrun hcode hfork hnp hact (by omega) hn8
+    (p+2) 256 (UInt256.ofNat 747) rest (by omega) hrun hcode hfork hnp hact (by omega) hn8
     (by omega) hj
     ((hread 2752 (Or.inr (by decide))).trans hml)
     ((hread 2784 (Or.inr (by decide))).trans htl)

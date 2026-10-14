@@ -24,15 +24,16 @@ abbrev Handled (input : ByteArray) : Prop :=
       (initialState submissionBytecode input 0) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input)
 
-/-- The old nonzero one-word proof, factored at pc 599 so it can follow a miss
-from the appended route.  Every lemma used below is inherited unchanged from
-`WordCorrect`. -/
-def gasSteps_wordNonzeroFromEntry (input : ByteArray)
+/-- The one-word route from pc 135 with a nonzero modulus. An empty exponent leaves the
+loop head for the exit at 202; any other exponent width leaves it for the generic route at
+pc 218 (`BigC.U.bigC_correct`), which the head reaches with the input's calldata, an empty
+memory and a sixteen-word stack. -/
+def wordNonzeroHandled (input : ByteArray)
     (hvalid : ValidInput input) (hmsize : 0 < modulusSize input)
     (hword : modulusSize input ≤ 32) (hmodpos : 0 < Word.modulusValue input) :
-    Challenge.EvmProof.GasSteps (Dispatch.wordEntryState input)
-      (WordExit.wordFinalState input (WordCorrect.wordResult input)
-        (WordCorrect.wordBase input)) := by
+    ∃ final : State,
+      Nonempty (Challenge.EvmProof.GasSteps (Dispatch.wordEntryState input) final) ∧
+        final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let start := Word.gasSteps_start input hvalid hmsize hword hmodpos
   let setup := Word.gasSteps_baseSetup input
   let baseLoop := Word.gasSteps_baseLoop input hvalid
@@ -43,18 +44,37 @@ def gasSteps_wordNonzeroFromEntry (input : ByteArray)
     simpa [WordCorrect.wordBase, WordCorrect.wordInitialAcc] using
       Word.gasSteps_baseFinish input (WordCorrect.wordBase input)
         hvalid hword
-  let exponentLoop : Challenge.EvmProof.GasSteps
-      (Word.expLoopState input 0 (WordCorrect.wordInitialAcc input)
-        (WordCorrect.wordBase input))
-      (Word.expLoopState input (exponentSize input)
-        (WordCorrect.wordResult input) (WordCorrect.wordBase input)) := by
-    simpa [WordCorrect.wordResult] using
-      WordLoops.gasSteps_expLoop input (WordCorrect.wordInitialAcc input)
-        (WordCorrect.wordBase input) hvalid
-  let finish := WordExit.gasSteps_expFinish input
-    (WordCorrect.wordResult input) (WordCorrect.wordBase input) hvalid hword
-  exact (((((start.trans setup).trans baseLoop).trans baseFinish).trans
-    exponentLoop).trans finish)
+  let toHead := ((start.trans setup).trans baseLoop).trans baseFinish
+  by_cases he : exponentSize input = 0
+  · have finish := WordExit.gasSteps_expFinish input
+      (WordCorrect.wordResult input) (WordCorrect.wordBase input) hvalid hword
+    rw [he] at finish
+    exact ⟨_, ⟨toHead.trans finish⟩,
+      WordExit.wordFinalState_isDone input (WordCorrect.wordResult input)
+        (WordCorrect.wordBase input),
+      WordCorrect.wordFinalState_result input hvalid he hmsize hword hmodpos⟩
+  · have hepos : 0 < exponentSize input := Nat.pos_of_ne_zero he
+    let toGeneric := Word.gasSteps_toGeneric input (WordCorrect.wordInitialAcc input)
+      (WordCorrect.wordBase input) hvalid hepos
+    have env : WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka
+        (Word.genericState input 0 (WordCorrect.wordInitialAcc input)
+          (WordCorrect.wordBase input)) :=
+      { sizeBound := by
+          change Challenge.Modexp.submissionBytecode.size < 2 ^ 256
+          rw [Challenge.Modexp.submissionBytecode_size]
+          decide
+        code := rfl
+        forkEq := rfl
+        running := rfl
+        noPrecompile := Challenge.Modexp.deployAddress_not_precompile }
+    obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
+      BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
+        BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks _ env rfl
+        (by simp [Word.genericState, Word.expLoopState, Word.nonzeroState, Word.callerRest])
+        (by simp [Word.genericState, Word.expLoopState, Word.nonzeroState,
+          Dispatch.wordEntryState, Main.headerState, initialState]; decide)
+        rfl hvalid hmsize
+    exact ⟨final, ⟨(toHead.trans toGeneric).trans tail⟩, hdone, hres⟩
 
 /-- The old one-word implementation is a complete fallback from pc 599. -/
 def legacyWordHandled (input : ByteArray) (hvalid : ValidInput input)
@@ -68,13 +88,7 @@ def legacyWordHandled (input : ByteArray) (hvalid : ValidInput input)
       ⟨Word.gasSteps_zeroModulus input hvalid hmsize hword hzero⟩,
       Word.zeroModulusFinalState_isDone input,
       Word.zeroModulusFinalState_result input hmsize hzero⟩
-  · have hmodpos : 0 < Word.modulusValue input := by omega
-    exact ⟨WordExit.wordFinalState input (WordCorrect.wordResult input)
-        (WordCorrect.wordBase input),
-      ⟨gasSteps_wordNonzeroFromEntry input hvalid hmsize hword hmodpos⟩,
-      WordExit.wordFinalState_isDone input (WordCorrect.wordResult input)
-        (WordCorrect.wordBase input),
-      WordCorrect.wordFinalState_result input hvalid hmsize hword hmodpos⟩
+  · exact wordNonzeroHandled input hvalid hmsize hword (by omega)
 
 /-- Compose an initial-state prefix with a packaged successful suffix. -/
 private theorem prepend {input : ByteArray} {middle : State}
@@ -93,7 +107,7 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
     (hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps
       (initialState submissionBytecode input 0)
-      (Main.trampolineState input 553)) : Handled input := by
+      (Main.trampolineState input 533)) : Handled input := by
   by_cases hzeroSize : modulusSize input = 0
   · exact ⟨Dispatch.zeroSizeFinalState input,
       ⟨Dispatch.gasSteps_zeroSize_total input hvalid hzeroSize entry⟩,
@@ -102,12 +116,8 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
   have hpositive : 0 < modulusSize input := by omega
   by_cases hword : modulusSize input ≤ 32
   · let header := Main.gasSteps_header input hvalid entry
-    let entered := header.trans (route.enter input hvalid hpositive hword)
-    by_cases hmatch : WindowRoute.Matches input
-    · exact prepend entered (route.hit input hvalid hpositive hword hmatch)
-    · let missed := entered.trans
-        (route.miss input hvalid hpositive hword hmatch)
-      exact prepend missed (legacyWordHandled input hvalid hpositive hword)
+    exact prepend (header.trans (route.enter input hvalid hpositive hword))
+      (legacyWordHandled input hvalid hpositive hword)
   · exact SubmissionCorrect.bigHandled input hvalid (by omega) entry
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowBodyCorrect

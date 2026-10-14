@@ -30,8 +30,8 @@ conditions before the fast path is entered, so `common` now falls straight throu
 def commonGuardProgram : List Instr := [.op .JUMPDEST]
 
 
-def commonGuard : Block Artifact.submissionArtifact .Osaka 3401 commonGuardProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2655 1 3401 commonGuardProgram
+def commonGuard : Block Artifact.submissionArtifact .Osaka 3189 commonGuardProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2492 1 3189 commonGuardProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 

@@ -32,7 +32,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   let ec := WindowTwentyOneGasRoute.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
   let e := WindowTwentyOneInput.exponentWord input
-  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 872 = true := by
+  have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 813 = true := by
     rw [ec.code]
     exact paths.routeJump
   have hraw := FermatNext.run_join (context template input) m e (shiftWord input :: tail)
@@ -127,7 +127,7 @@ def genSteps {artifact : ProgramArtifact} {fork : Fork}
     GasSteps (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 103) rest)
       (joinState template input (UInt256.ofNat (32 - baseSize input) :: rest)) := by
   let ec := WindowTwentyOneGasRoute.context_env template env input
-  have h238 : Decode.isValidJumpDest (context template input).executionEnv.code 238 = true := by
+  have h238 : Decode.isValidJumpDest (context template input).executionEnv.code 218 = true := by
     rw [ec.code]
     exact paths.bigJump
   have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 31 = true := by

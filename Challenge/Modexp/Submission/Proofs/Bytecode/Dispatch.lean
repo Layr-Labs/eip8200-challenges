@@ -86,7 +86,7 @@ private def gasSteps_wordCheck (input : ByteArray) (hvalid : ValidInput input)
 
 private def gasSteps_wordTail (input : ByteArray) :
     Challenge.EvmProof.GasSteps (wordCheckedState input)
-      (wordRouteEntryState input) :=
+      (wordEntryState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka wordTailPath rfl rfl
       (run_wordTail input) rfl deployAddress_not_precompile
@@ -133,7 +133,7 @@ theorem gasSteps_wordRouteEnter_cost (input : ByteArray)
 def gasSteps_zeroSize_total (input : ByteArray) (hvalid : ValidInput input)
     (hzero : modulusSize input = 0)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 553)) :
+      (Main.trampolineState input 533)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (zeroSizeFinalState input) :=
   (Main.gasSteps_header input hvalid entry).trans (gasSteps_zeroSize input hzero)

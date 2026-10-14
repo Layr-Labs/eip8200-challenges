@@ -140,8 +140,8 @@ def baseProgram : List Instr :=
 
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 872) (value :: rest)) =
-    some (framed template (UInt256.ofNat 873) (value :: rest)) := by
+    runInstructions baseProgram (framed template (UInt256.ofNat 813) (value :: rest)) =
+    some (framed template (UInt256.ofNat 814) (value :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -154,8 +154,8 @@ def modulusProgram : List Instr :=
 
 theorem run_modulus (template : State)
     (value : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 873) (value :: rest)) =
-    some (framed template (UInt256.ofNat 876)
+    runInstructions modulusProgram (framed template (UInt256.ofNat 814) (value :: rest)) =
+    some (framed template (UInt256.ofNat 817)
       (UInt256.ofNat 96 :: value :: value :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
@@ -175,8 +175,8 @@ theorem run_normalize (template : State) (modulus shift : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (hshift : rest[2]? = some shift) :
     runInstructions normalizeProgram
-      (framed template (UInt256.ofNat 876) (UInt256.ofNat 96 :: modulus :: rest)) =
-    some (framed template (UInt256.ofNat 879)
+      (framed template (UInt256.ofNat 817) (UInt256.ofNat 96 :: modulus :: rest)) =
+    some (framed template (UInt256.ofNat 820)
       (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift ::
         modulus :: rest)) := by
   have hcap2 : rest.length + 2 < 1024 := by omega

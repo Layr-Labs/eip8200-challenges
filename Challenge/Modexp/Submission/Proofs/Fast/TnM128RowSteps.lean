@@ -13,22 +13,22 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel StagedOperand
 open CiosCached CiosCachedMacCore CiosReadonly CiosCachedMidMemory TnM128ReductionSteps
 
-def l1PC (n : Nat) : Nat := if n = 4 then 5386 else 3579
+def l1PC (n : Nat) : Nat := if n = 4 then 5410 else 3367
 
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4281 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2786 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4324 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2622 (by rfl)
 
 /-- The multiply row head of each width (msplit: one loop per width). -/
-def headPC (n : Nat) : Nat := if n = 4 then 5352 else 3545
+def headPC (n : Nat) : Nat := if n = 4 then 5376 else 3333
 
 theorem head_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (headPC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4252 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2757 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4295 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2593 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (q : UInt256) :
     TnCacheRowModel.CacheState :=
@@ -57,7 +57,7 @@ noncomputable def row_steps (s : State)
           (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)))
       (framed {s with memory := (result s.memory tn pa n q).memory}
         (if UInt256.isTrue (UInt256.ofNat 32+q)
-         then UInt256.ofNat (headPC n) else UInt256.ofNat 4107)
+         then UInt256.ofNat (headPC n) else UInt256.ofNat 3895)
         (TnCacheFrameOps.frame (UInt256.ofNat 32+q) (UInt256.ofNat (headPC n)) pb
           ent m32
           m128 m64

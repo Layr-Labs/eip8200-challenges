@@ -18,12 +18,12 @@ private theorem run_wordTail_generic (template : State)
     (hcode : template.executionEnv.code = submissionBytecode)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordTailPath
-      (framed template 585 [modOff, expOff, m, e, b]) =
-    some (framed template 843
+      (framed template 565 [modOff, expOff, m, e, b]) =
+    some (framed template 135
       [b, e, m, UInt256.ofNat 96, expOff, modOff, UInt256.ofNat 1186,
         modOff, expOff, m, e, b]) := by
-  have h3000 : (843 : UInt256).toNat = 843 := by decide
-  have h3000Word : (843 : UInt256) = UInt256.ofNat 843 := by decide
+  have h3000 : (135 : UInt256).toNat = 135 := by decide
+  have h3000Word : (135 : UInt256) = UInt256.ofNat 135 := by decide
   have h96Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
   have h1267Word : (1186 : UInt256) = UInt256.ofNat 1186 := by decide
   simp (config := { maxSteps := 200000 })
@@ -37,12 +37,12 @@ private theorem run_wordTail_generic (template : State)
 
 theorem run_wordTail (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordTailPath
-      (wordCheckedState input) = some (wordRouteEntryState input) := by
+      (wordCheckedState input) = some (wordEntryState input) := by
   have h := run_wordTail_generic (Main.headerState input)
     (UInt256.ofNat (baseSize input)) (UInt256.ofNat (exponentSize input))
     (UInt256.ofNat (modulusSize input)) (UInt256.ofNat (96 + baseSize input))
     (UInt256.ofNat (96 + (baseSize input + exponentSize input))) rfl rfl
-  simpa only [framed, wordCheckedState, wordRouteEntryState, wordEntryState,
+  simpa only [framed, wordCheckedState, wordEntryState,
     Nat.add_assoc] using h
 
 

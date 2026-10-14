@@ -45,11 +45,11 @@ legacy entry exactly. -/
 def legacy (input : ByteArray)
     (hmiss : ¬ (exponentSize input = 32 ∧ modulusSize input = 32)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 599) := by
+      (Main.trampolineState input 578) := by
   have tail := EarlyWordGas.steps_size_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 599) at tail
+    (Main.trampolineState input 578) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
 /-- Every matching header has a complete initial-state correctness trace: a 32-byte
@@ -86,7 +86,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
 entry: the wide fallback at 238 with the base size and 32 on the stack. -/
 def genBigState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 238
+    pc := UInt256.ofNat 218
     stack := [UInt256.ofNat (baseSize input), UInt256.ofNat 32] }
 
 def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
@@ -97,7 +97,7 @@ def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize 
   have s2 := EarlyWordGas.steps_width_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl (by omega)
   have hjump : Decode.isValidJumpDest
-      (initialState submissionBytecode input 0).executionEnv.code 238 = true :=
+      (initialState submissionBytecode input 0).executionEnv.code 218 = true :=
     Artifact.fermatPaths.bigJump
   have hc := FermatNext.run_gen_check (initialState submissionBytecode input 0) [] (by simp) hjump
   have hword : MachineState.readWord

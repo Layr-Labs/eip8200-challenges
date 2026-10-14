@@ -8,16 +8,16 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareRows
 
-def pcNx : Nat := 4121
-def pcLast : Nat := 4231
+def pcNx : Nat := 3909
+def pcLast : Nat := 4019
 /-- The four-limb exit into the lazy gate (`m4j`, inside `last`). -/
-def pcM4j : Nat := 4234
+def pcM4j : Nat := 4022
 /-- The four-limb loop head: R4. -/
-def pcH2 : Nat := 4561
+def pcH2 : Nat := 4295
 
 def frameStack (mem : ByteArray) (_n : Nat)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 4245, MachineState.readWord mem 192, ent, m32, allOnes,
+  [pbi, UInt256.ofNat 5320, MachineState.readWord mem 192, ent, m32, allOnes,
     MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0, aprev, pdst, ret] ++ rest
 
 def frameAt (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)

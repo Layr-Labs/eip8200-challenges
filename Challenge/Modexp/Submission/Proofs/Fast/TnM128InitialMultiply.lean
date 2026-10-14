@@ -31,7 +31,7 @@ noncomputable def rows_steps (s : State)
     GasSteps
       (rowState s ⟨mpZeroed s mem n, UInt256.ofNat 0⟩ n 0 w3 ent tl inv m0 aEnd m96 m64 m32 dst ret rest)
       (framed {s with memory := CarryRowModel.rowsCarry (mpZeroed s mem n) pa 256 n n}
-        (UInt256.ofNat 4135) (dst :: ret :: rest)) := by
+        (UInt256.ofNat 3923) (dst :: ret :: rest)) := by
   let z : CacheState := ⟨mpZeroed s mem n, UInt256.ofNat 0⟩
   have hn8 : n ≤ 8 := by omega
   have hz : Cached z.memory pa n tl inv m0 m96 m64 m32 :=

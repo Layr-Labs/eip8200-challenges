@@ -28,7 +28,7 @@ theorem run_expGuard (input : ByteArray) (i : Nat) (acc base : UInt256)
       UInt256.ofNat 0 := by
     rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat, himod, hemod, if_neg hne]
-  have h598 : (691 : UInt256).toNat = 691 := by decide
+  have h598 : (202 : UInt256).toNat = 202 := by decide
   have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [expGuardPath, opAt, pushAt,
@@ -40,28 +40,30 @@ theorem run_expGuard (input : ByteArray) (i : Nat) (acc base : UInt256)
       hi, hi256, he256, himod, hemod, hne, heq, hzeroNat, h598]
 
 set_option linter.unusedSimpArgs false in
-theorem run_expLoad (input : ByteArray) (i : Nat) (acc base : UInt256)
-    (hvalid : ValidInput input) (hi : i < exponentSize input) :
-    Challenge.EvmProof.Stepper.runLocatedBlock expLoadPath
-      (expGuardState input i acc base) =
-        some (bitLoopState input i 0 (byteWord input (expOffset input + i))
-          (UInt256.ofNat (expOffset input + i)) acc base) := by
-  rcases hvalid with ⟨_, hb, he, hm⟩
-  have hoff : expOffset input + i < 2 ^ 256 := by
-    simp only [expOffset]
-    omega
-  have hadd := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := expOffset input) (b := i) hoff
-  have hzeroWord : UInt256.ofNat 0 = (0 : UInt256) := by decide
-  have hzeroRaw : ({ val := 0 } : UInt256) = 0 := by decide
-  simp (config := { maxSteps := 175000 })
-    [expLoadPath, opAt, pushAt,
+theorem run_genericJump (input : ByteArray) (i : Nat) (acc base : UInt256) :
+    Challenge.EvmProof.Stepper.runLocatedBlock genericJumpPath
+      (expGuardState input i acc base) = some (genericState input i acc base) := by
+  have h218 : (218 : UInt256).toNat = 218 := by decide
+  have h218Word : (218 : UInt256) = UInt256.ofNat 218 := by decide
+  simp (config := { maxSteps := 150000 })
+    [genericJumpPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      expGuardState, expLoopState, bitLoopState, bitTail, byteWord,
-      Accessors.calldataByteValue,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, expPCs, Challenge.EvmProof.Word.word_toNat_ofNat,
-      hoff, hadd, hzeroWord, hzeroRaw]
+      expGuardState, genericState, expLoopState, nonzeroState, callerRest,
+      Dispatch.wordEntryState, Main.headerState, initialState, expPCs,
+      Challenge.EvmProof.Word.word_toNat_ofNat, h218, h218Word, jump218]
+
+/-- From the loop head with a nonzero exponent width to the generic route entry. -/
+def gasSteps_toGeneric (input : ByteArray) (acc base : UInt256)
+    (hvalid : ValidInput input) (he : 0 < exponentSize input) :
+    Challenge.EvmProof.GasSteps (expLoopState input 0 acc base) (genericState input 0 acc base) :=
+  (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka expGuardPath rfl rfl
+        (run_expGuard input 0 acc base hvalid he) rfl
+        deployAddress_not_precompile).trans
+    (Challenge.EvmProof.Stepper.runLocatedBlock_sound
+      Artifact.submissionArtifact .Osaka genericJumpPath rfl rfl
+        (run_genericJump input 0 acc base) rfl
+        deployAddress_not_precompile)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Word

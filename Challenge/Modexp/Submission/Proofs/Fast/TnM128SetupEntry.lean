@@ -66,17 +66,15 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (EntryPrefix.displacement mem) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3579 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3367 + EntryPrefix.displacement mem)
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  -- The artifact now computes the ladder displacement as `14 * (s32 &&& 128)` instead of
-  -- `148 * [s32 = 128]`.  The two agree at s32 = 128 and s32 = 256 but NOT at s32 = 160,
-  -- 192, 224 (n = 5,6,7), where the mask is still set.  `n = 4 ∨ n = 8` is what makes this
-  -- step true, and it holds because the kernel is only ever entered from the two
-  -- specialised width carriers.
-  have hdisp1 : UInt256.ofNat 3579 + EntryPrefix.displacement mem = l1Target n := by
+  -- The artifact computes the ladder displacement as `1748 * [s32 = 128]` (97bb cut, site A).
+  -- `n = 4 ∨ n = 8` is what makes this step true, and it holds because the kernel is only
+  -- ever entered from the two specialised width carriers.
+  have hdisp1 : UInt256.ofNat 3367 + EntryPrefix.displacement mem = l1Target n := by
     rcases hn4 with rfl | rfl <;>
       rw [EntryPrefix.displacement, hs32] <;> decide
   have hmasked :
@@ -114,7 +112,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hslot : rest[2]? = some (UInt256.ofNat n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3579)
+    some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3367)
       (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
       (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 2720 :: zeroTn ::
@@ -139,17 +137,17 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 m64 aEnd tl m96 zeroTn m32
-    (UInt256.ofNat 1748 * CapDispatch.selectBit (UInt256.ofNat n)) rest hcap hact
+    (UInt256.ofNat 1748 * EntryPrefix.sel128 (UInt256.ofNat n)) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3579 + (UInt256.ofNat 1748 * CapDispatch.selectBit (UInt256.ofNat n)))
+    (UInt256.ofNat 3367 + (UInt256.ofNat 1748 * EntryPrefix.sel128 (UInt256.ofNat n)))
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  have hdisp1 : UInt256.ofNat 3579 +
-      (UInt256.ofNat 1748 * CapDispatch.selectBit (UInt256.ofNat n)) =
-      UInt256.ofNat 3579 := by
+  have hdisp1 : UInt256.ofNat 3367 +
+      (UInt256.ofNat 1748 * EntryPrefix.sel128 (UInt256.ofNat n)) =
+      UInt256.ofNat 3367 := by
     rcases hn4 with rfl | rfl <;> decide
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++

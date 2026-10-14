@@ -26,7 +26,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 abbrev FastHandled (input : ByteArray) : Prop :=
   ∃ final : State,
     Nonempty (Challenge.EvmProof.GasSteps
-      (Main.trampolineState input 599) final) ∧
+      (Main.trampolineState input 578) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input)
 
 private theorem withGas_initialState (code cd : ByteArray) (gas : Nat) :

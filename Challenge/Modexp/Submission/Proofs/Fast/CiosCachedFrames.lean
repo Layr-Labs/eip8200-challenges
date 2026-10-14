@@ -23,19 +23,19 @@ def isFour (n : Nat) : UInt256 :=
 
 
 /-- First-loop entry of the multiply rows: msplit gives each width its own head, which falls
-into the Duff base 3579 (eight limbs) or the four-limb copy at 5386 (`3579 + 1807`). -/
+into the Duff base 3367 (eight limbs) or the four-limb copy at 5410 (`3367 + 2043`). -/
 def l1Target (n : Nat) : UInt256 :=
-  UInt256.ofNat 3579 + UInt256.ofNat 1807 * isFour n
+  UInt256.ofNat 3367 + UInt256.ofNat 2043 * isFour n
 
 /-- Second-loop entry, fixed for the whole kernel call: the four-limb ladder tail pushes
 it directly (`PUSH2 3843; JUMP`, instruction 4274) — shared by both widths. -/
 def l2Target (_n : Nat) : UInt256 :=
-  UInt256.ofNat 3862
+  UInt256.ofNat 3650
 
-@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5386 := by decide
-@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3579 := by decide
-@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3862 := by decide
-@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3862 := by decide
+@[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 5410 := by decide
+@[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3367 := by decide
+@[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3650 := by decide
+@[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3650 := by decide
 
 /-! ## Row frames
 

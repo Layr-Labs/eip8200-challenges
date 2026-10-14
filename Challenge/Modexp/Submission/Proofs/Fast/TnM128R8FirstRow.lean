@@ -18,9 +18,6 @@ def endFrameC (flag P hd tt next stride M target inv m0 tl m96 m64 m32 x : UInt2
   flag :: P :: hd :: tt :: next :: stride :: M :: target :: inv :: m0 :: tl ::
     m96 :: m64 :: m32 :: x :: rest
 
-/-- Exit by a code literal while keeping modulus[128] in the frame. -/
-def quotientJump (destination : UInt256) : List Instr := [.push 2 destination, .op .JUMP]
-
 /-- The quotient `mu = t0·inv` reads `t0` at the constant `0x920`. -/
 def quotientAC : List Instr :=
   [.op (.Dup ⟨12, by decide⟩), .push 2 2336, .op .MLOAD, .op .MUL]
@@ -30,8 +27,8 @@ def quotientBC : List Instr :=
   [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨14, by decide⟩), .op .MULMOD, .push 2 2336, .op .MLOAD, .op .ADDMOD]
 
-def exitProgram (destination : UInt256) : List Instr :=
-  (quotientAC ++ quotientBC) ++ quotientJump destination
+/-- The row's quotient and first carry; the block then falls into the `R_0` reduction copy. -/
+def exitProgram : List Instr := quotientAC ++ quotientBC
 
 theorem run_quotientAC (s : State)
     (pc flag P hd tt next stride M target inv m0 tl m96 m64 m32 x : UInt256)
@@ -74,39 +71,22 @@ theorem run_quotientBC (s : State)
   simp only [succ_eq_add, word_add_assoc]
   exact congrArg (pc + ·) (by decide)
 
-theorem run_quotientJump (s : State)
-    (pc c0 mu flag P hd tt next tn M m128 inv m0 tl m96 m64 m32 x destination : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code destination.toNat = true) :
-    runInstructions (quotientJump destination)
-      {s with pc := pc, stack := c0 :: mu :: endFrameC flag P hd tt next tn M m128 inv m0 tl m96 m64 m32 x rest} =
-    some {s with pc := destination,
-                 stack := c0 :: mu :: endFrameC flag P hd tt next tn M m128 inv m0 tl m96 m64 m32 x rest} := by
-  have h17 : rest.length + 17 < 1024 := by omega
-  have h18 : rest.length + 18 < 1024 := by omega
-  simp [quotientJump, endFrameC, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    h17, h18, hjump]
-
 theorem run_exit (s : State)
-    (pc flag P hd tt next tn M m128 inv m0 tl m96 m64 m32 x destination : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code destination.toNat = true) :
+    (pc flag P hd tt next tn M m128 inv m0 tl m96 m64 m32 x : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory 2336
     let mu := t0*inv
-    runInstructions (exitProgram destination)
+    runInstructions exitProgram
       {s with pc := pc, stack := endFrameC flag P hd tt next tn M m128 m64 m0 tl m96 inv m32 x rest} =
-    some {s with pc := destination,
+    some {s with pc := advancePC 16 pc,
                  stack := UInt256.addMod t0 (UInt256.mulMod tl mu M) M :: mu ::
                    endFrameC flag P hd tt next tn M m128 m64 m0 tl m96 inv m32 x rest} := by
   let t0 := MachineState.readWord s.memory 2336
   have h0 := run_quotientAC s pc flag P hd tt next tn M m128 inv m0 tl m96 m64 m32 x rest hcap hact
   have h1 := run_quotientBC s (advancePC 6 pc) (t0*inv) flag P hd tt next tn M m128 m64 m0 tl m96 inv m32 x
     rest hcap hact
-  have h2 := run_quotientJump s (advancePC 10 (advancePC 6 pc))
-    (UInt256.addMod t0 (UInt256.mulMod tl (t0*inv) M) M) (t0*inv)
-    flag P hd tt next tn M m128 m64 m0 tl m96 inv m32 x destination rest hcap hjump
-  have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
-  exact runInstructions_append_some _ _ _ _ _ h01 h2
+  rw [← advancePC_add] at h1
+  exact runInstructions_append_some _ _ _ _ _ h0 h1
 
 /-- frq: the first row reads `a_0` at the constant `0xa20`; the row pointer stays on the stack. -/
 def headProgramC : List Instr :=
@@ -316,9 +296,9 @@ theorem run_finishStoreNarrow (s : State)
     List.exchange, h14, h15, h16, advancePC]
 
 
-def program (next destination : UInt256) : List Instr :=
+def program (next : UInt256) : List Instr :=
   ((diagonalProgramC next ++ cellsProgramV1)
-    ++ finishStoreNarrow) ++ exitProgram destination
+    ++ finishStoreNarrow) ++ exitProgram
 
 /-- The first-row entry frame: row pointer `P` (`q`), frame word 3 `tt` (`n1`), word 10 `tl` (`n0`). -/
 def initialC (s : State) (pc P hd tt ent stride target inv m0 tl m96 m64 m32 aprev : UInt256)
@@ -343,12 +323,11 @@ def result (s : State) (P hd tt next m128 destination inv m0 tl m96 m64 m32 : UI
 /-- The complete specialized first row for arbitrary incoming scratch memory
 and zero incoming carry-register value. This is a universal instruction-semantics theorem. -/
 theorem run_program (s : State)
-    (pc P hd tt ent next m128 destination inv m0 tl m96 m64 m32 aprev : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code destination.toNat = true) :
-    runInstructions (program next destination)
+    (pc P hd tt ent next m128 inv m0 tl m96 m64 m32 aprev : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions (program next)
       (initialC s pc P hd tt ent m32 m128 m64 m0 tl m96 inv (UInt256.ofNat 0) aprev rest) =
-      some (result s P hd tt next m128 destination inv m0 tl m96 m64 m32 rest) := by
+      some (result s P hd tt next m128 (advancePC 241 pc) inv m0 tl m96 m64 m32 rest) := by
   let x := MachineState.readWord s.memory 2592
   let bi := x + x
   have h0 := run_diagonalC s pc P hd tt ent next m32 m128 m64 m0 tl
@@ -369,16 +348,20 @@ theorem run_program (s : State)
   rw [hpc2] at h2
   have h3 := run_exit {s with memory := (firstProduct s.memory).memory} (advancePC 225 pc)
     (UInt256.ofNat 0) P hd tt next
-    m32 maxWord m128 inv m0 tl m96 m64 (firstProduct s.memory).carry x destination rest hcap hact hjump
+    m32 maxWord m128 inv m0 tl m96 m64 (firstProduct s.memory).carry x rest hcap hact
+  have hpc3 : advancePC 16 (advancePC 225 pc) = advancePC 241 pc := by
+    rw [← advancePC_add]
+  rw [hpc3] at h3
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 
-/-- Binding to the lane image: 205 instructions from index 3996 (pc 5092). -/
-def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5105
-    (program (UInt256.ofNat 3616) (UInt256.ofNat 3862)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4045 205 5105
-    (program (UInt256.ofNat 3616) (UInt256.ofNat 3862))
+/-- Binding to the lane image: 203 instructions from index 3832 (pc 4839), ending at the
+`R_0` copy (pc 5080). -/
+def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4839
+    (program (UInt256.ofNat 3404)) :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3832 203 4839
+    (program (UInt256.ofNat 3404))
     (by decide) (by rfl) (by rfl) (by decide)
 
 #print axioms run_quotientAC

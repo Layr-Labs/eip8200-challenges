@@ -14,8 +14,8 @@ theorem run_bigCheckJump (input : ByteArray) :
       (bigComparedState input) = some (bigCheckedState input) := by
   have htrue : UInt256.isTrue 1 := by decide
   have h1 : (1 : UInt256).toNat = 1 := by decide
-  have h236 : (238 : UInt256).toNat = 238 := by decide
-  have h236Word : (238 : UInt256) = UInt256.ofNat 238 := by decide
+  have h236 : (218 : UInt256).toNat = 218 := by decide
+  have h236Word : (218 : UInt256) = UInt256.ofNat 218 := by decide
   simp (config := { maxSteps := 50000 })
     [bigCheckJumpPath, pushAt, opAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

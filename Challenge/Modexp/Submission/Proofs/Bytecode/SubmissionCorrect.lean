@@ -1,5 +1,7 @@
 import Challenge.Modexp.ProofSupport.Bytecode
-import Challenge.Modexp.Submission.Proofs.Bytecode.WordGas
+import Challenge.Modexp.Submission.Proofs.Bytecode.WordGasSteps
+import Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect
+import Challenge.Modexp.Submission.Proofs.Bytecode.WordExpRuns
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUMain
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUBlocks
@@ -24,7 +26,7 @@ result through the compact fallback. -/
 theorem bigHandled (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input)
     (entry : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Main.trampolineState input 553)) :
+      (Main.trampolineState input 533)) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (initialState submissionBytecode input 0) final) ∧

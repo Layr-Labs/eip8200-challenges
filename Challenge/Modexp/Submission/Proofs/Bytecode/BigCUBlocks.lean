@@ -17,86 +17,86 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
 def unsignedBlocks : BigC.Unsigned.Blocks Artifact.submissionArtifact where
-  entry := WindowTwentyOneSlice.block Artifact.allWellFormed 334 2 484 BigC.Unsigned.entryProgram
+  entry := WindowTwentyOneSlice.block Artifact.allWellFormed 317 2 464 BigC.Unsigned.entryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  init := WindowTwentyOneSlice.block Artifact.allWellFormed 336 4 488 BigC.Unsigned.initProgram
+  init := WindowTwentyOneSlice.block Artifact.allWellFormed 319 4 468 BigC.Unsigned.initProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  cell := WindowTwentyOneSlice.block Artifact.allWellFormed 340 33 494 BigC.Unsigned.cellProgram
+  cell := WindowTwentyOneSlice.block Artifact.allWellFormed 323 33 474 BigC.Unsigned.cellProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 373 3 529 BigC.Unsigned.guardProgram
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 356 3 509 BigC.Unsigned.guardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  decide := WindowTwentyOneSlice.block Artifact.allWellFormed 376 3 534 BigC.Unsigned.decideProgram
+  decide := WindowTwentyOneSlice.block Artifact.allWellFormed 359 3 514 BigC.Unsigned.decideProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  retry := WindowTwentyOneSlice.block Artifact.allWellFormed 379 5 539 BigC.Unsigned.retryProgram
+  retry := WindowTwentyOneSlice.block Artifact.allWellFormed 362 5 519 BigC.Unsigned.retryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  finish := WindowTwentyOneSlice.block Artifact.allWellFormed 384 5 548 BigC.Unsigned.finishProgram
+  finish := WindowTwentyOneSlice.block Artifact.allWellFormed 367 5 528 BigC.Unsigned.finishProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  jumpInit := Artifact.isValidJumpDest_index 336 (by rfl)
-  jumpLoop := Artifact.isValidJumpDest_index 340 (by rfl)
-  jumpDone := Artifact.isValidJumpDest_index 384 (by rfl)
+  jumpInit := Artifact.isValidJumpDest_index 319 (by rfl)
+  jumpLoop := Artifact.isValidJumpDest_index 323 (by rfl)
+  jumpDone := Artifact.isValidJumpDest_index 367 (by rfl)
 
 def mulBlocks : BigC.U.MulBlocks Artifact.submissionArtifact where
-  mEntry := WindowTwentyOneSlice.block Artifact.allWellFormed 283 7 413 BigC.U.mEntryProgram
+  mEntry := WindowTwentyOneSlice.block Artifact.allWellFormed 266 7 393 BigC.U.mEntryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  mGuard := WindowTwentyOneSlice.block Artifact.allWellFormed 290 8 421 BigC.U.mGuardProgram
+  mGuard := WindowTwentyOneSlice.block Artifact.allWellFormed 273 8 401 BigC.U.mGuardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  mDouble := WindowTwentyOneSlice.block Artifact.allWellFormed 298 4 432 BigC.U.mDoubleProgram
+  mDouble := WindowTwentyOneSlice.block Artifact.allWellFormed 281 4 412 BigC.U.mDoubleProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  m2 := WindowTwentyOneSlice.block Artifact.allWellFormed 302 16 440 BigC.U.m2Program
+  m2 := WindowTwentyOneSlice.block Artifact.allWellFormed 285 16 420 BigC.U.m2Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  mAdd := WindowTwentyOneSlice.block Artifact.allWellFormed 318 4 461 BigC.U.mAddProgram
+  mAdd := WindowTwentyOneSlice.block Artifact.allWellFormed 301 4 441 BigC.U.mAddProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  m3 := WindowTwentyOneSlice.block Artifact.allWellFormed 322 5 469 BigC.U.m3Program
+  m3 := WindowTwentyOneSlice.block Artifact.allWellFormed 305 5 449 BigC.U.m3Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  m9 := WindowTwentyOneSlice.block Artifact.allWellFormed 327 7 477 BigC.U.m9Program
+  m9 := WindowTwentyOneSlice.block Artifact.allWellFormed 310 7 457 BigC.U.m9Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumps :=
-    { j419 := Artifact.isValidJumpDest_index 290 (by rfl)
-      j438 := Artifact.isValidJumpDest_index 302 (by rfl)
-      j467 := Artifact.isValidJumpDest_index 322 (by rfl)
-      j475 := Artifact.isValidJumpDest_index 327 (by rfl)
-      j482 := Artifact.isValidJumpDest_index 334 (by rfl) }
+    { j419 := Artifact.isValidJumpDest_index 273 (by rfl)
+      j438 := Artifact.isValidJumpDest_index 285 (by rfl)
+      j467 := Artifact.isValidJumpDest_index 305 (by rfl)
+      j475 := Artifact.isValidJumpDest_index 310 (by rfl)
+      j482 := Artifact.isValidJumpDest_index 317 (by rfl) }
 
 def expBlocks : BigC.U.ExpBlocks Artifact.submissionArtifact where
-  eGuard := WindowTwentyOneSlice.block Artifact.allWellFormed 220 8 312 BigC.U.eGuardProgram
+  eGuard := WindowTwentyOneSlice.block Artifact.allWellFormed 203 8 292 BigC.U.eGuardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  eSquare := WindowTwentyOneSlice.block Artifact.allWellFormed 228 6 323 BigC.U.eSquareProgram
+  eSquare := WindowTwentyOneSlice.block Artifact.allWellFormed 211 6 303 BigC.U.eSquareProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e2 := WindowTwentyOneSlice.block Artifact.allWellFormed 234 23 335 BigC.U.e2Program
+  e2 := WindowTwentyOneSlice.block Artifact.allWellFormed 217 23 315 BigC.U.e2Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  eMul := WindowTwentyOneSlice.block Artifact.allWellFormed 257 7 366 BigC.U.eMulProgram
+  eMul := WindowTwentyOneSlice.block Artifact.allWellFormed 240 7 346 BigC.U.eMulProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e4 := WindowTwentyOneSlice.block Artifact.allWellFormed 264 5 381 BigC.U.e4Program
+  e4 := WindowTwentyOneSlice.block Artifact.allWellFormed 247 5 361 BigC.U.e4Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e3 := WindowTwentyOneSlice.block Artifact.allWellFormed 269 5 388 BigC.U.e3Program
+  e3 := WindowTwentyOneSlice.block Artifact.allWellFormed 252 5 368 BigC.U.e3Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e9 := WindowTwentyOneSlice.block Artifact.allWellFormed 274 9 396 BigC.U.e9Program
+  e9 := WindowTwentyOneSlice.block Artifact.allWellFormed 257 9 376 BigC.U.e9Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumps :=
-    { j295 := Artifact.isValidJumpDest_index 208 (by rfl)
-      j310 := Artifact.isValidJumpDest_index 220 (by rfl)
-      j333 := Artifact.isValidJumpDest_index 234 (by rfl)
-      j379 := Artifact.isValidJumpDest_index 264 (by rfl)
-      j386 := Artifact.isValidJumpDest_index 269 (by rfl)
-      j394 := Artifact.isValidJumpDest_index 274 (by rfl)
-      j411 := Artifact.isValidJumpDest_index 283 (by rfl)
-      j482 := Artifact.isValidJumpDest_index 334 (by rfl) }
+    { j295 := Artifact.isValidJumpDest_index 191 (by rfl)
+      j310 := Artifact.isValidJumpDest_index 203 (by rfl)
+      j333 := Artifact.isValidJumpDest_index 217 (by rfl)
+      j379 := Artifact.isValidJumpDest_index 247 (by rfl)
+      j386 := Artifact.isValidJumpDest_index 252 (by rfl)
+      j394 := Artifact.isValidJumpDest_index 257 (by rfl)
+      j411 := Artifact.isValidJumpDest_index 266 (by rfl)
+      j482 := Artifact.isValidJumpDest_index 317 (by rfl) }
 
 def setupBlocks : BigC.U.SetupBlocks Artifact.submissionArtifact where
-  setup := WindowTwentyOneSlice.block Artifact.allWellFormed 165 25 238 BigC.U.setupProgram
+  setup := WindowTwentyOneSlice.block Artifact.allWellFormed 148 25 218 BigC.U.setupProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zLoop := WindowTwentyOneSlice.block Artifact.allWellFormed 190 15 273 BigC.U.zLoopProgram
+  zLoop := WindowTwentyOneSlice.block Artifact.allWellFormed 173 15 253 BigC.U.zLoopProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zExit := WindowTwentyOneSlice.block Artifact.allWellFormed 205 3 292 BigC.U.zExitProgram
+  zExit := WindowTwentyOneSlice.block Artifact.allWellFormed 188 3 272 BigC.U.zExitProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zeroRet := WindowTwentyOneSlice.block Artifact.allWellFormed 208 4 297 BigC.U.zeroRetProgram
+  zeroRet := WindowTwentyOneSlice.block Artifact.allWellFormed 191 4 277 BigC.U.zeroRetProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  nz := WindowTwentyOneSlice.block Artifact.allWellFormed 212 8 301 BigC.U.nzProgram
+  nz := WindowTwentyOneSlice.block Artifact.allWellFormed 195 8 281 BigC.U.nzProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumps :=
-    { j236 := Artifact.isValidJumpDest_index 165 (by rfl)
-      j271 := Artifact.isValidJumpDest_index 190 (by rfl)
-      j295 := Artifact.isValidJumpDest_index 208 (by rfl)
-      j299 := Artifact.isValidJumpDest_index 212 (by rfl) }
+    { j236 := Artifact.isValidJumpDest_index 148 (by rfl)
+      j271 := Artifact.isValidJumpDest_index 173 (by rfl)
+      j295 := Artifact.isValidJumpDest_index 191 (by rfl)
+      j299 := Artifact.isValidJumpDest_index 195 (by rfl) }
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigC.UBlocks

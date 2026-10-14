@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
-import Challenge.Modexp.Submission.Proofs.Bytecode.WordLoops
+import Challenge.Modexp.Submission.Proofs.Bytecode.Word
 import Challenge.EvmProof.Memory
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -17,7 +17,6 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WordExit
 open EvmSemantics
 open EvmSemantics.EVM
 open Word
-open WordLoops
 
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
@@ -45,23 +44,23 @@ private def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def expFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 151 .JUMPDEST,
-   opAt 152 .POP,
-   opAt 153 (.Dup ⟨0, by decide⟩),
-   opAt 154 (.Dup ⟨6, by decide⟩),
-   pushAt 155 1 32,
-   opAt 156 .SUB,
-   pushAt 157 1 3,
-   opAt 158 .SHL,
-   opAt 159 .SHL,
-   pushAt 160 0 0,
-   opAt 161 .MSTORE,
-   opAt 162 (.Dup ⟨5, by decide⟩),
-   pushAt 163 0 0,
-   opAt 164 .RETURN]
+  [opAt 134 .JUMPDEST,
+   opAt 135 .POP,
+   opAt 136 (.Dup ⟨0, by decide⟩),
+   opAt 137 (.Dup ⟨6, by decide⟩),
+   pushAt 138 1 32,
+   opAt 139 .SUB,
+   pushAt 140 1 3,
+   opAt 141 .SHL,
+   opAt 142 .SHL,
+   pushAt 143 0 0,
+   opAt 144 .MSTORE,
+   opAt 145 (.Dup ⟨5, by decide⟩),
+   pushAt 146 0 0,
+   opAt 147 .RETURN]
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
-  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 222 }
+  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 202 }
 
 def outputShift (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft
@@ -78,7 +77,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
   let start := expLoopState input (exponentSize input) acc base
   let storedWords := start.activeWordsAfterUInt256 0 32
   { start with
-    pc := UInt256.ofNat 237
+    pc := UInt256.ofNat 217
     stack := [acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -92,15 +91,15 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       (modulusSize input) }
 
 @[simp] private theorem exitPCs (i : Nat)
-    (hi : 151 ≤ i) (hii : i ≤ 164) :
+    (hi : 134 ≤ i) (hii : i ≤ 147) :
     Artifact.submissionArtifact.instructionPC i =
-      ([222,223,224,225,226,228,229,231,232,233,234,235,236,237] : List Nat)[i - 151]! := by
+      ([202,203,204,205,206,208,209,211,212,213,214,215,216,217] : List Nat)[i - 134]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] private theorem jump669 :
-    Decode.isValidJumpDest submissionBytecode 222 = true :=
-  Artifact.isValidJumpDest_index 151 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 202 = true :=
+  Artifact.isValidJumpDest_index 134 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
@@ -115,8 +114,8 @@ theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
   have heq : UInt256.eq (UInt256.ofNat (exponentSize input))
       (UInt256.ofNat (exponentSize input)) = UInt256.ofNat 1 := by
     simp [UInt256.eq]
-  have h669 : (222 : UInt256).toNat = 222 := by decide
-  have h669Word : (222 : UInt256) = UInt256.ofNat 222 := by decide
+  have h669 : (202 : UInt256).toNat = 202 := by decide
+  have h669Word : (202 : UInt256) = UInt256.ofNat 202 := by decide
   simp (config := { maxSteps := 150000 })
     [expGuardPath, Word.opAt, Word.pushAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

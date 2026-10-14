@@ -107,25 +107,23 @@ def pushImmediates : List Nat :=
     | _ => none
 
 theorem jumpSites_eq : jumpSites =
-    [10, 16, 28, 39, 60, 75, 89, 102, 120, 132, 142, 150, 204, 207, 227, 233,
-     256, 263, 273, 282, 297, 301, 317, 321, 326, 333, 375, 378, 383, 388, 398, 413,
-     422, 432, 456, 477, 505, 551, 553, 567, 570, 578, 592, 615, 619, 1970, 1973, 1979,
-     1992, 1996, 2006, 2018, 2025, 2032, 2044, 2051, 2076, 2123, 2285, 2523, 2529, 2531, 2535, 2569,
-     2581, 2588, 2625, 2633, 2640, 2654, 2717, 2756, 3236, 3241, 3269, 3271, 3284, 3288, 3300, 3302,
-     3317, 3325, 3374, 3382, 3390, 3520, 3522, 3527, 3534, 3541, 3556, 3558, 3654, 3754, 3827, 3969,
-     3973, 3996, 3998, 4044, 4249, 4251, 4392, 4412] := by decide
+    [10, 16, 28, 39, 60, 75, 89, 102, 120, 131, 133, 187, 190, 210, 216, 239,
+     246, 256, 265, 280, 284, 300, 304, 309, 316, 358, 361, 366, 371, 381, 396, 405,
+     415, 439, 460, 488, 534, 544, 547, 554, 568, 1898, 1911, 1915, 1925, 1937, 1949, 1956,
+     1981, 2028, 2169, 2407, 2413, 2415, 2451, 2463, 2470, 2477, 2491, 2554, 2592, 3072, 3077, 3105,
+     3107, 3120, 3124, 3136, 3138, 3153, 3161, 3169, 3177, 3307, 3309, 3314, 3321, 3328, 3343, 3345,
+     3441, 3541, 3614, 3756, 3760, 3783, 3785, 3831, 4292, 4294, 4435, 4455] := by decide
 
 theorem literalJumpTargets_eq : literalJumpTargets =
-    [599, 103, 872, 872, 238, 31, 153, 186, 156, 222, 2448, 193, 273, 301, 396, 413,
-     388, 413, 312, 484, 477, 484, 469, 484, 421, 494, 548, 488, 570, 238, 843, 784,
-     790, 790, 2592, 2592, 795, 238, 553, 553, 135, 103, 2453, 212, 2527, 790, 2547, 790,
-     3401, 2547, 2568, 790, 4299, 2636, 714, 3228, 2858, 3366, 3307, 3240, 3234, 3216, 3284, 3266,
-     5522, 2858, 4176, 4512, 4314, 4426, 4207, 5105, 3487, 4326, 4503, 5350, 4156, 4523, 4512, 4314,
-     5105, 4561, 4909, 4909, 4909, 5057, 4561, 4234, 5018, 3862, 3991] := by decide
+    [578, 103, 813, 813, 218, 31, 153, 186, 156, 202, 218, 253, 281, 376, 393, 368,
+     393, 292, 464, 457, 464, 449, 464, 401, 474, 528, 468, 550, 218, 135, 755, 761,
+     761, 2465, 765, 218, 533, 533, 2424, 761, 2444, 761, 3189, 761, 4033, 2509, 693, 3080,
+     2710, 3154, 3088, 3082, 3068, 5546, 2710, 3964, 4246, 4048, 4160, 3995, 4839, 3275, 4060, 4237,
+     5374, 3944, 4257, 4246, 4048, 4839, 4295, 4643, 4643, 4643, 4791, 4295, 4022, 4752, 3779] := by decide
 
 /-- The twelve sites whose destination is a stack word, in program order. -/
 theorem dataDependentJumpSites_eq : dataDependentJumpSites =
-    [333, 388, 551, 2285, 2717, 2756, 3236, 3374, 3534, 3541, 3969, 4251, 4412] := by decide
+    [316, 371, 534, 2169, 2554, 2592, 3072, 3321, 3328, 3756, 4292, 4294, 4455] := by decide
 
 /-- **No literal jump destination is the M9 exit.**  None of the 88 destinations the image
 names with a `PUSH` immediate is pc 3168, 3169 or 3170. -/
@@ -140,17 +138,17 @@ destination, so no value equal to 3168..3170 can reach a jump operand. -/
 theorem noLiteralPush_window :
     pushImmediates.all fun n => decide (n ≠ 3168 ∧ n ≠ 3169 ∧ n ≠ 3170) = true := by decide
 
-/-- The exit `PUSH2 2080` is at instruction 2503,
-and the fixup's `SWAP3 POP` is at instructions 2514 and 2515. -/
+/-- The exit `PUSH2 2080` is at instruction 2387,
+and the fixup's `SWAP3 POP` is at instructions 2398 and 2399. -/
 theorem m9Exit_is_jumpdest :
-    Artifact.submissionInstructions[2503]? = some (.push 2 2080) ∧
-      Artifact.submissionInstructions[2514]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
-      Artifact.submissionInstructions[2515]? = some (.op .POP) :=
+    Artifact.submissionInstructions[2387]? = some (.push 2 2080) ∧
+      Artifact.submissionInstructions[2398]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
+      Artifact.submissionInstructions[2399]? = some (.op .POP) :=
   ⟨by rfl, by rfl, by rfl⟩
 
-/-- The program counter the exit `PUSH2 2080` sits at: 3189. -/
+/-- The program counter the exit `PUSH2 2080` sits at: 3041. -/
 theorem m9Exit_pcs :
-    Artifact.instructionPC 2503 = 3189 := by decide
+    Artifact.instructionPC 2387 = 3041 := by decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.ShiftJumpTargets
 

@@ -23,7 +23,7 @@ open CiosCachedMidMemory CarryRowModel StagedOperand
 /-- Entry retained by setup: 3562 for eight limbs, 5309 for four limbs.
 Eight-limb square rows advance this slot by 37. Four-limb squares use the
 separate R4 routine and retain their initial slot throughout the call. -/
-def sqEnt (n i : Nat) : Nat := 3579 + 1776 * ((8 - n) / 4) + 37 * i
+def sqEnt (n i : Nat) : Nat := 3367 + 1776 * ((8 - n) / 4) + 37 * i
 
 /-- Frame slot 14 at row head `i`: the row-0 value `a0` (the setup's `aEnd`, or zero when
 the in-kernel loop re-enters), and the limb `x_{i-1}` that row `i - 1` parked there. -/
@@ -56,7 +56,7 @@ theorem sqTb_eq_prev (a0 : UInt256) (M0 : ByteArray) (n i : Nat) (hi : i < n) (h
 
 def rowState (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256) (i : Nat) : State :=
-  outState s (sqRowsCarry M0 n i) 2368 n i (UInt256.ofNat 4245) (UInt256.ofNat (sqEnt n i)) m32 m64 m0
+  outState s (sqRowsCarry M0 n i) 2368 n i (UInt256.ofNat 5320) (UInt256.ofNat (sqEnt n i)) m32 m64 m0
     (tl :: m96 :: inv :: UInt256.ofNat 0 :: sqPrev a0 M0 n i :: pdst :: ret :: rest)
 
 theorem sqEnt_succ (n i : Nat) : sqEnt n i + 37 = sqEnt n (i + 1) := by

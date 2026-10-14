@@ -20,7 +20,7 @@ def steps_size_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hmiss : ¬ (exponentSize input = 32 ∧ modulusSize input = 32)) :
-    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 599) []) := by
+    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 578) []) := by
   have hs := run_size template input hdata (jump_env env paths.legacyJump)
   have hn : (sizeDiff input).toNat ≠ 0 := fun hz => hmiss ((sizeDiff_zero_iff input).mp hz)
   rw [if_neg hn] at hs

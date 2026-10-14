@@ -25,73 +25,73 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 branch. -/
 def widthPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 572 .JUMPDEST,
-   pushAt 573 5 137506062208,
-   pushAt 574 1 68,
-   opAt 575 .CALLDATALOAD,
-   opAt 576 .SUB,
-   pushAt 577 2 553,
-   opAt 578 .JUMPI]
+  [opAt 548 .JUMPDEST,
+   pushAt 549 5 137506062208,
+   pushAt 550 1 68,
+   opAt 551 .CALLDATALOAD,
+   opAt 552 .SUB,
+   pushAt 553 2 533,
+   opAt 554 .JUMPI]
 
 /-- The size test (`1 - bsize`, `2 - esize`, `word100`): fourteen instructions
 ending in the second miss branch. -/
 def tailPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 579 0 0,
-   opAt 580 .CALLDATALOAD,
-   pushAt 581 1 1,
-   opAt 582 .SUB,
-   pushAt 583 1 32,
-   opAt 584 .CALLDATALOAD,
-   pushAt 585 1 2,
-   opAt 586 .SUB,
-   opAt 587 .OR,
-   pushAt 588 1 100,
-   opAt 589 .CALLDATALOAD,
-   opAt 590 .OR,
-   pushAt 591 2 553,
-   opAt 592 .JUMPI]
+  [pushAt 555 0 0,
+   opAt 556 .CALLDATALOAD,
+   pushAt 557 1 1,
+   opAt 558 .SUB,
+   pushAt 559 1 32,
+   opAt 560 .CALLDATALOAD,
+   pushAt 561 1 2,
+   opAt 562 .SUB,
+   opAt 563 .OR,
+   pushAt 564 1 100,
+   opAt 565 .CALLDATALOAD,
+   opAt 566 .OR,
+   pushAt 567 2 533,
+   opAt 568 .JUMPI]
 
 def hitPrePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 593 .JUMPDEST,
-   pushAt 594 2 65535,
-   pushAt 595 1 3]
+  [opAt 569 .JUMPDEST,
+   pushAt 570 2 65535,
+   pushAt 571 1 3]
 
 def hitPostPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 597 0 0,
-   opAt 598 .MSTORE,
-   pushAt 599 1 32,
-   pushAt 600 0 0,
-   opAt 601 .RETURN]
+  [pushAt 573 0 0,
+   opAt 574 .MSTORE,
+   pushAt 575 1 32,
+   pushAt 576 0 0,
+   opAt 577 .RETURN]
 
 /-- The `EXP`, kept as a located witness so its opcode and fork availability are
 discharged from the artifact like every other one. -/
 def expAt : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  opAt 596 .EXP
+  opAt 572 .EXP
 
-@[simp] theorem widthPCs (i : Nat) (hi : 572 ≤ i) (hii : i ≤ 578) :
+@[simp] theorem widthPCs (i : Nat) (hi : 548 ≤ i) (hii : i ≤ 554) :
     Artifact.submissionArtifact.instructionPC i =
-      ([795, 796, 802, 804, 805, 806, 809] : List Nat)[i - 572]! := by
+      ([765, 766, 772, 774, 775, 776, 779] : List Nat)[i - 548]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem tailPCs (i : Nat) (hi : 579 ≤ i) (hii : i ≤ 592) :
+@[simp] theorem tailPCs (i : Nat) (hi : 555 ≤ i) (hii : i ≤ 568) :
     Artifact.submissionArtifact.instructionPC i =
-      ([810, 811, 812, 814, 815, 817, 818, 820, 821, 822, 824, 825, 826, 829] : List Nat)[i - 579]! := by
+      ([780, 781, 782, 784, 785, 787, 788, 790, 791, 792, 794, 795, 796, 799] : List Nat)[i - 555]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem answerPCs (i : Nat) (hi : 593 ≤ i) (hii : i ≤ 601) :
+@[simp] theorem answerPCs (i : Nat) (hi : 569 ≤ i) (hii : i ≤ 577) :
     Artifact.submissionArtifact.instructionPC i =
-      ([830, 831, 834, 836, 837, 838, 839, 841, 842] : List Nat)[i - 593]! := by
+      ([800, 801, 804, 806, 807, 808, 809, 811, 812] : List Nat)[i - 569]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 /-- The legacy entry, where both miss exits land. -/
 theorem jumpDestLegacy :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 553 = true :=
-  Artifact.isValidJumpDest_index 389 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 533 = true :=
+  Artifact.isValidJumpDest_index 372 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Memo

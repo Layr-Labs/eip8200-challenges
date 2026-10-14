@@ -22,8 +22,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev outer := Exp.outer
 
 /-- Program counters of the appended routine. -/
-def pcDispatch : Nat := 2592
-def pcHit : Nat := 2607
+def pcDispatch : Nat := 2465
+def pcHit : Nat := 2480
 -- 3310, not ticket 4's 3282: the recogniser-miss JUMPDEST is instruction 2433 here (it was 2438),
 -- and this is the one pc in the table the regenerator could not rewrite, because 3282 has no image
 -- in the pc map -- R-ONE2 deleted the instruction it used to sit on, so the map row is empty and
@@ -33,44 +33,39 @@ def pcHit : Nat := 2607
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
 /-- The full-base miss no longer seeds `R1` and converts: the dispatcher's `JUMPI`
 names the six-word bail trampoline (`BAIL6`, pc 1054), which lands on `modexpBig`. -/
-def pcMiss : Nat := 790
+def pcMiss : Nat := 761
 /-- `modexpBig`, where the trampoline lands. -/
-def pcBigC : Nat := 238
-def pcCsubReturn : Nat := 2621
-def pcAfterCsub0 : Nat := 2630
-def pcNegLoop : Nat := 2636
+def pcBigC : Nat := 218
+def pcCsubReturn : Nat := 2494
+def pcAfterCsub0 : Nat := 2503
+def pcNegLoop : Nat := 2509
 /-- The negation body after its store and the cleared flag, before the exit test. -/
-def pcNegMid : Nat := 2648
+def pcNegMid : Nat := 2521
 /-- The four `JUMPDEST` pads on the negation loop's fall-through. -/
-def pcNegDone : Nat := 2658
-def pcPreNewton : Nat := 2705
-def pcShiftLoop : Nat := 2858
-def pcShiftBody : Nat := 2859
-def pcEstimate : Nat := 2873
-def pcMacSetup : Nat := 2936   -- E6, the conversion entry JUMPDEST (mask already built)
-def pcMid : Nat := 3189   -- the fall-through after the eight straight blocks
-def pcAddLoop : Nat := 3234
-def pcAddInner : Nat := 3240
-def pcAddTail : Nat := 3277
+def pcNegDone : Nat := 2531
+def pcPreNewton : Nat := 2578
+def pcShiftLoop : Nat := 2710
+def pcShiftBody : Nat := 2711
+def pcEstimate : Nat := 2725
+def pcMacSetup : Nat := 2788   -- E6, the conversion entry JUMPDEST (mask already built)
+def pcMid : Nat := 3041   -- the fall-through after the eight straight blocks
+def pcAddLoop : Nat := 3082
+def pcAddInner : Nat := 3088
+def pcAddTail : Nat := 3125
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3264
+def pcAddMid : Nat := 3112
 /-- The fall-through padding after the add-round exit test. -/
-def pcAddPad : Nat := 3277
-def pcSubCheck : Nat := 3295
-def pcSubEntry : Nat := 3307
-def pcSubInner : Nat := 3313
-def pcSubTail : Nat := 3352
-/-- The subtract body after `OR`, before the pointer step and exit test. -/
-def pcSubMid : Nat := 3337
-def pcCsubCall : Nat := 3216
+def pcAddPad : Nat := 3125
+def pcSubCheck : Nat := 3143
+def pcCsubCall : Nat := 3068
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3228
+def pcUnc : Nat := 3080
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
-def pcAfterCsub : Nat := 2858
+def pcAfterCsub : Nat := 2710
 /-- The loop exit after the last step (`PUSH2 3366 JUMP`, the `JUMPI` fall-through). -/
-def pcCsubExit : Nat := 3224
-def pcShiftDone : Nat := 3366
+def pcCsubExit : Nat := 3076
+def pcShiftDone : Nat := 3154
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -96,7 +91,7 @@ def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : U
 
 /-- The unrolled-conversion entry the cache block stores at `0x6a2` and parks in
 the scratch slot for the rest of the window: `2940 + 116 · [n = 4]`. -/
-def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2940 + if n = 4 then 116 else 0)
+def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2792 + if n = 4 then 116 else 0)
 
 /-- The window's riding slots with the scratch slot holding the conversion entry. -/
 def entrySlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) : List UInt256 :=
@@ -162,15 +157,31 @@ def negDoneState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
              outer n bsize esize msize
            memory := (negStep mem n n).memory }
 
-/-- `PRE_NEWTON`: `[dodd, L, d]` above the frame, four words stored. -/
+/-- The estimator prologue's `CLZ` (pc 2672, CLZ cut): `[L, L, d]` above the frame. -/
+def preClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2545
+           stack := preL (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
+             MachineState.readWord mem 0 :: outer n bsize esize msize
+           memory := mem }
+
+/-- Just after the `CLZ` (pc 2673): `[clz L, L, d]` above the frame. -/
+def postClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2546
+           stack := UInt256.clz (preL (MachineState.readWord mem 0)) ::
+             preL (MachineState.readWord mem 0) ::
+             MachineState.readWord mem 0 :: outer n bsize esize msize
+           memory := mem }
+
+/-- `PRE_NEWTON`: `[dodd, L, d]` above the frame, four words stored (CLZ cut: the shift
+words `PRE_X := preS d` and `PRE_L := preK d` first). -/
 def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pcPreNewton
            stack := preDodd (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
              MachineState.readWord mem 0 :: outer n bsize esize msize
            memory := Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
-             PRE_L (preL (MachineState.readWord mem 0)))
+             PRE_X (preS (MachineState.readWord mem 0)))
+             PRE_L (preK (MachineState.readWord mem 0)))
              PRE_DODD (preDodd (MachineState.readWord mem 0)))
-             PRE_X (preX (MachineState.readWord mem 0)))
              PRE_BMOD (preBmod (MachineState.readWord mem 0)) }
 
 /-- The newton-batch head (pc 2705) over a raw memory `M`, with the top limb `d`. -/
@@ -181,14 +192,14 @@ def nbHeadState (s : State) (M : ByteArray) (d : UInt256) (n bsize esize msize :
 
 /-- The shared Newton chain entry (pc 714): `dodd * n0` and the return pc 2741 on top. -/
 def nbSubState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 714
-           stack := preDodd d * n0 :: UInt256.ofNat 2741 :: n0 :: preDodd d :: preL d :: d ::
+  { s with pc := UInt256.ofNat 693
+           stack := preDodd d * n0 :: UInt256.ofNat 2593 :: n0 :: preDodd d :: preL d :: d ::
              outer n bsize esize msize
            memory := M }
 
 /-- The newton-batch tail (pc 2741): the inverse of `dodd * n0` on top. -/
 def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2741
+  { s with pc := UInt256.ofNat 2593
            stack := newton8W (preDodd d * n0) :: n0 :: preDodd d :: preL d :: d ::
              outer n bsize esize msize
            memory := M }
@@ -201,7 +212,7 @@ def nbOutMem (M : ByteArray) (d n0 : UInt256) : ByteArray :=
 /-- The cache-setup entry (`E5`, pc 2764): the prologue has just parked the riding
 slots with the outer `n` in the scratch position. -/
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotState (UInt256.ofNat 0) s mem 2811 n bsize esize msize (UInt256.ofNat n)
+  slotState (UInt256.ofNat 0) s mem 2663 n bsize esize msize (UInt256.ofNat n)
 
 /-- The shift loop head with `k` steps to go. -/
 def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
@@ -294,7 +305,7 @@ def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
 riding slots but the exit slot `z`, which picks the jump target `2441 + z`. -/
 def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotState z s mem 5522 n bsize esize msize (shiftEntry n)
+  slotState z s mem 5546 n bsize esize msize (shiftEntry n)
 
 /-- The wrapped `-32` the pointer walks add. -/
 theorem negK_literal :

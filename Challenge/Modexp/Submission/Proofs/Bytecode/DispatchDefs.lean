@@ -39,51 +39,51 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 570,
-   opAt 398 .JUMPI,
-   pushAt 399 0 0,
-   pushAt 400 0 0,
-   opAt 401 .RETURN]
+  [opAt 379 (.Dup ⟨0, by decide⟩),
+   pushAt 380 2 550,
+   opAt 381 .JUMPI,
+   pushAt 382 0 0,
+   pushAt 383 0 0,
+   opAt 384 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 396 (.Dup ⟨0, by decide⟩),
-   pushAt 397 2 570,
-   opAt 398 .JUMPI,
-   opAt 402 .JUMPDEST,
-   opAt 403 (.Dup ⟨2, by decide⟩),
-   pushAt 404 1 96,
-   opAt 405 .ADD,
-   opAt 406 (.Dup ⟨2, by decide⟩),
-   opAt 407 (.Dup ⟨1, by decide⟩),
-   opAt 408 .ADD,
-   pushAt 409 1 32,
-   opAt 410 (.Dup ⟨3, by decide⟩),
-   opAt 411 .GT,
-   pushAt 412 1 238,
-   opAt 413 .JUMPI,
-   pushAt 414 2 1186,
-   opAt 415 (.Dup ⟨1, by decide⟩),
-   opAt 416 (.Dup ⟨3, by decide⟩),
-   pushAt 417 1 96,
-   opAt 418 (.Dup ⟨6, by decide⟩),
-   opAt 419 (.Dup ⟨8, by decide⟩),
-   opAt 420 (.Dup ⟨10, by decide⟩),
-   pushAt 421 2 843,
-   opAt 422 .JUMP]
+  [opAt 379 (.Dup ⟨0, by decide⟩),
+   pushAt 380 2 550,
+   opAt 381 .JUMPI,
+   opAt 385 .JUMPDEST,
+   opAt 386 (.Dup ⟨2, by decide⟩),
+   pushAt 387 1 96,
+   opAt 388 .ADD,
+   opAt 389 (.Dup ⟨2, by decide⟩),
+   opAt 390 (.Dup ⟨1, by decide⟩),
+   opAt 391 .ADD,
+   pushAt 392 1 32,
+   opAt 393 (.Dup ⟨3, by decide⟩),
+   opAt 394 .GT,
+   pushAt 395 1 218,
+   opAt 396 .JUMPI,
+   pushAt 397 2 1186,
+   opAt 398 (.Dup ⟨1, by decide⟩),
+   opAt 399 (.Dup ⟨3, by decide⟩),
+   pushAt 400 1 96,
+   opAt 401 (.Dup ⟨6, by decide⟩),
+   opAt 402 (.Dup ⟨8, by decide⟩),
+   opAt 403 (.Dup ⟨10, by decide⟩),
+   pushAt 404 1 135,
+   opAt 405 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
-def zeroReturnPath := [opAt 401 .RETURN]
+def zeroReturnPath := [opAt 384 .RETURN]
 def wordJumpPath := wordEntryPath.take 3
 def wordRestPath := wordEntryPath.drop 3
 def wordCheckPath := wordRestPath.take 12
 def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem dispatchPCs (i : Nat)
-    (hi : 396 ≤ i) (hii : i ≤ 422) :
+    (hi : 379 ≤ i) (hii : i ≤ 405) :
     Artifact.submissionArtifact.instructionPC i =
-      ([562,563,566,567,568,569,570,571,572,574,575,576,577,578,580,581,582,584,585,588,589,590,592,593,594,595,598] : List Nat)[i - 396]! := by
+      ([542,543,546,547,548,549,550,551,552,554,555,556,557,558,560,561,562,564,565,568,569,570,572,573,574,575,577] : List Nat)[i - 379]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -97,22 +97,16 @@ def wordTailPath := wordRestPath.drop 12
   simp [MachineState.readPadded]
 
 @[simp] theorem jump1237 :
-    Decode.isValidJumpDest submissionBytecode 570 = true :=
-  Artifact.isValidJumpDest_index 402 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 550 = true :=
+  Artifact.isValidJumpDest_index 385 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 135 = true :=
   Artifact.isValidJumpDest_index 78 (by rfl)
 
-set_option maxRecDepth 20000 in
-@[simp] theorem jump3000 :
-    Decode.isValidJumpDest submissionBytecode 843 = true := by
-  have hpc : Artifact.instructionPC 602 = 843 := by decide
-  simpa only [hpc] using Artifact.isValidJumpDest_index 602 (by rfl)
-
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 569
+    pc := UInt256.ofNat 549
     stack := [UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)]
     halt := .Returned
@@ -120,19 +114,19 @@ def zeroSizeFinalState (input : ByteArray) : State :=
 
 def zeroSetupState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 569
+    pc := UInt256.ofNat 549
     stack := [0, 0, UInt256.ofNat 0, UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)] }
 
 def wordDispatchState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 570
+    pc := UInt256.ofNat 550
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def wordCheckedState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 585
+    pc := UInt256.ofNat 565
     stack := [UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
@@ -151,30 +145,9 @@ def wordEntryState (input : ByteArray) : State :=
       UInt256.ofNat 1186, UInt256.ofNat modOff, UInt256.ofNat expOff,
       UInt256.ofNat m, UInt256.ofNat e, UInt256.ofNat b] }
 
-/-! ## Retargeted one-word dispatch boundary
-
-The fixed-width successor changes only the destination pushed by the final
-instruction pair of the one-word dispatcher.  Keep that changed boundary
-separate from `wordEntryState`: a route miss later restores the exact legacy
-pc-599 state consumed by the existing word implementation.
-
-These aliases deliberately state only the composition interface.  The exact
-located-instruction witnesses belong to the route execution module after the
-submission artifact has been regenerated.
--/
-
-/-- State reached by the retargeted one-word dispatcher at the appended route. -/
-def wordRouteEntryState (input : ByteArray) : State :=
-  { wordEntryState input with pc := UInt256.ofNat 843 }
-
-/-- The unchanged dispatcher prefix followed by its retargeted final jump. -/
+/-- The one-word dispatcher prefix, ending at the word entry. -/
 abbrev WordRouteEnter (input : ByteArray) : Type :=
   Challenge.EvmProof.GasSteps (Main.headerState input)
-    (wordRouteEntryState input)
-
-/-- A route miss must restore precisely the already-proved legacy entry. -/
-abbrev WordRouteMiss (input : ByteArray) : Type :=
-  Challenge.EvmProof.GasSteps (wordRouteEntryState input)
     (wordEntryState input)
 
 

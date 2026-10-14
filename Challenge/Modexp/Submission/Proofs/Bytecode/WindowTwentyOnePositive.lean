@@ -59,7 +59,7 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
     Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
 
 def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 879)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 820)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 
