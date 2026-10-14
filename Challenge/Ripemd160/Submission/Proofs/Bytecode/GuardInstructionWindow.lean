@@ -23,8 +23,11 @@ def tail : List Instr :=
   op 0x1c,
   .push 20 802931186561056611446976448233794645126013734992,
   op 0x18,
-  .push 2 4730,
-  op 0x56
+  .push 0 0,
+  op 0x52,
+  op 0x59,
+  .push 0 0,
+  op 0xf3
 ]
 theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3458).take tail.length = tail := by rfl
 

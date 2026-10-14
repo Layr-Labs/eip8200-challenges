@@ -42,11 +42,11 @@ private def sound (path : List Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
-@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 3529 = 4796 := J2EntryWindow.pcB 2
+@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 3531 = 4796 := J2EntryWindow.pcB 2
 
-@[simp] private theorem bigPC : Artifact.submissionArtifact.instructionPC 3527 = 4793 := J2EntryWindow.pcB 0
+@[simp] private theorem bigPC : Artifact.submissionArtifact.instructionPC 3529 = 4793 := J2EntryWindow.pcB 0
 
-@[simp] private theorem bigPushPC : Artifact.submissionArtifact.instructionPC 3528 = 4794 := J2EntryWindow.pcB 1
+@[simp] private theorem bigPushPC : Artifact.submissionArtifact.instructionPC 3530 = 4794 := J2EntryWindow.pcB 1
 
 private theorem isValidJumpDest_of_pc (idx pc : Nat)
     (hpc : Artifact.submissionArtifact.instructionPC idx = pc)
@@ -56,10 +56,10 @@ private theorem isValidJumpDest_of_pc (idx pc : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index idx hget
 
 private theorem guard_match_dest : Decode.isValidJumpDest submissionBytecode 4796 = true :=
-  isValidJumpDest_of_pc 3529 4796 entryPC61 (J2EntryWindow.getB 2)
+  isValidJumpDest_of_pc 3531 4796 entryPC61 (J2EntryWindow.getB 2)
 
 private theorem guard_big_dest : Decode.isValidJumpDest submissionBytecode 4793 = true :=
-  isValidJumpDest_of_pc 3527 4793 bigPC (J2EntryWindow.getB 0)
+  isValidJumpDest_of_pc 3529 4793 bigPC (J2EntryWindow.getB 0)
 
 private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
@@ -115,12 +115,12 @@ private def maskJump : List Located :=
   [DirectGuard.opAt 3449 .JUMPI (by exact J2EntryWindow.get 8)]
 
 private def guardMatchTail : List Located :=
-  [DirectGuard.opAt 3529 .JUMPDEST (by exact J2EntryWindow.getB 2)]
+  [DirectGuard.opAt 3531 .JUMPDEST (by exact J2EntryWindow.getB 2)]
 
 /-- The 256/376/1000 entry: `JUMPDEST PUSH1 251`, falling into the shared scanner entry. -/
 private def bigTail : List Located :=
-  [DirectGuard.opAt 3527 .JUMPDEST (by exact J2EntryWindow.getB 0),
-   DirectGuard.pushAt 3528 1 251 (by exact J2EntryWindow.getB 1)]
+  [DirectGuard.opAt 3529 .JUMPDEST (by exact J2EntryWindow.getB 0),
+   DirectGuard.pushAt 3530 1 251 (by exact J2EntryWindow.getB 1)]
 
 private def sizeBit (input : ByteArray) : UInt256 :=
   UInt256.land 1 (UInt256.shiftRight 342276208914615837337402008677671501826

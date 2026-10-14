@@ -39,8 +39,11 @@ def tail : List Instr := [
   op 0x1c,
   .push 20 802931186561056611446976448233794645126013734992,
   op 0x18,
-  .push 2 4730,
-  op 0x56
+  .push 0 0,
+  op 0x52,
+  op 0x59,
+  .push 0 0,
+  op 0xf3
 ]
 def tailB : List Instr := [
   op 0x5b,
@@ -65,20 +68,20 @@ theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
     rw [List.take_take, Nat.min_eq_left h] at ht0
     exact ht0
   rw [InstructionWindow.pc_drop, pc_base, ht]
-private theorem tailB_eq : (Artifact.submissionArtifact.instructions.drop 3527).take tailB.length = tailB := by rfl
-private theorem pc_baseB : Artifact.submissionArtifact.instructionPC 3527 = 4793 := by
+private theorem tailB_eq : (Artifact.submissionArtifact.instructions.drop 3529).take tailB.length = tailB := by rfl
+private theorem pc_baseB : Artifact.submissionArtifact.instructionPC 3529 = 4793 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 theorem getB (index : Nat) (h : index < tailB.length := by decide) :
-    Artifact.submissionArtifact.instructions[3527 + index]? = tailB[index]? := by
+    Artifact.submissionArtifact.instructions[3529 + index]? = tailB[index]? := by
   have ht := congrArg (fun l : List Instr => l[index]?) tailB_eq
   simp only [List.getElem?_take_of_lt h] at ht
   rw [← InstructionWindow.get_drop]
   exact ht
 theorem pcB (index : Nat) (h : index ≤ tailB.length := by decide) :
-    Artifact.submissionArtifact.instructionPC (3527 + index) =
+    Artifact.submissionArtifact.instructionPC (3529 + index) =
       4793 + byteLength (tailB.take index) := by
-  have ht : (Artifact.submissionArtifact.instructions.drop 3527).take index = tailB.take index := by
+  have ht : (Artifact.submissionArtifact.instructions.drop 3529).take index = tailB.take index := by
     have ht0 := congrArg (List.take index) tailB_eq
     rw [List.take_take, Nat.min_eq_left h] at ht0
     exact ht0

@@ -66,7 +66,7 @@ theorem condWord_zero (r : UInt256) :
   rw [word_toNat_mul, lor_zero_toNat, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.zero_mod,
     Nat.zero_mul, Nat.zero_mod]
 
-/-- A zero accumulator takes the `ISZERO PUSH2 4708 JUMPI` exit to the answer block. Stated for any input
+/-- A zero accumulator takes the `ISZERO PUSH2 4709 JUMPI` exit to the answer block. Stated for any input
 with a zero accumulator; the `JUMPI` runs as its own step (`stepG_jumpi_taken`), since one `simp` over the
 whole path does not finish inside the memory budget. -/
 theorem run_tail_zero (input : ByteArray) (hz : reverseAcc input 10 = UInt256.ofNat 0) :
@@ -75,7 +75,7 @@ theorem run_tail_zero (input : ByteArray) (hz : reverseAcc input 10 = UInt256.of
     unfold UInt256.isZero
     exact if_pos (by decide)
   have hpre : run (tailPath.take 2) (loopExitState input) =
-      some (stG input 246 (UInt256.ofNat 4708 :: UInt256.ofNat 1 :: spentCells input)) := by
+      some (stG input 246 (UInt256.ofNat 4709 :: UInt256.ofNat 1 :: spentCells input)) := by
     simp (config := { maxSteps := 1000000 })
       [tailPath, opAt, pushAt, wfOp, loopExitState, stG, spentCells, atPC,
       hz, hiz0, List.exchange,
@@ -83,14 +83,14 @@ theorem run_tail_zero (input : ByteArray) (hz : reverseAcc input 10 = UInt256.of
       Challenge.EvmProof.DataStepper.runInstr,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
-  have hpc : (stG input 246 (UInt256.ofNat 4708 :: UInt256.ofNat 1 :: spentCells input)).pc.toNat =
+  have hpc : (stG input 246 (UInt256.ofNat 4709 :: UInt256.ofNat 1 :: spentCells input)).pc.toNat =
       Artifact.submissionArtifact.instructionPC 155 := by
     rw [pc_direct_77]; rfl
   have hjump : run (tailPath.drop 2)
-      (stG input 246 (UInt256.ofNat 4708 :: UInt256.ofNat 1 :: spentCells input)) =
+      (stG input 246 (UInt256.ofNat 4709 :: UInt256.ofNat 1 :: spentCells input)) =
       some (returnHopState input) :=
     blockOf (opAt 155 .JUMPI) hpc
-      (stepG_jumpi_taken input 246 4708 (UInt256.ofNat 1) (spentCells input)
+      (stepG_jumpi_taken input 246 4709 (UInt256.ofNat 1) (spentCells input)
         (by simp [spentCells]) (by norm_num) (by decide) Artifact.validJumpDest_4708)
   rw [← List.take_append_drop 2 tailPath]
   exact Challenge.EvmProof.DataStepper.runLocatedBlock_append _ _ _ _ _ hpre rfl hjump
@@ -100,14 +100,14 @@ theorem run_tail_target :
       some (returnHopState KnownInputData.targetInput) :=
   run_tail_zero _ reverseAcc_target_zero
 
-/-- The taken `JUMPI` lands on the answer block's `JUMPDEST` 4708 in the tail. -/
+/-- The taken `JUMPI` lands on the answer block's `JUMPDEST` 4709 in the tail. -/
 theorem run_return_hop (input : ByteArray) :
     run returnHopPath (returnHopState input) = some (returnEntry input) := by
-  have p3502 : Artifact.submissionArtifact.instructionPC 3475 = 4708 := Artifact.cgPc3502
-  change run [opAt 3475 .JUMPDEST] (PatternedScan.stS input 4708 (spentCells input)) =
-    some (PatternedScan.stS input 4709 (spentCells input))
-  exact PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3475 4708 _ (by norm_num) p3502)
-    (PatternedScan.stepS_jumpdest input 4708 _ (by simp [spentCells]) (by norm_num))
+  have p3502 : Artifact.submissionArtifact.instructionPC 3478 = 4709 := Artifact.cgPc3502
+  change run [opAt 3478 .JUMPDEST] (PatternedScan.stS input 4709 (spentCells input)) =
+    some (PatternedScan.stS input 4710 (spentCells input))
+  exact PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3478 4709 _ (by norm_num) p3502)
+    (PatternedScan.stepS_jumpdest input 4709 _ (by simp [spentCells]) (by norm_num))
 
 /-- A nonzero accumulator diverts to the generic arm with a two-word suffix. -/
 theorem run_tail_divert_acc (input : ByteArray) (hneAcc : reverseAcc input 10 ≠ 0) :
@@ -171,13 +171,13 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3480 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3482 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3480 := by
+      Artifact.submissionArtifact.instructionPC 3482 := by
     rw [Artifact.cjPc58]; rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3480
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3482
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, spentCells]) (by rfl)

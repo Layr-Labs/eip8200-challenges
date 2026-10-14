@@ -17,6 +17,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 1ee7e50c74712c3762975c9124c6805ce2ded4ae5f9832d336762f997b6d25df.
--- 5247 bytes, 3616 executable instructions; local 98-row replica 647436 clean/dirty.
--- Removes the round-75 filler from kaankolcu's 647499 promoted image (00b4dbb3).
+-- Current decoded SHA-256: 9557558e80d2fb44f96edfa022d3205c01db50baa75579ad35ff743861e736c7.
+-- 5247 bytes, 3618 executable instructions; local 98-row replica 647411 clean/dirty.
+-- Inlines the empty/abc return and removes the shared return marker from the 647436 leader.
