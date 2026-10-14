@@ -47,7 +47,7 @@ private def bailHandled (input : ByteArray) (s : State) (memory : ByteArray)
       (FixedDirectStates.bailState s memory n bsize esize msize)) :
     Handled input (entryState s memory n bsize esize msize) := by
   have htramp := FixedDirectFallbackTrace.gasSteps_bail s memory
-    n bsize esize msize hcode hfork hrun hnp
+    n bsize esize msize
   have hcd : (FixedDirectStates.bigCState s memory n bsize esize msize).executionEnv.calldata
       = input := hdata
   have env : WindowTwentyOneBinding.Environment Artifact.submissionArtifact .Osaka
@@ -128,49 +128,15 @@ def route (input : ByteArray) (s : State) (memory : ByteArray)
             hcode hfork hrun hnp))
     · have hentry := FixedDirectDispatchTrace.gasSteps_entry_other
         s memory n bsize esize msize h3 he hcode hfork hrun hnp
-      by_cases h1 : esize = 1
-      · cases h1
-        have hv : exponentValue input bsize 1 ≠ 3 := by
-          intro hv
-          apply hnot
-          exact ⟨1, Case.three rfl hv⟩
-        exact bailHandled input s memory n bsize 1 msize
-          hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
-          (hentry.trans
-            (FixedDirectValueTrace.gasSteps_threeTest_miss s memory input
-              n bsize msize hb hv hdata hactive hframe.eoff
-              hcode hfork hrun hnp))
-      · exact bailHandled input s memory n bsize esize msize
-          hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
-          (hentry.trans
-            (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
-              n bsize esize msize h1 he hactive hcode hfork hrun hnp))
+      exact bailHandled input s memory n bsize esize msize
+        hcode hfork hrun hnp hdata hstack hvalid hactLe (by omega)
+        (hentry.trans
+          (FixedDirectDispatchTrace.gasSteps_oneWidth_miss s memory
+            n bsize esize msize hcode hfork hrun hnp))
   hit := by
     rcases hraw with ⟨rawBase, hrawRep, hrawForm, hrawLt⟩
     rintro ⟨count, hcase⟩
     cases hcase with
-    | three hsize hvalue =>
-        cases hsize
-        have htoSpecial :=
-          ((FixedDirectDispatchTrace.gasSteps_entry_other s memory
-            n bsize 1 msize (by decide) (by omega) hcode hfork hrun hnp).trans
-          (FixedDirectValueTrace.gasSteps_threeTest_hit s memory input
-            n bsize msize hb hvalue hdata hactive hframe.eoff
-            hcode hfork hrun hnp)).trans
-          (FixedDirectValueTrace.gasSteps_threeHit s memory
-            n bsize 1 msize hcode hfork hrun hnp)
-        have hfixed := FixedDirectHitCorrect.handled_of_fixed input s memory
-          n bsize 1 msize mm minv bM
-          rawBase 1 sub spec
-          hcode hfork hrun hnp hstack hactive hn hn32 hn48 hminv1 hmz hm32 hfull
-          hbsize hesize hmsz hmm
-          (lt_of_lt_of_le Limbs.radix_pos hradix)
-          (Model.coprime_radix_pow_of_odd hodd n) hradix hbMlt hbMform
-          hrawForm
-          (by omega) (by omega)
-          (by simpa [exponentValue] using hvalue)
-          hframe hmod hbase hrawRep hrawLt hone
-        exact prepend htoSpecial hfixed
     | fermat hsize hvalue =>
         cases hsize
         have htoSpecial :=

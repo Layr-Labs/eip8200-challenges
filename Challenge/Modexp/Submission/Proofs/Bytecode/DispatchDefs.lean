@@ -61,7 +61,7 @@ def wordEntryPath :
    pushAt 392 1 32,
    opAt 393 (.Dup ⟨3, by decide⟩),
    opAt 394 .GT,
-   pushAt 395 1 218,
+   pushAt 395 1 219,
    opAt 396 .JUMPI,
    pushAt 397 2 1186,
    opAt 398 (.Dup ⟨1, by decide⟩),
@@ -70,7 +70,7 @@ def wordEntryPath :
    opAt 401 (.Dup ⟨6, by decide⟩),
    opAt 402 (.Dup ⟨8, by decide⟩),
    opAt 403 (.Dup ⟨10, by decide⟩),
-   pushAt 404 1 135,
+   pushAt 404 1 136,
    opAt 405 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
@@ -101,7 +101,7 @@ def wordTailPath := wordRestPath.drop 12
   Artifact.isValidJumpDest_index 385 (by rfl)
 
 @[simp] theorem jump517 :
-    Decode.isValidJumpDest submissionBytecode 135 = true :=
+    Decode.isValidJumpDest submissionBytecode 136 = true :=
   Artifact.isValidJumpDest_index 78 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
@@ -139,7 +139,7 @@ def wordEntryState (input : ByteArray) : State :=
   let expOff := 96 + b
   let modOff := expOff + e
   { Main.headerState input with
-    pc := UInt256.ofNat 135
+    pc := UInt256.ofNat 136
     stack := [UInt256.ofNat b, UInt256.ofNat e, UInt256.ofNat m,
       UInt256.ofNat 96, UInt256.ofNat expOff, UInt256.ofNat modOff,
       UInt256.ofNat 1186, UInt256.ofNat modOff, UInt256.ofNat expOff,

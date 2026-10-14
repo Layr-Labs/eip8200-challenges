@@ -28,8 +28,6 @@ def exponentValue (input : ByteArray) (bsize esize : Nat) : Nat :=
 
 /-- Exact semantic cases recognized by the dispatcher. -/
 inductive Case (input : ByteArray) (bsize esize : Nat) : Nat → Prop
-  | three : esize = 1 → exponentValue input bsize esize = 3 →
-      Case input bsize esize 1
   | fermat : esize = 3 → exponentValue input bsize esize = 65537 →
       Case input bsize esize 16
 
@@ -41,7 +39,7 @@ def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
 at pc 3250. -/
 abbrev entryState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2389 }
+  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2317 }
 
 /-- Exact inherited exponent-loop state restored by every dispatcher miss. -/
 abbrev missState (s : State) (mem : ByteArray)

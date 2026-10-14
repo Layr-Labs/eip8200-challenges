@@ -32,7 +32,7 @@ def zeroProgram : List Instr := stageProgram ++ clearProgram
 /-- After `lowProgram`: `hd` above the operand pointers and the row frame. -/
 def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3245
+  { s with pc := UInt256.ofNat 3226
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
              l1Target n, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
@@ -40,7 +40,7 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
 /-- After staging: `hd` above the width word (pc 3454). -/
 def stagedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (ent w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3259
+  { s with pc := UInt256.ofNat 3240
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              ent, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
@@ -48,7 +48,7 @@ def stagedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
 /-- After staging and clearing the scratch word: `hd` above the width word. -/
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3264
+  { s with pc := UInt256.ofNat 3245
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
@@ -58,7 +58,7 @@ theorem run_stageGen (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hact : 88 ≤ s.activeWords.toNat) (hnpos : 0 < n) (hn : n ≤ 8) (hpa : pa+32*n ≤ 2816)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n)) :
     runInstructions stageProgram
-      { s with pc := UInt256.ofNat 3245
+      { s with pc := UInt256.ofNat 3226
                stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
                  ent, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
                memory := mem } =
@@ -96,7 +96,7 @@ theorem run_clearGen (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions clearProgram (stagedSetupState s mem hd pb n ent w5 dst ret rest) =
       some { stagedSetupState s (SquarePartialClear.memory mem) hd pb n ent w5 dst ret rest with
-        pc := UInt256.ofNat 3264 } := by
+        pc := UInt256.ofNat 3245 } := by
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
   have hc11 : rest.length+11 < 1024 := by omega
@@ -127,17 +127,17 @@ frame keeps the limb count (not the width word) in the setup's width slot, so th
 normalized selector vanishes and the displaced head is `3562` for both widths. -/
 def cachedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb _n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3245
+  { s with pc := UInt256.ofNat 3226
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
-             UInt256.ofNat 3367, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             UInt256.ofNat 3347, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := mem }
 
 /-- `clearedSetupState` for the square frame (row head 3562). -/
 def clearedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3264
+  { s with pc := UInt256.ofNat 3245
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
-             UInt256.ofNat 3367, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             UInt256.ofNat 3347, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
 
 theorem run_zero_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -147,8 +147,8 @@ theorem run_zero_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n)) :
     runInstructions zeroProgram (cachedSetupStateSq s mem hd pa pb n w5 dst ret rest) =
       some (clearedSetupStateSq s (stageW mem pa n) hd pb n w5 dst ret rest) := by
-  have h1 := run_stageGen s mem hd pa pb n (UInt256.ofNat 3367) w5 dst ret rest hcap hact hnpos hn hpa hs32
-  have h2 := run_clearGen s (stageW mem pa n) hd pb n (UInt256.ofNat 3367) w5 dst ret rest hcap hact
+  have h1 := run_stageGen s mem hd pa pb n (UInt256.ofNat 3347) w5 dst ret rest hcap hact hnpos hn hpa hs32
+  have h2 := run_clearGen s (stageW mem pa n) hd pb n (UInt256.ofNat 3347) w5 dst ret rest hcap hact
   have h := runInstructions_append_some _ _ _ _ _ h1 h2
   simpa only [zeroProgram, cachedSetupStateSq, stagedSetupState, clearedSetupStateSq,
     SquarePartialClear.readWord_outside _ 128 (Or.inl (by decide))] using h
@@ -159,16 +159,16 @@ block) zeroes the whole `64 + 32n` block first, exactly as the old in-setup
 `CALLDATACOPY` did, then jumps to the multiply entry (pc 3383). -/
 def preclearProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2688, .op .MLOAD, .push 1 64, .op .ADD, .op .CALLDATASIZE,
-   .push 2 2048, .op .CALLDATACOPY, .push 2 3189, .op .JUMP]
+   .push 2 2048, .op .CALLDATACOPY, .push 2 3181, .op .JUMP]
 
 theorem run_preclear (s : State) (mem : ByteArray) (n : Nat) (st : List UInt256)
     (hcap : st.length ≤ 1010)
     (hact : 88 ≤ s.activeWords.toNat) (hn : n ≤ 8)
     (hcds : s.executionEnv.calldata.size < 115792089237316195423570985008687907853269984665640564039457584007913129639936)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3189 = true) :
-    runInstructions preclearProgram { s with pc := UInt256.ofNat 5490, stack := st, memory := mem } =
-      some { s with pc := UInt256.ofNat 3189, stack := st, memory := mpZeroed s mem n } := by
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3181 = true) :
+    runInstructions preclearProgram { s with pc := UInt256.ofNat 5462, stack := st, memory := mem } =
+      some { s with pc := UInt256.ofNat 3181, stack := st, memory := mpZeroed s mem n } := by
   have hc0 : st.length < 1024 := by omega
   have hc1 : st.length+1 < 1024 := by omega
   have hc2 : st.length+2 < 1024 := by omega
@@ -183,7 +183,7 @@ theorem run_preclear (s : State) (mem : ByteArray) (n : Nat) (st : List UInt256)
     Nat.mod_eq_of_lt s.activeWords.val.isLt
   have h9344 : (2688 : UInt256).toNat = 2688 := by decide
   have h8192 : (2048 : UInt256).toNat = 2048 := by decide
-  have h3383 : (3189 : UInt256).toNat = 3189 := by decide
+  have h3383 : (3181 : UInt256).toNat = 3181 := by decide
   have h64 : (64 : UInt256) = UInt256.ofNat 64 := by decide
   simp (config := { maxSteps := 200000 }) [preclearProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     mpZeroed, hs32, hjump, h3383,
@@ -256,7 +256,7 @@ theorem run_pointersJump_sq (s : State) (mem : ByteArray) (hd : UInt256) (pb n :
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816) (hn : n ≤ 8)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions pointersJumpProgram (clearedSetupStateSq s mem hd pb n w5 dst ret rest) =
-      some (outState s (SquarePartialClear.memory mem) pb n 0 hd (UInt256.ofNat 3367) w5 dst ret rest) := by
+      some (outState s (SquarePartialClear.memory mem) pb n 0 hd (UInt256.ofNat 3347) w5 dst ret rest) := by
   have hc9 : rest.length + 9 < 1024 := by omega
   have hc10 : rest.length + 10 < 1024 := by omega
   have hc11 : rest.length + 11 < 1024 := by omega

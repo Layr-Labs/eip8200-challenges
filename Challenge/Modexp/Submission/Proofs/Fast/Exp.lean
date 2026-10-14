@@ -134,7 +134,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 trampoline at pc 5466), stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5520
+  { s with pc := UInt256.ofNat 5492
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -148,8 +148,8 @@ writes the square chain to `0x200`), so the caller no longer copies `TS` to
 `BASE` first; the only caller is the fixed-exponent chain. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3189
-           stack := UInt256.ofNat 4268 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3181
+           stack := UInt256.ofNat 4245 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -158,8 +158,8 @@ square count minus one in the frame's `pdst` slot, which the kernel's loop count
 (pc 3471 overwrites the slot before the final product). -/
 def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3189
-           stack := UInt256.ofNat 4268 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3181
+           stack := UInt256.ofNat 4245 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat (k - 1) :: ret :: tail
            memory := mem }
 
@@ -278,7 +278,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 2112 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqLoopCall s mem k ret tail)
-      (retTo s (sqLoopMem k mem) (UInt256.ofNat 747) tail)
+      (retTo s (sqLoopMem k mem) (UInt256.ofNat 690) tail)
   /-- The raw factor retained in ACC decodes the Montgomery square chain. -/
   sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
@@ -316,13 +316,13 @@ def selOf (n k : Nat) : Nat := 1024 + 256 * bitAt n k
 
 /-- `RRL`, pc 1569, at the top of iteration `k`. -/
 def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  { s with pc := UInt256.ofNat 794
+  { s with pc := UInt256.ofNat 727
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
 /-- `BDONE`, pc 1883, where the base chain rejoins. -/
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2389
+  { s with pc := UInt256.ofNat 2317
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -481,20 +481,20 @@ def expByte (input : ByteArray) (bsize i : Nat) : Nat :=
 
 /-- `EB`, pc 1838, at the top of exponent byte `i`. -/
 def ebHead (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
-  { s with pc := UInt256.ofNat 881
+  { s with pc := UInt256.ofNat 809
            stack := UInt256.ofNat i :: outer n bsize esize msize
            memory := mem }
 
 /-- pc 1938, back from the final `MonPro(ACC, ONE)`. -/
 def finHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 749
+  { s with pc := UInt256.ofNat 692
            stack := outer n bsize esize msize
            memory := mem }
 
 /-- The halted state after `RETURN`. -/
 def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 754
+  { s with pc := UInt256.ofNat 696
            stack := outer n bsize esize msize
            memory := mem
            halt := .Returned
@@ -2100,7 +2100,7 @@ instead of at the Montgomery-form conversion call.  `Shift.dispState` is definit
 state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
-      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2465)
+      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2390)
         (outer (Setup.limbs input) (Challenge.Modexp.baseSize input)
           (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)) := rfl
 

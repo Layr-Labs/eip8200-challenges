@@ -89,12 +89,12 @@ theorem run_program (template : State) (pc base modulus exponent : UInt256)
 theorem run_enter (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions program
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 909) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 837) base modulus 16
         ([modulus, exponent] ++ rest)) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 920) base modulus 16
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 848) base modulus 16
       (setupStack modulus exponent rest)) := by
-  have h := run_program template (UInt256.ofNat 909) base modulus exponent rest hrest
-  have hpc : advancePC 11 (UInt256.ofNat 909) = UInt256.ofNat 920 := by decide
+  have h := run_program template (UInt256.ofNat 837) base modulus exponent rest hrest
+  have hpc : advancePC 11 (UInt256.ofNat 837) = UInt256.ofNat 848 := by decide
   rw [hpc] at h
   exact h
 

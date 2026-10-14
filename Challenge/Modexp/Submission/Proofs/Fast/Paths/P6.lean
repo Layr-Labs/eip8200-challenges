@@ -13,31 +13,19 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 556..559, pc 774..779. -/
 def blk1333 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 537 .JUMPDEST,
-   opAt 538 (.Dup ⟨4, by decide⟩),
-   pushAt 539 2 256,
-   opAt 540 .RETURN]
+  [opAt 490 (.Dup ⟨4, by decide⟩),
+   pushAt 491 2 256,
+   opAt 492 .RETURN]
 
 /-- Instructions 1471..1344, pc 2016..2016. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 541 .JUMPDEST,
-   opAt 542 .POP,
-   pushAt 543 2 765,
-   opAt 544 .JUMP]
+  [opAt 493 .JUMPDEST,
+   opAt 494 .POP]
 
 /- `blk1345` (the oversize bail target `BAIL3`, pristine instructions 1345..1350) is
 deleted with the size test that was its only predecessor: nothing jumps to it any more,
 so the bytes are not in the candidate and the block, `bail3State`, `run_sizeCheck_bail`,
 `run_bail3` and their two gas traces in `Fast/Setup.lean` are dead proof code. -/
-
-/-- Instructions 715..717, pc 1053..1056: the six-word bail.  The wide-modulus
-fallback re-reads the header itself, so the live words are no longer dropped and the
-block jumps straight to the fallback entry at pc 236. -/
-def blk1351 :
-    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 545 .JUMPDEST,
-   pushAt 546 1 218,
-   opAt 547 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -151,13 +151,13 @@ theorem run_tailFall (pc0 : Nat) (s : State)
     Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
 
 /-- `R_0`'s reduction cells: 197 instructions from index 4035 (pc 5080). -/
-def bodyBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5080 body :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4035 197 5080 body
+def bodyBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5053 body :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4009 197 5053 body
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- `R_0`'s tail: 12 instructions from index 4232 (pc 5305), falling into the diagonal at 5320. -/
-def tailBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5305 tailFall :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4232 12 5305 tailFall
+def tailBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5278 tailFall :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4206 12 5278 tailFall
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Row 0's reduction: the shared row's carry-cache model, ending at the row-1 diagonal 5320. -/
@@ -172,12 +172,12 @@ noncomputable def suffix_steps (s : State)
     (hm0 : m0 = MachineState.readWord q.memory 160)
     (hpb : pb = MachineState.readWord q.memory 192) :
     GasSteps
-      (TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat 5080)
+      (TnCacheL2Trace.state {s with memory := q.memory} (UInt256.ofNat 5053)
         q.memory (UInt256.lt (tn+q.carry) q.carry) (rowMu q.memory 8) (rowC0 q.memory 8)
         8 0 pbi hd pb ent m32 m128 m64
         (m0 :: tl :: m96 :: inv :: (tn+q.carry) :: aEnd :: dst :: ret :: rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
-        (UInt256.ofNat 5320)
+        (UInt256.ofNat 5293)
         (TnCacheFrameOps.frame (UInt256.ofNat 32+pbi) hd pb ent
           m32 m128 m64
           (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn 8).tn :: aEnd :: dst :: ret :: rest))) := by
@@ -188,10 +188,10 @@ noncomputable def suffix_steps (s : State)
   let tl4 := aEnd :: dst :: ret :: rest
   have htl4 : tl4.length ≤ 1001 := by simp only [tl4, List.length_cons]; omega
   let tail := m0 :: tl :: m96 :: inv :: (tn+q.carry) :: tl4
-  have hreduce := run_body st 5080 q.memory flag (rowMu q.memory 8)
+  have hreduce := run_body st 5053 q.memory flag (rowMu q.memory 8)
     (rowC0 q.memory 8) pbi hd pb ent (tn+q.carry) m128
     tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact he hcache hm0 hpb
-  have htailrun := run_tailFall (5080+225)
+  have htailrun := run_tailFall (5053+225)
     {s with memory := mem2} carry2 flag pbi hd pb ent m32
     m128 m64 m0 tl m96 inv (tn+q.carry) tl4 htl4 hact
   have hflag : UInt256.lt (tn+q.carry+carry2) carry2+flag =
@@ -200,33 +200,33 @@ noncomputable def suffix_steps (s : State)
     simp only [Challenge.EvmProof.Word.word_toNat_add, Nat.add_comm]
   rw [hflag] at htailrun
   have hlast : runInstructions tailFall
-      (TnCacheLastTrace.lastState st (UInt256.ofNat (5080+225))
+      (TnCacheLastTrace.lastState st (UInt256.ofNat (5053+225))
         q.memory flag (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
         pbi hd pb ent m32 m128 m64 tail) =
       some (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
-        (UInt256.ofNat 5320)
+        (UInt256.ofNat 5293)
         (TnCacheFrameOps.frame (UInt256.ofNat 32+pbi) hd pb ent
           m32 m128 m64 (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn 8).tn :: tl4))) := by
     simpa only [TnCacheLastTrace.lastState, tail, tl4, st, framed, mem2, carry2,
       TnCacheSquareModel.fromL1, flag, List.cons_append, List.nil_append, Nat.reduceAdd] using htailrun
   have g1 : GasSteps
-      (TnCacheL2Trace.state st (UInt256.ofNat 5080) q.memory flag
+      (TnCacheL2Trace.state st (UInt256.ofNat 5053) q.memory flag
         (rowMu q.memory 8) (rowC0 q.memory 8) 8 0 pbi hd pb ent m32
         m128 m64 tail)
-      (TnCacheLastTrace.lastState st (UInt256.ofNat (5080+225))
+      (TnCacheLastTrace.lastState st (UInt256.ofNat (5053+225))
         q.memory flag (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
         pbi hd pb ent m32 m128 m64 tail) := by
     exact bodyBlock.steps (env.transfer rfl rfl) rfl hreduce
   have hpc : (TnCacheLastTrace.lastState st
-      (UInt256.ofNat (5080+225)) q.memory flag
+      (UInt256.ofNat (5053+225)) q.memory flag
       (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
       pbi hd pb ent m32 m128 m64 tail).pc =
-      UInt256.ofNat 5305 := by
-    change UInt256.ofNat (5080+225) = UInt256.ofNat 5305
+      UInt256.ofNat 5278 := by
+    change UInt256.ofNat (5053+225) = UInt256.ofNat 5278
     rfl
   have g2 := tailBlock.steps
     (s := TnCacheLastTrace.lastState st
-      (UInt256.ofNat (5080+225)) q.memory flag
+      (UInt256.ofNat (5053+225)) q.memory flag
       (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
       pbi hd pb ent m32 m128 m64 tail)
     (env.transfer rfl rfl) hpc hlast

@@ -201,11 +201,11 @@ def gasSteps_lazyFlag8 (s : State) (X : ByteArray) (ret : UInt256) (tail : List 
     (hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true)
     (hs : MachineState.readWord X 2688 = UInt256.ofNat (32 * 8))
     (hflag : (MachineState.readWord X 2080).toNat ≠ 0) :
-    Challenge.EvmProof.GasSteps (LazyGate.atState s X 4237 (UInt256.ofNat 2368) ret tail)
+    Challenge.EvmProof.GasSteps (LazyGate.atState s X 4214 (UInt256.ofNat 2368) ret tail)
       { s with pc := ret, stack := tail, memory := sub8 X } := by
   have env := SquareRow.environment s hcode hfork hrun hnp
   have hc := LazyCsub.gateBlock.steps
-    (env.transfer (t := LazyGate.atState s X 4237 (UInt256.ofNat 2368) ret tail) rfl rfl) rfl
+    (env.transfer (t := LazyGate.atState s X 4214 (UInt256.ofNat 2368) ret tail) rfl rfl) rfl
     (LazyGate.run_gate s X (UInt256.ofNat 2368) ret tail hcap hact
       (by simpa only [hcode] using jumpDestSub))
   rw [if_neg hflag] at hc

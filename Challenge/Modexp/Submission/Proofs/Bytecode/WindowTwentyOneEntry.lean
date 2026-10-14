@@ -50,8 +50,8 @@ def widthValueProgram : List Instr :=
 theorem run_width_value (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997) :
     runInstructions widthValueProgram
-      (framed template (UInt256.ofNat 843) ([baseSize, exponentSize, modulusSize] ++ tail)) =
-    some (framed template (UInt256.ofNat 858)
+      (framed template (UInt256.ofNat 771) ([baseSize, exponentSize, modulusSize] ++ tail)) =
+    some (framed template (UInt256.ofNat 786)
       (widthDiff baseSize exponentSize modulusSize :: [baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hcap4 : tail.length + 4 < 1024 := by omega
@@ -98,34 +98,34 @@ theorem run_short_branch (template : State) (pc target value : UInt256)
 
 /-- The width test at 1752 branches straight to the legacy word entry 144 on a
 miss and falls through to the hit tail on a match. -/
-def widthProgram : List Instr := widthValueProgram ++ shortBranchProgram (UInt256.ofNat 135)
+def widthProgram : List Instr := widthValueProgram ++ shortBranchProgram (UInt256.ofNat 136)
 
 theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 135 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 136 = true) :
     runInstructions widthProgram
-      (framed template (UInt256.ofNat 843) ([baseSize, exponentSize, modulusSize] ++ tail)) =
+      (framed template (UInt256.ofNat 771) ([baseSize, exponentSize, modulusSize] ++ tail)) =
     some (framed template
       (if (widthDiff baseSize exponentSize modulusSize).toNat = 0
-        then UInt256.ofNat 861 else UInt256.ofNat 135)
+        then UInt256.ofNat 789 else UInt256.ofNat 136)
       ([baseSize, exponentSize, modulusSize] ++ tail)) := by
   have hv := run_width_value template baseSize exponentSize modulusSize tail htail
-  have ht := run_short_branch template (UInt256.ofNat 858) (UInt256.ofNat 135)
+  have ht := run_short_branch template (UInt256.ofNat 786) (UInt256.ofNat 136)
     (widthDiff baseSize exponentSize modulusSize) ([baseSize, exponentSize, modulusSize] ++ tail)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
-  have hpc : advancePC 3 (UInt256.ofNat 858) = UInt256.ofNat 861 := by decide
+  have hpc : advancePC 3 (UInt256.ofNat 786) = UInt256.ofNat 789 := by decide
   simpa only [widthProgram, framed, hpc] using both
 
 /-- Hit tail at 861: drop the two copies on top of the route frame and enter the
 general-width entry at 103 with the remaining ten words. -/
-def hitTailProgram : List Instr := [.op .POP, .op .POP, .push 1 103, .op .JUMP]
+def hitTailProgram : List Instr := [.op .POP, .op .POP, .push 1 101, .op .JUMP]
 
 theorem run_hit_tail (template : State) (x y : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 103 = true) :
-    runInstructions hitTailProgram (framed template (UInt256.ofNat 861) (x :: y :: rest)) =
-    some (framed template (UInt256.ofNat 103) rest) := by
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 101 = true) :
+    runInstructions hitTailProgram (framed template (UInt256.ofNat 789) (x :: y :: rest)) =
+    some (framed template (UInt256.ofNat 101) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
@@ -140,51 +140,30 @@ def baseProgram : List Instr :=
 
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 813) (value :: rest)) =
-    some (framed template (UInt256.ofNat 814) (value :: rest)) := by
+    runInstructions baseProgram (framed template (UInt256.ofNat 745) (value :: rest)) =
+    some (framed template (UInt256.ofNat 746) (value :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 
-/-- 873: keep a spare copy of the modulus word under the working copy and
-preload calldata offset 96. -/
+/-- 746: keep a spare copy of the modulus word under the working copy and copy the
+width-normalized base word the entry left at depth two under the modulus. -/
 def modulusProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 96]
+  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩)]
 
+set_option linter.unusedSimpArgs false in
 theorem run_modulus (template : State)
-    (value : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 814) (value :: rest)) =
-    some (framed template (UInt256.ofNat 817)
-      (UInt256.ofNat 96 :: value :: value :: rest)) := by
+    (value base : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
+    (hbase : rest[1]? = some base) :
+    runInstructions modulusProgram (framed template (UInt256.ofNat 746) (value :: rest)) =
+    some (framed template (UInt256.ofNat 748)
+      (base :: value :: value :: rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
   have hcap3 : rest.length + 3 < 1024 := by omega
-  have h96Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
   simp [runInstructions, modulusProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hcap1, hcap2, h96Word, Challenge.EvmProof.Word.succ_ofNat_mod,
+    hcap1, hcap2, hbase, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
-/-- 876: load the base word at the preloaded calldata offset 96 and shift it right by
-the width amount kept at depth two under the two modulus copies
-(`8 * (32 - baseSize)`, zero for a full 32-byte base). -/
-def normalizeProgram : List Instr :=
-  [.op .CALLDATALOAD, .op (.Dup ⟨4, by decide⟩), .op .SHR]
-
-theorem run_normalize (template : State) (modulus shift : UInt256)
-    (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hshift : rest[2]? = some shift) :
-    runInstructions normalizeProgram
-      (framed template (UInt256.ofNat 817) (UInt256.ofNat 96 :: modulus :: rest)) =
-    some (framed template (UInt256.ofNat 820)
-      (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift ::
-        modulus :: rest)) := by
-  have hcap2 : rest.length + 2 < 1024 := by omega
-  have hcap3 : rest.length + 3 < 1024 := by omega
-  have h96 : (UInt256.ofNat 96).toNat = 96 := by decide
-  simp [runInstructions, normalizeProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hcap2, hcap3, List.getElem?_cons_succ, hshift, h96,
-    Challenge.EvmProof.Word.succ_ofNat_mod]
-
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry

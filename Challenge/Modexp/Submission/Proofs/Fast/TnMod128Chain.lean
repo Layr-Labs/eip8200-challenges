@@ -57,7 +57,7 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
 /-- Four cells; the first takes modulus[192] from frame word `pb` (p2), the second reads
 modulus[160] from the `m0` frame slot and the third modulus[128] from the cached frame slot. -/
 def prefixProgram : List Instr :=
-  ((([.op .JUMPDEST] ++ TnCacheL2Trace.l2ProgramFrame 2304 2336) ++
+  ((TnCacheL2Trace.l2ProgramFrame 2304 2336 ++
     TnMod128Trace.program160) ++ TnMod128Trace.program) ++
     TnCacheExtraTrace.extraProgramZeroNarrow 2208 2240
 
@@ -72,42 +72,33 @@ theorem run_prefix (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     runInstructions prefixProgram
       (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 8 0
         pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) =
-    some (TnCacheL2Trace.state s (UInt256.ofNat (pc+129)) mem bi mu c0 8 4
+    some (TnCacheL2Trace.state s (UInt256.ofNat (pc+128)) mem bi mu c0 8 4
       pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) := by
   have hrest : (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest).length ≤ 1006 := by
     simp only [List.length_cons]; omega
-  have h0 : runInstructions [.op .JUMPDEST]
-      (TnCacheL2Trace.state s (UInt256.ofNat pc) mem bi mu c0 8 0
-        pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) =
-      some (TnCacheL2Trace.state s (UInt256.ofNat (pc+1)) mem bi mu c0 8 0
-        pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)) := by
-    simp (disch := omega) [runInstructions, Challenge.EvmProof.Stepper.runInstr, TnCacheL2Trace.state,
-      Challenge.EvmProof.Word.succ_ofNat_mod]
-    omega
-  have h1 := TnCacheL2Trace.run_stepFrame s (UInt256.ofNat (pc+1)) mem bi mu c0 8 0
+  have h1 := TnCacheL2Trace.run_stepFrame s (UInt256.ofNat pc) mem bi mu c0 8 0
     2304 2336 (by decide) (by decide)
     pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     hrest hact (by decide) (by decide) hpb
-  have h2 := TnMod128Trace.run_step160 s (UInt256.ofNat (pc+33)) mem bi mu c0
+  have h2 := TnMod128Trace.run_step160 s (UInt256.ofNat (pc+32)) mem bi mu c0
     pbi hd pb ent m32 m128 m64 m0 (tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) hact hm0
-  have h3 := TnMod128Trace.run_step s (UInt256.ofNat (pc+65)) mem bi mu c0
+  have h3 := TnMod128Trace.run_step s (UInt256.ofNat (pc+64)) mem bi mu c0
     pbi hd pb ent m32 m128 m64 (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)
     hrest hact hcache
-  have h4 := TnCacheExtraTrace.run_extraStepZeroNarrow s (UInt256.ofNat (pc+97)) mem bi mu c0 8 3
+  have h4 := TnCacheExtraTrace.run_extraStepZeroNarrow s (UInt256.ofNat (pc+96)) mem bi mu c0 8 3
     96 2208 2240 (by decide) (by decide) (by decide) (by decide)
     pbi hd pb ent m32 m128 tl m64 m0 aEnd m96 inv tn dst ret rest hcap hact (by decide) (by decide) hc
   simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, Nat.reduceAdd, Fin.val_ofNat] at h1 h2 h3 h4
-  have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
-  have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
-  have h0123 := runInstructions_append_some _ _ _ _ _ h012 h3
-  exact runInstructions_append_some _ _ _ _ _ h0123 h4
+  have h12 := runInstructions_append_some _ _ _ _ _ h1 h2
+  have h123 := runInstructions_append_some _ _ _ _ _ h12 h3
+  exact runInstructions_append_some _ _ _ _ _ h123 h4
 
 
 def fullProgram (n : Nat) : List Instr :=
   if n = 4 then suffix else prefixProgram ++ suffix
 
-def fullSize (n : Nat) : Nat := if n = 4 then 98 else 227
+def fullSize (n : Nat) : Nat := if n = 4 then 98 else 226
 
 /-- All reduction cells preserve the arbitrary cached carry slot and consume mu. -/
 theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
@@ -130,7 +121,7 @@ theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
         rest hcap hact (by decide) (by decide) hc
   · have hp := run_prefix s pc mem bi mu c0 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
       rest hcap hact hc hcache (hm0 rfl) (hpb rfl)
-    have hs := run_suffix s (pc+129) mem bi mu c0 8 4 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
+    have hs := run_suffix s (pc+128) mem bi mu c0 8 4 pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret
       rest hcap hact (by decide) (by decide) hc
     have both := runInstructions_append_some _ _ _ _ _ hp hs
     simpa [fullProgram, fullSize, Nat.add_assoc] using both

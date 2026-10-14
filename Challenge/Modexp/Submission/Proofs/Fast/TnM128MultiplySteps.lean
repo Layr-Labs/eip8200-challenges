@@ -22,31 +22,31 @@ noncomputable def finish_steps (s : State)
     (w3 ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps (rowState s z n n w3 ent tl inv m0 aEnd m96 m64 m32 dst ret rest)
-      (framed {s with memory := lift z.memory z.tn} (UInt256.ofNat 3923) (dst :: ret :: rest)) := by
+      (framed {s with memory := lift z.memory z.tn} (UInt256.ofNat 3902) (dst :: ret :: rest)) := by
   let tail := m0 :: tl :: m96 :: inv :: z.tn :: aEnd :: dst :: ret :: rest
   let st : State := {s with memory := z.memory}
   let aft : State := {s with memory := lift z.memory z.tn}
   let stack := TnCacheFrameOps.frame (qptr n n) (UInt256.ofNat (headPC n))
     w3 ent m32 (MachineState.readWord z.memory 128) m64 tail
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hhd : headPC n = 3333 ∨ headPC n = 5376 := by
+  have hhd : headPC n = 3313 ∨ headPC n = 5349 := by
     rcases hn with rfl | rfl
     · exact Or.inr rfl
     · exact Or.inl rfl
-  have hg := TnCacheExitTrace.run_guard st 3895 (headPC n) hhd (qptr n n)
+  have hg := TnCacheExitTrace.run_guard st 3874 (headPC n) hhd (qptr n n)
     w3 ent m32 (MachineState.readWord z.memory 128) m64 tail htail
   have g0 := TnM128L1Blocks.guard.steps
-    (s := framed st (UInt256.ofNat 3895) stack) (env.transfer rfl rfl) rfl hg
-  have hf := TnCacheFrameOps.run_flush13 3904 st (qptr n n) (UInt256.ofNat (headPC n))
+    (s := framed st (UInt256.ofNat 3874) stack) (env.transfer rfl rfl) rfl hg
+  have hf := TnCacheFrameOps.run_flush13 3883 st (qptr n n) (UInt256.ofNat (headPC n))
     w3 ent m32 (MachineState.readWord z.memory 128) m64
     m0 tl m96 inv z.tn (aEnd :: dst :: ret :: rest) (by simp only [List.length_cons]; omega) hact
   have g1 := TnM128CandidateBlocks.flush.steps
-    (s := framed st (UInt256.ofNat 3904) stack) (env.transfer rfl rfl) rfl hf
-  have hd := TnCacheExitTrace.run_drop aft 3909 (qptr n n) (UInt256.ofNat (headPC n))
+    (s := framed st (UInt256.ofNat 3883) stack) (env.transfer rfl rfl) rfl hf
+  have hd := TnCacheExitTrace.run_drop aft 3888 (qptr n n) (UInt256.ofNat (headPC n))
     w3 ent m32 (MachineState.readWord z.memory 128) m64
     m0 tl m96 inv z.tn aEnd dst ret rest hcap
   have g2 := TnM128L1Blocks.drop.steps
-    (s := framed aft (UInt256.ofNat 3909) stack) (env.transfer rfl rfl) rfl hd
+    (s := framed aft (UInt256.ofNat 3888) stack) (env.transfer rfl rfl) rfl hd
   simpa only [rowState, if_neg (Nat.lt_irrefl n), st, aft, stack, tail] using (g0.trans g1).trans g2
 
 /-- The complete ordinary multiply loop and cache flush compute precisely the
@@ -64,7 +64,7 @@ noncomputable def multiply_steps (s : State)
     (hw3 : n = 8 → w3 = MachineState.readWord z.memory 192) :
     GasSteps (rowState s z n 0 w3 ent tl inv m0 aEnd m96 m64 m32 dst ret rest)
       (framed {s with memory := CarryRowModel.rowsCarry (lift z.memory z.tn) pa 256 n n}
-        (UInt256.ofNat 3923) (dst :: ret :: rest)) := by
+        (UInt256.ofNat 3902) (dst :: ret :: rest)) := by
   have hr := rows_steps s env z pa n hn w3 ent tl inv m0 aEnd m96 m64 m32 dst ret rest
     hcap hact hpa ha hc hw3 n le_rfl
   have hf := finish_steps s env (rows z pa 256 n n) n hn

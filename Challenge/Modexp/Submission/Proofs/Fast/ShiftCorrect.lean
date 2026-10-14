@@ -30,8 +30,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 theorem jumpD4643 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-    (UInt256.ofNat 2465).toNat = true :=
-  Exp.jumpD 2465 (by decide) jumpDest4608
+    (UInt256.ofNat 2390).toNat = true :=
+  Exp.jumpD 2390 (by decide) jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -191,6 +191,33 @@ theorem fastRepresents_seed (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n
 
 /-! ## The dispatcher case split -/
 
+/-- The fast path's entry check leaves the leading modulus word with bit 255 set. -/
+theorem fastSetup_topBit (input : ByteArray) (hpath : Setup.FastPath input) :
+    R1.TopBitSet (Setup.fastSetupMemory input) := by
+  have hn : 2 ≤ Setup.limbs input := Setup.limbs_ge_two input hpath.1
+  have hmod := Setup.fastSetup_modulus input hpath
+  have hlimb : (MachineState.readWord (Setup.fastSetupMemory input) 0).toNat =
+      Setup.modulus input / Limbs.radix ^ (Setup.limbs input - 1) % Limbs.radix := by
+    simpa using Model.readWord_of_fastRepresents hmod (j := 0) (by omega)
+  have hsplit := Setup.modulus_split input hpath.1
+  have htail := Setup.modulus_tail_lt input
+  have hRpos : 0 < Limbs.radix ^ (Setup.limbs input - 1) := Nat.pow_pos Limbs.radix_pos
+  have hdiv : Setup.modulus input / Limbs.radix ^ (Setup.limbs input - 1) = Setup.topLimb input := by
+    rw [hsplit, Nat.add_comm, Nat.add_mul_div_right _ _ hRpos, Nat.div_eq_of_lt htail, Nat.zero_add]
+  have hw : Setup.topLimb input = (MachineState.readWord input (Setup.modOffset input)).toNat := by
+    unfold Setup.topLimb
+    rw [Setup.topWidth_eq_32_of_mask input hpath.1 (Setup.fastPath_width input hpath),
+      Challenge.EvmProof.Bytes.readWord_toNat]
+  have hlt : Setup.topLimb input < Limbs.radix := by
+    have := Setup.topLimb_lt input
+    simpa [Limbs.radix] using this
+  have ht := Setup.fastPath_topBit input hpath
+  unfold R1.TopBitSet
+  rw [hlimb, hdiv, Nat.mod_eq_of_lt hlt, hw]
+  rw [Nat.shiftRight_eq_div_pow] at ht
+  by_contra hc
+  exact ht (Nat.div_eq_of_lt (by omega))
+
 /-- Everything after `R1B` returns to the dispatcher. -/
 theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize mm minv : Nat)
@@ -230,7 +257,8 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- component `hcds` cannot supply, and an upper bound on `activeWords`, which the
     -- carrier `Setup.fastSetupState input` fixes at exactly 89.
     (hvalid : Challenge.Modexp.ValidInput input)
-    (hactLe : s.activeWords.toNat ≤ 289) :
+    (hactLe : s.activeWords.toNat ≤ 289)
+    (htop : R1.TopBitSet mem) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (dispState s mem n bsize esize msize) final) ∧
@@ -264,7 +292,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- `modexpBig` at pc 237.  `bigC_correct` re-reads the header from calldata and
     -- is universal in the incoming memory and stack, so the frame the fast path
     -- built is simply discarded.
-    have hbail := gasSteps_missPath s mem n bsize esize msize hn32 e hbword hmatch
+    have hbail := gasSteps_missPath s mem n bsize esize msize hn32 e hbword htop hmatch
     -- `bigCState` is a record update of `s` touching only `pc`, `stack` and
     -- `memory`, so every environment field is `s`'s definitionally; naming that once
     -- with the bail state's spelling is what lets `rw` fire below.
@@ -350,7 +378,7 @@ theorem gasSteps_handled (input : ByteArray)
       (by rw [Setup.fastSetupMemory,
         Exp.readWord_setupMem_high input (Setup.lowLimb input) 2080 hpath.2.1.2.2
           (by omega) (by omega)])
-      hvalid hactLe
+      hvalid hactLe (fastSetup_topBit input hpath)
   exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
     (Setup.gasSteps_fastSetup input hsize hpath) rfl (Exp.fastSetup_entry_eq input)).trans
     tr⟩, hdone, hres⟩

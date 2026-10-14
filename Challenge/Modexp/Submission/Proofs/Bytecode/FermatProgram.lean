@@ -52,12 +52,10 @@ private theorem zero_lt_eq_double_isZero (x : UInt256) :
     simp [h, hzero, Nat.not_le_of_gt hp]
 
 
-/-- Fermat exit at 90: load the base word at calldata 96, shift it right by the
-width amount `s` kept at depth three under the modulus word (`s = 8 * (32 - baseSize)`),
-reduce it modulo the prime and compute `0 < base mod p`. -/
+/-- Fermat exit at 92: copy the (width-normalized) base word kept at depth three under the
+modulus word, reduce it modulo the prime and compute `0 < base mod p`. -/
 def valueProgram : List Instr :=
-  [.push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨3, by decide⟩), .op .SHR,
-   .op .MOD, .push 0 0, .op .LT]
+  [.op (.Dup ⟨2, by decide⟩), .op .MOD, .push 0 0, .op .LT]
 
 /-- 98: store the result word at 0 and return `MSIZE` (one word) bytes from 0. -/
 def exitProgram : List Instr :=
@@ -65,22 +63,19 @@ def exitProgram : List Instr :=
 
 def returnProgram : List Instr := valueProgram ++ exitProgram
 
-private theorem run_value (template : State) (modulus shift : UInt256) (rest : List UInt256)
-    (hrest : rest.length ≤ 999) (hshift : rest[1]? = some shift) :
-    runInstructions valueProgram (framed template (UInt256.ofNat 90) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 98)
-      (UInt256.isZero (UInt256.isZero (UInt256.mod
-        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift)
-          modulus)) :: rest)) := by
+private theorem run_value (template : State) (modulus base : UInt256) (rest : List UInt256)
+    (hrest : rest.length ≤ 999) (hbase : rest[1]? = some base) :
+    runInstructions valueProgram (framed template (UInt256.ofNat 92) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 96)
+      (UInt256.isZero (UInt256.isZero (UInt256.mod base modulus)) :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hc3 : rest.length + 3 < 1024 := by omega
-  have h96 : (UInt256.ofNat 96).toNat = 96 := by decide
   simp (config := { maxSteps := 500000 }) [valueProgram,
-    runInstructions, framed, hshift, h96,
-    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3,
+    runInstructions, framed, hbase,
+    Challenge.EvmProof.Stepper.runInstr, hc1, hc2,
     Challenge.EvmProof.Word.literal_eq_ofNat, zero_lt_eq_double_isZero,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+    Challenge.EvmProof.Word.succ_ofNat_mod]
   rfl
 
 /-- The exit on untouched memory: `MSIZE` reads exactly one word after the store. -/
@@ -103,27 +98,23 @@ theorem run_exit (template : State) (pc word : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     advancePC, succ_eq_add, word_add_assoc]
 
-theorem run_return (template : State) (modulus shift : UInt256) (rest : List UInt256)
-    (hrest : rest.length ≤ 999) (hshift : rest[1]? = some shift)
+theorem run_return (template : State) (modulus base : UInt256) (rest : List UInt256)
+    (hrest : rest.length ≤ 999) (hbase : rest[1]? = some base)
     (hactive : template.activeWords = UInt256.ofNat 0) :
     WindowTwentyOneMsize.runInstructionsX returnProgram
-      (framed template (UInt256.ofNat 90) (modulus :: rest)) =
-    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 102)
-      (UInt256.isZero (UInt256.isZero (UInt256.mod
-        (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift)
-          modulus))) 0 rest) := by
-  let word := UInt256.isZero (UInt256.isZero (UInt256.mod
-    (UInt256.shiftRight (MachineState.readWord template.executionEnv.calldata 96) shift)
-      modulus))
-  have hv := run_value template modulus shift rest hrest hshift
+      (framed template (UInt256.ofNat 92) (modulus :: rest)) =
+    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 100)
+      (UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))) 0 rest) := by
+  let word := UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))
+  have hv := run_value template modulus base rest hrest hbase
   have hvx : WindowTwentyOneMsize.runInstructionsX valueProgram
-      (framed template (UInt256.ofNat 90) (modulus :: rest)) =
-      some (framed template (UInt256.ofNat 98) (word :: rest)) := by
+      (framed template (UInt256.ofNat 92) (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 96) (word :: rest)) := by
     rw [WindowTwentyOneMsize.runInstructionsX_eq valueProgram (by decide)]
     exact hv
-  have hr := run_exit template (UInt256.ofNat 98) word hactive rest (by omega)
+  have hr := run_exit template (UInt256.ofNat 96) word hactive rest (by omega)
   have both := WindowTwentyOneMsize.runInstructionsX_append_some _ _ _ _ _ hvx hr
-  have hpc : advancePC 4 (UInt256.ofNat 98) = UInt256.ofNat 102 := by decide
+  have hpc : advancePC 4 (UInt256.ofNat 96) = UInt256.ofNat 100 := by decide
   simpa only [returnProgram, hpc, word] using both
 
 

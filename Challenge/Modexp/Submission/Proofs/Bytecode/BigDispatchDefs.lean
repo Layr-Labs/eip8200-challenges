@@ -63,7 +63,7 @@ def bigCheckComparePath :
 /-- `PUSH1 236; JUMPI` (pc 580..582): the taken branch is the fallback entry itself. -/
 def bigCheckJumpPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 395 1 218,
+  [pushAt 395 1 219,
    opAt 396 .JUMPI]
 
 def bigCheckPath := bigCheckExpPath ++ bigCheckModPath ++
@@ -95,7 +95,7 @@ header dispatcher's taken `JUMPI` lands here with the five header words
 `[modOff, expOff, msize, esize, bsize]` still live. -/
 def bigEntryState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 218
+    pc := UInt256.ofNat 219
     stack := [UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
@@ -103,7 +103,7 @@ def bigEntryState (input : ByteArray) : State :=
 /-- The dispatcher's exit state is the fallback's entry state. -/
 abbrev bigCheckedState (input : ByteArray) : State := bigEntryState input
 
-theorem jump704 : Decode.isValidJumpDest submissionBytecode 218 = true :=
+theorem jump704 : Decode.isValidJumpDest submissionBytecode 219 = true :=
   Artifact.isValidJumpDest_index 148 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigDispatch

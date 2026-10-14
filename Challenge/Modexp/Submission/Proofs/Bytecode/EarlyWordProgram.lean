@@ -22,7 +22,7 @@ def sizeProgram : List Instr := sizeValueProgram ++ sizeBranchProgram
 /-- 16..21: the base size difference. -/
 def widthValueProgram : List Instr := [.push 0 0, .op .CALLDATALOAD, .push 1 32, .op .XOR]
 
-def widthBranchProgram : List Instr := [.push 1 103, .op .JUMPI]
+def widthBranchProgram : List Instr := [.push 1 101, .op .JUMPI]
 
 /-- 16..24: the base size test. A base size other than 32 enters the general-width
 entry at 103 with an empty stack; 32 falls through to the fast entry at 24. -/
@@ -42,7 +42,7 @@ structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   /-- The fixed-vector recogniser's entry, where a size miss lands. -/
   legacyJump : Decode.isValidJumpDest artifact.code 578 = true
   /-- The general-width entry. -/
-  genJump : Decode.isValidJumpDest artifact.code 103 = true
+  genJump : Decode.isValidJumpDest artifact.code 101 = true
 
 theorem header_lt (input : ByteArray) (offset : Nat) :
     Precompile.bytesToNatPadded input offset 32 < 2 ^ 256 := by
@@ -133,10 +133,10 @@ theorem run_width_value (template : State) (input : ByteArray)
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 theorem run_width_branch (template : State) (value : UInt256)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 103 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 101 = true) :
     runInstructions widthBranchProgram (framed template (UInt256.ofNat 21) [value]) =
       some (framed template
-        (if value.toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 103) []) := by
+        (if value.toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 101) []) := by
   by_cases hv : value.toNat = 0 <;>
     simp [widthBranchProgram, runInstructions, framed, Stepper.runInstr, UInt256.isTrue,
       hv, hjump, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
@@ -144,10 +144,10 @@ theorem run_width_branch (template : State) (value : UInt256)
 
 theorem run_width (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 103 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 101 = true) :
     runInstructions widthTestProgram (framed template (UInt256.ofNat 16) []) =
       some (framed template
-        (if (baseDiff input).toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 103) []) :=
+        (if (baseDiff input).toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 101) []) :=
   runInstructions_append_some _ _ _ _ _ (run_width_value template input hdata)
     (run_width_branch template (baseDiff input) hjump)
 

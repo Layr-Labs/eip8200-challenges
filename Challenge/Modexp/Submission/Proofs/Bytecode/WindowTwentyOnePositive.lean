@@ -31,10 +31,11 @@ def routeStack (input : ByteArray) : List UInt256 :=
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
 
-/-- The width shift `8 * (32 - baseSize)` the route head applies to the base word
-(zero for a full 32-byte base). -/
+/-- The base word as the route head leaves it: shifted right by the width `8 * (32 - baseSize)`
+(unshifted for a full 32-byte base). The entries at 24 and 101 compute it once; the Fermat exit and
+the core entry copy it. -/
 def shiftWord (input : ByteArray) : UInt256 :=
-  UInt256.ofNat ((32 - baseSize input) * 8)
+  WindowTwentyOneInput.baseWord input
 
 /-- The core frame the entries at 24 and 103 build under the modulus word: the
 exponent word, the width shift, then whatever the entry leaves below. -/
@@ -59,7 +60,7 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
     Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
 
 def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 820)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 748)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 

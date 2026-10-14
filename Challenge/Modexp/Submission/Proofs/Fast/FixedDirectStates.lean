@@ -18,39 +18,39 @@ abbrev outer := Exp.outer
 
 def otherWidth (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2398
+  { s with pc := UInt256.ofNat 2326
            stack := outer n bsize esize msize
            memory := mem }
 
-/-- `e3go` (pc 2471): the E3 hit block.  The merged one-byte test falls through into it, and
-the shift cleanup tail jumps to it directly after the E3 conversion. -/
+/-- `e3go` (pc 2329): the E3 hit block.  The shift cleanup tail jumps to it after the E3
+conversion. -/
 def e3go (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2417
+  { s with pc := UInt256.ofNat 2329
            stack := outer n bsize esize msize
            memory := mem }
 
 def check65537 (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2424
+  { s with pc := UInt256.ofNat 2350
            stack := outer n bsize esize msize
            memory := mem }
 
 def special (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2444
+  { s with pc := UInt256.ofNat 2369
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def square (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2444
+  { s with pc := UInt256.ofNat 2369
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
 def squareReturn (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2568
+  { s with pc := UInt256.ofNat 2525
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -60,7 +60,7 @@ then still the one the caller pushed), and for the unaccelerated widths the
 caller's own loop falls through to it with the count decremented to `0`. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
-  { s with pc := UInt256.ofNat 2577
+  { s with pc := UInt256.ofNat 2534
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
@@ -69,7 +69,7 @@ pc 1054.  All three checks (`esize = 1`, first byte `3`, top three bytes `65537`
 `JUMPI` here instead of copying `R1` to `ACC` and rejoining the generic loop. -/
 def bailState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 761
+  { s with pc := UInt256.ofNat 219
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -78,7 +78,7 @@ re-reads the header from calldata and is universal in the incoming memory and
 stack, so the frame the fast path built is simply discarded. -/
 def bigCState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 218
+  { s with pc := UInt256.ofNat 219
            stack := outer n bsize esize msize
            memory := mem }
 
@@ -86,7 +86,7 @@ def bigCState (s : State) (mem : ByteArray)
 all three misses divert to `bailState`. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2465
+  { s with pc := UInt256.ofNat 2390
            stack := outer n bsize esize msize
            memory := mem }
 

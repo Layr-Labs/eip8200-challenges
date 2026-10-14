@@ -90,14 +90,14 @@ theorem rt_result (s : State) (pc : Nat) (stk : List UInt256) (mem : ByteArray)
 is metered, and the only integration parameters are certified artifact blocks. -/
 theorem bigC_correct {artifact : ProgramArtifact} (sb : SetupBlocks artifact)
     (eb : ExpBlocks artifact) (mb : MulBlocks artifact) (ab : Unsigned.Blocks artifact)
-    (s : State) (env : Environment artifact .Osaka s) (hpc : s.pc = UInt256.ofNat 218)
+    (s : State) (env : Environment artifact .Osaka s) (hpc : s.pc = UInt256.ofNat 219)
     (hstk : s.stack.length < 900) (haw : s.activeWords.toNat ≤ 289)
     (hcs : s.callStack = []) (hvalid : ValidInput s.executionEnv.calldata)
     (hpos : 0 < modulusSize s.executionEnv.calldata) :
     ∃ final : State, Nonempty (GasSteps s final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec s.executionEnv.calldata) := by
   obtain ⟨hsz, hbl, hel, hml⟩ := hvalid
-  have hs : st s 218 s.stack s.memory s.activeWords = s := by
+  have hs : st s 219 s.stack s.memory s.activeWords = s := by
     unfold st
     rw [← hpc]
   have hb : MachineState.readWord s.executionEnv.calldata 0 =

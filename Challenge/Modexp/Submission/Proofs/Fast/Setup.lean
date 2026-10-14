@@ -370,11 +370,11 @@ def fallbackState (s : State) : State :=
 /-- Where the `msize` guard branch lands: the fixed-vector recogniser's entry (pc 795)
 with an empty stack; its miss exits restore `fallbackState`. -/
 def memoEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 765, stack := [] }
+  { s with pc := UInt256.ofNat 699, stack := [] }
 
 /-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 755, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 697, stack := [UInt256.ofNat (modulusSize input)] }
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
@@ -621,22 +621,22 @@ def outerStack (input : ByteArray) : List UInt256 :=
 
 /-- After the top-limb check (pc 1514). -/
 def oddCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 625
+  { s with pc := UInt256.ofNat 624
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Entry of `BAIL6` (pc 1053): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 761
+  { s with pc := UInt256.ofNat 219
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 /-- Where `BAIL6` lands: the wide-modulus fallback entry (pc 236) with the six live
 words kept.  `modexpBig` re-reads the header from calldata and tolerates any incoming
 stack, so nothing is dropped any more. -/
 def bigBailState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 218
+  { s with pc := UInt256.ofNat 219
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
-theorem jumpDestBig : Decode.isValidJumpDest submissionBytecode 218 = true :=
+theorem jumpDestBig : Decode.isValidJumpDest submissionBytecode 219 = true :=
   Artifact.isValidJumpDest_index 148 (by rfl)
 
 set_option linter.unusedSimpArgs false in
@@ -697,7 +697,7 @@ theorem run_topCheck_bail (s : State) (input : ByteArray)
      topCheckState, bail6State, sizesOkStack, outerStack, hdata, hcode, hrun,
      shr5_limbs input hm, hshr, hmoff', shl5_s32 input hm,
      hmoff, hmodmod, shiftRight_topBit input, htop,
-     isZero_ofNat_zero, jumpDest1826,
+     isZero_ofNat_zero, jumpDestBig,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -727,7 +727,7 @@ theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
 
 /-- State after all four checks passed (pc 1481), before any memory write. -/
 def setupEntryState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 651
+  { s with pc := UInt256.ofNat 649
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 set_option linter.unusedSimpArgs false in
@@ -843,7 +843,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocatedBlock,
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
-       land_one_lastWord input h32, hodd, isZero_ofNat_zero, jumpDest1826,
+       land_one_lastWord input h32, hodd, isZero_ofNat_zero, jumpDestBig,
        lnot_zero_raw, isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -855,7 +855,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocatedBlock,
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
-       land_one_lastWord input h32, jumpDest1826,
+       land_one_lastWord input h32, jumpDestBig,
        lnot_zero_raw, isTrue_lor_iff, List.exchange,
        land_mask_isTrue_of_not_mod (modulusSize input) (modulusSize_lt input) hwidth,
        Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -868,7 +868,7 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Stepper.runLocatedBlock,
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
-       land_one_lastWord input h32, jumpDest1826,
+       land_one_lastWord input h32, jumpDestBig,
        lnot_zero_raw, eq_maxWord_of_eq _ hnprime, isTrue_lor_iff, List.exchange,
        Challenge.EvmProof.Word.literal_eq_ofNat,
        Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -877,29 +877,14 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bail1 (s : State) (input : ByteArray)
-    (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
+    (_hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1341 (bail1State s input) =
       some (memoEntryState s) := by
   simp (config := { maxSteps := 400000 })
     [blk1341, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     bail1State, memoEntryState, hcode, hrun, jumpDest795,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod,
-     Challenge.EvmProof.Word.word_toNat_ofNat]
-
-set_option linter.unusedSimpArgs false in
-theorem run_bail6 (s : State) (input : ByteArray)
-    (hcode : s.executionEnv.code = submissionBytecode) (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1351 (bail6State s input) =
-      some (bigBailState s input) := by
-  simp (config := { maxSteps := 400000 })
-    [blk1351, opAt, pushAt, wfOp,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     bail6State, outerStack, bigBailState, hcode, hrun, jumpDestBig,
+     bail1State, memoEntryState, hrun,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1057,14 +1042,12 @@ def gasSteps_bail1 (s : State) (input : ByteArray)
       (run_bail1 s input hcode hrun) hrun hnp
 
 def gasSteps_bail6 (s : State) (input : ByteArray)
-    (hcode : s.executionEnv.code = submissionBytecode)
-    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+    (_hcode : s.executionEnv.code = submissionBytecode)
+    (_hfork : s.fork = .Osaka) (_hrun : s.halt = .Running)
+    (_hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (bail6State s input) (bigBailState s input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    Artifact.submissionArtifact .Osaka blk1351 hcode hfork
-      (run_bail6 s input hcode hrun) hrun hnp
+  Challenge.EvmProof.GasSteps.refl _
 
 /-! ## The fallback trace
 
@@ -1158,13 +1141,13 @@ theorem fallbackState_initial (input : ByteArray) :
 
 theorem memoEntryState_initial (input : ByteArray) :
     memoEntryState (initialState submissionBytecode input 0) =
-      Main.trampolineState input 765 := rfl
+      Main.trampolineState input 699 := rfl
 
 /-- The two landing sites of a declined fast path, from the public entry state. -/
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
-        (Main.trampolineState input 765))
+        (Main.trampolineState input 699))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
         (bigBailState (initialState submissionBytecode input 0) input))
@@ -1377,16 +1360,15 @@ def setupPathA :
    opAt 481 (.Dup ⟨2, by decide⟩),
    pushAt 482 0 0,
    opAt 483 .CALLDATACOPY,
-   opAt 484 (.Swap ⟨0, by decide⟩),
+   opAt 484 .POP,
    opAt 485 .POP,
-   opAt 486 .POP,
-   pushAt 487 2 2465,
-   opAt 488 .JUMP]
+   pushAt 486 2 2390,
+   opAt 487 .JUMP]
 
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2465
+  { s with pc := UInt256.ofNat 2390
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
@@ -1394,8 +1376,8 @@ def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
 /-- The dispatcher entry `JUMPDEST` (instruction 2033, pc 2592).  The setup path jumps
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2465 = true :=
-  Artifact.isValidJumpDest_index 1938 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2390 = true :=
+  Artifact.isValidJumpDest_index 1878 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
@@ -1823,7 +1805,7 @@ theorem fastSetupState_memory (input : ByteArray) :
 /-- The setup block hands over at the dispatcher entry with a plain outer stack,
 rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2465 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2390 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl

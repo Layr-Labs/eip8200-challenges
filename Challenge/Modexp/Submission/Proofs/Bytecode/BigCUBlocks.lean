@@ -83,9 +83,9 @@ def expBlocks : BigC.U.ExpBlocks Artifact.submissionArtifact where
       j482 := Artifact.isValidJumpDest_index 317 (by rfl) }
 
 def setupBlocks : BigC.U.SetupBlocks Artifact.submissionArtifact where
-  setup := WindowTwentyOneSlice.block Artifact.allWellFormed 148 25 218 BigC.U.setupProgram
+  setup := WindowTwentyOneSlice.block Artifact.allWellFormed 148 25 219 BigC.U.setupProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zLoop := WindowTwentyOneSlice.block Artifact.allWellFormed 173 15 253 BigC.U.zLoopProgram
+  zLoop := WindowTwentyOneSlice.block Artifact.allWellFormed 173 15 254 BigC.U.zLoopProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   zExit := WindowTwentyOneSlice.block Artifact.allWellFormed 188 3 272 BigC.U.zExitProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)

@@ -86,7 +86,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
 entry: the wide fallback at 238 with the base size and 32 on the stack. -/
 def genBigState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 218
+    pc := UInt256.ofNat 219
     stack := [UInt256.ofNat (baseSize input), UInt256.ofNat 32] }
 
 def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
@@ -97,7 +97,7 @@ def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize 
   have s2 := EarlyWordGas.steps_width_miss Artifact.earlyWordPaths
     (initialState submissionBytecode input 0) (environment input) input rfl (by omega)
   have hjump : Decode.isValidJumpDest
-      (initialState submissionBytecode input 0).executionEnv.code 218 = true :=
+      (initialState submissionBytecode input 0).executionEnv.code 219 = true :=
     Artifact.fermatPaths.bigJump
   have hc := FermatNext.run_gen_check (initialState submissionBytecode input 0) [] (by simp) hjump
   have hword : MachineState.readWord
@@ -112,7 +112,7 @@ def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize 
   rw [hword, if_neg hgt] at hc
   have s3 := Artifact.fermatPaths.genCheck.steps
     ((environment input).transfer (t := WindowTwentyOneEntry.framed
-      (initialState submissionBytecode input 0) (UInt256.ofNat 103) []) rfl rfl) rfl hc
+      (initialState submissionBytecode input 0) (UInt256.ofNat 101) []) rfl rfl) rfl hc
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0) _ at s1
   exact (Main.gasSteps_entryHop input).trans ((s1.trans s2).trans s3)
 

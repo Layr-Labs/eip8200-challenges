@@ -32,7 +32,7 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
   phaseSwitch : (n = 4 ∨ n = 8) → ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 1 →
     GasSteps (shiftDoneState (UInt256.ofNat 0) s phaseMem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 28) s (RootE3Phase.phaseSwitch phaseMem n) n bsize esize
+      (shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch phaseMem n) n bsize esize
         msize (n / 4))
   /-- Exit slot `0`: the cleanup tail lands on the exponent dispatcher (2441). -/
   finalTail : ∀ phaseMem : ByteArray,
@@ -43,8 +43,8 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
   /-- Exit slot `28` (after the E3 switch): the cleanup tail lands on `e3go` (2471). -/
   e3Tail : ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
-    GasSteps (shiftDoneState (UInt256.ofNat 28) s phaseMem n bsize esize msize)
-      (frameState s phaseMem 2417 n bsize esize msize)
+    GasSteps (shiftDoneState (UInt256.ofNat 12) s phaseMem n bsize esize msize)
+      (frameState s phaseMem 2329 n bsize esize msize)
 
 theorem phaseSwitch_flag_zero (mem : ByteArray) (n : Nat) (hn8 : n ≤ 8) :
     MachineState.readWord (RootE3Phase.phaseSwitch mem n) 1760 = UInt256.ofNat 0 := by
@@ -97,7 +97,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hhit : Eligible input n bsize esize) :
     GasSteps (dispState s mem n bsize esize msize)
-      (frameState s (e3Final mem input n mm k) 2417 n bsize esize msize) := by
+      (frameState s (e3Final mem input n mm k) 2329 n bsize esize msize) := by
   have hhalf : n / 2 = 2 * k := by omega
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have hquarter : n / 4 = k := by omega
@@ -116,7 +116,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
   have hbaseSwitch := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) hbaseFirst
-  have secondLoop := gasSteps_shiftLoop_count (UInt256.ofNat 28) s
+  have secondLoop := gasSteps_shiftLoop_count (UInt256.ofNat 12) s
     (RootE3Phase.phaseSwitch (stepMems (e3Prepared mem input n) n mm (2 * k)) n)
     n bsize esize msize mm minv _ k (by omega) (by omega) hn hn8 hbs e hm
     (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm) hhit.2.2

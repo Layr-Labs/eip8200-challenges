@@ -358,10 +358,10 @@ theorem run_program (s : State)
 
 /-- Binding to the lane image: 203 instructions from index 3832 (pc 4839), ending at the
 `R_0` copy (pc 5080). -/
-def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4839
-    (program (UInt256.ofNat 3404)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3832 203 4839
-    (program (UInt256.ofNat 3404))
+def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 4812
+    (program (UInt256.ofNat 3384)) :=
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3806 203 4812
+    (program (UInt256.ofNat 3384))
     (by decide) (by rfl) (by rfl) (by decide)
 
 #print axioms run_quotientAC

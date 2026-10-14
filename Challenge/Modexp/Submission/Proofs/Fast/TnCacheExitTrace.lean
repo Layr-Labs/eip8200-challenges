@@ -10,12 +10,12 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast CiosCachedMacCore
 
 def normalGuard : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 5320, .op .EQ, .push 2 3964, .op .JUMPI]
+  [.op (.Dup ⟨1, by decide⟩), .push 2 5293, .op .EQ, .push 2 3942, .op .JUMPI]
 
 def drop : List Instr := List.replicate 14 (.op .POP)
 
 /-- A multiply row head (`hd` is one width's head, 3545 or 5339) falls through the mode test. -/
-theorem run_guard (s : State) (pc hd : Nat) (hhd : hd = 3333 ∨ hd = 5376)
+theorem run_guard (s : State) (pc hd : Nat) (hhd : hd = 3313 ∨ hd = 5349)
     (pbi pb ent tn target inv : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions normalGuard
       (framed s (UInt256.ofNat pc)
@@ -25,7 +25,7 @@ theorem run_guard (s : State) (pc hd : Nat) (hhd : hd = 3333 ∨ hd = 5376)
   have h8 : rest.length+8 < 1024 := by omega
   have h9 : rest.length+9 < 1024 := by omega
   have h10 : rest.length+10 < 1024 := by omega
-  have h4471 : (5320 : UInt256).toNat = 5320 := by decide
+  have h4471 : (5293 : UInt256).toNat = 5293 := by decide
   rcases hhd with rfl | rfl <;>
   simp [normalGuard, TnCacheFrameOps.frame, framed, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, h8, h9, h10,
@@ -61,18 +61,18 @@ theorem run_drop (s : State) (pc : Nat)
 
 theorem run_square_guard (s : State) (pc : Nat)
     (pbi pb ent tn target inv : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006)
-    (hj : Decode.isValidJumpDest s.executionEnv.code 3964 = true) :
+    (hj : Decode.isValidJumpDest s.executionEnv.code 3942 = true) :
     runInstructions normalGuard
       (framed s (UInt256.ofNat pc)
-        (TnCacheFrameOps.frame pbi (UInt256.ofNat 5320) pb ent tn target inv rest)) =
-    some (framed s (UInt256.ofNat 3964)
-      (TnCacheFrameOps.frame pbi (UInt256.ofNat 5320) pb ent tn target inv rest)) := by
+        (TnCacheFrameOps.frame pbi (UInt256.ofNat 5293) pb ent tn target inv rest)) =
+    some (framed s (UInt256.ofNat 3942)
+      (TnCacheFrameOps.frame pbi (UInt256.ofNat 5293) pb ent tn target inv rest)) := by
   have h8 : rest.length+8 < 1024 := by omega
   have h9 : rest.length+9 < 1024 := by omega
   have h10 : rest.length+10 < 1024 := by omega
-  have h4471 : (5320 : UInt256).toNat = 5320 := by decide
-  have h4362 : (3964 : UInt256).toNat = 3964 := by decide
-  have ht : (3964 : UInt256) = UInt256.ofNat 3964 := by decide
+  have h4471 : (5293 : UInt256).toNat = 5293 := by decide
+  have h4362 : (3942 : UInt256).toNat = 3942 := by decide
+  have ht : (3942 : UInt256) = UInt256.ofNat 3942 := by decide
   simp [normalGuard, TnCacheFrameOps.frame, framed, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, h8, h9, h10,
     UInt256.eq, UInt256.isTrue, h4471, h4362, ht, hj]

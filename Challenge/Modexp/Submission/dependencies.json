@@ -1,18 +1,23 @@
 [
   {
+    "submissionId": "4d05a61b-f88d-4cab-810d-840d772abd66",
+    "rationale": "Our own earlier submission (stack-clzep), the current record at 457,505 and the direct base of this image. Every cut in it is in this image; this image adds fourteen byte-level cuts of ours (negun, jdx, bstack, inl693, k3222, k2696, k2465, t790, thr755, thr4291, peep686, e3g, pad133, gpush).",
+    "evidence": "Its bytecode file sha256 is 6038e20b863c5ba3e44e9579d9b5914e7914be70e12987fa7c95e80936c2e65c. This image: 5,540 bytes, 4,429 instructions, -1,650.8 gas per seed paired over 1,000 replica seeds; 138 proof files changed, Solution.lean unchanged."
+  },
+  {
     "submissionId": "49a45e34-1ae7-41cc-878c-7bed9a0f42c4",
     "rationale": "Our own earlier submission (stack-clz): 66bc038a plus our CLZ quotient-estimator cut and leech1996's 97bb2bc5 width tests. It was verified correct and scored 459,752 on its single official draw, so it was not accepted; its cuts are carried here unchanged and this image builds on its tree.",
     "evidence": "Its bytecode file sha256 is 0cf7d7533216cb51db2dc44706174fb350d7899d2b7d38ae10b7b42243239365. Its CLZ step lemma (Proofs/Fast/ClzStep.lean) and ShiftModel bridge are in this tree; the paired replica gain over it is -594.8 gas per seed (31 seeds)."
   },
   {
     "submissionId": "66bc038a-3eac-4bea-908e-0fe1c6d80f7b",
-    "rationale": "Our own earlier submission (stack-h2, h2-newton), the current record at 458,412 and the base of this image. Every cut in it is in this image.",
-    "evidence": "Its bytecode file sha256 is 796161fc3dacc4fb8c35e0b6f1e9873316c0ebe066604d88ff7c5d284a3f34d1. This image adds the clz and 97bb hunks of 49a45e34, deletes unreachable or redundant code (dead, sub3307u, smallexp, f843, d2568) and inlines the first-row n=8 reduction (r0): 5,568 bytes, 4,456 instructions. Solution.lean is unchanged."
+    "rationale": "Our own earlier submission (stack-h2, h2-newton), the record at 458,412 before 4d05a61b, contained in this image through 4d05a61b. Every cut in it is in this image.",
+    "evidence": "Its bytecode file sha256 is 796161fc3dacc4fb8c35e0b6f1e9873316c0ebe066604d88ff7c5d284a3f34d1. Inherited through 4d05a61b; Solution.lean is unchanged."
   },
   {
     "submissionId": "97bb2bc5-6198-42d6-b922-d548d34fc616",
-    "rationale": "Cut taken from leech1996's submission: the two bit-7 width tests become equality tests (site A: `PUSH1 80 AND PUSH0 LT` -> `PUSH1 80 EQ JUMPDEST JUMPDEST` in the kernel setup at pc 3432 in 49a45e34, pc 3218 here; site B: the msplit row-head select `PUSH1 80 DUP15 AND PUSH0 LT` -> `PUSH2 09a0 DUP15 EQ JUMPDEST` at pc 3507 in 49a45e34, pc 3295 here, testing aEnd = 0x9a0), with our proof updates (TnM128SetupPrefix.sel128, TnM128FusedEntry.selTop).",
-    "evidence": "bytecode.hex bytes [3218, 3221) and [3295, 3301) carry the equality form (pcs 3432 and 3507 before this image's deletions shifted them)."
+    "rationale": "Cut taken from leech1996's submission: the two bit-7 width tests become equality tests (site A in the kernel setup, site B the row-head select `PUSH2 09a0 DUP15 EQ` testing aEnd = 0x9a0), carried since 49a45e34. In this image our k3222 folds site A's test and displacement to their constant value (n is 4 or 8 there), and site B's trailing JUMPDEST is deleted (jdx).",
+    "evidence": "Site B's equality form is at bytecode.hex pc 3276 (`61 09a0 8e 14`); site A's result is the constant `PUSH2 0d13` it always produced."
   },
   {
     "submissionId": "abbf9bf4-8c6d-4d0a-b46d-19b28b1f3ec6",

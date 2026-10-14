@@ -89,42 +89,21 @@ theorem run_entry_other (s : State) (memory : ByteArray)
       Challenge.EvmProof.Word.word_toNat_ofNat]
 
 set_option linter.unusedSimpArgs false in
-/-- The merged one-byte test with `esize ≠ 1`: `esize ^ 1 ≠ 0`, so the `OR` is nonzero
-whatever the exponent byte reads, and the `JUMPI` bails to `BAIL6`. -/
+/-- Every width but three jumps to `modexpBig`. -/
 theorem run_oneWidth_miss (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 1024)
-    (hactive : 89 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock oneWidth
       (otherWidth s memory n bsize esize msize) =
       some (FixedDirectStates.bailState s memory n bsize esize msize) := by
-  have helt : esize < 2 ^ 256 := Nat.lt_of_le_of_lt he (by norm_num)
-  have hxor : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize) ≠ 0 := by
-    intro hx
-    have heq' : UInt256.ofNat 1 = UInt256.ofNat esize :=
-      (Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordXor_eq_zero_iff
-        _ _).mp hx
-    have hnat := congrArg UInt256.toNat heq'
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt (by norm_num),
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Nat.mod_eq_of_lt helt] at hnat
-    exact hne hnat.symm
-  have htrue : ∀ x : UInt256, UInt256.isTrue
-      (UInt256.lor x (UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize))) := fun x =>
-    isTrue_lor_right _ _ (isTrue_of_xor_ne _ hxor)
-  have hfix : UInt256.ofNat (MachineState.activeWordsAfter
-      s.activeWords.toNat 2816 32) = s.activeWords :=
-    Exp.activeWords_fix s 2816 32 (by omega) (by omega) hactive
-  simp (config := { maxSteps := 700000 })
+  simp (config := { maxSteps := 400000 })
     [oneWidth, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      otherWidth, FixedDirectStates.bailState, Exp.outer, hcode, hrun, htrue, hfix,
-      Exp.isTrue_one, jumpDestBail,
-      State.activeWordsAfterUInt256,
+      otherWidth, FixedDirectStates.bailState, Exp.outer, hcode, hrun,
+      jumpDestBail,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,
@@ -175,8 +154,7 @@ def gasSteps_entry_other (s : State) (memory : ByteArray)
     (by simpa [entryState, Exp.bDone] using hnp)
 
 def gasSteps_oneWidth_miss (s : State) (memory : ByteArray)
-    (n bsize esize msize : Nat) (hne : esize ≠ 1) (he : esize ≤ 1024)
-    (hactive : 89 ≤ s.activeWords.toNat)
+    (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -185,7 +163,7 @@ def gasSteps_oneWidth_miss (s : State) (memory : ByteArray)
       (otherWidth s memory n bsize esize msize)
       (FixedDirectStates.bailState s memory n bsize esize msize) :=
   sound oneWidth
-    (run_oneWidth_miss s memory n bsize esize msize hne he hactive hcode hrun)
+    (run_oneWidth_miss s memory n bsize esize msize hcode hrun)
     (by simpa [otherWidth, Artifact.submissionArtifact] using hcode)
     (by simpa [otherWidth] using hfork)
     (by simpa [otherWidth] using hrun)

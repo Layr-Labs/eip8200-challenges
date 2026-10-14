@@ -18,9 +18,9 @@ open TnM128SquareRowSteps TnM128SquareTailSteps TnM128ReductionSteps
 with the carry word still in the frame (no flush) and the row pointer at zero. -/
 def exitState (s : State) (mem : ByteArray) (tn : UInt256) (_n : Nat)
     (aprev w3 tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
-  framed {s with memory := mem} (UInt256.ofNat 3964)
-    (TnCacheFrameOps.frame (UInt256.ofNat 0) (UInt256.ofNat 5320) w3
-      (UInt256.ofNat 3663) m32 (MachineState.readWord mem 128) m64
+  framed {s with memory := mem} (UInt256.ofNat 3942)
+    (TnCacheFrameOps.frame (UInt256.ofNat 0) (UInt256.ofNat 5293) w3
+      (UInt256.ofNat 3643) m32 (MachineState.readWord mem 128) m64
       (m0 :: tl :: m96 :: inv :: tn :: aprev :: dst :: ret :: rest))
 
 noncomputable def finish_steps (s : State)
@@ -32,19 +32,19 @@ noncomputable def finish_steps (s : State)
       (exitState s z.memory z.tn n aprev w3 tl inv m0 m96 m64 m32 dst ret rest) := by
   let tail := m0 :: tl :: m96 :: inv :: z.tn :: aprev :: dst :: ret :: rest
   let st : State := {s with memory := z.memory}
-  let stack := TnCacheFrameOps.frame (qptr n n) (UInt256.ofNat 5320) w3
+  let stack := TnCacheFrameOps.frame (qptr n n) (UInt256.ofNat 5293) w3
     (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64 tail
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hj : Decode.isValidJumpDest st.executionEnv.code 3964 = true := by
+  have hj : Decode.isValidJumpDest st.executionEnv.code 3942 = true := by
     rw [show st.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3121 (by rfl)
-  have hg := TnCacheExitTrace.run_square_guard st 3895 (qptr n n)
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3098 (by rfl)
+  have hg := TnCacheExitTrace.run_square_guard st 3874 (qptr n n)
     w3 (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
     tail htail hj
   have g1 := TnM128L1Blocks.guard.steps
-    (s := framed st (UInt256.ofNat 3895) stack) (env.transfer rfl rfl) rfl hg
+    (s := framed st (UInt256.ofNat 3874) stack) (env.transfer rfl rfl) rfl hg
   have hq : qptr n n = UInt256.ofNat 0 := qptr_end n
-  have he : sqEnt n n = 3663 := by unfold sqEnt; omega
+  have he : sqEnt n n = 3643 := by unfold sqEnt; omega
   simpa only [rowState, exitState, if_neg (Nat.lt_irrefl n), st, stack, tail, hq, he] using g1
 
 #print axioms finish_steps

@@ -48,7 +48,7 @@ theorem run_suffix (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
   exact runInstructions_append_some _ _ _ _ _ chain hd
 
 def privateProgram3 : List Instr :=
-  (TnCacheL1Trace.stepProgram 64 2176 ++ TnCacheL1Trace.l1Program 32 2144) ++
+  (TnCacheL1Trace.l1Program 64 2176 ++ TnCacheL1Trace.l1Program 32 2144) ++
     TnCacheL1Trace.l1Program 0 2112
 
 theorem run_private3 (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
@@ -58,20 +58,20 @@ theorem run_private3 (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
     (hpa : pa+32*4 ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa 4) :
     runInstructions privateProgram3
       (TnCacheL1Trace.qState s (UInt256.ofNat pc) q bi pbi hd pbEnd flag tn destination returnPC rest) =
-    some (TnCacheL1Trace.qState s (UInt256.ofNat (pc+109)) (l1Run q bi pa 4 1 3)
+    some (TnCacheL1Trace.qState s (UInt256.ofNat (pc+108)) (l1Run q bi pa 4 1 3)
       bi pbi hd pbEnd flag tn destination returnPC rest) := by
   have hs0 : Snapshot (l1Run q bi pa 4 1 0).memory pa 4 := hsnapshot
   have hs1 : Snapshot (l1Run q bi pa 4 1 1).memory pa 4 :=
     TnCacheL1Chain.snapshot_l1Run_pres hsnapshot bi 1 (by decide) hpa 1 (by decide)
   have hs2 : Snapshot (l1Run q bi pa 4 1 2).memory pa 4 :=
     TnCacheL1Chain.snapshot_l1Run_pres hsnapshot bi 1 (by decide) hpa 2 (by decide)
-  have c0 := TnCacheL1Trace.run_step s (UInt256.ofNat pc) (l1Run q bi pa 4 1 0)
+  have c0 := TnCacheL1Trace.run_l1 s (UInt256.ofNat pc) (l1Run q bi pa 4 1 0)
     bi pa 4 1 64 2176 (by decide) (by decide) pbi hd pbEnd flag tn destination returnPC
     rest hcap hactive (by decide) (by decide) hs0
-  have c1 := TnCacheL1Trace.run_l1 s (UInt256.ofNat (pc+37)) (l1Run q bi pa 4 1 1)
+  have c1 := TnCacheL1Trace.run_l1 s (UInt256.ofNat (pc+36)) (l1Run q bi pa 4 1 1)
     bi pa 4 2 32 2144 (by decide) (by decide) pbi hd pbEnd flag tn destination returnPC
     rest hcap hactive (by decide) (by decide) hs1
-  have c2 := TnCacheL1Trace.run_l1 s (UInt256.ofNat (pc+73)) (l1Run q bi pa 4 1 2)
+  have c2 := TnCacheL1Trace.run_l1 s (UInt256.ofNat (pc+72)) (l1Run q bi pa 4 1 2)
     bi pa 4 3 0 2112 (by decide) (by decide) pbi hd pbEnd flag tn destination returnPC
     rest hcap hactive (by decide) (by decide) hs2
   simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, Nat.reduceAdd] at c0 c1 c2

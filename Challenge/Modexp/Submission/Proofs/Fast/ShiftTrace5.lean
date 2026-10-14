@@ -243,14 +243,13 @@ block (pc 1430) as its return address, so the conversion runs only on this route
 recogniser-hit route instead gets its `R1` from the `MCOPY` at the end of the shift-reduce
 loop (`ShiftTrace3.run_shiftDone`). -/
 def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256)
+    (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256) (htop : R1.TopBitSet mem)
     (hmiss : ¬ FullBase.Matches mem n bsize) :
     Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
       (bigCState s mem n bsize esize msize) := by
   have h := soundEnv blk2862 e
-    (run_dispatch s mem n bsize esize msize hn32 hb e.act296 e.code e.run)
+    (run_dispatch s mem n bsize esize msize hn32 hb htop e.code e.run)
   rw [if_neg hmiss] at h
-  exact h.trans (soundEnv bailBlock e
-    (run_bailMiss s mem n bsize esize msize e.code e.run))
+  exact h
 
 end Challenge.Modexp.Submission.Proofs.Fast.Shift

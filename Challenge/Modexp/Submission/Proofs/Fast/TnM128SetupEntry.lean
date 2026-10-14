@@ -5,9 +5,9 @@ set_option warningAsError true
 set_option maxHeartbeats 1000000
 
 /-!
-# The kernel setup entry (62 instructions)
+# The kernel setup entry (54 instructions)
 
-`load` (26) · `shuffle` (10) · `low` (3) · `zero` (13: `MCOPY` staging + scratch-word `MSTORE`
+`load` (20) · `shuffle` (8) · `low` (3) · `zero` (13: `MCOPY` staging + scratch-word `MSTORE`
 zeroing) · `pointersJump` (10, ending `DUP2; JUMP` to the row head `hd`).
 -/
 
@@ -20,7 +20,7 @@ def fullEntryProgram : List Instr :=
   ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 62 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 54 := rfl
 
 /-- The whole `setup`: from `setupState` (pc 4123, `[hd, pa, pb, dst, ret] ++ rest`) to the
 row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
@@ -35,7 +35,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*n-32))
     (hw : rest[1]? = some (UInt256.ofNat (32*n)))
-    (hslot : rest[2]? = some (MachineState.readWord mem 2688))
+    (_hslot : rest[2]? = some (MachineState.readWord mem 2688))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
     some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (l1Target n)
@@ -54,7 +54,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     simp only [List.length_cons]; omega
   have hreads := EntryPrefix.run_load { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32) n
-    hcap hact (by omega) hn4 hml hw hslot
+    hcap hact (by omega) hn4 hml hw
   have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
     dsimp [aEnd]
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
@@ -63,20 +63,15 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 m64 aEnd tl m96 zeroTn m32
-    (EntryPrefix.displacement mem) rest hcap hact
+    (UInt256.ofNat 3347) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3367 + EntryPrefix.displacement mem)
+    (UInt256.ofNat 3347)
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  -- The artifact computes the ladder displacement as `1748 * [s32 = 128]` (97bb cut, site A).
-  -- `n = 4 ∨ n = 8` is what makes this step true, and it holds because the kernel is only
-  -- ever entered from the two specialised width carriers.
-  have hdisp1 : UInt256.ofNat 3367 + EntryPrefix.displacement mem = l1Target n := by
-    rcases hn4 with rfl | rfl <;>
-      rw [EntryPrefix.displacement, hs32] <;> decide
+  have hdisp1 : UInt256.ofNat 3347 = l1Target n := rfl
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++
           EntryPrefix.lowProgram)
@@ -109,10 +104,10 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32*n-32))
     (hw : rest[1]? = some (UInt256.ofNat (32*n)))
-    (hslot : rest[2]? = some (UInt256.ofNat n))
+    (_hslot : rest[2]? = some (UInt256.ofNat n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (setupState s mem hd pa pb dst ret rest) =
-    some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3367)
+    some (outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3347)
       (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16*n+32))
       (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
         MachineState.readWord mem 2720 :: zeroTn ::
@@ -126,9 +121,9 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   let m32 := MachineState.readWord mem 32
   have hcap' : (tl :: m96 :: inv :: zeroTn :: aEnd :: dst :: ret :: rest).length ≤ 1005 := by
     simp only [List.length_cons]; omega
-  have hreads := EntryPrefix.run_load_w { s with memory := mem } hd
+  have hreads := EntryPrefix.run_load { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest (32*n-32) n
-    hcap hact (by omega) hn4 hml hw (UInt256.ofNat n) hslot
+    hcap hact (by omega) hn4 hml hw
   have hAend : UInt256.ofNat pa + UInt256.ofNat (32*n-32) = aEnd := by
     dsimp [aEnd]
     rw [Challenge.EvmProof.Word.ofNat_add_mod]
@@ -137,25 +132,21 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   rw [hAend] at hreads
   have hshuffle := EntryPrefix.run_shuffle { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret m0 m64 aEnd tl m96 zeroTn m32
-    (UInt256.ofNat 1748 * EntryPrefix.sel128 (UInt256.ofNat n)) rest hcap hact
+    (UInt256.ofNat 3347) rest hcap hact
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
-    (UInt256.ofNat 3367 + (UInt256.ofNat 1748 * EntryPrefix.sel128 (UInt256.ofNat n)))
+    (UInt256.ofNat 3347)
     (MachineState.readWord mem 128)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
-  have hdisp1 : UInt256.ofNat 3367 +
-      (UInt256.ofNat 1748 * EntryPrefix.sel128 (UInt256.ofNat n)) =
-      UInt256.ofNat 3367 := by
-    rcases hn4 with rfl | rfl <;> decide
   have hmasked :
       runInstructions ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++
           EntryPrefix.lowProgram)
         (setupState s mem hd pa pb dst ret rest) =
       some (cachedSetupStateSq s mem hd pa pb n m32 m64 m0
         (tl :: m96 :: inv :: zeroTn :: aEnd :: dst :: ret :: rest)) := by
-    simpa only [setupState, cachedSetupStateSq, hdisp1,
+    simpa only [setupState, cachedSetupStateSq,
       hs32, tl, inv, m0, aEnd, m96, m64, m32,
       List.cons_append, List.nil_append] using hprefix
   have hzero := run_zero_sq s mem hd pa pb n m32 m64 m0

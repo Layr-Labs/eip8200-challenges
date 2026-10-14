@@ -501,14 +501,14 @@ arbitrary state constrained only by its `pc` and stack shape. -/
 /-- Subroutine entry, pc 2066, stack `[pa, pb, pd, ret]`. -/
 def mpEntryState (s : State) (mem : ByteArray) (pa pb : Nat) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 787
+  { s with pc := UInt256.ofNat 720
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
 /-- `CSUB` entry, pc 2432, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3923
+  { s with pc := UInt256.ofNat 3902
            stack := [pdst, ret] ++ rest
            memory := mem }
 

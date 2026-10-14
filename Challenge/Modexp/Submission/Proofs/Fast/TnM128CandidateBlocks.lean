@@ -12,36 +12,36 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast TnM128CandidateArtifact
 
-def l2Eight : Block submissionArtifact .Osaka 3650 (TnMod128Chain.fullProgram 8) :=
-  WindowTwentyOneSlice.block allWellFormed 2859 199 3650 (TnMod128Chain.fullProgram 8)
+def l2Eight : Block submissionArtifact .Osaka 3630 (TnMod128Chain.fullProgram 8) :=
+  WindowTwentyOneSlice.block allWellFormed 2838 198 3630 (TnMod128Chain.fullProgram 8)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def l2Four : Block submissionArtifact .Osaka 3779 (TnMod128Chain.fullProgram 4) :=
-  WindowTwentyOneSlice.block allWellFormed 2972 86 3779 (TnMod128Chain.fullProgram 4)
+def l2Four : Block submissionArtifact .Osaka 3758 (TnMod128Chain.fullProgram 4) :=
+  WindowTwentyOneSlice.block allWellFormed 2950 86 3758 (TnMod128Chain.fullProgram 4)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def cachedCell : Block submissionArtifact .Osaka 3715 (TnMod128Trace.program) :=
-  WindowTwentyOneSlice.block allWellFormed 2916 28 3715 (TnMod128Trace.program)
+def cachedCell : Block submissionArtifact .Osaka 3694 (TnMod128Trace.program) :=
+  WindowTwentyOneSlice.block allWellFormed 2894 28 3694 (TnMod128Trace.program)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def middle8 : Block submissionArtifact .Osaka 3627 (TnCacheRowTrace.middle8) :=
-  WindowTwentyOneSlice.block allWellFormed 2840 19 3627 (TnCacheRowTrace.middle8)
+def middle8 : Block submissionArtifact .Osaka 3607 (TnCacheRowTrace.middle8) :=
+  WindowTwentyOneSlice.block allWellFormed 2819 19 3607 (TnCacheRowTrace.middle8)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def middleCopy : Block submissionArtifact .Osaka 5519 (TnCacheRowTrace.middle4 ++ [.push 2 3779, .op .JUMP]) :=
-  WindowTwentyOneSlice.block allWellFormed 4415 21 5519 (TnCacheRowTrace.middle4 ++ [.push 2 3779, .op .JUMP])
+def middleCopy : Block submissionArtifact .Osaka 5491 (TnCacheRowTrace.middle4 ++ [.push 2 3758, .op .JUMP]) :=
+  WindowTwentyOneSlice.block allWellFormed 4388 21 5491 (TnCacheRowTrace.middle4 ++ [.push 2 3758, .op .JUMP])
     (by decide) (by rfl) (by rfl) (by decide)
 
-def tail : Block submissionArtifact .Osaka 3877 (TnCacheRowTrace.tail) :=
-  WindowTwentyOneSlice.block allWellFormed 3058 15 3877 (TnCacheRowTrace.tail)
+def tail : Block submissionArtifact .Osaka 3856 (TnCacheRowTrace.tail) :=
+  WindowTwentyOneSlice.block allWellFormed 3036 15 3856 (TnCacheRowTrace.tail)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def flush : Block submissionArtifact .Osaka 3904 (TnCacheFrameOps.flush13) :=
-  WindowTwentyOneSlice.block allWellFormed 3078 3 3904 (TnCacheFrameOps.flush13)
+def flush : Block submissionArtifact .Osaka 3883 (TnCacheFrameOps.flush13) :=
+  WindowTwentyOneSlice.block allWellFormed 3056 3 3883 (TnCacheFrameOps.flush13)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def afterSquareReset : Block submissionArtifact .Osaka 3276 (TnCacheFrameOps.reset13) :=
-  WindowTwentyOneSlice.block allWellFormed 2556 3 3276 (TnCacheFrameOps.reset13)
+def afterSquareReset : Block submissionArtifact .Osaka 3257 (TnCacheFrameOps.reset13) :=
+  WindowTwentyOneSlice.block allWellFormed 2536 3 3257 (TnCacheFrameOps.reset13)
     (by decide) (by rfl) (by rfl) (by decide)
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128CandidateBlocks

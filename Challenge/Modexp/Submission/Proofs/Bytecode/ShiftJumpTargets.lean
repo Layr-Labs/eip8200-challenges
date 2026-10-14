@@ -107,23 +107,23 @@ def pushImmediates : List Nat :=
     | _ => none
 
 theorem jumpSites_eq : jumpSites =
-    [10, 16, 28, 39, 60, 75, 89, 102, 120, 131, 133, 187, 190, 210, 216, 239,
+    [10, 16, 29, 40, 58, 77, 89, 102, 120, 131, 133, 187, 190, 210, 216, 239,
      246, 256, 265, 280, 284, 300, 304, 309, 316, 358, 361, 366, 371, 381, 396, 405,
-     415, 439, 460, 488, 534, 544, 547, 554, 568, 1898, 1911, 1915, 1925, 1937, 1949, 1956,
-     1981, 2028, 2169, 2407, 2413, 2415, 2451, 2463, 2470, 2477, 2491, 2554, 2592, 3072, 3077, 3105,
-     3107, 3120, 3124, 3136, 3138, 3153, 3161, 3169, 3177, 3307, 3309, 3314, 3321, 3328, 3343, 3345,
-     3441, 3541, 3614, 3756, 3760, 3783, 3785, 3831, 4292, 4294, 4435, 4455] := by decide
+     415, 439, 460, 487, 500, 514, 1840, 1842, 1846, 1855, 1865, 1877, 1884, 1891, 1901, 2158,
+     2396, 2402, 2404, 2440, 2452, 2458, 2465, 2479, 2534, 2571, 3050, 3055, 3082, 3084, 3097, 3101,
+     3113, 3115, 3130, 3137, 3145, 3153, 3283, 3285, 3290, 3297, 3304, 3319, 3415, 3515, 3588, 3730,
+     3734, 3757, 3759, 3805, 4266, 4268, 4408, 4428] := by decide
 
 theorem literalJumpTargets_eq : literalJumpTargets =
-    [578, 103, 813, 813, 218, 31, 153, 186, 156, 202, 218, 253, 281, 376, 393, 368,
-     393, 292, 464, 457, 464, 449, 464, 401, 474, 528, 468, 550, 218, 135, 755, 761,
-     761, 2465, 765, 218, 533, 533, 2424, 761, 2444, 761, 3189, 761, 4033, 2509, 693, 3080,
-     2710, 3154, 3088, 3082, 3068, 5546, 2710, 3964, 4246, 4048, 4160, 3995, 4839, 3275, 4060, 4237,
-     5374, 3944, 4257, 4246, 4048, 4839, 4295, 4643, 4643, 4643, 4791, 4295, 4022, 4752, 3779] := by decide
+    [578, 101, 745, 745, 219, 33, 154, 187, 157, 203, 219, 254, 281, 376, 393, 368,
+     393, 292, 464, 457, 464, 449, 464, 401, 474, 528, 468, 550, 219, 136, 697, 219,
+     219, 2390, 533, 533, 2350, 219, 2369, 2470, 219, 3181, 219, 4010, 2336, 3073, 2704, 3146,
+     3081, 3075, 3061, 5518, 2704, 3942, 4223, 4025, 4137, 3973, 4812, 3256, 4037, 4214, 5347, 3922,
+     4234, 4223, 4025, 4812, 4616, 4616, 4616, 4764, 4268, 3999, 4725, 3758] := by decide
 
 /-- The twelve sites whose destination is a stack word, in program order. -/
 theorem dataDependentJumpSites_eq : dataDependentJumpSites =
-    [316, 371, 534, 2169, 2554, 2592, 3072, 3321, 3328, 3756, 4292, 4294, 4455] := by decide
+    [316, 371, 2158, 2534, 2571, 3050, 3297, 3304, 3730, 4266, 4268, 4428] := by decide
 
 /-- **No literal jump destination is the M9 exit.**  None of the 88 destinations the image
 names with a `PUSH` immediate is pc 3168, 3169 or 3170. -/
@@ -138,17 +138,17 @@ destination, so no value equal to 3168..3170 can reach a jump operand. -/
 theorem noLiteralPush_window :
     pushImmediates.all fun n => decide (n ≠ 3168 ∧ n ≠ 3169 ∧ n ≠ 3170) = true := by decide
 
-/-- The exit `PUSH2 2080` is at instruction 2387,
-and the fixup's `SWAP3 POP` is at instructions 2398 and 2399. -/
+/-- The exit `PUSH2 2080` is at instruction 2376,
+and the fixup's `SWAP3 POP` is at instructions 2387 and 2388. -/
 theorem m9Exit_is_jumpdest :
-    Artifact.submissionInstructions[2387]? = some (.push 2 2080) ∧
-      Artifact.submissionInstructions[2398]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
-      Artifact.submissionInstructions[2399]? = some (.op .POP) :=
+    Artifact.submissionInstructions[2376]? = some (.push 2 2080) ∧
+      Artifact.submissionInstructions[2387]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
+      Artifact.submissionInstructions[2388]? = some (.op .POP) :=
   ⟨by rfl, by rfl, by rfl⟩
 
-/-- The program counter the exit `PUSH2 2080` sits at: 3041. -/
+/-- The program counter the exit `PUSH2 2080` sits at: 3034. -/
 theorem m9Exit_pcs :
-    Artifact.instructionPC 2387 = 3041 := by decide
+    Artifact.instructionPC 2376 = 3034 := by decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.ShiftJumpTargets
 

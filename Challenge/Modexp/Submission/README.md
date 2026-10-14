@@ -1,63 +1,64 @@
-# MODEXP: our 66bc038a plus CLZ, leech1996's width tests and six code-size cuts that pay for an inlined first REDC row (456,511 at seed 0)
+# MODEXP: our 4d05a61b plus fourteen byte-level cuts: an unrolled R - N setup, constant folds, an inlined Newton inverse and dead-JUMPDEST removal (454,861 at seed 0)
 
 Work by Claude Opus 5.5 agents in Claude Code, one per lane.
 
-This extends our `66bc038a` (stack-h2, the current record at 458,412). Everything in `66bc038a` is in this image. It also carries our `49a45e34` (CLZ in the quotient estimator plus leech1996's `97bb2bc5` width tests; it scored 459,752 on its single official draw and was not accepted, so its cuts ship here). New here: five cuts that remove unreachable or redundant code (dead, sub3307u, smallexp, f843, d2568) and spend the freed code-size budget on r0, an inline copy of the n=8 Montgomery reduction for the first squaring row.
+This extends our `4d05a61b` (stack-clzep, the current record at 457,505). Everything in `4d05a61b` is in this image. It adds fourteen cuts of ours, found by a byte-level search over the record's bytes and then ported through the proofs. None is taken from another submission.
 
 ## Context and goal
 
-Minimise total gas over the 44 scorer vectors while `Correct bytecode` stays proved for the exact bytes. The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk, summed) plus L (code length) plus 8 per chunk exceeds 8,194. On `66bc038a` that budget had 30 units left, so every gas cut that adds code has to be paid for by deleting code. This image: L 5,568 bytes, 4,456 instructions, 87 chunks, S 1,923, so 8,187, 7 below the limit. Seed 0: 456,511 gas (`66bc038a` 457,253).
+Minimise total gas over the 44 scorer vectors while `Correct bytecode` stays proved for the exact bytes. The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk, summed) plus L (code length) plus 8 per chunk exceeds 8,194; the record had 7 units left. This image: L 5,540 bytes (record 5,568), 4,429 instructions (record 4,456), 87 chunks, S 1,905, so 8,141, 53 below the limit. Seed 0: 454,861 gas (record 456,511).
 
 ## Setup
 
-- Source `Layr-Labs/eip8200-challenges` at `3db491e`. Lean `v4.31.0`. Osaka (CLZ is opcode 0x1e).
-- Gas: a Python replica of the scorer (Osaka gas plus a port of `Scorer.lean`'s corpus generator). It matched official per-vector gas on public runs and the official runs of our earlier submissions.
+- Source `Layr-Labs/eip8200-challenges` at `3db491e`. Lean `v4.31.0`. Osaka.
+- Gas: a Python replica of the scorer (Osaka gas plus a port of `Scorer.lean`'s corpus generator). It reproduced the record's seed-0 gas and the official runs of our earlier submissions.
+- Search: a per-pc gas profile of the record on 31 seeds, a block table with cold code marked, a per-region gas-per-code-unit exchange table, a symbolic peephole search over every executed window, a jump-target census and a constant-value census of every computed value. Each cut was composed by base pc and measured on all 44 vectors.
 - Proof check: a full `lake build Challenge.Modexp.Submission.Solution` of these exact bytes on an 8-CPU, 48 GiB remote container.
 
 ## The cuts
 
-From `49a45e34`:
-- **clz (ours).** The quotient estimator takes `CLZ` of the divisor's top limb once and shifts with `SHR`/`SHL`, replacing a lowest-set-bit derivation with `DIV`. 6 gas per estimator run.
-- **97bb (leech1996, `97bb2bc5`).** The two bit-7 width tests become equality tests (`PUSH1 80 EQ` at the kernel setup, `PUSH2 09a0 DUP15 EQ` at the row-head select, now pcs 3218 and 3295). 3 and 4 gas per RSA vector.
+Gas per seed is a leave-one-out on seed 0 of the search image (measured; the cuts interact slightly, so they sum to a little more than the total).
 
-New, all ours (pcs are in `49a45e34`'s bytes):
-- **dead.** Bytes after a JUMP or RETURN that hold no JUMPDEST any PUSH names: 768-771, 780-783, 794, 866-871 and the 21 PUSH0 filler bytes at 2720-2740.
-- **sub3307u.** The block from 3306 to 3365 is unreachable: every entry needs tn != 0 or f = 0, and the existing proofs (`ShiftTrace4`) rule out both (tn = 0 at the subtraction check, f != 0 on the add path). The guard at 3229 becomes a plain `POP` into `JUMPDEST POP`. This also removes the only two literal jumps to non-JUMPDEST bytes that `66bc038a` inherited (3348 to 3284, 3362 to 3266).
-- **smallexp.** The small-modulus route (ms <= 32) had its own exponent loop (193-218 and the bit loop at 2448-2491). Inputs with es >= 1 now go to the generic route, which is correct for every width; esize 0 keeps its fast exit. No scorer vector uses that loop.
-- **f843.** The test at 843 (`bs > 32 or es != 32 or ms != 32`) is always true where it is reached (843 is pushed only from a branch taken when es != 32 or ms != 32, and it reloads the same calldata words). The jump goes straight to 135.
-- **d2568.** 2568-2591 is a loop whose head is pushed only from inside its own body; nothing enters it.
-- **r0.** The n=8 squaring's first row used to jump to the shared reduction block and back. An inline copy of that block (token for token equal except the n=4 entry) now follows row 0 and falls through into the diagonal block, which moves after it. The row-loop back edge after row 0 disappears. The n=4 entry is relabelled. This is where the gas comes from.
+- **negun (-892).** The setup that stores R - N (the two's complement of the modulus, used by the reduction) was a loop over the words with 31 of its 55 gas per word in loop control. It is now straight-line cells `PUSH1 k MLOAD NOT PUSH2 X MSTORE` for n=8, with n=4 joining partway, and the least significant word as `PUSH0 SUB` (N is odd, so ~N + 1 never carries out of that word).
+- **jdx (-185).** Fifteen JUMPDESTs that no PUSH names and no computed jump reaches are deleted, so straight-line code no longer pays 1 gas to fall through them. The largest is the REDC row head at 3650 (135 falls per seed).
+- **bstack (-159).** The 256-bit route kept a shift in a stack slot and recomputed the base as `CALLDATALOAD ... SHR` at each use. The slot now holds the base itself, computed once on each entry path. Inputs with a base shorter than 32 bytes pay 3 gas more, by design; no scorer vector has one.
+- **inl693 (-108).** The Newton inverse subroutine had one caller. It is inlined: no return-address push, no call jump, two fewer JUMPDESTs, and a shorter stack cleanup.
+- **k3222 (-80), k2696 (-60), k2465 (-56).** Three values that are the same on every reachable input are folded. The width test at 3217 (from leech1996's `97bb2bc5`) reads n, which is 4 or 8 there, so its displacement is a constant. `n & 3 == 0` always holds for n in {4, 8}. The top-bit test at 2465 re-checks a bit that pc 624 already required.
+- **t790 and thr755 (-60).** Five bail-outs jumped through a one-instruction trampoline to the generic route; they now jump straight there, and the jump left behind that targeted the next instruction is removed.
+- **thr4291 (-22).** Another jump to the next instruction.
+- **peep686 (-12).** `SWAP1 POP POP` becomes `POP POP`.
+- **e3g, pad133, gpush (0 gas, 25 code units).** A guard that is always taken given n in {4, 8} becomes a direct jump; two pad JUMPDESTs go; one `PUSH2` becomes `PUSH1`.
 
-Per seed: -748.8 gas against `66bc038a` (31 seeds, range -770 to -742), of which -154 is clz and 97bb and about -595 is r0 plus the removed f843 test and the UNC guard (-14 per UNC entry, hence the spread).
+Total: -1,650.8 gas per seed against `4d05a61b` (31 fresh seeds, range -1,652 to -1,650; 1,000 seeds, range -1,656 to -1,650).
 
 ## Proof changes
 
-- Renumbering: every pc from 193 on moves. A token-level tool (instruction map from a sequence alignment, then a classifier that separates pcs from memory addresses and constants) rewrote 139 proof files. 141 Lean files changed against `49a45e34`'s tree and 17 modules that proved the removed exponent loop were deleted. `Solution.lean` is unchanged. No trusted file changes and no new axiom.
-- Semantic edits by cut. sub3307u: `ShiftPaths`, `ShiftBlocks`, `ShiftStates`, `ShiftJumpTargets` (the guard is a `JUMPDEST POP` block; the deleted block's states and jumpdest facts go). smallexp: `Word` gets a guard path and a jump to the generic entry, `WordExpRuns` runs it, `WordCorrect` keeps only the esize = 0 result, and `WindowBodyCorrect` splits esize = 0 (fast exit) from esize > 0 (the generic route's correctness theorem); 17 exponent-loop modules leave the build. f843: the dispatcher table and `WindowRoute` keep only the entry route, so `WindowBodyCorrect`, `WindowTwentyOneCorrect` and the route's gas paths drop the miss branch. r0: `TnM128R8FirstRow` ends after the quotient step and `TnM128R8SuffixSteps` proves the inlined reduction and the fall into the moved diagonal block; `TnM128SquareFirstSteps` and the square-row files follow the moved labels.
+- Every pc from 24 on moves. A token-level renumber tool (instruction map from the cut composer's provenance, a classifier that separates pcs from memory addresses and data constants) rewrote the pc and index literals; a scan then checked every literal `instructionPC I = P` and every jump-destination fact against the new bytes (0 bad).
+- Semantic edits by cut: `FermatNext`, `FermatProgram`, `WindowTwentyOneEntry` and the route's gas paths carry the base in the slot (bstack); `ShiftStates`, `ShiftTrace1` and `ShiftProducerSplitRun` prove the straight-line R - N cells (negun); `TnM128SetupFrames`, `CiosCachedFrames` and `TnM128FusedEntry` use the folded displacement (k3222), and the setup proofs use the top-bit fact pc 624 established (k2465) and n & 3 = 0 (k2696); `Defs`, `TnMod128Chain`, `R4Hooks` and the square-loop files lose the deleted JUMPDEST steps (jdx, thr4291); the bail states point at the generic entry and `FixedExponentRouteLogic` loses the e3 guard case (t790, e3g); the run lemmas around the Newton inverse follow its inlined body (inl693). 138 Lean files changed against the record's tree; none added or deleted. `Solution.lean` is unchanged. No trusted file changes and no new axiom.
 
 ## Evidence for these exact bytes
 
-- Full remote build: exit 0, "Build completed successfully (2310 jobs)", `candidate` depends on axioms `[propext, Classical.choice, Quot.sound]` only. The recorded run replayed every module from a cache that the preceding build of this same tree (manifest 1e6d57c5, 343 files) had just compiled.
-- Static checks against the artifact: instructions 4,456 and bytes 5,568 match; 2,153 instruction pcs checked, 0 bad; 132 code slices, 0 bad; jump table 92/79/13 matches. Every literal jump target is a JUMPDEST.
-- Replica (independent verifier): 31 fresh seeds plus seed 0, 0 wrong of 1,408 runs. 1,000 seeds: mean 458,033.7, sd 938.3, 0 wrong of 44,000; 665 of the 1,000 seeds land below 458,412.
-- Differential fuzz of these bytes against an EIP-198 oracle with Python `pow`: 69,800 adversarial cases (n=4 and n=8 RSA with edge moduli and bases, trailing junk, zero modulus, e = 0 and 1, truncated calldata, generic widths), 0 wrong.
+- Full remote build: exit 0, "Build completed successfully (2310 jobs)", `candidate` depends on axioms `[propext, Classical.choice, Quot.sound]` only. The recorded run replayed every module from a cache whose last fresh compile was on a byte-identical tree.
+- Static checks against the artifact: instructions 4,429 and bytes 5,540 match; 2,065 instruction pcs checked, 0 bad; 130 code slices, 0 bad; jump table 88/76/12 matches; every literal jump target is a JUMPDEST.
+- Replica (independent verifier): 31 fresh seeds plus seed 0, 0 wrong of 1,408 runs. 1,000 seeds: mean 456,382.9, sd 937.9, 0 wrong of 44,000; 891 of the 1,000 seeds land below 457,505.
+- Differential fuzz of these bytes and the record's against an EIP-198 oracle with Python `pow`: 52,500 adversarial cases (256-bit route with short bases, Fermat exits, inputs that fall to the generic route, extreme modulus words for the R - N setup, n=4 and n=8 RSA edges, zero modulus, e = 0 and 1, truncated calldata, generic widths), 0 wrong, identical step caps on both images. Hooks on the record's runs confirmed each folded value on every execution (for example n & 3 = 0 in 24,453 of 24,453).
 
 ## Failures and course corrections
 
-- The renumber classifier kept multiples of 32 as memory addresses. Two were real pcs (a dispatch pc and a jumpdest fact in `ShiftCorrect`, which sent Lean into a stack overflow) and one memory address 0x0a20 was rewritten as if it were a pc. The build caught each; the fixes were followed by a whole-tree scan of literal jumpdest facts against the new bytes.
-- Two modules (`TnR8FirstRow`, `TnM128R8SuffixSteps`) need about 10.7 GB to elaborate, more than the local per-job cap, so they were checked only on the remote builder; one remote run was preempted and restarted.
-- `49a45e34` drew 1.2 standard deviations high on its official run. That is why this image is sent only with a paired gain near 750 gas per seed.
+- A sixteenth cut, removing a store that looked dead (`PUSH0 PUSH2 0800 MSTORE`, -32 per seed), was dropped: the squaring loop's proof takes a zeroed scratch word from it every round, and threading that invariant from the exponent loop costs far more proof than it saves.
+- Moving the arrays down in memory (unused words 0x10 to 0x27; about -370 per seed) is measured but not in this image: the proofs carry thousands of literal addresses and an 88-word bound, so it needs a layout refactor first.
+- The renumber classifier needed rules for low pcs that equal data constants (alignment masks, word counts); the first relabel of the 97bb displacement broke two vectors in the replica before the composer learned to relabel displacements as a post-step.
+- Six remote build rounds found the remaining stale literals; each failure was fixed at its source and re-checked by the scans above.
 
 ## Caveats
 
-- One official run is one corpus draw. The replica puts this image's chance of beating 458,412 on a single draw at about 0.66.
-- smallexp makes off-corpus inputs with a modulus of at most 32 bytes and a non-empty exponent much slower (measured 4.6M to 727M gas on 300 such inputs, all correct). The scorer's corpus has none, and correctness is proved for every input.
+- One official run is one corpus draw. The replica puts this image's chance of beating 457,505 on a single draw at about 0.88.
 
 ## Cuts merged from other submissions (credited, declared)
 
 | Submission | Author | Change | Gas, every seed |
 |---|---|---|---|
-| `97bb2bc5` | leech1996 | bit-7 width tests as equality tests | -28 |
+| `97bb2bc5` | leech1996 | bit-7 width tests as equality tests (site A now folded by k3222) | -28 |
 | `d0a1f9e9` | Th0rgal | EarlyWord guard; Fermat entry/return stack diet | -405 |
 | `984faab1` | UsamaInayat | 256-bit window route setup block | -128 |
 
@@ -68,5 +69,5 @@ The base implementation chain (`af797111` Th0rgal, `a61dbcbf` rubenmarcus, `cd6b
 ```bash
 lake build Challenge.Modexp.Submission.Solution    # full proof build of the exact bytes
 sha256sum Challenge/Modexp/Submission/bytecode.hex
-# 6038e20b863c5ba3e44e9579d9b5914e7914be70e12987fa7c95e80936c2e65c
+# 3ee2104f2df7dba4299957f79079cb162b5d661bd4fd36fd48dab5ca52243e1b
 ```

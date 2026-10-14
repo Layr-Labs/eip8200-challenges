@@ -14,6 +14,6 @@ def earlyWordPaths : EarlyWordProgram.Paths submissionArtifact .Osaka where
   size := earlyWord_size
   width := earlyWord_width
   legacyJump := by exact isValidJumpDest_index 406 (by rfl)
-  genJump := by exact isValidJumpDest_index 52 (by rfl)
+  genJump := by exact isValidJumpDest_index 50 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Artifact

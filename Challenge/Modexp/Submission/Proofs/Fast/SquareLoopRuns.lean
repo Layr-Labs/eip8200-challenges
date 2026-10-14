@@ -25,7 +25,7 @@ open Monpro CiosCached CarryRowBlocks CarryRowModel SquareRows
 /-- The `last` entry: the retained frame under the unused CSUB call pair `[pdst, again]`. -/
 def lazyCsubState (s : State) (mem : ByteArray) (dst ret : UInt256)
     (rest : List UInt256) : State :=
-  LazyGate.atState s mem 4237 dst ret rest
+  LazyGate.atState s mem 4214 dst ret rest
 
 /-- The four-limb exit `m4j` (4248): the retained frame, no call pair on top. -/
 def m4jAt (s : State) (mem : ByteArray) (n : Nat)
@@ -41,13 +41,13 @@ theorem run_m4j (s : State) (mem : ByteArray) (n : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
     runInstructions m4jProgram
       (m4jAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 3275)
+    some (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 3256)
       (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) := by
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4237 = true := by
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 4214 = true := by
     rw [hcode]; exact jumpDestLazy
   simp [m4jProgram, TnM128SquareExit.m4jProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, frameStack, m4jAt, pcM4j, lazyCsubState, LazyGate.atState,
@@ -67,7 +67,7 @@ def gasSteps_m4j (s : State) (mem : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps
       (m4jAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 3275)
+      (lazyCsubState s mem (UInt256.ofNat 2368) (UInt256.ofNat 3256)
         (frameStack mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)) :=
   m4jBlock.steps
     (environment (m4jAt s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)

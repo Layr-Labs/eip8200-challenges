@@ -8,12 +8,14 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 
 def zeroTn : UInt256 := UInt256.ofNat 0
 
-def l1Target (n : Nat) : UInt256 := UInt256.ofNat 3367 + UInt256.ofNat 1748 * isFour n
+/-- The l1 entry the setup pushes (k3222: one constant for both widths; the four-limb rows fall into
+their own copy and never jump to it). -/
+def l1Target (_n : Nat) : UInt256 := UInt256.ofNat 3347
 
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 3190
+    pc := UInt256.ofNat 3182
     memory := mem
     stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, dst, ret] ++ rest}
 

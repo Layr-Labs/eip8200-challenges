@@ -19,7 +19,7 @@ open TnM128ReductionSteps
 def rowState (s : State) (z : CacheState) (n i : Nat)
     (w3 ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := z.memory}
-    (if i < n then UInt256.ofNat (headPC n) else UInt256.ofNat 3895)
+    (if i < n then UInt256.ofNat (headPC n) else UInt256.ofNat 3874)
     (TnCacheFrameOps.frame (qptr n i) (UInt256.ofNat (headPC n)) w3
       ent m32 (MachineState.readWord z.memory 128) m64
       (m0 :: tl :: m96 :: inv :: z.tn :: aEnd :: dst :: ret :: rest))

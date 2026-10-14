@@ -146,7 +146,7 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
       Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
       Model.FastRepresents mem 2112 n a → a < mm →
       Challenge.EvmProof.GasSteps (sqLoopCall s mem k ret tail)
-        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 747) tail) := by
+        (retTo s (FusedMemory.memory s n k mem) (UInt256.ofNat 690) tail) := by
   intro k ret tail mem a hfast hk hk16 hcap hw hslotn hf hm ha ham
   -- `GasSteps` lives in `Type`, so the limb count has to be split by `cases`.
   cases n with

@@ -28,7 +28,7 @@ theorem run_expGuard (input : ByteArray) (i : Nat) (acc base : UInt256)
       UInt256.ofNat 0 := by
     rw [UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat, himod, hemod, if_neg hne]
-  have h598 : (202 : UInt256).toNat = 202 := by decide
+  have h598 : (203 : UInt256).toNat = 203 := by decide
   have hzeroNat : (UInt256.ofNat 0).toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [expGuardPath, opAt, pushAt,
@@ -43,8 +43,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_genericJump (input : ByteArray) (i : Nat) (acc base : UInt256) :
     Challenge.EvmProof.Stepper.runLocatedBlock genericJumpPath
       (expGuardState input i acc base) = some (genericState input i acc base) := by
-  have h218 : (218 : UInt256).toNat = 218 := by decide
-  have h218Word : (218 : UInt256) = UInt256.ofNat 218 := by decide
+  have h218 : (219 : UInt256).toNat = 219 := by decide
+  have h218Word : (219 : UInt256) = UInt256.ofNat 219 := by decide
   simp (config := { maxSteps := 150000 })
     [genericJumpPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,

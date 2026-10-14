@@ -75,45 +75,25 @@ theorem ptrWord_step (base j : Nat) :
 
 /-! ## The negation loop and the estimator prologue -/
 
-/-- One negation-loop iteration with limbs to go: body, then the rotated exit test jumps back. -/
-def gasSteps_negIter (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
-    Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize j)
-      (negLoopState s mem n bsize esize msize (j + 1)) :=
-  Challenge.EvmProof.GasSteps.cast
-    ((soundEnv blk2896a e
-        (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) n bsize esize msize j
-          hn32 (by omega) (negPtr_toNat n j hn32 (by omega)) e.act296 e.code e.run)).trans
-      (soundEnv blk2896b e
-        (run_negTail s (negStep mem n (j + 1)).memory
-          (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) j)) (negStep mem n (j + 1)).flag
-          n bsize esize msize (negPtr_ne_zero n j hn32 hj) e.code e.run)))
-    rfl (by rw [negTop_succ] <;> rfl)
-
-/-- The last limb: body, then the exit test falls through into `NEG_DONE`. -/
-def gasSteps_negLast (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
-    Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize (n - 1))
-      (negDoneState s mem n bsize esize msize) :=
-  Challenge.EvmProof.GasSteps.cast
-    ((soundEnv blk2896a e
-        (run_negBodyA s mem (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) (n - 1))) n bsize esize
-          msize (n - 1) hn32 (by omega) (negPtr_toNat n (n - 1) hn32 (by omega)) e.act296 e.code
-          e.run)).trans
-      (soundEnv blk2896b e
-        (run_negExit s (negStep mem n (n - 1 + 1)).memory
-          (UInt256.ofNat (Monpro.ptrAt (32 * n - 32) (n - 1))) (negStep mem n (n - 1 + 1)).flag
-          n bsize esize msize
-          (by rw [negPtr_toNat n (n - 1) hn32 (by omega)]; omega) e.code e.run)))
-    rfl (by rw [negTop_succ, Nat.sub_add_cancel hn] <;> rfl)
-
-def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
-    Challenge.EvmProof.GasSteps (negLoopState s mem n bsize esize msize 0)
-      (negDoneState s mem n bsize esize msize) :=
-  (Challenge.EvmProof.GasSteps.iterateBounded (I := fun j => negLoopState s mem n bsize esize msize j)
-      (n - 1) (fun j hj => gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) e)).trans
-    (gasSteps_negLast s mem n bsize esize msize hn hn32 e)
+/-- The straight-line negation, from the first `CSUB` return to `NEG_DONE`: the width test,
+then the eight-limb cells or the four-limb stub, then `NEG_TAIL`. -/
+def gasSteps_neg (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hfast : n = 4 ∨ n = 8) (e : Env s) :
+    Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
+      (negDoneState s mem n bsize esize msize) := by
+  if h4 : n = 4 then
+    subst h4
+    exact ((soundEnv blkNegW e (run_negW4 s mem bsize esize msize e.code e.run)).trans
+      (soundEnv blkNeg4 e (run_neg4 s mem bsize esize msize e.act296 e.code e.run))).trans
+      (soundEnv blkNegT e (run_negT s mem 4 bsize esize msize 1 (by decide) (by decide)
+        (by decide) (by decide) e.act296 e.code e.run))
+  else
+    have h8 : n = 8 := by omega
+    subst h8
+    exact ((soundEnv blkNegW e (run_negW8 s mem bsize esize msize e.code e.run)).trans
+      (soundEnv blkNeg8 e (run_neg8 s mem bsize esize msize e.act296 e.code e.run))).trans
+      (soundEnv blkNegT e (run_negT s mem 8 bsize esize msize 5 (by decide) (by decide)
+        (by decide) (by decide) e.act296 e.code e.run))
 
 /-- `NEG_DONE` to `PRE_NEWTON` (CLZ cut): the pads and `L`, the one `CLZ` through the
 Submission-local rule `ClzStep.gasSteps_clz_framed` (the shared stepper has no `CLZ`), then
@@ -158,9 +138,9 @@ theorem preNewton_readWord (s : State) (X : ByteArray) (n bsize esize msize addr
 
 /-- From the first `CSUB` return to the `E5` entry (slot parking done, the
 esize/byte guard still pending inside `blk2764`).  The dinv site is the
-newton-batch head, the shared Newton chain at pc 714 and the tail. -/
+newton-batch head, the inline Newton chain and the tail. -/
 def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hfast : n = 4 ∨ n = 8)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
@@ -179,9 +159,7 @@ def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         (MachineState.readWord (negStep mem n n).memory 0) n bsize esize msize := rfl
   have hout := nbOut_eq s (negStep mem n n).memory n bsize esize msize hn32 hXml
     (by rw [hXn0]; exact hn0odd) (by rw [hX0]; exact hdodd)
-  (((((soundEnv blk2892 e
-      (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
-    (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
+  ((((gasSteps_neg s mem n bsize esize msize hfast e).trans
     (gasSteps_negDone s mem n bsize esize msize e)).trans
     ((soundEnv blkNbHead e
       (run_nbHead s (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
@@ -216,7 +194,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (shiftLoopState (UInt256.ofNat 0) s
         (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
-  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml hn0odd hdodd).trans
+  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
       (run_e5 s (preMem (negStep mem n n).memory) n bsize esize msize hfast e.act hesize e.code
         e.run))
@@ -238,7 +216,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
       (shiftLoopState (UInt256.ofNat 0) s
         (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
-  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml hn0odd hdodd).trans
+  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
       (run_e5_slowexp s (preMem (negStep mem n n).memory) n bsize esize msize hfast e.act hsize1
         hbyteNe e.code e.run))
@@ -259,7 +237,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
       (shiftLoopState (UInt256.ofNat 0) s
         (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
           (UInt256.ofNat 1)) n bsize esize msize (n / 2)) :=
-  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml hn0odd hdodd).trans
+  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
       (run_e5_e3 s (preMem (negStep mem n n).memory) n bsize esize msize hfast e.act hsize1
         hbyte3 e.code e.run))
@@ -398,9 +376,9 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     Challenge.EvmProof.GasSteps (csubCallState z s mem n bsize esize msize k)
       (afterCsubState z s mem n bsize esize msize k) :=
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
-def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2494
+def canonicalCopyBlock : WindowTwentyOneBinding.Block Artifact.submissionArtifact .Osaka 2412
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 1957 5 2494 ShiftProducerSplitRun.copyProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 1892 5 2412 ShiftProducerSplitRun.copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)

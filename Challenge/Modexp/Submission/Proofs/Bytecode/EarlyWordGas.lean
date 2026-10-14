@@ -51,7 +51,7 @@ def steps_width_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hb : baseSize input ≠ 32) :
-    GasSteps (framed template (UInt256.ofNat 16) []) (framed template (UInt256.ofNat 103) []) := by
+    GasSteps (framed template (UInt256.ofNat 16) []) (framed template (UInt256.ofNat 101) []) := by
   have hw := run_width template input hdata (jump_env env paths.genJump)
   have hn : (baseDiff input).toNat ≠ 0 := fun hz => hb ((baseDiff_zero_iff input).mp hz)
   rw [if_neg hn] at hw

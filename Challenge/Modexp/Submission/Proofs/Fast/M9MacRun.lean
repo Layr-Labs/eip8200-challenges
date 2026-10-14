@@ -537,9 +537,9 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hent]
   let st : State := { template with memory := um }
   have hs1 : runInstructions
-      [.op .JUMPDEST, .push 0 0]
+      [.push 0 0]
       (setupState template pc um bi (maxWord :: rest)) =
-      some (framed st (pc + UInt256.ofNat 2)
+      some (framed st (pc + UInt256.ofNat 1)
         (UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
     simp (disch := omega) [runInstructions, setupState, framed, st,
       Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
@@ -548,8 +548,8 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
       Challenge.EvmProof.Word.ofNat_add_mod, notZero_maxWord,
       notZeroOfNat_maxWord, push0_ofNat]
   have hs2 : runInstructions [.op (.Dup ⟨4, by decide⟩)]
-      (framed st (pc + UInt256.ofNat 2) (UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
-      some (framed st (pc + UInt256.ofNat 3)
+      (framed st (pc + UInt256.ofNat 1) (UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
+      some (framed st (pc + UInt256.ofNat 2)
         (UInt256.ofNat ent :: UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
     have hc6 : rest.length + 6 < 1024 := by omega
     simp only [runInstructions, framed, st,
@@ -560,7 +560,7 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
     simp (disch := omega)
     all_goals omega
   have hs3 : runInstructions [.op .JUMP]
-      (framed st (pc + UInt256.ofNat 3)
+      (framed st (pc + UInt256.ofNat 2)
         (UInt256.ofNat ent :: UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
       some (framed st (UInt256.ofNat ent)
         (UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
