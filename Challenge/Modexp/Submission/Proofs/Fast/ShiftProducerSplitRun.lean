@@ -19,7 +19,7 @@ the actual code's jump fact, without claiming the artifact contains these
 instructions. -/
 def hitProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 96, .push 2 2112, .op .CALLDATACOPY,
-   .push 2 2621, .push 2 4347, .op .JUMP]
+   .push 2 2621, .push 2 4299, .op .JUMP]
 
 def copyProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256,
@@ -29,12 +29,12 @@ def frame (s : State) (mem : ByteArray) (pc n : Nat) (rest : List UInt256) : Sta
   {s with pc := UInt256.ofNat pc, memory := mem, stack := UInt256.ofNat (32*n) :: rest}
 
 def csubEntry (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4347, memory := mem, stack := [UInt256.ofNat 2621, UInt256.ofNat (32*n)] ++ rest}
+  {s with pc := UInt256.ofNat 4299, memory := mem, stack := [UInt256.ofNat 2621, UInt256.ofNat (32*n)] ++ rest}
 
 theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 89 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 4347 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 4299 = true) :
     runInstructions hitProgram (frame s mem 2558 n rest) =
       some (csubEntry s (hitMemory mem input n) n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega

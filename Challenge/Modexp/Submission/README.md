@@ -1,43 +1,35 @@
-# EIP-8200 MODEXP: stack-v10c = 5788127e (stack-v9) plus the n=8 squaring-kernel group and the 256-bit tail
+# MODEXP: our abbf9bf4 plus the n=4 squaring group, newton-batch and zneg2 (457,253 at seed 0)
 
-Work by Claude Opus 5.5 agents in Claude Code, one per lane.
+Work by Claude Opus 5.5 agents in Claude Code, one per lane. A short OpenAI Codex continuation ran replica sweeps and dependency builds during an account switch.
 
-This extends our `5788127e` (stack-v9, the current record at 462,538), which is `1954e3f4` plus our N1 and P1 cuts. Everything in `5788127e` is in this image. It adds fifteen cuts of ours: `p2`, `zloop`, `zreset`, `m9rot`, `dead5466`, `tl`, `msplit`, `deadbytes`, `offsets`, `depad`, `n8g`, `rarej`, `st8`, `frq` and `t256`. No cut in this image comes from another submission.
+This extends our `abbf9bf4` (stack-v10c, n8grpt, the current record at 460,289). Everything in `abbf9bf4` is in this image. It adds our n=4 squaring kernel group from `d62773b1` (`n4a`, `n4f`, `n4t`, `rare4`), our `newton-batch` from `92ac47cf`, and two new cuts, `zneg2` and `dead3383`. No cut in this image comes from another solver's submission beyond the credited ancestry listed below.
 
 ## Context and goal
 
-Minimise total gas over the 44 scorer vectors while `Correct bytecode` stays proved for the exact bytes. Direct base: our `5788127e`, 5,544 bytes, 4,359 instructions, 461,838 gas at seed 0. This image has 5,531 bytes and 4,364 instructions: 458,608 gas at seed 0, 3,230 below. `depad`, `deadbytes`, `dead5466` and `t256` change the code length, so most pcs after 2392 move. The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk, summed) plus L (code length) plus 8 per chunk exceeds 8,194. This image: S 1,887, L 5,531, 87 chunks, so 8,114, 80 below the limit.
+Minimise total gas over the 44 scorer vectors while `Correct bytecode` stays proved for the exact bytes. Direct base: our `abbf9bf4`, 5,531 bytes, 4,364 instructions, 458,608 gas at seed 0. This image has 5,544 bytes and 4,413 instructions: 457,253 gas at seed 0, 1,355 below. The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk, summed) plus L (code length) plus 8 per chunk exceeds 8,194. This image: S 1,924, L 5,544, 87 chunks, so 8,164, 30 below the limit.
 
 ## Setup
 
-- Source `Layr-Labs/eip8200-challenges` at `3db491e`. Lean `v4.31.0`; Comparator `v4.33.0-rc1`.
-- Gas: a Python replica of the scorer (Osaka gas plus a port of `Scorer.lean`'s corpus generator). It matched official per-vector gas on 12,144 public runs, the Lean scorer on every benched seed, and the official runs of our earlier submissions on all 44 vectors.
+- Source `Layr-Labs/eip8200-challenges` at `3db491e`. Lean `v4.31.0`.
+- Gas: a Python replica of the scorer (Osaka gas plus a port of `Scorer.lean`'s corpus generator). It matched official per-vector gas on public runs, the Lean scorer on every benched seed, and the official runs of our earlier submissions on all 44 vectors.
 - Proof check: a full `lake build Challenge.Modexp.Submission.Solution` of these exact bytes.
 
 ## The cuts
 
-- **p2 and zloop.** The multiply and squaring row loops no longer carry the loop bound `pb` and the t-top address as separate constants. The frame holds the row pointer `q` (the loop exits when `q` reaches 0, so the tail is `DUP1 DUP3 JUMPI`) and `n1` in the bound slot. The squaring diagonal reads `a_i` from `mem[q + 0x920]`.
-- **zreset.** At the exit of a row loop the row pointer is exactly 0, so that value is the carry-cache reset `tn := 0` and the separate push goes.
-- **m9rot.** The M9 loop tests its counter at the bottom instead of the top. Entry counters are `n` or `n >> k`, always at least 1.
-- **dead5466.** The generic preclear trampoline [5466, 5483) is deleted. Its only predecessor was a statically dead block.
-- **tl.** The `tl` frame slot (the t-top address, 0x920 on every n=8 path) holds `n0 = mem[0xe0]`. The n=8 heads read `n0` with `DUP15`; setups read `tl` from memory.
-- **msplit.** One multiply loop per width with constant t-top addresses. The n=8 head falls through into the Duff base, the n=4 head has its own copy, and the multiply setup computes the head per width.
-- **deadbytes.** Statically unreachable filler inside the kernel is deleted (budget only).
-- **offsets.** Computed-jump offset constants become label expressions. 0 gas.
-- **depad.** Every `PUSHn` with leading zero bytes shrinks to its minimal width. 0 gas; the saved bytes pay for the other cuts under the artifact limit.
-- **n8g.** The n=8 squaring exit glue: a new block tests `tn` from the stack (`SWAP12` also resets the slot), does the `t` to `a` `MCOPY` with constants and the counter test, and jumps straight to the next first row or the multiply setup.
-- **rarej.** The `tn != 0` continuations jump straight into the width's subtraction (a new `JUMPDEST` for n=8), skipping the memory re-test and the width test.
-- **st8.** The `tn` store moves past the mode `JUMPI`; only the multiply and final fall-through need it. The rare n=8 continuation stores a nonzero word for the select.
-- **frq.** In the n=8 first row `q` is 0x100 on every entry, so `a_0 = mem[0xa20]` by constant (6 gas per n=8 squaring).
-- **t256.** The 256-bit route's last windows (a tail whose only predecessor is the jump at 2391) move inline at 2388. -12 gas per 256-bit vector. The five dead `JUMPDEST` pads at 2392 to 2396 go.
-
-Paired against `5788127e` the whole image saves 3,191 to 3,197 gas on average, and 3,087 to 3,230 on every one of the 62 seeds measured.
+- **n4a.** In the n=4 kernel the squaring result `t` lives on the stack and is stored at 0x840..0x8a0 at the end of each squaring. The next squaring reads its operand `a` from there, so the squaring-to-squaring `MCOPY` is skipped.
+- **n4f.** The n=4 squaring tail falls through into the counter block, its only predecessor, so `PUSH2 JUMP JUMPDEST` goes (12 gas per n=4 squaring).
+- **n4t.** The n=4 squaring tail tests `tn` from the stack before the counter and jumps straight to the next first row. The rare `tn != 0` case has its own block.
+- **rare4.** If `tn != 0` at the n=4 tail, a block subtracts `N` from the four `t` limbs in place on the stack, zeroes `tn` and jumps back to the stores, instead of the shared subtraction, select and `MCOPY` detour.
+- **newton-batch.** The RSA setup no longer computes the negated low-limb inverse with its own 49-instruction Newton chain. The dinv site calls one shared Newton subroutine on `p = dodd * n0` and derives both inverses from `x = newton(dodd * n0)` (`newton(a * b) * b = newton(a)`; `n0` and `dodd` are odd on this route). -84 gas on each RSA vector.
+- **zneg2.** The row pointer counts up through negative values (`q' = -q`), so the row tail step is `PUSH1 20 ADD` instead of a 33-byte `PUSH32 -32 ADD`. Address computations become subtractions (`0xe0 - q`, `0x920 - q`, `0x820 - q`), and setup tests n=4 by `q' + 0x80 == 0`. It is mainly a budget lever (+3 gas per row-pointer reset) that pays for the n=4 group under the artifact limit.
+- **dead3383.** The dead multiply-preclear entry at 3383, whose only jumper was the trampoline removed by `dead5466`, is deleted. 0 gas, budget only.
 
 ## Proof changes
 
-- The n=8 squaring round has its own memory model (`SquareRoundC`, new): the round no longer flushes `tn` to 0x820, and the rare `tn != 0` path stores a nonzero word there for the select. `SquareLoop`, `TnM128SquareExit`, `TnM128SquareFinishSteps`, `TnM128SquareRowSteps` and the cache-trace files carry the new frame (row pointer `q`, `n1` and `n0` in frame slots) and the new exit blocks; `TnM128FusedEntry` has the per-width multiply setup; `CsubCore` splits the select tail for the nonzero-flag continuation.
-- `Exp.Subroutines.monpro` is removed. No consumer used it (dead5466 deletes its trampoline). Five dead files are deleted: `CarryEntryLemmas`, `CarryFullFast`, `CarryFullSpecializedEight`, `CarryFullSpecializedFour` and `TnM128FusionFrame`.
-- 57 more files only renumber pcs, indices or memory offsets. The tree differs from `5788127e` in 139 files in all (133 changed, 5 deleted, 1 new). `Solution.lean` is unchanged.
+- The n=4 proofs (`R4Blocks`, `R4Runs`, `R4Trace`, `R4Hooks`, the n=4 section of `SquareLoop`, `TnM128SquareExit`, `Cios2Dispatch`) come from `d62773b1`'s tree through a three-way merge against `5788127e`, with `abbf9bf4`'s n=8 kernel files kept.
+- newton-batch: `Setup`, `ShiftPaths`, `ShiftStates`, `ShiftTrace1/4/5`, `ShiftCorrect`, `RootE3*` and the `ShiftModel` Newton algebra lemmas, as in `92ac47cf`.
+- zneg2: `TnCacheRowPointers.qptr n i = ofNat (2^256 - 32(n-i))` with new `qptr_end`, `sub_qptr` and `sub_qptr_toNat`. The row tail, multiply head (`bAddr q = 0xe0 - q`), square diagonal, first row, product setup, square exit and the `R4Hooks` H1 test carry the subtraction addresses.
+- 57+ more files only renumber pcs, indices or memory offsets. Apart from `README.md` and `dependencies.json`, the tree differs from `abbf9bf4` in 95 modified files (94 Lean files and `bytecode.hex`) and one deleted dead file, `R4SquareScratchAgreement`. `Solution.lean` is unchanged.
 
 ## Cuts merged from other submissions (credited, declared)
 
@@ -46,30 +38,27 @@ Paired against `5788127e` the whole image saves 3,191 to 3,197 gas on average, a
 | `d0a1f9e9` | Th0rgal | [4, 135), [864, 872) | EarlyWord guard; Fermat entry/return stack diet | -405 |
 | `984faab1` | UsamaInayat | [973, 994) | 256-bit window route setup block | -128 |
 
-Both entered through `bdd36736`; our C2 prologue and precopy256 route later superseded those exact bytes and kept the checks. The cuts that make up `5788127e` are listed in its own note: csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue 1 and 2, layout-v1, csub2, precopy256, B4, C2, e3skip, N1 and P1.
+Both entered through `bdd36736` and are inherited through `abbf9bf4`; later routes superseded those exact bytes and kept the checks.
 
 ## Results
 
-Python replica, 44 vectors, 0 wrong outputs of 1,364 runs for both images in each sweep:
+Python replica, 44 vectors, 0 wrong outputs in every sweep:
 
 | Sweep | Image | Mean | sd |
 |---|---|---|---|
-| seed 0 + 30 seeds of `random.Random(8200)` | `5788127e` (record) | 463,628.4 | 1,065.8 |
-| | **this image** | **460,436.9** | 1,074.4 |
-| 31 fresh seeds of `random.Random(20261015)` | `5788127e` (record) | 463,366.1 | 1,093.8 |
-| | **this image** | **460,169.6** | 1,111.2 |
+| seed 0 + 30 seeds of `random.Random(8200)` | `abbf9bf4` (record) | 460,436.9 | 1,074.4 |
+| | **this image** | **458,873.6** | 944.7 |
+| 1,000 fresh seeds of `random.Random(202610140702)` | `abbf9bf4` (record) | 460,294.4 | 1,027.0 |
+| | **this image** | **458,781.9** | 941.9 |
 
-- Paired against `5788127e`: -3,191.5 mean on the first sweep and -3,196.5 on the second, every seed negative (range -3,230 to -3,087).
-- A differential fuzz of these exact bytes against `pow` found 0 wrong of 2,050 completed inputs: 1,500 2048-bit moduli with e = 3 and 65,537 (random odd, near 2^2048 and 2^2047 plus small, bases below, near and above the modulus; 1,948 visits to the new rare `tn != 0` block), 500 1,024-bit moduli, and 50 mid-width inputs (950 more generic-width or leading-zero-limb inputs ran past the replica's step cap and are not counted).
-- Proof status: full Lean `Solution` build PASS on these exact bytes (exit 0, 2,327 jobs; `Challenge.Modexp.Benchmark.candidate` depends on axioms `[propext, Classical.choice, Quot.sound]`; no `sorry`). Comparator and official-scorer run of these exact bytes: not run before sending.
-- The official run draws its own random corpus seed, so a single run can land above the record: about 98% of draws are below 462,538 on the normal approximation of the 62 seeds.
+- Paired against `abbf9bf4`: -1,563.2 mean on the first sweep and -1,512.5 on the 1,000-seed sweep, every seed negative (range -2,062 to -1,151).
+- A differential fuzz of these exact bytes against `pow` found 0 wrong in 603 completed adversarial inputs (n=4 and n=8 moduli, near-modulus, all-ones, 0/1/2 bases, even and power-of-two moduli, odd widths, truncated calldata, targeted at the new n=4 and zneg2 blocks). 309 more ran past the replica's step cap and are not counted.
+- The official run draws its own random corpus seed: 950 of 1,000 fresh replica seeds scored below 460,289.
 
 ## Commands
 
 ```bash
 lake build Challenge.Modexp.Submission.Solution    # full proof build of the exact bytes
-# replica sweep; our script, not in the archive
-python3 multisweep.py v9=5788127e.hex v10c=Challenge/Modexp/Submission/bytecode.hex
 sha256sum Challenge/Modexp/Submission/bytecode.hex
-# 862e17e7636701a2cc995a7c5585645779bd67aa739bdd596cf78420ebe62298
+# 796161fc3dacc4fb8c35e0b6f1e9873316c0ebe066604d88ff7c5d284a3f34d1
 ```

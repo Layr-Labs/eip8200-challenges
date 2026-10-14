@@ -131,7 +131,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : E
     GasSteps (shiftDoneState (UInt256.ofNat 0) s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 28) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
         (n / 4)) := by
-  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5509 = true := by
+  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5522 = true := by
     rw [e.code]; exact jumpDest5444
   have hd2811 : Decode.isValidJumpDest s.executionEnv.code 2858 = true := by
     rw [e.code]; exact jumpDest2811
@@ -171,10 +171,25 @@ def tailSteps (s : State) (mem : ByteArray) (n bsize esize msize d target : Nat)
 def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (e : Env s) (hdata : s.executionEnv.calldata = input)
-    (hframe : Exp.Frame mem n bsize minv)
+    (hframe : Exp.Frame mem n bsize 0)
     (hmatch : FullBase.Matches mem n bsize) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
-    (hfast : n = 4 ∨ n = 8) :
+    (hfast : n = 4 ∨ n = 8)
+    (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1) :
     RootE3Trace.TraceBindings s mem input n bsize esize msize := by
+  -- the newton-batch tail inverts `dodd * n0`: both factors are odd on the hit arm
+  have hm1n0 : (MachineState.readWord (m1Of mem input n) (32 * n - 32)).toNat % 2 = 1 := by
+    rw [m1_readWord_disjoint mem input n (32 * n - 32) (by omega) hn8
+      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩]
+    exact hn0odd
+  have hm1d : (preDodd (MachineState.readWord (m1Of mem input n) 0)).toNat % 2 = 1 := by
+    rw [m1_readWord_disjoint mem input n 0 (by omega) hn8
+      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩]
+    apply preDodd_odd
+    intro h
+    have ht := hmatch.2
+    unfold R1.TopBitSet at ht
+    rw [h] at ht
+    norm_num at ht
   have hm1ml : MachineState.readWord (m1Of mem input n) 2752 = UInt256.ofNat (32 * n - 32) := by
     rw [m1_readWord_disjoint mem input n 2752 (by omega) hn8
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]
@@ -182,7 +197,8 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
   have heoff : MachineState.readWord (m2Of mem input n) 2816 = UInt256.ofNat (96 + bsize) := by
     rw [m2_readWord_disjoint mem input n 2816 (by omega) hn8
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
-        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩]
+        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
+      (Or.inr (by omega))]
     exact hframe.eoff
   have heoff' : MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2816 =
       UInt256.ofNat (96 + bsize) :=
@@ -208,13 +224,13 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
         have hlt := RootE3Guard.exponentValue_one_lt input bsize
         exact evne (nat_eq_of_word (by omega) (by decide) h)
       have third := gasSteps_prologue_slow s (m1Of mem input n) n bsize esize msize
-        (by omega) hn8 e hfast hes1 hebne hm1ml
+        (by omega) hn8 e hfast hes1 hebne hm1ml hm1n0 hm1d
       rw [hse] at third
       exact (first.trans (second.trans third)).cast rfl
         (congrArg (fun m => shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize n)
           (flagSet_m2Of_eq mem input n (UInt256.ofNat 0)).symm)
     · have third := gasSteps_prologue s (m1Of mem input n) n bsize esize msize
-        (by omega) hn8 e hfast hes1 hm1ml
+        (by omega) hn8 e hfast hes1 hm1ml hm1n0 hm1d
       rw [hse] at third
       exact (first.trans (second.trans third)).cast rfl
         (congrArg (fun m => shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize n)
@@ -227,7 +243,7 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
       rw [RootE3Guard.exponentByte_spec _ _ bsize hb heoff', hdata]
       exact congrArg UInt256.ofNat hhit.2.1
     have third := gasSteps_prologue_e3 s (m1Of mem input n) n bsize esize msize
-      (by omega) hn8 e hfast hes1 heb hm1ml
+      (by omega) hn8 e hfast hes1 heb hm1ml hm1n0 hm1d
     rw [hse] at third
     exact (first.trans (second.trans third)).cast rfl
       (congrArg (fun m => shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize (n / 2))

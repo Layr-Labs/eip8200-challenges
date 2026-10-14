@@ -33,9 +33,9 @@ noncomputable def reduction_steps (s : State)
       (framed {s with memory := q.memory} (UInt256.ofNat 3839)
         ([q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
-      (if UInt256.isTrue (negative32+pbi) then hd
-       else UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8+49))
-      (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
+      (if UInt256.isTrue (UInt256.ofNat 32+pbi) then hd
+       else UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8+18))
+      (TnCacheFrameOps.frame (UInt256.ofNat 32+pbi) hd pb ent
         m32 m128 m64
         (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn 8).tn :: aEnd :: dst :: ret :: rest))) := by
   let st : State := {s with memory := q.memory}
@@ -71,9 +71,9 @@ noncomputable def reduction_steps (s : State)
         q.memory flag (rowMu q.memory 8) (rowC0 q.memory 8) 8 (8-1)
         pbi hd pb ent m32 m128 m64 tail) =
       some (framed {s with memory := (TnCacheSquareModel.fromL1 q tn 8).memory}
-        (if UInt256.isTrue (negative32+pbi) then hd
-         else UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8+49))
-        (TnCacheFrameOps.frame (negative32+pbi) hd pb ent
+        (if UInt256.isTrue (UInt256.ofNat 32+pbi) then hd
+         else UInt256.ofNat ((l2PC)+TnMod128Chain.fullSize 8+18))
+        (TnCacheFrameOps.frame (UInt256.ofNat 32+pbi) hd pb ent
           m32 m128 m64 (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn 8).tn :: tl4))) := by
     simpa only [TnCacheLastTrace.lastState, tail, tl4, st, framed, mem2, carry2,
       TnCacheSquareModel.fromL1, flag, List.cons_append, List.nil_append] using htailrun

@@ -34,7 +34,7 @@ def stored (s : State) (c bi pbi paEnd pbEnd flag dst ret : UInt256)
 
 def product (s : State) (n : Nat) (bi pbi paEnd pbEnd flag dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed s (UInt256.ofNat 3847)
+  framed s (UInt256.ofNat 3874)
     ([rowC0 s.memory n, rowMu s.memory n] ++ baseStack bi pbi paEnd pbEnd flag dst ret rest)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMidDefs

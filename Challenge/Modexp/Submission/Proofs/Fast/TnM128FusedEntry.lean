@@ -14,19 +14,19 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CiosCached CiosCachedMacCore
 
 /-- The product setup after the square loop (pc 3487, TL/p2/zloop/msplit): clear the carry slot,
-`aEnd := mem[0xae0] + 0x100` (the staged operand's last limb), drop the row pointer, `q := aEnd - 0x920`
-(`= 32·n`), the width's row head `hd := 3545 + 1794·[aEnd & 0x80 ≠ 0]` (5339 for four limbs),
+`aEnd := mem[0xae0] + 0x100` (the staged operand's last limb), drop the row pointer, `q := 0x920 - aEnd`
+(zneg2: `= -32·n`), the width's row head `hd := 3545 + 1807·[aEnd & 0x80 ≠ 0]` (5352 for four limbs),
 `dst := 256`, `ret := 772`. -/
 def prefixHead : List Instr :=
   [.op .JUMPDEST, .push 0 0, .op (.Swap ⟨12, by decide⟩), .op .POP,
    .push 2 2784, .op .MLOAD, .push 2 256, .op .ADD, .op (.Swap ⟨13, by decide⟩), .op .POP,
    .op .POP,
-   .push 2 2336, .op (.Dup ⟨13, by decide⟩), .op .SUB]
+   .op (.Dup ⟨12, by decide⟩), .push 2 2336, .op .SUB]
 
 /-- The width's row head from bit 7 of `aEnd` (msplit). -/
 def prefixSelect : List Instr :=
   [.push 1 128, .op (.Dup ⟨14, by decide⟩), .op .AND, .push 0 0, .op .LT,
-   .push 2 1794, .op .MUL, .push 2 3545, .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .POP]
+   .push 2 1807, .op .MUL, .push 2 3545, .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .POP]
 
 def prefixTail : List Instr :=
   [.push 2 256, .op (.Swap ⟨14, by decide⟩), .op .POP,
@@ -41,10 +41,10 @@ def clearProgram : List Instr :=
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
 def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3487 prefixProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2716 31 3487 prefixProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2718 31 3487 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3533 clearProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2747 8 3533 clearProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2749 8 3533 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The first multiply row, the operand block at 2368 and the product scratch cleared. -/
@@ -69,7 +69,7 @@ theorem run_prefixHead (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     runInstructions prefixHead
       (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3487 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
       some (framed {s with memory := mem} (UInt256.ofNat 3507)
-        ([UInt256.ofNat (32*n), UInt256.ofNat 4293, w3, ent, m32, allOnes,
+        ([UInt256.ofNat (2^256 - 32*n), UInt256.ofNat 4245, w3, ent, m32, allOnes,
           MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0,
           UInt256.ofNat (2368+32*n-32), pdst, ret] ++ rest)) := by
   have hc13 : rest.length + 13 < 1024 := by omega
@@ -96,7 +96,7 @@ theorem run_prefixSelect (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z a
       (framed s (UInt256.ofNat 3507)
         ([q, hd, w3, ent, m32, allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) =
       some (framed s (UInt256.ofNat 3523)
-        ([q, UInt256.ofNat 3545 + UInt256.ofNat 1794 * CapDispatch.selectBit aEnd, w3, ent, m32,
+        ([q, UInt256.ofNat 3545 + UInt256.ofNat 1807 * CapDispatch.selectBit aEnd, w3, ent, m32,
           allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) := by
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
@@ -123,7 +123,7 @@ theorem run_prefixTail (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z aEn
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem headPC_select (n : Nat) (hn : n = 4 ∨ n = 8) :
-    UInt256.ofNat 3545 + UInt256.ofNat 1794 * CapDispatch.selectBit (UInt256.ofNat (2368+32*n-32)) =
+    UInt256.ofNat 3545 + UInt256.ofNat 1807 * CapDispatch.selectBit (UInt256.ofNat (2368+32*n-32)) =
       UInt256.ofNat (TnM128RowSteps.headPC n) := by
   rcases hn with rfl | rfl <;> decide
 
@@ -137,14 +137,14 @@ theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
       some (prefixState s mem n w3 ent tl inv m0 m96 m64 m32 rest) := by
   have h1 := run_prefixHead tn s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn
     htlw hact
-  have h2 := run_prefixSelect {s with memory := mem} (UInt256.ofNat (32*n)) (UInt256.ofNat 4293) w3
+  have h2 := run_prefixSelect {s with memory := mem} (UInt256.ofNat (2^256 - 32*n)) (UInt256.ofNat 4245) w3
     ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
     (UInt256.ofNat (2368+32*n-32)) pdst ret rest hcap
-  have h3 := run_prefixTail {s with memory := mem} (UInt256.ofNat (32*n))
-    (UInt256.ofNat 3545 + UInt256.ofNat 1794 * CapDispatch.selectBit (UInt256.ofNat (2368+32*n-32)))
+  have h3 := run_prefixTail {s with memory := mem} (UInt256.ofNat (2^256 - 32*n))
+    (UInt256.ofNat 3545 + UInt256.ofNat 1807 * CapDispatch.selectBit (UInt256.ofNat (2368+32*n-32)))
     w3 ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
     (UInt256.ofNat (2368+32*n-32)) pdst ret rest hcap
-  have hq : UInt256.ofNat (32*n) = TnCacheRowPointers.qptr n 0 := by
+  have hq : UInt256.ofNat (2^256 - 32*n) = TnCacheRowPointers.qptr n 0 := by
     simp only [TnCacheRowPointers.qptr, Nat.sub_zero]
   have h := runInstructions_append_some _ _ _ _ _ (runInstructions_append_some _ _ _ _ _ h1 h2) h3
   rw [headPC_select n hn, hq] at h

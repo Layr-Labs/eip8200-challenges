@@ -101,8 +101,8 @@ def squareCall : List Located :=
    opAt 2013 .ADD,
    pushAt 2014 2 512,
    pushAt 2015 2 2112,
-   pushAt 2016 2 4582,
-   pushAt 2017 2 3405,
+   pushAt 2016 2 4534,
+   pushAt 2017 2 3401,
    opAt 2018 .JUMP]
 
 theorem jumpDest3892 :
@@ -147,8 +147,8 @@ def bail : List Located :=
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3405 = true :=
-  Artifact.isValidJumpDest_index 2657 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3401 = true :=
+  Artifact.isValidJumpDest_index 2655 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

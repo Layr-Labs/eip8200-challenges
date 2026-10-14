@@ -35,27 +35,27 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
 /-- The SGT instruction in the eight-limb square row. -/
-theorem sqRowSgt_index : TnM128CandidateArtifact.submissionInstructions[3341]? = some (.op .SGT) := by
+theorem sqRowSgt_index : TnM128CandidateArtifact.submissionInstructions[3334]? = some (.op .SGT) := by
   rfl
 
 /-- Its exact byte address. -/
-theorem sqRowSgt_pc : TnM128CandidateArtifact.submissionArtifact.instructionPC 3341 = 4303 := by
+theorem sqRowSgt_pc : TnM128CandidateArtifact.submissionArtifact.instructionPC 3334 = 4255 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 theorem decodedOp_sqRowSgt (s : State)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
-    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4303) :
+    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 4255) :
     s.decodedOp = some .SGT := by
-  have hpcNat : s.pc.toNat = TnM128CandidateArtifact.submissionArtifact.instructionPC 3341 := by
+  have hpcNat : s.pc.toNat = TnM128CandidateArtifact.submissionArtifact.instructionPC 3334 := by
     rw [hpc, sqRowSgt_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .SGT) := by
     rw [hfork]
     exact ⟨by decide, trivial, rfl⟩
-  exact Stepper.decodes_of_artifact TnM128CandidateArtifact.submissionArtifact s 3341 (.op .SGT)
+  exact Stepper.decodes_of_artifact TnM128CandidateArtifact.submissionArtifact s 3334 (.op .SGT)
     hcode hpcNat sqRowSgt_index hwf
 
-theorem succ_4716 : (UInt256.ofNat 4303).succ = UInt256.ofNat 4304 := by
+theorem succ_4716 : (UInt256.ofNat 4255).succ = UInt256.ofNat 4256 := by
   decide
 
 /-- The `SGT` of `sq_row` (pc 4099 → 4100): pops `a, b`, pushes `UInt256.sgt a b`.
@@ -64,13 +64,13 @@ In `sq_row` the operands are `a = 0` (from `PUSH0`) and `b = aprev`; see
 def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = TnM128Candidate.bytecode)
     (hfork : s.fork = .Osaka)
-    (hpc : s.pc = UInt256.ofNat 4303)
+    (hpc : s.pc = UInt256.ofNat 4255)
     (hstack : s.stack = a :: b :: rest)
     (hcap : rest.length ≤ 1021)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    GasSteps s { s with stack := UInt256.sgt a b :: rest, pc := UInt256.ofNat 4304 } := by
+    GasSteps s { s with stack := UInt256.sgt a b :: rest, pc := UInt256.ofNat 4256 } := by
   have hcap' : s.stack.length + Operation.pushArity .SGT ≤
       1024 + Operation.popArity .SGT := by
     rw [hstack]
@@ -82,7 +82,7 @@ def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
   exact h
 
 /-- Same rule for a state written as a record update of a template
-(`{ t with pc := 4099, stack := a :: b :: rest, memory := m }`), the form used by
+(`{ t with pc := 4087, stack := a :: b :: rest, memory := m }`), the form used by
 the kernel frames. -/
 def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (rest : List UInt256)
@@ -92,9 +92,9 @@ def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (hrun : t.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig t.executionEnv.precompileConfig t.executionEnv.fork
       t.executionEnv.codeAddr = false) :
-    GasSteps { t with pc := UInt256.ofNat 4303, stack := a :: b :: rest, memory := m }
-      { t with pc := UInt256.ofNat 4304, stack := UInt256.sgt a b :: rest, memory := m } :=
-  gasSteps_sqRowSgt { t with pc := UInt256.ofNat 4303, stack := a :: b :: rest, memory := m }
+    GasSteps { t with pc := UInt256.ofNat 4255, stack := a :: b :: rest, memory := m }
+      { t with pc := UInt256.ofNat 4256, stack := UInt256.sgt a b :: rest, memory := m } :=
+  gasSteps_sqRowSgt { t with pc := UInt256.ofNat 4255, stack := a :: b :: rest, memory := m }
     a b rest hcode hfork rfl rfl hcap hrun hnp
 
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128SgtStep

@@ -101,7 +101,7 @@ def entryBlock : Block Artifact.submissionArtifact .Osaka 2936 entryProgram :=
 theorem jumpDest2899 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2940 = true :=
   Artifact.isValidJumpDest_index 2286 (by rfl)
 
-/-- The four-limb entry (block 4's `JUMPDEST`, instruction 2431, = 2899 + 133). -/
+/-- The four-limb entry (block 4's `JUMPDEST`, instruction 2431, = 2946 + 116). -/
 theorem jumpDest3032 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3056 = true :=
   Artifact.isValidJumpDest_index 2388 (by rfl)
 

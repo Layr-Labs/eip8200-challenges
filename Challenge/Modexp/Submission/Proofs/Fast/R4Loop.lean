@@ -1,118 +1,74 @@
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoopMem
+import Challenge.Modexp.Submission.Proofs.Fast.SquarePartialClear
 
 set_option warningAsError true
 set_option maxRecDepth 40000
-set_option maxHeartbeats 200000
+set_option maxHeartbeats 400000
+
+/-!
+# The n=4 square loop memory (n4a + n4t + rare4)
+
+The four-limb kernel squares the operand in place: every round reads `a` from 2112..2208 and the
+tail stores the reduced square back there (`R4Bridge.rows4r`, overflow word 2080 zeroed).  After
+the last round the lazy gate copies the window to 2368 for the fused product.  The eight-limb
+loop keeps `SquareLoopMem.sqLoopMem`; `loopMem` picks the model by width.
+-/
+
 namespace Challenge.Modexp.Submission.Proofs.Fast.R4Loop
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
-open Monpro StagedOperand SquareModel SquareResult SquareLoopMem R4Bridge
+open Monpro StagedOperand SquareModel SquareResult SquareLoopMem
 
-def r4Round (c : Nat) (mem : ByteArray) : ByteArray :=
-  LazyCsub.resultMemory (SquareLoopBlocks.countMem (rows4 mem) c) 4 (roundDst c)
-
-def r4RunMem : Nat → ByteArray → ByteArray
+/-- `k` n=4 rounds. -/
+def r4Steps : Nat → ByteArray → ByteArray
   | 0, mem => mem
-  | k + 1, mem => r4RunMem k (r4Round k mem)
+  | k + 1, mem => r4Steps k (R4Bridge.rows4r mem)
 
-def r4LoopMem (s : State) : Nat → ByteArray → ByteArray
+/-- `k` rounds, then the lazy gate (`[2368, after_sq]` on a zero overflow word: the copy of the
+window to 2368). -/
+def r4RunMem (k : Nat) (mem : ByteArray) : ByteArray :=
+  LazyCsub.resultMemory (r4Steps k mem) 4 2368
+
+/-- The whole n=4 call: the setup's self-copy, the cleared scratch word, then the rounds. -/
+def r4LoopMem (_s : State) : Nat → ByteArray → ByteArray
   | 0, mem => mem
-  | k + 1, mem => r4RunMem (k + 1) (mpZeroed s (stage mem 2112 4) 4)
+  | k + 1, mem => r4RunMem (k + 1) (SquarePartialClear.memory (stageW mem 2112 4))
 
-theorem r4RunMem_succ (k : Nat) (mem : ByteArray) :
-    r4RunMem (k + 1) mem = r4RunMem k (r4Round k mem) := rfl
+theorem r4Steps_succ (k : Nat) (mem : ByteArray) :
+    r4Steps (k + 1) mem = r4Steps k (R4Bridge.rows4r mem) := rfl
 
 theorem r4LoopMem_succ (s : State) (k : Nat) (mem : ByteArray) :
-    r4LoopMem s (k + 1) mem = r4RunMem (k + 1) (mpZeroed s (stage mem 2112 4) 4) := rfl
+    r4LoopMem s (k + 1) mem =
+      r4RunMem (k + 1) (SquarePartialClear.memory (stageW mem 2112 4)) := rfl
 
-theorem r4Round_readWord_outside (mem : ByteArray) (c addr : Nat)
-    (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * 4 ≤ addr)
-    (hscratch : addr + 32 ≤ 2048 ∨ 2624 ≤ addr)
-    (hdst : addr + 32 ≤ 512 ∨ 512 + 32 * 4 ≤ addr)
-    (hcount : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
-    MachineState.readWord (r4Round c mem) addr = MachineState.readWord mem addr := by
-  have hd : addr + 32 ≤ roundDst c ∨ roundDst c + 32 * 4 ≤ addr := by
-    simp only [roundDst]; omega
-  rw [r4Round, LazyCsub.result_readWord_outside _ 4 (roundDst c) addr (by omega) hsubb hd,
-    SquareLoopBlocks.readWord_countMem_disjoint _ c addr hcount,
-    rows4_readWord_outside mem addr (by omega)]
-
-theorem r4Round_readWord_high (mem : ByteArray) (c addr : Nat) (haddr : 2656 ≤ addr) :
-    MachineState.readWord (r4Round c mem) addr = MachineState.readWord mem addr :=
-  r4Round_readWord_outside mem c addr (Or.inr (by omega)) (Or.inr (by omega))
-    (Or.inr (by omega)) (Or.inr haddr)
-
-theorem r4Round_fastRepresents_outside (mem : ByteArray) (c ptr cnt v : Nat)
-    (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * 4 ≤ ptr)
-    (hscratch : ptr + 32 * cnt ≤ 2048 ∨ 2624 ≤ ptr)
-    (hdst : ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * 4 ≤ ptr)
-    (hcount : ptr + 32 * cnt ≤ 2624 ∨ 2656 ≤ ptr)
-    (hrep : Model.FastRepresents mem ptr cnt v) :
-    Model.FastRepresents (r4Round c mem) ptr cnt v := by
-  refine (Model.fastRepresents_congr (a := mem) ?_ v).1 hrep
-  intro j hj
-  rw [r4Round_readWord_outside mem c (ptr + 32 * j) (by omega) (by omega) (by omega) (by omega)]
-
-def r4RoundValue (mem : ByteArray) (c mm : Nat) : Nat :=
-  LazySquareMemory.roundValue (SquareLoopBlocks.countMem (rows4 mem) c) 4 mm
-
-theorem r4Round_represents (mem : ByteArray) (a mm c : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
-    (hodd : mm % 2 = 1) (_har : a < Limbs.radix^4)
-    (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
-    Model.FastRepresents (r4Round c mem) (roundDst c) 4 (r4RoundValue mem c mm) := by
-  rw [r4Round]
-  exact (LazySquareMemory.r4_result mem a mm c (roundDst c) ha hm hodd hminv).1
+theorem r4Steps_readWord_outside (k : Nat) (mem : ByteArray) (addr : Nat)
+    (h : addr + 32 ≤ 2080 ∨ 2240 ≤ addr) :
+    MachineState.readWord (r4Steps k mem) addr = MachineState.readWord mem addr := by
+  induction k generalizing mem with
+  | zero => rfl
+  | succ k ih =>
+      rw [r4Steps_succ, ih, R4Bridge.rows4r_readWord_outside mem addr h]
 
 theorem r4RunMem_readWord_outside (k : Nat) (mem : ByteArray) (addr : Nat)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * 4 ≤ addr)
-    (hscratch : addr + 32 ≤ 2048 ∨ 2624 ≤ addr)
-    (hdst : addr + 32 ≤ 512 ∨ 512 + 32 * 4 ≤ addr)
-    (hcount : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
+    (hscratch : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
     MachineState.readWord (r4RunMem k mem) addr = MachineState.readWord mem addr := by
-  induction k generalizing mem with
-  | zero => rfl
-  | succ k ih =>
-      rw [r4RunMem_succ, ih (r4Round k mem),
-        r4Round_readWord_outside mem k addr hsubb hscratch hdst hcount]
-
-theorem r4Round_eq_round (s : State) (c : Nat) (mem : ByteArray) :
-    r4Round c mem = LazyLoopMemory.round s 4 c mem := by
-  exact congrArg
-    (fun r : ByteArray => LazyCsub.resultMemory (SquareLoopBlocks.countMem r c) 4 2368)
-    (show rows4 mem = LazyLoopMemory.rows s 4 mem from
-      (if_pos (rfl : (4 : Nat) = 4)).symm)
-
-theorem r4RunMem_eq_run (s : State) (k : Nat) (mem : ByteArray) :
-    r4RunMem k mem = LazyLoopMemory.run s 4 k mem := by
-  induction k generalizing mem with
-  | zero => rfl
-  | succ k ih =>
-      rw [r4RunMem_succ, LazyLoopMemory.run, ih, r4Round_eq_round]
-
-theorem r4RunMem_represents (s : State) (a mm k : Nat) (mem : ByteArray) (hk : 1 ≤ k)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
-    (hodd : mm % 2 = 1) (_har : a < Limbs.radix^4) (_hmpos : 0 < mm)
-    (hminv : ((MachineState.readWord mem 96).toNat *
-      (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
-    ∃ v, Model.FastRepresents (r4RunMem k mem) 2368 4 v ∧ v < Limbs.radix^4 ∧
-      v % mm = ((fun x => Model.montMul mm (Limbs.radix^4) x x)^[k] a) := by
-  rw [r4RunMem_eq_run s k mem]
-  exact LazyLoopMemory.run_represents s mem 2 a mm k (by omega) hk ha hm hodd hminv
+  unfold r4RunMem
+  rw [LazyCsub.result_readWord_outside _ 4 2368 addr (by omega) hsubb (by omega),
+    r4Steps_readWord_outside k mem addr (by omega)]
 
 theorem r4LoopMem_readWord_outside (s : State) (mem : ByteArray) (k addr : Nat)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * 4 ≤ addr)
     (hscratch : addr + 32 ≤ 2048 ∨ 2624 ≤ addr)
-    (hdst : addr + 32 ≤ 512 ∨ 512 + 32 * 4 ≤ addr)
-    (hcount : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
+    (_hdst : addr + 32 ≤ 512 ∨ 512 + 32 * 4 ≤ addr)
+    (_hcount : addr + 32 ≤ 2624 ∨ 2656 ≤ addr) :
     MachineState.readWord (r4LoopMem s k mem) addr = MachineState.readWord mem addr := by
   cases k with
   | zero => rfl
   | succ k =>
-      rw [r4LoopMem_succ, r4RunMem_readWord_outside (k + 1) _ addr hsubb hscratch hdst hcount,
-        readWord_mpZeroed s _ 4 addr (by norm_num) hscratch,
-        read_stage_outside mem 2112 4 addr (by omega)]
+      rw [r4LoopMem_succ, r4RunMem_readWord_outside (k + 1) _ addr hsubb hscratch,
+        SquarePartialClear.readWord_outside _ addr (by omega),
+        read_stageW_four_outside mem addr (by omega)]
 
 theorem r4LoopMem_frame (s : State) (mem : ByteArray) (k : Nat) :
     MachineState.readWord (r4LoopMem s k mem) 2688 = MachineState.readWord mem 2688 ∧
@@ -142,9 +98,58 @@ theorem r4LoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (k ptr cn
   rw [r4LoopMem_readWord_outside s mem k (ptr + 32 * j) (by omega) (by omega) (by omega)
     (by omega)]
 
+/-- The rounds: after `k ≥ 1` of them the operand window holds the `k`-fold Montgomery square,
+below `R⁴`, and the overflow word is zero. -/
+theorem r4Steps_represents (mm : Nat) (hodd : mm % 2 = 1) :
+    ∀ (k : Nat) (mem : ByteArray) (a : Nat), 1 ≤ k →
+      Model.FastRepresents mem 2112 4 a → Model.FastRepresents mem 0 4 mm →
+      ((MachineState.readWord mem 96).toNat *
+        (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0 →
+      ∃ v, Model.FastRepresents (r4Steps k mem) 2112 4 v ∧ v < Limbs.radix^4 ∧
+        v % mm = ((fun x => Model.montMul mm (Limbs.radix^4) x x)^[k] a) ∧
+        MachineState.readWord (r4Steps k mem) 2080 = ⟨0⟩ := by
+  intro k
+  induction k with
+  | zero => intro _ _ hk; omega
+  | succ k ih =>
+      intro mem a _ ha hm hminv
+      obtain ⟨hv, hvr, hvm, h0⟩ := LazySquareMemory.r4r_result mem a mm ha hm hodd hminv
+      rw [r4Steps_succ]
+      cases k with
+      | zero => exact ⟨_, hv, hvr, hvm, h0⟩
+      | succ j =>
+          have hm' := R4Bridge.rows4r_fastRepresents_outside mem 0 4 mm (Or.inl (by omega)) hm
+          have hi' : ((MachineState.readWord (R4Bridge.rows4r mem) 96).toNat *
+              (MachineState.readWord (R4Bridge.rows4r mem) 2720).toNat + 1) % 2^256 = 0 := by
+            rw [R4Bridge.rows4r_readWord_outside mem 96 (Or.inl (by omega)),
+              R4Bridge.rows4r_readWord_outside mem 2720 (Or.inr (by omega))]
+            exact hminv
+          obtain ⟨w, hw, hwr, hwm, hw0⟩ := ih (R4Bridge.rows4r mem) _ (by omega) hv hm' hi'
+          refine ⟨w, hw, hwr, ?_, hw0⟩
+          rw [hwm]
+          have hf := LazyLoopMemory.mont_square_congr mm (Limbs.radix^4)
+            (LazySquareMemory.roundValue (R4Bridge.rows4 mem) 4 mm)
+            (Model.montMul mm (Limbs.radix^4) a a)
+            (by rw [hvm, Nat.mod_eq_of_lt (Model.montMul_lt (by omega) _ _ _)])
+          rw [Function.iterate_succ_apply, Function.iterate_succ_apply]
+          exact congrArg ((fun x => Model.montMul mm (Limbs.radix^4) x x)^[j]) hf
+
+theorem r4RunMem_represents (a mm k : Nat) (mem : ByteArray) (hk : 1 ≤ k)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (hodd : mm % 2 = 1)
+    (hminv : ((MachineState.readWord mem 96).toNat *
+      (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
+    ∃ v, Model.FastRepresents (r4RunMem k mem) 2368 4 v ∧ v < Limbs.radix^4 ∧
+      v % mm = ((fun x => Model.montMul mm (Limbs.radix^4) x x)^[k] a) := by
+  obtain ⟨v, hv, hvr, hvm, h0⟩ := r4Steps_represents mm hodd k mem a hk ha hm hminv
+  refine ⟨v, ?_, hvr, hvm⟩
+  unfold r4RunMem LazyCsub.resultMemory
+  rw [h0, if_pos (show (⟨0⟩ : UInt256).toNat = 0 from rfl)]
+  exact Csub.fastRepresents_mcopy _ 2112 2368 4 v (by omega) hv
+
 theorem r4LoopMem_represents (s : State) (mem : ByteArray) (a mm k : Nat) (hk : 1 ≤ k)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
-    (hodd : mm % 2 = 1) (har : a < Limbs.radix^4) (hmpos : 0 < mm)
+    (hodd : mm % 2 = 1) (_har : a < Limbs.radix^4) (_hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     ∃ v, Model.FastRepresents (r4LoopMem s k mem) 2368 4 v ∧ v < Limbs.radix^4 ∧
@@ -152,24 +157,25 @@ theorem r4LoopMem_represents (s : State) (mem : ByteArray) (a mm k : Nat) (hk : 
   cases k with
   | zero => omega
   | succ k =>
-      have hrd (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
-          MachineState.readWord (mpZeroed s (stage mem 2112 4) 4) addr =
+      have hrd (addr : Nat) (hd : addr + 32 ≤ 2048 ∨ 2240 ≤ addr) :
+          MachineState.readWord (SquarePartialClear.memory (stageW mem 2112 4)) addr =
             MachineState.readWord mem addr := by
-        rw [readWord_mpZeroed s _ 4 addr (by norm_num) hd,
-          read_stage_outside mem 2112 4 addr (by omega)]
-      have ha' := represents_zeroed_stage s (stage mem 2112 4) 4 a (by norm_num)
-        (represents_stage mem 4 a ha)
-      have hm' : Model.FastRepresents (mpZeroed s (stage mem 2112 4) 4) 0 4 mm := by
+        rw [SquarePartialClear.readWord_outside _ addr (by omega),
+          read_stageW_four_outside mem addr (by omega)]
+      have ha' : Model.FastRepresents (SquarePartialClear.memory (stageW mem 2112 4)) 2112 4 a :=
+        SquarePartialClear.fastRepresents_outside _ 2112 4 a (Or.inr (by omega))
+          (represents_stageW_four mem 2112 4 a (Or.inr (Or.inr ⟨rfl, le_rfl⟩)) ha)
+      have hm' : Model.FastRepresents (SquarePartialClear.memory (stageW mem 2112 4)) 0 4 mm := by
         refine (Model.fastRepresents_congr (a := mem) ?_ mm).1 hm
         intro j hj
         rw [hrd (0 + 32 * j) (Or.inl (by omega))]
-      have hminv' : ((MachineState.readWord (mpZeroed s (stage mem 2112 4) 4) 96).toNat *
-          (MachineState.readWord (mpZeroed s (stage mem 2112 4) 4) 2720).toNat + 1) %
+      have hminv' : ((MachineState.readWord (SquarePartialClear.memory (stageW mem 2112 4)) 96).toNat *
+          (MachineState.readWord (SquarePartialClear.memory (stageW mem 2112 4)) 2720).toNat + 1) %
             2 ^ 256 = 0 := by
         rw [hrd 96 (Or.inl (by norm_num)), hrd 2720 (Or.inr (by norm_num))]
         exact hminv
       rw [r4LoopMem_succ]
-      exact r4RunMem_represents s a mm (k + 1) _ (by omega) ha' hm' hodd har hmpos hminv'
+      exact r4RunMem_represents a mm (k + 1) _ (by omega) ha' hm' hodd hminv'
 
 def loopMem (s : State) (n k : Nat) (mem : ByteArray) : ByteArray :=
   if n = 4 then r4LoopMem s k mem else SquareLoopMem.sqLoopMem s n k mem

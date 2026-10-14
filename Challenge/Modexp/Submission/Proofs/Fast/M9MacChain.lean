@@ -63,7 +63,7 @@ def startPC : Nat → Nat
   | 7 => 3153
   | _ => 3189
 
-/-- Entry pc of the section for width `n`: block 0 for eight limbs, block 4 (`2899 + 133`) for four. -/
+/-- Entry pc of the section for width `n`: block 0 for eight limbs, block 4 (`2946 + 116`) for four. -/
 def entryPC : Nat → Nat
   | 4 => 3056
   | _ => 2940
@@ -328,7 +328,7 @@ section feeds, and its destination is the scratch slot `rest[1]` — pinned by `
 `entryPC n`.  Neither width's entry is one of the three `JUMPDEST`s the exit opened
 (`Bytecode.ShiftJumpTargets`: pc 3168, 3169, 3170). -/
 theorem entryPC_avoids (n : Nat) (hn : n = 4 ∨ n = 8) :
-    entryPC n ≠ 3189 ∧ entryPC n ≠ 3169 ∧ entryPC n ≠ 3170 := by
+    entryPC n ≠ 3189 ∧ entryPC n ≠ 3163 ∧ entryPC n ≠ 3164 := by
   rcases hn with rfl | rfl <;> decide
 
 /-- E6 at pc 2895: `[q, 2^256-1] ++ rest` over `um` to the chain frame at the entry parked in the

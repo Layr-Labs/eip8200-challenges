@@ -13,7 +13,7 @@ def l1Target (n : Nat) : UInt256 := UInt256.ofNat 3579 + UInt256.ofNat 1748 * is
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (dst ret : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 3406
+    pc := UInt256.ofNat 3402
     memory := mem
     stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, dst, ret] ++ rest}
 

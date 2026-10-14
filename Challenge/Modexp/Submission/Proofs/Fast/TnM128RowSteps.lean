@@ -13,36 +13,36 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel StagedOperand
 open CiosCached CiosCachedMacCore CiosReadonly CiosCachedMidMemory TnM128ReductionSteps
 
-def l1PC (n : Nat) : Nat := if n = 4 then 5373 else 3579
+def l1PC (n : Nat) : Nat := if n = 4 then 5386 else 3579
 
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4232 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2784 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4281 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2786 (by rfl)
 
 /-- The multiply row head of each width (msplit: one loop per width). -/
-def headPC (n : Nat) : Nat := if n = 4 then 5339 else 3545
+def headPC (n : Nat) : Nat := if n = 4 then 5352 else 3545
 
 theorem head_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (headPC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4203 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2755 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4252 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2757 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (q : UInt256) :
     TnCacheRowModel.CacheState :=
   TnCacheSquareModel.fromL1
-    (l1Step mem (MachineState.readWord mem (q.toNat+224)) pa n n) tn n
+    (l1Step mem (MachineState.readWord mem (TnCacheHeadTrace.bAddr q)) pa n n) tn n
 
 /-- A complete ordinary multiply row of the selected candidate, from the width's row head
-(`b_i = mem[q + 0xe0]`) through both limb loops and the actual next-row branch. -/
+(`b_i = mem[0xe0 - q]`) through both limb loops and the actual next-row branch. -/
 noncomputable def row_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (pa n : Nat) (hn : n = 4 ∨ n = 8)
     (q pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
-    (hact : 88 ≤ s.activeWords.toNat) (hq : q.toNat ≤ 2560)
+    (hact : 88 ≤ s.activeWords.toNat) (hq : TnCacheHeadTrace.bAddr q ≤ 2784)
     (hpa : pa+32*n ≤ 2048 ∨ pa = 2368)
     (ha : aEnd.toNat = pa+32*(n-1))
     (hc : ReadonlyCache s.memory n tl inv m0)
@@ -56,13 +56,13 @@ noncomputable def row_steps (s : State)
           m32 m128 m64
           (m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest)))
       (framed {s with memory := (result s.memory tn pa n q).memory}
-        (if UInt256.isTrue (negative32+q)
-         then UInt256.ofNat (headPC n) else UInt256.ofNat 4138)
-        (TnCacheFrameOps.frame (negative32+q) (UInt256.ofNat (headPC n)) pb
+        (if UInt256.isTrue (UInt256.ofNat 32+q)
+         then UInt256.ofNat (headPC n) else UInt256.ofNat 4107)
+        (TnCacheFrameOps.frame (UInt256.ofNat 32+q) (UInt256.ofNat (headPC n)) pb
           ent m32
           m128 m64
           (m0 :: tl :: m96 :: inv :: (result s.memory tn pa n q).tn :: aEnd :: dst :: ret :: rest))) := by
-  let bi := MachineState.readWord s.memory (q.toNat+224)
+  let bi := MachineState.readWord s.memory (TnCacheHeadTrace.bAddr q)
   let q1 := l1Step s.memory bi pa n 1
   let qn := l1Step s.memory bi pa n n
   let tail := m0 :: tl :: m96 :: inv :: tn :: aEnd :: dst :: ret :: rest

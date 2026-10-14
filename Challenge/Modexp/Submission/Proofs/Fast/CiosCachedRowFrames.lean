@@ -16,7 +16,7 @@ open WindowNibbleKernel
 `hd` above the call frame. -/
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3406
+  { s with pc := UInt256.ofNat 3402
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 

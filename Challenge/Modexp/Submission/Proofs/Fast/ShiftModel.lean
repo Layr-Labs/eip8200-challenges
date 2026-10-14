@@ -86,7 +86,12 @@ def preMemOf (mem : ByteArray) (d : UInt256) : ByteArray :=
     PRE_L (preL d)) PRE_DODD (preDodd d)) PRE_X (preX d)) PRE_BMOD (preBmod d))
     PRE_DINV (preDinv d)
 
-def preMem (mem : ByteArray) : ByteArray := preMemOf mem (MachineState.readWord mem 0)
+/-- The five estimator stores, then `V_MINV := -n0⁻¹` from the modulus low limb
+`n0 = mem[mem[V_ML]]`: newton-batch computes both inverses from one Newton chain. -/
+def preMem (mem : ByteArray) : ByteArray :=
+  Exp.storeWord (preMemOf mem (MachineState.readWord mem 0)) 2720
+    (UInt256.ofNat 0 - newton8W
+      (MachineState.readWord mem (MachineState.readWord mem 2752).toNat))
 
 /-! ## Phase 4: one shift step -/
 
@@ -492,6 +497,34 @@ theorem fastRepresents_preMemOf (mem : ByteArray) (d : UInt256) (ptr cnt v : Nat
   refine (Model.fastRepresents_congr ?_ v).2 hrep
   intro i hi
   exact preMemOf_readWord_disjoint mem d _ (by unfold PRE_L PRE_DINV at hdisj ⊢; omega)
+
+theorem preMem_readWord_low (mem : ByteArray) (addr : Nat) (h : addr + 32 ≤ 2720) :
+    MachineState.readWord (preMem mem) addr =
+      MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) addr := by
+  unfold preMem Exp.storeWord
+  exact Csub.readWord_write_disjoint _ _ _ _ (Or.inl h)
+
+theorem preMem_readWord_disjoint (mem : ByteArray) (addr : Nat)
+    (hdisj : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr)
+    (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
+    MachineState.readWord (preMem mem) addr = MachineState.readWord mem addr := by
+  unfold preMem Exp.storeWord
+  rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]
+  exact preMemOf_readWord_disjoint mem _ addr hdisj
+
+theorem preMem_readWord_minv (mem : ByteArray) :
+    MachineState.readWord (preMem mem) 2720 = UInt256.ofNat 0 - newton8W
+      (MachineState.readWord mem (MachineState.readWord mem 2752).toNat) := by
+  unfold preMem Exp.storeWord
+  exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
+
+theorem fastRepresents_preMem (mem : ByteArray) (ptr cnt v : Nat)
+    (hdisj : ptr + 32 * cnt ≤ PRE_L ∨ PRE_DINV + 32 ≤ ptr) (hhi : ptr + 32 * cnt ≤ 2720)
+    (hrep : Model.FastRepresents mem ptr cnt v) :
+    Model.FastRepresents (preMem mem) ptr cnt v := by
+  refine (Model.fastRepresents_congr ?_ v).2 hrep
+  intro i hi
+  exact preMem_readWord_disjoint mem _ (by unfold PRE_L PRE_DINV at hdisj ⊢; omega) (by omega)
 
 /-! ## `u = r * radix` -/
 
@@ -1480,6 +1513,80 @@ theorem preDinv_inv (d : UInt256) (hodd : (preDodd d).toNat % 2 = 1) :
   rw [Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod, h3]
   exact (Nat.mod_eq_of_lt (by norm_num)).symm
 
+/-- `newton8W` inverts every odd word modulo the radix. -/
+theorem newton8W_inv (a : UInt256) (ha : a.toNat % 2 = 1) :
+    a.toNat * (newton8W a).toNat % 2 ^ 256 = 1 := by
+  have hD : a = UInt256.ofNat a.toNat := word_eq_ofNat_toNat _
+  have hback : (UInt256.ofNat a.toNat).toNat = a.toNat := by
+    rw [word_toNat_ofNat]; exact Nat.mod_eq_of_lt a.val.isLt
+  have h1 : (newton8W a).toNat = Setup.newton8 a.toNat % 2 ^ 256 := by
+    rw [hD, newton8W_eq, word_toNat_ofNat, hback]
+  have h2 : Setup.newton8 a.toNat = Model.newtonIter a.toNat 8 := Setup.newton8_eq _ ha
+  have h3 := Model.newtonIter_eight (m := a.toNat) ha
+  have hr : Limbs.radix = 2 ^ 256 := rfl
+  rw [hr] at h3
+  rw [h1, h2, Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod, h3]
+
+/-- Two inverses of one word modulo the radix are the same word. -/
+theorem word_inv_unique (a y z : UInt256)
+    (hy : a.toNat * y.toNat % 2 ^ 256 = 1) (hz : a.toNat * z.toNat % 2 ^ 256 = 1) : y = z := by
+  apply word_ext
+  have hy' : a.toNat * y.toNat ≡ 1 [MOD 2 ^ 256] := by
+    unfold Nat.ModEq; rw [hy]; norm_num
+  have hz' : a.toNat * z.toNat ≡ 1 [MOD 2 ^ 256] := by
+    unfold Nat.ModEq; rw [hz]; norm_num
+  have h : y.toNat ≡ z.toNat [MOD 2 ^ 256] :=
+    calc y.toNat = y.toNat * 1 := (Nat.mul_one _).symm
+      _ ≡ y.toNat * (a.toNat * z.toNat) [MOD 2 ^ 256] := hz'.symm.mul_left _
+      _ = (a.toNat * y.toNat) * z.toNat := by ring
+      _ ≡ 1 * z.toNat [MOD 2 ^ 256] := hy'.mul_right _
+      _ = z.toNat := Nat.one_mul _
+  have hyl : y.toNat < 2 ^ 256 := y.val.isLt
+  have hzl : z.toNat < 2 ^ 256 := z.val.isLt
+  unfold Nat.ModEq at h
+  rwa [Nat.mod_eq_of_lt hyl, Nat.mod_eq_of_lt hzl] at h
+
+theorem word_mul_odd (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat % 2 = 1) :
+    (a * b).toNat % 2 = 1 := by
+  rw [Setup.word_toNat_mul, Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 2 ^ 256), Nat.mul_mod, ha, hb]
+
+/-- **Batch inversion, left factor.** With `x = (a b)⁻¹`, `x b = a⁻¹`. -/
+theorem newton8W_mul_left (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat % 2 = 1) :
+    newton8W (a * b) * b = newton8W a := by
+  apply word_inv_unique a _ _ _ (newton8W_inv a ha)
+  have hX := newton8W_inv (a * b) (word_mul_odd a b ha hb)
+  rw [Setup.word_toNat_mul, Nat.mod_mul_mod] at hX
+  rw [Setup.word_toNat_mul, Nat.mul_mod_mod, ← hX]
+  congr 1
+  ring
+
+/-- **Batch inversion, right factor.** With `x = (a b)⁻¹`, `a x = b⁻¹`. -/
+theorem newton8W_mul_right (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat % 2 = 1) :
+    a * newton8W (a * b) = newton8W b := by
+  apply word_inv_unique b _ _ _ (newton8W_inv b hb)
+  have hX := newton8W_inv (a * b) (word_mul_odd a b ha hb)
+  rw [Setup.word_toNat_mul, Nat.mod_mul_mod] at hX
+  rw [Setup.word_toNat_mul, Nat.mul_mod_mod, ← hX]
+  congr 1
+  ring
+
+/-- The least significant limb of a represented block, as a word. -/
+theorem lowLimb_word (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n)
+    (hmod : Model.FastRepresents mem 0 n mm) :
+    MachineState.readWord mem (32 * n - 32) = UInt256.ofNat (mm % Limbs.radix) := by
+  have h := Model.readLimb_of_fastRepresents hmod (k := 0) (by omega)
+  rw [show 0 + 32 * (n - 1 - 0) = 32 * n - 32 by omega, pow_zero, Nat.div_one] at h
+  rw [← h]
+  exact word_eq_ofNat_toNat _
+
+theorem lowLimb_odd (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hodd : mm % 2 = 1)
+    (hmod : Model.FastRepresents mem 0 n mm) :
+    (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1 := by
+  have h := Model.readLimb_of_fastRepresents hmod (k := 0) (by omega)
+  rw [show 0 + 32 * (n - 1 - 0) = 32 * n - 32 by omega, pow_zero, Nat.div_one] at h
+  rw [h, Nat.mod_mod_of_dvd _ (by unfold Limbs.radix; norm_num : 2 ∣ Limbs.radix)]
+  exact hodd
+
 
 /-! ## The five estimator words, in `Nat` terms -/
 
@@ -1614,15 +1721,29 @@ def PreOK (mem : ByteArray) : Prop :=
   MachineState.readWord mem PRE_BMOD = preBmod (MachineState.readWord mem 0) ∧
   MachineState.readWord mem PRE_DINV = preDinv (MachineState.readWord mem 0)
 
-/-- `preMem` establishes the estimator words by construction. -/
-theorem PreOK_preMem (mem : ByteArray) : PreOK (preMem mem) := by
-  have hz : MachineState.readWord (preMem mem) 0 = MachineState.readWord mem 0 :=
+/-- The five estimator stores establish the estimator words by construction. -/
+theorem PreOK_preMemOf (mem : ByteArray) : PreOK (preMemOf mem (MachineState.readWord mem 0)) := by
+  have hz : MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) 0 =
+      MachineState.readWord mem 0 :=
     preMemOf_readWord_disjoint mem _ 0 (Or.inl (by simp only [PRE_L]; omega))
   refine ⟨?_, ?_, ?_, ?_, ?_⟩ <;> rw [hz] <;>
-    show MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) _ = _ <;>
     (unfold preMemOf Exp.storeWord PRE_L PRE_DODD PRE_X PRE_BMOD PRE_DINV
      repeat rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]) <;>
     exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
+
+/-- `preMem` keeps them: its `V_MINV` store lies above the estimator words. -/
+theorem PreOK_preMem (mem : ByteArray) : PreOK (preMem mem) := by
+  obtain ⟨h1, h2, h3, h4, h5⟩ := PreOK_preMemOf mem
+  have hlow : ∀ a : Nat, a + 32 ≤ 2720 → MachineState.readWord (preMem mem) a =
+      MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) a :=
+    preMem_readWord_low mem
+  have hz := hlow 0 (by omega)
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · rw [hlow PRE_L (by simp only [PRE_L]; omega), hz]; exact h1
+  · rw [hlow PRE_DODD (by simp only [PRE_DODD]; omega), hz]; exact h2
+  · rw [hlow PRE_X (by simp only [PRE_X]; omega), hz]; exact h3
+  · rw [hlow PRE_BMOD (by simp only [PRE_BMOD]; omega), hz]; exact h4
+  · rw [hlow PRE_DINV (by simp only [PRE_DINV]; omega), hz]; exact h5
 
 theorem PreOK_uMem (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) (h : PreOK mem) :
     PreOK (uMem mem n) := by
@@ -2016,6 +2137,11 @@ theorem qhatOf_ge (mem : ByteArray) (n mm u : Nat)
     · rw [hd]; simp [hd]
     · have : (eDec mem).toNat = 0 := by omega
       rw [this]; simp [hd]
+
+/-- A nonzero top limb has an odd odd part. -/
+theorem preDodd_odd (d : UInt256) (hd : d.toNat ≠ 0) : (preDodd d).toNat % 2 = 1 := by
+  obtain ⟨_, _, _, _, h, _⟩ := pre_facts d hd
+  exact h
 
 end QHatGe
 

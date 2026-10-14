@@ -14,6 +14,50 @@ open Challenge.Modexp.Submission.Proofs.Fast
 def stage (mem : ByteArray) (pa n : Nat) : ByteArray :=
   MachineState.writeBytes mem (MachineState.readPadded mem pa (32*n)) 2368
 
+/-- The kernel setup's staging copy (n4a): the operand goes to `0x740 + 2·32n`, i.e. 2368 for
+eight limbs and back onto itself at 2112 for four. -/
+def stageW (mem : ByteArray) (pa n : Nat) : ByteArray :=
+  MachineState.writeBytes mem (MachineState.readPadded mem pa (32*n)) (1856 + 64*n)
+
+theorem stageW_eight (mem : ByteArray) (pa : Nat) : stageW mem pa 8 = stage mem pa 8 := rfl
+
+theorem read_stageW_outside (mem : ByteArray) (pa n addr : Nat)
+    (hd : addr + 32 ≤ 1856 + 64*n ∨ 1856 + 64*n + 32*n ≤ addr) :
+    MachineState.readWord (stageW mem pa n) addr = MachineState.readWord mem addr := by
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
+  simpa using hd
+
+theorem read_stageW_four_outside (mem : ByteArray) (addr : Nat)
+    (hd : addr + 32 ≤ 2112 ∨ 2240 ≤ addr) :
+    MachineState.readWord (stageW mem 2112 4) addr = MachineState.readWord mem addr := by
+  apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
+  simpa using hd
+
+/-- The four-limb staging copy is onto itself: the operand words read back unchanged. -/
+theorem read_stageW_four_member (mem : ByteArray) (j : Nat) (hj : j < 4) :
+    MachineState.readWord (stageW mem 2112 4) (2112 + 32*j) =
+      MachineState.readWord mem (2112 + 32*j) :=
+  Csub.readWord_mcopy mem 2112 2112 (32*4) j (by omega)
+
+theorem read_stageW_four (mem : ByteArray) (addr : Nat)
+    (hd : addr + 32 ≤ 2112 ∨ 2240 ≤ addr ∨ ∃ j, j < 4 ∧ addr = 2112 + 32*j) :
+    MachineState.readWord (stageW mem 2112 4) addr = MachineState.readWord mem addr := by
+  rcases hd with h | h | ⟨j, hj, rfl⟩
+  · exact read_stageW_four_outside mem addr (Or.inl h)
+  · exact read_stageW_four_outside mem addr (Or.inr h)
+  · exact read_stageW_four_member mem j hj
+
+theorem represents_stageW_four (mem : ByteArray) (ptr cnt v : Nat)
+    (hd : ptr + 32*cnt ≤ 2112 ∨ 2240 ≤ ptr ∨ (ptr = 2112 ∧ cnt ≤ 4))
+    (hrep : Model.FastRepresents mem ptr cnt v) :
+    Model.FastRepresents (stageW mem 2112 4) ptr cnt v := by
+  refine (Model.fastRepresents_congr (a := mem) ?_ v).1 hrep
+  intro j hj
+  rcases hd with h | h | ⟨rfl, hc⟩
+  · rw [read_stageW_four_outside mem _ (Or.inl (by omega))]
+  · rw [read_stageW_four_outside mem _ (Or.inr (by omega))]
+  · rw [read_stageW_four_member mem j (by omega)]
+
 /-- The specialized rows exclude the all-ones low modulus word through the inverse guard. -/
 def eligible (mem : ByteArray) (n : Nat) : Prop :=
   (n = 4 ∨ n = 8) ∧ MachineState.readWord mem 2720 ≠ UInt256.ofNat 1

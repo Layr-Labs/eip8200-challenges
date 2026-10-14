@@ -52,14 +52,14 @@ noncomputable def private_steps (s : State)
     (hactive : 88 ≤ s.activeWords.toNat)
     (hpa : pa+32*4 ≤ 2048 ∨ pa = 2368) (hsnapshot : Snapshot q.memory pa 4) :
     GasSteps
-      (TnCacheL1Trace.qState s (UInt256.ofNat 5373) q bi
+      (TnCacheL1Trace.qState s (UInt256.ofNat 5386) q bi
         pbi hd pbEnd flag tn destination returnPC rest)
-      (TnCacheL1Trace.qState s (UInt256.ofNat 5482) (l1Run q bi pa 4 1 3)
+      (TnCacheL1Trace.qState s (UInt256.ofNat 5495) (l1Run q bi pa 4 1 3)
         bi pbi hd pbEnd flag tn destination returnPC rest) := by
-  have hr := TnCacheL1Suffix.run_private3 s 5373 q bi pa
+  have hr := TnCacheL1Suffix.run_private3 s 5386 q bi pa
     pbi hd pbEnd flag tn destination returnPC rest hcap hactive hpa hsnapshot
   exact private3.steps
-    (s := TnCacheL1Trace.qState s (UInt256.ofNat 5373) q bi
+    (s := TnCacheL1Trace.qState s (UInt256.ofNat 5386) q bi
       pbi hd pbEnd flag tn destination returnPC rest)
     (env.transfer rfl rfl) rfl hr
 

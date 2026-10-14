@@ -32,8 +32,8 @@ def result (z : CacheState) (n i : Nat) (aprev : UInt256) : CacheState :=
 def rowState (s : State) (z : CacheState) (n i : Nat) (aprev : UInt256)
     (w3 tl inv m0 m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := z.memory}
-    (if i < n then UInt256.ofNat 4293 else UInt256.ofNat 4138)
-    (TnCacheFrameOps.frame (qptr n i) (UInt256.ofNat 4293) w3
+    (if i < n then UInt256.ofNat 4245 else UInt256.ofNat 4107)
+    (TnCacheFrameOps.frame (qptr n i) (UInt256.ofNat 4245) w3
       (UInt256.ofNat (sqEnt n i)) m32 (MachineState.readWord z.memory 128) m64
       (m0 :: tl :: m96 :: inv :: z.tn :: aprev :: dst :: ret :: rest))
 
@@ -58,15 +58,15 @@ noncomputable def step (s : State)
   have he := sqEnt_suffix n i hn8 hi
   have hj : Decode.isValidJumpDest TnM128Candidate.bytecode (sqEnt n i) = true := by
     rw [he]; exact TnM128L1Jumps.entry_jump (n-1-i) (by omega)
-  have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4293).toNat = true := by
-    change Decode.isValidJumpDest s.executionEnv.code 4293 = true
+  have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4245).toNat = true := by
+    change Decode.isValidJumpDest s.executionEnv.code 4245 = true
     rw [env.code]; exact TnM128L1Jumps.square_jump
   have g0 := TnM128SquareSteps.prologue_steps s z.memory m32 (MachineState.readWord z.memory 128) n i (sqEnt n i)
     w3 m64 m0 tl m96 inv z.tn aprev (dst :: ret :: rest)
     (by simp only [List.length_cons]; omega) env.running env.code env.forkEq env.noPrecompile
     hact hi hn8 hj (by unfold sqEnt; omega)
   have g1 := TnM128L1Steps.suffix_steps s env q0 b2 2368 n (i+1) (n-1-i) (by omega)
-    (UInt256.ofNat (32*(n-i))) (UInt256.ofNat 4293) w3
+    (UInt256.ofNat (2^256 - 32*(n-i))) (UInt256.ofNat 4245) w3
     (UInt256.ofNat (sqEnt n i+37)) m32 (MachineState.readWord z.memory 128) m64 tail
     (by simp only [tail, List.length_cons]; omega) hact hn8 (by omega)
     (Or.inr rfl) (by intro j _; rfl)
@@ -74,7 +74,7 @@ noncomputable def step (s : State)
   have g01 := g0.trans g1
   have hc1 := sqL1_cached hc i tb hi hn8
   have g2 := reduction_steps s env q1 b2 z.tn n (Or.inr hn)
-    (UInt256.ofNat (32*(n-i))) (UInt256.ofNat 4293) w3
+    (UInt256.ofNat (2^256 - 32*(n-i))) (UInt256.ofNat 4245) w3
     (UInt256.ofNat (sqEnt n i+37)) (MachineState.readWord z.memory 128) tl inv m0 (sqX z.memory n i) m96 m64 m32 dst ret rest
     hcap hact hc1.readonly hc1.extra hc1.inverse
     (readWord_sqL1 z.memory n i 128 tb hi (Or.inl (by decide))).symm

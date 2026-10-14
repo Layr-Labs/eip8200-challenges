@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FusedMemory
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
-import Challenge.Modexp.Submission.Proofs.Fast.CarryFullBase
 import Challenge.Modexp.Submission.Proofs.Fast.SquareResult
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
 
@@ -13,8 +12,8 @@ checked here as `M9Width.ExpSubsFast` against `M9Width.CarryFullFast`, whose tre
 from the tree's ExpSubs.lean, and nothing else:
 * imports `CarryFullFast` instead of `CarryFull`, and no longer imports `SquareFull`;
 * `eligible_of_frame`: `Frame` + `n ∈ {4, 8}` + `minv ≠ 1` gives `StagedOperand.eligible mem n`;
-* `subsMonpro` takes `(hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)` and uses
-  `CarryFull.gasSteps_monproFullFast … (eligible_of_frame hf hfast hminv1 hminvlt)`;
+* (n4a) the record has no `monpro` field any more, so `subsMonpro` and the `CarryFullFast`
+  import are gone: no consumer runs the generic multiply call;
 * `subsSquare` (the `¬ eligible` square through the generic `MONPRO`) is vacuous: its own
   hypothesis `¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1)` contradicts `hfast`/`hminv1`;
 * `subs`, `subs_mpMem`, `subs_amMem`, `specOf_subs` take the same two hypotheses;
@@ -35,7 +34,7 @@ set_option maxHeartbeats 4000000
 
 `Fast.Exp` states the driver against the abstract record `Exp.Subroutines`
 (`MONPRO`, `ADDMOD` and the in-place `SQUARE(0x800) → 0x800`).  This module
-instantiates it: `MONPRO` from `Fast.CarryFull.gasSteps_monproFull`, `ADDMOD`
+instantiates it: `MONPRO`'s memory effect from `CarryResult.monproMem`, `ADDMOD`
 from the pair `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` (packaged in `Exp`
 as `gasSteps_addmodFull`), and `SQUARE` from `Fast.SquareFull.gasSteps_squareFull`
 (the widths the kernel does not accelerate) together with

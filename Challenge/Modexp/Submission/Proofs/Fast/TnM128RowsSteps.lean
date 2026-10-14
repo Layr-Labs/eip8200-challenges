@@ -19,15 +19,15 @@ open TnM128ReductionSteps
 def rowState (s : State) (z : CacheState) (n i : Nat)
     (w3 ent tl inv m0 aEnd m96 m64 m32 dst ret : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := z.memory}
-    (if i < n then UInt256.ofNat (headPC n) else UInt256.ofNat 4138)
+    (if i < n then UInt256.ofNat (headPC n) else UInt256.ofNat 4107)
     (TnCacheFrameOps.frame (qptr n i) (UInt256.ofNat (headPC n)) w3
       ent m32 (MachineState.readWord z.memory 128) m64
       (m0 :: tl :: m96 :: inv :: z.tn :: aEnd :: dst :: ret :: rest))
 
 theorem result_eq_row (z : CacheState) (pa n i : Nat) (hn : n ≤ 8) (hi : i < n) :
     result z.memory z.tn pa n (qptr n i) = row z pa 256 n i := by
-  unfold result row TnCacheSquareModel.fromL1 rowBi
-  rw [qptr_toNat n i hn, show 32*(n-i)+224 = 256+32*(n-1-i) from by omega]
+  unfold result row TnCacheSquareModel.fromL1 rowBi TnCacheHeadTrace.bAddr
+  rw [sub_qptr_toNat 224 n i hn (by norm_num), show 224+32*(n-i) = 256+32*(n-1-i) from by omega]
 
 noncomputable def step (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
@@ -42,7 +42,8 @@ noncomputable def step (s : State)
     GasSteps (rowState s z n i w3 ent tl inv m0 aEnd m96 m64 m32 dst ret rest)
       (rowState s (row z pa 256 n i) n (i+1) w3 ent tl inv m0 aEnd m96 m64 m32 dst ret rest) := by
   have hn8 : n ≤ 8 := by omega
-  have hq : (qptr n i).toNat ≤ 2560 := by rw [qptr_toNat n i hn8]; omega
+  have hq : TnCacheHeadTrace.bAddr (qptr n i) ≤ 2784 := by
+    unfold TnCacheHeadTrace.bAddr; rw [sub_qptr_toNat 224 n i hn8 (by norm_num)]; omega
   have hr := row_steps {s with memory := z.memory}
     (env.transfer rfl rfl) pa n hn (qptr n i) w3 ent z.tn
     (MachineState.readWord z.memory 128) tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact hq hpa ha

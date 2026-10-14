@@ -1,47 +1,62 @@
 [
-  {
-    "submissionId": "5788127e-caea-439f-805a-e92364af327a",
-    "rationale": "Our own earlier submission (stack-v9) and the direct base of this image: 1954e3f4 plus our N1 negation loop and P1 CIOS frame transpositions. It is the current record (462,538 at the time of writing). This image contains all of it and adds fifteen more cuts of ours (p2, zloop, zreset, m9rot, dead5466, tl, msplit, deadbytes, offsets, depad, n8g, rarej, st8, frq, t256) with their proof updates.",
-    "evidence": "Every cut of 5788127e is in this image. The code is 5,531 bytes and 4,364 instructions (5788127e: 5,544 and 4,359); depad, deadbytes, dead5466 and t256 shift most pcs after 2392, so the bytes are not position-aligned with 5788127e. The tree differs from 5788127e in 139 files: bytecode.hex, README.md, dependencies.json, Bytes, Bytecode, TnM128CandidateBytes, TnM128CandidateArtifact, ShiftJumpTargets and the proof files of the fifteen cuts listed in the note (133 changed, 5 dead files deleted, 1 new, SquareRoundC). Solution.lean is unchanged."
-  },
-  {
-    "submissionId": "1954e3f4-0898-4094-9ec8-f383d695f51c",
-    "rationale": "Our own earlier submission (stack-v8): a87239b0 plus our B4, C2 and e3skip cuts. It was rejected on score only (465,282 official, an ordinary draw for its 464,722 mean). Contained in this image through 5788127e.",
-    "evidence": "All of it is in 5788127e and so in this image; the fifteen new cuts and the 5788127e cuts N1 and P1 are the only differences. Its Solution.lean is unchanged here."
-  },
-  {
-    "submissionId": "a87239b0-9b59-4fc7-9c57-045626934916",
-    "rationale": "Our own earlier submission (stack-v6): bdd36736 plus our precopied 256-bit window route (precopy256), with its proofs. Contained in this image through 1954e3f4 and 5788127e.",
-    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
-  },
-  {
-    "submissionId": "bdd36736-2faa-4674-b1da-456c272a6965",
-    "rationale": "Our own earlier submission (stack-v5), accepted at 464,988: the d0a1f9e9 + 984faab1 merge plus eight cuts of ours (csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue attempts 1 and 2, layout-v1, csub2). Contained in this image through a87239b0, 1954e3f4 and 5788127e.",
-    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
-  },
-  {
-    "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
-    "rationale": "Merged in, through bdd36736: the EarlyWord guard and the Fermat entry/return stack diet (bytes [4, 135) and [864, 872) in bdd36736, -405 gas on every seed) with its proof updates. Our C2 cut rewrites that dispatch prologue on top of it.",
-    "evidence": "This submission's changes lie in bytes [4, 135) and [864, 872). In 5788127e our C2 cut rewrote [0, 132) and [864, 878), so those bytes are no longer identical to it; the new prologue keeps its Fermat check. None of the fifteen new cuts touches that prologue."
-  },
-  {
-    "submissionId": "984faab1-c97e-4747-80d1-2ea9f6ea3a0e",
-    "rationale": "Merged in, through bdd36736: the PC- and instruction-count-neutral setup block of the 256-bit window route (bytes [973, 994) in bdd36736, -128 gas on every seed) with its proof updates. Our precopy256 cut later replaced the route bytes with a precopied-pool route.",
-    "evidence": "Its setup block bytes were superseded in 5788127e by our precopy256 route. None of the fifteen new cuts touches that setup block; t256 only moves the route's last windows inline at pc 2388."
-  },
-  {
-    "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
-    "rationale": "Base: the promoted 5,483-byte record image (467,495) and its complete Lean proof tree, on which both merged submissions and all of our own cuts are built.",
-    "evidence": "Common base of the whole chain: the promoted 5,483-byte image and its Lean proof tree. Every proof module not listed in the note is this chain's, unchanged."
-  },
-  {
-    "submissionId": "adacb8da-4a6b-4b59-b3f3-83ba833b5c4e",
-    "rationale": "Our own earlier submission (stack-v1): the merge of d0a1f9e9 and 984faab1 plus our csub subtraction select tail with its proof updates. Contained in this image through the later stacks.",
-    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
-  },
-  {
-    "submissionId": "91bf857a-8b15-401d-9c2b-8b26e052657f",
-    "rationale": "Our own earlier submission (stack-v3): adacb8da plus our rsa-setup cut 1, route padding move and width-specific CSUB return, with their proof updates. Contained in this image through the later stacks.",
-    "evidence": "Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
-  }
+    {
+        "submissionId": "abbf9bf4-8c6d-4d0a-b46d-19b28b1f3ec6",
+        "rationale": "Our own earlier submission (stack-v10c, n8grpt), the current record at 460,289 and the direct base of this image. Every cut in it is in this image; the row pointers now count through negative values (zneg2).",
+        "evidence": "Its bytecode file sha256 is 862e17e7636701a2cc995a7c5585645779bd67aa739bdd596cf78420ebe62298. This image keeps all fifteen of its cuts. pcs after the n=4 and zneg2 edits are renumbered, and Solution.lean is unchanged."
+    },
+    {
+        "submissionId": "d62773b1-5af8-426e-9496-881f85b87e6e",
+        "rationale": "Our own earlier submission (stack-v10a, n4grpt), rejected on score only (official 462,616). It contributes the n=4 squaring kernel group n4a, n4f, n4t and rare4, merged here onto the n=8 tree.",
+        "evidence": "The four n=4 cuts and their proofs (R4Blocks, R4Runs, R4Trace, SquareLoop n=4 section, TnM128SquareExit, Cios2Dispatch) come from that tree through a three-way merge against 5788127e."
+    },
+    {
+        "submissionId": "92ac47cf-c69e-4124-8b87-b041997b615b",
+        "rationale": "Our own earlier submission (stack-v10b, newton-batch), rejected on score only (official 463,071). It contributes newton-batch: one shared Newton chain computes both the modulus low-limb inverse and the dodd inverse.",
+        "evidence": "The shared Newton subroutine, the dinv-site rewrite and their ShiftModel algebra lemmas (newton8W_mul_left/right, lowLimb_odd, preDodd_odd) are in this image."
+    },
+    {
+        "submissionId": "5788127e-caea-439f-805a-e92364af327a",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Our own earlier submission (stack-v9) and the direct base of this image: 1954e3f4 plus our N1 negation loop and P1 CIOS frame transpositions. It was the prior record at 462,538. This image contains all of it and adds fifteen more cuts of ours (p2, zloop, zreset, m9rot, dead5466, tl, msplit, deadbytes, offsets, depad, n8g, rarej, st8, frq, t256) with their proof updates.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Every cut of 5788127e is in this image. The code is 5,531 bytes and 4,364 instructions (5788127e: 5,544 and 4,359); depad, deadbytes, dead5466 and t256 shift most pcs after 2392, so the bytes are not position-aligned with 5788127e. The tree differs from 5788127e in 139 files: bytecode.hex, README.md, dependencies.json, Bytes, Bytecode, TnM128CandidateBytes, TnM128CandidateArtifact, ShiftJumpTargets and the proof files of the fifteen cuts listed in the note (133 changed, 5 dead files deleted, 1 new, SquareRoundC). Solution.lean is unchanged."
+    },
+    {
+        "submissionId": "1954e3f4-0898-4094-9ec8-f383d695f51c",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Our own earlier submission (stack-v8): a87239b0 plus our B4, C2 and e3skip cuts. It was rejected on score only (465,282 official, an ordinary draw for its 464,722 mean). Contained in this image through 5788127e.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: All of it is in 5788127e and so in this image; the fifteen new cuts and the 5788127e cuts N1 and P1 are the only differences. Its Solution.lean is unchanged here."
+    },
+    {
+        "submissionId": "a87239b0-9b59-4fc7-9c57-045626934916",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Our own earlier submission (stack-v6): bdd36736 plus our precopied 256-bit window route (precopy256), with its proofs. Contained in this image through 1954e3f4 and 5788127e.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+    },
+    {
+        "submissionId": "bdd36736-2faa-4674-b1da-456c272a6965",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Our own earlier submission (stack-v5), accepted at 464,988: the d0a1f9e9 + 984faab1 merge plus eight cuts of ours (csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue attempts 1 and 2, layout-v1, csub2). Contained in this image through a87239b0, 1954e3f4 and 5788127e.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+    },
+    {
+        "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Merged in, through bdd36736: the EarlyWord guard and the Fermat entry/return stack diet (bytes [4, 135) and [864, 872) in bdd36736, -405 gas on every seed) with its proof updates. Our C2 cut rewrites that dispatch prologue on top of it.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: This submission's changes lie in bytes [4, 135) and [864, 872). In 5788127e our C2 cut rewrote [0, 132) and [864, 878), so those bytes are no longer identical to it; the new prologue keeps its Fermat check. None of the fifteen new cuts touches that prologue."
+    },
+    {
+        "submissionId": "984faab1-c97e-4747-80d1-2ea9f6ea3a0e",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Merged in, through bdd36736: the PC- and instruction-count-neutral setup block of the 256-bit window route (bytes [973, 994) in bdd36736, -128 gas on every seed) with its proof updates. Our precopy256 cut later replaced the route bytes with a precopied-pool route.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Its setup block bytes were superseded in 5788127e by our precopy256 route. None of the fifteen new cuts touches that setup block; t256 only moves the route's last windows inline at pc 2388."
+    },
+    {
+        "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Base: the promoted 5,483-byte record image (467,495) and its complete Lean proof tree, on which both merged submissions and all of our own cuts are built.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Common base of the whole chain: the promoted 5,483-byte image and its Lean proof tree. Every proof module not listed in the note is this chain's, unchanged."
+    },
+    {
+        "submissionId": "adacb8da-4a6b-4b59-b3f3-83ba833b5c4e",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Our own earlier submission (stack-v1): the merge of d0a1f9e9 and 984faab1 plus our csub subtraction select tail with its proof updates. Contained in this image through the later stacks.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+    },
+    {
+        "submissionId": "91bf857a-8b15-401d-9c2b-8b26e052657f",
+        "rationale": "Inherited through our accepted n8grpt abbf9bf4. Our own earlier submission (stack-v3): adacb8da plus our rsa-setup cut 1, route padding move and width-specific CSUB return, with their proof updates. Contained in this image through the later stacks.",
+        "evidence": "Inherited source/proof chain retained; this ticket additionally merges our n=4 squaring group, newton-batch, zneg2 and dead3383. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+    }
 ]

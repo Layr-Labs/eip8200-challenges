@@ -134,7 +134,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 trampoline at pc 5466), stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5466
+  { s with pc := UInt256.ofNat 5520
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }
@@ -148,8 +148,8 @@ writes the square chain to `0x200`), so the caller no longer copies `TS` to
 `BASE` first; the only caller is the fixed-exponent chain. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3405
-           stack := UInt256.ofNat 4582 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3401
+           stack := UInt256.ofNat 4534 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
@@ -158,8 +158,8 @@ square count minus one in the frame's `pdst` slot, which the kernel's loop count
 (pc 3471 overwrites the slot before the final product). -/
 def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3405
-           stack := UInt256.ofNat 4582 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
+  { s with pc := UInt256.ofNat 3401
+           stack := UInt256.ofNat 4534 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
              UInt256.ofNat (k - 1) :: ret :: tail
            memory := mem }
 
@@ -215,11 +215,12 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
          by rw [key 2816 (by omega)]; exact hf.eoff⟩
 
 /-- The subroutines the driver calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.CarryFull.gasSteps_monproFull`,
-`Fast.SquareFull.gasSteps_squareFull` and
+carrying exactly the side conditions `Fast.SquareFull.gasSteps_squareFull` and
 `Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
 (`Frame`), the pointer bounds, the return-address jump destination, and — for
-`MONPRO` and `SQUARE` — the values of the operand blocks.  The `SQUARE` fields
+`SQUARE` — the values of the operand blocks.  `MONPRO` enters only through its
+memory effect `mpMem` (and `SubSpec`): no consumer runs the generic multiply call, which
+the four-limb kernel no longer stages for (n4a).  The `SQUARE` fields
 also carry its value contract, since `SubSpec` is shared by callers that never
 square.  The concrete instance `subs` lives in `Fast.ExpSubs`, so this module
 depends on neither the multiply nor the square kernel development. -/
@@ -2015,8 +2016,7 @@ theorem readWord_setupMem_mid (input : ByteArray) (m0 target : Nat)
   unfold Setup.setupMem Setup.modulusMem Setup.varsMem
   -- `setupMem` does not store the R1 seed, so this read-through peels one
   -- `mstoreAt` fewer before the two `writeBytes`.
-  rw [Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_writeBytes_ne _ _ _ _
+  rw [Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
@@ -2048,8 +2048,7 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
   unfold Setup.setupMem Setup.modulusMem Setup.varsMem
   -- There is no seed store, so the region starts at 0x1000 rather than
   -- 0x1020 and the `Or.inr` peel that stepped over it is no longer needed.
-  rw [Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_writeBytes_ne _ _ _ _
+  rw [Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_writeBytes_ne _ _ _ _
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),

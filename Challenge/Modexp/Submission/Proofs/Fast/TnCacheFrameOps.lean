@@ -22,10 +22,10 @@ def advanceShort : List Instr :=
   [.push 1 31, .op .NOT, .op .ADD, .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op .GT, .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
 
-/-- The row pointer counts down to zero (`PUSH32 -32 ADD DUP1 DUP3 JUMPI`): the next row while it
-is nonzero. -/
+/-- zneg2: the row pointer counts up to zero through negatives (`PUSH1 20 ADD DUP1 DUP3 JUMPI`):
+the next row while it is nonzero. -/
 def advance : List Instr :=
-  [.push 32 negative32, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
+  [.push 1 32, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
 
 theorem run_reset (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
@@ -60,12 +60,12 @@ theorem run_advance (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt2
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions advance (framed s (UInt256.ofNat pc0) (frame pbi hd pb ent tn target inv rest)) =
     some (framed s
-      (if UInt256.isTrue (negative32+pbi) then hd else UInt256.ofNat (pc0+37))
-      (frame (negative32+pbi) hd pb ent tn target inv rest)) := by
+      (if UInt256.isTrue (UInt256.ofNat 32+pbi) then hd else UInt256.ofNat (pc0+6))
+      (frame (UInt256.ofNat 32+pbi) hd pb ent tn target inv rest)) := by
   have hc8 : rest.length+8 < 1024 := by omega
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
-  by_cases ht : UInt256.isTrue (negative32+pbi) <;>
+  by_cases ht : UInt256.isTrue (UInt256.ofNat 32+pbi) <;>
     simp [advance, frame, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
       hc8, hc9, hc10, Nat.add_assoc, ht, htarget,
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,

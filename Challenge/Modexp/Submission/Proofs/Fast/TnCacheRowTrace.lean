@@ -75,8 +75,8 @@ theorem run_tail (pc0 : Nat) (s : State)
       (framed s (UInt256.ofNat pc0)
         ([c,f,pbi,hd,pb,ent,w5,allOnes,target,w8,r0,r1,r2,r3,tn] ++ rest)) =
     some (framed {s with memory := TnCacheMemory.put s.memory (tn+c) 2112}
-      (if UInt256.isTrue (negative32+pbi) then hd else UInt256.ofNat (pc0+49))
-      (TnCacheFrameOps.frame (negative32+pbi) hd pb ent w5 target w8
+      (if UInt256.isTrue (UInt256.ofNat 32+pbi) then hd else UInt256.ofNat (pc0+18))
+      (TnCacheFrameOps.frame (UInt256.ofNat 32+pbi) hd pb ent w5 target w8
         (r0 :: r1 :: r2 :: r3 :: (UInt256.lt (tn+c) c+f) :: rest))) := by
   have hs := TnCacheStoreAt.run_tail16 pc0 s c f pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn rest hcap hact
   have ha := TnCacheFrameOps.run_advance (pc0+12)

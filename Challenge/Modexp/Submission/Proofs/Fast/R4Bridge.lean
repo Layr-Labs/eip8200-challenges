@@ -33,8 +33,8 @@ def r4Mem (mem : ByteArray) (W : W5) : ByteArray :=
 
 /-- R4 的五个输出字：`a` 取自 A 窗口，`n3` 取自字 0，其余模数字、`np`、`k` 取自帧。 -/
 def r4Final (mem : ByteArray) (k n0 n1 n2 np : UInt256) : W5 :=
-  final (MachineState.readWord mem 2464) (MachineState.readWord mem 2432)
-    (MachineState.readWord mem 2400) (MachineState.readWord mem 2368) n0 n1 n2
+  final (MachineState.readWord mem 2208) (MachineState.readWord mem 2176)
+    (MachineState.readWord mem 2144) (MachineState.readWord mem 2112) n0 n1 n2
     (MachineState.readWord mem 0) np k
 
 /-- 只由内存决定的 R4 输出内存。 -/
@@ -132,17 +132,17 @@ theorem lsum_four (f : Nat → Nat) :
 
 /-- `rows4` 的累加器满足 `T · R⁴ = a² + Q · m`，`Q < R⁴`。 -/
 theorem rows4_eq (mem : ByteArray) (a mm : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
     ∃ Q, Q < Limbs.radix ^ 4 ∧ tValue (rows4 mem) 4 * Limbs.radix ^ 4 = a * a + Q * mm := by
-  obtain ⟨Q, hQ, hf⟩ := final_eq (MachineState.readWord mem 2464) (MachineState.readWord mem 2432)
-    (MachineState.readWord mem 2400) (MachineState.readWord mem 2368)
+  obtain ⟨Q, hQ, hf⟩ := final_eq (MachineState.readWord mem 2208) (MachineState.readWord mem 2176)
+    (MachineState.readWord mem 2144) (MachineState.readWord mem 2112)
     (MachineState.readWord mem 96) (MachineState.readWord mem 64) (MachineState.readWord mem 32)
     (MachineState.readWord mem 0) (MachineState.readWord mem 2720) hminv
-  have hA : SquareMath.lsum (2 * 2 ^ 255) (limbs4 (MachineState.readWord mem 2464)
-      (MachineState.readWord mem 2432) (MachineState.readWord mem 2400)
-      (MachineState.readWord mem 2368)) 4 = a := by
+  have hA : SquareMath.lsum (2 * 2 ^ 255) (limbs4 (MachineState.readWord mem 2208)
+      (MachineState.readWord mem 2176) (MachineState.readWord mem 2144)
+      (MachineState.readWord mem 2112)) 4 = a := by
     rw [← limbSum_fastRepresents ha, lsum_four, limbSum_four]
     rfl
   have hM : (MachineState.readWord mem 96).toNat + (MachineState.readWord mem 64).toNat * 2 ^ 256 +
@@ -167,9 +167,29 @@ theorem rows4_fastRepresents_outside (mem : ByteArray) (ptr cnt v : Nat)
   intro j hj
   rw [rows4_readWord_outside mem (ptr + 32 * j) (by omega)]
 
+/-- The n=4 round memory (n4a + n4t + rare4): R4 squares the operand at 2112..2208 and the tail
+stores the reduced window `red4` back over it, with a zero overflow word at 2080. -/
+def rows4r (mem : ByteArray) : ByteArray :=
+  r4Mem mem (red4 (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+    (MachineState.readWord mem 32) (MachineState.readWord mem 0)
+    (r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
+      (MachineState.readWord mem 32) (MachineState.readWord mem 2720)))
+
+theorem rows4r_readWord_outside (mem : ByteArray) (addr : Nat)
+    (h : addr + 32 ≤ 2080 ∨ 2240 ≤ addr) :
+    MachineState.readWord (rows4r mem) addr = MachineState.readWord mem addr :=
+  readWord_r4Mem_outside mem _ addr h
+
+theorem rows4r_fastRepresents_outside (mem : ByteArray) (ptr cnt v : Nat)
+    (h : ptr + 32 * cnt ≤ 2080 ∨ 2240 ≤ ptr) (hrep : Model.FastRepresents mem ptr cnt v) :
+    Model.FastRepresents (rows4r mem) ptr cnt v := by
+  refine (Model.fastRepresents_congr (a := mem) ?_ v).1 hrep
+  intro j hj
+  rw [rows4r_readWord_outside mem (ptr + 32 * j) (by omega)]
+
 /-- 累加器 `< 2m`。 -/
 theorem rows4_lt (mem : ByteArray) (a mm : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) (ham : a < mm) :
     tValue (rows4 mem) 4 < 2 * mm := by
@@ -188,7 +208,7 @@ theorem rows4_lt (mem : ByteArray) (a mm : Nat)
 
 /-- 顶字 `≤ 1`。 -/
 theorem rows4_tn_le_one (mem : ByteArray) (a mm : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) (ham : a < mm) :
     (MachineState.readWord (rows4 mem) 2080).toNat ≤ 1 := by
@@ -204,7 +224,7 @@ theorem rows4_tn_le_one (mem : ByteArray) (a mm : Nat)
 
 /-- **R4 之后的 CSUB 给出 Montgomery 平方。** -/
 theorem rows4_represents (mem : ByteArray) (a mm pdst : Nat)
-    (ha : Model.FastRepresents mem 2368 4 a) (hm : Model.FastRepresents mem 0 4 mm)
+    (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1) (ham : a < mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :

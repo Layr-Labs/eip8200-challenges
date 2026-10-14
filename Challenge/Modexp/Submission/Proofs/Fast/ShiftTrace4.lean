@@ -114,22 +114,79 @@ def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (n - 1) (fun j hj => gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) e)).trans
     (gasSteps_negLast s mem n bsize esize msize hn hn32 e)
 
+/-- The newton-batch tail leaves exactly `preMem`: with `dodd` and `n0` odd, one inverse of
+`dodd * n0` gives `dodd⁻¹ = x n0` and `n0⁻¹ = dodd x`. -/
+theorem nbOut_eq (s : State) (X : ByteArray) (n bsize esize msize : Nat) (hn32 : n ≤ 8)
+    (hml : MachineState.readWord X 2752 = UInt256.ofNat (32 * n - 32))
+    (hn0odd : (MachineState.readWord X (32 * n - 32)).toNat % 2 = 1)
+    (hdodd : (preDodd (MachineState.readWord X 0)).toNat % 2 = 1) :
+    nbOutMem (preNewtonState s X n bsize esize msize).memory (MachineState.readWord X 0)
+      (MachineState.readWord X (32 * n - 32)) = preMem X := by
+  have hmodn : (32 * n - 32) % 2 ^ 256 = 32 * n - 32 := Nat.mod_eq_of_lt (by omega)
+  simp only [nbOutMem, preMem, preMemOf, preDinv, preNewtonState]
+  rw [hml, Challenge.EvmProof.Word.word_toNat_ofNat, hmodn,
+    newton8W_mul_left _ _ hdodd hn0odd, newton8W_mul_right _ _ hdodd hn0odd]
+
+/-- The four estimator stores leave `V_ML` and the modulus limbs alone. -/
+theorem preNewton_readWord (s : State) (X : ByteArray) (n bsize esize msize addr : Nat)
+    (h : addr + 32 ≤ PRE_L ∨ PRE_BMOD + 32 ≤ addr) :
+    MachineState.readWord (preNewtonState s X n bsize esize msize).memory addr =
+      MachineState.readWord X addr := by
+  simp only [preNewtonState]
+  unfold PRE_L PRE_BMOD at h
+  unfold Exp.storeWord PRE_L PRE_DODD PRE_X PRE_BMOD
+  rw [Csub.readWord_write_disjoint _ _ _ _ (by omega),
+    Csub.readWord_write_disjoint _ _ _ _ (by omega),
+    Csub.readWord_write_disjoint _ _ _ _ (by omega),
+    Csub.readWord_write_disjoint _ _ _ _ (by omega)]
+
 /-- From the first `CSUB` return to the `E5` entry (slot parking done, the
-esize/byte guard still pending inside `blk2764`). -/
+esize/byte guard still pending inside `blk2764`).  The dinv site is the
+newton-batch head, the shared Newton chain at pc 714 and the tail. -/
 def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
+    (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (cacheSetupState s (preMem (negStep mem n n).memory) n bsize esize msize) :=
-  ((((soundEnv blk2892 e
+  have hX0 : MachineState.readWord (negStep mem n n).memory 0 = MachineState.readWord mem 0 :=
+    negStep_readWord_disjoint mem n 0 (Or.inl (by unfold NEG; omega)) n le_rfl
+  have hXn0 : MachineState.readWord (negStep mem n n).memory (32 * n - 32) =
+      MachineState.readWord mem (32 * n - 32) :=
+    negStep_readWord_disjoint mem n (32 * n - 32) (Or.inl (by unfold NEG; omega)) n le_rfl
+  have hXml : MachineState.readWord (negStep mem n n).memory 2752 =
+      UInt256.ofNat (32 * n - 32) :=
+    (negStep_readWord_disjoint mem n 2752 (Or.inr (by unfold NEG; omega)) n le_rfl).trans hml
+  have hhead : preNewtonState s (negStep mem n n).memory n bsize esize msize =
+      nbHeadState s (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
+        (MachineState.readWord (negStep mem n n).memory 0) n bsize esize msize := rfl
+  have hout := nbOut_eq s (negStep mem n n).memory n bsize esize msize hn32 hXml
+    (by rw [hXn0]; exact hn0odd) (by rw [hX0]; exact hdodd)
+  (((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
     (soundEnv blk2919 e
       (run_negDone s mem n bsize esize msize e.act296 e.code e.run))).trans
-    (soundEnv blk2956 e
-      (run_preNewton s (negStep mem n n).memory n bsize esize msize e.code e.run))).trans
-    (soundEnv blk2982 e
-      (run_newtonB s (negStep mem n n).memory n bsize esize msize e.act296 e.code e.run))
+    ((soundEnv blkNbHead e
+      (run_nbHead s (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
+        (MachineState.readWord (negStep mem n n).memory 0)
+        (MachineState.readWord (negStep mem n n).memory (32 * n - 32)) n bsize esize msize
+        hn hn32 e.act296
+        ((preNewton_readWord s _ n bsize esize msize 2752 (Or.inr (by unfold PRE_BMOD; omega))).trans
+          hXml)
+        (preNewton_readWord s _ n bsize esize msize (32 * n - 32)
+          (Or.inl (by unfold PRE_L; omega)))
+        e.code e.run)).cast hhead.symm rfl)).trans
+    ((soundEnv blkNbSub e (run_nbSub s
+        (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
+        (MachineState.readWord (negStep mem n n).memory 0)
+        (MachineState.readWord (negStep mem n n).memory (32 * n - 32)) n bsize esize msize e.code e.run)).trans
+      (soundEnv blkNbTail e (run_nbTail s
+        (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
+        (MachineState.readWord (negStep mem n n).memory 0)
+        (MachineState.readWord (negStep mem n n).memory (32 * n - 32)) n bsize esize msize e.act296 e.code e.run)))).cast
+    rfl (congrArg (fun m => cacheSetupState s m n bsize esize msize) hout)
 
 /-- From the first `CSUB` return to the shift loop head with counter `n`
 (word-sized exponent arm of `E5`). -/
@@ -137,12 +194,14 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
     (hfast : n = 4 ∨ n = 8)
     (hesize : UInt256.ofNat esize ≠ UInt256.ofNat 1)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
+    (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
         (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
-  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml).trans
+  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml hn0odd hdodd).trans
     (soundEnv blk2764 e
       (run_e5 s (preMem (negStep mem n n).memory) n bsize esize msize hfast e.act hesize e.code
         e.run))
@@ -157,12 +216,14 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
       (MachineState.readWord s.executionEnv.calldata
         (MachineState.readWord (preMem (negStep mem n n).memory) 2816).toNat) ≠
       UInt256.ofNat 3)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
+    (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
         (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
-  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml).trans
+  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml hn0odd hdodd).trans
     (soundEnv blk2764 e
       (run_e5_slowexp s (preMem (negStep mem n n).memory) n bsize esize msize hfast e.act hsize1
         hbyteNe e.code e.run))
@@ -176,12 +237,14 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
       (MachineState.readWord s.executionEnv.calldata
         (MachineState.readWord (preMem (negStep mem n n).memory) 2816).toNat) =
       UInt256.ofNat 3)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)) :
+    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
+    (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
         (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
           (UInt256.ofNat 1)) n bsize esize msize (n / 2)) :=
-  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml).trans
+  (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hml hn0odd hdodd).trans
     (soundEnv blk2764 e
       (run_e5_e3 s (preMem (negStep mem n n).memory) n bsize esize msize hfast e.act hsize1
         hbyte3 e.code e.run))

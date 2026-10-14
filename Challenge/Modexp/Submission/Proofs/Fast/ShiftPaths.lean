@@ -42,7 +42,7 @@ def blk2874 :
    pushAt 2047 2 2112,
    opAt 2048 .CALLDATACOPY,
    pushAt 2049 2 2621,
-   pushAt 2050 2 4347,
+   pushAt 2050 2 4299,
    opAt 2051 .JUMP]
 
 
@@ -95,56 +95,87 @@ def blk2919 :
    pushAt 2113 2 1632,
    opAt 2114 .MSTORE]
 
-/-- Located block of the selected shift-reduce program. -/
-def blk2956 :
+/-- newton-batch head (pc 2705): load the modulus low limb `n0 = mem[mem[0xac0]]`, call the
+shared Newton chain on `dodd * n0` with return pc 2741. -/
+def blkNbHead :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2115 (.Dup ⟨0, by decide⟩),
-   pushAt 2116 1 3,
-   opAt 2117 .MUL,
-   pushAt 2118 1 2,
-   opAt 2119 .XOR,
-   opAt 2120 (.Dup ⟨0, by decide⟩),
-   opAt 2121 (.Dup ⟨2, by decide⟩),
-   opAt 2122 .MUL,
-   pushAt 2123 1 2,
-   opAt 2124 .SUB,
-   opAt 2125 .MUL,
-   opAt 2126 (.Dup ⟨0, by decide⟩),
-   opAt 2127 (.Dup ⟨2, by decide⟩),
-   opAt 2128 .MUL,
-   pushAt 2129 1 2,
-   opAt 2130 .SUB,
-   opAt 2131 .MUL,
-   opAt 2132 (.Dup ⟨0, by decide⟩),
-   opAt 2133 (.Dup ⟨2, by decide⟩),
-   opAt 2134 .MUL,
-   pushAt 2135 1 2,
-   opAt 2136 .SUB,
-   opAt 2137 .MUL]
+  [pushAt 2115 2 2752,
+   opAt 2116 .MLOAD,
+   opAt 2117 .MLOAD,
+   pushAt 2118 2 2741,
+   opAt 2119 (.Dup ⟨1, by decide⟩),
+   opAt 2120 (.Dup ⟨3, by decide⟩),
+   opAt 2121 .MUL,
+   pushAt 2122 2 714,
+   opAt 2123 .JUMP]
 
-/-- Located block of the selected shift-reduce program. -/
-def blk2982 :
+/-- The shared Newton chain (pc 714): `[p, ret]` becomes `[newton8W p]` at `ret`. -/
+def blkNbSub :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 2138 (.Dup ⟨0, by decide⟩),
-   opAt 2139 (.Dup ⟨2, by decide⟩),
-   opAt 2140 .MUL,
-   pushAt 2141 1 2,
-   opAt 2142 .SUB,
-   opAt 2143 .MUL,
-   opAt 2144 (.Dup ⟨0, by decide⟩),
-   opAt 2145 (.Dup ⟨2, by decide⟩),
-   opAt 2146 .MUL,
-   pushAt 2147 1 2,
-   opAt 2148 .SUB,
-   opAt 2149 .MUL,
-   opAt 2150 (.Dup ⟨0, by decide⟩),
+  [opAt 506 .JUMPDEST,
+   opAt 507 (.Dup ⟨0, by decide⟩),
+   pushAt 508 1 3,
+   opAt 509 .MUL,
+   pushAt 510 1 2,
+   opAt 511 .XOR,
+   opAt 512 (.Dup ⟨0, by decide⟩),
+   opAt 513 (.Dup ⟨2, by decide⟩),
+   opAt 514 .MUL,
+   pushAt 515 1 2,
+   opAt 516 .SUB,
+   opAt 517 .MUL,
+   opAt 518 (.Dup ⟨0, by decide⟩),
+   opAt 519 (.Dup ⟨2, by decide⟩),
+   opAt 520 .MUL,
+   pushAt 521 1 2,
+   opAt 522 .SUB,
+   opAt 523 .MUL,
+   opAt 524 (.Dup ⟨0, by decide⟩),
+   opAt 525 (.Dup ⟨2, by decide⟩),
+   opAt 526 .MUL,
+   pushAt 527 1 2,
+   opAt 528 .SUB,
+   opAt 529 .MUL,
+   opAt 530 (.Dup ⟨0, by decide⟩),
+   opAt 531 (.Dup ⟨2, by decide⟩),
+   opAt 532 .MUL,
+   pushAt 533 1 2,
+   opAt 534 .SUB,
+   opAt 535 .MUL,
+   opAt 536 (.Dup ⟨0, by decide⟩),
+   opAt 537 (.Dup ⟨2, by decide⟩),
+   opAt 538 .MUL,
+   pushAt 539 1 2,
+   opAt 540 .SUB,
+   opAt 541 .MUL,
+   opAt 542 (.Dup ⟨0, by decide⟩),
+   opAt 543 (.Dup ⟨2, by decide⟩),
+   opAt 544 .MUL,
+   pushAt 545 1 2,
+   opAt 546 .SUB,
+   opAt 547 .MUL,
+   opAt 548 (.Swap ⟨1, by decide⟩),
+   opAt 549 (.Swap ⟨0, by decide⟩),
+   opAt 550 .POP,
+   opAt 551 .JUMP]
+
+/-- newton-batch tail (pc 2741): `dinv := x * n0`, `V_MINV := -(dodd * x)`, drop the four
+words, then the old `k := n` prologue. -/
+def blkNbTail :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2145 .JUMPDEST,
+   opAt 2146 (.Dup ⟨1, by decide⟩),
+   opAt 2147 (.Dup ⟨1, by decide⟩),
+   opAt 2148 .MUL,
+   pushAt 2149 2 1664,
+   opAt 2150 .MSTORE,
    opAt 2151 (.Dup ⟨2, by decide⟩),
    opAt 2152 .MUL,
-   pushAt 2153 1 2,
+   pushAt 2153 0 0,
    opAt 2154 .SUB,
-   opAt 2155 .MUL,
-   pushAt 2156 2 1664,
-   opAt 2157 .MSTORE,
+   pushAt 2155 2 2720,
+   opAt 2156 .MSTORE,
+   opAt 2157 .POP,
    opAt 2158 .POP,
    opAt 2159 .POP,
    opAt 2160 .POP,
@@ -448,6 +479,14 @@ theorem jumpDest4608 :
   Artifact.isValidJumpDest_index 2033 (by rfl)
 
 /-- `BAIL6`, the target of the full-base miss. -/
+theorem jumpDest714 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 714 = true :=
+  Artifact.isValidJumpDest_index 506 (by rfl)
+
+theorem jumpDest2694 :
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2741 = true :=
+  Artifact.isValidJumpDest_index 2145 (by rfl)
+
 theorem jumpDestBail6 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 790 = true :=
   Artifact.isValidJumpDest_index 568 (by rfl)
@@ -503,8 +542,8 @@ theorem jumpDest5366 :
   Artifact.isValidJumpDest_index 2634 (by rfl)
 
 theorem jumpDest5444 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5509 = true :=
-  Artifact.isValidJumpDest_index 4344 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5522 = true :=
+  Artifact.isValidJumpDest_index 4393 (by rfl)
 
 /-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
 E3 phase switch has set the last riding slot to `30`. -/
@@ -513,7 +552,7 @@ theorem jumpDest2471 :
   Artifact.isValidJumpDest_index 1993 (by rfl)
 
 /-- The cache-setup block (`E5`, pcs 2764-2810): computes the unrolled-conversion
-entry `2899 + 133·[n = 4]`, stores it at `0x6a2` (1698) and the squaring flag at
+entry `2946 + 116·[n = 4]`, stores it at `0x6a2` (1698) and the squaring flag at
 `0x6e0` (1760), and leaves the loop counter `n ≫ flag` on top of the riding slots
 with the entry parked in the scratch slot. -/
 def blk2764 :
@@ -561,33 +600,33 @@ def blk3346 :
    pushAt 2636 2 1760,
    opAt 2637 .MLOAD,
    opAt 2638 .ISZERO,
-   pushAt 2639 2 5509,
+   pushAt 2639 2 5522,
    opAt 2640 .JUMPI]
 
 /-- The cleanup tail (pcs 5444-5465): sixteen `POP`s drop all riding slots but the last,
 then `PUSH2 0989 ADD JUMP` jumps to `2441 + z`, where `z` is that last slot: `0` from `E5`
-(the exponent dispatcher at 2441) and `30` after the E3 phase switch (`e3go` at 2471). -/
+(the exponent dispatcher at 2441) and `28` after the E3 phase switch (`e3go` at 2471). -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4344 .JUMPDEST,
-   opAt 4345 .POP,
-   opAt 4346 .POP,
-   opAt 4347 .POP,
-   opAt 4348 .POP,
-   opAt 4349 .POP,
-   opAt 4350 .POP,
-   opAt 4351 .POP,
-   opAt 4352 .POP,
-   opAt 4353 .POP,
-   opAt 4354 .POP,
-   opAt 4355 .POP,
-   opAt 4356 .POP,
-   opAt 4357 .POP,
-   opAt 4358 .POP,
-   opAt 4359 .POP,
-   opAt 4360 .POP,
-   pushAt 4361 2 2492,
-   opAt 4362 .ADD,
-   opAt 4363 .JUMP]
+  [opAt 4393 .JUMPDEST,
+   opAt 4394 .POP,
+   opAt 4395 .POP,
+   opAt 4396 .POP,
+   opAt 4397 .POP,
+   opAt 4398 .POP,
+   opAt 4399 .POP,
+   opAt 4400 .POP,
+   opAt 4401 .POP,
+   opAt 4402 .POP,
+   opAt 4403 .POP,
+   opAt 4404 .POP,
+   opAt 4405 .POP,
+   opAt 4406 .POP,
+   opAt 4407 .POP,
+   opAt 4408 .POP,
+   opAt 4409 .POP,
+   pushAt 4410 2 2492,
+   opAt 4411 .ADD,
+   opAt 4412 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
