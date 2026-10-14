@@ -17,18 +17,18 @@ open StackRoundTrace StackRoundTemplate StaggerPersistentLoopRaw
 def dispatchCode : List Instr := StaggerPersistentLoopRaw.dispatchTemplate
 
 theorem dispatch_slice :
-    (Artifact.submissionArtifact.instructions.drop 3399).take dispatchCode.length = dispatchCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3398).take dispatchCode.length = dispatchCode := by rfl
 
 def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3399 dispatch_slice
-    (by change 3399 + dispatchCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3398 dispatch_slice
+    (by change 3398 + dispatchCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide))
     (by decide)
 
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4551 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3399) = UInt256.ofNat 4551
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3398) = UInt256.ofNat 4551
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def incTemplate : List Instr := StaggerPersistentLoopRaw.incTemplate

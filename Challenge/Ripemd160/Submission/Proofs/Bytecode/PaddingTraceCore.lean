@@ -197,79 +197,79 @@ def padEntry (input : ByteArray) : State :=
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3610 :
-    Artifact.submissionArtifact.instructionPC 3611 = 4959 := by
+    Artifact.submissionArtifact.instructionPC 3610 = 4959 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3610 :
-    Artifact.instructionPC 3611 = 4959 := by
-  change Artifact.submissionArtifact.instructionPC 3611 = 4959
+    Artifact.instructionPC 3610 = 4959 := by
+  change Artifact.submissionArtifact.instructionPC 3610 = 4959
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3611 :
-    Artifact.submissionArtifact.instructionPC 3612 = 4960 := by
+    Artifact.submissionArtifact.instructionPC 3611 = 4960 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3611 :
-    Artifact.instructionPC 3612 = 4960 := by
-  change Artifact.submissionArtifact.instructionPC 3612 = 4960
+    Artifact.instructionPC 3611 = 4960 := by
+  change Artifact.submissionArtifact.instructionPC 3611 = 4960
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3612 :
-    Artifact.submissionArtifact.instructionPC 3613 = 4961 := by
+    Artifact.submissionArtifact.instructionPC 3612 = 4961 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3612 :
-    Artifact.instructionPC 3613 = 4961 := by
-  change Artifact.submissionArtifact.instructionPC 3613 = 4961
+    Artifact.instructionPC 3612 = 4961 := by
+  change Artifact.submissionArtifact.instructionPC 3612 = 4961
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3613 :
-    Artifact.submissionArtifact.instructionPC 3614 = 4962 := by
+    Artifact.submissionArtifact.instructionPC 3613 = 4962 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3613 :
-    Artifact.instructionPC 3614 = 4962 := by
-  change Artifact.submissionArtifact.instructionPC 3614 = 4962
+    Artifact.instructionPC 3613 = 4962 := by
+  change Artifact.submissionArtifact.instructionPC 3613 = 4962
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3614 :
-    Artifact.submissionArtifact.instructionPC 3615 = 4963 := by
+    Artifact.submissionArtifact.instructionPC 3614 = 4963 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3614 :
-    Artifact.instructionPC 3615 = 4963 := by
-  change Artifact.submissionArtifact.instructionPC 3615 = 4963
+    Artifact.instructionPC 3614 = 4963 := by
+  change Artifact.submissionArtifact.instructionPC 3614 = 4963
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3615 :
-    Artifact.submissionArtifact.instructionPC 3616 = 4964 := by
+    Artifact.submissionArtifact.instructionPC 3615 = 4964 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3615 :
-    Artifact.instructionPC 3616 = 4964 := by
-  change Artifact.submissionArtifact.instructionPC 3616 = 4964
+    Artifact.instructionPC 3615 = 4964 := by
+  change Artifact.submissionArtifact.instructionPC 3615 = 4964
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPc3616 :
-    Artifact.submissionArtifact.instructionPC 3617 = 4966 := by
+    Artifact.submissionArtifact.instructionPC 3616 = 4966 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] private theorem padPci3616 :
-    Artifact.instructionPC 3617 = 4966 := by
-  change Artifact.submissionArtifact.instructionPC 3617 = 4966
+    Artifact.instructionPC 3616 = 4966 := by
+  change Artifact.submissionArtifact.instructionPC 3616 = 4966
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem initializedCalldata (input : ByteArray) :
@@ -826,19 +826,19 @@ the cursor, shift the residual, and `DUP4 JUMPI` back to the head 4949 that stay
 loop registers while the residual is nonzero. -/
 def lengthIterationPath : List
     (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨3603, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3602, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3603, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3604, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3605, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3606, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3607, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨3608, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3609, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3610, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨3611, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3612, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3613, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3614, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3615, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨3605, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3606, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨3607, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3608, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3609, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨3610, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3611, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3612, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3613, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3614, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 10
 def lengthBranchPath := lengthIterationPath.drop 10
@@ -895,9 +895,9 @@ theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
 
 @[simp] private theorem validLengthLoopHead :
     Decode.isValidJumpDest submissionBytecode 4949 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3603 = 4949 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 3602 = 4949 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 3603 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 3602 (by rfl)
 
 theorem validJump4949 :
     Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 4949).toNat = true :=

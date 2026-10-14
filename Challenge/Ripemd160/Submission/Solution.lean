@@ -17,6 +17,8 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 9557558e80d2fb44f96edfa022d3205c01db50baa75579ad35ff743861e736c7.
--- 5247 bytes, 3618 executable instructions; local 98-row replica 647411 clean/dirty.
--- Inlines the empty/abc return and removes the shared return marker from the 647436 leader.
+-- Current decoded SHA-256: 34b57b79b00486b64a85666336c9e0e48c9822c2fc925bda08ccb3222c17c9c5.
+-- 5247 bytes, 3617 executable instructions; local replica 647222 clean/dirty (record 647411, newjordan d62f7e87).
+-- Built on newjordan's d62f7e87 (direct empty/abc return) and 52f50e76 (round-75 filler removed, PUSH13 -> PUSH14);
+-- adds kaankolcu's window 62-72 cut with its own filler replaced by a PUSH13 -> PUSH14 widening in round 71, and
+-- gas-neutral rewrites in rounds 9-17 and 44-51.

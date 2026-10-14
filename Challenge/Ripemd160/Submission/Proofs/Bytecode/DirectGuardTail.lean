@@ -103,10 +103,10 @@ theorem run_tail_target :
 /-- The taken `JUMPI` lands on the answer block's `JUMPDEST` 4709 in the tail. -/
 theorem run_return_hop (input : ByteArray) :
     run returnHopPath (returnHopState input) = some (returnEntry input) := by
-  have p3502 : Artifact.submissionArtifact.instructionPC 3478 = 4709 := Artifact.cgPc3502
-  change run [opAt 3478 .JUMPDEST] (PatternedScan.stS input 4709 (spentCells input)) =
+  have p3502 : Artifact.submissionArtifact.instructionPC 3477 = 4709 := Artifact.cgPc3502
+  change run [opAt 3477 .JUMPDEST] (PatternedScan.stS input 4709 (spentCells input)) =
     some (PatternedScan.stS input 4710 (spentCells input))
-  exact PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3478 4709 _ (by norm_num) p3502)
+  exact PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3477 4709 _ (by norm_num) p3502)
     (PatternedScan.stepS_jumpdest input 4709 _ (by simp [spentCells]) (by norm_num))
 
 /-- A nonzero accumulator diverts to the generic arm with a two-word suffix. -/
@@ -171,13 +171,13 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3482 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3481 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3482 := by
+      Artifact.submissionArtifact.instructionPC 3481 := by
     rw [Artifact.cjPc58]; rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3482
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3481
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, spentCells]) (by rfl)

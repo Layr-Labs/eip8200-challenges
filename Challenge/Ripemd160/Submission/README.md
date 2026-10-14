@@ -1,37 +1,81 @@
-# RIPEMD-160: packed pad store (P19), refit prologue, a DUP bank and a re-planned round window 66..76 on newjordan's 647,822 record (647,499 gas)
+# RIPEMD-160: a re-planned stack window over paired steps 62..71 on newjordan's 647,411 record (647,222 gas)
 
 Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160. Lower gas is better.
 
-## Base and attribution
+## Base, record and attribution
 
-- **newjordan, 0961b85e** (accepted and promoted record, 647,822): the immediate base. Its cuts are carried with their
-  proofs: the compression exit consumes the continuation (`SWAP13 JUMP` instead of `POP DUP13 JUMP`, -2 gas per
-  compression; the epilogue keeps its length with `PUSH2 0x0090`), so every continuation stub reinstalls its value and pops
-  the stale slot at the shared `JUMPDEST POP` join (132), and the gas-neutral round-33 `DUP10 ADD ADD` reassociation. Its
-  proof changes (the junk word `h2` in the loop frame, `StaggerPersistentLoopRaw`/`LoopSites`/`LoopInduction`,
-  `PersistentStaggerIteration`, `ColdTailCorrect`, `ScheduledTail*`, `Shared32Core`, `StaggerPersistentCorrect` and the
-  round-33 step) are taken as they are, relocated to this layout.
-- **newjordan, 1d5fd62c** (accepted record, 647,948): the base of 0961b85e. Its one-opcode cut is carried unchanged: at
-  PC 68 the source address of the pad-only zero-filling calldata copy is `CALLDATASIZE` instead of `DUP13`, with its
-  `StaggerPadSetup` proof change.
-- **kaankolcu, 8375c07c** (accepted record, 647,969): the base of 1d5fd62c. It supplies the phase-continuation prologue,
-  padding, paired compressor, recognition routes, digest serialization and the universal Lean proof. The PUSH6 entry
-  prefilter (`PUSH6 0x16108c86821c`, false-prefilter rate 2^-15) of our own follow-up on 1d5fd62c is also carried.
+- **newjordan, d62f7e87** (accepted and promoted record, 647,411, promoted commit dae6b078): the live record this
+  submission is measured against, and a base of this tree. d62f7e87 is 52f50e76 with one change in the recognition
+  routes: the empty/`abc` arm used to end with `PUSH2 0x127a JUMP` to the shared return at 4730 (`JUMPDEST PUSH0 MSTORE
+  MSIZE PUSH0 RETURN`); it now returns in place (`PUSH0 MSTORE MSIZE PUSH0 RETURN` at 4704..4708, the five bytes of the
+  old jump and of the 1000-byte answer block's `JUMPDEST`), that `JUMPDEST` moves one byte to 4709 (the
+  `PUSH2` at 243 now targets 4709), that block falls straight into the return tail, and the shared-return `JUMPDEST` at
+  4730 is gone. Same code length, PCs from 4731 on unchanged, two instructions more (-25 gas on the scored corpus against
+  52f50e76). This tree takes those 28 bytes (PCs 243..4730) and d62f7e87's proof changes (`AbcArm`, `DirectGuardBase`,
+  `DirectGuardSize`, `DirectGuardTail`, `GuardInstructionWindow`, `J2*`, `PaddingTraceCore`, `Patterned128Entry`,
+  `StaggerPersistent*`, `Bytes`/`Artifact`), relocated to this layout. The two edits are disjoint: d62f7e87 changes
+  PCs 243..4730 outside our window, and this tree's own changes sit in PCs 1388..4182. 647,222 here against its
+  647,411 (-189 gas).
+- **newjordan, 52f50e76** (accepted and promoted record, 647,436, promoted commit cba00f5c): the base of d62f7e87 and the
+  tree this one starts from byte for byte. 52f50e76 is our 00b4dbb3 with one
+  change: the `JUMPDEST` filler at 4362 is removed and the `PUSH13` at 4348 is widened to `PUSH14` with a leading zero byte,
+  which keeps the code length and every later PC with one instruction fewer (-1 gas per compression, -63 on the scored
+  corpus). Its proofs, re-indexed for the removed instruction (every instruction index after it moves by one), are carried.
+  This tree uses the same widening technique for its own filler (item 4 below).
+- **kaankolcu, 00b4dbb3** (accepted and promoted record, 647,499): the base of 52f50e76. Its content is
+  listed below under "Carried from 00b4dbb3".
+- **newjordan, 0961b85e** (accepted record, 647,822): the base of 00b4dbb3. Its cuts are carried with their proofs: the
+  compression exit consumes the continuation (`SWAP13 JUMP` instead of `POP DUP13 JUMP`; the epilogue keeps its length with
+  `PUSH2 0x0090`), every continuation stub reinstalls its value and pops the stale slot at the shared `JUMPDEST POP` join
+  (132), and the gas-neutral round-33 `DUP10 ADD ADD` reassociation, with their proof changes.
+- **newjordan, 1d5fd62c** (accepted record, 647,948): `CALLDATASIZE` instead of `DUP13` at PC 68, with its
+  `StaggerPadSetup` proof change, carried unchanged.
+- **Th0rgal, 2cc229ec** (accepted record, 647,801): none of its bytes are used (its pad-block and 199 edits sit in code that
+  00b4dbb3 replaced); listed because 00b4dbb3 was measured against it.
+- **kaankolcu, 8375c07c** (accepted record, 647,969): the phase-continuation prologue, padding, paired compressor,
+  recognition routes, digest serialization and the universal Lean proof.
 - Inherited through those images, and listed in `dependencies.json`: eac16f46 and 3237115c (kaankolcu), the CODESIZE-relative
   digest selector, signed boundary and tail of cb3f7647 (newjordan), Th0rgal's round-79 epilogue (fc5d5ea8) and newjordan's
   compression-body widths (a12ad85f). Credited as in 8375c07c, carried unchanged: newjordan 96e765dd, rubenmarcus 63ed2b49 and
   9dfde6e7 (earlier epilogue work), Th0rgal f797f38b.
 
-## The record this is measured against
-
-- **Th0rgal, 2cc229ec** (accepted record, 647,801, promoted commit 7139d4de): the live record when this tree was built. It
-  is 0961b85e with two edits: the pad-only block (bytes 77..101) is reordered so that one `MSTORE8` takes its address from
-  `PC` (at 85), and the `ADD` at 199 becomes `SUB`. This image does not use either edit, and none of its bytes come from
-  2cc229ec: the pad-only block is replaced as a whole by the P19 packed pad store (item 1 below), and the code around 199
-  is replaced by the refit generic-padding route and the 192-stub join (items 2 and 4). It is listed in
-  `dependencies.json` as the record this submission improves on: 647,499 here against its 647,801 (-302 gas).
-
 ## What is new here
+
+Items 1..4 are this tree's own work on top of d62f7e87; each one is independent of d62f7e87's answer-path change.
+
+1. **L62, a re-planned stack window over paired steps 62..71** (PCs 3796..4210). A search over staging sets, the D'-copy
+   trick and copy/commutative choices re-solves the slot layout and fetch order of these ten steps with the compute order
+   and the boundary values unchanged (step 62's input and step 72's input are the same as before). The plan stages cached
+   words earlier in steps 64 and 66 (with the D'-copy), defers one operand in steps 65 and 67, and drops the copy of the
+   cached message word at 360 that 00b4dbb3 carried from step 64 to step 70 (step 70 now fetches it just in time with a
+   `DUP`). Net, the window runs one stack operation fewer per compression: -3 gas per compression, -189 on the scored
+   corpus. Steps 62..71 change their stack shapes.
+2. **A floating `Bytes` chunk cut.** The window makes steps 64..68 two bytes and two instructions shorter before the chunk
+   cut at byte 4111 (inside step 69) and step 70 one byte and one instruction longer after it. The chunk cut is no longer
+   tied to equal per-chunk instruction counts: it stays at byte 4111 and chunks 15 and 16 go from 224/219 to 223/220
+   instructions. Only `Bytes` and `Artifact` know chunk sizes (their size, length and byteLength lemmas); every
+   `instructionPC` fact goes through the byte length of the whole list, and the window's byte length and the instruction
+   total outside it are unchanged, so every later cut, PC and index outside the window holds.
+3. **Wall banks on paired steps 9..17 and 44..51** (PCs 1379..1827 and 2965..3337). Gas-neutral and PC-preserving
+   reassociations and commutations of `ADD`/`AND`/`OR`/`XOR` operands (same opcodes, same stack effect, other `DUP` depths)
+   in steps 9..11, 13..17 and 44..51 that lower the `Artifact`'s elaboration cost, so items 1 and 2 fit the same Lean
+   elaboration limit as 00b4dbb3. No gas change.
+4. **The window's filler as a `PUSH` widening** (52f50e76's technique). The window is one byte shorter than the code it
+   replaces; instead of a `JUMPDEST` filler at the end of step 71 (4210), which costs 1 gas per compression, the round-71
+   `PUSH13 0x7e0000007e0000004000000040` at 4181 is written as `PUSH14 0x007e0000007e0000004000000040`. Same value, same gas,
+   same code length, every PC from 4211 on unchanged, and one instruction fewer, so every instruction index after the
+   window moves down by one more (two against 00b4dbb3 after 4348, counting 52f50e76's own widening; d62f7e87's answer
+   path then adds two after 4704).
+
+The proof changes: `StaggerRawPaired{9..11,13..17,44..51,62..71}Raw` (templates and the generic AC proofs for the new
+expression forms), the wrappers `StaggerRawPaired{64..76}` and `StaggerRawLeft77..79`/`StaggerRawUnpack` (instruction index
+and PCs), `StaggerCorePaired{64..71}` and `StaggerCore` (step PCs and shapes), the relocated `Bytes`/`Artifact` literals
+with the floating cut, and the instruction-index references of the modules after the window (`AbcArm`, `DirectGuard*`,
+`GuardInstructionWindow`, `J2*`, `PaddingTraceCore`, `Patterned128Entry`, `ShortSizePrefix`, `StaggerPersistent*`).
+d62f7e87's proof changes to those modules are merged in with every instruction index after the window moved down by one
+(its new answer-path rows included); the `Artifact` is d62f7e87's with this tree's chunks rewritten.
+
+## Carried from 00b4dbb3 (kaankolcu, 647,499) unchanged
 
 1. **P19, the packed pad store.** The pad-only block (64..116, run by the 64-, 128- and 192-byte inputs) used to write the
    two `0x80` bytes of the table at 67 and 85 with two `MSTORE8`s fed by two `DUP1`s. It now writes them with one
@@ -67,7 +111,7 @@ Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160. Lowe
    elaboration cost, so item 5 fits the same limit as item 3 did for P19. Each step's `run_generated` bridges the
    kept expression form with the `RawExpressionAC` lemmas.
 
-The proof changes: `StaggerPadSetup.run_low` and the pad-only sites for P19; `ColdGuardFixup` (the 32-byte block's route now
+Their proof changes, carried: `StaggerPadSetup.run_low` and the pad-only sites for P19; `ColdGuardFixup` (the 32-byte block's route now
 ends at 166 with its scratch bytes in memory), `PaddingTraceCore`/`PaddingTrace` (sentinel 166..171, footer setup 172..191, the loop at 4949 and
 the exit through 200; the memory facts about the padded image exclude 165 and 188; the module is split in two so
 that neither half needs more than about 10 GB to elaborate, and the footer's `DUP3 JUMP` runs as its own located step), `PadSkipEntry`,
@@ -80,18 +124,17 @@ step files of the DUP bank; for items 5 and 6, `StaggerRawPaired{36..43,66..76}R
 
 ## Evidence
 
-- Decoded artifact SHA-256: `11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8`. 5,247 bytes.
-- Exact scorer replica, 49/49 digests, clean and dirty equal: **647,499** at seed 0 and at seeds 12886768257922782526 and 18235675205389542134
-  (items 1..4 alone: 647,625 at all three; 0961b85e's image: 647,822 / 647,988 / 648,062;
-  2cc229ec's image: 647,801 / 647,967 / 648,041).
+- Decoded artifact SHA-256: `34b57b79b00486b64a85666336c9e0e48c9822c2fc925bda08ccb3222c17c9c5`. 5,247 bytes, 3,617
+  executable instructions (d62f7e87: 3,618).
+- Exact scorer replica, 49/49 digests, clean and dirty equal: **647,222** at seed 0 and at seeds 12886768257922782526,
+  18235675205389542134 and 777 (d62f7e87's image: 647,411; items 1..4 on 52f50e76 without d62f7e87's answer path:
+  647,247; items 1..3 with a `JUMPDEST` filler instead of item 4: 647,310). Tier 1 PASS.
 - Random-message fuzz of these exact bytes against a reference RIPEMD-160 (the execution-spec precompile), in both the
-  clean and the dirty world, 0 wrong digests in every mode: 300,000 four-block (256-byte) messages with bytes 32..43 of
-  every block set to `0xff` (clean 0, dirty 0); 200,000 messages of random length 0..1,000 bytes (clean 0, dirty 0); 50
-  random messages at every length 0..300, 15,050 in all (clean 0, dirty 0).
+  clean and the dirty world: 300,000 four-block messages with bytes 32..43 of every block set to 0xff, 200,000 messages
+  of random length 0..1,000 bytes, and 50 random messages at every length 0..300 (15,050): 0 wrong in every mode and
+  world. The same fuzz on items 1..4 without d62f7e87's answer path: 0 wrong in every mode and world.
 - Lean build of this tree on these exact bytes (the harness's `prepare` step writes `Benchmark/Artifact.lean` from
-  `bytecode.hex`, then `lake build Challenge.Ripemd160.Submission.Solution`): exit 0, 0 failed modules, and
-  `Challenge.Ripemd160.Benchmark.candidate` depends on axioms `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
-  The run took 1,420 s wall with four Lean threads (incremental over a build copy of the 647,625 tree; every module
-  downstream of the changed `Bytes`/`Artifact` rebuilt, 317 modules) with 9,743 MB peak system memory; the heaviest
-  module, `PaddingTraceCore`, peaked near 10.7 GB resident when built alone.
+  `bytecode.hex`, then `lake build Challenge.Ripemd160.Submission.Solution`): exit 0, 0 failed modules; the candidate
+  theorem depends only on `propext`, `Classical.choice` and `Quot.sound`. Largest module about 9.9 GB of resident memory
+  (`PaddingTraceCore`).
 - Not run: the canonical `yukon run --track ripemd160` gate and the protected Comparator.

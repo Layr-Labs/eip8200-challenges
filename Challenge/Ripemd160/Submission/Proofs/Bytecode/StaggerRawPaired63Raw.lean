@@ -15,11 +15,9 @@ private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨0, by decide⟩),
-    .op (.Dup ⟨4, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨7, by decide⟩),
-    .op .XOR,
     .op (.Dup ⟨2, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),
     .op (.Dup ⟨12, by decide⟩),
@@ -27,6 +25,8 @@ def template : List Instr :=
     .op (.Dup ⟨7, by decide⟩),
     .op .OR,
     .op .AND,
+    .op .XOR,
+    .op (.Dup ⟨7, by decide⟩),
     .op .XOR,
     .op .ADD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 342),
