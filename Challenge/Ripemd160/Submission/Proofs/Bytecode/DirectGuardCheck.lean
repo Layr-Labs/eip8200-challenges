@@ -23,48 +23,45 @@ private def sS (l : Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     [l] hcode hfork h hrun hnp
 
-/-- The straight-line seed block from PC 33 and the `PUSH1 200 JUMP` at 44 to the loop head at PC 200. -/
+/-- The straight-line seed block from PC 33 and the `PUSH1 212 JUMP` at 45 to the loop head at PC 212. -/
 def gasSteps_checkEntry (input : ByteArray) :
     GasSteps (sizeMatched input) (loopState input 0) := by
   let R := referenceWord input
   let W := MachineState.readWord input 968
-  rw [show sizeMatched input = PatternedScan.stS input 33 [] from rfl]
+  rw [show sizeMatched input = PatternedScan.stS input 34 [] from rfl]
   have s0 := sS (pushAt 19 0 0) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 19 33 [] (by norm_num) pc_direct_19)
-    (PatternedScan.stepS_push0 input 33 [] (by simp) (by norm_num)))
+    (PatternedScan.pcFactS input 19 34 [] (by norm_num) pc_direct_19)
+    (PatternedScan.stepS_push0 input 34 [] (by simp) (by norm_num)))
   have s1 := sS (opAt 20 .CALLDATALOAD) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 20 34 [0] (by norm_num) pc_direct_20)
-    (PatternedScan.stepS_calldataload input 34 0 [] (by simp) (by norm_num)))
+    (PatternedScan.pcFactS input 20 35 [0] (by norm_num) pc_direct_20)
+    (PatternedScan.stepS_calldataload input 35 0 [] (by simp) (by norm_num)))
   have s2 := sS (pushAt 21 2 960) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 21 35 [R] (by norm_num) pc_direct_21)
-    (PatternedScan.stepS_push input 35 2 960 [R] (by simp) (by decide) (by decide) (by norm_num)))
+    (PatternedScan.pcFactS input 21 36 [R] (by norm_num) pc_direct_21)
+    (PatternedScan.stepS_push input 36 2 960 [R] (by simp) (by decide) (by decide) (by norm_num)))
   have s3 := sS (pushAt 22 2 968) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 22 38 [960, R] (by norm_num) pc_direct_22)
-    (PatternedScan.stepS_push input 38 2 968 [960, R] (by simp) (by decide) (by decide) (by norm_num)))
+    (PatternedScan.pcFactS input 22 39 [960, R] (by norm_num) pc_direct_22)
+    (PatternedScan.stepS_push input 39 2 968 [960, R] (by simp) (by decide) (by decide) (by norm_num)))
   have s4 := sS (opAt 23 .CALLDATALOAD) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 23 41 [968, 960, R] (by norm_num) pc_direct_23)
-    (PatternedScan.stepS_calldataload input 41 968 [960, R] (by simp) (by norm_num)))
+    (PatternedScan.pcFactS input 23 42 [968, 960, R] (by norm_num) pc_direct_23)
+    (PatternedScan.stepS_calldataload input 42 968 [960, R] (by simp) (by norm_num)))
   have s5 := sS (opAt 24 (.Dup ⟨2, by decide⟩)) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 24 42 [W, 960, R] (by norm_num) pc_direct_24)
-    (PatternedScan.stepS_dup input 42 2 (by decide) [W, 960, R] R rfl (by simp) (by norm_num)))
+    (PatternedScan.pcFactS input 24 43 [W, 960, R] (by norm_num) pc_direct_24)
+    (PatternedScan.stepS_dup input 43 2 (by decide) [W, 960, R] R rfl (by simp) (by norm_num)))
   have s6 := sS (opAt 25 .XOR) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 25 43 [R, W, 960, R] (by norm_num) pc_direct_25)
-    (PatternedScan.stepS_xor input 43 R W [960, R] (by simp) (by norm_num)))
-  have p26 : Artifact.submissionArtifact.instructionPC 26 = 44 := by
+    (PatternedScan.pcFactS input 25 44 [R, W, 960, R] (by norm_num) pc_direct_25)
+    (PatternedScan.stepS_xor input 44 R W [960, R] (by simp) (by norm_num)))
+  have p26 : Artifact.submissionArtifact.instructionPC 26 = 45 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p27 : Artifact.submissionArtifact.instructionPC 27 = 46 := by
+  have p27 : Artifact.submissionArtifact.instructionPC 27 = 47 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hdest : Decode.isValidJumpDest submissionBytecode 200 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 134 (by rfl)
-    rw [pc_direct_26] at h
-    exact h
-  have s7 := sS (pushAt 26 1 200) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 26 44 [UInt256.xor R W, 960, R] (by norm_num) p26)
-    (PatternedScan.stepS_push input 44 1 200 [UInt256.xor R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
+  have hdest : Decode.isValidJumpDest submissionBytecode 212 = true := Artifact.validJumpDest_212
+  have s7 := sS (pushAt 26 1 212) (PatternedScan.blockOfS _
+    (PatternedScan.pcFactS input 26 45 [UInt256.xor R W, 960, R] (by norm_num) p26)
+    (PatternedScan.stepS_push input 45 1 212 [UInt256.xor R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
   have s8 := sS (opAt 27 .JUMP) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 27 46 [200, UInt256.xor R W, 960, R] (by norm_num) p27)
-    (PatternedScan.stepS_jump input 46 200 200 [UInt256.xor R W, 960, R] (by simp) (by norm_num) rfl hdest))
-  have hend : PatternedScan.stS input 200 [UInt256.xor R W, 960, R] =
+    (PatternedScan.pcFactS input 27 47 [212, UInt256.xor R W, 960, R] (by norm_num) p27)
+    (PatternedScan.stepS_jump input 47 212 212 [UInt256.xor R W, 960, R] (by simp) (by norm_num) rfl hdest))
+  have hend : PatternedScan.stS input 212 [UInt256.xor R W, 960, R] =
       loopState input 0 := rfl
   rw [hend] at s8
   exact s0.trans (s1.trans (s2.trans (s3.trans (s4.trans (s5.trans (s6.trans (s7.trans s8)))))))

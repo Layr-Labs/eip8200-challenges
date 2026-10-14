@@ -45,7 +45,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       exact GasSteps.cast gf (by
         rw [LoopCompletionControl.cont_aligned input hz 0 hp0, Nat.mul_zero, Nat.sub_zero]
         exact hs.symm) rfl
-    · have hs : s = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 47) maskRho} := by
+    · have hs : s = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 48) maskRho} := by
         simpa only [if_neg hz, PaddingTrace.glFrame, maskRho] using heta
       have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input 0) maskRho)
         (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn

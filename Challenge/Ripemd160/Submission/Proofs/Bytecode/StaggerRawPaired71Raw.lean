@@ -14,42 +14,42 @@ open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨0, by decide⟩),
-    .op (.Dup ⟨11, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
+  [ .op (.Dup ⟨13, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op (.Swap ⟨2, by decide⟩),
     .op (.Dup ⟨8, by decide⟩),
     .op (.Dup ⟨14, by decide⟩),
     .op .AND,
+    .op (.Dup ⟨4, by decide⟩),
     .op .OR,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨14, by decide⟩),
     .op .XOR,
-    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .XOR,
+    .op (.Dup ⟨12, by decide⟩),
     .op .XOR,
-    .op .ADD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 216),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op .ADD,
-    .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
-    .op (.Dup ⟨14, by decide⟩),
-    .op (.Swap ⟨1, by decide⟩),
+    .op .ADD,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
+    .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
     .op .MULMOD,
     .push ⟨1, by decide⟩ (UInt256.ofNat 26),
     .op .SHR,
-    .op (.Dup ⟨5, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
     .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
-    .op (.Swap ⟨5, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Swap ⟨6, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .SHR,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v0,
@@ -72,6 +72,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 23))),
     x.v0,
+    x.v0,
     x.v2,
     x.v3,
     x.v4,
@@ -89,6 +90,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v16 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v6) (UInt256.ofNat 23))),
+    x.v0,
     x.v0,
     x.v2,
     x.v3,
@@ -123,7 +125,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
     RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm, RawExpressionAC.mulMod_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)

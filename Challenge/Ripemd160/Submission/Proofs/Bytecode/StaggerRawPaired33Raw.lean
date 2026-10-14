@@ -36,7 +36,7 @@ def template : List Instr :=
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .op (.Swap ⟨7, by decide⟩),
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op .MUL,
     .op (.Dup ⟨9, by decide⟩),
     .op .SHR,
@@ -64,7 +64,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
     x.v18,
     x.v19 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v6 (UInt256.shiftRight (UInt256.mul x.v2 x.v9) x.v10)),
+  [ (UInt256.land x.v6 (UInt256.shiftRight (UInt256.mul x.v13 x.v9) x.v10)),
     x.v2,
     x.v3,
     x.v4,
@@ -84,7 +84,7 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v18,
     x.v19 ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v6 (UInt256.shiftRight (UInt256.mul x.v2 x.v9) x.v10)),
+  [ (UInt256.land x.v6 (UInt256.shiftRight (UInt256.mul x.v13 x.v9) x.v10)),
     x.v2,
     x.v3,
     x.v4,

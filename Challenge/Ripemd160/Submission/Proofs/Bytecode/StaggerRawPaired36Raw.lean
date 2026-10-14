@@ -9,6 +9,8 @@ set_option linter.unusedVariables false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired36
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
+private theorem hmul_eq_mul (x y : UInt256) : x * y = UInt256.mul x y := rfl
+private theorem hadd_eq_add (x y : UInt256) : x + y = UInt256.add x y := rfl
 def template : List Instr :=
   [ .op (.Dup ⟨12, by decide⟩),
     .op (.Dup ⟨15, by decide⟩),
@@ -20,11 +22,11 @@ def template : List Instr :=
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
     .op .XOR,
-    .op .ADD,
     .push ⟨2, by decide⟩ (UInt256.ofNat 828),
     .op .MLOAD,
     .op .ADD,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
+    .op .ADD,
     .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
@@ -120,7 +122,8 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals repeat first | apply And.intro | rfl
+  all_goals simp only [hmul_eq_mul, hadd_eq_add, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.add_assoc]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat) :

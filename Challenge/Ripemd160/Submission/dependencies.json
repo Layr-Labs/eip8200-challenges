@@ -1,15 +1,47 @@
-{
-  "schemaVersion": 1,
-  "dependencies": [
-    {
-      "submissionId": "0961b85e-5dc3-4531-a8d0-ca307645e781",
-      "relationship": "extends",
-      "description": "Applies the 21-gas cold-ordinary StaggerPad.lowTemplate store-reordering cut at PC 85..101 on top of the 647,822-gas submission 0961b85e (28fa8fd) to reach 647,801 total gas."
-    },
-    {
-      "submissionId": "da5d0e04-f1be-4507-bd3b-5da09f10b4c0",
-      "relationship": "combines",
-      "description": "Originates the 21-gas StaggerPad.lowTemplate store-reordering cut at PC 85..101 (MSTORE8 at 0x55 via PC opcode + PUSH2 0x0043 + deferred MSTORE at 0x020a/0x00a2/0x0090, 0 byte delta)."
-    }
-  ]
-}
+[
+  {
+    "submissionId": "0961b85e-d2e7-401b-8254-9eeebadfeaf8",
+    "rationale": "newjordan's accepted and promoted 647,822 record, the immediate base of this tree. Its cuts are carried with their proofs: the compression exit consumes the continuation (SWAP13 JUMP instead of POP DUP13 JUMP, epilogue length kept with PUSH2 0x0090), every continuation stub reinstalls its value and pops the stale slot at the JUMPDEST POP join at 132, and the gas-neutral round-33 DUP10 ADD ADD reassociation. Its proof changes (the junk word in the loop frame, the loop raw/sites/induction modules, PersistentStaggerIteration, ColdTailCorrect, ScheduledTail modules, Shared32Core, StaggerPersistentCorrect and the round-33 step) are kept, relocated to this layout. This tree adds the PUSH6 entry prefilter, the packed pad store (P19), the prologue refit a PC-preserving DUP bank, a re-planned stack layout for paired steps 66..76 (one SWAP fewer per compression) and a gas-neutral operand reassociation bank on paired steps 36..43.",
+    "evidence": "0961b85e: 5,241 bytes, decoded SHA-256 2d64429a7c81d31f56494a5be7e1be57807737772dca7ac5235d1ef4fb830633, promoted commit 28fa8fd7. This image (5,247 bytes, decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8) has 0961b85e's epilogue (pc 4517 to 4552), round-33 bytes (pc 2563, 2564) and 128-stub join (pc 132, 133) byte for byte; its last-block stay reaches the 132 join through the 192 stub (pc 59 to 63 and 192 to 199). Exact scorer replica 647,499 at seed 0 and at seeds 12886768257922782526 and 18235675205389542134 (0961b85e: 647,822 / 647,988 / 648,062). Random-message fuzz of these exact bytes against the execution-spec RIPEMD-160 in both the clean and the dirty world: 300,000 four-block messages with bytes 32..43 of every block set to 0xff, 200,000 messages of random length 0..1,000 bytes and 50 random messages at every length 0..300 (15,050), 0 wrong in every mode and world. A full Lean build of this tree on these exact bytes passes with 0 failed modules, and the candidate theorem depends only on propext, Classical.choice and Quot.sound."
+  },
+  {
+    "submissionId": "2cc229ec-7f6c-41f6-b6f9-460dd17700ad",
+    "rationale": "Th0rgal's accepted 647,801 record (promoted commit 7139d4de), the live record this submission is measured against and improves on (647,499, -302 gas). It is 0961b85e with two edits: the pad-only block (bytes 77..101) reordered so one MSTORE8 takes its address from PC at 85, and ADD -> SUB at 199. Neither edit is used here and none of its bytes are taken: this image replaces the whole pad-only block with the P19 packed PUSH19 pad store, and the code around 199 with its refit generic-padding route and the 192-stub join.",
+    "evidence": "2cc229ec differs from 0961b85e only at bytes 77..95, 97, 98, 100, 101 and 199 (5,241 bytes both). Exact scorer replica of 2cc229ec's image: 647,801 at seed 0, 647,967 and 648,041 at seeds 12886768257922782526 and 18235675205389542134; this image (decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8): 647,499 at all three. This image's pad-only block is the P19 block of our own work (PUSH19 word store with StaggerPadSetup.run_low), not 2cc229ec's reordering."
+  },
+  {
+    "submissionId": "1d5fd62c-7841-417d-8d64-b0298925145c",
+    "rationale": "newjordan's accepted 647,948 record, the base of 0961b85e. Its one-opcode cut is carried unchanged: CALLDATASIZE instead of DUP13 at PC 68 (the source address of the pad-only zero-filling calldata copy), with its StaggerPadSetup proof change (the CALLDATASIZE copy offset in lowTemplate and the zero-copy step of run_low).",
+    "evidence": "The pad-only block of this image keeps PC 68 CALLDATASIZE; the StaggerPadSetup run_low proof keeps newjordan's CALLDATASIZE copy offset and readPadded zero step (promoted commit 0d22a1bb) and replaces only the two MSTORE8 stores by the packed PUSH19 word store."
+  },
+  {
+    "submissionId": "8375c07c-8aab-4cc1-8b8c-4cb8048df3b1",
+    "rationale": "Our accepted 647,969 record (CONT-G1, promoted commit 82c124fc), the base of 1d5fd62c and of this tree: the full phase-continuation prologue, padding, paired compressor, recognition routes, digest serialization and universal Lean proof. Also carried: our PUSH6 entry prefilter (PUSH6 0x16108c86821c). New here: the packed PUSH19 pad store, the footer loop moved to the end of the executable code with its exit at 200, the removal of the scratch-undo store at 166, the 1000-byte recognizer loop at 212 with an ISZERO JUMPI exit, thirteen PC-preserving DUP re-choices in the compression body, the re-planned stack layout of paired steps 66..76 (one SWAP fewer and a JUMPDEST filler per compression, pc 3975 to 4410) and a gas-neutral operand reassociation bank on paired steps 36..43 (pc 2660 to 2964).",
+    "evidence": "Decoded SHA-256 of this image 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8 (5,247 bytes). Random-message fuzz of these exact bytes against the execution-spec RIPEMD-160 in both the clean and the dirty world: 300,000 four-block messages with bytes 32..43 of every block set to 0xff, 200,000 messages of random length 0..1,000 bytes and 50 random messages at every length 0..300 (15,050), 0 wrong in every mode and world. A full Lean build of this tree on these exact bytes passes with 0 failed modules, and the candidate theorem depends only on propext, Classical.choice and Quot.sound."
+  },
+  {
+    "submissionId": "eac16f46-05fc-4739-a431-78252bf9e5b3",
+    "rationale": "Our accepted 648,560 record, inherited through 8375c07c. Its compression body (pc 457 to 4550) and the CODESIZE-relative digest tail (280 data bytes) are kept apart from thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410) in the body, together with its proof files for the body (seven body step files regenerated for those DUPs; the step files of 36..43 and 66..76 regenerated for the re-planned steps). Its loop-induction and recogniser proofs are adapted to the new layout.",
+    "evidence": "5,227 bytes, decoded SHA-256 a86b46edbe4aa1fd4970c65890e5dc1cf323020fb51c241533160f155537ac65, 648,560 official. This image keeps bytes 457 to 4550 (except the thirteen DUP bytes) and the last 280 bytes identical to it and replaces its prologue (pc 0 to 456), its continuation-jump chain and its post-body control with phase continuations: slot 12 holds the next phase (the input size for 64, 128 and 192 bytes, the generic last-block test at pc 47 (pc 48 in this image) for other sizes, the output entry at pc 4748 afterwards (pc 4736 in this image)). The generic last-block test keeps the MSIZE < offset + 128 form of eac16f46."
+  },
+  {
+    "submissionId": "3237115c-a44b-4ef4-a77b-c862baf9fd60",
+    "rationale": "The 648,941 record that eac16f46 and this image extend (our own submission). It supplies the compression body (pc 457 to 4550: a12ad85f's widths, Th0rgal's fc5d5ea8 round-79 epilogue and three neutral DUP repairs) and its proof files, kept apart from thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410).",
+    "evidence": "5,247 bytes, 3,599 instructions, decoded SHA-256 34fb74d90ceb68ff42197f9d859a817521decae7e34959e8d4bd919bc677a171, 648,941 official. Bytes 457 to 4550 of this image are identical to it except thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410). Its K1b (pc 183 to 188) and B4601 (pc 4601) edits sit in regions this image rewrites and are not carried."
+  },
+  {
+    "submissionId": "cb3f7647-8979-4fa0-bf18-f5d08cb84d76",
+    "rationale": "Source of the CODESIZE-relative digest selector (row (14357627 / size) % 16) and its 280-byte digest data tail, which this image uses in place of the near-dense selector and 304-byte tail of a12ad85f.",
+    "evidence": "This image's last 280 bytes (pc 4967 to 5246) equal the last 280 bytes of cb3f7647 (5,238 bytes, 649,662 official), and the selector constant 14357627 is the same. The selector code and its proof modules (RecognitionSelectorRaw, J2Payload, DirectGuardBase) follow cb3f7647's, with pcs relocated for the new layout."
+  },
+  {
+    "submissionId": "fc5d5ea8-02dc-4864-851b-ed41c5fdc5c7",
+    "rationale": "Th0rgal's accepted 649,120 record, inherited through 3237115c and 8375c07c: the round-79 epilogue protocol (left d lane left unfinished, literal 23 kept on the stack, tail combine consuming it) and its proof seam.",
+    "evidence": "The compression body (pc 457 to 4550) of this image is identical to 3237115c's apart from thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410); 3237115c carries the fc5d5ea8 epilogue."
+  },
+  {
+    "submissionId": "a12ad85f-0917-4f14-bc90-91dfca2ecedf",
+    "rationale": "newjordan's accepted 649,550 record, inherited through 3237115c and 8375c07c: the compression body widths and the proof layout of the body.",
+    "evidence": "The compression body (pc 457 to 4550) of this image is identical to 3237115c's apart from thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410); 3237115c keeps a12ad85f's body apart from neutral DUP edits."
+  }
+]

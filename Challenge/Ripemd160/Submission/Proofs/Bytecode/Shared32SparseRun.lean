@@ -14,10 +14,10 @@ open Shared32Scratch
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- `PUSH2 0x128c SWAP13 POP` at 144: the continuation slot becomes the output entry 4748 (the
+/-- `PUSH2 0x1280 SWAP13 POP` at 144: the continuation slot becomes the output entry 4736 (the
 single block then jumps straight to the output). -/
 def headTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4748),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4736),
     .op (.Swap ⟨12, by decide⟩),
     .op .POP ]
 
@@ -29,7 +29,7 @@ theorem run_head (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt25
         stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho} =
       some {s with
         pc := pcAfter pc headTemplate
-        stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4748) rho} := by
+        stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4736) rho} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [headTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, Instr.size, UInt256.succ, stk, Nat.add_assoc,

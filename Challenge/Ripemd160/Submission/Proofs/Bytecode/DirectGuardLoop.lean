@@ -19,10 +19,10 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
     (hinput : s.executionEnv.calldata = input) :
     run loopPath
       { s with
-        pc := UInt256.ofNat 200
+        pc := UInt256.ofNat 212
         stack := [a, UInt256.ofNat (960 - 96 * n), r] ++ rest } =
     some { s with
-      pc := UInt256.ofNat (if n < 9 then 200 else 230)
+      pc := UInt256.ofNat (if n < 9 then 212 else 242)
       stack := [UInt256.lor
           (UInt256.xor (MachineState.readWord input (960 - 96 * n)) r)
           (UInt256.lor
@@ -30,10 +30,7 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
             (UInt256.lor
               (UInt256.xor (MachineState.readWord input (928 - 96 * n)) r) a)),
         UInt256.ofNat (864 - 96 * n), r] ++ rest } := by
-  have hdest : Decode.isValidJumpDest submissionBytecode 200 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 134 (by rfl)
-    rw [pc_direct_26] at h
-    exact h
+  have hdest : Decode.isValidJumpDest submissionBytecode 212 = true := Artifact.validJumpDest_212
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
   have hcap4 : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
   have hcap5 : rest.length + 1 + 1 + 1 + 1 + 1 < 1024 := by omega

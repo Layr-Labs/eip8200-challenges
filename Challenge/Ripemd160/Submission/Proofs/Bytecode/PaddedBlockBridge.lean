@@ -633,8 +633,9 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
       (paddedMessage input) blockOff := by
   apply paddedBlockAt (PaddingTrace.padReturned input)
     (PaddingTrace.padLengthReady input).memory input
-  · intro a _ ha
+  · intro a hlo ha
     exact PaddingTrace.padReturned_getD_window input hfit a (by omega)
+      (by have hm : messageOffset = 1056 := rfl; exact ⟨by omega, by omega⟩)
   · exact padBase_size input
   · rfl
   · exact hfit

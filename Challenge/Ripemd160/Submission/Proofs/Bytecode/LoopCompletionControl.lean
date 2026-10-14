@@ -19,11 +19,11 @@ instance (input : ByteArray) (i : Nat) : Decidable (Pad input i) := by
 /-- The continuation in slot 12 while block `i` runs.  A fast-entry input carries the PC of its
 next phase: `size - 64 i` for a message block (192 and 128 are stubs that step it down, 64 is the
 pad-only block), and the pad-only block itself is entered with 64.  Every other input carries the
-last-block test 47. -/
+last-block test 48. -/
 def contNat (input : ByteArray) (i : Nat) : Nat :=
   if input.size % 64 = 0 ∧ input.size < 256 then
     (if input.size = i * 64 then 64 else input.size - 64 * i)
-  else 47
+  else 48
 
 def cont (input : ByteArray) (i : Nat) : UInt256 := UInt256.ofNat (contNat input i)
 
@@ -37,7 +37,7 @@ def offIndex (input : ByteArray) (i : Nat) : Nat :=
   if input.size = i * 64 ∧ input.size < 256 then i - 1 else i
 
 theorem cont_cold (input : ByteArray) (hz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) (i : Nat) :
-    cont input i = UInt256.ofNat 47 := by
+    cont input i = UInt256.ofNat 48 := by
   simp only [cont, contNat, if_neg hz]
 
 theorem cont_aligned (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) (i : Nat)

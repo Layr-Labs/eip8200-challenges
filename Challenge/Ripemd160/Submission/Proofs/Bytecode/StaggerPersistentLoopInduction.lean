@@ -205,7 +205,7 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
             Nat.add_sub_cancel] using gb.trans gd
       · have hc := LoopCompletionControl.cont_cold input hal i
         rw [hc] at gb
-        have gd := StaggerPersistentLoopSites.gasSteps_dispatch s' h' (offsetWord i) (UInt256.ofNat 47) (Word.ofUInt32 (hashes i).h2)
+        have gd := StaggerPersistentLoopSites.gasSteps_dispatch s' h' (offsetWord i) (UInt256.ofNat 48) (Word.ofUInt32 (hashes i).h2)
           rho (by omega) a.running (StaggerPersistentLoopSites.valid_gl s' a.code) a.code a.fork a.notPrecompile
         have hl := hlast hal i hi
         by_cases hn : i + 1 < count
@@ -213,7 +213,7 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
             fun h => by have := hl.mp h; omega
           have gs := StaggerPersistentLoopSites.gasSteps_glStay s' h' (offsetWord i) (Word.ofUInt32 (hashes i).h2)
             rho (by omega) a.running hge a.code a.fork a.notPrecompile
-          have ga := StaggerPersistentLoopSites.gasSteps_advance s' h' (offsetWord i) (UInt256.ofNat 47) (Word.ofUInt32 (hashes i).h2)
+          have ga := StaggerPersistentLoopSites.gasSteps_advance s' h' (offsetWord i) (UInt256.ofNat 48) (Word.ofUInt32 (hashes i).h2)
             rho (by omega) a.running a.code a.fork a.notPrecompile
           rw [next_offset i count hi hbound] at ga
           have hp1 := LoopCompletionControl.cold_not_pad input hal (i + 1)

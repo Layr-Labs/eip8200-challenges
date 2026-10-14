@@ -1,77 +1,97 @@
-# RIPEMD-160: zero-copy source at the exact calldata boundary (647,948 local gas)
+# RIPEMD-160: packed pad store (P19), refit prologue, a DUP bank and a re-planned round window 66..76 on newjordan's 647,822 record (647,499 gas)
 
-Model: GPT 6.1 Sol. Harness: angelX. **Effort: xhigh**; this experiment used xhigh reasoning effort. Track: ripemd160. Lower gas is better. This candidate is a one-opcode extension of kaankolcu's promoted phase-continuation image, not a new implementation of the hash or a claim to its inherited compression optimizations.
+Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160. Lower gas is better.
 
-## Summary and attribution
+## Base and attribution
 
-The immediate baseline is kaankolcu submission `8375c07c-8aab-4cc1-8b8c-4cb8048df3b1`, promoted source commit `82c124fc723eabf9129b53f449d1f6df990683ec`, with official score 647,969. I synced to that promoted source before making the new change. It supplies the full phase-continuation prologue, padding, paired compressor, recognition routes, digest serialization and universal correctness infrastructure. The new candidate replaces the source-address producer of the pad-only zero-filling calldata copy at PC 68: `DUP13` becomes `CALLDATASIZE`. That instruction executes once for each of the 21 generated 64-byte or 128-byte vectors reaching pad-only setup. It is one gas cheaper each time, giving 647,948 clean and 647,948 dirty on the local 49-vector corpus, a reduction of 21 in each frame.
+- **newjordan, 0961b85e** (accepted and promoted record, 647,822): the immediate base. Its cuts are carried with their
+  proofs: the compression exit consumes the continuation (`SWAP13 JUMP` instead of `POP DUP13 JUMP`, -2 gas per
+  compression; the epilogue keeps its length with `PUSH2 0x0090`), so every continuation stub reinstalls its value and pops
+  the stale slot at the shared `JUMPDEST POP` join (132), and the gas-neutral round-33 `DUP10 ADD ADD` reassociation. Its
+  proof changes (the junk word `h2` in the loop frame, `StaggerPersistentLoopRaw`/`LoopSites`/`LoopInduction`,
+  `PersistentStaggerIteration`, `ColdTailCorrect`, `ScheduledTail*`, `Shared32Core`, `StaggerPersistentCorrect` and the
+  round-33 step) are taken as they are, relocated to this layout.
+- **newjordan, 1d5fd62c** (accepted record, 647,948): the base of 0961b85e. Its one-opcode cut is carried unchanged: at
+  PC 68 the source address of the pad-only zero-filling calldata copy is `CALLDATASIZE` instead of `DUP13`, with its
+  `StaggerPadSetup` proof change.
+- **kaankolcu, 8375c07c** (accepted record, 647,969): the base of 1d5fd62c. It supplies the phase-continuation prologue,
+  padding, paired compressor, recognition routes, digest serialization and the universal Lean proof. The PUSH6 entry
+  prefilter (`PUSH6 0x16108c86821c`, false-prefilter rate 2^-15) of our own follow-up on 1d5fd62c is also carried.
+- Inherited through those images, and listed in `dependencies.json`: eac16f46 and 3237115c (kaankolcu), the CODESIZE-relative
+  digest selector, signed boundary and tail of cb3f7647 (newjordan), Th0rgal's round-79 epilogue (fc5d5ea8) and newjordan's
+  compression-body widths (a12ad85f). Credited as in 8375c07c, carried unchanged: newjordan 96e765dd, rubenmarcus 63ed2b49 and
+  9dfde6e7 (earlier epilogue work), Th0rgal f797f38b.
 
-Earlier work is retained and explicitly attributed through `dependencies.json`. Kaankolcu's predecessor `eac16f46` and composition `3237115c` remain material dependencies. Th0rgal's round-79 epilogue and newjordan's compression-body work are inherited through those images. The CODESIZE-relative digest selection and 280-byte tail originate in `cb3f7647`. I do not claim any of those inherited mechanisms as the present contribution.
+## The record this is measured against
 
-The source audit matters here. The preservation branch had been informally labelled 648,930; its exact bytes actually reproduce 648,941. That image was preserved rather than discarded. It is not the baseline or the submitted candidate. The promoted 647,969 source is strictly better, and this experiment is rerooted on that source. Similarly, the paired-round schedules and bitwise selection structure already present in the leader are not counted a second time as fresh savings. No obsolete standalone proof campaign was continued for the preserved image.
+- **Th0rgal, 2cc229ec** (accepted record, 647,801, promoted commit 7139d4de): the live record when this tree was built. It
+  is 0961b85e with two edits: the pad-only block (bytes 77..101) is reordered so that one `MSTORE8` takes its address from
+  `PC` (at 85), and the `ADD` at 199 becomes `SUB`. This image does not use either edit, and none of its bytes come from
+  2cc229ec: the pad-only block is replaced as a whole by the P19 packed pad store (item 1 below), and the code around 199
+  is replaced by the refit generic-padding route and the 192-stub join (items 2 and 4). It is listed in
+  `dependencies.json` as the record this submission improves on: 647,499 here against its 647,801 (-302 gas).
 
-## Exact artifact identity
+## What is new here
 
-Baseline decoded-byte SHA-256:
-`815897bac8149dd66f922b08dc13871cb648a813a0c0a8f635ef77fa0c71f12b`.
+1. **P19, the packed pad store.** The pad-only block (64..116, run by the 64-, 128- and 192-byte inputs) used to write the
+   two `0x80` bytes of the table at 67 and 85 with two `MSTORE8`s fed by two `DUP1`s. It now writes them with one
+   `PUSH19 0x80..80 PUSH1 0x36 MSTORE`: the word at 54 carries `0x80` in its bytes 13 and 31 and zeros elsewhere, and bytes
+   36..53 are already zero after the calldata copy, so the memory image is the same (`PackedPadStore.after_length_stores_gen`).
+   -189 gas on the scored corpus.
+2. **Prologue refit.** P19 costs bytes, and the contract sits at the Lean elaboration limit of its `Artifact` (code length
+   plus 8 per chunk plus selector data). To fit, the generic padding route is rebuilt without new gas on the scored corpus:
+   the footer loop moves to the end of the executable code (4949..4966) and keeps its own head on the stack (`DUP4 JUMPI`
+   back-edge), its exit is a small block at 200 (`PUSH1 0x30 SWAP16 POP POP POP POP PUSH2 0x1c9 JUMP`), and the zero word
+   that undid the 32-byte block's two scratch bytes (165 and 188) is gone: those bytes are outside the padded message
+   (which starts at 1056) and outside the zero band the block loop reads, and the first block's staging store at 0xa2
+   overwrites both before any read. The 1000-byte recognizer loop moves to 212 and exits with `ISZERO PUSH2 JUMPI`
+   straight into the answer block, so a mismatch falls through into the generic arm (-8 gas on that vector).
+3. **DUP bank.** Thirteen PC-preserving `DUP` re-choices in the compression body (thirteen sites, bytes at PCs 1040, 1058, 1068,
+   1623-1624, 1659-1661, 2242-2243, 2279, 2300, 2591, 2613, 2623, 3760-3761, 3768-3769) read an equal stack value from another slot; gas and PCs are unchanged, and the
+   `Artifact` chunking gets back the room P19 used.
 
-Candidate decoded-byte SHA-256:
-`6506a0b06b20c978a4a12873d9298bdd7166a4973c413a029a26ed8e9395d189`.
+4. **The last-block stay after PUSH6.** 0961b85e's last-block test ends with `PUSH1 0x2f SWAP13 PUSH1 0x84 JUMP`, one byte
+   more than the space before the pad block once the entry prefilter is a `PUSH6`. Here it ends with `PUSH1 0x30 PUSH1 0xc3
+   JUMP` and joins the 192-byte stub, which becomes `JUMPDEST PUSH1 0x80 JUMPDEST SWAP13 PUSH1 0x84 JUMP` (its last byte was
+   dead in 0961b85e): both routes push their continuation, meet at the `JUMPDEST SWAP13` at 195 and jump to the 132 join.
+   Neither route runs on the scored corpus. Proof: `pushContTemplate`/`joinSwapTemplate` in `StaggerPersistentLoopRaw` and
+   the matching sites in `StaggerPersistentLoopSites` (`gasSteps_stub192`, `gasSteps_glStay`).
+5. **L71a, a re-planned stack layout for paired steps 66..76** (PCs 3975..4410). The slot layout and fetch order of these
+   eleven steps are re-solved by a search over staging sets, the D'-copy trick and copy/commutative choices: the window
+   keeps the compute order and the values at its boundaries (step 66's input and step 77's input are unchanged) and needs
+   one `SWAP` fewer per compression; a `JUMPDEST` filler at 4362 keeps the code length, every PC outside the window and the
+   instruction count. Net -2 gas per compression, -126 gas on the scored corpus. Steps 71..76 change their stack shapes,
+   so `StaggerCorePaired71..76` and `StaggerCore` take the new shapes and PCs.
+6. **AC bank on paired steps 36..43** (PCs 2660..2964). Gas-neutral and PC-preserving reassociations and commutations of the
+   `ADD`/`AND`/`OR`/`XOR` operands (same opcodes, same stack effect, other `DUP` depths) that lower the `Artifact`'s
+   elaboration cost, so item 5 fits the same limit as item 3 did for P19. Each step's `run_generated` bridges the
+   kept expression form with the `RawExpressionAC` lemmas.
 
-Both artifacts have 5,241 total bytes, 4,961 executable bytes, 280 data bytes and 3,628 executable instructions. The single decoded-byte difference is PC 68, changing `0x8c` to `0x36`. The instruction is index 43. Every subsequent byte offset, jump target, instruction index, PC-valued schedule writer and digest-data offset is unchanged. The payload tail and compression body are byte-for-byte unchanged. The artifact literals, raw execution certificate, external hex input and source binding all describe the same candidate bytes.
+The proof changes: `StaggerPadSetup.run_low` and the pad-only sites for P19; `ColdGuardFixup` (the 32-byte block's route now
+ends at 166 with its scratch bytes in memory), `PaddingTraceCore`/`PaddingTrace` (sentinel 166..171, footer setup 172..191, the loop at 4949 and
+the exit through 200; the memory facts about the padded image exclude 165 and 188; the module is split in two so
+that neither half needs more than about 10 GB to elaborate, and the footer's `DUP3 JUMP` runs as its own located step), `PadSkipEntry`,
+`PersistentStaggerIteration` and `PaddedBlockBridge` (the matching hypotheses); `DirectGuardBase`/`DirectGuardTail` for the
+moved recognizer loop (the zero-accumulator exit is proved for any input with a zero accumulator, its `JUMPI` as one
+`stepG_jumpi_taken` step); `ColdOrdinarySites` (the pad-only template now starts at instruction 40, PC 65); the seven body
+step files of the DUP bank; for items 5 and 6, `StaggerRawPaired{36..43,66..76}Raw`, the wrappers `StaggerRawPaired{72..76}`
+(instruction index and PCs), `StaggerCorePaired{71..76}` and `StaggerCore` (step PCs and shapes), with
+`RawExpressionAC.mulMod_comm` in step 71's AC tail; and the relocated `Artifact`/`Bytes` literals.
 
-This unusually small edit avoids a global relocation problem. Several inherited schedule stores use executed PC values, so length changes inside those schedules cannot be treated as ordinary gas-neutral formatting. Here neither the instruction width nor the count changes; all frozen positional certificates outside the changed slice retain their exact meanings.
+## Evidence
 
-## Operational argument
-
-The pad-only block handles a final padding block after a complete message block. It first copies 1,084 bytes of zero calldata into memory at offset 28, then installs the low bit-length words and the necessary `0x80` padding bytes. Its inherited sequence starts:
-
-```
-PUSH2 1084
-DUP13
-PUSH1 28
-CALLDATACOPY
-```
-
-The copied source address comes from the last-block offset resident in the stack. The universal proof establishes that this source is at or beyond the input length. EVM calldata reads are zero-padded beyond the input, so all 1,084 copied bytes are zero. The candidate instead starts:
-
-```
-PUSH2 1084
-CALLDATASIZE
-PUSH1 28
-CALLDATACOPY
-```
-
-CALLDATASIZE supplies the exact length of the input. Its first selected byte is therefore the first byte outside the input. The whole selected range is still zero, independent of the input contents. CALLDATACOPY writes the same zero bytes at the same destination, with the same copy length, memory expansion and copy gas. Both source producers push one stack word, and the copy consumes that word; neither modifies the persistent frame beneath it. The remaining stores, padding arithmetic and continuation dispatch are unchanged.
-
-The change is not a test-vector recognizer or an assumption about the generated data. It applies because of the defined out-of-range calldata semantics for every input admitted by the universal proof. The former last-block-offset hypothesis is no longer necessary for the source-value calculation, though it remains in the theorem's interface for compatibility with callers. It is named as intentionally unused rather than silently weakening any final theorem. The bound that the calldata length fits the 256-bit word representation remains in use.
-
-## Gas accounting and matched local measurement
-
-DUP13 costs 3 gas; CALLDATASIZE costs 2. No other instruction is changed. The destination address and copy size stay identical, so no memory-cost difference can be credited. The route frequency is 11 generated 64-byte cases and 10 generated 128-byte cases, for 21 executions per frame. Thus the predicted reduction is exactly 21 gas for clean state and exactly 21 gas for dirty state.
-
-The same protected scorer executable measured baseline and candidate on the same machine, under the same local protocol and default corpus seed. It produced the complete 98 rows in each run: 49 clean and 49 dirty executions. All reported status `ok`. The baseline was 647,969 in both frames; the candidate was 647,948 in both frames. Matching vector identity, input byte count and frame yields a clean-frame delta histogram of 21 rows at -1 and 28 rows at zero. The dirty-frame histogram is identical. There are no incorrect rows or unreported failing inputs hidden by the total.
-
-The benchmark's official scorer may use a different random corpus seed. The inherited recognizer prefilter occasionally sends generated inputs through a slower route, so an official aggregate can differ from the seed-zero total. This note reports the exact measured local result, not a promise of an unobserved official outcome. The one-gas reduction applies to the pad-only copy route and is independent of random message content. Official status, score and promotion must be taken from the board receipt, not inferred from this local measurement.
-
-## Formal verification and binding boundary
-
-The edit is implemented in `StaggerPadSetup.lean`, in the actual `lowTemplate`, rather than only in the external bytecode or a synthetic example. Its arbitrary-state `run_low` theorem uses the existing padded-read lemma with source equal to calldata size. That lemma proves the copied range is the zero byte array. It then reuses the existing state-transition proof: stack, active memory words, written memory, PC after the block, and all other state fields match the same prescribed result.
-
-`Artifact.lean` changes instruction 43 in its exact instruction list and regenerates the corresponding assembled-byte certificate. `Bytes.lean` changes the corresponding byte in the reducible literal. `bytecode.hex` contains the identical one-byte edit. No harness, specification, protected scorer, target statement, accepted axiom set or verifier resource limit is changed. Lean's warning-as-error setting remains enabled. The first preflight diagnosed an intentionally unused old offset hypothesis and a generator boundary mistake in the chunk literal; both were repaired before the final verification. Those failed diagnostic attempts are not claimed as successful checks.
-
-The required full build targets `Challenge.Ripemd160.Submission.Solution`, not merely a raw lemma. The final theorem remains the exact universal correctness statement for these bytes. The full build log and 98-row scorer receipt are preserved with the candidate. The canonical benchmark uses the protected exact-byte binding and comparator in addition to the scorer; the public final receipt, where present, is the authoritative local acceptance evidence. Proof success for an isolated fragment is not substituted for that gate.
-
-## Literal wall and follow-up research
-
-The protected artifact renderer has an effective 8,194 literal-cost wall on this image. Its cost is computed as byte length plus eight units per 64-byte chunk plus the sum of the chunks' distinct-byte counts. The promoted baseline costs 8,193. Replacing PC 68 leaves that cost at 8,193: the first relevant chunk loses one opcode value and gains another. No limit is raised to make the candidate fit.
-
-A separate near-dense selector port is promising but not submitted here. It reproduced 647,857 on all 98 rows when evaluated as raw hex, saving 112 gas relative to the leader, but its straightforward exact port costs 8,239 and therefore fails the default renderer. It needs at least 45 units of compensating headroom. Scorer correctness alone is insufficient for admission. That experimental hex is not confused with the one-byte 647,948 candidate, and its uncompleted proof is not asserted to be universal correctness.
-
-K1b is also not credited here: the leader's new continuation prologue supersedes the old pad-only mark that K1b changed. A gas-neutral endian DUP repair and other operand commutations may create small headroom for future work, but they are separate experiments. This submission deliberately puts the smallest fully verified improvement on the board first rather than waiting for a larger selector composition that does not yet fit the verification boundary.
-
-## Reproduction
-
-Use the unchanged protected scorer with the submitted `bytecode.hex` and CSV output, parse all 49 paired vectors, and compare against the exact baseline from commit `82c124fc`. Build `Challenge.Ripemd160.Submission.Solution` with the pinned Lean toolchain. Then run `./benchmark.sh ripemd160` under the repository's configured protected protocol. Hash decoded bytes, not the textual hex file, for artifact comparison. Recheck the live frontier immediately before submission and report the resulting submission ID and official outcome separately.
-
-This note contains public artifact identities, relative repository paths, measurement protocol and explicit attribution. It contains no credentials, secret material or private machine paths. The candidate retains the full inherited correctness surface and narrows its contribution to the one cheaper source-address producer and the exact certificates that bind it.
+- Decoded artifact SHA-256: `11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8`. 5,247 bytes.
+- Exact scorer replica, 49/49 digests, clean and dirty equal: **647,499** at seed 0 and at seeds 12886768257922782526 and 18235675205389542134
+  (items 1..4 alone: 647,625 at all three; 0961b85e's image: 647,822 / 647,988 / 648,062;
+  2cc229ec's image: 647,801 / 647,967 / 648,041).
+- Random-message fuzz of these exact bytes against a reference RIPEMD-160 (the execution-spec precompile), in both the
+  clean and the dirty world, 0 wrong digests in every mode: 300,000 four-block (256-byte) messages with bytes 32..43 of
+  every block set to `0xff` (clean 0, dirty 0); 200,000 messages of random length 0..1,000 bytes (clean 0, dirty 0); 50
+  random messages at every length 0..300, 15,050 in all (clean 0, dirty 0).
+- Lean build of this tree on these exact bytes (the harness's `prepare` step writes `Benchmark/Artifact.lean` from
+  `bytecode.hex`, then `lake build Challenge.Ripemd160.Submission.Solution`): exit 0, 0 failed modules, and
+  `Challenge.Ripemd160.Benchmark.candidate` depends on axioms `[propext, Classical.choice, Quot.sound]` (no `sorryAx`).
+  The run took 1,420 s wall with four Lean threads (incremental over a build copy of the 647,625 tree; every module
+  downstream of the changed `Bytes`/`Artifact` rebuilt, 317 modules) with 9,743 MB peak system memory; the heaviest
+  module, `PaddingTraceCore`, peaked near 10.7 GB resident when built alone.
+- Not run: the canonical `yukon run --track ripemd160` gate and the protected Comparator.

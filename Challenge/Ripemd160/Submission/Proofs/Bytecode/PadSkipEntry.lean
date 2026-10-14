@@ -189,7 +189,8 @@ theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
       (Or.inl (by unfold Padding.messageOffset; omega)), hbase]
     decide
-  · rw [PaddingTrace.padReturned_readWord input hfit 0 (by unfold Padding.messageOffset; omega)]
+  · rw [PaddingTrace.padReturned_readWord input hfit 0 (by unfold Padding.messageOffset; omega)
+      (Or.inl (by norm_num))]
     unfold Padding.paddedMemory Padding.sentinelMemory Padding.copiedMemory
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
         (Or.inl (by unfold Padding.messageOffset; have := (paddedLength_ge input.size).2; omega)),
@@ -200,7 +201,7 @@ theorem entryState_lowClear (input : ByteArray) (hfit : CalldataFits input) :
     decide
 
 theorem entryState_zero_below (input : ByteArray) (hfit : CalldataFits input)
-    (a : Nat) (ha : a < Padding.messageOffset) :
+    (a : Nat) (ha : a < Padding.messageOffset) (hd : a ≠ 165 ∧ a ≠ 188) :
     (PadSkipEntry.entryState input).memory[a]?.getD 0 = 0 := by
   have hbase : (PaddingTrace.padLengthReady input).memory = ByteArray.empty := rfl
   have hp : 64 ≤ Padding.paddedLength input.size := by
@@ -212,7 +213,7 @@ theorem entryState_zero_below (input : ByteArray) (hfit : CalldataFits input)
       (MachineState.readPadded input 0 input.size) Padding.messageOffset)[a]?.getD 0 = 0
     rw [MachineState.writeBytes_getElem?_getD, if_neg (by omega), hbase]
     simp
-  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega)]
+  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega) hd]
     simp only [Padding.paddedMemory, Padding.sentinelMemory, Padding.copiedMemory,
       MachineState.writeBytes_getElem?_getD]
     rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]
@@ -235,7 +236,7 @@ theorem entryState_gapClear (input : ByteArray) (hfit : CalldataFits input) :
       (MachineState.readPadded input 0 input.size) Padding.messageOffset)[18 * j + k]?.getD 0 = 0
     rw [MachineState.writeBytes_getElem?_getD, if_neg (by omega), hbase]
     simp
-  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega)]
+  · rw [PaddingTrace.padReturned_getD_window input hfit _ (by omega) ⟨by omega, by omega⟩]
     simp only [Padding.paddedMemory, Padding.sentinelMemory, Padding.copiedMemory,
       MachineState.writeBytes_getElem?_getD]
     rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]

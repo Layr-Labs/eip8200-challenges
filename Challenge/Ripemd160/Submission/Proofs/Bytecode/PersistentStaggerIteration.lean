@@ -74,7 +74,9 @@ theorem initial_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 
     fun a ha => PadSkipEntry.entryState_zero_below input hfit a
       (by have := (PoolShapeV2.zeroAddressesV2_band a ha).2.1
           change a < 1056
-          omega)⟩
+          omega)
+      (by have := (PoolShapeV2.zeroAddressesV2_band a ha).2.2
+          exact ⟨by omega, by omega⟩)⟩
 
 theorem states_context (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
     (n : Nat) (hn : n ≤ DriverTrace.blockCount input) : Context (states input n) input n := by

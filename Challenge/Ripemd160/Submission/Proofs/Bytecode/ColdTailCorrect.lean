@@ -40,7 +40,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
       exact GasSteps.cast gf (by
         rw [LoopCompletionControl.cont_aligned input hz 0 hp0, Nat.mul_zero, Nat.sub_zero]
         exact hs.symm) rfl
-    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 47) (maskRho rho)} := by
+    · have hs : StackTail.append s rho = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 48) (maskRho rho)} := by
         dsimp [s]
         rw [PaddingTrace.entryState_miss input hz]
         rfl

@@ -33,7 +33,7 @@ def backTemplate : List Instr := [.op (.Swap ⟨10, by decide⟩)]
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
 
 /-- The output entry: the continuation of the pad-only block and of the 32-byte block. -/
-def outPC : Nat := 4748
+def outPC : Nat := 4736
 
 /-- The block entry stack: every block, the pad-only block included, starts with the frame. -/
 def entryStack (_input : ByteArray) (_i : Nat) (h : Compression.HashState) (off limit : UInt256)
@@ -80,6 +80,40 @@ theorem run_setCont (s : State) (pc : UInt256) (h : Compression.HashState)
         stack := cont :: StaggerPersistentFrame.frame h off (UInt256.ofNat v) rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [setContTemplate, StaggerPersistentFrame.frame,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, add_eq_hAdd,
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+
+/-- W2B: the continuation push of the last-block stay (59) and of the 192 stub (193). -/
+def pushContTemplate (v : Nat) : List Instr :=
+  [.push ⟨1, by decide⟩ (UInt256.ofNat v)]
+
+theorem run_pushCont (s : State) (pc : UInt256) (h : Compression.HashState)
+    (off cont : UInt256) (rho : List UInt256) (v : Nat)
+    (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
+    runInstrSeq (pushContTemplate v) {s with pc := pc, stack := StaggerPersistentFrame.frame h off cont rho} =
+      some {s with
+        pc := pcAfter pc (pushContTemplate v)
+        stack := UInt256.ofNat v :: StaggerPersistentFrame.frame h off cont rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [pushContTemplate, StaggerPersistentFrame.frame,
+    runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, add_eq_hAdd,
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+
+/-- W2B: the shared join at 195, `JUMPDEST SWAP13`, installs the pushed continuation. -/
+def joinSwapTemplate : List Instr :=
+  [.op .JUMPDEST, .op (.Swap ⟨12, by decide⟩)]
+
+theorem run_joinSwap (s : State) (pc : UInt256) (h : Compression.HashState)
+    (off cont x : UInt256) (rho : List UInt256)
+    (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
+    runInstrSeq joinSwapTemplate {s with pc := pc, stack := x :: StaggerPersistentFrame.frame h off cont rho} =
+      some {s with
+        pc := pcAfter pc joinSwapTemplate
+        stack := cont :: StaggerPersistentFrame.frame h off x rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [joinSwapTemplate, StaggerPersistentFrame.frame,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, add_eq_hAdd,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -252,4 +286,6 @@ theorem run_back (s : State) (pc : UInt256) (h : Compression.HashState)
 #print axioms run_glExit
 #print axioms run_glStay
 #print axioms run_setCont
+#print axioms run_pushCont
+#print axioms run_joinSwap
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopRaw

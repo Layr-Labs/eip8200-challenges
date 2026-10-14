@@ -19,7 +19,7 @@ def entryFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.ini
   (UInt256.ofNat 1056) (UInt256.ofNat 32) maskRho
 /-- After the 32-byte block the continuation slot holds the output entry, so the single block finishes. -/
 def bodyFrame : List UInt256 := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-  (UInt256.ofNat 1056) (UInt256.ofNat 4748) maskRho
+  (UInt256.ofNat 1056) (UInt256.ofNat 4736) maskRho
 
 theorem rounded_32 : PadLimitArithmetic.rounded (UInt256.ofNat 32) = UInt256.ofNat 64 := by decide
 
@@ -100,7 +100,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4748) [] (by decide) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4736) [] (by decide) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)

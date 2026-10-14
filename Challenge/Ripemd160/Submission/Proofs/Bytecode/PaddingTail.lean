@@ -42,7 +42,7 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     (hn32 : input.size ≠ 32) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256))
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (padFramed input) rho)
-      (StackTail.append (padGuardMiss input) rho) := by
+      (StackTail.append (padDirty input) rho) := by
   have g := tail_guardTaken input hfit hnz rho hcap
   have hpos : 0 < input.size := by
     by_contra h
@@ -53,12 +53,12 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile
     (by exact Nat.lt_trans hfit (by norm_num)) hn32
-    (padGuardMiss_active input hfit hpos) (padGuardMiss_msize input hpos) (padGuardMiss_zero input)
+    (padGuardMiss_active input hfit hpos)
   exact g.trans gp
 
 def gasSteps_setup (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
-    GasSteps (StackTail.append (padGuardMiss input) rho)
+    GasSteps (StackTail.append (padDirty input) rho)
       (StackTail.append (lengthLoopState input 0) rho) := by
   have g1 := tail_sentinelAddress input rho hcap
   have g2 := tail_sentinelStore input hfit rho hcap

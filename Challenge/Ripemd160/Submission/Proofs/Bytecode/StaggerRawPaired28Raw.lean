@@ -17,7 +17,7 @@ def template : List Instr :=
   [ .op (.Swap ⟨6, by decide⟩),
     .op (.Dup ⟨7, by decide⟩),
     .op (.Dup ⟨12, by decide⟩),
-    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .OR,
     .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨9, by decide⟩),
