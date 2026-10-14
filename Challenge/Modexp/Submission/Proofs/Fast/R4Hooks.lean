@@ -31,18 +31,18 @@ def h1Program : List Instr :=
 def h1FallProgram : List Instr := [.push 2 4561, .op .JUMP]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4549 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3552 5 4549 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3551 5 4549 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 def h1FallBlock : Block Artifact.submissionArtifact .Osaka 4557 h1FallProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3557 2 4557 h1FallProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3556 2 4557 h1FallProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4561 = true :=
-  Artifact.isValidJumpDest_index 3559 (by rfl)
+  Artifact.isValidJumpDest_index 3558 (by rfl)
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4245 = true :=
-  Artifact.isValidJumpDest_index 3326 (by rfl)
+  Artifact.isValidJumpDest_index 3325 (by rfl)
 
 theorem cond_four : ¬ UInt256.isTrue (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) := by decide
 
@@ -104,7 +104,7 @@ theorem run_h1Eight (s : State) (mem : ByteArray)
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 5105 = true := by
-    rw [hcode]; exact Artifact.isValidJumpDest_index 4045 (by rfl)
+    rw [hcode]; exact Artifact.isValidJumpDest_index 4044 (by rfl)
   have hcond := cond_eight
   have hcondL := cond_eight_lit
   simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,

@@ -377,7 +377,7 @@ theorem run_program (s : State)
 /-- Binding to the lane image: 205 instructions from index 3996 (pc 5092). -/
 def block : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5105
     (program (UInt256.ofNat 3616) (UInt256.ofNat 3862)) :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4045 205 5105
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4044 205 5105
     (program (UInt256.ofNat 3616) (UInt256.ofNat 3862))
     (by decide) (by rfl) (by rfl) (by decide)
 

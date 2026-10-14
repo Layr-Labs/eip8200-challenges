@@ -79,11 +79,18 @@ def preDodd (d : UInt256) : UInt256 := d / preL d
 def preX (d : UInt256) : UInt256 := UInt256.ofNat 1 + (UInt256.ofNat 0 - preL d) / preL d
 def preBmod (d : UInt256) : UInt256 := (UInt256.ofNat 0 - preDodd d) % preDodd d
 def preDinv (d : UInt256) : UInt256 := newton8W (preDodd d)
+/-- CLZ cut: the `PRE_L` word is the shift `k = 255 - clz L` (`= log2 L` for a nonzero
+top limb), stored by `CLZ ... PUSH1 ff SUB PUSH2 0600 MSTORE`. -/
+def preK (d : UInt256) : UInt256 := UInt256.ofNat 255 - UInt256.clz (preL d)
+/-- CLZ cut: the `PRE_X` word is the left shift `0 - ~clz L = clz L + 1` (`= 256 - k`),
+stored first, by `DUP1 NOT PUSH0 SUB PUSH2 0640 MSTORE`. -/
+def preS (d : UInt256) : UInt256 := UInt256.ofNat 0 - UInt256.lnot (UInt256.clz (preL d))
 
-/-- The five stores, in program order, from the top limb `d` of the modulus. -/
+/-- The five stores, in program order, from the top limb `d` of the modulus (CLZ cut:
+`PRE_X := preS d` first, then `PRE_L := preK d`). -/
 def preMemOf (mem : ByteArray) (d : UInt256) : ByteArray :=
   Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
-    PRE_L (preL d)) PRE_DODD (preDodd d)) PRE_X (preX d)) PRE_BMOD (preBmod d))
+    PRE_X (preS d)) PRE_L (preK d)) PRE_DODD (preDodd d)) PRE_BMOD (preBmod d))
     PRE_DINV (preDinv d)
 
 /-- The five estimator stores, then `V_MINV := -n0⁻¹` from the modulus low limb
@@ -103,12 +110,12 @@ def uMem (mem : ByteArray) (n : Nat) : ByteArray :=
 is irrelevant to correctness. -/
 def qhatOf (mem : ByteArray) : UInt256 :=
   let utop := MachineState.readWord mem 2080
-  let L := MachineState.readWord mem PRE_L
-  let hi := utop / L
+  let K := MachineState.readWord mem PRE_L
+  let hi := UInt256.shiftRight utop K
   let X := MachineState.readWord mem PRE_X
-  let xr := X * utop
+  let xr := UInt256.shiftLeft utop X
   let unext := MachineState.readWord mem 2112
-  let uL := unext / L
+  let uL := UInt256.shiftRight unext K
   let lo := uL + xr
   let dodd := MachineState.readWord mem PRE_DODD
   let bmod := MachineState.readWord mem PRE_BMOD
@@ -1660,6 +1667,85 @@ theorem pre_facts (d : UInt256) (hd : d.toNat ≠ 0) :
       omega
 
 
+/-! ## CLZ cut: the shift words agree with the old divisor words
+
+The bytecode now keeps `k = log2 L` in `PRE_L` and `256 - k` in `PRE_X` and shifts where it
+used to divide by `L` and multiply by `X = 2^256 / L`.  These bridges restate every shift
+in the old `Nat` form, so the estimator proofs below are unchanged. -/
+
+theorem clz_two_pow (x : UInt256) (v : Nat) (hv : v < 256) (hx : x.toNat = 2 ^ v) :
+    (UInt256.clz x).toNat = 255 - v := by
+  unfold UInt256.clz
+  rw [if_neg (by rw [hx]; exact (Nat.two_pow_pos v).ne'), hx, Nat.log2_two_pow,
+    word_toNat_ofNat]
+  exact Nat.mod_eq_of_lt (by omega)
+
+theorem preK_toNat (d : UInt256) (v : Nat) (hv : v < 256) (hL : (preL d).toNat = 2 ^ v) :
+    (preK d).toNat = v := by
+  unfold preK
+  rw [word_toNat_sub, word_toNat_ofNat, clz_two_pow _ v hv hL,
+    show (255 : Nat) % 2 ^ 256 = 255 by norm_num,
+    show 2 ^ 256 + 255 - (255 - v) = v + 2 ^ 256 by omega, Nat.add_mod_right]
+  exact Nat.mod_eq_of_lt (by omega)
+
+theorem preS_toNat (d : UInt256) (v : Nat) (hv : v < 256) (hL : (preL d).toNat = 2 ^ v) :
+    (preS d).toNat = 256 - v := by
+  unfold preS
+  rw [word_toNat_sub, word_toNat_ofNat, lnot_toNat, clz_two_pow _ v hv hL, Nat.zero_mod,
+    show 2 ^ 256 + 0 - (2 ^ 256 - 1 - (255 - v)) = 256 - v by omega]
+  exact Nat.mod_eq_of_lt (by omega)
+
+theorem preX_toNat (d : UInt256) (v : Nat) (hv : v < 256) (hL : (preL d).toNat = 2 ^ v) :
+    (preX d).toNat = 2 ^ (256 - v) % 2 ^ 256 := by
+  have hLpos : (0 : Nat) < 2 ^ v := Nat.two_pow_pos v
+  have hXnat : (preX d).toNat = (1 + (2 ^ 256 - 2 ^ v) / 2 ^ v) % 2 ^ 256 := by
+    show (UInt256.ofNat 1 + (UInt256.ofNat 0 - preL d) / preL d).toNat = _
+    rw [word_toNat_add, toNat_div, neg_toNat _ (by rw [hL]; exact hLpos.ne'), hL, word_toNat_ofNat]
+    norm_num
+  have hdv : (2 : Nat) ^ v ∣ 2 ^ 256 := pow_dvd_pow 2 (by omega)
+  have hq : (2 ^ 256 - 2 ^ v) / 2 ^ v = 2 ^ 256 / 2 ^ v - 1 := by
+    obtain ⟨c, hc⟩ := hdv
+    have hcpos : 0 < c := by
+      rcases Nat.eq_zero_or_pos c with h | h
+      · subst h; simp at hc
+      · exact h
+    rw [hc, show 2 ^ v * c - 2 ^ v = 2 ^ v * (c - 1) by
+          rw [Nat.mul_sub, Nat.mul_one], Nat.mul_div_cancel_left _ hLpos,
+        Nat.mul_div_cancel_left _ hLpos]
+  have hdiv : 2 ^ 256 / 2 ^ v = 2 ^ (256 - v) := by
+    rw [← Nat.pow_div (by omega) (by norm_num)]
+  have hge : 1 ≤ 2 ^ 256 / 2 ^ v := by rw [hdiv]; exact Nat.one_le_two_pow
+  rw [hXnat, hq, show 1 + (2 ^ 256 / 2 ^ v - 1) = 2 ^ 256 / 2 ^ v by omega, hdiv]
+
+/-- `SHR` by `k` is the old division by `L = 2^k`. -/
+theorem shiftRight_preK (x d : UInt256) (v : Nat) (hv : v < 256)
+    (hL : (preL d).toNat = 2 ^ v) :
+    (UInt256.shiftRight x (preK d)).toNat = x.toNat / (preL d).toNat := by
+  have hk := preK_toNat d v hv hL
+  unfold UInt256.shiftRight
+  rw [if_neg (by omega)]
+  change (x.val >>> (preK d).val).val = _
+  rw [Fin.shiftRight_val]
+  change x.toNat >>> (preK d).toNat = _
+  rw [hk, hL, Nat.shiftRight_eq_div_pow]
+
+/-- `SHL` by `256 - k` is the old wrapping product with `X` (both vanish at `k = 0`). -/
+theorem shiftLeft_preS (x d : UInt256) (v : Nat) (hv : v < 256)
+    (hL : (preL d).toNat = 2 ^ v) :
+    (UInt256.shiftLeft x (preS d)).toNat = (preX d).toNat * x.toNat % 2 ^ 256 := by
+  have hs := preS_toNat d v hv hL
+  rw [preX_toNat d v hv hL]
+  unfold UInt256.shiftLeft
+  by_cases hv0 : v = 0
+  · subst hv0
+    rw [if_pos (by omega)]
+    simp
+    rfl
+  · have hlt : 2 ^ (256 - v) < 2 ^ 256 := Nat.pow_lt_pow_right (by norm_num) (by omega)
+    rw [if_neg (by omega), word_toNat_ofNat, hs, Nat.shiftLeft_eq, Nat.mod_eq_of_lt hlt,
+      show UInt256.size = 2 ^ 256 from rfl, Nat.mod_mod, Nat.mul_comm]
+
+
 /-! ## The limb decomposition of the dividend and the divisor -/
 
 theorem mod_two_limbs (mem : ByteArray) (n mm : Nat) (hn : 2 ≤ n)
@@ -1715,9 +1801,9 @@ theorem tv_three_limbs (mem : ByteArray) (n : Nat) (hn : 2 ≤ n) :
 
 /-- The five words the estimator reads, as a predicate on memory. -/
 def PreOK (mem : ByteArray) : Prop :=
-  MachineState.readWord mem PRE_L = preL (MachineState.readWord mem 0) ∧
+  MachineState.readWord mem PRE_L = preK (MachineState.readWord mem 0) ∧
   MachineState.readWord mem PRE_DODD = preDodd (MachineState.readWord mem 0) ∧
-  MachineState.readWord mem PRE_X = preX (MachineState.readWord mem 0) ∧
+  MachineState.readWord mem PRE_X = preS (MachineState.readWord mem 0) ∧
   MachineState.readWord mem PRE_BMOD = preBmod (MachineState.readWord mem 0) ∧
   MachineState.readWord mem PRE_DINV = preDinv (MachineState.readWord mem 0)
 
@@ -1763,10 +1849,10 @@ theorem PreOK_uMem (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) (h : PreOK mem) 
 
 /-- The estimator's own intermediate values, named so the proof can talk about them. -/
 def eHi (mem : ByteArray) : UInt256 :=
-  MachineState.readWord mem 2080 / MachineState.readWord mem PRE_L
+  UInt256.shiftRight (MachineState.readWord mem 2080) (MachineState.readWord mem PRE_L)
 def eLo (mem : ByteArray) : UInt256 :=
-  MachineState.readWord mem 2112 / MachineState.readWord mem PRE_L +
-    MachineState.readWord mem PRE_X * MachineState.readWord mem 2080
+  UInt256.shiftRight (MachineState.readWord mem 2112) (MachineState.readWord mem PRE_L) +
+    UInt256.shiftLeft (MachineState.readWord mem 2080) (MachineState.readWord mem PRE_X)
 def eRho (mem : ByteArray) : UInt256 :=
   UInt256.addMod (UInt256.mulMod (eHi mem) (MachineState.readWord mem PRE_BMOD)
     (MachineState.readWord mem PRE_DODD)) (eLo mem) (MachineState.readWord mem PRE_DODD)
@@ -1789,24 +1875,29 @@ theorem qhatOf_eq (mem : ByteArray) :
 section Pieces
 variable (mem : ByteArray)
 
-theorem eHi_toNat (hPL : MachineState.readWord mem PRE_L = preL (MachineState.readWord mem 0)) :
+theorem eHi_toNat (hPL : MachineState.readWord mem PRE_L = preK (MachineState.readWord mem 0))
+    (hd : (MachineState.readWord mem 0).toNat ≠ 0) :
     (eHi mem).toNat =
       (MachineState.readWord mem 2080).toNat / (preL (MachineState.readWord mem 0)).toNat := by
-  show (MachineState.readWord mem 2080 / MachineState.readWord mem PRE_L).toNat = _
-  rw [toNat_div, hPL]
+  obtain ⟨v, hv, hL, -⟩ := pre_facts (MachineState.readWord mem 0) hd
+  show (UInt256.shiftRight (MachineState.readWord mem 2080)
+    (MachineState.readWord mem PRE_L)).toNat = _
+  rw [hPL, shiftRight_preK _ _ v hv hL]
 
-theorem eLo_toNat (hPL : MachineState.readWord mem PRE_L = preL (MachineState.readWord mem 0))
-    (hPX : MachineState.readWord mem PRE_X = preX (MachineState.readWord mem 0)) :
+theorem eLo_toNat (hPL : MachineState.readWord mem PRE_L = preK (MachineState.readWord mem 0))
+    (hPX : MachineState.readWord mem PRE_X = preS (MachineState.readWord mem 0))
+    (hd : (MachineState.readWord mem 0).toNat ≠ 0) :
     (eLo mem).toNat =
       ((MachineState.readWord mem 2112).toNat / (preL (MachineState.readWord mem 0)).toNat +
         (preX (MachineState.readWord mem 0)).toNat * (MachineState.readWord mem 2080).toNat
           % 2 ^ 256) % 2 ^ 256 := by
-  show (MachineState.readWord mem 2112 / MachineState.readWord mem PRE_L +
-    MachineState.readWord mem PRE_X * MachineState.readWord mem 2080).toNat = _
-  rw [word_toNat_add, toNat_div, Setup.word_toNat_mul, hPL, hPX]
+  obtain ⟨v, hv, hL, -⟩ := pre_facts (MachineState.readWord mem 0) hd
+  show (UInt256.shiftRight (MachineState.readWord mem 2112) (MachineState.readWord mem PRE_L) +
+    UInt256.shiftLeft (MachineState.readWord mem 2080) (MachineState.readWord mem PRE_X)).toNat = _
+  rw [word_toNat_add, hPL, hPX, shiftRight_preK _ _ v hv hL, shiftLeft_preS _ _ v hv hL]
 
 theorem eRho_toNat
-    (hPL : MachineState.readWord mem PRE_L = preL (MachineState.readWord mem 0))
+    (hPL : MachineState.readWord mem PRE_L = preK (MachineState.readWord mem 0))
     (hPD : MachineState.readWord mem PRE_DODD = preDodd (MachineState.readWord mem 0))
     (hPB : MachineState.readWord mem PRE_BMOD = preBmod (MachineState.readWord mem 0))
     (hdne : (preDodd (MachineState.readWord mem 0)).toNat ≠ 0) :
@@ -1930,7 +2021,7 @@ theorem qhatOf_ge (mem : ByteArray) (n mm u : Nat)
     · exact h
   -- the estimator's low word
   have hHi : (eHi mem).toNat = (MachineState.readWord mem 2080).toNat / 2 ^ v := by
-    rw [eHi_toNat mem hPL, hL]
+    rw [eHi_toNat mem hPL hDne, hL]
   have hLwlt : (MachineState.readWord mem 2112).toNat < 2 ^ 256 :=
     (MachineState.readWord mem 2112).val.isLt
   have hHlt : (MachineState.readWord mem 2080).toNat < 2 ^ 256 :=
@@ -1949,7 +2040,7 @@ theorem qhatOf_ge (mem : ByteArray) (n mm u : Nat)
   have hLo : (eLo mem).toNat =
       (2 ^ 256 / 2 ^ v) * ((MachineState.readWord mem 2080).toNat % 2 ^ v) +
         (MachineState.readWord mem 2112).toNat / 2 ^ v := by
-    rw [eLo_toNat mem hPL hPX, hL]
+    rw [eLo_toNat mem hPL hPX hDne, hL]
     rcases hXd with hX1 | ⟨hv1, hX0⟩
     · have hXt : (preX (MachineState.readWord mem 0)).toNat = 2 ^ 256 / 2 ^ v :=
         Nat.eq_of_mul_eq_mul_left hspos (by rw [hX1, hst])

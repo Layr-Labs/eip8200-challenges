@@ -162,15 +162,31 @@ def negDoneState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
              outer n bsize esize msize
            memory := (negStep mem n n).memory }
 
-/-- `PRE_NEWTON`: `[dodd, L, d]` above the frame, four words stored. -/
+/-- The estimator prologue's `CLZ` (pc 2672, CLZ cut): `[L, L, d]` above the frame. -/
+def preClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2672
+           stack := preL (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
+             MachineState.readWord mem 0 :: outer n bsize esize msize
+           memory := mem }
+
+/-- Just after the `CLZ` (pc 2673): `[clz L, L, d]` above the frame. -/
+def postClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
+  { s with pc := UInt256.ofNat 2673
+           stack := UInt256.clz (preL (MachineState.readWord mem 0)) ::
+             preL (MachineState.readWord mem 0) ::
+             MachineState.readWord mem 0 :: outer n bsize esize msize
+           memory := mem }
+
+/-- `PRE_NEWTON`: `[dodd, L, d]` above the frame, four words stored (CLZ cut: the shift
+words `PRE_X := preS d` and `PRE_L := preK d` first). -/
 def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pcPreNewton
            stack := preDodd (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
              MachineState.readWord mem 0 :: outer n bsize esize msize
            memory := Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
-             PRE_L (preL (MachineState.readWord mem 0)))
+             PRE_X (preS (MachineState.readWord mem 0)))
+             PRE_L (preK (MachineState.readWord mem 0)))
              PRE_DODD (preDodd (MachineState.readWord mem 0)))
-             PRE_X (preX (MachineState.readWord mem 0)))
              PRE_BMOD (preBmod (MachineState.readWord mem 0)) }
 
 /-- The newton-batch head (pc 2705) over a raw memory `M`, with the top limb `d`. -/

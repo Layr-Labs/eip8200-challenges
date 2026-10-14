@@ -18,8 +18,8 @@ def l1PC (n : Nat) : Nat := if n = 4 then 5386 else 3579
 theorem l1_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (l1PC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4281 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2786 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4280 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2785 (by rfl)
 
 /-- The multiply row head of each width (msplit: one loop per width). -/
 def headPC (n : Nat) : Nat := if n = 4 then 5352 else 3545
@@ -27,8 +27,8 @@ def headPC (n : Nat) : Nat := if n = 4 then 5352 else 3545
 theorem head_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (headPC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4252 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2757 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4251 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2756 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (q : UInt256) :
     TnCacheRowModel.CacheState :=

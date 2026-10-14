@@ -73,35 +73,35 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win] at *) <;> omega))
 
 theorem jd5158 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4909 = true :=
-  Artifact.isValidJumpDest_index 3867 (by rfl)
+  Artifact.isValidJumpDest_index 3866 (by rfl)
 
 theorem jd4903 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4669 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3655 (by rfl)
+  Artifact.isValidJumpDest_index 3654 (by rfl)
 
 theorem jd5020 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4781 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3755 (by rfl)
+  Artifact.isValidJumpDest_index 3754 (by rfl)
 
 theorem jd5108 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (4864 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3828 (by rfl)
+  Artifact.isValidJumpDest_index 3827 (by rfl)
 
 theorem jd5274 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (5012 : UInt256).toNat = true :=
-  Artifact.isValidJumpDest_index 3970 (by rfl)
+  Artifact.isValidJumpDest_index 3969 (by rfl)
 
 theorem jd5038 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5018 = true :=
-  Artifact.isValidJumpDest_index 3974 (by rfl)
+  Artifact.isValidJumpDest_index 3973 (by rfl)
 
 theorem jd5077 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5057 = true :=
-  Artifact.isValidJumpDest_index 3999 (by rfl)
+  Artifact.isValidJumpDest_index 3998 (by rfl)
 
 theorem jd4580 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4561 = true :=
-  Artifact.isValidJumpDest_index 3559 (by rfl)
+  Artifact.isValidJumpDest_index 3558 (by rfl)
 
 theorem jd4248 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4234 = true :=
-  Artifact.isValidJumpDest_index 3321 (by rfl)
+  Artifact.isValidJumpDest_index 3320 (by rfl)
 
 section
 variable (s : State)
@@ -168,7 +168,7 @@ def gasSteps_row1 (P : W5) (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4909 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r1h (run_r1h s (hcap := by lenOK) (ha1 := ha1) (ha0 := ha0) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3661 4679 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3660 4679 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r1d (run_r1d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r1c2 (run_r1c2 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -189,7 +189,7 @@ def gasSteps_row2 (P : W5) (k n0 n1 n2 n3 np a1 a2 a3 : UInt256) (rest : List UI
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4909 = true := by rw [hcode]; exact jd5158
   simp only [win]
   seg block_r2h (run_r2h s (hcap := by lenOK) (ha2 := ha2) (ha1 := ha1) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3761 4791 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3760 4791 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r2d (run_r2d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r2c3 (run_r2c3 s (hcap := by lenOK) (ha3 := ha3) (hact := hact) ..)
@@ -207,7 +207,7 @@ def gasSteps_row3 (P : W5) (k n0 n1 n2 n3 np a2 a3 : UInt256) (rest : List UInt2
                  win (row3 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win]
   seg block_r3h (run_r3h s (hcap := by lenOK) (ha3 := ha3) (ha2 := ha2) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3834 4874 (by rfl) (by rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3833 4874 (by rfl) (by rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r3d (run_r3d s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   exact SquareRow.stepsOf block_r3e (run_r3e s (hcap := by lenOK) ..) rfl hcode hfork hrun hnp

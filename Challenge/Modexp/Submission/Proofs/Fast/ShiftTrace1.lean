@@ -291,16 +291,39 @@ theorem run_negExit (s : State) (m : ByteArray) (p c : UInt256) (n bsize esize m
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk2919`: run the four pads, drop the loop words, store `L`, `dodd`, `X`, `Bmod`. -/
-theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+/-- `blk2919a`: run the four pads, drop the loop words, leave `[L, L, d]` at the `CLZ`. -/
+theorem run_negDoneA (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk2919
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2919a
       (negDoneState s mem n bsize esize msize) =
-      some (preNewtonState s (negStep mem n n).memory n bsize esize msize) := by
+      some (preClzState s (negStep mem n n).memory n bsize esize msize) := by
   have haw0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  simp (config := { maxSteps := 600000 })
+    [blk2919a, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      negDoneState, preClzState, pcNegDone,
+      preL,
+      outer, Exp.outer, hcode, hrun, haw0, Exp.push0_word,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
+
+/-- `blk2919b` (after the `CLZ`): store `PRE_X := 0 - ~clz L`, `PRE_L := 255 - clz L`,
+`dodd`, `Bmod`. -/
+theorem run_negDoneB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blk2919b
+      (postClzState s mem n bsize esize msize) =
+      some (preNewtonState s mem n bsize esize msize) := by
   have haw1 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1536 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1568 32) =
@@ -310,13 +333,13 @@ theorem run_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have haw4 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1632 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
-    [blk2919, opAt, pushAt, wfOp,
+    [blk2919b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      negDoneState, preNewtonState, pcNegDone, pcPreNewton,
-      preL, preDodd, preX, preBmod, PRE_L, PRE_DODD, PRE_X, PRE_BMOD, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, haw0, haw1, haw2, haw3, haw4, Exp.push0_word,
+      postClzState, preNewtonState, pcPreNewton,
+      preDodd, preK, preS, preBmod, PRE_L, PRE_DODD, PRE_X, PRE_BMOD, Exp.storeWord,
+      outer, Exp.outer, hcode, hrun, haw1, haw2, haw3, haw4, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

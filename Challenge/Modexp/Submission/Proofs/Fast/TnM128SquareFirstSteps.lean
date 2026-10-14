@@ -57,7 +57,7 @@ noncomputable def steps (s : State)
   let st : State := {s with memory := mem}
   have hL2 : Decode.isValidJumpDest st.executionEnv.code (UInt256.ofNat 3862).toNat = true := by
     rw [show st.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3023 (by rfl)
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3022 (by rfl)
   have hhead : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4245).toNat = true := by
     rw [env.code]; exact TnM128L1Jumps.square_jump
   have hp := TnM128R8FirstRow.run_program st (UInt256.ofNat 5105) (TnCacheRowPointers.qptr 8 0)

@@ -4,6 +4,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace3
 import Challenge.Modexp.Submission.Proofs.Fast.RetainedTEntry
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftCacheModel
 import Challenge.Modexp.Submission.Proofs.Fast.M9MacShift
+import Challenge.Modexp.Submission.Proofs.Fast.ClzStep
 
 set_option warningAsError false
 set_option maxRecDepth 40000
@@ -114,6 +115,21 @@ def gasSteps_negLoop (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (n - 1) (fun j hj => gasSteps_negIter s mem n bsize esize msize j hn32 (by omega) e)).trans
     (gasSteps_negLast s mem n bsize esize msize hn hn32 e)
 
+/-- `NEG_DONE` to `PRE_NEWTON` (CLZ cut): the pads and `L`, the one `CLZ` through the
+Submission-local rule `ClzStep.gasSteps_clz_framed` (the shared stepper has no `CLZ`), then
+the four estimator stores. -/
+def gasSteps_negDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : Env s) :
+    Challenge.EvmProof.GasSteps (negDoneState s mem n bsize esize msize)
+      (preNewtonState s (negStep mem n n).memory n bsize esize msize) :=
+  ((soundEnv blk2919a e (run_negDoneA s mem n bsize esize msize e.act296 e.code e.run)).trans
+    (ClzStep.gasSteps_clz_framed s (negStep mem n n).memory
+      (preL (MachineState.readWord (negStep mem n n).memory 0))
+      (preL (MachineState.readWord (negStep mem n n).memory 0) ::
+        MachineState.readWord (negStep mem n n).memory 0 :: outer n bsize esize msize)
+      e.code e.fork (by simp [outer]) e.run e.np)).trans
+    (soundEnv blk2919b e
+      (run_negDoneB s (negStep mem n n).memory n bsize esize msize e.act296 e.code e.run))
+
 /-- The newton-batch tail leaves exactly `preMem`: with `dodd` and `n0` odd, one inverse of
 `dodd * n0` gives `dodd⁻¹ = x n0` and `n0⁻¹ = dodd x`. -/
 theorem nbOut_eq (s : State) (X : ByteArray) (n bsize esize msize : Nat) (hn32 : n ≤ 8)
@@ -166,8 +182,7 @@ def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   (((((soundEnv blk2892 e
       (run_negEntry s mem n bsize esize msize hn hn32 e.act296 hml e.code e.run)).trans
     (gasSteps_negLoop s mem n bsize esize msize hn hn32 e)).trans
-    (soundEnv blk2919 e
-      (run_negDone s mem n bsize esize msize e.act296 e.code e.run))).trans
+    (gasSteps_negDone s mem n bsize esize msize e)).trans
     ((soundEnv blkNbHead e
       (run_nbHead s (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
         (MachineState.readWord (negStep mem n n).memory 0)

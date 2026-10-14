@@ -53,8 +53,10 @@ def blk2892 :
    opAt 2058 .MLOAD,
    pushAt 2059 1 1]
 
-/-- Located block of the selected shift-reduce program. -/
-def blk2919 :
+/-- `blk2919`, first part (pc 2658..2671): the four pads, drop the loop words, and
+`L = d &&& -d` twice on top of `d`.  The block stops before the `CLZ` at pc 2672, which the
+shared stepper cannot run (`ClzStep.gasSteps_clz`). -/
+def blk2919a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2077 .JUMPDEST,
    opAt 2078 .JUMPDEST,
@@ -69,23 +71,27 @@ def blk2919 :
    opAt 2087 .SUB,
    opAt 2088 (.Dup ⟨1, by decide⟩),
    opAt 2089 .AND,
-   opAt 2090 (.Dup ⟨0, by decide⟩),
-   pushAt 2091 2 1536,
-   opAt 2092 .MSTORE,
-   opAt 2093 (.Dup ⟨0, by decide⟩),
-   opAt 2094 (.Dup ⟨2, by decide⟩),
-   opAt 2095 .DIV,
-   opAt 2096 (.Dup ⟨0, by decide⟩),
-   pushAt 2097 2 1568,
-   opAt 2098 .MSTORE,
-   opAt 2099 (.Dup ⟨1, by decide⟩),
-   opAt 2100 (.Dup ⟨0, by decide⟩),
-   pushAt 2101 0 0,
-   opAt 2102 .SUB,
-   opAt 2103 .DIV,
-   pushAt 2104 1 1,
-   opAt 2105 .ADD,
-   pushAt 2106 2 1600,
+   opAt 2090 (.Dup ⟨0, by decide⟩)]
+
+/-- `blk2919`, second part (pc 2673..2704), after the `CLZ`: `PRE_X := 0 - ~clz L`,
+`PRE_L := 255 - clz L`, `PRE_DODD := d / L`, `PRE_BMOD := -dodd mod dodd`. -/
+def blk2919b :
+    List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
+  [opAt 2092 (.Dup ⟨0, by decide⟩),
+   opAt 2093 .NOT,
+   pushAt 2094 0 0,
+   opAt 2095 .SUB,
+   pushAt 2096 2 1600,
+   opAt 2097 .MSTORE,
+   pushAt 2098 1 255,
+   opAt 2099 .SUB,
+   pushAt 2100 2 1536,
+   opAt 2101 .MSTORE,
+   opAt 2102 (.Dup ⟨0, by decide⟩),
+   opAt 2103 (.Dup ⟨2, by decide⟩),
+   opAt 2104 .DIV,
+   opAt 2105 (.Dup ⟨0, by decide⟩),
+   pushAt 2106 2 1568,
    opAt 2107 .MSTORE,
    opAt 2108 (.Dup ⟨0, by decide⟩),
    opAt 2109 (.Dup ⟨0, by decide⟩),
@@ -230,17 +236,17 @@ def blk3026 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2230 2 2080,
    opAt 2231 .MLOAD,
-   opAt 2232 (.Dup ⟨13, by decide⟩),
-   opAt 2233 (.Dup ⟨1, by decide⟩),
-   opAt 2234 .DIV,
+   opAt 2232 (.Dup ⟨0, by decide⟩),
+   opAt 2233 (.Dup ⟨14, by decide⟩),
+   opAt 2234 .SHR,
    opAt 2235 (.Swap ⟨0, by decide⟩),
    pushAt 2236 2 1600,
    opAt 2237 .MLOAD,
-   opAt 2238 .MUL,
-   opAt 2239 (.Dup ⟨14, by decide⟩),
-   pushAt 2240 2 2112,
-   opAt 2241 .MLOAD,
-   opAt 2242 .DIV,
+   opAt 2238 .SHL,
+   pushAt 2239 2 2112,
+   opAt 2240 .MLOAD,
+   opAt 2241 (.Dup ⟨15, by decide⟩),
+   opAt 2242 .SHR,
    opAt 2243 .ADD,
    opAt 2244 (.Dup ⟨13, by decide⟩),
    opAt 2245 (.Dup ⟨0, by decide⟩),
@@ -543,7 +549,7 @@ theorem jumpDest5366 :
 
 theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5522 = true :=
-  Artifact.isValidJumpDest_index 4393 (by rfl)
+  Artifact.isValidJumpDest_index 4392 (by rfl)
 
 /-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
 E3 phase switch has set the last riding slot to `30`. -/
@@ -608,7 +614,8 @@ then `PUSH2 0989 ADD JUMP` jumps to `2441 + z`, where `z` is that last slot: `0`
 (the exponent dispatcher at 2441) and `28` after the E3 phase switch (`e3go` at 2471). -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4393 .JUMPDEST,
+  [opAt 4392 .JUMPDEST,
+   opAt 4393 .POP,
    opAt 4394 .POP,
    opAt 4395 .POP,
    opAt 4396 .POP,
@@ -624,9 +631,8 @@ def blk5444 :
    opAt 4406 .POP,
    opAt 4407 .POP,
    opAt 4408 .POP,
-   opAt 4409 .POP,
-   pushAt 4410 2 2492,
-   opAt 4411 .ADD,
-   opAt 4412 .JUMP]
+   pushAt 4409 2 2492,
+   opAt 4410 .ADD,
+   opAt 4411 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast

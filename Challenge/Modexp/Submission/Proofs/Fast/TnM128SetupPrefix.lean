@@ -23,7 +23,7 @@ def loadProgram : List Instr :=
    .push 2 2752, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
    .push 0 0, .push 1 32, .op .MLOAD,
    .op (.Dup ⟨14, by decide⟩),
-   .push 1 128, .op .AND, .push 0 0, .op .LT, .push 2 1748, .op .MUL]
+   .push 1 128, .op .EQ, .op .JUMPDEST, .op .JUMPDEST, .push 2 1748, .op .MUL]
 
 def shuffleProgram : List Instr :=
   [
@@ -44,14 +44,20 @@ in the slot named `inverse` below. -/
 def lowProgram : List Instr :=
   [.push 2 2720, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
 
+/-- The four-limb selector of the 97bb cut (leech1996, submission 97bb2bc5, site A):
+`PUSH1 128 EQ JUMPDEST JUMPDEST` replaces `PUSH1 128 AND PUSH0 LT`, so the selector is the
+equality test `[x = 128]` (the two pads keep every pc).  On the two admissible width words
+128 and 256, and on the limb counts 4 and 8 that the square-loop frame rides, it agrees
+with the old bit-7 selector. -/
+def sel128 (x : UInt256) : UInt256 := UInt256.eq (UInt256.ofNat 128) x
+
 /-- The four-limb displacement.  The selector word is no longer loaded: `DUP15` pulls the
 F5[4] length slot off the riding frame (pinned to `readWord mem 2688` by `hslot`), then
-`PUSH1 128 AND PUSH0 LT PUSH2 1748 MUL` normalizes its bit 7 to 0/1 before scaling,
-so the distance is a free `PUSH2` literal rather than a multiple of 128.  It still agrees
-with `1748 * isFour n` only for `n = 4` and `n = 8` (at `n = 5,6,7` the mask bit is
-also set), so every consumer carries `n = 4 ∨ n = 8`. -/
+`PUSH1 128 EQ PUSH2 1748 MUL` makes it 0/1 before scaling, so the distance is a free
+`PUSH2` literal.  It agrees with `1748 * isFour n` for `n = 4` and `n = 8`, so every
+consumer carries `n = 4 ∨ n = 8`. -/
 def displacement (mem : ByteArray) : UInt256 :=
-  UInt256.ofNat 1748 * CapDispatch.selectBit (MachineState.readWord mem 2688)
+  UInt256.ofNat 1748 * sel128 (MachineState.readWord mem 2688)
 
 def readsProgram : List Instr := loadProgram.take 16
 def setupProgram : List Instr := loadProgram.drop 16
@@ -148,7 +154,7 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
   have h9344 : (2688 : UInt256).toNat = 2688 := by decide
   have hact3 := activeWords_fix s 2688 32 (by decide) (by omega) hact
   simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    displacement, CapDispatch.selectBit, CapDispatch.lit_zero_lt_eq_double_isZero,
+    displacement, sel128,
     h9344, State.activeWordsAfterUInt256, hact3, hslot,
     hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, h32, hact32,
     State.activeWordsAfterUInt256,
@@ -168,7 +174,7 @@ theorem run_setup_w (s : State) (hd pa pb dst ret value inverse aEnd tailPointer
         stack := [aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
       pc := UInt256.ofNat 3439
-      stack := [UInt256.ofNat 1748 * CapDispatch.selectBit w,
+      stack := [UInt256.ofNat 1748 * sel128 w,
         MachineState.readWord s.memory 32, zeroTn, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
@@ -186,7 +192,7 @@ theorem run_setup_w (s : State) (hd pa pb dst ret value inverse aEnd tailPointer
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have hact32 := activeWords_fix s 32 32 (by decide) (by omega) hact
   simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    CapDispatch.selectBit, CapDispatch.lit_zero_lt_eq_double_isZero, hslot,
+    sel128, hslot,
     hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, h32, hact32,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
@@ -223,7 +229,7 @@ theorem run_load_w (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256
       {s with pc := UInt256.ofNat 3402, stack := [hd, pa, pb, dst, ret] ++ rest} =
     some {s with
         pc := UInt256.ofNat 3439
-        stack := [UInt256.ofNat 1748 * CapDispatch.selectBit w,
+        stack := [UInt256.ofNat 1748 * sel128 w,
         MachineState.readWord s.memory 32, zeroTn, (pa + UInt256.ofNat addr), MachineState.readWord s.memory 64, MachineState.readWord s.memory (16*n+32), MachineState.readWord s.memory 224, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
   change runInstructions (readsProgram ++ setupProgram) _ = _
   have hr := run_reads s hd pa pb dst ret rest addr n hcap hact haddr hn4 hml hw

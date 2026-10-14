@@ -321,7 +321,7 @@ def gasSteps_rows (s : State) (M : ByteArray) (a mm : Nat)
 theorem jumpH2 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 5105).toNat = true := by
   change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5105 = true
-  exact Artifact.isValidJumpDest_index 4045 (by rfl)
+  exact Artifact.isValidJumpDest_index 4044 (by rfl)
 
 theorem jumpSetup : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 3487).toNat = true := by

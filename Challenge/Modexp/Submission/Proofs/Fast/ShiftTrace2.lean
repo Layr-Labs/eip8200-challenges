@@ -354,7 +354,7 @@ private theorem saturation_gt_eq_lt (a b : UInt256) : a.gt b = b.lt a := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2240 = 2887 := by
+@[simp] private theorem newEstimatePC2964 : Artifact.submissionArtifact.instructionPC 2240 = 2889 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -538,7 +538,7 @@ private theorem saturation_gt_eq_lt (a b : UInt256) : a.gt b = b.lt a := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem nopMovePC2309 : Artifact.submissionArtifact.instructionPC 2240 = 2887 := by
+@[simp] private theorem nopMovePC2309 : Artifact.submissionArtifact.instructionPC 2240 = 2889 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
