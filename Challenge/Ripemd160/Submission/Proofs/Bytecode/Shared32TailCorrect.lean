@@ -65,16 +65,16 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
     (UInt256.ofNat 1056) (UInt256.ofNat 4748) masks (by omega)
     (by rw [hactive]; decide)
   have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (Shared32Core.resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 4748) masks (by omega) e.run
+    (UInt256.ofNat 1056) (UInt256.ofNat 4748) Shared32Core.resultCont masks (by omega) e.run
     (StaggerPersistentLoopSites.valid_out s e.code)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) (UInt256.ofNat 4748)
+  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) Shared32Core.resultCont
     (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np
   have hresult : StackTail.append (Shared32Core.resultState s) rho =
       StaggerPersistentSerialize.result s (Shared32Core.resultHash s)
-        (UInt256.ofNat 1056) (UInt256.ofNat 4748) masks :=
+        (UInt256.ofNat 1056) Shared32Core.resultCont masks :=
     serialize_append s (Shared32Core.resultHash s) (UInt256.ofNat 1056)
-      (UInt256.ofNat 4748) Shared32Core.maskRho rho
+      Shared32Core.resultCont Shared32Core.maskRho rho
   rw [hresult]
   simpa only [StackTail.append, Shared32Core.entryState,
     StaggerPersistentFrame.frame, Shared32Core.maskRho, masks,

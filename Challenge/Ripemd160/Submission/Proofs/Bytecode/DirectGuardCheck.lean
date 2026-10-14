@@ -55,7 +55,7 @@ def gasSteps_checkEntry (input : ByteArray) :
   have p27 : Artifact.submissionArtifact.instructionPC 27 = 46 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hdest : Decode.isValidJumpDest submissionBytecode 200 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 135 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 134 (by rfl)
     rw [pc_direct_26] at h
     exact h
   have s7 := sS (pushAt 26 1 200) (PatternedScan.blockOfS _

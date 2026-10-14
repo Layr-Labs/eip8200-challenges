@@ -104,7 +104,7 @@ def chunk1 : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op (.Swap ⟨2, by decide⟩),
     .op .POP,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op (.Swap ⟨7, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
@@ -164,10 +164,9 @@ def chunk3 : List Instr := [ .op .ADD,
     .op .ADD,
     .op (.Dup ⟨2, by decide⟩),
     .op .AND,
-    .op (.Swap ⟨8, by decide⟩),
-    .op .POP ]
+    .op (.Swap ⟨8, by decide⟩) ]
 
-def stack4 (q : Input) (rho : List UInt256) : List UInt256 := [ q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, (UInt256.land q.lower (UInt256.add (UInt256.add q.h0 q.lb) (UInt256.shiftRight q.rc (UInt256.ofNat 144)))), (UInt256.land q.lower (UInt256.add q.h4 (UInt256.add (UInt256.shiftRight q.rb (UInt256.ofNat 144)) q.la))), (UInt256.land q.lower (UInt256.add q.h3 (UInt256.add (UInt256.shiftRight q.ra (UInt256.ofNat 144)) q.le))), (UInt256.land q.lower (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) (UInt256.shiftRight (UInt256.mul q.ld q.factor) (UInt256.ofNat 23))))), (UInt256.land q.lower (UInt256.add (UInt256.add q.h1 q.lc) (UInt256.shiftRight q.rd (UInt256.ofNat 144)))), q.off, q.limit ] ++ rho
+def stack4 (q : Input) (rho : List UInt256) : List UInt256 := [ q.h2, q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, (UInt256.land q.lower (UInt256.add (UInt256.add q.h0 q.lb) (UInt256.shiftRight q.rc (UInt256.ofNat 144)))), (UInt256.land q.lower (UInt256.add q.h4 (UInt256.add (UInt256.shiftRight q.rb (UInt256.ofNat 144)) q.la))), (UInt256.land q.lower (UInt256.add q.h3 (UInt256.add (UInt256.shiftRight q.ra (UInt256.ofNat 144)) q.le))), (UInt256.land q.lower (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) (UInt256.shiftRight (UInt256.mul q.ld q.factor) (UInt256.ofNat 23))))), (UInt256.land q.lower (UInt256.add (UInt256.add q.h1 q.lc) (UInt256.shiftRight q.rd (UInt256.ofNat 144)))), q.off, q.limit ] ++ rho
 theorem run_chunk3 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
     runInstrSeq chunk3 {s with pc := pc, stack := stack3 q rho} =

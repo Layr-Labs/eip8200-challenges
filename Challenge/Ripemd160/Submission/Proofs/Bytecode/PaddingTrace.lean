@@ -55,7 +55,7 @@ def padEntry (input : ByteArray) : State :=
     (padEntry input).executionEnv.calldata = input := by rfl
 
 @[simp] private theorem initializedPC764 :
-    Artifact.instructionPC 173 = 248 := by change Artifact.submissionArtifact.instructionPC 173 = 248; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Artifact.instructionPC 172 = 248 := by change Artifact.submissionArtifact.instructionPC 172 = 248; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem initializedCalldata (input : ByteArray) :
     (Main.initializedState input).executionEnv.calldata = input := by rfl
@@ -79,9 +79,9 @@ private theorem run_enter (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock enterPath
       (Main.initializedState input) = some (padEntry input) := by
   have hzero : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
-  have p245 : Artifact.submissionArtifact.instructionPC 173 = 248 := by
+  have p245 : Artifact.submissionArtifact.instructionPC 172 = 248 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p246 : Artifact.submissionArtifact.instructionPC 174 = 279 := by
+  have p246 : Artifact.submissionArtifact.instructionPC 173 = 279 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   simp [enterPath, Artifact.padEnterPath, Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
@@ -588,25 +588,25 @@ def lengthLoopState (input : ByteArray) (i : Nat) : State :=
 
 def lengthIterationPath : List
     (Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨74, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨73, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨74, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨75, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨76, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨77, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨78, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨79, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨80, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨81, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨82, .push ⟨1, by decide⟩ (UInt256.ofNat 237), by rfl, by decide⟩,
-   ⟨83, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨165, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨166, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨167, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨168, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨169, .push ⟨1, by decide⟩ (UInt256.ofNat 115), by rfl, by decide⟩,
-   ⟨170, .push ⟨2, by decide⟩ (UInt256.ofNat 4708), by rfl, by decide⟩,
-   ⟨171, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3493, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3494, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨76, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨77, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨78, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨79, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨80, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨81, .push ⟨1, by decide⟩ (UInt256.ofNat 237), by rfl, by decide⟩,
+   ⟨82, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨164, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨165, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨166, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨167, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨168, .push ⟨1, by decide⟩ (UInt256.ofNat 115), by rfl, by decide⟩,
+   ⟨169, .push ⟨2, by decide⟩ (UInt256.ofNat 4708), by rfl, by decide⟩,
+   ⟨170, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3491, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3492, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 13
 def lengthBranchPath := lengthIterationPath.drop 13
@@ -624,7 +624,7 @@ def lengthJumpPath := (lengthIterationPath.drop 9).take 1
 def lengthShiftPath := (lengthIterationPath.drop 10).take 3
 def lengthHopPushPath := (lengthIterationPath.drop 13).take 3
 def hopJumpLoc : Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨171, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩
+  ⟨170, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩
 def lengthHopJumpPath := [hopJumpLoc]
 
 theorem lengthBodyPath_split :
@@ -729,9 +729,9 @@ private theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
 
 @[simp] private theorem validLengthLoopHead :
     Decode.isValidJumpDest submissionBytecode 115 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 74 = 115 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 73 = 115 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 74 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 73 (by rfl)
 
 private theorem validJump237 :
     Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 237).toNat = true :=
@@ -1055,7 +1055,7 @@ set_option maxHeartbeats 400000 in
 private theorem run_lengthHopJump (input : ByteArray) (i : Nat) :
     Challenge.EvmProof.DataStepper.runLocatedBlock lengthHopJumpPath
       (lengthPreHop input i) = some (lengthHopped input i) := by
-  have hpc : (lengthPreHop input i).pc.toNat = Artifact.submissionArtifact.instructionPC 171 := by
+  have hpc : (lengthPreHop input i).pc.toNat = Artifact.submissionArtifact.instructionPC 170 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (lengthPreHop input i) =
       some (lengthHopped input i) := by
@@ -1572,7 +1572,7 @@ noncomputable def gasSteps_lengthLoop (input : ByteArray) (hfit : CalldataFits i
 111. -/
 def footerA1 := Artifact.padFooterSetupA.take 9
 def footJumpLoc : Challenge.EvmProof.DataStepper.Located Artifact.submissionArtifact .Osaka :=
-  ⟨127, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩
+  ⟨126, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩
 
 theorem lengthFooterSetupPath_split :
     lengthFooterSetupPath = footerA1 ++ ([footJumpLoc] ++ Artifact.padFooterSetupB) := rfl
@@ -1604,7 +1604,7 @@ private theorem run_footJump (input : ByteArray) :
       some (footerPostJump input) := by
   have hpc : (footerPreJump input).pc.toNat =
       Artifact.submissionArtifact.instructionPC footJumpLoc.index := by
-    change 190 = Artifact.submissionArtifact.instructionPC 127
+    change 190 = Artifact.submissionArtifact.instructionPC 126
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (footerPreJump input) =
       some (footerPostJump input) := by

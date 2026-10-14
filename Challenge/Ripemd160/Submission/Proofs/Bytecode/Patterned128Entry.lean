@@ -42,11 +42,11 @@ private def sound (path : List Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
-@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 3556 = 4808 := J2EntryWindow.pcB 2
+@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 3554 = 4808 := J2EntryWindow.pcB 2
 
-@[simp] private theorem bigPC : Artifact.submissionArtifact.instructionPC 3554 = 4805 := J2EntryWindow.pcB 0
+@[simp] private theorem bigPC : Artifact.submissionArtifact.instructionPC 3552 = 4805 := J2EntryWindow.pcB 0
 
-@[simp] private theorem bigPushPC : Artifact.submissionArtifact.instructionPC 3555 = 4806 := J2EntryWindow.pcB 1
+@[simp] private theorem bigPushPC : Artifact.submissionArtifact.instructionPC 3553 = 4806 := J2EntryWindow.pcB 1
 
 private theorem isValidJumpDest_of_pc (idx pc : Nat)
     (hpc : Artifact.submissionArtifact.instructionPC idx = pc)
@@ -56,10 +56,10 @@ private theorem isValidJumpDest_of_pc (idx pc : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index idx hget
 
 private theorem guard_match_dest : Decode.isValidJumpDest submissionBytecode 4808 = true :=
-  isValidJumpDest_of_pc 3556 4808 entryPC61 (J2EntryWindow.getB 2)
+  isValidJumpDest_of_pc 3554 4808 entryPC61 (J2EntryWindow.getB 2)
 
 private theorem guard_big_dest : Decode.isValidJumpDest submissionBytecode 4805 = true :=
-  isValidJumpDest_of_pc 3554 4805 bigPC (J2EntryWindow.getB 0)
+  isValidJumpDest_of_pc 3552 4805 bigPC (J2EntryWindow.getB 0)
 
 private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
@@ -72,55 +72,55 @@ private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UIn
 
 /-! ## Program counters in the guard window -/
 
-private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3459 = 4601 := J2EntryWindow.pc 0
-private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3460 = 4602 := J2EntryWindow.pc 1
-private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3467 = 4629 := J2EntryWindow.pc 8
-private theorem packedPC3736 : Artifact.submissionArtifact.instructionPC 3469 = 4633 := J2EntryWindow.pc 10
-private theorem packedPC3737 : Artifact.submissionArtifact.instructionPC 3470 = 4634 := J2EntryWindow.pc 11
-private theorem packedPC3738 : Artifact.submissionArtifact.instructionPC 3471 = 4637 := J2EntryWindow.pc 12
-private theorem packedPC3739 : Artifact.submissionArtifact.instructionPC 3472 = 4638 := J2EntryWindow.pc 13
-private theorem packedPC3740 : Artifact.submissionArtifact.instructionPC 3473 = 4639 := J2EntryWindow.pc 14
-private theorem packedPC3743 : Artifact.submissionArtifact.instructionPC 3474 = 4640 := J2EntryWindow.pc 15
-private theorem packedPC3745 : Artifact.submissionArtifact.instructionPC 3475 = 4643 := J2EntryWindow.pc 16
-private theorem packedPC3735 : Artifact.submissionArtifact.instructionPC 3468 = 4630 := J2EntryWindow.pc 9
+private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3457 = 4601 := J2EntryWindow.pc 0
+private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3458 = 4602 := J2EntryWindow.pc 1
+private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3465 = 4629 := J2EntryWindow.pc 8
+private theorem packedPC3736 : Artifact.submissionArtifact.instructionPC 3467 = 4633 := J2EntryWindow.pc 10
+private theorem packedPC3737 : Artifact.submissionArtifact.instructionPC 3468 = 4634 := J2EntryWindow.pc 11
+private theorem packedPC3738 : Artifact.submissionArtifact.instructionPC 3469 = 4637 := J2EntryWindow.pc 12
+private theorem packedPC3739 : Artifact.submissionArtifact.instructionPC 3470 = 4638 := J2EntryWindow.pc 13
+private theorem packedPC3740 : Artifact.submissionArtifact.instructionPC 3471 = 4639 := J2EntryWindow.pc 14
+private theorem packedPC3743 : Artifact.submissionArtifact.instructionPC 3472 = 4640 := J2EntryWindow.pc 15
+private theorem packedPC3745 : Artifact.submissionArtifact.instructionPC 3473 = 4643 := J2EntryWindow.pc 16
+private theorem packedPC3735 : Artifact.submissionArtifact.instructionPC 3466 = 4630 := J2EntryWindow.pc 9
 
-@[simp] private theorem sizeHitPC3837 : Artifact.submissionArtifact.instructionPC 3461 = 4603 :=
+@[simp] private theorem sizeHitPC3837 : Artifact.submissionArtifact.instructionPC 3459 = 4603 :=
   J2EntryWindow.pc 2
-@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3462 = 4605 :=
+@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3460 = 4605 :=
   J2EntryWindow.pc 3
-@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3463 = 4623 :=
+@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3461 = 4623 :=
   J2EntryWindow.pc 4
-@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3464 = 4624 :=
+@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3462 = 4624 :=
   J2EntryWindow.pc 5
-@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3465 = 4625 :=
+@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3463 = 4625 :=
   J2EntryWindow.pc 6
-@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3466 = 4626 :=
+@[simp] private theorem sizeHitPC3842 : Artifact.submissionArtifact.instructionPC 3464 = 4626 :=
   J2EntryWindow.pc 7
 
 /-! ## The size mask -/
 
 private def maskEntry : List Located :=
-  [DirectGuard.opAt 3459 .JUMPDEST (by exact J2EntryWindow.get 0)]
+  [DirectGuard.opAt 3457 .JUMPDEST (by exact J2EntryWindow.get 0)]
 
 private def sizePrefix : List Located :=
-  [DirectGuard.opAt 3460 .CALLDATASIZE (by exact J2EntryWindow.get 1),
-   DirectGuard.pushAt 3461 1 1 (by exact J2EntryWindow.get 2),
-   DirectGuard.pushAt 3462 17 342276208914615837337402008677671501826 (by exact J2EntryWindow.get 3),
-   DirectGuard.opAt 3463 .CALLDATASIZE (by exact J2EntryWindow.get 4),
-   DirectGuard.opAt 3464 .SHR (by exact J2EntryWindow.get 5),
-   DirectGuard.opAt 3465 .AND (by exact J2EntryWindow.get 6),
-   DirectGuard.pushAt 3466 2 4808 (by exact J2EntryWindow.get 7)]
+  [DirectGuard.opAt 3458 .CALLDATASIZE (by exact J2EntryWindow.get 1),
+   DirectGuard.pushAt 3459 1 1 (by exact J2EntryWindow.get 2),
+   DirectGuard.pushAt 3460 17 342276208914615837337402008677671501826 (by exact J2EntryWindow.get 3),
+   DirectGuard.opAt 3461 .CALLDATASIZE (by exact J2EntryWindow.get 4),
+   DirectGuard.opAt 3462 .SHR (by exact J2EntryWindow.get 5),
+   DirectGuard.opAt 3463 .AND (by exact J2EntryWindow.get 6),
+   DirectGuard.pushAt 3464 2 4808 (by exact J2EntryWindow.get 7)]
 
 private def maskJump : List Located :=
-  [DirectGuard.opAt 3467 .JUMPI (by exact J2EntryWindow.get 8)]
+  [DirectGuard.opAt 3465 .JUMPI (by exact J2EntryWindow.get 8)]
 
 private def guardMatchTail : List Located :=
-  [DirectGuard.opAt 3556 .JUMPDEST (by exact J2EntryWindow.getB 2)]
+  [DirectGuard.opAt 3554 .JUMPDEST (by exact J2EntryWindow.getB 2)]
 
 /-- The 256/376/1000 entry: `JUMPDEST PUSH1 251`, falling into the shared scanner entry. -/
 private def bigTail : List Located :=
-  [DirectGuard.opAt 3554 .JUMPDEST (by exact J2EntryWindow.getB 0),
-   DirectGuard.pushAt 3555 1 251 (by exact J2EntryWindow.getB 1)]
+  [DirectGuard.opAt 3552 .JUMPDEST (by exact J2EntryWindow.getB 0),
+   DirectGuard.pushAt 3553 1 251 (by exact J2EntryWindow.getB 1)]
 
 private def sizeBit (input : ByteArray) : UInt256 :=
   UInt256.land 1 (UInt256.shiftRight 342276208914615837337402008677671501826
@@ -135,13 +135,13 @@ private theorem run_mask_entry (input : ByteArray) :
     DirectGuard.run maskEntry (PatternedScan.stS input 4601 []) =
       some (PatternedScan.stS input 4602 []) :=
   PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3459 4601 [] (by norm_num) pc3836)
+    (PatternedScan.pcFactS input 3457 4601 [] (by norm_num) pc3836)
     (PatternedScan.stepS_jumpdest input 4601 [] (by simp) (by norm_num))
 
 private theorem run_size_prefix (input : ByteArray) :
     DirectGuard.run sizePrefix (PatternedScan.stS input 4602 []) =
       some (PatternedScan.stS input 4629 [4808, sizeBit input, UInt256.ofNat input.size]) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3460 = 4602 := pc3837
+  have hpc : Artifact.submissionArtifact.instructionPC 3458 = 4602 := pc3837
   simp (config := {maxSteps := 400000}) [sizePrefix, sizeBit, DirectGuard.opAt,
     DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS, initialState, hpc,
     DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
@@ -151,7 +151,7 @@ private theorem run_mask_match (input : ByteArray) (hc : UInt256.isTrue (sizeBit
     DirectGuard.run maskJump (PatternedScan.stS input 4629 [4808, sizeBit input, UInt256.ofNat input.size]) =
       some (PatternedScan.stS input 4808 [UInt256.ofNat input.size]) :=
   PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3467 4629 [4808, sizeBit input, UInt256.ofNat input.size] (by norm_num) pc3843)
+    (PatternedScan.pcFactS input 3465 4629 [4808, sizeBit input, UInt256.ofNat input.size] (by norm_num) pc3843)
     (PatternedScan.stepS_jumpi_taken input 4629 4808 4808 (sizeBit input) [UInt256.ofNat input.size]
       (by simp) (by norm_num) (by rfl) hc guard_match_dest)
 
@@ -159,7 +159,7 @@ private theorem run_mask_fall (input : ByteArray) (hc : ¬ UInt256.isTrue (sizeB
     DirectGuard.run maskJump (PatternedScan.stS input 4629 [4808, sizeBit input, UInt256.ofNat input.size]) =
       some (PatternedScan.stS input 4630 [UInt256.ofNat input.size]) :=
   PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3467 4629 [4808, sizeBit input, UInt256.ofNat input.size] (by norm_num) pc3843)
+    (PatternedScan.pcFactS input 3465 4629 [4808, sizeBit input, UInt256.ofNat input.size] (by norm_num) pc3843)
     (PatternedScan.stepS_jumpi_fall input 4629 4808 (sizeBit input) [UInt256.ofNat input.size]
       (by simp) (by norm_num) hc)
 
@@ -231,16 +231,16 @@ private def lengthCond (input : ByteArray) : UInt256 :=
     (UInt256.eq 256 (UInt256.ofNat input.size))
 
 private def lengthPrefix : List Located :=
-  [DirectGuard.pushAt 3468 2 256 (by exact J2EntryWindow.get 9),
-   DirectGuard.opAt 3469 .EQ (by exact J2EntryWindow.get 10),
-   DirectGuard.pushAt 3470 2 376 (by exact J2EntryWindow.get 11),
-   DirectGuard.opAt 3471 .CALLDATASIZE (by exact J2EntryWindow.get 12),
-   DirectGuard.opAt 3472 .EQ (by exact J2EntryWindow.get 13),
-   DirectGuard.opAt 3473 .ADD (by exact J2EntryWindow.get 14),
-   DirectGuard.pushAt 3474 2 4805 (by exact J2EntryWindow.get 15)]
+  [DirectGuard.pushAt 3466 2 256 (by exact J2EntryWindow.get 9),
+   DirectGuard.opAt 3467 .EQ (by exact J2EntryWindow.get 10),
+   DirectGuard.pushAt 3468 2 376 (by exact J2EntryWindow.get 11),
+   DirectGuard.opAt 3469 .CALLDATASIZE (by exact J2EntryWindow.get 12),
+   DirectGuard.opAt 3470 .EQ (by exact J2EntryWindow.get 13),
+   DirectGuard.opAt 3471 .ADD (by exact J2EntryWindow.get 14),
+   DirectGuard.pushAt 3472 2 4805 (by exact J2EntryWindow.get 15)]
 
 private def lengthJump : List Located :=
-  [DirectGuard.opAt 3475 .JUMPI (by exact J2EntryWindow.get 16)]
+  [DirectGuard.opAt 3473 .JUMPI (by exact J2EntryWindow.get 16)]
 
 private theorem run_length_prefix (input : ByteArray) :
     DirectGuard.run lengthPrefix (PatternedScan.stS input 4630 [UInt256.ofNat input.size]) =
@@ -287,7 +287,7 @@ private def gasSteps_length_match (input : ByteArray)
   have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4643 [4805, lengthCond input]) =
       some (PatternedScan.stS input 4805 []) :=
     PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 3475 4643 _ (by norm_num) packedPC3745)
+      (PatternedScan.pcFactS input 3473 4643 _ (by norm_num) packedPC3745)
       (PatternedScan.stepS_jumpi_taken input 4643 4805 4805 (lengthCond input) []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (lengthCond_true input hsize) guard_big_dest)
@@ -302,7 +302,7 @@ private def gasSteps_length_fail (input : ByteArray) (hfit : CalldataFits input)
   have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4643 [4805, lengthCond input]) =
       some (AbcArm.armEntry input) :=
     PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 3475 4643 _ (by norm_num) packedPC3745)
+      (PatternedScan.pcFactS input 3473 4643 _ (by norm_num) packedPC3745)
       (PatternedScan.stepS_jumpi_fall input 4643 4805 (lengthCond input) []
         (by simp) (by norm_num) (lengthCond_false input hfit h256 h376))
   exact (sound lengthPrefix (run_length_prefix input)).trans (sound lengthJump hj)

@@ -82,9 +82,9 @@ private theorem isValidJumpDest_of_pc (idx pc : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index idx hget
 
 theorem generic_dest : Decode.isValidJumpDest submissionBytecode 247 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 172 = 247 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 171 = 247 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  exact isValidJumpDest_of_pc 172 247 hpc (by rfl)
+  exact isValidJumpDest_of_pc 171 247 hpc (by rfl)
 
 /-- The size word `1000 - size`. -/
 def sizeWord (input : ByteArray) : UInt256 :=
@@ -186,9 +186,9 @@ theorem anchorWord_false (input : ByteArray)
 
 /-- The recogniser's long-length entry (`JUMPDEST PUSH1 251`). -/
 theorem big_dest : Decode.isValidJumpDest submissionBytecode 4805 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3554 = 4805 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3552 = 4805 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  exact isValidJumpDest_of_pc 3554 4805 hpc (by rfl)
+  exact isValidJumpDest_of_pc 3552 4805 hpc (by rfl)
 
 theorem run_anchor_prefix (input : ByteArray) :
     run anchorPrefix (PatternedScan.stS input 21 []) =

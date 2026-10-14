@@ -93,7 +93,7 @@ theorem run_taken (input : ByteArray) (h : condition input ≠ 0) :
   have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 247 []) =
       some (PatternedScan.stS input 248 []) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 172 247 [] (by norm_num)
+      (PatternedScan.pcFactS input 171 247 [] (by norm_num)
         (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl))
       (PatternedScan.stepS_jumpdest input 247 [] (by simp) (by norm_num))
   have hje := DataStepper.runLocatedBlock_append [opAt 5 .JUMPI] [entryDest]

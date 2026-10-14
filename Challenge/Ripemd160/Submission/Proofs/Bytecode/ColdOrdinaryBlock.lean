@@ -20,7 +20,7 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
         stack := frame h (DriverTrace.messageOffsetWord (LoopCompletionControl.offIndex input i)) limit rho}
       {scheduledState s i with
         pc := UInt256.ofNat 4551
-        stack := frame (result (scheduledState s i).memory h)
+        stack := Word.ofUInt32 h.h2 :: frame (result (scheduledState s i).memory h)
           (DriverTrace.messageOffsetWord (LoopCompletionControl.offIndex input i))
           (StaggerPersistentLoopRaw.blockCont input i limit) rho} := by
   let q := scheduledState s i

@@ -58,17 +58,17 @@ theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
 
 
 theorem initial_slice :
-    (Artifact.submissionArtifact.instructions.drop 181).take initialTemplate.length = initialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 180).take initialTemplate.length = initialTemplate := by rfl
 
 def initialSite : GenericRoundSite Artifact.submissionArtifact .Osaka initialTemplate :=
-  StackSiteBuilder.ofSlice initialTemplate 181 initial_slice
-    (by change 181 + initialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice initialTemplate 180 initial_slice
+    (by change 180 + initialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := initialTemplate) (by decide)) (by decide)
 
 theorem initial_pc : initialSite.startPC = UInt256.ofNat 321 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 181) = UInt256.ofNat 321
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 180) = UInt256.ofNat 321
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The chaining words and the six resident round constants are pushed directly after the

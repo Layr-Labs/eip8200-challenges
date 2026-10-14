@@ -16,7 +16,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Execution.atPC input 248) rho)
-      (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState 0
+      (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState StackRunBridge.initialHashState 0
         (DriverTrace.blockCount input) (maskRho rho)) := by
   let s := PaddingTrace.entryState input
   let h := StackRunBridge.initialHashState
@@ -51,7 +51,7 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
         exact hs.symm) rfl
   have gp := PaddingTail.gasSteps_pad input hfit hn32 rho hcap
   have g := gp.trans gx
-  simpa only [loopState, LoopCompletionControl.blockPC, blockOff, LoopCompletionControl.offIndex,
+  simpa only [loopState, loopCont, LoopCompletionControl.blockPC, blockOff, LoopCompletionControl.offIndex,
     Nat.zero_mul, if_neg hp0, offsetWord, DriverTrace.messageOffsetWord,
     DriverTrace.blockOffset, Padding.messageOffset, Nat.add_zero] using g
 
@@ -71,16 +71,12 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     exact ⟨states_code input i, states_fork input i, states_halt input i,
       states_noPrecompile input i, states_calldata input i⟩
   have hblock : ∀ i, i < DriverTrace.blockCount input →
-      GasSteps (loopState input (states input i) (hashes input i) i
+      GasSteps (loopState input (states input i) (hashes input (i - 1)) (hashes input i) i
         (DriverTrace.blockCount input) (maskRho rho))
-        (postState input (states input (i + 1)) (hashes input (i + 1)) i
+        (postState input (states input (i + 1)) (hashes input i) (hashes input (i + 1)) i
           (DriverTrace.blockCount input) (maskRho rho)) := by
     intro i hi
-    exact ColdOrdinaryBlock.gasSteps (states input i) input i (hashes input i)
-      (LoopCompletionControl.cont input i) (maskRho rho) hm rho rfl hfit hi
-      (states_context input hfit hpositive i (Nat.le_of_lt hi))
-      (states_code input i) (states_fork input i) (states_halt input i)
-      (states_noPrecompile input i)
+    exact gasSteps_block input hfit hpositive i hi (maskRho rho) hm rho rfl
   have gs := gasSteps_start input hfit hpositive hn32 rho hcap
   have gb := run_blocks input (states input) (hashes input) (maskRho rho) hfit hm hambient
     (fun hc i hi => states_last input hfit hpositive hc i hi) hblock
@@ -88,7 +84,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
   have a := hambient count (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states input count)
     (blockOff input (count - 1))
-    (StaggerPersistentLoopRaw.blockCont input (count - 1) (LoopCompletionControl.cont input (count - 1))) (hashes input count) rho
+    (Word.ofUInt32 (hashes input (count - 1)).h2) (hashes input count) rho
     (by omega) a.running a.code a.fork a.notPrecompile
   have trace := entryPrefix.trans (gs.trans (gb.trans go))
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl

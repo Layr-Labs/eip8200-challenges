@@ -56,7 +56,7 @@ private theorem raw_toUInt32_add (x y : UInt256) :
 
 theorem tail_result (h : Compression.HashState) (q : ScheduledTailRaw.Input)
     (rho : List UInt256) :
-    ScheduledTailRaw.stack4 (bind h q) rho = frame (combine h q) q.off q.limit rho := by
+    ScheduledTailRaw.stack4 (bind h q) rho = ofUInt32 h.h2 :: frame (combine h q) q.off q.limit rho := by
   simp only [ScheduledTailRaw.stack4, bind, frame, combine, high, Paired144WordRound.wordShift,
     lower_left, lower_right, mask32_eq_ofUInt32, raw_toUInt32_add, toUInt32_ofUInt32,
     List.cons_append, List.nil_append,
@@ -74,7 +74,7 @@ theorem run_tail (s : State) (pc : UInt256) (h : Compression.HashState)
       {s with pc := pc, stack := ScheduledTailRaw.stack0 (bind h q) rho} =
       some {s with
         pc := pcAfter pc ScheduledTailRaw.template
-        stack := frame (combine h q) q.off q.limit rho} := by
+        stack := ofUInt32 h.h2 :: frame (combine h q) q.off q.limit rho} := by
   simpa only [tail_result] using ScheduledTailRaw.run_template s pc (bind h q) rho hstack hrun
 #print axioms tail_result
 #print axioms run_tail

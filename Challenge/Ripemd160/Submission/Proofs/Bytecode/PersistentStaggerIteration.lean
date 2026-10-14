@@ -3,6 +3,8 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerFunctiona
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddedBlockBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadSkipEntry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashAfterModel
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdOrdinaryBlock
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopInduction
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 3000000
@@ -116,6 +118,28 @@ theorem hashArray_hashes (input : ByteArray) (hfit : CalldataFits input) (hpos :
     rw [ih (by omega), StackRunBridge.hashAfter_succ]
     rfl
 
+/-- A block consumes its selected continuation and exposes its old `h2` word.
+The pad-only entry accepts the garbage left by the preceding dispatch. -/
+def gasSteps_block (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
+    (i : Nat) (hi : i < DriverTrace.blockCount input)
+    (rho : List UInt256) (hs : rho.length ≤ 880)
+    (tail : List UInt256)
+    (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail) :
+    GasSteps
+      (StaggerPersistentLoopInduction.loopState input (states input i)
+        (hashes input (i - 1)) (hashes input i) i (DriverTrace.blockCount input) rho)
+      (StaggerPersistentLoopInduction.postState input (states input (i + 1))
+        (hashes input i) (hashes input (i + 1)) i (DriverTrace.blockCount input) rho) := by
+  have gb := ColdOrdinaryBlock.gasSteps (states input i) input i (hashes input i)
+    (StaggerPersistentLoopInduction.loopCont input (hashes input (i - 1)) i)
+    rho hs tail hrho hfit hi (states_context input hfit hpos i (Nat.le_of_lt hi))
+    (states_code input i) (states_fork input i) (states_halt input i)
+    (states_noPrecompile input i)
+  simpa only [StaggerPersistentLoopInduction.loopState,
+    StaggerPersistentLoopInduction.postState, StaggerPersistentLoopInduction.blockOff,
+    StaggerPersistentLoopInduction.offsetWord, states_succ, hashes_succ,
+    StaggerPersistentLoopInduction.blockCont_loopCont] using gb
+
 /-- What the block-exit `MSIZE` reads after block `i`: exactly the end of the copied input on
 the fast entry when the pad-only block is next, and above the next block pointer otherwise. -/
 theorem states_msize (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
@@ -192,5 +216,6 @@ theorem states_last (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < 
 #print axioms states_activeWords
 #print axioms states_ready
 #print axioms hashArray_hashes
+#print axioms gasSteps_block
 #print axioms states_last
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerIteration

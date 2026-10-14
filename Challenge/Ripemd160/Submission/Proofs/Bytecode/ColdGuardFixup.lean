@@ -112,15 +112,15 @@ theorem run_guard_miss (s : State) (stack : List UInt256)
 namespace fixup
 abbrev template : List Instr :=
   [.push ⟨0, by decide⟩ (UInt256.ofNat 0), .push ⟨1, by decide⟩ (UInt256.ofNat 157), .op .MSTORE]
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 110).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 109).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 110 actual_slice
-    (by change 110 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 109 actual_slice
+    (by change 109 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 166 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 110) = UInt256.ofNat 166
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 109) = UInt256.ofNat 166
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem run (s : State) (stack : List UInt256) (hstack : stack.length ≤ 900)

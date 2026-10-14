@@ -82,27 +82,27 @@ theorem run_tail_target :
 /-- `PUSH2 0x1270 JUMP` at 233 reaches the answer block's `JUMPDEST` 4720 in the tail. -/
 theorem run_return_hop (input : ByteArray) :
     run returnHopPath (returnHopState input) = some (returnEntry input) := by
-  have p163 : Artifact.submissionArtifact.instructionPC 163 = 233 := Artifact.cgPc163
-  have p164 : Artifact.submissionArtifact.instructionPC 164 = 236 := by
+  have p163 : Artifact.submissionArtifact.instructionPC 162 = 233 := Artifact.cgPc163
+  have p164 : Artifact.submissionArtifact.instructionPC 163 = 236 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p3502 : Artifact.submissionArtifact.instructionPC 3502 = 4720 := Artifact.cgPc3502
+  have p3502 : Artifact.submissionArtifact.instructionPC 3500 = 4720 := Artifact.cgPc3502
   have hdest : Decode.isValidJumpDest submissionBytecode 4720 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 3502 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 3500 (by rfl)
     rw [p3502] at h
     exact h
-  have b0 : run [pushAt 163 2 4720] (PatternedScan.stS input 233 (spentCells input)) =
+  have b0 : run [pushAt 162 2 4720] (PatternedScan.stS input 233 (spentCells input)) =
       some (PatternedScan.stS input 236 (4720 :: spentCells input)) :=
-    PatternedScan.blockOfS _ (PatternedScan.pcFactS input 163 233 _ (by norm_num) p163)
+    PatternedScan.blockOfS _ (PatternedScan.pcFactS input 162 233 _ (by norm_num) p163)
       (PatternedScan.stepS_push input 233 2 4720 _ (by simp [spentCells]) (by decide) (by decide) (by norm_num))
-  have b1 : run [opAt 164 .JUMP] (PatternedScan.stS input 236 (4720 :: spentCells input)) =
+  have b1 : run [opAt 163 .JUMP] (PatternedScan.stS input 236 (4720 :: spentCells input)) =
       some (PatternedScan.stS input 4720 (spentCells input)) :=
-    PatternedScan.blockOfS _ (PatternedScan.pcFactS input 164 236 _ (by norm_num) p164)
+    PatternedScan.blockOfS _ (PatternedScan.pcFactS input 163 236 _ (by norm_num) p164)
       (PatternedScan.stepS_jump input 236 4720 4720 _ (by simp [spentCells]) (by norm_num) rfl hdest)
-  have b2 : run [opAt 3502 .JUMPDEST] (PatternedScan.stS input 4720 (spentCells input)) =
+  have b2 : run [opAt 3500 .JUMPDEST] (PatternedScan.stS input 4720 (spentCells input)) =
       some (PatternedScan.stS input 4721 (spentCells input)) :=
-    PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3502 4720 _ (by norm_num) p3502)
+    PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3500 4720 _ (by norm_num) p3502)
       (PatternedScan.stepS_jumpdest input 4720 _ (by simp [spentCells]) (by norm_num))
-  change run ([pushAt 163 2 4720] ++ ([opAt 164 .JUMP] ++ [opAt 3502 .JUMPDEST]))
+  change run ([pushAt 162 2 4720] ++ ([opAt 163 .JUMP] ++ [opAt 3500 .JUMPDEST]))
     (PatternedScan.stS input 233 (spentCells input)) = some (PatternedScan.stS input 4721 (spentCells input))
   exact Challenge.EvmProof.DataStepper.runLocatedBlock_append _ _ _ _ _ b0 rfl
     (Challenge.EvmProof.DataStepper.runLocatedBlock_append _ _ _ _ _ b1 rfl b2)
@@ -114,7 +114,7 @@ theorem run_tail_divert_acc (input : ByteArray) (hneAcc : reverseAcc input 10 â‰
     intro hn
     exact hneAcc (Challenge.EvmProof.Word.word_ext hn)
   have hdest : Decode.isValidJumpDest submissionBytecode 247 = true :=
-    Artifact.submissionArtifact.isValidJumpDest_index 172 (by rfl)
+    Artifact.submissionArtifact.isValidJumpDest_index 171 (by rfl)
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
     htrue, hdest, List.exchange,
@@ -171,13 +171,13 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3507 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3505 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3507 := by
+      Artifact.submissionArtifact.instructionPC 3505 := by
     rw [Artifact.cjPc58]; rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3507
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3505
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, spentCells]) (by rfl)

@@ -31,7 +31,7 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
               (UInt256.xor (MachineState.readWord input (928 - 96 * n)) r) a)),
         UInt256.ofNat (864 - 96 * n), r] ++ rest } := by
   have hdest : Decode.isValidJumpDest submissionBytecode 200 = true := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 135 (by rfl)
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 134 (by rfl)
     rw [pc_direct_26] at h
     exact h
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega

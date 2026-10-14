@@ -22,11 +22,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     exact ⟨states_code input i, states_fork input i, states_halt input i,
       states_noPrecompile input i, states_calldata input i⟩
   · intro i hi
-    exact ColdOrdinaryBlock.gasSteps (states input i) input i (hashes input i)
-      (LoopCompletionControl.cont input i) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
-      (by decide) [] rfl hfit hi
-      (states_context input hfit hpositive i (Nat.le_of_lt hi))
-      (states_code input i) (states_fork input i) (states_halt input i)
-      (states_noPrecompile input i)
+    exact gasSteps_block input hfit hpositive i hi
+      [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] (by decide) [] rfl
 #print axioms correct
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdOrdinaryCorrect

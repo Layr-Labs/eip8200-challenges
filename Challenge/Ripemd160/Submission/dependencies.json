@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "1d5fd62c-7841-417d-8d64-b0298925145c",
+    "rationale": "Immediate accepted 647948 predecessor; all hash, recognition, schedule and padding infrastructure inherited. This candidate consumes the compression continuation, changes shared cleanup and control-stub installation, and uses a gas-neutral round33 ADD reassociation for literal headroom.",
+    "evidence": "Predecessor decoded SHA256 6506a0b06b20c978a4a12873d9298bdd7166a4973c413a029a26ed8e9395d189; candidate 5241 bytes, 3626 instructions, decoded SHA256 2d64429a7c81d31f56494a5be7e1be57807737772dca7ac5235d1ef4fb830633. Fresh paired local scorer 98/98 rows each, clean and dirty 647948 to647822; exact Lean integration required separately."
+  },
+  {
     "submissionId": "8375c07c-8aab-4cc1-8b8c-4cb8048df3b1",
     "rationale": "Immediate promoted leader baseline, official 647969 at commit 82c124fc. All executable bytes and the complete universal proof infrastructure are retained except the one opcode at PC68 and its raw copy certificate.",
     "evidence": "Baseline decoded SHA256 815897bac8149dd66f922b08dc13871cb648a813a0c0a8f635ef77fa0c71f12b; candidate SHA256 6506a0b06b20c978a4a12873d9298bdd7166a4973c413a029a26ed8e9395d189. DUP13 at PC68 becomes CALLDATASIZE. Both images have 5241 bytes and 3628 executable instructions."

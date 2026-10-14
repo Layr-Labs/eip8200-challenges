@@ -51,7 +51,7 @@ theorem run_current (s : State) (pc : UInt256) (h : Compression.HashState)
       {s with pc := pc, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h q) rho} =
       some {s with
         pc := StackRoundTrace.pcAfter pc ScheduledTailRaw.template
-        stack := StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) q.off q.limit rho} := by
+        stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) q.off q.limit rho} := by
   have g := ScheduledTailFrame.run_tail s pc h (fromCurrent q) rho hstack hrun
   rw [bind_current, stack0_current, combine_current] at g
   exact g
