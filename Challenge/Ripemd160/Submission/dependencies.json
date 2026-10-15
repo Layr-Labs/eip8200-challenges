@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "fe67a6d0-68a5-4dad-90d5-8bab814e133f",
+    "rationale": "Direct accepted646308 baseline: carries the EQ/AND repeated-word accumulator and final inversion removal, plus all inherited digest arithmetic, writer, output and recognizer code. The new local22byte entry transform reuses live calldata length for32-byte branch; all bytes outside144..165 remain identical.",
+    "evidence": "Accepted source1000e41ce5714760920f371b6742366c3aa94a5c; predecessor decoded SHA25631325345d4f3eb7089fe05d87ca83e80c73d2a5fbd08db436c5c28d832148a06. Candidatebd82d8e3715567bef877c0aaa9d5c9cbc68e41531aafa61216ace10825cf8b82. See Shared32SparseRun/Shared32Sites/Shared32Trace/ColdGuardFixup."
+  },
+  {
     "submissionId": "1ae4a5dd-d516-47eb-ae50-f13bd95b36ae",
     "rationale": "Direct 646311 baseline: reuse shift-free multiply-stage endian epilogue and proof modules. This candidate only changes repeated-word comparisons from XOR/OR to EQ/AND and removes the terminal ISZERO, preserving total length and all later instruction indices.",
     "evidence": "Source185510a47e4d02d89df7b13b90fc982ae31e0036. Runtime decoded SHA256 fdf164479431f204aeac1c04b10b8526e7e6c3f8362f6369407cc6ffee449346 to31325345d4f3eb7089fe05d87ca83e80c73d2a5fbd08db436c5c28d832148a06. Only bytes44,217,218,225,226,234,235,240..244 differ."

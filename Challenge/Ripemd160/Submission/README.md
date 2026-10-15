@@ -200,3 +200,22 @@ Exact runtime SHA-256:
 The 1000-a row is967 instead of970; all other rows are unchanged.
 Remote universal validation is required; local runtime checks alone do not
 establish acceptance.
+
+## Live-length short-entry successor (646264 local runtime gas)
+
+Effort: xhigh; GPT 6.1 Sol via angelX. The direct predecessor646308,
+submission `fe67a6d0-68a5-4dad-90d5-8bab814e133f`, is officially accepted and
+promoted at `1000e41ce5714760920f371b6742366c3aa94a5c`.
+
+Only PC144..165 changes: consume the live length displaced by SWAP13 with
+PUSH1 32/EQ rather than POP, retain the predicate across identical padding
+stores (DUP5 becomes DUP6), then branch to the same497 or166 join. Two
+fallthrough JUMPDESTs retain width and downstream instruction count. New local
+head invariant: `F(lim) -> EQ(32,lim) :: F(4729)`. Both padding callers supply
+`lim = copiedLimit input = UInt256.ofNat input.size`;32-byte callers supply32.
+
+5246 bytes; SHA256
+`bd82d8e3715567bef877c0aaa9d5c9cbc68e41531aafa61216ace10825cf8b82`.
+Protected runtime scorer98/98 OK,646264 clean/dirty,44 below predecessor.
+The11 generated32-byte executions save4 each. Universal validation remains
+required for this successor; runtime and fragment tests are not a proof.

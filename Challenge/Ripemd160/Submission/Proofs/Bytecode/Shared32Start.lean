@@ -94,7 +94,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
-    (by decide) h32
+    (by decide) h32 rfl
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)

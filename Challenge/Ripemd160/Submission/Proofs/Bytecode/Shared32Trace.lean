@@ -12,13 +12,13 @@ open Shared32Scratch Shared32Sites
 
 /-- The 32-byte block, entered from the alignment guard at 143: the continuation slot becomes the
 output entry 4729, the sentinel `0x80` and the length byte (the low byte of the resident
-coefficient word in slot 4) are stored, then the 32-byte test at 158 joins the lower half at 497. -/
+coefficient word in slot 4) are stored, then the flag is consumed at160 and joins the lower half at497. -/
 def gasSteps_sparse (s : State) (e : Env s)
     (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
     (hactive : s.activeWords = UInt256.ofNat 34)
     (hone : UInt8.ofNat (a4.toNat % 256) = 1)
-    (h32 : s.executionEnv.calldata.size = 32) :
+    (_h32 : s.executionEnv.calldata.size = 32) (hlim : lim = UInt256.ofNat 32) :
     GasSteps
       (atState s 143 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
       (atState {s with memory := sparseMemory s.memory} 498
@@ -35,31 +35,28 @@ def gasSteps_sparse (s : State) (e : Env s)
     apply special.lift s (atState s 144 F) e F
     simpa only [special.template, atState, show UInt256.ofNat 143 + UInt256.ofNat 1 = UInt256.ofNat 144 by decide] using
       PadJump.run_merge s (UInt256.ofNat 143) F (by omega) e.run
-  have g1 : GasSteps (atState s 144 F) (atState s 149 F0) := by
-    apply head.lift s (atState s 149 F0) e F
+  have g1 : GasSteps (atState s 144 F) (atState s 151 (UInt256.ofNat 1 :: F0)) := by
+    apply head.lift s (atState s 151 (UInt256.ofNat 1 :: F0)) e F
     have h := Shared32SparseRun.run_head s (UInt256.ofNat 144) ret mw a2 a3 a4
       a5 a6 a7 a8 a9 a10 lim rho hstack e.run
-    simpa only [head.template, head.end_pc, atState, F, F0] using h
-  have g2 : GasSteps (atState s 149 F0) (atState s 151 (v :: F0)) := by
-    apply fold.lift s (atState s 151 (v :: F0)) e F0
-    have h := Shared32SparseRun.run_fold s (UInt256.ofNat 149) F0 hF0 e.run
+    simpa only [head.template, head.end_pc, atState, F, F0, hlim, show UInt256.eq (UInt256.ofNat 32) (UInt256.ofNat 32) = UInt256.ofNat 1 from rfl] using h
+  have g2 : GasSteps (atState s 151 (UInt256.ofNat 1 :: F0)) (atState s 153 (v :: UInt256.ofNat 1 :: F0)) := by
+    apply fold.lift s (atState s 153 (v :: UInt256.ofNat 1 :: F0)) e (UInt256.ofNat 1 :: F0)
+    have h := Shared32SparseRun.run_fold s (UInt256.ofNat 151) (UInt256.ofNat 1 :: F0) (by simp [F0, stk]; omega) e.run
     simpa only [fold.template, fold.end_pc, atState] using h
-  have g4 : GasSteps (atState s 151 (v :: F0)) (atState sM 158 F0) := by
-    apply sparse.lift s (atState sM 158 F0) e (v :: F0)
-    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 151) v ret mw a2 a3 a4
+  have g4 : GasSteps (atState s 153 (v :: UInt256.ofNat 1 :: F0)) (atState sM 160 (UInt256.ofNat 1 :: F0)) := by
+    apply sparse.lift s (atState sM 160 (UInt256.ofNat 1 :: F0)) e (v :: UInt256.ofNat 1 :: F0)
+    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 153) v (UInt256.ofNat 1) ret mw a2 a3 a4
       (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 1056 :: UInt256.ofNat 4729 ::
         DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
       (by simp only [List.length_cons]; omega) e.run hactive hbyte hone
     simpa only [sparse.template, sparse.end_pc, atState, sM, F0, stk] using h
-  have g5 : GasSteps (atState sM 158 F0) (atState sM 497 F0) := by
-    apply guard.lift sM (atState sM 497 F0) eM F0
-    have h0 : F0.length < 1024 := by omega
-    have h1 : F0.length + 1 < 1024 := by omega
-    have h2 : F0.length + 2 < 1024 := by omega
+  have g5 : GasSteps (atState sM 160 (UInt256.ofNat 1 :: F0)) (atState sM 497 F0) := by
+    apply guard.lift sM (atState sM 497 F0) eM (UInt256.ofNat 1 :: F0)
+    have hc (n : Nat) (hn : n ≤ 3) : F0.length + n < 1024 := by omega
     have hv := valid_lower sM eM
-    have h32M : sM.executionEnv.calldata.size = 32 := h32
-    simp [guard.template, atState, runInstrSeq, DataStepper.runInstr, eM.run,
-      h0, h1, h2, h32M, UInt256.eq, UInt256.isTrue, hv]
+    simp (config := { maxSteps := 100000 }) (discharger := omega) [guard.template, atState, runInstrSeq,
+      DataStepper.runInstr, eM.run, hc, List.length_cons, Nat.add_assoc, UInt256.isTrue, hv]
   have g6 : GasSteps (atState sM 497 F0) (atState sM 498 F0) := by
     apply lower.lift sM (atState sM 498 F0) eM F0
     simpa only [lower.template, atState, show UInt256.ofNat 497 + UInt256.ofNat 1 = UInt256.ofNat 498 by decide] using

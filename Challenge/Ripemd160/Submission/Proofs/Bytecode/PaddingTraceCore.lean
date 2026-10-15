@@ -721,7 +721,7 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
     (by decide) rfl rfl rfl deployAddress_not_precompile
     (by exact Nat.lt_trans hfit (by norm_num)) hn32
-    (padGuardMiss_active input hfit hpos)
+    (padGuardMiss_active input hfit hpos) rfl
   exact g.trans gp
 
 set_option maxHeartbeats 400000 in
