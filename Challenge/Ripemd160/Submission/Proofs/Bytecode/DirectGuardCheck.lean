@@ -47,21 +47,21 @@ def gasSteps_checkEntry (input : ByteArray) :
   have s5 := sS (opAt 24 (.Dup ⟨2, by decide⟩)) (PatternedScan.blockOfS _
     (PatternedScan.pcFactS input 24 43 [W, 960, R] (by norm_num) pc_direct_24)
     (PatternedScan.stepS_dup input 43 2 (by decide) [W, 960, R] R rfl (by simp) (by norm_num)))
-  have s6 := sS (opAt 25 .XOR) (PatternedScan.blockOfS _
+  have s6 := sS (opAt 25 .EQ) (PatternedScan.blockOfS _
     (PatternedScan.pcFactS input 25 44 [R, W, 960, R] (by norm_num) pc_direct_25)
-    (PatternedScan.stepS_xor input 44 R W [960, R] (by simp) (by norm_num)))
+    (PatternedScan.stepS_eq input 44 R W [960, R] (by simp) (by norm_num)))
   have p26 : Artifact.submissionArtifact.instructionPC 26 = 45 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have p27 : Artifact.submissionArtifact.instructionPC 27 = 47 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hdest : Decode.isValidJumpDest submissionBytecode 210 = true := Artifact.validJumpDest_212
   have s7 := sS (pushAt 26 1 210) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 26 45 [UInt256.xor R W, 960, R] (by norm_num) p26)
-    (PatternedScan.stepS_push input 45 1 210 [UInt256.xor R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
+    (PatternedScan.pcFactS input 26 45 [UInt256.eq R W, 960, R] (by norm_num) p26)
+    (PatternedScan.stepS_push input 45 1 210 [UInt256.eq R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
   have s8 := sS (opAt 27 .JUMP) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 27 47 [210, UInt256.xor R W, 960, R] (by norm_num) p27)
-    (PatternedScan.stepS_jump input 47 210 210 [UInt256.xor R W, 960, R] (by simp) (by norm_num) rfl hdest))
-  have hend : PatternedScan.stS input 210 [UInt256.xor R W, 960, R] =
+    (PatternedScan.pcFactS input 27 47 [210, UInt256.eq R W, 960, R] (by norm_num) p27)
+    (PatternedScan.stepS_jump input 47 210 210 [UInt256.eq R W, 960, R] (by simp) (by norm_num) rfl hdest))
+  have hend : PatternedScan.stS input 210 [UInt256.eq R W, 960, R] =
       loopState input 0 := rfl
   rw [hend] at s8
   exact s0.trans (s1.trans (s2.trans (s3.trans (s4.trans (s5.trans (s6.trans (s7.trans s8)))))))

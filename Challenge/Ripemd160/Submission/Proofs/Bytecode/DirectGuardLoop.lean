@@ -23,12 +23,12 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
         stack := [a, UInt256.ofNat (960 - 96 * n), r] ++ rest } =
     some { s with
       pc := UInt256.ofNat (if n < 9 then 210 else 240)
-      stack := [UInt256.lor
-          (UInt256.xor (MachineState.readWord input (960 - 96 * n)) r)
-          (UInt256.lor
-            (UInt256.xor (MachineState.readWord input (896 - 96 * n)) r)
-            (UInt256.lor
-              (UInt256.xor (MachineState.readWord input (928 - 96 * n)) r) a)),
+      stack := [UInt256.land
+          (UInt256.eq (MachineState.readWord input (960 - 96 * n)) r)
+          (UInt256.land
+            (UInt256.eq (MachineState.readWord input (896 - 96 * n)) r)
+            (UInt256.land
+              (UInt256.eq (MachineState.readWord input (928 - 96 * n)) r) a)),
         UInt256.ofNat (864 - 96 * n), r] ++ rest } := by
   have hdest : Decode.isValidJumpDest submissionBytecode 210 = true := Artifact.validJumpDest_212
   have hcap3 : rest.length + 1 + 1 + 1 < 1024 := by omega
@@ -53,12 +53,12 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
   have hsub96 : UInt256.ofNat (960 - 96 * n) - UInt256.ofNat 96 =
       UInt256.ofNat (864 - 96 * n) := by
     rw [Word.ofNat_sub_ofNat hp96 hp, heq96]
-  have hxor1 : UInt256.xor r (MachineState.readWord input (928 - 96 * n)) =
-      UInt256.xor (MachineState.readWord input (928 - 96 * n)) r := BooleanSelect.xor_comm _ _
-  have hxor2 : UInt256.xor r (MachineState.readWord input (896 - 96 * n)) =
-      UInt256.xor (MachineState.readWord input (896 - 96 * n)) r := BooleanSelect.xor_comm _ _
-  have hxor3 : UInt256.xor r (MachineState.readWord input (960 - 96 * n)) =
-      UInt256.xor (MachineState.readWord input (960 - 96 * n)) r := BooleanSelect.xor_comm _ _
+  have hxor1 : UInt256.eq r (MachineState.readWord input (928 - 96 * n)) =
+      UInt256.eq (MachineState.readWord input (928 - 96 * n)) r := equality_comm _ _
+  have hxor2 : UInt256.eq r (MachineState.readWord input (896 - 96 * n)) =
+      UInt256.eq (MachineState.readWord input (896 - 96 * n)) r := equality_comm _ _
+  have hxor3 : UInt256.eq r (MachineState.readWord input (960 - 96 * n)) =
+      UInt256.eq (MachineState.readWord input (960 - 96 * n)) r := equality_comm _ _
   by_cases hmore : n < 9
   · have hnonzero : 864 - 96 * n ≠ 0 := by omega
     simp (config := { maxSteps := 1000000 }) (disch := omega)
@@ -95,30 +95,30 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
 theorem run_loop_more (input : ByteArray) (n : Nat) (hn : n < 9) :
     run loopPath (loopState input n) = some (loopState input (n + 1)) := by
   have h := run_reverse_triple (initialState submissionBytecode input 0) input n
-    (by omega) (reverseAcc input n) (referenceWord input) [] (by decide) rfl rfl rfl
+    (by omega) (equalityAcc input n) (referenceWord input) [] (by decide) rfl rfl rfl
   have hp : 960 - 96 * (n + 1) = 864 - 96 * n := by omega
-  have ha : reverseAcc input (n + 1) =
-      UInt256.lor
-        (UInt256.xor (MachineState.readWord input (960 - 96 * n)) (referenceWord input))
-        (UInt256.lor
-          (UInt256.xor (MachineState.readWord input (896 - 96 * n)) (referenceWord input))
-          (UInt256.lor
-            (UInt256.xor (MachineState.readWord input (928 - 96 * n)) (referenceWord input))
-            (reverseAcc input n))) := rfl
+  have ha : equalityAcc input (n + 1) =
+      UInt256.land
+        (UInt256.eq (MachineState.readWord input (960 - 96 * n)) (referenceWord input))
+        (UInt256.land
+          (UInt256.eq (MachineState.readWord input (896 - 96 * n)) (referenceWord input))
+          (UInt256.land
+            (UInt256.eq (MachineState.readWord input (928 - 96 * n)) (referenceWord input))
+            (equalityAcc input n))) := rfl
   simpa only [loopState, if_pos hn, List.append_nil, hp, ha] using h
 
 theorem run_loop_last (input : ByteArray) :
     run loopPath (loopState input 9) = some (loopExitState input) := by
   have h := run_reverse_triple (initialState submissionBytecode input 0) input 9
-    (by decide) (reverseAcc input 9) (referenceWord input) [] (by decide) rfl rfl rfl
-  have ha : reverseAcc input 10 =
-      UInt256.lor
-        (UInt256.xor (MachineState.readWord input 96) (referenceWord input))
-        (UInt256.lor
-          (UInt256.xor (MachineState.readWord input 32) (referenceWord input))
-          (UInt256.lor
-            (UInt256.xor (MachineState.readWord input 64) (referenceWord input))
-            (reverseAcc input 9))) := rfl
+    (by decide) (equalityAcc input 9) (referenceWord input) [] (by decide) rfl rfl rfl
+  have ha : equalityAcc input 10 =
+      UInt256.land
+        (UInt256.eq (MachineState.readWord input 96) (referenceWord input))
+        (UInt256.land
+          (UInt256.eq (MachineState.readWord input 32) (referenceWord input))
+          (UInt256.land
+            (UInt256.eq (MachineState.readWord input 64) (referenceWord input))
+            (equalityAcc input 9))) := rfl
   simpa only [loopState, loopExitState, show ¬ 9 < 9 by decide, if_false,
     List.append_nil, show 864 - 96 * 9 = 0 by decide,
     show 928 - 96 * 9 = 64 by decide, show 896 - 96 * 9 = 32 by decide,

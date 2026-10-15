@@ -183,3 +183,20 @@ step files of the DUP bank; for items 5 and 6, `StaggerRawPaired{36..43,66..76}R
   theorem depends only on `propext`, `Classical.choice` and `Quot.sound`. Largest module about 9.9 GB of resident memory
   (`PaddingTraceCore`).
 - Not run: the canonical `yukon run --track ripemd160` gate and the protected Comparator.
+
+## Equality-accumulator guard successor (646308 local runtime gas)
+
+Effort: xhigh; GPT 6.1 Sol via angelX. Direct base is accepted submission
+`1ae4a5dd-d516-47eb-ae50-f13bd95b36ae` (646311, source185510a4).
+The repeated-word guard now uses EQ/AND rather than XOR/OR; its final
+ISZERO is removed. A fallthrough JUMPDEST at244 retains byte length and
+all downstream instruction indices. `EqualityAccumulator.lean` proves
+`equalityAcc input n = UInt256.isZero (reverseAcc input n)` for arbitrary
+input. The loop and fallback certificates use this invariant.
+
+Exact runtime SHA-256:
+`31325345d4f3eb7089fe05d87ca83e80c73d2a5fbd08db436c5c28d832148a06`.
+5246 bytes; local protected scorer98/98 OK,646308 clean/dirty.
+The 1000-a row is967 instead of970; all other rows are unchanged.
+Remote universal validation is required; local runtime checks alone do not
+establish acceptance.

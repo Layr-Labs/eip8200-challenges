@@ -8,6 +8,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Execution
 import Challenge.EvmProof.Memory
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardGrouping
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EqualityAccumulator
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackTail
 
 set_option warningAsError true
@@ -73,7 +74,7 @@ def checkEntryPath : List Located :=
    pushAt 22 2 968,
    opAt 23 .CALLDATALOAD,
    opAt 24 (.Dup ⟨2, by decide⟩),
-   opAt 25 .XOR]
+   opAt 25 .EQ]
 
 def loopPath : List Located :=
   [opAt 125 .JUMPDEST,
@@ -82,23 +83,23 @@ def loopPath : List Located :=
    opAt 128 .SUB,
    opAt 129 .CALLDATALOAD,
    opAt 130 (.Dup ⟨3, by decide⟩),
-   opAt 131 .XOR,
-   opAt 132 .OR,
+   opAt 131 .EQ,
+   opAt 132 .AND,
    pushAt 133 1 64,
    opAt 134 (.Dup ⟨2, by decide⟩),
    opAt 135 .SUB,
    opAt 136 .CALLDATALOAD,
    opAt 137 (.Dup ⟨3, by decide⟩),
-   opAt 138 .XOR,
-   opAt 139 .OR,
+   opAt 138 .EQ,
+   opAt 139 .AND,
    pushAt 140 1 96,
    opAt 141 (.Dup ⟨2, by decide⟩),
    opAt 142 .SUB,
    opAt 143 (.Swap ⟨1, by decide⟩),
    opAt 144 .CALLDATALOAD,
    opAt 145 (.Dup ⟨3, by decide⟩),
-   opAt 146 .XOR,
-   opAt 147 .OR,
+   opAt 146 .EQ,
+   opAt 147 .AND,
    opAt 148 (.Dup ⟨1, by decide⟩),
    pushAt 149 1 210,
    opAt 150 .JUMPI]
@@ -106,13 +107,12 @@ def loopPath : List Located :=
 /-- Branch on the accumulator directly. The generic implementation carries the
 zero counter and anchor below it as a suffix. -/
 def tailPath : List Located :=
-  [opAt 151 .ISZERO,
-   pushAt 152 2 4702,
-   opAt 153 .JUMPI]
+  [pushAt 151 2 4702,
+   opAt 152 .JUMPI]
 
 /-- Off the measured path: the divert lands on the generic arm's entry. -/
 def fallbackPath : List Located :=
-  [entryDest]
+  [opAt 153 .JUMPDEST, entryDest]
 
 def returnPath : List Located :=
   [pushAt 3475 20 972889429405991776604892044862621566948497025487,
@@ -156,12 +156,12 @@ def fallbackState (input : ByteArray) : State :=
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 210
-    stack := [reverseAcc input n, UInt256.ofNat (960 - 96 * n), referenceWord input] }
+    stack := [equalityAcc input n, UInt256.ofNat (960 - 96 * n), referenceWord input] }
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 240
-    stack := [reverseAcc input 10, UInt256.ofNat 0, referenceWord input] }
+    stack := [equalityAcc input 10, UInt256.ofNat 0, referenceWord input] }
 
 /-- The accumulator test `ISZERO PUSH2 0x125e JUMPI` at 240 jumped (zero accumulator) to the answer
 block's `JUMPDEST` 4702 in the tail. -/
@@ -180,7 +180,7 @@ def returnEntry (input : ByteArray) : State :=
 
 def tailDivertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 245
+    pc := UInt256.ofNat 244
     stack := spentCells input }
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -355,7 +355,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
 
 @[simp] theorem pc_direct_75 : Artifact.submissionArtifact.instructionPC 151 = 240 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_76 : Artifact.submissionArtifact.instructionPC 152 = 241 := by
+@[simp] theorem pc_direct_76 : Artifact.submissionArtifact.instructionPC 152 = 243 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_77 : Artifact.submissionArtifact.instructionPC 153 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

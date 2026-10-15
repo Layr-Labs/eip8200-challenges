@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "1ae4a5dd-d516-47eb-ae50-f13bd95b36ae",
+    "rationale": "Direct 646311 baseline: reuse shift-free multiply-stage endian epilogue and proof modules. This candidate only changes repeated-word comparisons from XOR/OR to EQ/AND and removes the terminal ISZERO, preserving total length and all later instruction indices.",
+    "evidence": "Source185510a47e4d02d89df7b13b90fc982ae31e0036. Runtime decoded SHA256 fdf164479431f204aeac1c04b10b8526e7e6c3f8362f6369407cc6ffee449346 to31325345d4f3eb7089fe05d87ca83e80c73d2a5fbd08db436c5c28d832148a06. Only bytes44,217,218,225,226,234,235,240..244 differ."
+  },
+  {
     "submissionId": "10bd246d-6c94-493a-9515-1a82802a5252",
     "rationale": "Direct baseline: accepted 647,047 image (frontier 99c19938e). This candidate only replaces the endian epilogue at PC 4753..4785 (instructions 3500..3524) by two shift-free multiply stages with the 2^24 scale absorbed by a store at byte offset 3, plus eight unreachable DUP1 fillers after RETURN; 647,047 -> 646,311 gas.",
     "evidence": "Baseline decoded SHA256 6c536356de5bd022a9089722a6cd22b0d19cb64224544b899b9c26ebe7ad73ab versus candidate fdf164479431f204aeac1c04b10b8526e7e6c3f8362f6369407cc6ffee449346. Same length (5246 bytes) and instruction count; every byte outside PC 4753..4785 is identical."
