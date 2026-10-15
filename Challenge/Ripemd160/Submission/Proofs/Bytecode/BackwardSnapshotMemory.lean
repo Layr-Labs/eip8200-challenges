@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotCertificates
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pc792Writer
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 4000000
@@ -178,6 +179,58 @@ theorem ready (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
     have hp := congrArg UInt32.toNat (h.scalar j hj)
     exact ((result_lanes m lo hi hc j hj).1).trans hp
 
+/-! The guard candidate exchanges two stores after the snapshot loads.  The
+canonical result below is still the old masked schedule memory, not a new
+byte-source model. -/
+
+def writerWrites0 (words : Nat → UInt256) : List (Nat × UInt256) :=
+  [(900, words 9), (216, words 10), (882, words 3), (126, words 11),
+   (864, words 11), (846, words 3)]
+
+def writerWrites3 (words : Nat → UInt256) : List (Nat × UInt256) :=
+  [(1062, words 13), (972, words 3), (1008, words 15), (648, words 15),
+   (630, words 10), (612, words 15), (738, words 8), (288, words 7)]
+
+def writerMemory0 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
+  Pair13WriterRaw.writeChain memory (writerWrites0 words)
+
+def writerMemory3 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
+  Pair13WriterRaw.writeChain memory (writerWrites3 words)
+
+def writerWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
+  writerWrites0 words ++ Pc792Writer.writes1 words ++ Pc792Writer.writes2 words ++
+    writerWrites3 words ++ Pc792Writer.writes4 words ++ Pc792Writer.writes5 words
+
+/-- Byte-array equality to the old writer order, without clean-word or memory
+assumptions. D11 is schedule word 10; D6 is schedule word 15. -/
+theorem writerWrites_eq_old (memory : ByteArray) (words : Nat → UInt256) :
+    Pair13WriterRaw.writeChain memory (writerWrites words) =
+      Pair13WriterRaw.writeChain memory (Pc792Writer.rawWrites words) := by
+  let tail := [(648, words 15), (630, words 10), (612, words 15),
+    (738, words 8), (288, words 7)] ++ Pc792Writer.writes4 words ++ Pc792Writer.writes5 words
+  change Pair13WriterRaw.writeChain (PairedScheduleMemory.writeWord memory 900 (words 9))
+      ((216, words 10) :: PoolRawWriter.paddingMiddle words ++ (1008, words 15) :: tail) =
+    Pair13WriterRaw.writeChain (PairedScheduleMemory.writeWord memory 900 (words 9))
+      ((1008, words 15) :: PoolRawWriter.paddingMiddle words ++ (216, words 10) :: tail)
+  exact PoolRawWriter.paddingStores_exchange _ words tail
+
+/-- After every writer store, the candidate has exactly the old canonical
+masked schedule image, including all bytes outside the schedule. -/
+theorem writer_memory_eq (memory : ByteArray) (words : Nat → UInt256) :
+    Pair13WriterRaw.writeChain memory (writerWrites words) =
+      FusedTerminalMemory.writerMemory memory words := by
+  rw [writerWrites_eq_old, Pc792Writer.memory_eq]
+
+theorem writer_chunks_eq (memory : ByteArray) (words : Nat → UInt256) :
+    Pc792Writer.memory5 (Pc792Writer.memory4
+      (writerMemory3 (Pc792Writer.memory2 (Pc792Writer.memory1
+        (writerMemory0 memory words) words) words) words) words) words =
+      FusedTerminalMemory.writerMemory memory words := by
+  rw [← writer_memory_eq]
+  simp only [writerMemory0, writerMemory3, Pc792Writer.memory1, Pc792Writer.memory2,
+    Pc792Writer.memory4, Pc792Writer.memory5, writerWrites, Pair13WriterRaw.writeChain_append]
+
+#print axioms writer_memory_eq
 #print axioms ready
 #print axioms result_shape
 #print axioms copiedFour_getD

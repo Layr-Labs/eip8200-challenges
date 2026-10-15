@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotNormal
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.BackwardSnapshotRun
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13Endian
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PoolReference
@@ -56,8 +56,53 @@ theorem run_clear (s : State) (pc : UInt256) (stack : List UInt256)
     State.activeWordsAfterUInt256, hact, Word.word_toNat_ofNat, PoolShapeV2.clearTerminal]
   exact ⟨rfl, rfl⟩
 
-abbrev normalTemplate := SecondSnapshotNormal.normalTemplate
-abbrev run_normal := SecondSnapshotNormal.run_normal
-abbrev exact_bytes := SecondSnapshotNormal.exact_bytes
-abbrev end_pc := SecondSnapshotNormal.end_pc
+/-- The complete candidate normal path, PC 462 through PC 824. -/
+def normalTemplate : List Instr :=
+  (candidateTemplate ++ BackwardSnapshotRun.template) ++ BackwardSnapshotRun.writerTemplate
+
+theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
+    (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
+    (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
+    (hq1 : off + UInt256.ofNat 32 = UInt256.ofNat (p + 32))
+    (hq0 : off = UInt256.ofNat p) (hpc : pc = UInt256.ofNat 462) :
+    runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
+      some {s with
+        pc := pcAfter pc normalTemplate
+        stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
+        memory := PoolReference.dataMemory s.memory p
+        activeWords := loadedActiveWords s (UInt256.ofNat p)} := by
+  let rest : List UInt256 :=
+    a2 :: a3 :: a4 :: a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: off :: lim :: mask8 :: mask16 :: rho
+  let F := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho
+  let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory p)
+  let high := PairedScheduleData.reversedWord (MachineState.readWord s.memory (p + 32))
+  let words := Pair13PoolRaw.poolWordV2 (BackwardSnapshotMemory.fanMemory s.memory low high)
+  let scratch := Pair13Endian.scratchV2 s.memory low high
+  let s1 : State := {s with activeWords := loadedActiveWords s (UInt256.ofNat p)}
+  let s2 : State := {s1 with memory := scratch}
+  let s3 : State := {s2 with memory := BackwardSnapshotMemory.copiedFour scratch}
+  have ha : 35 ≤ s1.activeWords.toNat := Stagger144Active.loaded_active_ge35 s p hp hbound
+  have ha2 : 35 ≤ s2.activeWords.toNat := ha
+  have ha3 : 35 ≤ s3.activeWords.toNat := ha
+  have hF : F.length ≤ 900 := by simp [F, stk]; omega
+  have hrest : rest.length ≤ 898 := by simp only [rest, List.length_cons]; omega
+  have h1 := run_candidate s pc ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p
+    (by omega) hrun hp hbound hq1 hq0
+  have h3 := BackwardSnapshotRun.run_actual_of_small s2 (pcAfter pc candidateTemplate) F hF hrun (by omega)
+  have h13 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h3
+  have h4 := BackwardSnapshotRun.run_writer s3
+    (pcAfter (pcAfter pc candidateTemplate) BackwardSnapshotRun.template) ret words rest hrest hrun (by omega) (by rw [hpc]; decide)
+  have h134 := DenseScheduleTrace.runInstrSeq_append_running h13 (by exact hrun) h4
+  have h := h134
+  simpa only [normalTemplate, DenseScheduleTrace.pcAfter_append,
+    s1, s2, s3, scratch, Pair13Endian.scratchV2, words,
+    PoolReference.dataMemory, BackwardSnapshotMemory.resultMemory, BackwardSnapshotMemory.fanMemory, low, high, rest, stk] using h
+
+theorem writer_pc :
+    pcAfter (pcAfter (UInt256.ofNat 462) candidateTemplate) BackwardSnapshotRun.template =
+      UInt256.ofNat 608 := by decide
+
+theorem end_pc : pcAfter (UInt256.ofNat 462) normalTemplate = UInt256.ofNat 824 := by decide
+
+#print axioms run_normal
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Pair13NormalTrace
