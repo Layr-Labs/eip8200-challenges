@@ -20,7 +20,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 /-- The machine at a program counter with a given stack. -/
 def stG (input : ByteArray) (pc : Nat) (stk : List UInt256) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat pc, stack := stk }
+    pc := UInt256.ofNat pc, stack := stk, activeWords := UInt256.ofNat 1 }
 
 @[simp] theorem stG_code (input : ByteArray) (pc : Nat) (stk : List UInt256) :
     (stG input pc stk).executionEnv.code = submissionBytecode := rfl

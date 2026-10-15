@@ -155,7 +155,7 @@ def initTemplate : List Instr := [
 def firstTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 33),
     .op .CALLDATASIZE,
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4914),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4910),
     .op .JUMPI ]
 
 /-- Increment the saved offset before loading the old offset. This eliminates one
@@ -184,31 +184,32 @@ def normalTemplate : List Instr := [
 def normalGuardTemplate : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨2, by decide⟩),
     .op .LT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4889),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4885),
     .op .JUMPI ]
+
+/-- A tail's XOR remains live until the segment-length branch. -/
+def tailDiff (s : State) (f : Frame) : UInt256 :=
+  UInt256.xor f.word (MachineState.readWord s.executionEnv.calldata f.off.toNat)
+def pending (s : State) (f : Frame) (rho : List UInt256) : List UInt256 :=
+  tailDiff s f :: frame f rho
 
 def tailTemplate : List Instr := [
-  .op .JUMPDEST,
-  .op (.Dup ⟨1, by decide⟩),
-  .op .CALLDATALOAD,
-  .op (.Dup ⟨3, by decide⟩),
-  .op .XOR,
-  .op (.Dup ⟨4, by decide⟩),
-  .op (.Dup ⟨3, by decide⟩),
-  .op .SUB,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-  .op .SHL,
-  .op .SHR,
-  .op .OR]
+  .op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .CALLDATALOAD,
+  .op (.Dup ⟨3, by decide⟩), .op .XOR]
 
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
-    .op (.Dup ⟨7, by decide⟩),
-    .op .SUB,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
-    .op .JUMPI ]
+    .op (.Dup ⟨8, by decide⟩), .op .SUB,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4547), .op .JUMPI ]
+
+def finalProjectionTemplate : List Instr := [
+  .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .SUB,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 3), .op .SHL, .op .SHR, .op .OR]
+
+def boundaryProjectionTemplate : List Instr := [
+  .op .JUMPDEST, .push ⟨1, by decide⟩ (UInt256.ofNat 40), .op .SHR, .op .OR]
 
 def transitionTemplate : List Instr := [
-  .op .JUMPDEST, .op (.Swap ⟨1, by decide⟩),
+  .op (.Swap ⟨1, by decide⟩),
   .op (.Dup ⟨5, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 2), .op .SHL,
   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .OR,
   .push ⟨1, by decide⟩ (UInt256.ofNat 9), .op (.Dup ⟨1, by decide⟩),
@@ -223,13 +224,13 @@ def transitionTemplate : List Instr := [
 
 def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨4, by decide⟩),
     .op .GT,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4889),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4885),
     .op .JUMPI ]
 
-def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4914),
+def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4910),
     .op .JUMP ]
 
-def resultTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4959),
+def resultTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4955),
     .op .JUMPI ]
 
 

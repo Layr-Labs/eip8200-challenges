@@ -45,7 +45,7 @@ theorem from_entry (input : ByteArray)
   have hactive : s.activeWords = UInt256.ofNat 1 := rfl
   have gprepare := EarlySerializeReturn.gasSteps_prepare input saved (by simp [saved])
   have gp : GasSteps (PatternedScan.patternedEntry input)
-      (J2Moves.atState s 4808 [J2Raw.clamp (UInt256.ofNat input.size)]) := by
+      (J2Moves.atState s 4804 [J2Raw.clamp (UInt256.ofNat input.size)]) := by
     exact GasSteps.cast gprepare rfl (by
       rw [EarlySerializeReturn.prepared_atState]
       rfl)
@@ -66,7 +66,7 @@ theorem from_entry (input : ByteArray)
     have hb := RecognitionAccumulator.allowed_bounds input.size hn
     have gf := EarlySerializeFallback.gasSteps input hfit hb.1
       s.memory (EarlySerializeReturn.prepared_memory_size input saved) rho hc
-    have gfm : GasSteps (J2Moves.atState s 4959 rho)
+    have gfm : GasSteps (J2Moves.atState s 4955 rho)
         (StackTail.append (PaddingTrace.padFramed input) rho) := by
       simpa only [J2Moves.atState, EarlySerializeFallback.incoming, s,
         EarlySerializeReturn.prepared, RecognitionSelectorResult.copied,

@@ -49,6 +49,20 @@ private theorem facts_closed (n : Nat) (hn : Allowed n) :
 theorem facts (n k : Nat) (hn : Allowed n) (hk : k≤last n) : Facts n k :=
   facts_closed n hn ⟨k,by have := last_lt n hn; omega⟩ hk
 
+/-- At a nonfinal 251-byte boundary, the tail shift is always five bytes. -/
+private theorem boundary_shift_closed (n : Nat) (hn : Allowed n) :
+    ∀ k : Fin 32, k.val < last n → isTail n k.val →
+      UInt256.shiftLeft (UInt256.sub (UInt256.ofNat (offset k.val)) (fullW n k.val))
+        (UInt256.ofNat 3) = UInt256.ofNat 40 := by
+  rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals decide
+
+theorem boundary_shift (input : ByteArray) (n k : Nat) (hn : Allowed n)
+    (hk : k < last n) (ht : isTail n k) :
+    UInt256.shiftLeft (UInt256.sub (current input n k).off (current input n k).full)
+      (UInt256.ofNat 3) = UInt256.ofNat 40 :=
+  boundary_shift_closed n hn ⟨k, by have := last_lt n hn; omega⟩ hk ht
+
 theorem init_current (input : ByteArray) (n : Nat) (hn : Allowed n) :
     initResult n = current input n 0 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl

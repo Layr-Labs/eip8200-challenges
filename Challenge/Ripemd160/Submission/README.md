@@ -1,3 +1,48 @@
+# Nonfinal segment-tail projection — local 646,197 gas
+
+Current exact runtime: **5,242 bytes**, decoded SHA-256
+`3bc4db8b7197dd2540a6a0ed58ed22354f38b4997a3bb3b4517673588c2e3162`.
+The protected gas runner returns **98/98 executions OK**, clean **646,197**,
+dirty **646,197**. Universal certificate acceptance is pending Yukon validation.
+
+This extends the warm-empty MLOAD/MSIZE guard below. At every nonfinal
+251-byte patterned-scanner segment, `off = segmentStart + 224` and
+`full = segmentStart + 219`; hence the projection shift is exactly 40 bits.
+The existing end-of-input branch now runs while the tail XOR is still live.
+Its nonfinal arm uses `PUSH1 40; SHR; OR`, instead of dynamically forming the
+shift. The final arm retains the original general projection. This saves
+12 gas per nonfinal segment boundary, 60 gas per benchmark frame in aggregate.
+Eight unreachable serializer filler bytes were removed; a four-byte boundary
+projection was inserted, and subsequent positions and pointer immediates were
+relocated. Compressor and shared writer schedules are unchanged.
+
+The raw tail/control/transition proofs, finite control-state invariant,
+J2 loop induction, exact artifact binding, new site windows, relocated
+entry guards and endian output adapter have focused local checks with no
+`sorryAx`. Full universal verification is deliberately left to Yukon, not
+inferred from local runtime samples. The generic fallback keeps both length32
+and ordinary non-32 cases. The source sections below are historical predecessors,
+not descriptions of the current hash or size.
+
+---
+
+# Guard MLOAD/MSIZE candidate — local 646,257 gas
+
+This working candidate builds on accepted 646,264 submission `ee41c2be-f76e-4b2f-a6a4-27f9c5f6c6a6`.
+The repeated-word guard activates exactly one memory word with `PUSH0; MLOAD`,
+reuses the zero as its reference-word calldata offset, and replaces ten `PUSH1 32`
+instructions with `MSIZE`. A shorter safe prefilter and a swallowed inert filler
+keep length 5,246 bytes and renderer cost 8,194 unchanged. SHA-256:
+`425d4cb74c18156807059705bd4b52935a482a8d882de770e69ddd8f0c7ce2bc`.
+
+Trusted runtime: **98/98 ok, clean 646,257 / dirty 646,257**. The seven-gas
+reduction is on `1000 a's`. Universal remote validation of this source is pending.
+The fallback proof distinguishes empty physical memory from active memory size:
+`MLOAD` does not write a zero word. Focused seed/loop/tail, exact artifact,
+warm-empty copy and ordinary fallback adapters have been checked locally.
+
+---
+
 # RIPEMD-160: epilogue byte swap without shifts on the 647,047 frontier (646,311 gas)
 
 Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
@@ -219,3 +264,25 @@ head invariant: `F(lim) -> EQ(32,lim) :: F(4729)`. Both padding callers supply
 Protected runtime scorer98/98 OK,646264 clean/dirty,44 below predecessor.
 The11 generated32-byte executions save4 each. Universal validation remains
 required for this successor; runtime and fragment tests are not a proof.
+
+
+## Nonfinal segment tail specialization
+
+Current measured image: **646,197 clean / dirty gas**, **5,242 bytes**,
+SHA-256 `3bc4db8b7197dd2540a6a0ed58ed22354f38b4997a3bb3b4517673588c2e3162`.
+98/98 trusted runtime executions pass. Universal certification remains pending.
+
+The patterned scanner now tests the segment endpoint before projecting the
+last loaded word. Final segments retain the general shift. Nonfinal 251-byte
+segment boundaries always satisfy `off - full = 5`, hence use a fixed 40-bit
+shift. No branch was added: the existing endpoint branch was moved while the
+XOR stays live. The nonfinal projection saves 12 gas at each boundary, totaling
+60 over the measured corpus. Eight unreachable DUP1 bytes are removed to keep
+the image smaller; all affected continuation and jump literals are relocated.
+The compressor and PC-derived writer sites remain at their original PCs.
+
+The Lean trace splits tail-XOR, endpoint branch, final projection and nonfinal
+projection; `J2Frame.boundary_shift` proves the fixed shift from the scanner's
+closed allowed-length control-state invariant. It is independent of message
+bytes and the loaded tail value. `J2Moves` exposes the two tail cases to the
+loop induction. The generic fallback retains the length-32 sparse branch.

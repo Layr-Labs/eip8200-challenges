@@ -108,15 +108,15 @@ private def wfOp {op : Operation}
 
 /-- Include the destination JUMPDEST, so the result is precisely PC 246. -/
 private def cleanupPath : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨3614, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3615, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3616, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3617, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3618, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
-   ⟨3619, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3609, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3610, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3611, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3612, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3613, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
+   ⟨3614, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨154, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
-private def cleared (input : ByteArray) : State :=
+def cleared (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     memory := zero32, activeWords := UInt256.ofNat 1, pc := UInt256.ofNat 246 }
 
@@ -125,15 +125,15 @@ from the original initial state. -/
 def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
   { initialState submissionBytecode input 0 with
     memory := m, activeWords := UInt256.ofNat 1,
-    pc := UInt256.ofNat 4959, stack := rho }
+    pc := UInt256.ofNat 4955, stack := rho }
 
 private theorem cleanup_pcs :
-    Artifact.submissionArtifact.instructionPC 3614 = 4959 ∧
-    Artifact.submissionArtifact.instructionPC 3615 = 4960 ∧
-    Artifact.submissionArtifact.instructionPC 3616 = 4961 ∧
-    Artifact.submissionArtifact.instructionPC 3617 = 4962 ∧
-    Artifact.submissionArtifact.instructionPC 3618 = 4963 ∧
-    Artifact.submissionArtifact.instructionPC 3619 = 4965 ∧
+    Artifact.submissionArtifact.instructionPC 3609 = 4955 ∧
+    Artifact.submissionArtifact.instructionPC 3610 = 4956 ∧
+    Artifact.submissionArtifact.instructionPC 3611 = 4957 ∧
+    Artifact.submissionArtifact.instructionPC 3612 = 4958 ∧
+    Artifact.submissionArtifact.instructionPC 3613 = 4959 ∧
+    Artifact.submissionArtifact.instructionPC 3614 = 4961 ∧
     Artifact.submissionArtifact.instructionPC 154 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -165,10 +165,10 @@ private theorem run_cleanup (input : ByteArray) (m : ByteArray) (hm : m.size = 3
     p0, p1, p2, p3, p4, p5, pd, jump245,
     State.activeWordsAfterUInt256, MachineState.activeWordsAfter, clear_word m hm]
 
-private def copyPrefix : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
+def copyPrefix : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
   Artifact.padEnterPath ++ Artifact.padCopyPath
 
-private theorem run_copyPrefix (input : ByteArray) (hfit : CalldataFits input)
+theorem run_copyPrefix (input : ByteArray) (hfit : CalldataFits input)
     (hpos : 0 < input.size) :
     DataStepper.runLocatedBlock copyPrefix (cleared input) =
       some (PaddingTrace.padCopied input) := by
@@ -194,6 +194,33 @@ private theorem run_copyPrefix (input : ByteArray) (hfit : CalldataFits input)
     calldata_absorb_zero32 input hpos, activeWords_absorb input.size hpos]
   rfl
 
+theorem run_copyPrefix_warmEmpty (input : ByteArray) (hfit : CalldataFits input)
+    (hpos : 0 < input.size) :
+    DataStepper.runLocatedBlock copyPrefix ({initialState submissionBytecode input 0 with
+        pc := UInt256.ofNat 246, activeWords := UInt256.ofNat 1}) =
+      some (PaddingTrace.padCopied input) := by
+  obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7⟩ := prefix_pcs
+  have hsize : input.size % 2 ^ 256 = input.size := Nat.mod_eq_of_lt
+    (Nat.lt_trans hfit (by norm_num))
+  have hsize' : input.size %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      input.size := hsize
+  have hm8 : UInt256.ofNat
+      450552876409790643671482431940419874915447411150352389258589821042463539455 =
+      DenseScheduleTemplate.mask8 := by decide
+  have hm16 : UInt256.ofNat
+      1766820105243087041267848467410591083712559083657179364930612997358944255 =
+      DenseScheduleTemplate.mask16 := by decide
+  simp [copyPrefix, Artifact.padEnterPath, Artifact.padCopyPath,
+    DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
+    PaddingTrace.padCopied, PaddingTrace.padCopyDone,
+    PaddingTrace.padLengthReady, PaddingTrace.padEntry, Main.initializedState,
+    Execution.mainStart, Execution.atPC, initialState,
+    p0, p1, p2, p3, p4, p5, p6, p7, hsize, hsize', hm8, hm16,
+    Padding.messageOffset, State.activeWordsAfterUInt256,
+    activeWords_absorb input.size hpos]
+  rfl
+
 /-- Scanner misses with a nonempty input rejoin the ordinary framed padding
 state, preserving any lower stack of at most twenty words. -/
 def gasSteps (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)
@@ -215,7 +242,7 @@ def gasSteps_of_eq (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (hs : s = { initialState submissionBytecode input 0 with
       memory := m, activeWords := UInt256.ofNat 1,
-      pc := UInt256.ofNat 4959, stack := rho }) :
+      pc := UInt256.ofNat 4955, stack := rho }) :
     GasSteps s (StackTail.append (PaddingTrace.padFramed input) rho) := by
   subst s
   exact gasSteps input hfit hpos m hm rho hcap

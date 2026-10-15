@@ -45,7 +45,7 @@ def entryState (s : State) : State :=
   {s with
     pc := UInt256.ofNat 824
     stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-      (UInt256.ofNat 1056) (UInt256.ofNat 4729) maskRho}
+      (UInt256.ofNat 1056) (UInt256.ofNat 4733) maskRho}
 
 def resultHash (s : State) : Compression.HashState :=
   Functional.result s.memory StackRunBridge.initialHashState
@@ -62,10 +62,10 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray)
     (hactive : s.activeWords = UInt256.ofNat 35) :
     GasSteps (entryState s) (resultState s) := by
   have gb := gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4729) maskRho (by decide)
+    (UInt256.ofNat 1056) (UInt256.ofNat 4733) maskRho (by decide)
     (by rw [hactive]; decide)
   have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 4729) resultCont maskRho (by decide) e.run
+    (UInt256.ofNat 1056) (UInt256.ofNat 4733) resultCont maskRho (by decide) e.run
     (StaggerPersistentLoopSites.valid_out s e.code)
     e.code e.fork e.np
   have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) resultCont

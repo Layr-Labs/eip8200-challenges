@@ -33,7 +33,7 @@ def backTemplate : List Instr := [.op (.Swap ⟨10, by decide⟩)]
 def nextOffset (off : UInt256) : UInt256 := off + UInt256.ofNat 64
 
 /-- The output entry: the continuation of the pad-only block and of the 32-byte block. -/
-def outPC : Nat := 4729
+def outPC : Nat := 4733
 
 /-- The block entry stack: every block, the pad-only block included, starts with the frame. -/
 def entryStack (_input : ByteArray) (_i : Nat) (h : Compression.HashState) (off limit : UInt256)

@@ -42,10 +42,10 @@ def lowTemplate : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 54),
     .op .MSTORE ]
 
-/-- `PUSH2 0x1280 SWAP13 POP PUSH2 0338 JUMP` at 117: the output entry 4729 becomes the
+/-- `PUSH2 0x1280 SWAP13 POP PUSH2 0338 JUMP` at 117: the output entry 4733 becomes the
 continuation in slot 12 and the block goes straight to the rounds. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4729),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
     .op (.Swap ⟨12, by decide⟩),
     .op .POP,
     .push ⟨2, by decide⟩ (UInt256.ofNat 824),
@@ -92,7 +92,7 @@ theorem pack_two_bytes (memory : ByteArray) (hsize : 86 ≤ memory.size)
           exact (hzero i (by omega) (by omega)).symm
       · rw [if_neg h36, if_neg h54, if_neg (by omega), if_neg (by omega)]
 
-/-- Pad-only high block (pc 4833..4860), reached only when `n >>> 29 ≠ 0`. -/
+/-- Pad-only high block (pc 4829..4860), reached only when `n >>> 29 ≠ 0`. -/
 def highTemplate : List Instr :=
   [ .op .CALLDATASIZE,
     .push ⟨1, by decide⟩ (UInt256.ofNat 29),
@@ -219,7 +219,7 @@ theorem run_branch_taken (s : State) (pc : UInt256)
         {s with pc := pc, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho} =
       some {s with
         pc := UInt256.ofNat 824
-        stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4729 :: rho} := by
+        stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4733 :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid
