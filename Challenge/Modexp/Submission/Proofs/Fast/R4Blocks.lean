@@ -95,53 +95,55 @@ def block_redm : Block Artifact.submissionArtifact .Osaka 4616 prog_redm :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3628 11 4616 prog_redm
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- RED slice 1 (pc 4938..4965, idx 3950..3976). -/
+/-- RED slice 1 (pc 4627..4652, idx 3639..3664).  `T`-carry form: the stored sum goes to
+the destination slot and the dead source slot receives the destination's old word. -/
 def prog_reds1 : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MUL, .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨13, by decide⟩),
    .op (.Dup ⟨4, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,
    .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨10, by decide⟩), .op .POP, .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .GT, .op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB,
+   .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨11, by decide⟩), .op (.Swap ⟨10, by decide⟩),
+   .op .GT, .op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB,
    .op .SUB, .op .ADD]
 
 def block_reds1 : Block Artifact.submissionArtifact .Osaka 4627 prog_reds1 :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3639 27 4627 prog_reds1
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3639 26 4627 prog_reds1
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- RED slice 2 (pc 4965..4992, idx 3977..4003). -/
+/-- RED slice 2 (pc 4653..4678, idx 3665..3690). -/
 def prog_reds2 : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MUL, .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨14, by decide⟩),
    .op (.Dup ⟨4, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,
    .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨9, by decide⟩), .op .POP, .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .GT, .op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB,
+   .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨10, by decide⟩), .op (.Swap ⟨9, by decide⟩),
+   .op .GT, .op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB,
    .op .SUB, .op .ADD]
 
-def block_reds2 : Block Artifact.submissionArtifact .Osaka 4654 prog_reds2 :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3666 27 4654 prog_reds2
+def block_reds2 : Block Artifact.submissionArtifact .Osaka 4653 prog_reds2 :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3665 26 4653 prog_reds2
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- RED slice 3 (pc 4992..5019, idx 4004..4030). -/
+/-- RED slice 3 (pc 4679..4704, idx 3691..3716). -/
 def prog_reds3 : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MUL, .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨15, by decide⟩),
    .op (.Dup ⟨4, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,
    .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨7, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨8, by decide⟩), .op .POP, .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .GT, .op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB,
+   .op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨9, by decide⟩), .op (.Swap ⟨8, by decide⟩),
+   .op .GT, .op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB,
    .op .SUB, .op .ADD]
 
-def block_reds3 : Block Artifact.submissionArtifact .Osaka 4681 prog_reds3 :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3693 27 4681 prog_reds3
+def block_reds3 : Block Artifact.submissionArtifact .Osaka 4679 prog_reds3 :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3691 26 4679 prog_reds3
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- RED tail (pc 5019.., idx 4031..4041): returns to the `ret` under the window. -/
+/-- RED tail (pc 4705..4715, idx 3717..3727): returns to the `ret` under the window.
+Three unreachable `JUMPDEST` pads follow (pc 4716..4718), so pc 4719 and idx 3731 stay. -/
 def prog_redt : List Instr :=
   [.op (.Dup ⟨8, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .POP, .op .POP,
    .op (.Swap ⟨5, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .LT,
    .op .ADD, .op (.Swap ⟨4, by decide⟩), .op .JUMP]
 
-def block_redt : Block Artifact.submissionArtifact .Osaka 4708 prog_redt :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3720 11 4708 prog_redt
+def block_redt : Block Artifact.submissionArtifact .Osaka 4705 prog_redt :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3717 11 4705 prog_redt
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- pc 4687..4697（idx 3727..3732）: the return landing of the row-1 head trampoline. -/
@@ -241,9 +243,10 @@ def block_r3h : Block Artifact.submissionArtifact .Osaka 4571 prog_r3h :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3589 6 4571 prog_r3h
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- Row 3 diagonal (pc 4893..4919, idx 3907..3932). -/
+/-- Row 3 diagonal (pc 4582..4607, idx 3596..3621).  The overflow bit is `GT a f` and the
+product `a * f` is formed before the `MULMOD`; one `JUMPDEST` keeps the pc/index layout. -/
 def prog_r3d : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .LT, .op .SUB, .op .SUB]
+  [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .GT, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .JUMPDEST, .op .MULMOD, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .LT, .op .SUB, .op .SUB]
 
 def block_r3d : Block Artifact.submissionArtifact .Osaka 4582 prog_r3d :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3596 26 4582 prog_r3d

@@ -4,6 +4,17 @@ Work by Claude Opus 5.5 agents in Claude Code, one per lane.
 
 This extends our `4d05a61b` (stack-clzep, the current record at 457,505). Everything in `4d05a61b` is in this image. It adds fourteen cuts of ours, found by a byte-level search over the record's bytes and then ported through the proofs. None is taken from another submission.
 
+## R4 T-carry reduction cells and row-3 diagonal (port, -442 per seed)
+
+Two byte-neutral cuts in the n=4 (RSA-1024) squaring routine `R4`, ported from our earlier verified patch (made against `4958f98`, there at pc 4877 and 4937..5011). Here the code is the same 293 bytes and 239 instructions lower.
+
+- **RED T-carry (pc 4644..4718).** Each of the three reduction cells stored `s = (c + lo) + T` with `DUPk DUP2 ADD SWAPk+1 POP DUPk+1 DUP2 GT` (23 gas) and took the overflow bit as `GT(c + lo, s)`. It now uses `DUPk DUP2 ADD DUP1 SWAPk+2 SWAPk+1 GT` (21 gas): the sum still lands in the destination slot, the overflow bit is `GT(T, s)`, and the dead source slot receives the destination's old word. The three freed bytes become unreachable `JUMPDEST`s after the RED tail's `JUMP` (pc 4716..4718), so pc 4719 and every later instruction index are unchanged.
+- **Row-3 diagonal (pc 4584..4593).** `SWAP1 DUP8 DUP3 DUP3 DUP1 DUP6 MUL SWAP5 LT SWAP3` (32 gas) became `DUP8 DUP2 DUP1 DUP5 GT SWAP3 DUP5 MUL SWAP4 JUMPDEST` (30 gas). The exit stack is identical.
+
+Gas (`seedscore`, 31 seeds): 455,880.1 → **455,438.1** (-442.0, same on every seed; seed 0 454,861 → 454,419). Length 5,540 bytes and 4,429 instructions, both unchanged.
+
+Proof changes: `R4Blocks` (new `prog_reds1..3`, 26 instructions each; new `prog_r3d`), `R4Runs` (new RED sub-runs; the carry is rewritten to `sCarry` by `gt_add_right_swap`), `R4Diagonal` (`diag3Part0/1` re-derived, `gt a f` rewritten to `lt f a`), `ShiftJumpTargets` (the RED tail's `JUMP` is instruction 3727, was 3730), and `Bytes.lean`, `TnM128CandidateBytes.lean` and `TnM128CandidateArtifact.lean` follow `bytecode.hex`.
+
 ## Context and goal
 
 Minimise total gas over the 44 scorer vectors while `Correct bytecode` stays proved for the exact bytes. The generated `Artifact.lean` fails when S (distinct bytes per 64-byte chunk, summed) plus L (code length) plus 8 per chunk exceeds 8,194; the record had 7 units left. This image: L 5,540 bytes (record 5,568), 4,429 instructions (record 4,456), 87 chunks, S 1,905, so 8,141, 53 below the limit. Seed 0: 454,861 gas (record 456,511).

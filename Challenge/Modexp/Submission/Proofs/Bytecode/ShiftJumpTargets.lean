@@ -111,7 +111,7 @@ theorem jumpSites_eq : jumpSites =
      246, 256, 265, 280, 284, 300, 304, 309, 316, 358, 361, 366, 371, 381, 396, 405,
      415, 439, 460, 487, 500, 514, 1840, 1842, 1846, 1855, 1865, 1877, 1884, 1891, 1901, 2158,
      2396, 2402, 2404, 2440, 2452, 2458, 2465, 2479, 2534, 2571, 3050, 3055, 3082, 3084, 3097, 3101,
-     3113, 3115, 3130, 3137, 3145, 3153, 3283, 3285, 3290, 3297, 3304, 3319, 3415, 3515, 3588, 3730,
+     3113, 3115, 3130, 3137, 3145, 3153, 3283, 3285, 3290, 3297, 3304, 3319, 3415, 3515, 3588, 3727,
      3734, 3757, 3759, 3805, 4266, 4268, 4408, 4428] := by decide
 
 theorem literalJumpTargets_eq : literalJumpTargets =
@@ -123,7 +123,7 @@ theorem literalJumpTargets_eq : literalJumpTargets =
 
 /-- The twelve sites whose destination is a stack word, in program order. -/
 theorem dataDependentJumpSites_eq : dataDependentJumpSites =
-    [316, 371, 2158, 2534, 2571, 3050, 3297, 3304, 3730, 4266, 4268, 4428] := by decide
+    [316, 371, 2158, 2534, 2571, 3050, 3297, 3304, 3727, 4266, 4268, 4428] := by decide
 
 /-- **No literal jump destination is the M9 exit.**  None of the 88 destinations the image
 names with a `PUSH` immediate is pc 3168, 3169 or 3170. -/
