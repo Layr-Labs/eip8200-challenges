@@ -1,4 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeFallback
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.GenericFramedCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EntryGateLogic
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardTail
@@ -151,9 +153,23 @@ theorem correct_of_recognition
   by_cases ht : input = KnownInputData.targetInput
   · subst input
     exact correct_target
-  · exact StackCorrect.correct_tail input hfit (by omega)
-      (spentCells input) (by simp [spentCells])
-      (gasSteps_repeat_miss input hpass h1000 href ht)
+  · have hpos : 0 < input.size := by omega
+    have gp := StackTail.gasSteps EarlySerializeFallback.copyPrefix
+      (s := { initialState submissionBytecode input 0 with
+        pc := UInt256.ofNat 246, activeWords := UInt256.ofNat 1 })
+      (t := PaddingTrace.padCopied input) (spentCells input)
+      (by change 0 + (spentCells input).length + 8 < 1024; simp [spentCells])
+      (by
+        exact
+          EarlySerializeFallback.run_copyPrefix_warmEmpty input hfit hpos)
+      rfl rfl rfl deployAddress_not_precompile
+    have gp' : GasSteps (fallbackState input)
+        (StackTail.append (PaddingTrace.padCopied input) (spentCells input)) := by
+      simpa only [fallbackState, atPC] using gp
+    exact GenericFramedCorrect.correct input hfit hpos (spentCells input)
+      (by simp [spentCells])
+      ((gasSteps_repeat_miss input hpass h1000 href ht).trans
+        (gp'.trans (PaddingTail.gasSteps_push input (spentCells input) (by simp [spentCells]))))
 
 #print axioms correct_of_recognition
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

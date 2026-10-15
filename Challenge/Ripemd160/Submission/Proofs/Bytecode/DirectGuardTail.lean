@@ -77,7 +77,7 @@ theorem run_tail_zero (input : ByteArray) (hz : reverseAcc input 10 = UInt256.of
   have hpre : run (tailPath.take 1) (loopExitState input) =
       some (stG input 243 (UInt256.ofNat 4702 :: UInt256.ofNat 1 :: spentCells input)) := by
     simp (config := { maxSteps := 1000000 })
-      [tailPath, opAt, pushAt, wfOp, loopExitState, stG, spentCells, atPC,
+      [tailPath, opAt, pushAt, wfOp, loopExitState, stG, spentCells, atPC, stG,
       equalityAcc_reverse, hz, hiz0, List.exchange,
       Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
       Challenge.EvmProof.DataStepper.runInstr,
@@ -103,20 +103,19 @@ theorem run_tail_target :
 /-- The taken `JUMPI` lands on the answer block's `JUMPDEST` 4702 in the tail. -/
 theorem run_return_hop (input : ByteArray) :
     run returnHopPath (returnHopState input) = some (returnEntry input) := by
-  have p3502 : Artifact.submissionArtifact.instructionPC 3474 = 4702 := Artifact.cgPc3502
-  change run [opAt 3474 .JUMPDEST] (PatternedScan.stS input 4702 (spentCells input)) =
-    some (PatternedScan.stS input 4703 (spentCells input))
-  exact PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3474 4702 _ (by norm_num) p3502)
-    (PatternedScan.stepS_jumpdest input 4702 _ (by simp [spentCells]) (by norm_num))
+  have hp : Artifact.submissionArtifact.instructionPC 3474 = 4702 := Artifact.cgPc3502
+  change run [opAt 3474 .JUMPDEST] (stG input 4702 (spentCells input)) =
+    some (stG input 4703 (spentCells input))
+  exact blockOf _ (pcFactG input 3474 4702 _ (by norm_num) hp)
+    (stepG_jumpdest input 4702 (spentCells input) (by simp [spentCells]) (by norm_num))
 
-/-- A nonzero accumulator diverts to the generic arm with a two-word suffix. -/
 theorem run_tail_divert_acc (input : ByteArray) (hneAcc : reverseAcc input 10 ≠ 0) :
     run tailPath (loopExitState input) = some (tailDivertState input) := by
   have hiz : UInt256.isZero (reverseAcc input 10) = UInt256.ofNat 0 := by
     unfold UInt256.isZero
     exact if_neg (fun hn => hneAcc (Challenge.EvmProof.Word.word_ext hn))
   simp (config := { maxSteps := 1000000 })
-    [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC,
+    [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, spentCells, atPC, stG,
     equalityAcc_reverse, hiz, List.exchange, UInt256.isTrue,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
     Challenge.EvmProof.DataStepper.runInstr,
@@ -128,7 +127,7 @@ theorem run_fallback_clear (input : ByteArray) :
     run fallbackPath (tailDivertState input) = some (fallbackState input) := by
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, entryDest, opAt, pushAt, wfOp, tailDivertState, fallbackState,
-    StackTail.append, spentCells, atPC,
+    StackTail.append, spentCells, atPC, stG,
     List.exchange,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
     Challenge.EvmProof.DataStepper.runInstr,
@@ -145,8 +144,8 @@ theorem run_return_store (input : ByteArray) :
     run returnPath (returnEntry input) = some (storedReturnState input) := by
   have hzeroNat : ({ val := 0 } : UInt256).toNat = 0 := rfl
   simp (config := { maxSteps := 1000000 })
-    [returnPath, opAt, pushAt, wfOp, returnEntry, spentCells, atPC, storedReturnState,
-    answerMemory, storeWord, ExactGuardSpec.paddedDigestWord,
+    [returnPath, opAt, pushAt, wfOp, returnEntry, spentCells, atPC, stG, storedReturnState,
+    initialState, answerMemory, storeWord, ExactGuardSpec.paddedDigestWord,
     MachineState.mstore, State.activeWordsAfterUInt256,
     MachineState.activeWordsAfter, hzeroNat,
     Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,

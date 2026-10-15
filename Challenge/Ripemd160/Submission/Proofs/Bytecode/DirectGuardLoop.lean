@@ -16,7 +16,8 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
     (a r : UInt256) (rest : List UInt256) (hlen : rest.length ≤ 1018)
     (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = submissionBytecode)
-    (hinput : s.executionEnv.calldata = input) :
+    (hinput : s.executionEnv.calldata = input)
+    (hactive : s.activeWords = UInt256.ofNat 1) :
     run loopPath
       { s with
         pc := UInt256.ofNat 210
@@ -62,7 +63,7 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
   by_cases hmore : n < 9
   · have hnonzero : 864 - 96 * n ≠ 0 := by omega
     simp (config := { maxSteps := 1000000 }) (disch := omega)
-      [loopPath, opAt, pushAt, wfOp, hrun, hcap3, hcap4, hcap5, hcode, hinput, hdest, hmore,
+      [loopPath, opAt, pushAt, wfOp, hrun, hcap3, hcap4, hcap5, hcode, hinput, hactive, MachineState.msize, hdest, hmore,
        hsub32, hsub64, hsub96, hxor1, hxor2, hxor3, Nat.mod_eq_of_lt hp, Nat.mod_eq_of_lt hq,
        Nat.mod_eq_of_lt hq2, Nat.mod_eq_of_lt ht, hnonzero, List.exchange,
        List.getElem?_cons_zero, UInt256.isTrue,
@@ -83,7 +84,7 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
   · have hn9 : n = 9 := by omega
     subst n
     simp (config := { maxSteps := 1000000 }) (disch := omega)
-      [loopPath, opAt, pushAt, wfOp, hrun, hcap3, hcap4, hcap5, hcode, hinput, hdest,
+      [loopPath, opAt, pushAt, wfOp, hrun, hcap3, hcap4, hcap5, hcode, hinput, hactive, MachineState.msize, hdest,
        hsub32, hsub64, hsub96, hxor1, hxor2, hxor3, List.exchange, List.getElem?_cons_zero,
        UInt256.isTrue,
        Challenge.EvmProof.DataStepper.runLocatedBlock,
@@ -94,8 +95,8 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
 
 theorem run_loop_more (input : ByteArray) (n : Nat) (hn : n < 9) :
     run loopPath (loopState input n) = some (loopState input (n + 1)) := by
-  have h := run_reverse_triple (initialState submissionBytecode input 0) input n
-    (by omega) (equalityAcc input n) (referenceWord input) [] (by decide) rfl rfl rfl
+  have h := run_reverse_triple ({initialState submissionBytecode input 0 with activeWords := UInt256.ofNat 1}) input n
+    (by omega) (equalityAcc input n) (referenceWord input) [] (by decide) rfl rfl rfl rfl
   have hp : 960 - 96 * (n + 1) = 864 - 96 * n := by omega
   have ha : equalityAcc input (n + 1) =
       UInt256.land
@@ -109,8 +110,8 @@ theorem run_loop_more (input : ByteArray) (n : Nat) (hn : n < 9) :
 
 theorem run_loop_last (input : ByteArray) :
     run loopPath (loopState input 9) = some (loopExitState input) := by
-  have h := run_reverse_triple (initialState submissionBytecode input 0) input 9
-    (by decide) (equalityAcc input 9) (referenceWord input) [] (by decide) rfl rfl rfl
+  have h := run_reverse_triple ({initialState submissionBytecode input 0 with activeWords := UInt256.ofNat 1}) input 9
+    (by decide) (equalityAcc input 9) (referenceWord input) [] (by decide) rfl rfl rfl rfl
   have ha : equalityAcc input 10 =
       UInt256.land
         (UInt256.eq (MachineState.readWord input 96) (referenceWord input))

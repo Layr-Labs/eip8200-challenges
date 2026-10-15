@@ -110,7 +110,7 @@ theorem run_sparse (s : State) (pc v flag x0 x1 x2 x3 x4 : UInt256) (G : List UI
 theorem run_guard_miss (s : State) (stack : List UInt256)
     (hstack : stack.length ≤ 1000) (hrun : s.halt = .Running) :
     runInstrSeq guard.template {s with pc := UInt256.ofNat 160, stack := UInt256.ofNat 0 :: stack} =
-      some {s with pc := UInt256.ofNat 164, stack := stack} := by
+      some {s with pc := UInt256.ofNat 165, stack := stack} := by
   have hcap (n : Nat) (hn : n ≤ 3) : stack.length+n < 1024 := by omega
   simp [guard.template, runInstrSeq, DataStepper.runInstr, hrun, hcap,
     UInt256.isTrue, pcAfter, Nat.add_assoc, List.length_cons]
@@ -179,10 +179,10 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
       (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: off :: UInt256.ofNat 4729 :: rho)
       (by simp only [List.length_cons]; omega) hrun hactive
     simpa only [sparse.template, sparse.end_pc, atState, sW, b, c, F0, cstk] using hh
-  have g5 : GasSteps (atState sW 160 (UInt256.ofNat 0 :: F0)) (atState sW 164 F0) := by
-    apply guard.lift sW (atState sW 164 F0) eW (UInt256.ofNat 0 :: F0)
+  have g5 : GasSteps (atState sW 160 (UInt256.ofNat 0 :: F0)) (atState sW 165 F0) := by
+    apply guard.lift sW (atState sW 165 F0) eW (UInt256.ofNat 0 :: F0)
     exact run_guard_miss sW F0 (by omega) hrun
-  have g6 : GasSteps (atState sW 164 F0) (atState sW 166 F0) := by
+  have g6 : GasSteps (atState sW 165 F0) (atState sW 166 F0) := by
     apply missTail.lift sW (atState sW 166 F0) eW F0
     have hc : F0.length < 1024 := by omega
     simp [missTail.template, runInstrSeq, DataStepper.runInstr, atState, eW.run, hc]
