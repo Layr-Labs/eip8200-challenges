@@ -58,17 +58,17 @@ theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
 
 
 theorem initial_slice :
-    (Artifact.submissionArtifact.instructions.drop 165).take initialTemplate.length = initialTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 163).take initialTemplate.length = initialTemplate := by rfl
 
 def initialSite : GenericRoundSite Artifact.submissionArtifact .Osaka initialTemplate :=
-  StackSiteBuilder.ofSlice initialTemplate 165 initial_slice
-    (by change 165 + initialTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice initialTemplate 163 initial_slice
+    (by change 163 + initialTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := initialTemplate) (by decide)) (by decide)
 
-theorem initial_pc : initialSite.startPC = UInt256.ofNat 321 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 165) = UInt256.ofNat 321
+theorem initial_pc : initialSite.startPC = UInt256.ofNat 319 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 163) = UInt256.ofNat 319
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The chaining words and the six resident round constants are pushed directly after the
@@ -78,12 +78,12 @@ def gasSteps_push (s : State) (limit : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 321, stack := UInt256.ofNat 1056 :: limit :: rho}
-      {s with pc := UInt256.ofNat 449, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056) limit rho} := by
-  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 321, stack := UInt256.ofNat 1056 :: limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 319, stack := UInt256.ofNat 1056 :: limit :: rho}
+      {s with pc := UInt256.ofNat 447, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056) limit rho} := by
+  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 319, stack := UInt256.ofNat 1056 :: limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · have hr := run_initial s (UInt256.ofNat 321) limit rho (by omega) hrun
-    have hp : pcAfter (UInt256.ofNat 321) initialTemplate = UInt256.ofNat 449 := by decide
+  · have hr := run_initial s (UInt256.ofNat 319) limit rho (by omega) hrun
+    have hp : pcAfter (UInt256.ofNat 319) initialTemplate = UInt256.ofNat 447 := by decide
     rw [hp] at hr
     exact hr
 

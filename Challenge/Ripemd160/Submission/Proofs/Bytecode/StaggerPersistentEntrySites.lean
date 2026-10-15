@@ -11,11 +11,11 @@ set_option maxRecDepth 30000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
-/-! The block-advance code at 133..142 (`JUMPDEST SWAP11 PUSH1 0x40 ADD SWAP11 PUSH2 0x1c9 JUMP`):
+/-! The block-advance code at 133..142 (`POP SWAP11 PUSH1 0x40 ADD SWAP11 PUSH2 0x1cd JUMP`):
 the increment lives in StaggerPersistentLoopSites, the swap back and the jump to the loop head
 are here. -/
 
-def jumpCode : List Instr := PadJump.template 457
+def jumpCode : List Instr := PadJump.template 461
 theorem jump_slice :
     (Artifact.submissionArtifact.instructions.drop 77).take jumpCode.length = jumpCode := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
@@ -46,21 +46,21 @@ theorem swap_pc : swapSite.startPC = UInt256.ofNat 138 := by
 
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4736).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3484 = 4736 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3481 = 4736 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3484 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3481 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 4736 = true
   rw [hcode]
   exact h
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 457).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 182 = 457 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 461).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 179 = 461 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 182 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 179 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 457 = true
+  change Decode.isValidJumpDest s.executionEnv.code 461 = true
   rw [hcode]
   exact h
 
@@ -95,12 +95,12 @@ theorem valid_stub128 (s : State) (hcode : s.executionEnv.code = Artifact.submis
   exact h
 
 theorem valid_adv (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 132).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 71 = 132 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 131).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 70 = 131 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 71 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 70 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 132 = true
+  change Decode.isValidJumpDest s.executionEnv.code 131 = true
   rw [hcode]
   exact h
 
@@ -136,10 +136,10 @@ def gasSteps_back (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1000
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 139, stack := rho}
-      {s with pc := UInt256.ofNat 457, stack := rho} := by
+      {s with pc := UInt256.ofNat 461, stack := rho} := by
   apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 139, stack := rho} _ hcode hfork hrun hnp jump_pc.symm
   · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template s (UInt256.ofNat 139) rho 457 (by omega) hrun (valid_loop s hcode)
+  · exact PadJump.run_template s (UInt256.ofNat 139) rho 461 (by omega) hrun (valid_loop s hcode)
 
 #print axioms gasSteps_back
 #print axioms gasSteps_swapBack

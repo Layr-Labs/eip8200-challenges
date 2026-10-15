@@ -23,35 +23,26 @@ theorem padded_bound (input : ByteArray) (hfit : CalldataFits input) :
   omega
 
 noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 248)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     GasSteps (initialState submissionBytecode input 0)
       (loopState input (PaddingTrace.entryState input) StackRunBridge.initialHashState StackRunBridge.initialHashState 0
         (DriverTrace.blockCount input) maskRho) := by
   let s := PaddingTrace.entryState input
   let h := StackRunBridge.initialHashState
-  have hr : s.halt = .Running := PadSkipEntry.entryState_halt input
-  have hc : s.executionEnv.code = Artifact.submissionArtifact.code := PadSkipEntry.entryState_code input
-  have hf : s.fork = .Osaka := PadSkipEntry.entryState_fork input
-  have hn : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false := PadSkipEntry.entryState_noPrecompile input
   have heta := PaddingTrace.entryState_eta input
   have hp0 : ¬ (input.size = 0 * 64 ∧ input.size < 256) := by omega
-  have gx : GasSteps s {s with pc := UInt256.ofNat 458, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input 0) maskRho} := by
+  have gx : GasSteps s {s with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input 0) maskRho} := by
     by_cases hz : input.size % 64 = 0 ∧ input.size < 256
-    · have hs : s = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat input.size) maskRho} := by
+    · have hs : s = {s with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat input.size) maskRho} := by
         simpa only [if_pos hz, PaddingTrace.initialFrame, PaddingTrace.copiedLimit, maskRho] using heta
-      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input 0) maskRho)
-        (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
-      exact GasSteps.cast gf (by
+      exact GasSteps.cast (GasSteps.refl s) rfl (by
         rw [LoopCompletionControl.cont_aligned input hz 0 hp0, Nat.mul_zero, Nat.sub_zero]
-        exact hs.symm) rfl
-    · have hs : s = {s with pc := UInt256.ofNat 457, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 48) maskRho} := by
+        exact hs)
+    · have hs : s = {s with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (UInt256.ofNat 48) maskRho} := by
         simpa only [if_neg hz, PaddingTrace.glFrame, maskRho] using heta
-      have gf := StaggerPersistentLoopSites.gasSteps_join s (StaggerPersistentFrame.frame h (UInt256.ofNat 1056) (LoopCompletionControl.cont input 0) maskRho)
-        (by simp [StaggerPersistentFrame.frame, maskRho]) hr hc hf hn
-      exact GasSteps.cast gf (by
+      exact GasSteps.cast (GasSteps.refl s) rfl (by
         rw [LoopCompletionControl.cont_cold input hz 0]
-        exact hs.symm) rfl
+        exact hs)
   have gp := PaddingTrace.gasSteps_pad input hfit hn32 entryPrefix
   have g := gp.trans gx
   simpa only [loopState, loopCont, LoopCompletionControl.blockPC, blockOff, LoopCompletionControl.offIndex,
@@ -75,7 +66,7 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState input (states i) (hashes (i - 1)) (hashes i) i (DriverTrace.blockCount input) maskRho)
         (postState input (states (i + 1)) (hashes i) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 248)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     GasSteps (initialState submissionBytecode input 0) (result input states hashes) := by
   have gs := gasSteps_start input hfit hpositive hn32 entryPrefix
   have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hlast hblock
@@ -101,7 +92,7 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (hfinal : CompressionCorrect.hashArray (hashes (DriverTrace.blockCount input)) =
       CompressionSeamBridge.hashAfter input (DriverTrace.blockCount input))
     (hcalls : (states (DriverTrace.blockCount input)).callStack = [])
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 248)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let trace := fullTrace input hfit hpositive hn32 states hashes hszero hhzero hambient hlast hblock entryPrefix

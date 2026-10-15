@@ -746,6 +746,33 @@ theorem run_writer_grow (s : State) (pc ret : UInt256) (words : Nat → UInt256)
     s0, s1, s2, s3, s4, s5, pc0, pc1, pc2, pc3, pc4, pc5,
     stack0, Pair13PoolRaw.poolStack, outputStack5, hmem] using h05
 
+/-- Stores strictly between the exchanged padding stores in the fixed-PC writer.
+All loads have finished before this block. The canonical word numbering here is
+the schedule numbering, not the top-to-bottom DUP numbering. -/
+def paddingMiddle (words : Nat → UInt256) : List (Nat × UInt256) :=
+  [(882, words 3), (126, words 11), (864, words 11), (846, words 3),
+   (828, words 9), (936, words 8), (558, words 8), (540, words 1),
+   (108, words 5), (684, words 6), (666, words 14), (414, words 6),
+   (756, words 9), (522, words 0), (90, words 12), (72, words 4),
+   (54, words 0), (504, words 1), (1080, words 5), (486, words 5),
+   (1062, words 13), (972, words 3)]
+
+/-- The guard candidate writes the old D11 at 216 early and D6 at 1008
+late. Both stores commute with every intervening store, so the old final
+memory remains the canonical image. No cleanliness assumption is needed. -/
+theorem paddingStores_exchange (memory : ByteArray) (words : Nat → UInt256)
+    (tail : List (Nat × UInt256)) :
+    writeChain memory ((216, words 10) :: paddingMiddle words ++ (1008, words 15) :: tail) =
+      writeChain memory ((1008, words 15) :: paddingMiddle words ++ (216, words 10) :: tail) := by
+  apply Pair13WriterRaw.writeChain_exchange
+  · norm_num
+  all_goals
+    intro z hz
+    simp only [paddingMiddle, List.mem_cons, List.mem_singleton, List.not_mem_nil, or_false] at hz
+    rcases hz with h | h | h | h | h | h | h | h | h | h | h | h |
+      h | h | h | h | h | h | h | h | h | h
+    all_goals subst z; norm_num
+
 theorem template_eq : writerTemplate = Pair13WriterRaw.writerTemplate := rfl
 #print axioms run_writer
 #print axioms run_writer_grow

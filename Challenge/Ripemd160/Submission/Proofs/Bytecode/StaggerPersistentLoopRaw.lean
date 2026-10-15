@@ -67,9 +67,9 @@ theorem run_dispatch (s : State) (pc : UInt256) (h : Compression.HashState)
 def glHeadTemplate : List Instr :=
   [.op .JUMPDEST, .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op (.Dup ⟨12, by decide⟩), .op .ADD]
 
-/-- `PUSH1 v SWAP13 POP`: the continuation stubs at 128 and 192 install the next continuation. -/
+/-- The 128 stub falls through the shared join: `PUSH1 v JUMPDEST SWAP13`. -/
 def setContTemplate (v : Nat) : List Instr :=
-  [.push ⟨1, by decide⟩ (UInt256.ofNat v), .op (.Swap ⟨12, by decide⟩)]
+  [.push ⟨1, by decide⟩ (UInt256.ofNat v), .op .JUMPDEST, .op (.Swap ⟨12, by decide⟩)]
 
 theorem run_setCont (s : State) (pc : UInt256) (h : Compression.HashState)
     (off cont : UInt256) (rho : List UInt256) (v : Nat)
@@ -84,7 +84,7 @@ theorem run_setCont (s : State) (pc : UInt256) (h : Compression.HashState)
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, add_eq_hAdd,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
 
-/-- W2B: the continuation push of the last-block stay (59) and of the 192 stub (193). -/
+/-- The continuation push of the last-block stay (59) and of the 192 stub (193). -/
 def pushContTemplate (v : Nat) : List Instr :=
   [.push ⟨1, by decide⟩ (UInt256.ofNat v)]
 
@@ -101,7 +101,7 @@ theorem run_pushCont (s : State) (pc : UInt256) (h : Compression.HashState)
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, add_eq_hAdd,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
 
-/-- W2B: the shared join at 195, `JUMPDEST SWAP13`, installs the pushed continuation. -/
+/-- The shared join at 131, `JUMPDEST SWAP13`, installs the pushed continuation. -/
 def joinSwapTemplate : List Instr :=
   [.op .JUMPDEST, .op (.Swap ⟨12, by decide⟩)]
 

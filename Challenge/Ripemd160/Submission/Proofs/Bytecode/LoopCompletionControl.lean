@@ -27,9 +27,13 @@ def contNat (input : ByteArray) (i : Nat) : Nat :=
 
 def cont (input : ByteArray) (i : Nat) : UInt256 := UInt256.ofNat (contNat input i)
 
-/-- Message blocks start after the loop-head `JUMPDEST`; the pad-only block at its code at 64. -/
+/-- Message blocks enter the loop-head `JUMPDEST` at 461; the pad-only block enters at 64. -/
 def blockPC (input : ByteArray) (i : Nat) : UInt256 :=
-  UInt256.ofNat (if input.size = i * 64 ∧ input.size < 256 then 64 else 458)
+  UInt256.ofNat (if input.size = i * 64 ∧ input.size < 256 then 64 else 461)
+
+/-- The shared lower-half path has its own JUMPDEST; its table body starts at 498.
+It is not the ordinary loop-head entry, which must reverse both message halves. -/
+def sharedTailPC : UInt256 := UInt256.ofNat 497
 
 /-- The offset index in slot 11 while block `i` runs: the pad-only block keeps the last message
 block's offset, since it is entered by the dispatch without an advance. -/
