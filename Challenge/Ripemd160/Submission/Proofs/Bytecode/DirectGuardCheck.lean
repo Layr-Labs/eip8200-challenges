@@ -23,7 +23,7 @@ private def sS (l : Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     [l] hcode hfork h hrun hnp
 
-/-- The straight-line seed block from PC 33 and the `PUSH1 212 JUMP` at 45 to the loop head at PC 212. -/
+/-- The straight-line seed block from PC 33 and the `PUSH1 210 JUMP` at 45 to the loop head at PC 210. -/
 def gasSteps_checkEntry (input : ByteArray) :
     GasSteps (sizeMatched input) (loopState input 0) := by
   let R := referenceWord input
@@ -54,14 +54,14 @@ def gasSteps_checkEntry (input : ByteArray) :
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have p27 : Artifact.submissionArtifact.instructionPC 27 = 47 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hdest : Decode.isValidJumpDest submissionBytecode 212 = true := Artifact.validJumpDest_212
-  have s7 := sS (pushAt 26 1 212) (PatternedScan.blockOfS _
+  have hdest : Decode.isValidJumpDest submissionBytecode 210 = true := Artifact.validJumpDest_212
+  have s7 := sS (pushAt 26 1 210) (PatternedScan.blockOfS _
     (PatternedScan.pcFactS input 26 45 [UInt256.xor R W, 960, R] (by norm_num) p26)
-    (PatternedScan.stepS_push input 45 1 212 [UInt256.xor R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
+    (PatternedScan.stepS_push input 45 1 210 [UInt256.xor R W, 960, R] (by simp) (by decide) (by decide) (by norm_num)))
   have s8 := sS (opAt 27 .JUMP) (PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 27 47 [212, UInt256.xor R W, 960, R] (by norm_num) p27)
-    (PatternedScan.stepS_jump input 47 212 212 [UInt256.xor R W, 960, R] (by simp) (by norm_num) rfl hdest))
-  have hend : PatternedScan.stS input 212 [UInt256.xor R W, 960, R] =
+    (PatternedScan.pcFactS input 27 47 [210, UInt256.xor R W, 960, R] (by norm_num) p27)
+    (PatternedScan.stepS_jump input 47 210 210 [UInt256.xor R W, 960, R] (by simp) (by norm_num) rfl hdest))
+  have hend : PatternedScan.stS input 210 [UInt256.xor R W, 960, R] =
       loopState input 0 := rfl
   rw [hend] at s8
   exact s0.trans (s1.trans (s2.trans (s3.trans (s4.trans (s5.trans (s6.trans (s7.trans s8)))))))

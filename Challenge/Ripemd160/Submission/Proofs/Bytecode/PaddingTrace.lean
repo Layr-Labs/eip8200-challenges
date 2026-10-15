@@ -473,7 +473,7 @@ def gasSteps_lengthCopy (input : ByteArray) (hfit : CalldataFits input) :
 calldata copy and the frame pushes. -/
 private def gasSteps_padPrefix (input : ByteArray) (hfit : CalldataFits input)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 248)) :
+      (Execution.atPC input 246)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (padFramed input) :=
   (Main.gasSteps_initialize input entryPrefix).trans
@@ -504,7 +504,7 @@ theorem entryState_miss (input : ByteArray) (hnz : ¬ (input.size % 64 = 0 ∧ i
 
 theorem entryState_eta (input : ByteArray) :
     entryState input = {entryState input with
-      pc := UInt256.ofNat 457
+      pc := UInt256.ofNat 461
       stack := if input.size % 64 = 0 ∧ input.size < 256 then initialFrame input else glFrame} := by
   by_cases hz : input.size % 64 = 0 ∧ input.size < 256
   · simp only [entryState_skip input hz, if_pos hz]
@@ -515,7 +515,7 @@ theorem entryState_eta (input : ByteArray) :
 noncomputable def gasSteps_pad (input : ByteArray) (hfit : CalldataFits input)
     (hn32 : input.size ≠ 32)
     (entryPrefix : Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
-      (Execution.atPC input 248)) :
+      (Execution.atPC input 246)) :
     Challenge.EvmProof.GasSteps (initialState submissionBytecode input 0)
       (entryState input) :=
   if hz : input.size % 64 = 0 ∧ input.size < 256 then
@@ -564,13 +564,13 @@ def tail_guardSkip (input : ByteArray) (hfit : CalldataFits input) (hz : input.s
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     Challenge.EvmProof.GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padSkip input) rho) :=
-  liftTail guardPath (run_guardSkip input hfit hz) (by change 21 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
+  liftTail guardPath (run_guardSkip input hfit hz) (by change 20 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
 
 def tail_guardTaken (input : ByteArray) (hfit : CalldataFits input) (hnz : ¬ (input.size % 64 = 0 ∧ input.size < 256))
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     Challenge.EvmProof.GasSteps (StackTail.append (padFramed input) rho)
       (StackTail.append (padGuardTaken input) rho) :=
-  liftTail guardPath (run_guardMiss input hfit hnz) (by change 21 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
+  liftTail guardPath (run_guardMiss input hfit hnz) (by change 20 ≤ 100; decide) rho hcap rfl rfl rfl deployAddress_not_precompile
 
 def tail_sentinelAddress (input : ByteArray)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :

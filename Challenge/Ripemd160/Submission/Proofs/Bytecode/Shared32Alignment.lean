@@ -10,25 +10,24 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate Shared32Sites
 
 abbrev template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 192),
-    .op .NOT,
+  [ .push ⟨8, by decide⟩ (UInt256.ofNat 18446744073709551423),
     .op .CALLDATASIZE,
     .op .AND,
     .push ⟨1, by decide⟩ (UInt256.ofNat 143),
     .op .JUMPI ]
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 176).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 174).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 176 actual_slice
-    (by change 176 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 174 actual_slice
+    (by change 174 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 449 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 176) = UInt256.ofNat 449
+theorem site_pc : site.startPC = UInt256.ofNat 447 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 174) = UInt256.ofNat 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
@@ -42,15 +41,15 @@ theorem valid_padding (s : State) (e : Env s) :
 
 def gasSteps (s : State) (e : Env s) (F : List UInt256)
     (hstack : F.length ≤ 900) (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps (atState s 449 F) (atState s 143 F) := by
-  apply PadLift.gasSteps_of_raw site (atState s 449 F) (atState s 143 F)
+    GasSteps (atState s 447 F) (atState s 143 F) := by
+  apply PadLift.gasSteps_of_raw site (atState s 447 F) (atState s 143 F)
     e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have h0 : F.length < 1024 := by omega
     have h1 : F.length + 1 < 1024 := by omega
     have h2 : F.length + 2 < 1024 := by omega
     have hv := valid_padding s e
-    have hn : (UInt256.land (UInt256.ofNat 32) (UInt256.lnot (UInt256.ofNat 192))).toNat ≠ 0 := by decide
+    have hn : (UInt256.land (UInt256.ofNat 32) (UInt256.ofNat 18446744073709551423)).toNat ≠ 0 := by decide
     simp [template, atState, runInstrSeq, DataStepper.runInstr, e.run,
       h0, h1, h2, h32, UInt256.isTrue, hv, hn]
 

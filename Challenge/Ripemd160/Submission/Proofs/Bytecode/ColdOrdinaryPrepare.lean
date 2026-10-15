@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.LoopCompletionControl
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerTable
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdOrdinarySites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdAlignedBlock
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentPadPrefix
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -63,6 +63,7 @@ def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256
     StaggerTablePad.padRealChain_eq s.memory _ (StaggerPad.highZero_true_imp _ hz)
   exact (g1.trans g2).cast rfl (by rw [heq]; rfl)
 
+/-- Ordinary blocks enter at the loop-head marker (461), not the endian body (462). -/
 def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashState)
     (limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 880)
     (tail : List UInt256) (hrho : rho = DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: tail)
@@ -122,7 +123,7 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     have hq1 : DriverTrace.messageOffsetWord i + UInt256.ofNat 32 = UInt256.ofNat (messagePointer i + 32) := by
       change UInt256.ofNat (messagePointer i) + UInt256.ofNat 32 = _
       rw [Word.ofNat_add_ofNat (by omega)]
-    have gn := ColdOrdinarySites.gasSteps_normal s Paired144WordRound.factorPlusWord
+    have gn := ColdAlignedBlock.gasSteps_normal s Paired144WordRound.factorPlusWord
       (Paired144WordRound.fusedModulusWord 5 7) (Paired144WordRound.fusedModulusWord 8 5)
       (Paired144WordRound.fusedCoefficientWord 0 3) (Paired144WordRound.fusedCoefficientWord 0 2)
       (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1)

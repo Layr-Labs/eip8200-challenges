@@ -17,7 +17,7 @@ theorem run_normal (s : State) (pc ret a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
     (rho : List UInt256) (p : Nat) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
     (hp : 1056 ≤ p) (hbound : p + 64 < 2 ^ 256)
     (hq1 : off + UInt256.ofNat 32 = UInt256.ofNat (p + 32))
-    (hq0 : off = UInt256.ofNat p) (hpc : pc = UInt256.ofNat 458) :
+    (hq0 : off = UInt256.ofNat p) (hpc : pc = UInt256.ofNat 462) :
     runInstrSeq normalTemplate {s with pc := pc, stack := stk ret (UInt256.ofNat 4294967295) a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc normalTemplate

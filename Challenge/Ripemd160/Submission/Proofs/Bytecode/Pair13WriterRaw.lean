@@ -66,6 +66,38 @@ theorem writeWord_comm (memory : ByteArray) (a b : Nat) (v u : UInt256)
     · rw [if_pos hb, if_pos hb, if_neg (by omega)]
     · rw [if_neg hb, if_neg hb]
 
+/-- Folding a suffix is unchanged by how its prefix is parenthesized. -/
+theorem writeChain_append (memory : ByteArray) (xs ys : List (Nat × UInt256)) :
+    writeChain memory (xs ++ ys) = writeChain (writeChain memory xs) ys := by
+  simp only [writeChain, List.foldl_append]
+
+/-- Move a store through a block containing only disjoint stores. -/
+theorem writeChain_move (memory : ByteArray) (x : Nat × UInt256)
+    (stores : List (Nat × UInt256))
+    (hdisjoint : ∀ y ∈ stores, x.1 + 32 ≤ y.1 ∨ y.1 + 32 ≤ x.1) :
+    writeChain (writeWord memory x.1 x.2) stores =
+      writeWord (writeChain memory stores) x.1 x.2 := by
+  induction stores generalizing memory with
+  | nil => rfl
+  | cons y ys ih =>
+    simp only [writeChain_cons]
+    rw [writeWord_comm memory x.1 y.1 x.2 y.2 (hdisjoint y (by simp))]
+    exact ih _ (fun z hz => hdisjoint z (by simp [hz]))
+
+/-- Exchange two disjoint stores across a load-free, disjoint store block.
+The equality is of complete byte arrays, including their sizes, and permits
+arbitrary values, dirty initial memory, and an arbitrary remaining suffix. -/
+theorem writeChain_exchange (memory : ByteArray) (x y : Nat × UInt256)
+    (middle tail : List (Nat × UInt256))
+    (hxy : x.1 + 32 ≤ y.1 ∨ y.1 + 32 ≤ x.1)
+    (hx : ∀ z ∈ middle, x.1 + 32 ≤ z.1 ∨ z.1 + 32 ≤ x.1)
+    (hy : ∀ z ∈ middle, y.1 + 32 ≤ z.1 ∨ z.1 + 32 ≤ y.1) :
+    writeChain memory (x :: middle ++ y :: tail) =
+      writeChain memory (y :: middle ++ x :: tail) := by
+  simp only [writeChain_cons, writeChain_append]
+  rw [writeChain_move memory x middle hx, writeChain_move memory y middle hy,
+    writeWord_comm _ x.1 y.1 x.2 y.2 hxy]
+
 /-- Overwriting the eighteen bytes below a slot erases the dual lane the broadcast
 adds, so the packed and the plain word are interchangeable there. -/
 theorem absorb (memory : ByteArray) (a b : Nat) (hab : b + 18 = a) (w u : UInt256)

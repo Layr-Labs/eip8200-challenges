@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotCertificates
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Lower
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 12000000
@@ -166,6 +167,50 @@ theorem run_actual_of_small (s : State) (pc : UInt256) (rho : List UInt256)
   simpa only [template, DenseScheduleTrace.pcAfter_append, s1, SecondSnapshotCertificates.second_pool_eq s.memory hr, ScratchSnapshotMemory.pool_eq] using h
 
 theorem end_pc : pcAfter (UInt256.ofNat 528) template = UInt256.ofNat 607 := by decide
+/-! The second-snapshot entry in the guard candidate starts at byte 497.
+Its lower-word reversal now uses PUSH1 16, leaving the same scratch memory
+and beginning the backward copies at byte 530. -/
+
+open Pair13Endian
+
+def lowerTemplate : List Instr :=
+  (loadDirectTemplate ++ (stage8 true ++ stage16 true)) ++ lowStoreV2
+
+theorem run_lower (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
+    (rho : List UInt256) (hstack : rho.length ≤ 880) (hrun : s.halt = .Running)
+    (hactive : s.activeWords = UInt256.ofNat 34) :
+    runInstrSeq lowerTemplate
+      {s with pc := pc, stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho} =
+      some {s with
+        pc := pcAfter pc lowerTemplate
+        stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho
+        memory := writeWord s.memory 252
+          (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))} := by
+  let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho
+  let low := PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)
+  have hF : F.length + 3 < 1024 := by simp only [F, stk, List.length_cons]; omega
+  have ha : 34 ≤ s.activeWords.toNat := by rw [hactive]; decide
+  have hloadActive : activeAfterWord s.activeWords (UInt256.ofNat 1056) = s.activeWords := by
+    rw [hactive]
+    rfl
+  have h1 := run_loadDirect s pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho
+    1056 (by omega) hrun rfl (by decide)
+  rw [hloadActive] at h1
+  let pc1 := pcAfter pc loadDirectTemplate
+  have h2 := run_reverse_mixed s pc1 (MachineState.readWord s.memory 1056)
+    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho true true (by omega) hrun
+  have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 (by exact hrun) h2
+  let pc2 := pcAfter (pcAfter pc1 (stage8 true)) (stage16 true)
+  have h3 := run_lowStoreV2_of_small s pc2 low F hF hrun ha
+  have h := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
+  simpa only [lowerTemplate, DenseScheduleTrace.pcAfter_append, pc1, pc2, low] using h
+
+theorem lower_bytes : Challenge.EvmProof.PcEncoding.assembleBytes lowerTemplate =
+    [139,81,128,96,8,28,129,24,143,22,97,1,1,2,24,143,129,128,96,16,28,24,22,98,1,0,1,2,24,96,252,82] := by decide
+
+theorem lower_end_pc : pcAfter (UInt256.ofNat 498) lowerTemplate = UInt256.ofNat 530 := by decide
+#print axioms run_lower
+#print axioms lower_bytes
 #print axioms run_copy
 #print axioms run_actual_of_small
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.SecondSnapshotRun

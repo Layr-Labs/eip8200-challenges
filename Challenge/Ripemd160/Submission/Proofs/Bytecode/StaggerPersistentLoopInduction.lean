@@ -83,7 +83,7 @@ private theorem blockOff_msg (input : ByteArray) (i : Nat)
 
 private theorem blockPC_msg (input : ByteArray) (i : Nat)
     (hp : ¬ (input.size = i * 64 ∧ input.size < 256)) :
-    LoopCompletionControl.blockPC input i = UInt256.ofNat 458 := by
+    LoopCompletionControl.blockPC input i = UInt256.ofNat 461 := by
   simp only [LoopCompletionControl.blockPC, if_neg hp]
 
 private theorem blockCont_msg (input : ByteArray) (i : Nat) (c : UInt256)
