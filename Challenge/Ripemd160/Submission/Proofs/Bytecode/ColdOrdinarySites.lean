@@ -194,7 +194,7 @@ def gasSteps_branch_taken (s : State)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 117, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho}
-      {s with pc := UInt256.ofNat 824, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4736 :: rho} := by
+      {s with pc := UInt256.ofNat 824, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4729 :: rho} := by
   apply PadLift.gasSteps_of_raw branchSite {s with pc := UInt256.ofNat 117, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho} _ hcode hfork hrun hnp branch_pc.symm branch_advances
   exact StaggerPad.run_branch_taken s (UInt256.ofNat 117) x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 off c rho hstack hrun (valid_rounds s hcode)
 

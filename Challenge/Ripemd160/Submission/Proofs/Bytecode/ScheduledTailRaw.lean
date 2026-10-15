@@ -71,7 +71,7 @@ def stack0 (q : Input) (rho : List UInt256) : List UInt256 := [ q.lb,
     q.limit ] ++ rho
 
 def chunk0 : List Instr := [ .op (.Swap ⟨3, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op .ADD,
     .op (.Swap ⟨6, by decide⟩),
@@ -81,7 +81,7 @@ def chunk0 : List Instr := [ .op (.Swap ⟨3, by decide⟩),
     .op (.Swap ⟨3, by decide⟩),
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op .ADD,
     .op (.Swap ⟨4, by decide⟩) ]
@@ -100,11 +100,11 @@ theorem run_chunk0 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_chunk0
 
-def chunk1 : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 144),
+def chunk1 : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op (.Swap ⟨2, by decide⟩),
     .op .POP,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 144),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 144),
     .op .SHR,
     .op (.Swap ⟨7, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),

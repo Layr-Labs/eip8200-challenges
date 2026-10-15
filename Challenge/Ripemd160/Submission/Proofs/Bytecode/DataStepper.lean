@@ -136,6 +136,7 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op (.Swap n) => match s.stack.exchange 0 (n.idx.val + 1) with
         | some stack => some { s with stack := stack, pc := s.pc.succ }
         | none => none
+    | .op .MSIZE => some { s with stack := s.msize :: s.stack, pc := s.pc.succ }
     | .op .PC => some { s with stack := s.pc :: s.stack, pc := s.pc.succ }
     | .op .CODESIZE => some { s with
         stack := UInt256.ofNat s.executionEnv.code.size :: s.stack
@@ -484,6 +485,24 @@ private def sound_pc {s t : State}
     exact g.trace gas hgas
   · simp [runInstr, hcap] at hresult
 
+private def sound_msize {s t : State}
+    (hdecode : s.decodedOp = some .MSIZE)
+    (hresult : runInstr (.op .MSIZE) s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .MSIZE) s, ?_⟩
+  intro gas hgas
+  by_cases hcap : s.stack.length < 1024
+  · simp only [runInstr, if_pos hcap] at hresult
+    cases hresult
+    let g : GasSteps s {s with stack := s.msize :: s.stack, pc := s.pc.succ} :=
+      GasStep.of_running (Gas.baseCost s.fork .MSIZE) hrun hnp
+        (fun fuel hfuel => by
+          simpa [withGas, MachineState.msize] using StepRunning.msize (withGas s fuel) hdecode hfuel hcap)
+    exact g.trace gas hgas
+  · simp [runInstr, hcap] at hresult
+
 private def sound_calldataload {s t : State}
     (hdecode : s.decodedOp = some .CALLDATALOAD)
     (hresult : runInstr (.op .CALLDATALOAD) s = some t)
@@ -762,6 +781,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
     | StackMemFlow op =>
       cases op <;> first
         | exact (sound_pc hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_msize hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_pop hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mload hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mstore hdecode hresult hrun hnp).trace gas hgas

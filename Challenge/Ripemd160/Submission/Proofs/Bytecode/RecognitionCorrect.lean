@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.GenericFramedCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Correct
 set_option warningAsError true
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect
@@ -10,10 +10,10 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
     (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  apply J2Correct.from_entry input hn hentry
+  apply J2Correct.from_entry input hn hfit hentry
   intro rho hcap hg
   have hb := RecognitionAccumulator.allowed_bounds input.size hn
-  exact StackCorrect.correct_tail input hfit hb.1 rho hcap hg
+  exact GenericFramedCorrect.correct input hfit hb.1 rho hcap hg
 
 #print axioms from_entry
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect

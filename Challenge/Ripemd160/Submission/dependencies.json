@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "8b0e974c-1fc7-4a91-9816-7e2626788171",
+    "rationale": "Direct baseline: accepted647126 early-entry/guard/writer proof-repaired runtime. This candidate moves answer serialization before the inherited patterned scanner, threads the memory high-water invariant, and narrows six retained PUSH-width fillers after PC-sensitive stores.",
+    "evidence": "Baseline decoded SHA25620b59c5525a755a58ef9ddcc0eda95d6fd5e319a7f46da073ae9af90b07c3f56 versus candidate6c536356de5bd022a9089722a6cd22b0d19cb64224544b899b9c26ebe7ad73ab. Entry, compressor arithmetic and answer data unchanged; only relocated tail destinations, serializers, cleanup, and widths differ."
+  },
+  {
     "submissionId": "d26d79bc-3c25-4762-9a9a-e611fae7851f",
     "rationale": "Direct base is kaankolcu promoted 647222 source 5e2bc792. The compressor stack replan and all earlier certified code are carried unchanged. This candidate only changes the guard/padding/continuation layout, preserving PC-sensitive stores and every compressor byte from 824 through 4552.",
     "evidence": "Compare decoded bytecode candidate SHA256 20b59c5525a755a58ef9ddcc0eda95d6fd5e319a7f46da073ae9af90b07c3f56 with predecessor 34b57b79b00486b64a85666336c9e0e48c9822c2fc925bda08ccb3222c17c9c5. Both 5247 bytes, compressor [824:4553] identical."
