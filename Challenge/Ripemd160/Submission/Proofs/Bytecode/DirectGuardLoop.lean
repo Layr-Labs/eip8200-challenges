@@ -19,7 +19,7 @@ theorem run_reverse_triple (s : State) (input : ByteArray) (n : Nat) (hn : n < 1
     (hinput : s.executionEnv.calldata = input) :
     run loopPath
       { s with
-        pc := UInt256.ofNat 212
+        pc := UInt256.ofNat 210
         stack := [a, UInt256.ofNat (960 - 96 * n), r] ++ rest } =
     some { s with
       pc := UInt256.ofNat (if n < 9 then 212 else 242)

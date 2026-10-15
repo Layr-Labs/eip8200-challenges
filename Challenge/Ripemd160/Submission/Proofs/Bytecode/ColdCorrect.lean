@@ -11,7 +11,7 @@ bytes or more enter it through the cold padding path (the fast entry admits only
 192 bytes), so the pad-only block never meets a length whose high length words are set. -/
 theorem correct (input : ByteArray) (hfit : CalldataFits input)
     (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 248)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) :=
   ColdOrdinaryCorrect.correct input hfit hpositive hn32 entryPrefix

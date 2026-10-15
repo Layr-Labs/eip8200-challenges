@@ -82,7 +82,7 @@ private theorem isValidJumpDest_of_pc (idx pc : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index idx hget
 
 theorem generic_dest : Decode.isValidJumpDest submissionBytecode 247 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 156 = 247 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 154 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   exact isValidJumpDest_of_pc 156 247 hpc (by rfl)
 
@@ -186,7 +186,7 @@ theorem anchorWord_false (input : ByteArray)
 
 /-- The recogniser's long-length entry (`JUMPDEST PUSH1 251`). -/
 theorem big_dest : Decode.isValidJumpDest submissionBytecode 4793 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3528 = 4793 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3525 = 4793 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   exact isValidJumpDest_of_pc 3528 4793 hpc (by rfl)
 

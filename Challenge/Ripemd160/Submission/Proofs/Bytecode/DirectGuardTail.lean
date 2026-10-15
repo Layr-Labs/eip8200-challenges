@@ -84,12 +84,12 @@ theorem run_tail_zero (input : ByteArray) (hz : reverseAcc input 10 = UInt256.of
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
   have hpc : (stG input 246 (UInt256.ofNat 4709 :: UInt256.ofNat 1 :: spentCells input)).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 155 := by
+      Artifact.submissionArtifact.instructionPC 153 := by
     rw [pc_direct_77]; rfl
   have hjump : run (tailPath.drop 2)
       (stG input 246 (UInt256.ofNat 4709 :: UInt256.ofNat 1 :: spentCells input)) =
       some (returnHopState input) :=
-    blockOf (opAt 155 .JUMPI) hpc
+    blockOf (opAt 153 .JUMPI) hpc
       (stepG_jumpi_taken input 246 4709 (UInt256.ofNat 1) (spentCells input)
         (by simp [spentCells]) (by norm_num) (by decide) Artifact.validJumpDest_4708)
   rw [← List.take_append_drop 2 tailPath]
@@ -103,8 +103,8 @@ theorem run_tail_target :
 /-- The taken `JUMPI` lands on the answer block's `JUMPDEST` 4709 in the tail. -/
 theorem run_return_hop (input : ByteArray) :
     run returnHopPath (returnHopState input) = some (returnEntry input) := by
-  have p3502 : Artifact.submissionArtifact.instructionPC 3477 = 4709 := Artifact.cgPc3502
-  change run [opAt 3477 .JUMPDEST] (PatternedScan.stS input 4709 (spentCells input)) =
+  have p3502 : Artifact.submissionArtifact.instructionPC 3474 = 4709 := Artifact.cgPc3502
+  change run [opAt 3474 .JUMPDEST] (PatternedScan.stS input 4709 (spentCells input)) =
     some (PatternedScan.stS input 4710 (spentCells input))
   exact PatternedScan.blockOfS _ (PatternedScan.pcFactS input 3477 4709 _ (by norm_num) p3502)
     (PatternedScan.stepS_jumpdest input 4709 _ (by simp [spentCells]) (by norm_num))
@@ -174,7 +174,7 @@ def gasSteps_direct_return (input : ByteArray) :
   have hd := Artifact.submissionArtifact.decodeAt_op_index 3481 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 3481 := by
+      Artifact.submissionArtifact.instructionPC 3478 := by
     rw [Artifact.cjPc58]; rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
     Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 3481

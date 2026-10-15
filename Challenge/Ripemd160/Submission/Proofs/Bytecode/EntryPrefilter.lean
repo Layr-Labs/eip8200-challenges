@@ -107,7 +107,7 @@ def gasSteps_fall (input : ByteArray) (h : condition input = 0) :
     path rfl rfl (run_fall input h) rfl deployAddress_not_precompile
 
 def gasSteps_taken (input : ByteArray) (h : condition input ≠ 0) :
-    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 248) :=
+    GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246) :=
   DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     takenPath rfl rfl (run_taken input h) rfl deployAddress_not_precompile
 

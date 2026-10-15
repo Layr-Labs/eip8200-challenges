@@ -229,7 +229,7 @@ def transitionGuardTemplate : List Instr := [ .op (.Dup ⟨4, by decide⟩),
 def toTailTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4905),
     .op .JUMP ]
 
-def resultTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 247),
+def resultTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 245),
     .op .JUMPI ]
 
 
