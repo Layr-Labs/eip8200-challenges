@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "ee41c2be-f76e-4b2f-a6a4-27f9c5f6c6a6",
+    "rationale": "Uses the accepted 646264 runtime and its shared32 length-flag sparse-write proof implementation as the unchanged base. Adds only first-word guard memory activation, MSIZE loop constant, and a shorter safe prefilter mask.",
+    "evidence": "Compare candidate to promoted 0c357603: unchanged bytes from PC36 except guard PUSH-width/filler and PC211..220 MSIZE slot; inherited compressor, recognizers, sparse padding and endian serialization unchanged."
+  },
+  {
     "submissionId": "fe67a6d0-68a5-4dad-90d5-8bab814e133f",
     "rationale": "Direct accepted646308 baseline: carries the EQ/AND repeated-word accumulator and final inversion removal, plus all inherited digest arithmetic, writer, output and recognizer code. The new local22byte entry transform reuses live calldata length for32-byte branch; all bytes outside144..165 remain identical.",
     "evidence": "Accepted source1000e41ce5714760920f371b6742366c3aa94a5c; predecessor decoded SHA25631325345d4f3eb7089fe05d87ca83e80c73d2a5fbd08db436c5c28d832148a06. Candidatebd82d8e3715567bef877c0aaa9d5c9cbc68e41531aafa61216ace10825cf8b82. See Shared32SparseRun/Shared32Sites/Shared32Trace/ColdGuardFixup."

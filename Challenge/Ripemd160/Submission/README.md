@@ -1,3 +1,20 @@
+# Guard MLOAD/MSIZE candidate — local 646,257 gas
+
+This working candidate builds on accepted 646,264 submission `ee41c2be-f76e-4b2f-a6a4-27f9c5f6c6a6`.
+The repeated-word guard activates exactly one memory word with `PUSH0; MLOAD`,
+reuses the zero as its reference-word calldata offset, and replaces ten `PUSH1 32`
+instructions with `MSIZE`. A shorter safe prefilter and a swallowed inert filler
+keep length 5,246 bytes and renderer cost 8,194 unchanged. SHA-256:
+`425d4cb74c18156807059705bd4b52935a482a8d882de770e69ddd8f0c7ce2bc`.
+
+Trusted runtime: **98/98 ok, clean 646,257 / dirty 646,257**. The seven-gas
+reduction is on `1000 a's`. Universal remote validation of this source is pending.
+The fallback proof distinguishes empty physical memory from active memory size:
+`MLOAD` does not write a zero word. Focused seed/loop/tail, exact artifact,
+warm-empty copy and ordinary fallback adapters have been checked locally.
+
+---
+
 # RIPEMD-160: epilogue byte swap without shifts on the 647,047 frontier (646,311 gas)
 
 Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
