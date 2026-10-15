@@ -14,7 +14,8 @@ private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 size-dispatch arm that jumped here).  The two SWAR constants are pushed above it and the pushed word becomes
 the frame's bottom slot (`stop`) in place, so no copy of it is made. -/
 theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
-    (hstack : rho.length ≤ 989) (hrun : s.halt = .Running) :
+    (hstack : rho.length ≤ 989) (hrun : s.halt = .Running)
+    (hactive : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq initTemplate {s with pc := pc, stack := clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho} =
       some {s with pc := pcAfter pc initTemplate, stack := frame (initResult s.executionEnv.calldata.size) rho} := by
   have hbase : rho.length < 1024 := by omega
@@ -27,7 +28,7 @@ theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
   simp (config := { maxSteps := 600000 }) (discharger := omega)
     [initTemplate, initResult_eq, frame, runInstrSeq, DataStepper.runInstr, pcAfter,
     clamp, aligned, c114, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hrun, hbase, hcap, hU, hH, hL, hC, hC2,
+    Nat.add_assoc, hrun, MachineState.msize, hactive, hbase, hcap, hU, hH, hL, hC, hC2,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals simp only [hsub_eq, hdiv_eq, hU, hH, hL, hC, hC2, hadd_eq, hmul_eq, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl

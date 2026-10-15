@@ -7209,25 +7209,25 @@ def group64Block : CoreBlock 4146 4153 [.d, .a, .b, .c, .upper, .e, .factor, .pa
     exact h
 
 
-theorem inline64Template_pc : pcAfter (UInt256.ofNat 4153) inline64Template = UInt256.ofNat 4207 := rfl
+theorem inline64Template_pc : pcAfter (UInt256.ofNat 4153) inline64Template = UInt256.ofNat 4206 := rfl
 
-theorem inline65Template_pc : pcAfter (UInt256.ofNat 4207) inline65Template = UInt256.ofNat 4260 := rfl
+theorem inline65Template_pc : pcAfter (UInt256.ofNat 4206) inline65Template = UInt256.ofNat 4259 := rfl
 
-theorem inline66Template_pc : pcAfter (UInt256.ofNat 4260) inline66Template = UInt256.ofNat 4314 := rfl
+theorem inline66Template_pc : pcAfter (UInt256.ofNat 4259) inline66Template = UInt256.ofNat 4313 := rfl
 
-theorem inline67Template_pc : pcAfter (UInt256.ofNat 4314) inline67Template = UInt256.ofNat 4368 := rfl
+theorem inline67Template_pc : pcAfter (UInt256.ofNat 4313) inline67Template = UInt256.ofNat 4366 := rfl
 
-theorem inline68Template_pc : pcAfter (UInt256.ofNat 4368) inline68Template = UInt256.ofNat 4422 := rfl
+theorem inline68Template_pc : pcAfter (UInt256.ofNat 4366) inline68Template = UInt256.ofNat 4420 := rfl
 
-theorem inline69Template_pc : pcAfter (UInt256.ofNat 4422) inline69Template = UInt256.ofNat 4476 := rfl
+theorem inline69Template_pc : pcAfter (UInt256.ofNat 4420) inline69Template = UInt256.ofNat 4474 := rfl
 
-theorem inline70Template_pc : pcAfter (UInt256.ofNat 4476) inline70Template = UInt256.ofNat 4530 := rfl
+theorem inline70Template_pc : pcAfter (UInt256.ofNat 4474) inline70Template = UInt256.ofNat 4524 := rfl
 
-theorem inline71Template_pc : pcAfter (UInt256.ofNat 4530) inline71Template = UInt256.ofNat 4584 := rfl
+theorem inline71Template_pc : pcAfter (UInt256.ofNat 4524) inline71Template = UInt256.ofNat 4584 := rfl
 
-theorem inline72Template_pc : pcAfter (UInt256.ofNat 4584) inline72Template = UInt256.ofNat 4639 := rfl
+theorem inline72Template_pc : pcAfter (UInt256.ofNat 4584) inline72Template = UInt256.ofNat 4632 := rfl
 
-theorem inline73Template_pc : pcAfter (UInt256.ofNat 4639) inline73Template = UInt256.ofNat 4693 := rfl
+theorem inline73Template_pc : pcAfter (UInt256.ofNat 4632) inline73Template = UInt256.ofNat 4693 := rfl
 
 theorem inline74Template_pc : pcAfter (UInt256.ofNat 4693) inline74Template = UInt256.ofNat 4747 := rfl
 
@@ -7235,11 +7235,11 @@ theorem inline75Template_pc : pcAfter (UInt256.ofNat 4747) inline75Template = UI
 
 theorem inline76Template_pc : pcAfter (UInt256.ofNat 4801) inline76Template = UInt256.ofNat 4854 := rfl
 
-theorem inline77Template_pc : pcAfter (UInt256.ofNat 4854) inline77Template = UInt256.ofNat 4909 := rfl
+theorem inline77Template_pc : pcAfter (UInt256.ofNat 4854) inline77Template = UInt256.ofNat 4918 := rfl
 
-theorem inline78Template_pc : pcAfter (UInt256.ofNat 4909) inline78Template = UInt256.ofNat 4963 := rfl
+theorem inline78Template_pc : pcAfter (UInt256.ofNat 4918) inline78Template = UInt256.ofNat 4955 := rfl
 
-theorem inline79Template_pc : pcAfter (UInt256.ofNat 4963) inline79Template = UInt256.ofNat 5016 := rfl
+theorem inline79Template_pc : pcAfter (UInt256.ofNat 4955) inline79Template = UInt256.ofNat 5016 := rfl
 
 theorem coreExitTemplate_pc : pcAfter (UInt256.ofNat 5016) coreExitTemplate = UInt256.ofNat 5018 := rfl
 
@@ -8442,21 +8442,21 @@ structure WholeCoreSites (artifact : DataProgramArtifact) (fork : Fork) where
   inline63 : {site : GenericRoundSite artifact fork inline63Template // site.startPC = UInt256.ofNat 4085}
   group64 : {site : GenericRoundSite artifact fork group64Template // site.startPC = UInt256.ofNat 4146}
   inline64 : {site : GenericRoundSite artifact fork inline64Template // site.startPC = UInt256.ofNat 4153}
-  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4207}
-  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4260}
-  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4314}
-  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4368}
-  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4422}
-  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4476}
-  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4530}
+  inline65 : {site : GenericRoundSite artifact fork inline65Template // site.startPC = UInt256.ofNat 4206}
+  inline66 : {site : GenericRoundSite artifact fork inline66Template // site.startPC = UInt256.ofNat 4259}
+  inline67 : {site : GenericRoundSite artifact fork inline67Template // site.startPC = UInt256.ofNat 4313}
+  inline68 : {site : GenericRoundSite artifact fork inline68Template // site.startPC = UInt256.ofNat 4366}
+  inline69 : {site : GenericRoundSite artifact fork inline69Template // site.startPC = UInt256.ofNat 4420}
+  inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4474}
+  inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4524}
   inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4584}
-  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4639}
+  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4632}
   inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4693}
   inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4747}
   inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4801}
   inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4854}
-  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4909}
-  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4963}
+  inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4918}
+  inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4955}
   coreExit : {site : GenericRoundSite artifact fork coreExitTemplate // site.startPC = UInt256.ofNat 5016}
   helper : {site : GenericRoundSite artifact fork fullTemplate // site.startPC = UInt256.ofNat 5103}
 

@@ -45,8 +45,8 @@ theorem swap_pc : swapSite.startPC = UInt256.ofNat 138 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4736).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3481 = 4736 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4729).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3481 = 4729 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3481 (by rfl)
   rw [hpc] at h

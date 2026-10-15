@@ -27,8 +27,8 @@ def dispatchSite : GenericRoundSite Artifact.submissionArtifact .Osaka dispatchC
     (StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide))
     (by decide)
 
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4551 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3395) = UInt256.ofNat 4551
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4545 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3395) = UInt256.ofNat 4545
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def incTemplate : List Instr := StaggerPersistentLoopRaw.incTemplate
@@ -160,11 +160,11 @@ def gasSteps_dispatch (s : State) (h : Compression.HashState) (off cont junk : U
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4551, stack := junk :: StaggerPersistentFrame.frame h off cont rho}
+    GasSteps {s with pc := UInt256.ofNat 4545, stack := junk :: StaggerPersistentFrame.frame h off cont rho}
       {s with pc := cont, stack := StaggerPersistentFrame.frame h off junk rho} := by
-  apply ExitLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4551, stack := junk :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp dispatch_pc.symm
+  apply ExitLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4545, stack := junk :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact ExitLift.advancesAll_sound _ (by decide)
-  · exact StaggerPersistentLoopRaw.run_dispatch s (UInt256.ofNat 4551) h off cont junk rho (by omega) hrun hvalid
+  · exact StaggerPersistentLoopRaw.run_dispatch s (UInt256.ofNat 4545) h off cont junk rho (by omega) hrun hvalid
 
 /-- The 192 stub pushes its next continuation before jumping to the shared join. -/
 def stub192Push : GenericRoundSite Artifact.submissionArtifact .Osaka (StaggerPersistentLoopRaw.pushContTemplate 128) :=

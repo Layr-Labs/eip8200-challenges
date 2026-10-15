@@ -45,7 +45,7 @@ def lowTemplate : List Instr :=
 /-- `PUSH2 0x1280 SWAP13 POP PUSH2 0338 JUMP` at 117: the output entry 4736 becomes the
 continuation in slot 12 and the block goes straight to the rounds. -/
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4736),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4729),
     .op (.Swap ⟨12, by decide⟩),
     .op .POP,
     .push ⟨2, by decide⟩ (UInt256.ofNat 824),
@@ -219,7 +219,7 @@ theorem run_branch_taken (s : State) (pc : UInt256)
         {s with pc := pc, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho} =
       some {s with
         pc := UInt256.ofNat 824
-        stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4736 :: rho} := by
+        stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4729 :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by omega
   simp only [Word.word_toNat_ofNat] at hvalid
   norm_num only at hvalid

@@ -355,7 +355,7 @@ def footerRounded (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 187
     stack := PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) :: bitLengthWord input ::
-      UInt256.ofNat 4949 :: padFrame input }
+      UInt256.ofNat 4941 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerA (input : ByteArray) :
@@ -371,9 +371,9 @@ private theorem run_footerA (input : ByteArray) :
 (same shape as `footerRounded`), so the block run below never unfolds the loop's memory recursion. -/
 def footerEntered (input : ByteArray) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 4949
+    pc := UInt256.ofNat 4941
     stack := (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 4949 :: padFrame input }
+      bitLengthWord input :: UInt256.ofNat 4941 :: padFrame input }
 
 private theorem footerEntered_eq (input : ByteArray) :
     footerEntered input = lengthLoopState input 0 := by
@@ -391,9 +391,9 @@ finish inside the memory budget. -/
 def footerPreJump (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 191
-    stack := UInt256.ofNat 4949 ::
+    stack := UInt256.ofNat 4941 ::
       (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 4949 :: padFrame input }
+      bitLengthWord input :: UInt256.ofNat 4941 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerB3 (input : ByteArray) :

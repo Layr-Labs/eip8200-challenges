@@ -7757,7 +7757,7 @@ def inline68Block : CoreBlock 4132 4182 [.d, .k, .b, .c, .a, .e, .factor, .pair,
     rw [inline68Template_pc] at h
     exact h
 
-theorem inline69Template_pc : pcAfter (UInt256.ofNat 4182) inline69Template = UInt256.ofNat 4232 := rfl
+theorem inline69Template_pc : pcAfter (UInt256.ofNat 4182) inline69Template = UInt256.ofNat 4231 := rfl
 
 #print axioms inline69Template_pc
 
@@ -7771,7 +7771,7 @@ def inline69Block : CoreBlock 4182 4232 [.d, .k, .c, .b, .e, .a, .factor, .pair,
     rw [inline69Template_pc] at h
     exact h
 
-theorem inline70Template_pc : pcAfter (UInt256.ofNat 4232) inline70Template = UInt256.ofNat 4279 := rfl
+theorem inline70Template_pc : pcAfter (UInt256.ofNat 4231) inline70Template = UInt256.ofNat 4278 := rfl
 
 #print axioms inline70Template_pc
 
@@ -7780,12 +7780,12 @@ def inline70Block : CoreBlock 4232 4279 [.d, .k, .b, .c, .a, .e, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 13 14 (inline70Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline70Template_word s (UInt256.ofNat 4232) f.frame rho
+    have h := run_inline70Template_word s (UInt256.ofNat 4231) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline70Template_pc] at h
     exact h
 
-theorem inline71Template_pc : pcAfter (UInt256.ofNat 4279) inline71Template = UInt256.ofNat 4329 := rfl
+theorem inline71Template_pc : pcAfter (UInt256.ofNat 4278) inline71Template = UInt256.ofNat 4328 := rfl
 
 #print axioms inline71Template_pc
 
@@ -7794,12 +7794,12 @@ def inline71Block : CoreBlock 4279 4329 [.d, .k, .c, .b, .e, .a, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 12 6 (inline71Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline71Template_word s (UInt256.ofNat 4279) f.frame rho
+    have h := run_inline71Template_word s (UInt256.ofNat 4278) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline71Template_pc] at h
     exact h
 
-theorem inline72Template_pc : pcAfter (UInt256.ofNat 4329) inline72Template = UInt256.ofNat 4380 := rfl
+theorem inline72Template_pc : pcAfter (UInt256.ofNat 4328) inline72Template = UInt256.ofNat 4378 := rfl
 
 #print axioms inline72Template_pc
 
@@ -7808,12 +7808,12 @@ def inline72Block : CoreBlock 4329 4380 [.d, .k, .b, .c, .a, .e, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 5 8 (inline72Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline72Template_word s (UInt256.ofNat 4329) f.frame rho
+    have h := run_inline72Template_word s (UInt256.ofNat 4328) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline72Template_pc] at h
     exact h
 
-theorem inline73Template_pc : pcAfter (UInt256.ofNat 4380) inline73Template = UInt256.ofNat 4427 := rfl
+theorem inline73Template_pc : pcAfter (UInt256.ofNat 4378) inline73Template = UInt256.ofNat 4425 := rfl
 
 #print axioms inline73Template_pc
 
@@ -7822,12 +7822,12 @@ def inline73Block : CoreBlock 4380 4427 [.d, .k, .c, .b, .e, .a, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 12 13 (inline73Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline73Template_word s (UInt256.ofNat 4380) f.frame rho
+    have h := run_inline73Template_word s (UInt256.ofNat 4378) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline73Template_pc] at h
     exact h
 
-theorem inline74Template_pc : pcAfter (UInt256.ofNat 4427) inline74Template = UInt256.ofNat 4477 := rfl
+theorem inline74Template_pc : pcAfter (UInt256.ofNat 4425) inline74Template = UInt256.ofNat 4475 := rfl
 
 #print axioms inline74Template_pc
 
@@ -7836,12 +7836,12 @@ def inline74Block : CoreBlock 4427 4477 [.d, .k, .b, .c, .a, .e, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 13 6 (inline74Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline74Template_word s (UInt256.ofNat 4427) f.frame rho
+    have h := run_inline74Template_word s (UInt256.ofNat 4425) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline74Template_pc] at h
     exact h
 
-theorem inline75Template_pc : pcAfter (UInt256.ofNat 4477) inline75Template = UInt256.ofNat 4528 := rfl
+theorem inline75Template_pc : pcAfter (UInt256.ofNat 4475) inline75Template = UInt256.ofNat 4522 := rfl
 
 #print axioms inline75Template_pc
 
@@ -7850,12 +7850,12 @@ def inline75Block : CoreBlock 4477 4528 [.d, .k, .c, .b, .e, .a, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 14 5 (inline75Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline75Template_word s (UInt256.ofNat 4477) f.frame rho
+    have h := run_inline75Template_word s (UInt256.ofNat 4475) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline75Template_pc] at h
     exact h
 
-theorem inline76Template_pc : pcAfter (UInt256.ofNat 4528) inline76Template = UInt256.ofNat 4577 := rfl
+theorem inline76Template_pc : pcAfter (UInt256.ofNat 4522) inline76Template = UInt256.ofNat 4571 := rfl
 
 #print axioms inline76Template_pc
 
@@ -7864,12 +7864,12 @@ def inline76Block : CoreBlock 4528 4577 [.d, .k, .b, .c, .a, .e, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 11 15 (inline76Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline76Template_word s (UInt256.ofNat 4528) f.frame rho
+    have h := run_inline76Template_word s (UInt256.ofNat 4522) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline76Template_pc] at h
     exact h
 
-theorem inline77Template_pc : pcAfter (UInt256.ofNat 4577) inline77Template = UInt256.ofNat 4628 := rfl
+theorem inline77Template_pc : pcAfter (UInt256.ofNat 4571) inline77Template = UInt256.ofNat 4628 := rfl
 
 #print axioms inline77Template_pc
 
@@ -7878,7 +7878,7 @@ def inline77Block : CoreBlock 4577 4628 [.d, .k, .c, .b, .e, .a, .factor, .pair,
   eval := fun memory f => {f with lane := PairedLaneWordRound.wordStep 4 8 13 (inline77Frame memory f.frame).message0 f.k f.lane}
   run := by
     intro s f rho hstack hrun hactive
-    have h := run_inline77Template_word s (UInt256.ofNat 4577) f.frame rho
+    have h := run_inline77Template_word s (UInt256.ofNat 4571) f.frame rho
       hstack hrun hactive rfl rfl rfl rfl
     rw [inline77Template_pc] at h
     exact h
@@ -9677,14 +9677,14 @@ structure WholeCoreSites (artifact : DataProgramArtifact) (fork : Fork) where
   inline67 : {site : GenericRoundSite artifact fork inline67Block.code // site.startPC = UInt256.ofNat 4082}
   inline68 : {site : GenericRoundSite artifact fork inline68Block.code // site.startPC = UInt256.ofNat 4132}
   inline69 : {site : GenericRoundSite artifact fork inline69Block.code // site.startPC = UInt256.ofNat 4182}
-  inline70 : {site : GenericRoundSite artifact fork inline70Block.code // site.startPC = UInt256.ofNat 4232}
-  inline71 : {site : GenericRoundSite artifact fork inline71Block.code // site.startPC = UInt256.ofNat 4279}
-  inline72 : {site : GenericRoundSite artifact fork inline72Block.code // site.startPC = UInt256.ofNat 4329}
-  inline73 : {site : GenericRoundSite artifact fork inline73Block.code // site.startPC = UInt256.ofNat 4380}
-  inline74 : {site : GenericRoundSite artifact fork inline74Block.code // site.startPC = UInt256.ofNat 4427}
-  inline75 : {site : GenericRoundSite artifact fork inline75Block.code // site.startPC = UInt256.ofNat 4477}
-  inline76 : {site : GenericRoundSite artifact fork inline76Block.code // site.startPC = UInt256.ofNat 4528}
-  inline77 : {site : GenericRoundSite artifact fork inline77Block.code // site.startPC = UInt256.ofNat 4577}
+  inline70 : {site : GenericRoundSite artifact fork inline70Block.code // site.startPC = UInt256.ofNat 4231}
+  inline71 : {site : GenericRoundSite artifact fork inline71Block.code // site.startPC = UInt256.ofNat 4278}
+  inline72 : {site : GenericRoundSite artifact fork inline72Block.code // site.startPC = UInt256.ofNat 4328}
+  inline73 : {site : GenericRoundSite artifact fork inline73Block.code // site.startPC = UInt256.ofNat 4378}
+  inline74 : {site : GenericRoundSite artifact fork inline74Block.code // site.startPC = UInt256.ofNat 4425}
+  inline75 : {site : GenericRoundSite artifact fork inline75Block.code // site.startPC = UInt256.ofNat 4475}
+  inline76 : {site : GenericRoundSite artifact fork inline76Block.code // site.startPC = UInt256.ofNat 4522}
+  inline77 : {site : GenericRoundSite artifact fork inline77Block.code // site.startPC = UInt256.ofNat 4571}
   inline78 : {site : GenericRoundSite artifact fork inline78Block.code // site.startPC = UInt256.ofNat 4628}
   inline79 : {site : GenericRoundSite artifact fork inline79Block.code // site.startPC = UInt256.ofNat 4678}
   coreExit : {site : GenericRoundSite artifact fork coreExitBlock.code // site.startPC = UInt256.ofNat 4727}
@@ -9978,14 +9978,14 @@ structure CorePrefixSites (artifact : DataProgramArtifact) (fork : Fork) where
   inline67 : {site : GenericRoundSite artifact fork inline67Block.code // site.startPC = UInt256.ofNat 4082}
   inline68 : {site : GenericRoundSite artifact fork inline68Block.code // site.startPC = UInt256.ofNat 4132}
   inline69 : {site : GenericRoundSite artifact fork inline69Block.code // site.startPC = UInt256.ofNat 4182}
-  inline70 : {site : GenericRoundSite artifact fork inline70Block.code // site.startPC = UInt256.ofNat 4232}
-  inline71 : {site : GenericRoundSite artifact fork inline71Block.code // site.startPC = UInt256.ofNat 4279}
-  inline72 : {site : GenericRoundSite artifact fork inline72Block.code // site.startPC = UInt256.ofNat 4329}
-  inline73 : {site : GenericRoundSite artifact fork inline73Block.code // site.startPC = UInt256.ofNat 4380}
-  inline74 : {site : GenericRoundSite artifact fork inline74Block.code // site.startPC = UInt256.ofNat 4427}
-  inline75 : {site : GenericRoundSite artifact fork inline75Block.code // site.startPC = UInt256.ofNat 4477}
-  inline76 : {site : GenericRoundSite artifact fork inline76Block.code // site.startPC = UInt256.ofNat 4528}
-  inline77 : {site : GenericRoundSite artifact fork inline77Block.code // site.startPC = UInt256.ofNat 4577}
+  inline70 : {site : GenericRoundSite artifact fork inline70Block.code // site.startPC = UInt256.ofNat 4231}
+  inline71 : {site : GenericRoundSite artifact fork inline71Block.code // site.startPC = UInt256.ofNat 4278}
+  inline72 : {site : GenericRoundSite artifact fork inline72Block.code // site.startPC = UInt256.ofNat 4328}
+  inline73 : {site : GenericRoundSite artifact fork inline73Block.code // site.startPC = UInt256.ofNat 4378}
+  inline74 : {site : GenericRoundSite artifact fork inline74Block.code // site.startPC = UInt256.ofNat 4425}
+  inline75 : {site : GenericRoundSite artifact fork inline75Block.code // site.startPC = UInt256.ofNat 4475}
+  inline76 : {site : GenericRoundSite artifact fork inline76Block.code // site.startPC = UInt256.ofNat 4522}
+  inline77 : {site : GenericRoundSite artifact fork inline77Block.code // site.startPC = UInt256.ofNat 4571}
   inline78 : {site : GenericRoundSite artifact fork inline78Block.code // site.startPC = UInt256.ofNat 4628}
 
 
