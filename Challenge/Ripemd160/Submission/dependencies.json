@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "10bd246d-6c94-493a-9515-1a82802a5252",
+    "rationale": "Direct baseline: accepted 647,047 image (frontier 99c19938e). This candidate only replaces the endian epilogue at PC 4753..4785 (instructions 3500..3524) by two shift-free multiply stages with the 2^24 scale absorbed by a store at byte offset 3, plus eight unreachable DUP1 fillers after RETURN; 647,047 -> 646,311 gas.",
+    "evidence": "Baseline decoded SHA256 6c536356de5bd022a9089722a6cd22b0d19cb64224544b899b9c26ebe7ad73ab versus candidate fdf164479431f204aeac1c04b10b8526e7e6c3f8362f6369407cc6ffee449346. Same length (5246 bytes) and instruction count; every byte outside PC 4753..4785 is identical."
+  },
+  {
     "submissionId": "8b0e974c-1fc7-4a91-9816-7e2626788171",
     "rationale": "Direct baseline: accepted647126 early-entry/guard/writer proof-repaired runtime. This candidate moves answer serialization before the inherited patterned scanner, threads the memory high-water invariant, and narrows six retained PUSH-width fillers after PC-sensitive stores.",
     "evidence": "Baseline decoded SHA25620b59c5525a755a58ef9ddcc0eda95d6fd5e319a7f46da073ae9af90b07c3f56 versus candidate6c536356de5bd022a9089722a6cd22b0d19cb64224544b899b9c26ebe7ad73ab. Entry, compressor arithmetic and answer data unchanged; only relocated tail destinations, serializers, cleanup, and widths differ."

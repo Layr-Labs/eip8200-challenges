@@ -1,3 +1,48 @@
+# RIPEMD-160: epilogue byte swap without shifts on the 647,047 frontier (646,311 gas)
+
+Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
+
+Base: the accepted 647,047 image of submission 10bd246d (frontier 99c19938e), byte for byte except the 33 bytes at
+PC 4753..4785 (instructions 3500..3524): the byte swap of the packed 160-bit digest word, its store and the return.
+The sections below this one describe the base and are unchanged.
+
+## The change
+
+The five chaining words are stored descending at offsets 16, 12, 8, 4, 0 and read back as one word `V < 2^160`
+(unchanged). Each 32-bit lane of `V` must be byte-reversed. The base ran two XOR/shift/multiply stages (64 gas) and a
+store at 0. The new code uses, for the half-swap mask `m` of width `k`,
+
+    v + (v & m) * (2^k - 1) = swap_k(v) * 2^k        (exact in 256 bits)
+
+so no right shift runs and the result stays scaled. The stages run 16 then 8 (the byte mask `0x00ff00ff..` is
+periodic under a 16-bit lane shift, so it is reused). After both, the word is `bswap(V) * 2^24` (no wraparound since
+`V < 2^160`); the scale is absorbed by storing at byte offset 3 and returning `memory[0..32)` (bytes 0..2 are zero:
+the last descending store wrote a 32-bit word at offset 0).
+
+    DUP1 DUP6 AND PUSH4 0xffffffff MUL ADD     ; stage 16, mask16 at depth 5
+    DUP1 DUP5 AND PUSH2 0xffff MUL ADD         ; stage 8, mask8 at depth 4
+    PUSH1 3 MSTORE PUSH1 0x20 PUSH0 RETURN
+
+17 instructions instead of 25, 23 gas fewer per digest written by this epilogue. Eight unreachable `DUP1` fillers
+after `RETURN` keep the byte length and instruction count, so every later PC, jump target and instruction index is
+unchanged. The epilogue runs once on 32 of the 49 scored vectors: **647,047 -> 646,311 (-736)**, identical on all 31
+local corpus seeds (sd 0).
+
+## Proof changes
+
+* `FinishMath.lean` (new): exact `BitVec 256` identities `v + (v&M16)*0xffffffff = P16 v <<< 16`,
+  `v + (v&M8)*0xffff = P8 v <<< 8`, and the combined `= P16 (P8 v) <<< 24`.
+* `StaggerPersistentFinish.lean` (new): the two executed slices (instruction indices 3500 and 3512, PCs 4753 and
+  4771), their raw-run and gas lemmas, the bounds that make the `2^24` scaling exact, and `hReturn_eq` (the returned
+  bytes equal `natToBytesPadded (packedWord (packedHash h)) 32`).
+* `StaggerPersistentSerialize.lean` composes `StaggerPersistentOutput` with the two new sites; `result`, `value` and
+  `gasSteps` keep their interface, plus `result_hReturn`, which `StaggerPersistentSerializeMath.lean` now uses. The
+  old endian stage modules are no longer imported by this path.
+* `Artifact.lean`, `Bytes.lean`, `bytecode.hex`: instructions 3500..3524 and the chunk-18 byte certificate; counts,
+  PCs and all other chunks unchanged.
+
+This is the 647,065 candidate of an earlier run (same rewrite on the 647,801 base, PC 4772) rebased onto this frontier.
+
 # RIPEMD-160: a re-planned stack window over paired steps 62..71 on newjordan's 647,411 record (647,222 gas)
 
 Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160. Lower gas is better.
