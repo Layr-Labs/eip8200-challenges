@@ -191,21 +191,9 @@ theorem form (i : Fin 14) : ∀ instruction ∈ (template i).dropLast, Recogniti
   RecognitionLift.advancesAll_sound _ (by fin_cases i <;> decide)
 end storeSite
 
-def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
+def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
     (i : Fin 14) (hn : input.size = ReverseLiteralScan.nval i) :
-    GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
-  have hv : Decode.isValidJumpDest (base input).executionEnv.code
-      (DirectDigestRaw.selected (UInt256.ofNat 8191) input.size).toNat = true := by
-    rw [hn]
-    exact storeSite.valid i
-  have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
-      some (loaded input rho) := by
-    have h := DirectDigestRaw.run_prefix (base input) (UInt256.ofNat 4786) rho hcap rfl hv
-    change runInstrSeq prefixSite.template (atState (base input) 4786 rho) = some (loaded input rho) at h
-    exact h
-  have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
-    (atState (base input) 4786 rho) (loaded input rho) rfl rfl rfl
-    deployAddress_not_precompile prefixSite.site_pc.symm prefixSite.form hp
+    GasSteps (loaded input rho) (prepared input rho) := by
   have hac : (base input).activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
     simp [State.activeWordsAfterUInt256,base,initialState,Word.word_toNat_ofNat]
     rfl
@@ -223,7 +211,24 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
     (by change DirectDigestRaw.selected (UInt256.ofNat 8191) input.size = (storeSite.site i).startPC
         rw [hn]; exact (storeSite.site_pc i).symm)
     (storeSite.form i) hr'
-  exact gp.trans gj
+  exact gj
+
+def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
+    (i : Fin 14) (hn : input.size = ReverseLiteralScan.nval i) :
+    GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
+  have hv : Decode.isValidJumpDest (base input).executionEnv.code
+      (DirectDigestRaw.selected (UInt256.ofNat 8191) input.size).toNat = true := by
+    rw [hn]
+    exact storeSite.valid i
+  have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
+      some (loaded input rho) := by
+    have h := DirectDigestRaw.run_prefix (base input) (UInt256.ofNat 4786) rho hcap rfl hv
+    change runInstrSeq prefixSite.template (atState (base input) 4786 rho) = some (loaded input rho) at h
+    exact h
+  have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
+    (atState (base input) 4786 rho) (loaded input rho) rfl rfl rfl
+    deployAddress_not_precompile prefixSite.site_pc.symm prefixSite.form hp
+  exact gp.trans (gasSteps_prepare_loaded input rho hcap i hn)
 
 def returnIndex : Fin 14 → Nat
  | ⟨0, _⟩ => 4891

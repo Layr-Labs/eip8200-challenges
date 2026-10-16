@@ -43,7 +43,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x02,
   .push ⟨1, by decide⟩ (UInt256.ofNat 97),
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 8158),
   op 0x57,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x51,
@@ -5440,7 +5440,7 @@ theorem referenceInstructions_count : submissionInstructions.length = 5270 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
-  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17, 246, 87, 95, 53, 96, 255, 2, 96, 97, 1, 97, 18, 177, 87, 95, 81, 53, 97, 3, 192, 97, 3, 200, 53, 130, 20, 96, 210, 86, 91, 96,
+  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17, 246, 87, 95, 53, 96, 255, 2, 96, 97, 1, 97, 31, 222, 87, 95, 81, 53, 97, 3, 192, 97, 3, 200, 53, 130, 20, 96, 210, 86, 91, 96,
   128, 140, 1, 89, 16, 97, 18, 125, 87, 96, 48, 96, 131, 86, 91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82, 128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 54, 82, 97, 18, 125, 156, 80, 97, 3, 56, 86, 4, 4, 91, 96, 64, 91, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91, 97, 18, 125, 156, 96, 32,
   20, 96, 128, 96, 165, 83, 133, 96, 188, 83, 98, 0, 1, 241, 87, 91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 96, 128, 96, 131, 86, 91, 96,

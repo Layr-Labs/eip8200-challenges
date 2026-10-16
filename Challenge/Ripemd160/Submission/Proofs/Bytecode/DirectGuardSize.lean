@@ -184,13 +184,17 @@ theorem anchorWord_false (input : ByteArray)
   rw [anchorWord_eq, fullTerm, h, fullWord_anchor]
   rfl
 
-/-- The recogniser's shared entry, with no saved tail on long paths. -/
-theorem big_dest : Decode.isValidJumpDest submissionBytecode 4785 = true := by
-  exact Artifact.validJumpDest_4808
+/-- The private 1000-byte row, with no saved lower stack tail. -/
+theorem big_dest : Decode.isValidJumpDest submissionBytecode 8158 = true := by
+  have hp : Artifact.submissionArtifact.instructionPC 5101 = 8158 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 5101 (by rfl)
+  rw [hp] at h
+  exact h
 
 theorem run_anchor_prefix (input : ByteArray) :
     run anchorPrefix (PatternedScan.stS input 21 []) =
-      some (PatternedScan.stS input 32 [4785, anchorWord input]) := by
+      some (PatternedScan.stS input 32 [8158, anchorWord input]) := by
   let R := KnownInputCompactState.referenceWord input
   let l0 : Located := pushAt 11 0 0
   have h0 := PatternedScan.blockOfS l0
@@ -216,10 +220,10 @@ theorem run_anchor_prefix (input : ByteArray) :
   have h5 := PatternedScan.blockOfS l5
     (PatternedScan.pcFactS input 16 28 [97, 255 * R] (by norm_num) pc_g16)
     (PatternedScan.stepS_add input 28 97 (255 * R) [] (by simp) (by norm_num))
-  let l6 : Located := pushAt 17 2 4785
+  let l6 : Located := pushAt 17 2 8158
   have h6 := PatternedScan.blockOfS l6
     (PatternedScan.pcFactS input 17 29 [97 + 255 * R] (by norm_num) pc_g17)
-    (PatternedScan.stepS_push input 29 2 4785 [97 + 255 * R]
+    (PatternedScan.stepS_push input 29 2 8158 [97 + 255 * R]
       (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := DataStepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
@@ -231,13 +235,13 @@ theorem run_anchor_prefix (input : ByteArray) :
 
 theorem run_anchor_taken (input : ByteArray)
     (hne : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord) :
-    run anchorPath (PatternedScan.stS input 21 []) = some (PatternedScan.stS input 4785 []) := by
+    run anchorPath (PatternedScan.stS input 21 []) = some (PatternedScan.stS input 8158 []) := by
   have hj : run [opAt 18 .JUMPI]
-      (PatternedScan.stS input 32 [4785, anchorWord input]) =
-      some (PatternedScan.stS input 4785 []) := by
+      (PatternedScan.stS input 32 [8158, anchorWord input]) =
+      some (PatternedScan.stS input 8158 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 18 32 _ (by norm_num) pc_g18)
-      (PatternedScan.stepS_jumpi_taken input 32 4785 4785 _ []
+      (PatternedScan.stepS_jumpi_taken input 32 8158 8158 _ []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (anchorWord_isTrue input hne) big_dest)
   exact DataStepper.runLocatedBlock_append anchorPrefix [opAt 18 .JUMPI] _ _ _
@@ -247,11 +251,11 @@ theorem run_anchor_fall (input : ByteArray)
     (h : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     run anchorPath (PatternedScan.stS input 21 []) = some (PatternedScan.stS input 33 []) := by
   have hj : run [opAt 18 .JUMPI]
-      (PatternedScan.stS input 32 [4785, anchorWord input]) =
+      (PatternedScan.stS input 32 [8158, anchorWord input]) =
       some (PatternedScan.stS input 33 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 18 32 _ (by norm_num) pc_g18)
-      (PatternedScan.stepS_jumpi_fall input 32 4785 _ [] (by simp) (by norm_num)
+      (PatternedScan.stepS_jumpi_fall input 32 8158 _ [] (by simp) (by norm_num)
         (anchorWord_false input h))
   exact DataStepper.runLocatedBlock_append anchorPrefix [opAt 18 .JUMPI] _ _ _
     (run_anchor_prefix input) rfl hj
