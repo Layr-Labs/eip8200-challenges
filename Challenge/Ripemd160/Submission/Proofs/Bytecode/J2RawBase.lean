@@ -241,7 +241,7 @@ def finalProjectionTemplate : List Instr := [
 def boundaryProjectionTemplate : List Instr := [
   .op .JUMPDEST, .push ⟨1, by decide⟩ (UInt256.ofNat 40), .op .SHR, .op .OR]
 
-def resultTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4565),
+def resultTemplate : List Instr := [ .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
     .op .JUMPI ]
 
 

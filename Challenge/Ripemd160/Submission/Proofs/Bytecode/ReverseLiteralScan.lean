@@ -46,20 +46,20 @@ def tailPC : Fin 14 → Nat
  | ⟨12, _⟩ => 6907
  | ⟨13, _⟩ => 8182
 def tailIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4885
- | ⟨1, _⟩ => 4406
- | ⟨2, _⟩ => 3747
- | ⟨3, _⟩ => 4265
- | ⟨4, _⟩ => 4455
- | ⟨5, _⟩ => 3533
- | ⟨6, _⟩ => 4589
- | ⟨7, _⟩ => 4076
- | ⟨8, _⟩ => 3873
- | ⟨9, _⟩ => 3775
- | ⟨10, _⟩ => 4856
- | ⟨11, _⟩ => 5036
- | ⟨12, _⟩ => 4740
- | ⟨13, _⟩ => 5105
+ | ⟨0, _⟩ => 4873
+ | ⟨1, _⟩ => 4394
+ | ⟨2, _⟩ => 3735
+ | ⟨3, _⟩ => 4253
+ | ⟨4, _⟩ => 4443
+ | ⟨5, _⟩ => 3521
+ | ⟨6, _⟩ => 4577
+ | ⟨7, _⟩ => 4064
+ | ⟨8, _⟩ => 3861
+ | ⟨9, _⟩ => 3763
+ | ⟨10, _⟩ => 4844
+ | ⟨11, _⟩ => 5024
+ | ⟨12, _⟩ => 4728
+ | ⟨13, _⟩ => 5093
 def returnPC : Fin 14 → Nat
  | ⟨0, _⟩ => 7664
  | ⟨1, _⟩ => 6387
@@ -232,9 +232,9 @@ theorem tail_end (i : Fin 14) :
 
 theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 990)
     (i : Fin 14)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
     runInstrSeq (tailTemplate i) (atState s (tailPC i) rho) =
-      some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4565) rho) := by
+      some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4785) rho) := by
   have hp := run_prefix s (UInt256.ofNat (tailPC i)) i rho hs e.run e.active
   have hr := run_revTemplate s (pcAfter (UInt256.ofNat (tailPC i)) (prefixTemplate i))
     (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)) rho hs e.run e.active false (last (nval i)) (by fin_cases i <;> decide)
@@ -248,10 +248,10 @@ theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
   simp only [tailTemplate,DenseScheduleTrace.pcAfter_append] at he
   simpa only [tailTemplate,atState,DenseScheduleTrace.pcAfter_append,he,apply_ite] using hall
 
-theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code 4565 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3412 = 4565 := by
+theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code 4785 = true := by
+  have hp : Artifact.submissionArtifact.instructionPC 3502 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3412 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3502 (by rfl)
   rw [hp] at h
   exact h
 
@@ -262,8 +262,8 @@ theorem source_target (i : Fin 14) :
 def gasSteps_for (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 988)
     (i : Fin 14) (hn : s.executionEnv.calldata.size = nval i) :
     GasSteps (atState s (tailPC i) rho)
-      (atState s (if (ZeroTailModel.result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4565) rho) := by
-  have hvf : Decode.isValidJumpDest s.executionEnv.code 4565 = true := by rw [e.code]; exact valid_fallback
+      (atState s (if (ZeroTailModel.result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4785) rho) := by
+  have hvf : Decode.isValidJumpDest s.executionEnv.code 4785 = true := by rw [e.code]; exact valid_fallback
   have hr := run_small s e rho (by omega) i hvf
   have gt := lift (.tail i) s _ e rho hr
   simpa only [hn,pc] using gt

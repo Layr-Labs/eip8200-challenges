@@ -1,55 +1,56 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardSize
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CounterFreeSeedRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 
 set_option warningAsError true
 set_option maxRecDepth 100000
-set_option maxHeartbeats 20000000
+set_option maxHeartbeats 4000000
 set_option linter.unusedSimpArgs false
 
-/-! The seed accumulator: reference word and tail word. -/
-
+/-! Bind the small compositional seed trace to the exact artifact.  In particular,
+no simplifier unfolds the entire artifact while evaluating the memory warm-up. -/
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
-
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open KnownInputCompactState
+open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
-private def sS (l : Located) {s t : State}
-    (h : Challenge.EvmProof.DataStepper.runLocatedBlock [l] s = some t)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code := by rfl)
-    (hfork : s.fork = .Osaka := by rfl)
-    (hrun : s.halt = .Running := by rfl)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false := by
-        exact deployAddress_not_precompile) : GasSteps s t :=
-  Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
-    [l] hcode hfork h hrun hnp
+private def seed := CounterFreeSeedRaw.template
+private theorem seed_slice :
+    (Artifact.submissionArtifact.instructions.drop 19).take seed.length = seed := by rfl
+private theorem seed_pc : Artifact.submissionArtifact.instructionPC 19 = 33 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+private theorem seed_bounds :
+    19 + seed.length ≤ Artifact.submissionArtifact.instructions.length := by
+  change 19 + seed.length ≤ Artifact.submissionInstructions.length
+  rw [Artifact.referenceInstructions_count]
+  decide
+private theorem seed_wf : StackRoundData.TemplateWellFormed seed := by decide
+private theorem seed_advances : ∀ i ∈ seed.dropLast, RecognitionLift.Advances i := by
+  apply RecognitionLift.advancesAll_sound
+  decide
+private def seed_site : GenericRoundSite Artifact.submissionArtifact .Osaka seed :=
+  StackSiteBuilder.ofSlice seed 19 seed_slice seed_bounds
+    (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
+    (StackRoundData.templateWellFormed_mem seed_wf) (by decide)
+private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 33 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 19) = _
+  rw [seed_pc]
 
-/-- The straight-line seed block from PC 33 and the `PUSH1 210 JUMP` at 45 to the loop head at PC 210. -/
+private theorem run_seed (input : ByteArray) :
+    runInstrSeq seed (sizeMatched input) = some (loopState input 0) := by
+  simpa only [seed, sizeMatched, atPC, loopState, List.append_nil,
+    Challenge.Ripemd160.initialState_calldata, Challenge.Ripemd160.initialState_stack,
+    Word.literal_eq_ofNat] using
+    CounterFreeSeedRaw.run (initialState submissionBytecode input 0)
+      (UInt256.ofNat 33) [] (by decide) rfl rfl rfl
+      Artifact.validJumpDest_9429
+
+/-- Warm memory, form the counter-free equality seed, and jump to the scanner. -/
 def gasSteps_checkEntry (input : ByteArray) :
-    GasSteps (sizeMatched input) (loopState input 0) := by
-  apply Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
-    (checkEntryPath ++ [pushAt 27 1 210, opAt 28 .JUMP])
-    (by rfl) (by rfl) _ (by rfl) deployAddress_not_precompile
-  have hz : MachineState.readWord ByteArray.empty 0 = UInt256.ofNat 0 := by
-    unfold MachineState.readWord
-    rw [← Bytes.bytesNat_toList, Bytes.readPadded_toList,
-      YulEvmCompiler.ByteArray.toList_eq_data]
-    decide
-  have p21 : Artifact.submissionArtifact.instructionPC 21 = 35 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p27 : Artifact.submissionArtifact.instructionPC 27 = 45 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have p28 : Artifact.submissionArtifact.instructionPC 28 = 47 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  simp (config := { maxSteps := 1000000 })
-    [checkEntryPath, pushAt, opAt, wfOp, sizeMatched, atPC, loopState,
-      initialState, equalityAcc, referenceWord,
-      Challenge.EvmProof.DataStepper.runLocatedBlock,
-      Challenge.EvmProof.DataStepper.runLocated,
-      Challenge.EvmProof.DataStepper.runInstr,
-      p21, p27, p28, hz,
-      Artifact.validJumpDest_212,
-      State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
-      Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
-      Word.word_toNat_ofNat]
+    GasSteps (sizeMatched input) (loopState input 0) :=
+  RecognitionLift.gasSteps_of_raw seed_site _ _ (by rfl) (by rfl) (by rfl)
+    deployAddress_not_precompile seed_site_pc.symm seed_advances (run_seed input)
 
+#print axioms gasSteps_checkEntry
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard

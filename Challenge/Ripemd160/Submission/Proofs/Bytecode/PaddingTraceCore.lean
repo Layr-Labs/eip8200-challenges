@@ -1314,15 +1314,31 @@ def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
     (lengthExitEntered input i).executionEnv.code = submissionBytecode := by rfl
 
 set_option maxHeartbeats 400000 in
-theorem run_lengthExitPop (input : ByteArray) (i : Nat) :
+/-- Keep memory and the concrete bytecode opaque while checking the stack-only
+exit.  Expanding the full padding state here duplicates the large code array
+in the kernel's record-update reductions. -/
+private theorem run_lengthExitPop_opaque (s : State) (input : ByteArray)
+    (a b : UInt256) (hrun : s.halt = .Running)
+    (h198 : Decode.isValidJumpDest s.executionEnv.code 198 = true)
+    (h461 : Decode.isValidJumpDest s.executionEnv.code 461 = true) :
     Challenge.EvmProof.DataStepper.runLocatedBlock lengthExitPath
-      (lengthExitEntered input i) = some (lengthExitReturned input i) := by
+      { s with
+        pc := UInt256.ofNat 4562
+        stack := a :: b :: UInt256.ofNat 4547 :: padFrame input } =
+      some { s with pc := UInt256.ofNat 461, stack := glFrame } := by
   simp [lengthExitPath, Artifact.padExitPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
-    lengthExitEntered, lengthExitReturned, lengthLoopState, padFrame, glFrame,
-    StaggerPersistentFrame.frame, List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
-    validJump198, validJump461]
+    padFrame, glFrame, StaggerPersistentFrame.frame,
+    List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
+    h198, h461, hrun]
 
+set_option maxHeartbeats 400000 in
+theorem run_lengthExitPop (input : ByteArray) (i : Nat) :
+    Challenge.EvmProof.DataStepper.runLocatedBlock lengthExitPath
+      (lengthExitEntered input i) = some (lengthExitReturned input i) := by
+  exact run_lengthExitPop_opaque (lengthLoopState input i) input
+    (lengthAddr input i) (lengthShift input i) (by rfl)
+    validJump198 validJump461
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
