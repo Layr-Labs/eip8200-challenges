@@ -33,7 +33,7 @@ def prepared (input : ByteArray) (rho : List UInt256) : State :=
 
 /-- The final return uses the prepared memory, not an unrelated running state. -/
 def output (input : ByteArray) (rho : List UInt256) : State :=
-  RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat 5571) rho
+  RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat 6106) rho
 
 @[simp] theorem prepared_pc (input : ByteArray) (rho : List UInt256) :
     (prepared input rho).pc = UInt256.ofNat 4804 := by
@@ -141,19 +141,19 @@ end prefixSite
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3735).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3734).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3735 actual_slice
-    (by change 3735 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3734 actual_slice
+    (by change 3734 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 5571 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3735) = UInt256.ofNat 5571
+theorem site_pc : site.startPC = UInt256.ofNat 6106 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3734) = UInt256.ofNat 6106
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem end_pc : pcAfter (UInt256.ofNat 5571) template = UInt256.ofNat 5573 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 6106) template = UInt256.ofNat 6108 := by decide
 
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -195,35 +195,35 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
     show (20 : UInt256).toNat = 20 from rfl] using gc
 
 private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) :
-    (atState (prepared input saved) 5570 rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3734 .MSIZE
+    (atState (prepared input saved) 6105 rho).decodedOp = some .MSIZE := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3733 .MSIZE
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
-    (atState (prepared input saved) 5570 rho) 3734 rfl _ .MSIZE none hd (by rfl)
-  change (UInt256.ofNat 5570).toNat = Artifact.submissionArtifact.instructionPC 3734
+    (atState (prepared input saved) 6105 rho) 3733 rfl _ .MSIZE none hd (by rfl)
+  change (UInt256.ofNat 6105).toNat = Artifact.submissionArtifact.instructionPC 3733
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The recognizer may replace the entire stack; only the prepared memory matters. -/
 def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.length ≤ 990) :
-    GasSteps (atState (prepared input saved) 5570 rho) (output input rho) := by
+    GasSteps (atState (prepared input saved) 6105 rho) (output input rho) := by
   have gs := Msize.step (size_decoded input saved rho)
     (by change rho.length < 1024; omega) rfl deployAddress_not_precompile
   have hf : runInstrSeq finishSite.template
-      (atState (prepared input saved) 5571 (32 :: rho)) =
-      some (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 5571) rho) :=
-    run_finish (prepared input saved) (UInt256.ofNat 5571) rho (by omega) rfl
+      (atState (prepared input saved) 6106 (32 :: rho)) =
+      some (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 6106) rho) :=
+    run_finish (prepared input saved) (UInt256.ofNat 6106) rho (by omega) rfl
   have gf := RecognitionLift.gasSteps_of_raw finishSite.site
-    (atState (prepared input saved) 5571 (32 :: rho))
-    (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 5571) rho)
+    (atState (prepared input saved) 6106 (32 :: rho))
+    (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 6106) rho)
     (prepared_code input saved) (prepared_fork input saved) (prepared_run input saved)
     (prepared_np input saved) finishSite.site_pc.symm finishSite.form hf
-  have hpc : (UInt256.ofNat 5570).succ = UInt256.ofNat 5571 := by decide
-  have gs' : GasSteps (atState (prepared input saved) 5570 rho)
-      (atState (prepared input saved) 5571 (32 :: rho)) := by
+  have hpc : (UInt256.ofNat 6105).succ = UInt256.ofNat 6106 := by decide
+  have gs' : GasSteps (atState (prepared input saved) 6105 rho)
+      (atState (prepared input saved) 6106 (32 :: rho)) := by
     simpa only [atState, prepared_activeWords, Word.word_toNat_ofNat,
       Word.literal_eq_ofNat, hpc,
       show (1 : Nat) % 2^256 = 1 from by decide, Nat.mul_one] using gs
-  have gout : RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 5571) rho =
+  have gout : RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 6106) rho =
       output input rho := rfl
   exact gs'.trans (gout ▸ gf)
 
@@ -269,7 +269,7 @@ theorem return_correct (input : ByteArray) (saved rho : List UInt256)
     (hcap : rho.length ≤ 990) (hn : RecognitionAccumulator.Allowed input.size)
     (hz : J2Accumulator.resultAcc input input.size = 0) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (withGas (atState (prepared input saved) 5570 rho) gas)
+      Eval (withGas (atState (prepared input saved) 6105 rho) gas)
         (.returned (spec input)) := by
   let trace := gasSteps_return input saved rho hcap
   refine ⟨trace.cost, fun gas hgas => ?_⟩
@@ -277,7 +277,7 @@ theorem return_correct (input : ByteArray) (saved rho : List UInt256)
     simp [withGas, State.isDone, State.isHalted, State.isRunning,
       output_halt, output_callStack])
   rw [State.toResult_returned _ (by simp [withGas])] at heval
-  change Eval (withGas (atState (prepared input saved) 5570 rho) gas)
+  change Eval (withGas (atState (prepared input saved) 6105 rho) gas)
     (.returned (output input rho).hReturn) at heval
   simpa only [output_spec input rho hn hz] using heval
 
