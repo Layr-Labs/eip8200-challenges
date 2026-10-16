@@ -35,7 +35,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x36,
   .push 2 1000,
   op 0x03,
-  .push 2 4598,
+  .push 2 4845,
   op 0x57,
   .push 0 0,
   op 0x35,
@@ -43,7 +43,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x02,
   .push 1 97,
   op 0x01,
-  .push 2 4782,
+  .push 2 4596,
   op 0x57,
   .push 0 0,
   op 0x51,
@@ -61,7 +61,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x01,
   op 0x59,
   op 0x10,
-  .push 2 4733,
+  .push 2 4547,
   op 0x57,
   .push 1 48,
   .push 1 131,
@@ -88,7 +88,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 19 2854495385411919762116571938898990272765493376,
   .push 1 54,
   op 0x52,
-  .push 2 4733,
+  .push 2 4547,
   op 0x9c,
   op 0x50,
   .push 2 824,
@@ -107,7 +107,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   .push 2 461,
   op 0x56,
   op 0x5b,
-  .push 2 4733,
+  .push 2 4547,
   op 0x9c,
   .push 1 32,
   op 0x14,
@@ -125,7 +125,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x36,
   op 0x01,
   op 0x53,
-  .push 2 4937,
+  .push 2 4820,
   op 0x36,
   .push 1 3,
   op 0x1b,
@@ -177,7 +177,7 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x81,
   .push 1 210,
   op 0x57,
-  .push 2 4706,
+  .push 2 4953,
   op 0x57,
   op 0x5b,
   op 0x5b
@@ -452,22 +452,22 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x1c,
   op 0x88,
   op 0x88,
-  op 0x8d,
-  .push 4 1352829926,
-  op 0x01,
-  .push 2 486,
-  op 0x51,
-  op 0x01,
+  op 0x83,
   op 0x8d,
   op 0x8d,
   op 0x8d,
   op 0x19,
   op 0x17,
   op 0x18,
+  op 0x8f,
+  .push 4 1352829926,
   op 0x01,
-  op 0x85,
+  op 0x01,
+  .push 2 486,
+  op 0x51,
+  op 0x01,
+  op 0x86,
   op 0x16,
-  op 0x84,
   op 0x02,
   .push 1 25,
   op 0x1c,
@@ -483,10 +483,10 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x17,
   op 0x84,
   op 0x18,
+  op 0x8d,
+  op 0x01,
   .push 1 162,
   op 0x51,
-  op 0x8e,
-  op 0x01,
   op 0x01,
   .push 4 1352829926,
   op 0x01,
@@ -568,7 +568,7 @@ private def submissionInstructionsChunk4 : List Instr :=
 [
   .push 22 30169115476673038213297653277143730720156734734729216,
   op 0x98,
-  op 0x86,
+  op 0x88,
   op 0x8c,
   op 0x88,
   op 0x16,
@@ -576,8 +576,8 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x17,
   op 0x8d,
   op 0x18,
+  op 0x88,
   op 0x18,
-  op 0x89,
   op 0x18,
   op 0x01,
   .push 1 54,
@@ -710,14 +710,14 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x8b,
   op 0x82,
   op 0x9a,
-  op 0x89,
-  op 0x8d,
-  op 0x89,
+  op 0x8c,
+  op 0x88,
   op 0x16,
-  op 0x8d,
+  op 0x8c,
   op 0x17,
-  op 0x89,
+  op 0x88,
   op 0x18,
+  op 0x8a,
   op 0x18,
   op 0x8d,
   op 0x18,
@@ -781,21 +781,21 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x8b,
   op 0x82,
   op 0x9a,
-  op 0x8c,
-  op 0x88,
-  op 0x16,
-  op 0x8c,
-  op 0x17,
-  op 0x8d,
   op 0x89,
-  op 0x8c
+  op 0x88,
+  op 0x18,
+  op 0x8d,
+  op 0x8d,
+  op 0x8a,
+  op 0x82,
+  op 0x16
 ]
 
 @[simp] private theorem submissionInstructionsChunk4_length : submissionInstructionsChunk4.length = 223 := by rfl
 
 private def submissionInstructionsChunk5 : List Instr :=
 [
-  op 0x18,
+  op 0x17,
   op 0x18,
   op 0x18,
   op 0x01,
@@ -964,15 +964,15 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x16,
   op 0x96,
   op 0x88,
-  op 0x87,
-  op 0x89,
-  op 0x81,
   op 0x8c,
+  op 0x89,
+  op 0x89,
+  op 0x83,
   op 0x16,
   op 0x17,
+  op 0x89,
   op 0x18,
   op 0x18,
-  op 0x8c,
   op 0x18,
   .push 2 864,
   op 0x51,
@@ -999,14 +999,14 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x97,
   op 0x89,
   op 0x85,
-  op 0x16,
-  op 0x89,
-  op 0x17,
   op 0x8a,
-  op 0x88,
+  op 0x81,
+  op 0x83,
+  op 0x16,
+  op 0x17,
+  op 0x89,
   op 0x18,
   op 0x18,
-  op 0x85,
   op 0x18,
   op 0x01
 ]
@@ -1119,18 +1119,18 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x92,
-  op 0x83,
+  op 0x88,
   op 0x8c,
-  op 0x85,
-  op 0x89,
-  op 0x16,
-  op 0x8b,
-  op 0x8a,
-  op 0x83,
+  op 0x88,
   op 0x16,
   op 0x18,
+  op 0x84,
+  op 0x88,
+  op 0x16,
   op 0x17,
+  op 0x8c,
   op 0x18,
+  op 0x84,
   op 0x18,
   .push 2 990,
   op 0x51,
@@ -1159,18 +1159,18 @@ private def submissionInstructionsChunk6 : List Instr :=
   .push 4 1518500249,
   op 0x01,
   op 0x98,
-  op 0x86,
+  op 0x87,
   op 0x8b,
-  op 0x17,
+  op 0x16,
+  op 0x8b,
   op 0x88,
-  op 0x87,
-  op 0x18,
-  op 0x16,
-  op 0x87,
-  op 0x18,
-  op 0x8b,
+  op 0x17,
   op 0x89,
+  op 0x88,
+  op 0x18,
   op 0x16,
+  op 0x88,
+  op 0x18,
   op 0x17,
   op 0x01,
   .push 1 252,
@@ -1392,12 +1392,12 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x81,
   op 0x96,
   op 0x87,
-  op 0x8c,
-  op 0x89,
-  op 0x17,
+  op 0x87,
   op 0x8a,
-  op 0x89,
   op 0x18,
+  op 0x8d,
+  op 0x8a,
+  op 0x17,
   op 0x16,
   op 0x18,
   op 0x8c,
@@ -1582,12 +1582,12 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x90,
-  op 0x86,
-  op 0x82,
-  op 0x17,
-  op 0x8a,
-  op 0x86,
+  op 0x89,
+  op 0x85,
   op 0x18,
+  op 0x82,
+  op 0x88,
+  op 0x17,
   op 0x16,
   op 0x82,
   op 0x18,
@@ -1666,18 +1666,18 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x92,
-  op 0x83,
-  op 0x87,
+  op 0x86,
+  op 0x8c,
+  op 0x18,
+  op 0x8c,
+  op 0x85,
+  op 0x16,
   op 0x8a,
-  op 0x8e,
-  op 0x83,
-  op 0x16,
-  op 0x18,
-  op 0x8e,
-  op 0x82,
   op 0x18,
   op 0x16,
+  op 0x84,
   op 0x18,
+  op 0x87,
   op 0x18,
   op 0x01,
   .push 2 666,
@@ -2096,14 +2096,14 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x90,
-  op 0x81,
+  .push 1 54,
+  op 0x51,
   op 0x8a,
   op 0x19,
   op 0x88,
   op 0x17,
+  op 0x83,
   op 0x18,
-  .push 1 54,
-  op 0x51,
   op 0x87,
   op 0x01,
   op 0x01,
@@ -2227,9 +2227,12 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x90,
-  op 0x81,
+  .push 2 702,
+  op 0x51,
   op 0x8c,
-  op 0x81,
+  op 0x83,
+  op 0x18,
+  op 0x83,
   op 0x89,
   op 0x16,
   op 0x8c,
@@ -2239,9 +2242,6 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x18,
   op 0x16,
   op 0x18,
-  op 0x18,
-  .push 2 702,
-  op 0x51,
   op 0x87,
   op 0x01,
   op 0x01,
@@ -2313,22 +2313,22 @@ private def submissionInstructionsChunk12 : List Instr :=
   .push 4 541184315,
   op 0x01,
   op 0x90,
-  op 0x86,
+  op 0x81,
   op 0x8a,
-  op 0x86,
-  op 0x17,
-  op 0x18,
-  op 0x8a,
-  op 0x86,
-  op 0x16,
   op 0x87,
+  op 0x81,
+  op 0x88,
+  op 0x16,
+  op 0x18,
+  op 0x81,
+  op 0x88,
+  op 0x17,
+  op 0x8a,
   op 0x18,
   op 0x16,
-  op 0x8a,
   op 0x18,
   .push 2 792,
   op 0x51,
-  op 0x83,
   op 0x01,
   op 0x01,
   op 0x01,
@@ -2391,18 +2391,18 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x8d,
   op 0x81,
   op 0x96,
+  op 0x8b,
   op 0x87,
-  op 0x87,
-  op 0x8d,
-  op 0x16,
-  op 0x18,
-  op 0x87,
-  op 0x8d,
+  op 0x81,
   op 0x17,
   op 0x8a,
   op 0x18,
+  op 0x81,
+  op 0x89,
   op 0x16,
-  op 0x8c,
+  op 0x8a,
+  op 0x18,
+  op 0x16,
   op 0x18,
   .push 2 594,
   op 0x51,
@@ -2547,18 +2547,18 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x8c,
   op 0x81,
   op 0x96,
-  op 0x8b,
   op 0x87,
-  op 0x81,
+  op 0x87,
+  op 0x8d,
+  op 0x16,
+  op 0x18,
+  op 0x87,
+  op 0x8d,
   op 0x17,
   op 0x8a,
   op 0x18,
-  op 0x89,
-  op 0x89,
-  op 0x83,
   op 0x16,
-  op 0x18,
-  op 0x16,
+  op 0x8c,
   op 0x18,
   op 0x01,
   .push 2 450,
@@ -2703,18 +2703,18 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x8c,
   op 0x81,
   op 0x96,
-  op 0x8b,
   op 0x87,
-  op 0x81,
+  op 0x8c,
+  op 0x88,
+  op 0x16,
+  op 0x18,
+  op 0x8c,
+  op 0x88,
   op 0x17,
   op 0x8a,
   op 0x18,
-  op 0x89,
-  op 0x89,
-  op 0x83,
   op 0x16,
-  op 0x18,
-  op 0x16,
+  op 0x8c,
   op 0x18,
   op 0x01,
   .push 1 252,
@@ -2776,18 +2776,18 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x94,
+  op 0x89,
   op 0x86,
-  op 0x8a,
   op 0x86,
+  op 0x82,
+  op 0x16,
+  op 0x18,
+  op 0x86,
+  op 0x82,
   op 0x17,
-  op 0x18,
-  op 0x8a,
-  op 0x86,
-  op 0x16,
-  op 0x87,
+  op 0x89,
   op 0x18,
   op 0x16,
-  op 0x8a,
   op 0x18,
   op 0x01,
   .push 1 162,
@@ -2851,23 +2851,23 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x94,
-  op 0x85,
+  .push 2 1026,
+  op 0x51,
+  op 0x8a,
   op 0x87,
-  op 0x8b,
+  op 0x87,
+  op 0x8a,
+  op 0x83,
   op 0x18,
-  op 0x86,
   op 0x17,
   op 0x16,
   op 0x87,
-  op 0x86,
+  op 0x8a,
   op 0x16,
   op 0x18,
-  op 0x8a,
   op 0x18,
-  .push 2 1026,
-  op 0x51,
+  op 0x8a,
   op 0x01,
-  op 0x89,
   op 0x01,
   op 0x01,
   op 0x83,
@@ -2888,15 +2888,15 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x90,
-  op 0x89,
+  op 0x81,
   op 0x85,
-  op 0x16,
-  op 0x82,
   op 0x88,
   op 0x8c,
   op 0x18,
-  op 0x87,
   op 0x17,
+  op 0x16,
+  op 0x85,
+  op 0x8b,
   op 0x16,
   op 0x18,
   op 0x87,
@@ -2936,14 +2936,14 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x96,
   op 0x8d,
   op 0x8c,
+  op 0x81,
+  op 0x81,
   op 0x16,
-  op 0x83,
+  op 0x85,
   op 0x17,
-  op 0x89,
+  op 0x8b,
   op 0x18,
-  op 0x8c,
   op 0x18,
-  op 0x8e,
   op 0x18,
   .push 2 396,
   op 0x51,
@@ -2969,15 +2969,15 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x92,
-  op 0x8d,
-  op 0x89,
-  op 0x18,
+  op 0x83,
   op 0x89,
   op 0x8f,
   op 0x16,
-  op 0x85,
   op 0x17,
-  op 0x8d,
+  op 0x8c,
+  op 0x18,
+  op 0x89,
+  op 0x8f,
   op 0x18,
   op 0x18,
   .push 2 522,
@@ -3008,12 +3008,12 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x97,
   op 0x8c,
   op 0x8f,
+  op 0x8a,
+  op 0x82,
+  op 0x82,
   op 0x16,
-  op 0x89,
   op 0x17,
-  op 0x8f,
   op 0x18,
-  op 0x8d,
   op 0x18,
   op 0x8a,
   op 0x18,
@@ -3041,14 +3041,14 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x93,
-  op 0x89,
+  op 0x8c,
   op 0x8f,
+  op 0x86,
+  op 0x8c,
+  op 0x82,
   op 0x16,
-  op 0x85,
   op 0x17,
-  op 0x8d,
   op 0x18,
-  op 0x8f,
   op 0x18,
   op 0x8a,
   op 0x18,
@@ -3110,15 +3110,15 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x16,
   op 0x90,
   op 0x86,
-  op 0x8c,
-  op 0x16,
-  op 0x82,
-  op 0x17,
-  op 0x8c,
-  op 0x18,
-  op 0x87,
-  op 0x18,
   op 0x8a,
+  op 0x18,
+  op 0x8c,
+  op 0x83,
+  op 0x81,
+  op 0x8a,
+  op 0x16,
+  op 0x17,
+  op 0x18,
   op 0x18,
   .push 2 432,
   op 0x51,
@@ -3150,14 +3150,14 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x94,
-  op 0x8b,
-  op 0x87,
-  op 0x18,
+  op 0x85,
   op 0x8a,
   op 0x8d,
   op 0x16,
-  op 0x87,
   op 0x17,
+  op 0x87,
+  op 0x8d,
+  op 0x18,
   op 0x18,
   op 0x8a,
   op 0x18,
@@ -3328,21 +3328,21 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x8d,
   op 0x81,
   op 0x92,
-  op 0x88,
-  op 0x8e,
-  op 0x16,
-  op 0x84,
-  op 0x17,
-  op 0x8e,
   op 0x8d,
-  op 0x18,
+  op 0x84,
+  op 0x81,
+  op 0x8b,
+  op 0x16,
+  op 0x17,
   op 0x8a,
   op 0x18,
+  op 0x8d,
   op 0x18,
+  op 0x18,
+  op 0x8b,
+  op 0x01,
   .push 2 918,
   op 0x51,
-  op 0x01,
-  op 0x8b,
   op 0x01,
   op 0x01,
   op 0x85,
@@ -3403,20 +3403,20 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x02,
   op 0x88,
   op 0x1c,
-  op 0x8c,
+  .push 0 0,
+  op 0x51,
+  op 0x8a,
+  op 0x01,
+  op 0x83,
+  op 0x01,
   op 0x8b,
   op 0x83,
   op 0x19,
   op 0x8a,
   op 0x17,
   op 0x18,
-  .push 0 0,
-  op 0x51,
-  op 0x85,
   op 0x01,
-  op 0x01,
-  op 0x8b,
-  op 0x01,
+  op 0x8d,
   op 0x16,
   op 0x8c,
   op 0x02,
@@ -3426,20 +3426,20 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x01,
   op 0x8d,
   op 0x16,
+  op 0x8d,
+  op 0x82,
+  op 0x19,
+  op 0x8d,
+  op 0x17,
+  op 0x82,
+  op 0x18,
+  op 0x8c,
+  op 0x01,
   .push 2 612,
   op 0x51,
-  op 0x8b,
-  op 0x82,
-  op 0x8e,
-  op 0x85,
-  op 0x19,
-  op 0x17,
-  op 0x18,
+  op 0x8a,
   op 0x01,
   op 0x01,
-  op 0x88,
-  op 0x01,
-  op 0x8e,
   op 0x16,
   op 0x8d,
   op 0x02,
@@ -3447,17 +3447,17 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x1c,
   op 0x83,
   op 0x01,
-  op 0x8c,
-  op 0x8e,
+  op 0x8d,
+  op 0x8d,
   op 0x02,
   op 0x8b,
   op 0x1c,
   op 0x9b,
-  op 0x81,
-  op 0x83,
-  op 0x8e,
+  op 0x8c,
   op 0x19,
+  op 0x83,
   op 0x17,
+  op 0x82,
   op 0x18,
   op 0x85,
   op 0x01,
@@ -3526,99 +3526,6 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x9c,
   op 0x56,
   op 0x5b,
-  .push 1 40,
-  op 0x1c,
-  op 0x17,
-  op 0x91,
-  op 0x85,
-  .push 1 2,
-  op 0x1b,
-  op 0x81,
-  op 0x81,
-  op 0x17,
-  .push 1 9,
-  op 0x81,
-  op 0x92,
-  op 0x05,
-  op 0x01,
-  op 0x18,
-  op 0x18,
-  op 0x91,
-  .push 1 251,
-  op 0x87,
-  op 0x01,
-  op 0x80,
-  op 0x36,
-  op 0x03,
-  op 0x80,
-  op 0x36,
-  op 0x1d,
-  op 0x16,
-  op 0x01,
-  op 0x59,
-  op 0x81,
-  op 0x03,
-  op 0x94,
-  op 0x50,
-  op 0x96,
-  op 0x91,
-  op 0x84,
-  op 0x11,
-  .push 2 4885,
-  op 0x57,
-  .push 2 4910,
-  op 0x56,
-  op 0x5b,
-  op 0x36,
-  .push 1 1,
-  .push 17 342276208914615837337402008677671501826,
-  op 0x36,
-  op 0x1c,
-  op 0x16,
-  .push 2 4785,
-  op 0x57
-]
-
-@[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 216 := by rfl
-
-private def submissionInstructionsChunk18 : List Instr :=
-[
-  .push 2 256,
-  op 0x14,
-  .push 2 376,
-  op 0x36,
-  op 0x14,
-  op 0x01,
-  .push 2 4782,
-  op 0x57,
-  .push 0 0,
-  op 0x35,
-  .push 1 232,
-  op 0x1d,
-  op 0x36,
-  .push 3 2127393,
-  op 0x02,
-  op 0x18,
-  .push 1 245,
-  op 0x57,
-  .push 20 95383801997447390147238369573240532004699299169,
-  op 0x36,
-  op 0x1c,
-  .push 20 802931186561056611446976448233794645126013734992,
-  op 0x18,
-  .push 0 0,
-  op 0x52,
-  op 0x59,
-  .push 0 0,
-  op 0xf3,
-  op 0x5b,
-  .push 20 972889429405991776604892044862621566948497025487,
-  .push 0 0,
-  op 0x52,
-  op 0x59,
-  .push 0 0,
-  op 0xf3,
-  op 0x5b,
   op 0x50,
   op 0x50,
   op 0x50,
@@ -3669,7 +3576,13 @@ private def submissionInstructionsChunk18 : List Instr :=
   op 0x03,
   .push 1 12,
   op 0x39,
-  .push 32 43592315948166097100638488473858977074172229521182329991325208097096707629152,
+  .push 32 43592315948166097100638488473858977074172229521182329991325208097096707629152
+]
+
+@[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 216 := by rfl
+
+private def submissionInstructionsChunk18 : List Instr :=
+[
   op 0x80,
   op 0x19,
   op 0x59,
@@ -3681,7 +3594,7 @@ private def submissionInstructionsChunk18 : List Instr :=
   .push 1 33,
   op 0x36,
   op 0x10,
-  .push 2 4910,
+  .push 2 4724,
   op 0x57,
   op 0x5b,
   op 0x81,
@@ -3689,20 +3602,14 @@ private def submissionInstructionsChunk18 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
-  op 0x84,
+  op 0x83,
+  op 0x86,
+  op 0x81,
   op 0x17,
-  op 0x87
-]
-
-@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 110 := by rfl
-
-private def submissionInstructionsChunk19 : List Instr :=
-[
+  op 0x88,
   op 0x81,
   op 0x03,
   op 0x18,
-  op 0x84,
   op 0x18,
   op 0x93,
   op 0x18,
@@ -3710,7 +3617,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x83,
   op 0x82,
   op 0x10,
-  .push 2 4885,
+  .push 2 4699,
   op 0x57,
   op 0x5b,
   op 0x81,
@@ -3720,7 +3627,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x36,
   op 0x88,
   op 0x03,
-  .push 2 4547,
+  .push 2 4751,
   op 0x57,
   op 0x84,
   op 0x83,
@@ -3729,11 +3636,65 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x1b,
   op 0x1c,
   op 0x17,
-  .push 2 4955,
+  .push 2 4838,
   op 0x57,
   op 0x59,
   .push 0 0,
   op 0xf3,
+  op 0x5b,
+  op 0x36,
+  op 0x59,
+  op 0x16,
+  .push 2 4774,
+  op 0x57,
+  .push 5 99006248207,
+  op 0x18,
+  op 0x17,
+  .push 2 4838,
+  op 0x57,
+  op 0x59,
+  .push 0 0,
+  op 0xf3,
+  op 0x5b,
+  .push 1 40,
+  op 0x1c,
+  op 0x17,
+  op 0x91,
+  op 0x85,
+  .push 1 2,
+  op 0x1b,
+  op 0x81,
+  op 0x81,
+  op 0x17,
+  .push 1 9,
+  op 0x81,
+  op 0x92,
+  op 0x05,
+  op 0x01,
+  op 0x18,
+  op 0x18,
+  op 0x91,
+  .push 1 251,
+  op 0x87,
+  op 0x01,
+  op 0x80,
+  op 0x36,
+  op 0x03,
+  op 0x80,
+  op 0x36,
+  op 0x1d,
+  op 0x16,
+  op 0x01,
+  op 0x59,
+  op 0x81,
+  op 0x03,
+  op 0x94,
+  op 0x50,
+  op 0x96,
+  op 0x91,
+  op 0x50,
+  .push 2 4699,
+  op 0x56,
   op 0x5b,
   op 0x81,
   op 0x81,
@@ -3754,10 +3715,60 @@ private def submissionInstructionsChunk19 : List Instr :=
   .push 0 0,
   op 0x52,
   .push 1 245,
-  op 0x56
+  op 0x56,
+  op 0x5b,
+  op 0x36,
+  .push 1 1,
+  .push 17 342276208914615837337402008677671501826,
+  op 0x36,
+  op 0x1c,
+  op 0x16,
+  .push 2 4599,
+  op 0x57,
+  .push 2 256,
+  op 0x14,
+  .push 2 376,
+  op 0x36,
+  op 0x14,
+  op 0x01,
+  .push 2 4596,
+  op 0x57,
+  .push 0 0,
+  op 0x35,
+  .push 1 232,
+  op 0x1d,
+  op 0x36,
+  .push 3 2127393
 ]
 
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 56 := by rfl
+@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 156 := by rfl
+
+private def submissionInstructionsChunk19 : List Instr :=
+[
+  op 0x02,
+  op 0x18,
+  .push 1 245,
+  op 0x57,
+  .push 20 95383801997447390147238369573240532004699299169,
+  op 0x36,
+  op 0x1c,
+  .push 20 802931186561056611446976448233794645126013734992,
+  op 0x18,
+  .push 0 0,
+  op 0x52,
+  op 0x59,
+  .push 0 0,
+  op 0xf3,
+  op 0x5b,
+  .push 20 972889429405991776604892044862621566948497025487,
+  .push 0 0,
+  op 0x52,
+  op 0x59,
+  .push 0 0,
+  op 0xf3
+]
+
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 21 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -3781,15 +3792,15 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
 
-theorem referenceInstructions_count : submissionInstructions.length = 3615 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3626 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
-  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17, 246, 87, 95, 53, 96, 255, 2, 96, 97, 1, 97, 18, 174, 87, 95, 81, 53, 97, 3, 192, 97, 3, 200, 53, 130, 20, 96, 210, 86, 91, 96,
-  128, 140, 1, 89, 16, 97, 18, 125, 87, 96, 48, 96, 131, 86, 91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82, 128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 54, 82, 97, 18, 125, 156, 80, 97, 3, 56, 86, 4, 4, 91, 96, 64, 91, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91, 97, 18, 125, 156, 96, 32,
-  20, 96, 128, 96, 165, 83, 133, 96, 188, 83, 98, 0, 1, 241, 87, 91, 96, 128, 140, 54, 1, 83, 97, 19, 73, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 96, 128, 96, 131, 86, 91, 96,
-  48, 159, 80, 80, 80, 80, 97, 1, 205, 86, 91, 89, 130, 3, 53, 131, 20, 22, 97, 0, 64, 130, 3, 53, 131, 20, 22, 96, 96, 130, 3, 145, 53, 131, 20, 22, 129, 96, 210, 87, 97, 18, 98, 87, 91, 91
+  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 18, 237, 87, 95, 53, 96, 255, 2, 96, 97, 1, 97, 17, 244, 87, 95, 81, 53, 97, 3, 192, 97, 3, 200, 53, 130, 20, 96, 210, 86, 91, 96,
+  128, 140, 1, 89, 16, 97, 17, 195, 87, 96, 48, 96, 131, 86, 91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82, 128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 54, 82, 97, 17, 195, 156, 80, 97, 3, 56, 86, 4, 4, 91, 96, 64, 91, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91, 97, 17, 195, 156, 96, 32,
+  20, 96, 128, 96, 165, 83, 133, 96, 188, 83, 98, 0, 1, 241, 87, 91, 96, 128, 140, 54, 1, 83, 97, 18, 212, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 96, 128, 96, 131, 86, 91, 96,
+  48, 159, 80, 80, 80, 80, 97, 1, 205, 86, 91, 89, 130, 3, 53, 131, 20, 22, 97, 0, 64, 130, 3, 53, 131, 20, 22, 96, 96, 130, 3, 145, 53, 131, 20, 22, 129, 96, 210, 87, 97, 19, 89, 87, 91, 91
 ] := by decide
 
 private theorem submissionInstructionsChunk1_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk1 = [
@@ -3812,36 +3823,36 @@ private theorem submissionInstructionsChunk2_assemble : Challenge.EvmProof.PcEnc
 
 private theorem submissionInstructionsChunk3_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk3 = [
   22, 97, 2, 82, 82, 136, 97, 4, 20, 82, 97, 2, 208, 82, 97, 1, 14, 82, 129, 97, 1, 140, 82, 128, 88, 82, 97, 1, 212, 82, 96, 18, 82, 97, 1, 104, 82, 96, 198, 82, 97, 1, 68, 82, 96, 252, 82, 95, 82, 97,
-  1, 194, 82, 96, 162, 82, 91, 136, 129, 2, 96, 23, 28, 136, 136, 141, 99, 80, 162, 139, 230, 1, 97, 1, 230, 81, 1, 141, 141, 141, 25, 23, 24, 1, 133, 22, 132, 2, 96, 25, 28, 1, 132, 22, 132, 132, 134, 143, 134, 25,
-  23, 132, 24, 96, 162, 81, 142, 1, 1, 99, 80, 162, 139, 230, 1, 22, 2, 96, 24, 28, 131, 1, 22, 99, 80, 162, 139, 230, 142, 134, 2, 96, 23, 28, 147, 131, 133, 25, 23, 131, 24, 1, 96, 252, 81, 1, 1, 134, 22, 133,
+  1, 194, 82, 96, 162, 82, 91, 136, 129, 2, 96, 23, 28, 136, 136, 131, 141, 141, 141, 25, 23, 24, 143, 99, 80, 162, 139, 230, 1, 1, 97, 1, 230, 81, 1, 134, 22, 2, 96, 25, 28, 1, 132, 22, 132, 132, 134, 143, 134, 25,
+  23, 132, 24, 141, 1, 96, 162, 81, 1, 99, 80, 162, 139, 230, 1, 22, 2, 96, 24, 28, 131, 1, 22, 99, 80, 162, 139, 230, 142, 134, 2, 96, 23, 28, 147, 131, 133, 25, 23, 131, 24, 1, 96, 252, 81, 1, 1, 134, 22, 133,
   2, 96, 24, 28, 132, 1, 134, 22, 96, 144, 27, 142, 23, 144, 96, 144, 27, 141, 23, 147, 96, 144, 27, 143, 23, 145, 133, 2, 96, 23, 28, 96, 144, 27, 140, 23, 146, 96, 144, 27, 139, 23, 117, 255, 255, 255, 255, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 117, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 97, 1, 104, 81, 96, 23, 140, 138
 ] := by decide
 
 private theorem submissionInstructionsChunk4_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk4 = [
-  117, 80, 162, 139, 230, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 134, 140, 136, 22, 140, 23, 141, 24, 24, 137, 24, 1, 96, 54, 81, 1, 137, 1, 133, 22, 140, 2, 96, 22, 28, 135,
+  117, 80, 162, 139, 230, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 136, 140, 136, 22, 140, 23, 141, 24, 136, 24, 24, 1, 96, 54, 81, 1, 137, 1, 133, 22, 140, 2, 96, 22, 28, 135,
   1, 133, 22, 154, 140, 2, 131, 28, 133, 22, 150, 135, 137, 136, 22, 23, 135, 24, 137, 141, 24, 24, 1, 97, 3, 6, 81, 1, 137, 1, 133, 22, 9, 96, 19, 28, 136, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 140, 143, 130,
   154, 137, 141, 133, 138, 130, 22, 23, 138, 24, 24, 24, 1, 133, 1, 138, 1, 134, 22, 141, 2, 96, 18, 28, 136, 1, 134, 22, 155, 141, 2, 132, 28, 134, 22, 151, 137, 136, 138, 129, 131, 22, 23, 24, 24, 141, 24, 1, 97, 3,
-  114, 81, 1, 138, 1, 134, 22, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 141, 139, 130, 154, 137, 141, 137, 22, 141, 23, 137, 24, 24, 141, 24, 1, 97, 1, 140, 81, 1, 138, 1, 134, 22, 141, 2, 96, 28,
+  114, 81, 1, 138, 1, 134, 22, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 141, 139, 130, 154, 140, 136, 22, 140, 23, 136, 24, 138, 24, 141, 24, 1, 97, 1, 140, 81, 1, 138, 1, 134, 22, 141, 2, 96, 28,
   28, 136, 1, 134, 22, 155, 141, 2, 132, 28, 134, 22, 151, 137, 136, 138, 129, 131, 22, 23, 24, 24, 141, 24, 1, 97, 4, 56, 81, 1, 138, 1, 134, 22, 9, 96, 25, 28, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 141, 139,
-  130, 154, 140, 136, 22, 140, 23, 141, 137, 140
+  130, 154, 137, 136, 24, 141, 141, 138, 130, 22
 ] := by decide
 
 private theorem submissionInstructionsChunk5_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk5 = [
-  24, 24, 24, 1, 97, 4, 20, 81, 1, 138, 1, 134, 22, 129, 2, 96, 26, 28, 136, 1, 134, 22, 155, 129, 2, 132, 28, 134, 22, 151, 140, 138, 138, 129, 139, 22, 23, 138, 24, 24, 24, 1, 97, 1, 32, 81, 1, 138, 1, 134,
+  23, 24, 24, 1, 97, 4, 20, 81, 1, 138, 1, 134, 22, 129, 2, 96, 26, 28, 136, 1, 134, 22, 155, 129, 2, 132, 28, 134, 22, 151, 140, 138, 138, 129, 139, 22, 23, 138, 24, 24, 24, 1, 97, 1, 32, 81, 1, 138, 1, 134,
   22, 9, 96, 24, 28, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 140, 129, 153, 139, 139, 129, 137, 22, 23, 138, 137, 24, 24, 24, 1, 97, 3, 168, 81, 1, 137, 1, 133, 22, 140, 2, 96, 22, 28, 135, 1, 133, 22, 154, 140,
   2, 131, 28, 133, 22, 150, 135, 135, 138, 22, 23, 140, 24, 135, 24, 137, 24, 1, 97, 3, 42, 81, 1, 137, 1, 133, 22, 108, 2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 19, 28, 1, 131, 22, 149, 138,
-  2, 129, 28, 131, 22, 141, 129, 153, 136, 140, 136, 24, 24, 131, 141, 137, 22, 23, 24, 97, 1, 68, 81, 1, 1, 137, 1, 133, 22, 140, 2, 96, 19, 28, 135, 1, 133, 22, 154, 140, 2, 131, 28, 133, 22, 150, 136, 135, 137, 129,
-  140, 22, 23, 24, 24, 140, 24, 97, 3, 96, 81, 1, 138, 1, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0, 0, 8, 0, 0, 0, 8, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 151, 137, 133, 22, 137,
-  23, 138, 136, 24, 24, 133, 24, 1
+  2, 129, 28, 131, 22, 141, 129, 153, 136, 140, 136, 24, 24, 131, 141, 137, 22, 23, 24, 97, 1, 68, 81, 1, 1, 137, 1, 133, 22, 140, 2, 96, 19, 28, 135, 1, 133, 22, 154, 140, 2, 131, 28, 133, 22, 150, 136, 140, 137, 137,
+  131, 22, 23, 137, 24, 24, 24, 97, 3, 96, 81, 1, 138, 1, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0, 0, 8, 0, 0, 0, 8, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 129, 28, 131, 22, 151, 137, 133, 138, 129,
+  131, 22, 23, 137, 24, 24, 24, 1
 ] := by decide
 
 private theorem submissionInstructionsChunk6_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk6 = [
   97, 1, 194, 81, 1, 144, 150, 1, 130, 22, 137, 2, 96, 27, 28, 132, 1, 130, 22, 151, 137, 2, 134, 28, 130, 22, 139, 143, 117, 92, 77, 209, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 150, 139, 137, 136, 130, 22, 24, 136, 134, 22, 23, 24, 132, 24, 97, 4, 38, 81, 1, 136, 1, 1, 133, 22, 9, 96, 25, 28, 136, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 151, 134, 133, 22, 138, 24, 133, 138, 22, 23,
-  135, 138, 24, 24, 1, 96, 144, 81, 1, 133, 1, 140, 141, 108, 30, 0, 0, 0, 30, 0, 0, 0, 1, 0, 0, 0, 1, 134, 131, 148, 22, 9, 137, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 131, 140, 133, 137,
-  22, 139, 138, 131, 22, 24, 23, 24, 24, 97, 3, 222, 81, 1, 136, 1, 1, 133, 22, 108, 254, 0, 0, 0, 254, 0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 24, 28, 137, 1, 132, 22, 150, 139, 2, 136, 28, 132, 22, 149, 99,
-  90, 130, 121, 153, 1, 152, 134, 139, 23, 136, 135, 24, 22, 135, 24, 139, 137, 22, 23, 1, 96, 252, 81, 1, 137, 1, 132, 22, 139, 2, 96, 26, 28, 130, 1, 132, 22, 153, 139, 2, 136, 28, 132, 22, 145, 130, 139, 135, 24, 137,
+  135, 138, 24, 24, 1, 96, 144, 81, 1, 133, 1, 140, 141, 108, 30, 0, 0, 0, 30, 0, 0, 0, 1, 0, 0, 0, 1, 134, 131, 148, 22, 9, 137, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 136, 140, 136, 22,
+  24, 132, 136, 22, 23, 140, 24, 132, 24, 97, 3, 222, 81, 1, 136, 1, 1, 133, 22, 108, 254, 0, 0, 0, 254, 0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 24, 28, 137, 1, 132, 22, 150, 139, 2, 136, 28, 132, 22, 149, 99,
+  90, 130, 121, 153, 1, 152, 135, 139, 22, 139, 136, 23, 137, 136, 24, 22, 136, 24, 23, 1, 96, 252, 81, 1, 137, 1, 132, 22, 139, 2, 96, 26, 28, 130, 1, 132, 22, 153, 139, 2, 136, 28, 132, 22, 145, 130, 139, 135, 24, 137,
   130, 23, 22, 24, 139, 137, 22, 23, 1
 ] := by decide
 
@@ -3850,7 +3861,7 @@ private theorem submissionInstructionsChunk7_assemble : Challenge.EvmProof.PcEnc
   138, 22, 23, 1, 96, 198, 81, 1, 138, 1, 133, 22, 140, 2, 96, 25, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 131, 137, 133, 23, 141, 137, 24, 22, 24, 140, 138, 22, 23, 1, 97, 1, 248, 81, 1, 138, 1,
   133, 22, 108, 30, 0, 0, 0, 30, 0, 0, 0, 16, 0, 0, 0, 16, 9, 136, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 135, 140, 137, 23, 138, 137, 24, 22, 24, 140, 138, 22, 23, 1, 97, 1, 68, 81,
   1, 138, 1, 133, 22, 140, 2, 96, 22, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 131, 137, 133, 23, 141, 137, 24, 22, 24, 140, 138, 22, 23, 1, 97, 2, 172, 81, 1, 138, 1, 133, 22, 108, 6, 0, 0, 0,
-  6, 0, 0, 0, 4, 0, 0, 0, 4, 9, 96, 25, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 135, 140, 137, 23, 138, 137, 24, 22, 24, 140, 138, 22, 23, 1, 97, 3, 240, 81, 1, 138, 1, 133, 22, 140,
+  6, 0, 0, 0, 4, 0, 0, 0, 4, 9, 96, 25, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 135, 135, 138, 24, 141, 138, 23, 22, 24, 140, 138, 22, 23, 1, 97, 3, 240, 81, 1, 138, 1, 133, 22, 140,
   2, 96, 26, 28, 131, 1, 133, 22, 154, 140
 ] := by decide
 
@@ -3858,14 +3869,14 @@ private theorem submissionInstructionsChunk8_assemble : Challenge.EvmProof.PcEnc
   2, 137, 28, 133, 22, 146, 131, 137, 133, 23, 141, 137, 24, 22, 24, 140, 138, 22, 23, 1, 97, 3, 186, 81, 1, 138, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0, 0, 8, 0, 0, 0, 8, 9, 96, 20, 28, 1, 131, 22,
   149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 135, 140, 137, 23, 138, 137, 24, 22, 24, 140, 138, 22, 23, 1, 97, 1, 194, 81, 1, 138, 1, 133, 22, 140, 2, 96, 26, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146,
   131, 137, 133, 23, 141, 137, 24, 22, 24, 140, 138, 22, 23, 1, 96, 36, 81, 1, 138, 1, 133, 22, 108, 126, 0, 0, 0, 126, 0, 0, 0, 64, 0, 0, 0, 64, 9, 96, 26, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22,
-  148, 134, 138, 22, 138, 135, 23, 136, 135, 24, 22, 135, 24, 23, 1, 97, 3, 60, 81, 1, 136, 1, 131, 22, 138, 2, 96, 18, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 144, 134, 130, 23, 138, 134, 24, 22, 130, 24,
+  148, 134, 138, 22, 138, 135, 23, 136, 135, 24, 22, 135, 24, 23, 1, 97, 3, 60, 81, 1, 136, 1, 131, 22, 138, 2, 96, 18, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 144, 137, 133, 24, 130, 136, 23, 22, 130, 24,
   138, 136, 22, 23, 1, 97, 1, 230, 81, 1, 136, 1, 143, 141, 108, 30, 0, 0, 0, 30, 0, 0, 0, 1, 0, 0, 0, 1, 143, 147, 135, 22, 9, 137, 28, 135, 1, 133, 22, 151, 140, 2, 137, 28, 133, 22, 150, 135, 140, 137,
   23, 138, 137, 24, 22, 24, 140, 138, 22, 23
 ] := by decide
 
 private theorem submissionInstructionsChunk9_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk9 = [
-  1, 132, 1, 117, 109, 112, 62, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 130, 121, 153, 154, 1, 133, 22, 140, 2, 96, 22, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 131, 135, 138,
-  142, 131, 22, 24, 142, 130, 24, 22, 24, 24, 1, 97, 2, 154, 81, 1, 138, 1, 133, 22, 9, 96, 25, 28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 133, 133, 24, 138, 136, 136, 22, 24, 136, 135, 24, 22, 24, 1,
+  1, 132, 1, 117, 109, 112, 62, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 90, 130, 121, 153, 154, 1, 133, 22, 140, 2, 96, 22, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 134, 140, 24,
+  140, 133, 22, 138, 24, 22, 132, 24, 135, 24, 1, 97, 2, 154, 81, 1, 138, 1, 133, 22, 9, 96, 25, 28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 133, 133, 24, 138, 136, 136, 22, 24, 136, 135, 24, 22, 24, 1,
   96, 126, 81, 1, 136, 1, 108, 126, 0, 0, 0, 126, 0, 0, 0, 64, 0, 0, 0, 64, 142, 145, 133, 22, 9, 96, 25, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 151, 134, 138, 138, 22, 24, 138, 134, 24, 22, 137,
   134, 24, 24, 1, 97, 2, 46, 81, 1, 1, 141, 140, 145, 132, 22, 9, 96, 20, 28, 132, 1, 130, 22, 148, 137, 2, 134, 28, 130, 22, 140, 138, 129, 118, 1, 109, 112, 62, 242, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 1, 110, 217, 235, 161, 151, 132, 141, 25, 139, 23, 24, 1, 97, 3, 204, 81, 1, 136, 1, 134, 22, 141, 2, 96, 22, 28, 139, 1, 134, 22, 155, 141, 2, 138, 28, 134, 22, 154, 139, 141, 139, 25, 23, 24, 1, 97, 1,
@@ -3883,78 +3894,77 @@ private theorem submissionInstructionsChunk10_assemble : Challenge.EvmProof.PcEn
 
 private theorem submissionInstructionsChunk11_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk11 = [
   138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 138, 140, 138, 25, 23, 24, 96, 234, 81, 137, 1, 1, 1, 133, 22, 108, 62, 0, 0, 0, 62, 0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 24, 28, 1, 131, 22, 149, 138,
-  2, 135, 28, 131, 22, 144, 129, 138, 25, 136, 23, 24, 96, 54, 81, 135, 1, 1, 1, 131, 22, 138, 2, 96, 20, 28, 136, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 151, 136, 138, 136, 25, 23, 24, 97, 1, 158, 81, 135, 1,
+  2, 135, 28, 131, 22, 144, 96, 54, 81, 138, 25, 136, 23, 131, 24, 135, 1, 1, 1, 131, 22, 138, 2, 96, 20, 28, 136, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 151, 136, 138, 136, 25, 23, 24, 97, 1, 158, 81, 135, 1,
   1, 1, 142, 141, 108, 2, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 1, 143, 147, 135, 22, 9, 96, 26, 28, 131, 1, 133, 22, 151, 140, 2, 137, 28, 133, 22, 146, 131, 140, 25, 138, 23, 24, 96, 198, 81, 1, 1, 117,
   122, 109, 118, 233, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 110, 217, 235, 161, 151, 1, 133, 22, 140, 2, 96, 28, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 138, 140, 143, 24, 138, 142, 131,
-  22, 24, 22, 24, 142, 24, 97, 2, 64, 81, 1, 1, 135, 1, 133, 22, 9, 96, 20, 28, 129, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 144, 129, 140, 129, 137, 22, 140, 24, 137, 143, 24, 22, 24, 24, 97, 2, 190, 81, 135,
+  22, 24, 22, 24, 142, 24, 97, 2, 64, 81, 1, 1, 135, 1, 133, 22, 9, 96, 20, 28, 129, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 144, 97, 2, 190, 81, 140, 131, 24, 131, 137, 22, 140, 24, 137, 143, 24, 22, 24, 135,
   1, 1, 1, 142, 142
 ] := by decide
 
 private theorem submissionInstructionsChunk12_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk12 = [
   108, 6, 0, 0, 0, 6, 0, 0, 0, 4, 0, 0, 0, 4, 143, 147, 135, 22, 9, 96, 27, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 138, 140, 143, 24, 138, 142, 142, 22, 24, 22, 143, 24, 24, 96, 90, 81,
-  1, 1, 135, 1, 133, 22, 9, 96, 27, 28, 129, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 99, 32, 65, 209, 59, 1, 144, 134, 138, 134, 23, 24, 138, 134, 22, 135, 24, 22, 138, 24, 97, 3, 24, 81, 131, 1, 1, 1,
+  1, 1, 135, 1, 133, 22, 9, 96, 27, 28, 129, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 99, 32, 65, 209, 59, 1, 144, 129, 138, 135, 129, 136, 22, 24, 129, 136, 23, 138, 24, 22, 24, 97, 3, 24, 81, 1, 1, 1,
   131, 22, 138, 2, 96, 22, 28, 136, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 151, 134, 133, 22, 137, 24, 135, 134, 23, 139, 24, 22, 135, 24, 97, 3, 132, 81, 1, 1, 129, 1, 131, 22, 143, 141, 145, 9, 96, 20, 28, 133,
-  1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 135, 135, 141, 22, 24, 135, 141, 23, 138, 24, 22, 140, 24, 97, 2, 82, 81, 133, 1, 1, 1, 133, 22, 140, 2, 96, 19, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28,
+  1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 139, 135, 129, 23, 138, 24, 129, 137, 22, 138, 24, 22, 24, 97, 2, 82, 81, 133, 1, 1, 1, 133, 22, 140, 2, 96, 19, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28,
   133, 22, 153, 138, 135, 138, 22, 24, 140, 138, 137, 23, 24, 22, 137, 24, 97, 2, 118, 81, 133, 1, 1, 1, 133, 22, 109, 3, 254, 0, 0, 3, 254, 0, 0, 2, 0, 0, 0, 2, 0, 9, 96, 26, 28, 1, 131, 22, 149, 138,
   2, 135, 28, 131, 22, 141, 129, 150, 136, 140
 ] := by decide
 
 private theorem submissionInstructionsChunk13_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk13 = [
   136, 23, 24, 140, 136, 22, 137, 24, 22, 140, 24, 1, 96, 54, 81, 1, 131, 1, 133, 22, 140, 2, 96, 19, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 136, 140, 129, 137, 23, 24, 140, 137, 131, 22, 24, 22, 24,
-  1, 97, 2, 226, 81, 1, 131, 1, 133, 22, 109, 3, 254, 0, 0, 3, 254, 0, 0, 2, 0, 0, 0, 2, 0, 9, 96, 26, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 140, 129, 150, 139, 135, 129, 23, 138, 24, 137, 137,
-  131, 22, 24, 22, 24, 1, 97, 1, 194, 81, 1, 131, 1, 133, 22, 140, 2, 96, 24, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 138, 135, 138, 22, 24, 140, 138, 137, 23, 24, 22, 137, 24, 1, 97, 1, 122, 81,
+  1, 97, 2, 226, 81, 1, 131, 1, 133, 22, 109, 3, 254, 0, 0, 3, 254, 0, 0, 2, 0, 0, 0, 2, 0, 9, 96, 26, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 140, 129, 150, 135, 135, 141, 22, 24, 135, 141, 23,
+  138, 24, 22, 140, 24, 1, 97, 1, 194, 81, 1, 131, 1, 133, 22, 140, 2, 96, 24, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 138, 135, 138, 22, 24, 140, 138, 137, 23, 24, 22, 137, 24, 1, 97, 1, 122, 81,
   1, 131, 1, 133, 22, 108, 30, 0, 0, 0, 30, 0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 24, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 136, 140, 136, 23, 24, 140, 136, 22, 137, 24, 22, 140, 24, 1,
   96, 198, 81, 1, 131, 1, 133, 22, 140, 2, 96, 24, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 136, 140, 129, 137, 23, 24, 140, 137, 131, 22, 24, 22, 24, 1, 97, 3, 78, 81, 1, 131, 1, 133, 22
 ] := by decide
 
 private theorem submissionInstructionsChunk14_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk14 = [
-  108, 6, 0, 0, 0, 6, 0, 0, 0, 4, 0, 0, 0, 4, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 140, 129, 150, 139, 135, 129, 23, 138, 24, 137, 137, 131, 22, 24, 22, 24, 1, 96, 252, 81, 1, 131,
+  108, 6, 0, 0, 0, 6, 0, 0, 0, 4, 0, 0, 0, 4, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 140, 129, 150, 135, 140, 136, 22, 24, 140, 136, 23, 138, 24, 22, 140, 24, 1, 96, 252, 81, 1, 131,
   1, 133, 22, 140, 2, 96, 28, 28, 138, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 153, 136, 140, 138, 137, 23, 24, 140, 137, 131, 22, 24, 22, 24, 1, 97, 2, 136, 81, 1, 131, 1, 133, 22, 109, 3, 254, 0, 0, 3, 254,
-  0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 26, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 134, 138, 134, 23, 24, 138, 134, 22, 135, 24, 22, 138, 24, 1, 96, 162, 81, 1, 1, 130, 22, 137, 2, 96, 25, 28, 135,
+  0, 0, 0, 1, 0, 0, 0, 1, 9, 96, 26, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 137, 134, 134, 130, 22, 24, 134, 130, 23, 137, 24, 22, 24, 1, 96, 162, 81, 1, 1, 130, 22, 137, 2, 96, 25, 28, 135,
   1, 130, 22, 151, 137, 2, 134, 28, 130, 22, 139, 143, 99, 143, 27, 188, 220, 153, 134, 137, 141, 24, 23, 132, 22, 137, 24, 135, 141, 22, 24, 1, 96, 108, 81, 1, 138, 1, 133, 22, 9, 96, 26, 28, 133, 1, 131, 22, 149, 138,
-  2, 135, 28, 131, 22, 148, 133, 135, 139, 24, 134, 23, 22, 135, 134, 22, 24, 138, 24, 97, 4, 2, 81, 1, 137, 1, 1, 131, 22, 138, 2, 96, 28, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 144, 137, 133, 22, 130,
-  136, 140, 24, 135, 23, 22, 24, 135, 24, 1
+  2, 135, 28, 131, 22, 148, 97, 4, 2, 81, 138, 135, 135, 138, 131, 24, 23, 22, 135, 138, 22, 24, 24, 138, 1, 1, 1, 131, 22, 138, 2, 96, 28, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 144, 129, 133, 136, 140,
+  24, 23, 22, 133, 139, 22, 24, 135, 24, 1
 ] := by decide
 
 private theorem submissionInstructionsChunk15_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk15 = [
-  97, 1, 86, 81, 1, 99, 169, 83, 253, 78, 152, 1, 131, 22, 138, 2, 96, 21, 28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 141, 140, 22, 131, 23, 137, 24, 140, 24, 142, 24, 97, 1, 140, 81, 1, 1,
-  138, 1, 133, 22, 140, 2, 96, 24, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 141, 137, 24, 137, 143, 22, 133, 23, 141, 24, 24, 97, 2, 10, 81, 1, 1, 138, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0,
-  0, 8, 0, 0, 0, 8, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 140, 143, 130, 151, 140, 143, 22, 137, 23, 143, 24, 141, 24, 138, 24, 97, 2, 208, 81, 141, 1, 1, 1, 134, 22, 141, 2, 96, 28, 28,
-  132, 1, 134, 22, 155, 141, 2, 138, 28, 134, 22, 147, 137, 143, 22, 133, 23, 141, 24, 143, 24, 138, 24, 97, 2, 244, 81, 1, 140, 1, 1, 134, 22, 9, 96, 21, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 137, 140,
-  22, 134, 23, 135, 24, 138, 24, 140, 24, 96, 252, 81, 138, 1, 1, 1, 131, 22, 138, 2, 96, 27, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 144, 134, 140, 22, 130, 23, 140, 24, 135, 24, 138, 24, 97, 1, 176, 81,
+  97, 1, 86, 81, 1, 99, 169, 83, 253, 78, 152, 1, 131, 22, 138, 2, 96, 21, 28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 141, 129, 150, 141, 140, 129, 129, 22, 133, 23, 139, 24, 24, 24, 97, 1, 140, 81, 1, 1,
+  138, 1, 133, 22, 140, 2, 96, 24, 28, 131, 1, 133, 22, 154, 140, 2, 137, 28, 133, 22, 146, 131, 137, 143, 22, 23, 140, 24, 137, 143, 24, 24, 97, 2, 10, 81, 1, 1, 138, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0,
+  0, 8, 0, 0, 0, 8, 9, 96, 20, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 140, 143, 130, 151, 140, 143, 138, 130, 130, 22, 23, 24, 24, 138, 24, 97, 2, 208, 81, 141, 1, 1, 1, 134, 22, 141, 2, 96, 28, 28,
+  132, 1, 134, 22, 155, 141, 2, 138, 28, 134, 22, 147, 140, 143, 134, 140, 130, 22, 23, 24, 24, 138, 24, 97, 2, 244, 81, 1, 140, 1, 1, 134, 22, 9, 96, 21, 28, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 137, 140,
+  22, 134, 23, 135, 24, 138, 24, 140, 24, 96, 252, 81, 138, 1, 1, 1, 131, 22, 138, 2, 96, 27, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 144, 134, 138, 24, 140, 131, 129, 138, 22, 23, 24, 24, 97, 1, 176, 81,
   138, 1, 1, 1, 131, 22, 138, 2, 96, 25
 ] := by decide
 
 private theorem submissionInstructionsChunk16_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk16 = [
-  28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 139, 135, 24, 138, 141, 22, 135, 23, 24, 138, 24, 131, 138, 1, 1, 1, 131, 22, 138, 2, 96, 20, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 141, 129, 146,
+  28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131, 22, 148, 133, 138, 141, 22, 23, 135, 141, 24, 24, 138, 24, 131, 138, 1, 1, 1, 131, 22, 138, 2, 96, 20, 28, 129, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 141, 129, 146,
   136, 142, 22, 132, 23, 137, 24, 140, 24, 142, 24, 96, 216, 81, 140, 1, 1, 1, 133, 22, 108, 126, 0, 0, 0, 126, 0, 0, 0, 64, 0, 0, 0, 64, 9, 96, 26, 28, 134, 1, 132, 22, 150, 139, 2, 136, 28, 132, 22, 149,
   140, 139, 24, 139, 142, 22, 136, 23, 137, 24, 24, 96, 162, 81, 1, 138, 1, 1, 132, 22, 139, 2, 96, 28, 28, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 140, 143, 130, 147, 140, 143, 24, 143, 139, 22, 134, 23, 24, 138, 24,
   97, 2, 28, 81, 1, 1, 139, 1, 134, 22, 9, 96, 20, 28, 134, 1, 132, 22, 150, 139, 2, 136, 28, 132, 22, 149, 138, 141, 22, 135, 23, 136, 24, 141, 24, 139, 24, 97, 3, 204, 81, 1, 138, 1, 1, 132, 22, 139, 2, 96,
-  20, 28, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 141, 129, 146, 136, 142, 22, 132, 23, 142, 141, 24, 138, 24, 24, 97, 3, 150, 81, 1, 139, 1, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0, 0, 8, 0, 0, 0, 8,
+  20, 28, 1, 131, 22, 152, 138, 2, 135, 28, 131, 22, 141, 129, 146, 141, 132, 129, 139, 22, 23, 138, 24, 141, 24, 24, 139, 1, 97, 3, 150, 81, 1, 1, 133, 22, 108, 14, 0, 0, 0, 14, 0, 0, 0, 8, 0, 0, 0, 8,
   9, 96, 21, 28, 134, 1, 132, 22
 ] := by decide
 
 private theorem submissionInstructionsChunk17_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17 = [
-  150, 139, 2, 136, 28, 149, 138, 141, 22, 135, 23, 136, 24, 141, 24, 139, 24, 97, 2, 82, 81, 1, 138, 1, 1, 132, 22, 139, 2, 96, 22, 28, 1, 131, 22, 152, 138, 2, 135, 28, 138, 135, 2, 136, 28, 140, 139, 131, 25, 138,
-  23, 24, 95, 81, 133, 1, 1, 139, 1, 22, 140, 2, 96, 25, 28, 135, 1, 141, 22, 97, 2, 100, 81, 139, 130, 142, 133, 25, 23, 24, 1, 1, 136, 1, 142, 22, 141, 2, 96, 28, 28, 131, 1, 140, 142, 2, 139, 28, 155, 129,
-  131, 142, 25, 23, 24, 133, 1, 96, 198, 81, 1, 1, 143, 22, 142, 2, 96, 27, 28, 131, 1, 147, 96, 144, 28, 1, 150, 80, 140, 2, 147, 80, 150, 96, 144, 28, 1, 148, 96, 144, 28, 146, 80, 96, 144, 28, 151, 96, 144, 28,
-  149, 28, 1, 143, 1, 136, 22, 159, 1, 135, 22, 159, 1, 134, 22, 154, 1, 1, 132, 22, 153, 1, 1, 130, 22, 152, 156, 86, 91, 96, 40, 28, 23, 145, 133, 96, 2, 27, 129, 129, 23, 96, 9, 129, 146, 5, 1, 24, 24, 145,
-  96, 251, 135, 1, 128, 54, 3, 128, 54, 29, 22, 1, 89, 129, 3, 148, 80, 150, 145, 132, 17, 97, 19, 21, 87, 97, 19, 46, 86, 91, 54, 96, 1, 112, 1, 1, 128, 0, 0, 0, 0, 0, 3, 129, 128, 0, 1, 128, 0, 0,
-  2, 54, 28, 22, 97, 18, 177, 87
+  150, 139, 2, 136, 28, 149, 138, 141, 22, 135, 23, 136, 24, 141, 24, 139, 24, 97, 2, 82, 81, 1, 138, 1, 1, 132, 22, 139, 2, 96, 22, 28, 1, 131, 22, 152, 138, 2, 135, 28, 138, 135, 2, 136, 28, 95, 81, 138, 1, 131,
+  1, 139, 131, 25, 138, 23, 24, 1, 141, 22, 140, 2, 96, 25, 28, 135, 1, 141, 22, 141, 130, 25, 141, 23, 130, 24, 140, 1, 97, 2, 100, 81, 138, 1, 1, 22, 141, 2, 96, 28, 28, 131, 1, 141, 141, 2, 139, 28, 155, 140,
+  25, 131, 23, 130, 24, 133, 1, 96, 198, 81, 1, 1, 143, 22, 142, 2, 96, 27, 28, 131, 1, 147, 96, 144, 28, 1, 150, 80, 140, 2, 147, 80, 150, 96, 144, 28, 1, 148, 96, 144, 28, 146, 80, 96, 144, 28, 151, 96, 144, 28,
+  149, 28, 1, 143, 1, 136, 22, 159, 1, 135, 22, 159, 1, 134, 22, 154, 1, 1, 132, 22, 153, 1, 1, 130, 22, 152, 156, 86, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82, 96,
+  16, 81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3, 82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 20, 96, 15, 54, 98, 219, 20, 123, 4, 22, 129, 2, 56, 3, 96, 12, 57, 127,
+  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96
 ] := by decide
 
 private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18 = [
-  97, 1, 0, 20, 97, 1, 120, 54, 20, 1, 97, 18, 174, 87, 95, 53, 96, 232, 29, 54, 98, 32, 118, 33, 2, 24, 96, 245, 87, 115, 16, 181, 40, 89, 5, 22, 178, 98, 175, 214, 144, 26, 176, 43, 33, 241, 110, 170, 221, 97,
-  54, 28, 115, 140, 164, 173, 252, 192, 255, 78, 54, 206, 254, 152, 141, 206, 195, 212, 185, 220, 143, 80, 80, 24, 95, 82, 89, 95, 243, 91, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16, 243, 129, 233,
-  207, 95, 82, 89, 95, 243, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3,
-  82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 20, 96, 15, 54, 98, 219, 20, 123, 4, 22, 129, 2, 56, 3, 96, 12, 57, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
-  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 128, 25, 89, 131, 3, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 95,
-  96, 33, 54, 16, 97, 19, 46, 87, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135
+  128, 25, 89, 131, 3, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 95, 96, 33, 54, 16, 97, 18, 116, 87, 91, 129,
+  89, 1, 145, 53, 131, 134, 129, 23, 136, 129, 3, 24, 24, 147, 24, 23, 131, 130, 16, 97, 18, 91, 87, 91, 129, 53, 131, 24, 54, 136, 3, 97, 18, 143, 87, 132, 131, 3, 96, 3, 27, 28, 23, 97, 18, 230, 87, 89, 95, 243,
+  91, 54, 89, 22, 97, 18, 166, 87, 100, 23, 13, 59, 117, 15, 24, 23, 97, 18, 230, 87, 89, 95, 243, 91, 96, 40, 28, 23, 145, 133, 96, 2, 27, 129, 129, 23, 96, 9, 129, 146, 5, 1, 24, 24, 145, 96, 251, 135, 1, 128,
+  54, 3, 128, 54, 29, 22, 1, 89, 129, 3, 148, 80, 150, 145, 80, 97, 18, 91, 86, 91, 129, 129, 83, 96, 1, 1, 144, 96, 8, 28, 144, 129, 131, 87, 96, 198, 86, 91, 95, 95, 82, 96, 245, 86, 91, 54, 96, 1, 112, 1,
+  1, 128, 0, 0, 0, 0, 0, 3, 129, 128, 0, 1, 128, 0, 0, 2, 54, 28, 22, 97, 17, 247, 87, 97, 1, 0, 20, 97, 1, 120, 54, 20, 1, 97, 17, 244, 87, 95, 53, 96, 232, 29, 54, 98, 32, 118, 33
 ] := by decide
 
 private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
-  129, 3, 24, 132, 24, 147, 24, 23, 131, 130, 16, 97, 19, 21, 87, 91, 129, 53, 131, 24, 54, 136, 3, 97, 17, 195, 87, 132, 131, 3, 96, 3, 27, 28, 23, 97, 19, 91, 87, 89, 95, 243, 91, 129, 129, 83, 96, 1, 1, 144,
-  96, 8, 28, 144, 129, 131, 87, 96, 198, 86, 91, 95, 95, 82, 96, 245, 86
+  2, 24, 96, 245, 87, 115, 16, 181, 40, 89, 5, 22, 178, 98, 175, 214, 144, 26, 176, 43, 33, 241, 110, 170, 221, 97, 54, 28, 115, 140, 164, 173, 252, 192, 255, 78, 54, 206, 254, 152, 141, 206, 195, 212, 185, 220, 143, 80, 80, 24,
+  95, 82, 89, 95, 243, 91, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16, 243, 129, 233, 207, 95, 82, 89, 95, 243
 ] := by decide
 
 private theorem assemble_chunk0 :
@@ -4164,12 +4174,12 @@ private theorem chunk16_byteLength :
   rfl
 
 private theorem chunk17_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 258 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 282 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk18_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 268 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 247 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
@@ -4197,7 +4207,7 @@ private def tailPrefix : List Instr :=
 private theorem tailPrefix_length : tailPrefix.length = 3559 := by
   simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length]
 
-private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4895 := by
+private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4898 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
 
 private theorem instructionPC_tail (i : Nat) (hi : i ≤ 56) :
@@ -4951,105 +4961,105 @@ def initStores : List InitStore := []
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_279 :
-    submissionArtifact.instructionPC 3594 = 4937 := by
+    submissionArtifact.instructionPC 3561 = 4820 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_279 :
-    instructionPC 3594 = 4937 := by
-  change submissionArtifact.instructionPC 3594 = 4937
+    instructionPC 3561 = 4820 := by
+  change submissionArtifact.instructionPC 3561 = 4820
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_280 :
-    submissionArtifact.instructionPC 3595 = 4938 := by
+    submissionArtifact.instructionPC 3562 = 4821 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_280 :
-    instructionPC 3595 = 4938 := by
-  change submissionArtifact.instructionPC 3595 = 4938
+    instructionPC 3562 = 4821 := by
+  change submissionArtifact.instructionPC 3562 = 4821
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_281 :
-    submissionArtifact.instructionPC 3596 = 4939 := by
+    submissionArtifact.instructionPC 3563 = 4822 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_281 :
-    instructionPC 3596 = 4939 := by
-  change submissionArtifact.instructionPC 3596 = 4939
+    instructionPC 3563 = 4822 := by
+  change submissionArtifact.instructionPC 3563 = 4822
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_282 :
-    submissionArtifact.instructionPC 3597 = 4940 := by
+    submissionArtifact.instructionPC 3564 = 4823 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_282 :
-    instructionPC 3597 = 4940 := by
-  change submissionArtifact.instructionPC 3597 = 4940
+    instructionPC 3564 = 4823 := by
+  change submissionArtifact.instructionPC 3564 = 4823
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_283 :
-    submissionArtifact.instructionPC 3598 = 4941 := by
+    submissionArtifact.instructionPC 3565 = 4824 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_283 :
-    instructionPC 3598 = 4941 := by
-  change submissionArtifact.instructionPC 3598 = 4941
+    instructionPC 3565 = 4824 := by
+  change submissionArtifact.instructionPC 3565 = 4824
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_284 :
-    submissionArtifact.instructionPC 3599 = 4943 := by
+    submissionArtifact.instructionPC 3566 = 4826 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_284 :
-    instructionPC 3599 = 4943 := by
-  change submissionArtifact.instructionPC 3599 = 4943
+    instructionPC 3566 = 4826 := by
+  change submissionArtifact.instructionPC 3566 = 4826
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_285 :
-    submissionArtifact.instructionPC 3600 = 4944 := by
+    submissionArtifact.instructionPC 3567 = 4827 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_285 :
-    instructionPC 3600 = 4944 := by
-  change submissionArtifact.instructionPC 3600 = 4944
+    instructionPC 3567 = 4827 := by
+  change submissionArtifact.instructionPC 3567 = 4827
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_286 :
-    submissionArtifact.instructionPC 3601 = 4945 := by
+    submissionArtifact.instructionPC 3568 = 4828 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_286 :
-    instructionPC 3601 = 4945 := by
-  change submissionArtifact.instructionPC 3601 = 4945
+    instructionPC 3568 = 4828 := by
+  change submissionArtifact.instructionPC 3568 = 4828
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -5065,11 +5075,11 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_210 :
-    Decode.isValidJumpDest submissionBytecode 4937 = true := by
-  have hp : submissionArtifact.instructionPC 3594 = 4937 := by
+    Decode.isValidJumpDest submissionBytecode 4820 = true := by
+  have hp : submissionArtifact.instructionPC 3561 = 4820 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 3594 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3561 (by rfl)
   rw [hp] at h
   exact h
 
@@ -5675,92 +5685,92 @@ private def wfOp {op : Operation}
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc54 :
-    submissionArtifact.instructionPC 3478 = 4707 := by
+    submissionArtifact.instructionPC 3620 = 4954 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci54 :
-    instructionPC 3478 = 4707 := by
-  change submissionArtifact.instructionPC 3478 = 4707
+    instructionPC 3620 = 4954 := by
+  change submissionArtifact.instructionPC 3620 = 4954
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc55 :
-    submissionArtifact.instructionPC 3478 = 4707 := by
+    submissionArtifact.instructionPC 3620 = 4954 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci55 :
-    instructionPC 3478 = 4707 := by
-  change submissionArtifact.instructionPC 3478 = 4707
+    instructionPC 3620 = 4954 := by
+  change submissionArtifact.instructionPC 3620 = 4954
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc56 :
-    submissionArtifact.instructionPC 3479 = 4728 := by
+    submissionArtifact.instructionPC 3621 = 4975 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci56 :
-    instructionPC 3479 = 4728 := by
-  change submissionArtifact.instructionPC 3479 = 4728
+    instructionPC 3621 = 4975 := by
+  change submissionArtifact.instructionPC 3621 = 4975
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc57 :
-    submissionArtifact.instructionPC 3480 = 4729 := by
+    submissionArtifact.instructionPC 3622 = 4976 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci57 :
-    instructionPC 3480 = 4729 := by
-  change submissionArtifact.instructionPC 3480 = 4729
+    instructionPC 3622 = 4976 := by
+  change submissionArtifact.instructionPC 3622 = 4976
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc58 :
-    submissionArtifact.instructionPC 3481 = 4730 := by
+    submissionArtifact.instructionPC 3623 = 4977 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci58 :
-    instructionPC 3481 = 4730 := by
-  change submissionArtifact.instructionPC 3481 = 4730
+    instructionPC 3623 = 4977 := by
+  change submissionArtifact.instructionPC 3623 = 4977
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc59 :
-    submissionArtifact.instructionPC 3482 = 4731 := by
+    submissionArtifact.instructionPC 3624 = 4978 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci59 :
-    instructionPC 3482 = 4731 := by
-  change submissionArtifact.instructionPC 3482 = 4731
+    instructionPC 3624 = 4978 := by
+  change submissionArtifact.instructionPC 3624 = 4978
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc60 :
-    submissionArtifact.instructionPC 3483 = 4732 := by
+    submissionArtifact.instructionPC 3625 = 4979 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci60 :
-    instructionPC 3483 = 4732 := by
-  change submissionArtifact.instructionPC 3483 = 4732
+    instructionPC 3625 = 4979 := by
+  change submissionArtifact.instructionPC 3625 = 4979
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -6140,105 +6150,105 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc127 :
-    submissionArtifact.instructionPC 3594 = 4937 := by
+    submissionArtifact.instructionPC 3561 = 4820 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci127 :
-    instructionPC 3594 = 4937 := by
-  change submissionArtifact.instructionPC 3594 = 4937
+    instructionPC 3561 = 4820 := by
+  change submissionArtifact.instructionPC 3561 = 4820
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc128 :
-    submissionArtifact.instructionPC 3595 = 4938 := by
+    submissionArtifact.instructionPC 3562 = 4821 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci128 :
-    instructionPC 3595 = 4938 := by
-  change submissionArtifact.instructionPC 3595 = 4938
+    instructionPC 3562 = 4821 := by
+  change submissionArtifact.instructionPC 3562 = 4821
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc129 :
-    submissionArtifact.instructionPC 3596 = 4939 := by
+    submissionArtifact.instructionPC 3563 = 4822 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci129 :
-    instructionPC 3596 = 4939 := by
-  change submissionArtifact.instructionPC 3596 = 4939
+    instructionPC 3563 = 4822 := by
+  change submissionArtifact.instructionPC 3563 = 4822
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc130 :
-    submissionArtifact.instructionPC 3597 = 4940 := by
+    submissionArtifact.instructionPC 3564 = 4823 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci130 :
-    instructionPC 3597 = 4940 := by
-  change submissionArtifact.instructionPC 3597 = 4940
+    instructionPC 3564 = 4823 := by
+  change submissionArtifact.instructionPC 3564 = 4823
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc131 :
-    submissionArtifact.instructionPC 3598 = 4941 := by
+    submissionArtifact.instructionPC 3565 = 4824 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci131 :
-    instructionPC 3598 = 4941 := by
-  change submissionArtifact.instructionPC 3598 = 4941
+    instructionPC 3565 = 4824 := by
+  change submissionArtifact.instructionPC 3565 = 4824
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc132 :
-    submissionArtifact.instructionPC 3599 = 4943 := by
+    submissionArtifact.instructionPC 3566 = 4826 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci132 :
-    instructionPC 3599 = 4943 := by
-  change submissionArtifact.instructionPC 3599 = 4943
+    instructionPC 3566 = 4826 := by
+  change submissionArtifact.instructionPC 3566 = 4826
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc133 :
-    submissionArtifact.instructionPC 3600 = 4944 := by
+    submissionArtifact.instructionPC 3567 = 4827 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci133 :
-    instructionPC 3600 = 4944 := by
-  change submissionArtifact.instructionPC 3600 = 4944
+    instructionPC 3567 = 4827 := by
+  change submissionArtifact.instructionPC 3567 = 4827
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc134 :
-    submissionArtifact.instructionPC 3601 = 4945 := by
+    submissionArtifact.instructionPC 3568 = 4828 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci134 :
-    instructionPC 3601 = 4945 := by
-  change submissionArtifact.instructionPC 3601 = 4945
+    instructionPC 3568 = 4828 := by
+  change submissionArtifact.instructionPC 3568 = 4828
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -7112,482 +7122,482 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3459 :
-    submissionArtifact.instructionPC 3440 = 4598 := by
+    submissionArtifact.instructionPC 3582 = 4845 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3459 :
-    instructionPC 3440 = 4598 := by
-  change submissionArtifact.instructionPC 3440 = 4598
+    instructionPC 3582 = 4845 := by
+  change submissionArtifact.instructionPC 3582 = 4845
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3460 :
-    submissionArtifact.instructionPC 3441 = 4599 := by
+    submissionArtifact.instructionPC 3583 = 4846 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3460 :
-    instructionPC 3441 = 4599 := by
-  change submissionArtifact.instructionPC 3441 = 4599
+    instructionPC 3583 = 4846 := by
+  change submissionArtifact.instructionPC 3583 = 4846
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3461 :
-    submissionArtifact.instructionPC 3442 = 4600 := by
+    submissionArtifact.instructionPC 3584 = 4847 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3461 :
-    instructionPC 3442 = 4600 := by
-  change submissionArtifact.instructionPC 3442 = 4600
+    instructionPC 3584 = 4847 := by
+  change submissionArtifact.instructionPC 3584 = 4847
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3462 :
-    submissionArtifact.instructionPC 3443 = 4602 := by
+    submissionArtifact.instructionPC 3585 = 4849 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3462 :
-    instructionPC 3443 = 4602 := by
-  change submissionArtifact.instructionPC 3443 = 4602
+    instructionPC 3585 = 4849 := by
+  change submissionArtifact.instructionPC 3585 = 4849
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3463 :
-    submissionArtifact.instructionPC 3444 = 4620 := by
+    submissionArtifact.instructionPC 3586 = 4867 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3463 :
-    instructionPC 3444 = 4620 := by
-  change submissionArtifact.instructionPC 3444 = 4620
+    instructionPC 3586 = 4867 := by
+  change submissionArtifact.instructionPC 3586 = 4867
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3464 :
-    submissionArtifact.instructionPC 3445 = 4621 := by
+    submissionArtifact.instructionPC 3587 = 4868 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3464 :
-    instructionPC 3445 = 4621 := by
-  change submissionArtifact.instructionPC 3445 = 4621
+    instructionPC 3587 = 4868 := by
+  change submissionArtifact.instructionPC 3587 = 4868
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3465 :
-    submissionArtifact.instructionPC 3446 = 4622 := by
+    submissionArtifact.instructionPC 3588 = 4869 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3465 :
-    instructionPC 3446 = 4622 := by
-  change submissionArtifact.instructionPC 3446 = 4622
+    instructionPC 3588 = 4869 := by
+  change submissionArtifact.instructionPC 3588 = 4869
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3466 :
-    submissionArtifact.instructionPC 3447 = 4623 := by
+    submissionArtifact.instructionPC 3589 = 4870 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3466 :
-    instructionPC 3447 = 4623 := by
-  change submissionArtifact.instructionPC 3447 = 4623
+    instructionPC 3589 = 4870 := by
+  change submissionArtifact.instructionPC 3589 = 4870
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3467 :
-    submissionArtifact.instructionPC 3448 = 4626 := by
+    submissionArtifact.instructionPC 3590 = 4873 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3467 :
-    instructionPC 3448 = 4626 := by
-  change submissionArtifact.instructionPC 3448 = 4626
+    instructionPC 3590 = 4873 := by
+  change submissionArtifact.instructionPC 3590 = 4873
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3468 :
-    submissionArtifact.instructionPC 3449 = 4627 := by
+    submissionArtifact.instructionPC 3591 = 4874 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3468 :
-    instructionPC 3449 = 4627 := by
-  change submissionArtifact.instructionPC 3449 = 4627
+    instructionPC 3591 = 4874 := by
+  change submissionArtifact.instructionPC 3591 = 4874
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3469 :
-    submissionArtifact.instructionPC 3450 = 4630 := by
+    submissionArtifact.instructionPC 3592 = 4877 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3469 :
-    instructionPC 3450 = 4630 := by
-  change submissionArtifact.instructionPC 3450 = 4630
+    instructionPC 3592 = 4877 := by
+  change submissionArtifact.instructionPC 3592 = 4877
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3470 :
-    submissionArtifact.instructionPC 3451 = 4631 := by
+    submissionArtifact.instructionPC 3593 = 4878 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3470 :
-    instructionPC 3451 = 4631 := by
-  change submissionArtifact.instructionPC 3451 = 4631
+    instructionPC 3593 = 4878 := by
+  change submissionArtifact.instructionPC 3593 = 4878
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3471 :
-    submissionArtifact.instructionPC 3452 = 4634 := by
+    submissionArtifact.instructionPC 3594 = 4881 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3471 :
-    instructionPC 3452 = 4634 := by
-  change submissionArtifact.instructionPC 3452 = 4634
+    instructionPC 3594 = 4881 := by
+  change submissionArtifact.instructionPC 3594 = 4881
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3472 :
-    submissionArtifact.instructionPC 3453 = 4635 := by
+    submissionArtifact.instructionPC 3595 = 4882 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3472 :
-    instructionPC 3453 = 4635 := by
-  change submissionArtifact.instructionPC 3453 = 4635
+    instructionPC 3595 = 4882 := by
+  change submissionArtifact.instructionPC 3595 = 4882
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3473 :
-    submissionArtifact.instructionPC 3454 = 4636 := by
+    submissionArtifact.instructionPC 3596 = 4883 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3473 :
-    instructionPC 3454 = 4636 := by
-  change submissionArtifact.instructionPC 3454 = 4636
+    instructionPC 3596 = 4883 := by
+  change submissionArtifact.instructionPC 3596 = 4883
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3474 :
-    submissionArtifact.instructionPC 3455 = 4637 := by
+    submissionArtifact.instructionPC 3597 = 4884 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3474 :
-    instructionPC 3455 = 4637 := by
-  change submissionArtifact.instructionPC 3455 = 4637
+    instructionPC 3597 = 4884 := by
+  change submissionArtifact.instructionPC 3597 = 4884
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3475 :
-    submissionArtifact.instructionPC 3456 = 4640 := by
+    submissionArtifact.instructionPC 3598 = 4887 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3475 :
-    instructionPC 3456 = 4640 := by
-  change submissionArtifact.instructionPC 3456 = 4640
+    instructionPC 3598 = 4887 := by
+  change submissionArtifact.instructionPC 3598 = 4887
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3476 :
-    submissionArtifact.instructionPC 3457 = 4641 := by
+    submissionArtifact.instructionPC 3599 = 4888 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3476 :
-    instructionPC 3457 = 4641 := by
-  change submissionArtifact.instructionPC 3457 = 4641
+    instructionPC 3599 = 4888 := by
+  change submissionArtifact.instructionPC 3599 = 4888
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3477 :
-    submissionArtifact.instructionPC 3458 = 4642 := by
+    submissionArtifact.instructionPC 3600 = 4889 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3477 :
-    instructionPC 3458 = 4642 := by
-  change submissionArtifact.instructionPC 3458 = 4642
+    instructionPC 3600 = 4889 := by
+  change submissionArtifact.instructionPC 3600 = 4889
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3478 :
-    submissionArtifact.instructionPC 3459 = 4643 := by
+    submissionArtifact.instructionPC 3601 = 4890 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3478 :
-    instructionPC 3459 = 4643 := by
-  change submissionArtifact.instructionPC 3459 = 4643
+    instructionPC 3601 = 4890 := by
+  change submissionArtifact.instructionPC 3601 = 4890
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3479 :
-    submissionArtifact.instructionPC 3460 = 4645 := by
+    submissionArtifact.instructionPC 3602 = 4892 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3479 :
-    instructionPC 3460 = 4645 := by
-  change submissionArtifact.instructionPC 3460 = 4645
+    instructionPC 3602 = 4892 := by
+  change submissionArtifact.instructionPC 3602 = 4892
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3480 :
-    submissionArtifact.instructionPC 3461 = 4646 := by
+    submissionArtifact.instructionPC 3603 = 4893 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3480 :
-    instructionPC 3461 = 4646 := by
-  change submissionArtifact.instructionPC 3461 = 4646
+    instructionPC 3603 = 4893 := by
+  change submissionArtifact.instructionPC 3603 = 4893
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3481 :
-    submissionArtifact.instructionPC 3462 = 4647 := by
+    submissionArtifact.instructionPC 3604 = 4894 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3481 :
-    instructionPC 3462 = 4647 := by
-  change submissionArtifact.instructionPC 3462 = 4647
+    instructionPC 3604 = 4894 := by
+  change submissionArtifact.instructionPC 3604 = 4894
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3482 :
-    submissionArtifact.instructionPC 3463 = 4651 := by
+    submissionArtifact.instructionPC 3605 = 4898 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3482 :
-    instructionPC 3463 = 4651 := by
-  change submissionArtifact.instructionPC 3463 = 4651
+    instructionPC 3605 = 4898 := by
+  change submissionArtifact.instructionPC 3605 = 4898
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3483 :
-    submissionArtifact.instructionPC 3464 = 4652 := by
+    submissionArtifact.instructionPC 3606 = 4899 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3483 :
-    instructionPC 3464 = 4652 := by
-  change submissionArtifact.instructionPC 3464 = 4652
+    instructionPC 3606 = 4899 := by
+  change submissionArtifact.instructionPC 3606 = 4899
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3484 :
-    submissionArtifact.instructionPC 3465 = 4653 := by
+    submissionArtifact.instructionPC 3607 = 4900 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3484 :
-    instructionPC 3465 = 4653 := by
-  change submissionArtifact.instructionPC 3465 = 4653
+    instructionPC 3607 = 4900 := by
+  change submissionArtifact.instructionPC 3607 = 4900
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3485 :
-    submissionArtifact.instructionPC 3466 = 4655 := by
+    submissionArtifact.instructionPC 3608 = 4902 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3485 :
-    instructionPC 3466 = 4655 := by
-  change submissionArtifact.instructionPC 3466 = 4655
+    instructionPC 3608 = 4902 := by
+  change submissionArtifact.instructionPC 3608 = 4902
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3486 :
-    submissionArtifact.instructionPC 3467 = 4656 := by
+    submissionArtifact.instructionPC 3609 = 4903 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3486 :
-    instructionPC 3467 = 4656 := by
-  change submissionArtifact.instructionPC 3467 = 4656
+    instructionPC 3609 = 4903 := by
+  change submissionArtifact.instructionPC 3609 = 4903
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3487 :
-    submissionArtifact.instructionPC 3468 = 4677 := by
+    submissionArtifact.instructionPC 3610 = 4924 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3487 :
-    instructionPC 3468 = 4677 := by
-  change submissionArtifact.instructionPC 3468 = 4677
+    instructionPC 3610 = 4924 := by
+  change submissionArtifact.instructionPC 3610 = 4924
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3488 :
-    submissionArtifact.instructionPC 3469 = 4678 := by
+    submissionArtifact.instructionPC 3611 = 4925 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3488 :
-    instructionPC 3469 = 4678 := by
-  change submissionArtifact.instructionPC 3469 = 4678
+    instructionPC 3611 = 4925 := by
+  change submissionArtifact.instructionPC 3611 = 4925
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3489 :
-    submissionArtifact.instructionPC 3470 = 4679 := by
+    submissionArtifact.instructionPC 3612 = 4926 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3489 :
-    instructionPC 3470 = 4679 := by
-  change submissionArtifact.instructionPC 3470 = 4679
+    instructionPC 3612 = 4926 := by
+  change submissionArtifact.instructionPC 3612 = 4926
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3490 :
-    submissionArtifact.instructionPC 3471 = 4700 := by
+    submissionArtifact.instructionPC 3613 = 4947 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3490 :
-    instructionPC 3471 = 4700 := by
-  change submissionArtifact.instructionPC 3471 = 4700
+    instructionPC 3613 = 4947 := by
+  change submissionArtifact.instructionPC 3613 = 4947
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3491 :
-    submissionArtifact.instructionPC 3472 = 4701 := by
+    submissionArtifact.instructionPC 3614 = 4948 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3491 :
-    instructionPC 3472 = 4701 := by
-  change submissionArtifact.instructionPC 3472 = 4701
+    instructionPC 3614 = 4948 := by
+  change submissionArtifact.instructionPC 3614 = 4948
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3492 :
-    submissionArtifact.instructionPC 3473 = 4702 := by
+    submissionArtifact.instructionPC 3615 = 4949 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3492 :
-    instructionPC 3473 = 4702 := by
-  change submissionArtifact.instructionPC 3473 = 4702
+    instructionPC 3615 = 4949 := by
+  change submissionArtifact.instructionPC 3615 = 4949
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3502 :
-    submissionArtifact.instructionPC 3477 = 4706 := by
+    submissionArtifact.instructionPC 3619 = 4953 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3502 :
-    instructionPC 3477 = 4706 := by
-  change submissionArtifact.instructionPC 3477 = 4706
+    instructionPC 3619 = 4953 := by
+  change submissionArtifact.instructionPC 3619 = 4953
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3510 :
-    submissionArtifact.instructionPC 3484 = 4733 := by
+    submissionArtifact.instructionPC 3397 = 4547 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3510 :
-    instructionPC 3484 = 4733 := by
-  change submissionArtifact.instructionPC 3484 = 4733
+    instructionPC 3397 = 4547 := by
+  change submissionArtifact.instructionPC 3397 = 4547
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3511 :
-    submissionArtifact.instructionPC 3485 = 4734 := by
+    submissionArtifact.instructionPC 3398 = 4548 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3511 :
-    instructionPC 3485 = 4734 := by
-  change submissionArtifact.instructionPC 3485 = 4734
+    instructionPC 3398 = 4548 := by
+  change submissionArtifact.instructionPC 3398 = 4548
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -7628,12 +7638,12 @@ def padSentinelPath : List
    ⟨97, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨98, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
-/-- Cached located path for the footer-loop setup: the loop head 4945 stays under the two loop
+/-- Cached located path for the footer-loop setup: the loop head 4828 stays under the two loop
 registers (it is the back-edge target of the loop's `DUP4 JUMPI`), then the bit length, the rounded
 length offset plus 89, and `DUP3 JUMP` to the loop head. -/
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨99, .push ⟨2, by decide⟩ (UInt256.ofNat 4937), by rfl, by decide⟩,
+  [⟨99, .push ⟨2, by decide⟩ (UInt256.ofNat 4820), by rfl, by decide⟩,
    ⟨100, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨101, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
    ⟨102, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
@@ -7652,8 +7662,8 @@ loop's `JUMPI`), then at 200 the generic continuation 48 replaces the output ent
 loop words are dropped. -/
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨3607, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
-   ⟨3608, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3574, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
+   ⟨3575, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨116, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨117, .push ⟨1, by decide⟩ (UInt256.ofNat 48), by rfl, by decide⟩,
    ⟨118, .op (.Swap ⟨15, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
@@ -7684,11 +7694,11 @@ def padExitPath : List
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4708 :
-    Decode.isValidJumpDest submissionBytecode 4706 = true := by
-  have hp : submissionArtifact.instructionPC 3477 = 4706 := by
+    Decode.isValidJumpDest submissionBytecode 4953 = true := by
+  have hp : submissionArtifact.instructionPC 3619 = 4953 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3477 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3619 (by rfl)
   rw [hp] at h
   exact h
 
@@ -7758,16 +7768,6 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4748 :
-    Decode.isValidJumpDest submissionBytecode 4733 = true := by
-  have hp : submissionArtifact.instructionPC 3484 = 4733 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    decide
-  have h := submissionArtifact.isValidJumpDest_index 3484 (by rfl)
-  rw [hp] at h
-  exact h
-
-set_option maxRecDepth 100000 in
-@[simp] theorem validJumpDest_4553 :
     Decode.isValidJumpDest submissionBytecode 4547 = true := by
   have hp : submissionArtifact.instructionPC 3397 = 4547 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
@@ -7777,32 +7777,42 @@ set_option maxRecDepth 100000 in
   exact h
 
 set_option maxRecDepth 100000 in
-@[simp] theorem validJumpDest_4601 :
-    Decode.isValidJumpDest submissionBytecode 4598 = true := by
-  have hp : submissionArtifact.instructionPC 3440 = 4598 := by
+@[simp] theorem validJumpDest_4553 :
+    Decode.isValidJumpDest submissionBytecode 4751 = true := by
+  have hp : submissionArtifact.instructionPC 3507 = 4751 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3440 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3507 (by rfl)
+  rw [hp] at h
+  exact h
+
+set_option maxRecDepth 100000 in
+@[simp] theorem validJumpDest_4601 :
+    Decode.isValidJumpDest submissionBytecode 4845 = true := by
+  have hp : submissionArtifact.instructionPC 3582 = 4845 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]
+    decide
+  have h := submissionArtifact.isValidJumpDest_index 3582 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4805 :
-    Decode.isValidJumpDest submissionBytecode 4782 = true := by
-  have hp : submissionArtifact.instructionPC 3520 = 4782 := by
+    Decode.isValidJumpDest submissionBytecode 4596 = true := by
+  have hp : submissionArtifact.instructionPC 3433 = 4596 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3520 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3433 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4808 :
-    Decode.isValidJumpDest submissionBytecode 4785 = true := by
-  have hp : submissionArtifact.instructionPC 3522 = 4785 := by
+    Decode.isValidJumpDest submissionBytecode 4599 = true := by
+  have hp : submissionArtifact.instructionPC 3435 = 4599 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3522 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3435 (by rfl)
   rw [hp] at h
   exact h
 

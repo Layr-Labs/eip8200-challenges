@@ -17,6 +17,8 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 3bc4db8b7197dd2540a6a0ed58ed22354f38b4997a3bb3b4517673588c2e3162.
--- 5242 bytes; trusted runtime 646197 clean/dirty, 98/98 checks.
--- Warm-empty guard + fixed nonfinal 40-bit tail projection; remote validation pending.
+-- Current decoded SHA-256: 411fcad177dcd5a9cbe4f4c57b11ea5b51dc5680906f9670de9416c5b78dc37b.
+-- 5260 bytes; trusted runtime 646095 clean/dirty, 98/98 checks.
+-- Warm-empty guard + fixed nonfinal 40-bit tail projection.
+-- Accepted and promoted by Yukon as ae929341-d1da-489c-8996-0776dea7b681:
+-- official 646095 clean/dirty, verified=true, 49 vectors, state-independent gas.

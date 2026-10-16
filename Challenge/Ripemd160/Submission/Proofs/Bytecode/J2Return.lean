@@ -14,31 +14,31 @@ def source (s : State) : UInt256 :=
   selected (UInt256.ofNat s.executionEnv.code.size) s.executionEnv.calldata.size
 
 def beforeCopy (s : State) (rho : List UInt256) : State :=
-  atState s 4945 (12 :: source s :: 20 :: rho)
+  atState s 4828 (12 :: source s :: 20 :: rho)
 
 def afterCopy (s : State) (rho : List UInt256) : State :=
   sized (beforeCopy s rho) (source s) rho
 
 def output (s : State) (rho : List UInt256) : State :=
-  RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 4939) rho
+  RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 4822) rho
 
-private theorem pc_3606 : Artifact.submissionArtifact.instructionPC 3539 = 4807 := by
+private theorem pc_3606 : Artifact.submissionArtifact.instructionPC 3452 = 4807 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3596 = 4938 := by
+private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3563 = 4821 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 private theorem beforeCopy_pc (s : State) (rho : List UInt256) :
-    (beforeCopy s rho).pc.toNat = 4945 := by
-  change (UInt256.ofNat 4945).toNat = 4945; decide
+    (beforeCopy s rho).pc.toNat = 4828 := by
+  change (UInt256.ofNat 4828).toNat = 4828; decide
 
 private theorem copied_pc (s : State) (rho : List UInt256) :
     (copied (beforeCopy s rho) (source s) rho).pc.toNat = 4946 := by
-  change (UInt256.ofNat 4945).succ.toNat = 4946; decide
+  change (UInt256.ofNat 4828).succ.toNat = 4946; decide
 
 private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (beforeCopy s rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3539 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3452 .CODECOPY
     (by rfl) (by decide) trivial
   exact Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 3539
     e.code ((beforeCopy_pc s rho).trans pc_3606.symm) .CODECOPY none hd
@@ -46,7 +46,7 @@ private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
 
 private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (copied (beforeCopy s rho) (source s) rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3596 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3563 .MSIZE
     (by rfl) (by decide) trivial
   exact Artifact.submissionArtifact.state_decodedOp_of
     (copied (beforeCopy s rho) (source s) rho) 3596 e.code
@@ -56,10 +56,10 @@ private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
 def gasSteps (s : State) (e : Env s) (rho : List UInt256)
     (hcap : rho.length ≤ 990) (hmem : s.memory = ByteArray.empty)
     (hactive : s.activeWords = 0) :
-    GasSteps (atState s 4938 rho) (output s rho) := by
+    GasSteps (atState s 4821 rho) (output s rho) := by
   have hp : StackRoundTrace.runInstrSeq J2ReturnSites.selector.template
-      (atState s 4938 rho) = some (beforeCopy s rho) := by
-    have h := run_prefix s (UInt256.ofNat 4938) rho (by omega) e.run
+      (atState s 4821 rho) = some (beforeCopy s rho) := by
+    have h := run_prefix s (UInt256.ofNat 4821) rho (by omega) e.run
     simpa only [J2ReturnSites.selector.end_pc, beforeCopy, atState, source] using h
   have gp := J2ReturnSites.selector.lift s (beforeCopy s rho) e rho hp
   have gc : GasSteps (beforeCopy s rho) (afterCopy s rho) :=
@@ -67,9 +67,9 @@ def gasSteps (s : State) (e : Env s) (rho : List UInt256)
       e.run e.np (copy_decoded s e rho) (size_decoded s e rho)
   have ea : Env (afterCopy s rho) := ⟨e.code, e.fork, e.run, e.np⟩
   have hf : StackRoundTrace.runInstrSeq J2ReturnSites.returned.template
-      (atState (afterCopy s rho) 4947 (32 :: rho)) = some (output s rho) :=
-    run_finish (afterCopy s rho) (UInt256.ofNat 4939) rho (by omega) e.run
-  have hpc : (UInt256.ofNat 4945).succ.succ = UInt256.ofNat 4939 := by decide
+      (atState (afterCopy s rho) 4830 (32 :: rho)) = some (output s rho) :=
+    run_finish (afterCopy s rho) (UInt256.ofNat 4822) rho (by omega) e.run
+  have hpc : (UInt256.ofNat 4828).succ.succ = UInt256.ofNat 4822 := by decide
   have gf : GasSteps (afterCopy s rho) (output s rho) := by
     simpa only [afterCopy, beforeCopy, sized, copied, atState, hpc] using
       J2ReturnSites.returned.lift (afterCopy s rho) (output s rho) ea (32 :: rho) hf
@@ -84,7 +84,7 @@ theorem output_spec (s : State) (e : Env s) (rho : List UInt256)
     (hn : RecognitionAccumulator.Allowed s.executionEnv.calldata.size)
     (hz : J2Accumulator.resultAcc s.executionEnv.calldata s.executionEnv.calldata.size = 0) :
     (output s rho).hReturn = spec s.executionEnv.calldata := by
-  apply returned_spec (beforeCopy s rho) (source s) (UInt256.ofNat 4939) rho
+  apply returned_spec (beforeCopy s rho) (source s) (UInt256.ofNat 4822) rho
     s.executionEnv.calldata.size hn rfl
       ((RecognitionAccumulator.resultAcc_zero_iff _ _ hn rfl).mpr
         ((J2Accumulator.resultAcc_zero_iff _ _ hn rfl).mp hz))

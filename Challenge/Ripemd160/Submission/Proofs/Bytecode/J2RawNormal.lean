@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2RawBase
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 3000000

@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "ae929341-d1da-489c-8996-0776dea7b681",
+    "rationale": "Direct accepted646197 implementation; retains all compressor, recognition, early serialization, sparse writer and fallback features. New fused256 tail and pure AC expression scheduling reduce runtime gas to646095.",
+    "evidence": "Base runtime SHA2563bc4db8b7197dd2540a6a0ed58ed22354f38b4997a3bb3b4517673588c2e3162; new411fcad177dcd5a9cbe4f4c57b11ea5b51dc5680906f9670de9416c5b78dc37b. See J2Fused* and StaggerRaw* templates."
+  },
+  {
     "submissionId": "ee41c2be-f76e-4b2f-a6a4-27f9c5f6c6a6",
     "rationale": "Uses the accepted 646264 runtime and its shared32 length-flag sparse-write proof implementation as the unchanged base. Adds only first-word guard memory activation, MSIZE loop constant, and a shorter safe prefilter mask.",
     "evidence": "Compare candidate to promoted 0c357603: unchanged bytes from PC36 except guard PUSH-width/filler and PC211..220 MSIZE slot; inherited compressor, recognizers, sparse padding and endian serialization unchanged."
