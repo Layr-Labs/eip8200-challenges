@@ -13,7 +13,7 @@ set_option linter.unusedSimpArgs false
 # The cold guard-miss route through the shared 32-byte block
 
 Every length the alignment guard at 449 does not send to the block loop jumps to 143, the
-32-byte block. That block sets the continuation slot to the output entry 4733 and writes two
+32-byte block. That block sets the continuation slot to the output entry 4547 and writes two
 scratch bytes (165 and 188) before its length test at 158. Any other length falls through to the
 sentinel store at 166 with both scratch bytes still written: no store undoes them. They are not
 part of the padded message (which starts at 1056) nor of the zero band the block loop needs, and
@@ -84,7 +84,7 @@ theorem run_head (s : State) (pc a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
       {s with pc := pc, stack := cstk a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho} =
       some {s with
         pc := pcAfter pc Shared32SparseRun.headTemplate
-        stack := UInt256.eq (UInt256.ofNat 32) lim :: cstk a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off (UInt256.ofNat 4733) rho} := by
+        stack := UInt256.eq (UInt256.ofNat 32) lim :: cstk a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off (UInt256.ofNat 4547) rho} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [Shared32SparseRun.headTemplate, runInstrSeq, DataStepper.runInstr,
     pcAfter, hrun, hcap, Instr.size, UInt256.succ, cstk, Nat.add_assoc,
@@ -117,7 +117,7 @@ theorem run_guard_miss (s : State) (stack : List UInt256)
   rfl
 
 /-- A guard miss at 449 that is not 32 bytes long reaches the sentinel store at 166 with the two
-scratch bytes written and the output entry 4733 in the continuation slot. -/
+scratch bytes written and the output entry 4547 in the continuation slot. -/
 def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 860) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
@@ -130,7 +130,7 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     GasSteps {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho}
       { s with
         pc := UInt256.ofNat 166
-        stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4733) rho
+        stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4547) rho
         memory := wMemory s.memory dirtyB dirtyC } := by
   have heq : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0 := by
     rw [hlim]
@@ -151,9 +151,9 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
   let a9 := Word.ofUInt32 h.h1
   let a10 := Word.ofUInt32 h.h0
   let F := cstk a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off limit rho
-  let F0 := cstk a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off (UInt256.ofNat 4733) rho
+  let F0 := cstk a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off (UInt256.ofNat 4547) rho
   have hF : StaggerPersistentFrame.frame h off limit rho = F := rfl
-  have hF0 : StaggerPersistentFrame.frame h off (UInt256.ofNat 4733) rho = F0 := rfl
+  have hF0 : StaggerPersistentFrame.frame h off (UInt256.ofNat 4547) rho = F0 := rfl
   have hF0len : F0.length ≤ 900 := by simp only [F0, cstk, List.length_cons]; omega
   let v := UInt256.ofNat 128
   let b := UInt8.ofNat (v.toNat % 256)
@@ -176,7 +176,7 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
   have g4 : GasSteps (atState s 153 (v :: UInt256.ofNat 0 :: F0)) (atState sW 160 (UInt256.ofNat 0 :: F0)) := by
     apply sparse.lift s (atState sW 160 (UInt256.ofNat 0 :: F0)) e (v :: UInt256.ofNat 0 :: F0)
     have hh := run_sparse s (UInt256.ofNat 153) v (UInt256.ofNat 0) a0 a1 a2 a3 a4
-      (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: off :: UInt256.ofNat 4733 :: rho)
+      (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: off :: UInt256.ofNat 4547 :: rho)
       (by simp only [List.length_cons]; omega) hrun hactive
     simpa only [sparse.template, sparse.end_pc, atState, sW, b, c, F0, cstk] using hh
   have g5 : GasSteps (atState sW 160 (UInt256.ofNat 0 :: F0)) (atState sW 165 F0) := by

@@ -13,14 +13,14 @@ private theorem hmul_eq_mul (x y : UInt256) : x * y = UInt256.mul x y := rfl
 private theorem hadd_eq_add (x y : UInt256) : x + y = UInt256.add x y := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨0, by decide⟩),
-    .op (.Dup ⟨1, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+    .op .MLOAD,
     .op (.Dup ⟨10, by decide⟩),
     .op .NOT,
     .op (.Dup ⟨8, by decide⟩),
     .op .OR,
+    .op (.Dup ⟨3, by decide⟩),
     .op .XOR,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MLOAD,
     .op (.Dup ⟨7, by decide⟩),
     .op .ADD,
     .op .ADD,
@@ -113,7 +113,11 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hmul_eq_mul, hadd_eq_add, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.add_assoc]
+  all_goals simp only [hmul_eq_mul, hadd_eq_add,
+    RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.add_assoc,
+    RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm,
+    RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm,
+    RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)

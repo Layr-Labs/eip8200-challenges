@@ -108,12 +108,12 @@ private def wfOp {op : Operation}
 
 /-- Include the destination JUMPDEST, so the result is precisely PC 246. -/
 private def cleanupPath : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨3609, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3610, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3611, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3612, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3613, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
-   ⟨3614, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3576, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3577, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3578, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3579, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3580, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
+   ⟨3581, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨154, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def cleared (input : ByteArray) : State :=
@@ -125,15 +125,15 @@ from the original initial state. -/
 def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
   { initialState submissionBytecode input 0 with
     memory := m, activeWords := UInt256.ofNat 1,
-    pc := UInt256.ofNat 4955, stack := rho }
+    pc := UInt256.ofNat 4838, stack := rho }
 
 private theorem cleanup_pcs :
-    Artifact.submissionArtifact.instructionPC 3609 = 4955 ∧
-    Artifact.submissionArtifact.instructionPC 3610 = 4956 ∧
-    Artifact.submissionArtifact.instructionPC 3611 = 4957 ∧
-    Artifact.submissionArtifact.instructionPC 3612 = 4958 ∧
-    Artifact.submissionArtifact.instructionPC 3613 = 4959 ∧
-    Artifact.submissionArtifact.instructionPC 3614 = 4961 ∧
+    Artifact.submissionArtifact.instructionPC 3576 = 4838 ∧
+    Artifact.submissionArtifact.instructionPC 3577 = 4839 ∧
+    Artifact.submissionArtifact.instructionPC 3578 = 4840 ∧
+    Artifact.submissionArtifact.instructionPC 3579 = 4841 ∧
+    Artifact.submissionArtifact.instructionPC 3580 = 4842 ∧
+    Artifact.submissionArtifact.instructionPC 3581 = 4844 ∧
     Artifact.submissionArtifact.instructionPC 154 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -242,7 +242,7 @@ def gasSteps_of_eq (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (hs : s = { initialState submissionBytecode input 0 with
       memory := m, activeWords := UInt256.ofNat 1,
-      pc := UInt256.ofNat 4955, stack := rho }) :
+      pc := UInt256.ofNat 4838, stack := rho }) :
     GasSteps s (StackTail.append (PaddingTrace.padFramed input) rho) := by
   subst s
   exact gasSteps input hfit hpos m hm rho hcap

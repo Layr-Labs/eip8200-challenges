@@ -7150,10 +7150,10 @@ structure WholeCoreSites (artifact : DataProgramArtifact) (fork : Fork) where
   inline70 : {site : GenericRoundSite artifact fork inline70Template // site.startPC = UInt256.ofNat 4388}
   inline71 : {site : GenericRoundSite artifact fork inline71Template // site.startPC = UInt256.ofNat 4441}
   inline72 : {site : GenericRoundSite artifact fork inline72Template // site.startPC = UInt256.ofNat 4493}
-  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4547}
-  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4600}
-  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4652}
-  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4705}
+  inline73 : {site : GenericRoundSite artifact fork inline73Template // site.startPC = UInt256.ofNat 4751}
+  inline74 : {site : GenericRoundSite artifact fork inline74Template // site.startPC = UInt256.ofNat 4847}
+  inline75 : {site : GenericRoundSite artifact fork inline75Template // site.startPC = UInt256.ofNat 4899}
+  inline76 : {site : GenericRoundSite artifact fork inline76Template // site.startPC = UInt256.ofNat 4952}
   inline77 : {site : GenericRoundSite artifact fork inline77Template // site.startPC = UInt256.ofNat 4755}
   inline78 : {site : GenericRoundSite artifact fork inline78Template // site.startPC = UInt256.ofNat 4827}
   inline79 : {site : GenericRoundSite artifact fork inline79Template // site.startPC = UInt256.ofNat 4882}
