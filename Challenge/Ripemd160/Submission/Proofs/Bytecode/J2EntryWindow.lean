@@ -22,7 +22,7 @@ def tail : List Instr := [
   op 0x36,
   op 0x14,
   op 0x01,
-  .push 2 4782,
+  .push 2 4785,
   op 0x57,
   .push 0 0,
   op 0x35,

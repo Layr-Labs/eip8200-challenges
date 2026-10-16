@@ -53,7 +53,7 @@ def sizePrefix : List Located :=
    pushAt 9 2 4598]
 
 /-- Anchor gate: `97 + 255 * calldata[0] != 0` (first word is not the repeated
-`0x61` word) jumps straight to the recogniser's long-length entry at 4782 (the size is
+`0x61` word) jumps straight to the recogniser's shared entry at 4785 (the size is
 already known to be 1000 here). -/
 def anchorPrefix : List Located :=
   [pushAt 11 0 0,
@@ -62,7 +62,7 @@ def anchorPrefix : List Located :=
    opAt 14 .MUL,
    pushAt 15 1 97,
    opAt 16 .ADD,
-   pushAt 17 2 4782]
+   pushAt 17 2 4785]
 
 def entryDest : Located := opAt 154 .JUMPDEST
 

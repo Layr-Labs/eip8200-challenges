@@ -38,15 +38,16 @@ theorem from_entry (input : ByteArray)
         Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let saved : List UInt256 := [PatternedScan.segEnd input.size]
+  let saved : List UInt256 := PatternedScan.entryRho input.size
+  have hsaved : saved.length ≤ 1 := PatternedScan.entryRho_length input.size
   let s := ReverseSerializeReturn.prepared input saved
-  have e : ReverseLiteralScan.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
+  have e : ReverseLiteralScan.Env s := ⟨rfl, rfl, rfl, rfl, deployAddress_not_precompile⟩
   obtain ⟨i, hi⟩ := ReverseLiteralScan.allowed_index input.size hn
-  have gprepare := ReverseSerializeReturn.gasSteps_prepare input saved (by simp [saved]) i hi.symm
+  have gprepare := ReverseSerializeReturn.gasSteps_prepare input saved (by omega) i hi.symm
   have gp : GasSteps (PatternedScan.patternedEntry input)
       (J2Moves.atState s (ReverseLiteralScan.tailPC i) saved) := by
     exact GasSteps.cast gprepare rfl (ReverseSerializeReturn.prepared_atState input saved i hi.symm)
-  have gs := ReverseLiteralScan.gasSteps_for s e saved (by simp [saved]) i hi.symm
+  have gs := ReverseLiteralScan.gasSteps_for s e saved (by omega) i hi.symm
   have gs' : GasSteps (J2Moves.atState s (ReverseLiteralScan.tailPC i) saved)
       (J2Moves.atState s
         (if (ZeroTailModel.result input input.size).toNat = 0 then ReverseLiteralScan.returnPC i else 4565) saved) := gs
@@ -57,20 +58,32 @@ theorem from_entry (input : ByteArray)
       exact hz
     have heq := (ZeroTailModel.result_zero_iff input input.size hn rfl).mp hzword
     have hold := (J2Accumulator.resultAcc_zero_iff input input.size hn rfl).mpr heq
-    have gr := ReverseSerializeReturn.gasSteps_return input saved saved (by simp [saved]) i
-    have trace : GasSteps (initialState submissionBytecode input 0)
-        (ReverseSerializeReturn.output input saved i) := hentry.trans (gp.trans (gs'.trans gr))
-    exact of_returned input _ trace (ReverseSerializeReturn.output_halt input saved i) rfl
-      (ReverseSerializeReturn.output_spec input saved i hn hold)
+    by_cases hi2 : i.val = 2
+    · have hi' : i = ⟨2, by decide⟩ := Fin.ext hi2
+      subst i
+      have hin : input.size = 32 := hi.symm
+      have hsave : saved = [32] := by simp [saved,hin,PatternedScan.entryRho]
+      have gr := ReverseSerializeReturn.gasSteps_return32 input saved
+      have gr' : GasSteps (J2Moves.atState s (ReverseLiteralScan.returnPC ⟨2,by decide⟩) saved)
+          (ReverseSerializeReturn.output input [] ⟨2,by decide⟩) := by
+        simpa only [s,hsave] using gr
+      have trace := hentry.trans (gp.trans (gs'.trans gr'))
+      exact of_returned input _ trace (ReverseSerializeReturn.output_halt input [] ⟨2,by decide⟩) rfl
+        (ReverseSerializeReturn.output_spec input [] ⟨2,by decide⟩ hn hold)
+    · have gr := ReverseSerializeReturn.gasSteps_return input saved saved (by omega) i hi2
+      have trace : GasSteps (initialState submissionBytecode input 0)
+          (ReverseSerializeReturn.output input saved i) := hentry.trans (gp.trans (gs'.trans gr))
+      exact of_returned input _ trace (ReverseSerializeReturn.output_halt input saved i) rfl
+        (ReverseSerializeReturn.output_spec input saved i hn hold)
   · rw [if_neg hz] at gs'
     have hb := RecognitionAccumulator.allowed_bounds input.size hn
     have gf := EarlySerializeFallback.gasSteps input hfit hb.1
-      s.memory (ReverseSerializeReturn.prepared_memory_size input saved) saved (by simp [saved])
+      s.memory (ReverseSerializeReturn.prepared_memory_size input saved) saved (by omega)
     have gfm : GasSteps (J2Moves.atState s 4565 saved)
         (StackTail.append (PaddingTrace.padFramed input) saved) := by
       simpa only [J2Moves.atState, EarlySerializeFallback.incoming, s,
         ReverseSerializeReturn.prepared, ReverseSerializeReturn.base] using gf
-    exact hgeneric saved (by simp [saved]) (hentry.trans (gp.trans (gs'.trans gfm)))
+    exact hgeneric saved (by omega) (hentry.trans (gp.trans (gs'.trans gfm)))
 
 #print axioms of_returned
 #print axioms from_entry

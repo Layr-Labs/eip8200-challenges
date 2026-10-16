@@ -16,8 +16,16 @@ def segEnd (n : Nat) : UInt256 :=
   UInt256.add (UInt256.ofNat n)
     (UInt256.mul (UInt256.lt (UInt256.ofNat 251) (UInt256.ofNat n)) (UInt256.sub (UInt256.ofNat 251) (UInt256.ofNat n)))
 
-/-- The scanner entry: the dispatch has already pushed the segment end. -/
+/-- Dispatch retains the length on short routes. Long routes need no saved word. -/
+def entryRho (n : Nat) : List UInt256 :=
+  if n ≤ 128 then [UInt256.ofNat n] else []
+
+@[simp] theorem entryRho_length (n : Nat) : (entryRho n).length ≤ 1 := by
+  unfold entryRho
+  split <;> simp
+
+/-- The private recognizer entry with its actual dispatch-defined saved tail. -/
 def patternedEntry (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 4786, stack := [segEnd input.size] }
+  { initialState submissionBytecode input 0 with pc := UInt256.ofNat 4786, stack := entryRho input.size }
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan
