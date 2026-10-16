@@ -1,3 +1,16 @@
+# Six-word scanner — local644830
+
+Decoded SHA2563e8bdee71603c96793baddaecde68033c887b3abf19590677d6dd8a2165955e6.
+5392bytes3752instructions,98/98protected executions,644830clean/dirty.
+Concrete full slot erased; finalshift=((off−len)+32)<<3, MSIZE=32. Six-word
+frame and five-word miss residual. Effort:xhigh. Raw/abstract checks pass;
+exact artifact adapters checked, full certificate delegated to Yukon.
+Accepted parent1991c997 at04e2ad5a is644876, preserved separately.
+
+Historical metadata below is not current.
+
+---
+
 # Global full, stop-based initial dispatch — local644876
 
 Current5393bytes,3753instructions; decoded SHA-256

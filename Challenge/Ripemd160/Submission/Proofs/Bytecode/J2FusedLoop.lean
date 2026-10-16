@@ -61,7 +61,7 @@ def prefix256 (s : State) (rho : List UInt256) (moves : Moves s rho)
         (if (J2FusedAccumulator.resultAcc256 s.executionEnv.calldata).toNat = 0
           then fusedReturnPC else 4565) (rest256 s rho)) := by
     simp only [fusedAcc_current] at g
-    change GasSteps (atState s 5077 _) _
+    change GasSteps (atState s 5074 _) _
     exact g
   exact (prefix256 s rho moves hsize).trans g'
 

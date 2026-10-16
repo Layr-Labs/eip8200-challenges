@@ -12,7 +12,14 @@ private theorem hadd_eq (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 private theorem hsub_eq (a b : UInt256) : a - b = UInt256.sub a b := rfl
 
-def prefixTemplate : List Instr := transitionTemplate.take 15
+/-- Exact recurrence prefix at PC 4916; the ghost full word is absent. -/
+def prefixTemplate : List Instr := [
+  .op (.Swap ⟨1, by decide⟩),
+  .op (.Dup ⟨4, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 2), .op .SHL,
+  .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .OR,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 9), .op (.Dup ⟨1, by decide⟩),
+  .op (.Swap ⟨2, by decide⟩), .op .SDIV, .op .ADD,
+  .op .XOR, .op .XOR, .op (.Swap ⟨1, by decide⟩) ]
 
 def mid (f : J2Raw.Frame) : J2Raw.Frame := { f with word := tw f.word }
 
@@ -20,17 +27,17 @@ def post (f : J2Raw.Frame) (stop : UInt256) : J2Raw.Frame :=
   { f with off := f.stop, stop := stop }
 
 def cleanupTemplate : List Instr := [
-  .op (.Swap ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP ]
+  .op (.Swap ⟨5, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP ]
 
-/-- `60fb8701969150`: the generic branch increments the stop and preserves
-its arbitrary incoming full-word limit. -/
+/-- `60fb8601959150`: the generic branch increments the stop and preserves
+its arbitrary incoming ghost full-word limit. -/
 def genericTemplate : List Instr := [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 251), .op (.Dup ⟨7, by decide⟩), .op .ADD,
-  .op (.Swap ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP ]
+  .push ⟨1, by decide⟩ (UInt256.ofNat 251), .op (.Dup ⟨6, by decide⟩), .op .ADD,
+  .op (.Swap ⟨5, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .POP ]
 
 def branchTemplate : List Instr := [ .op .CALLDATASIZE,
   .push ⟨1, by decide⟩ (UInt256.ofNat 16), .op .AND,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 5104), .op .JUMPI ]
+  .push ⟨2, by decide⟩ (UInt256.ofNat 5103), .op .JUMPI ]
 
 def specialTemplate : List Instr := [.op .JUMPDEST, .op .CALLDATASIZE] ++
   cleanupTemplate ++ [.push ⟨2, by decide⟩ (UInt256.ofNat (blockPC 4)), .op .JUMP]
@@ -42,7 +49,7 @@ def specialTemplate : List Instr := [.op .JUMPDEST, .op .CALLDATASIZE] ++
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [prefixTemplate, transitionTemplate, mid, frame, c114, tw,
+    [prefixTemplate, mid, frame, c114, tw,
       runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
       List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap,
       signed_sentinel_div9, add_negative_eq_sub, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -85,10 +92,10 @@ def specialTemplate : List Instr := [.op .JUMPDEST, .op .CALLDATASIZE] ++
 
  theorem run_branch (s : State) (pc : UInt256) (stack : List UInt256)
     (hs : stack.length ≤ 1018) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5104 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5103 = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := stack} =
       some {s with pc := if UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) (UInt256.ofNat 16) = 0
-        then pcAfter pc branchTemplate else UInt256.ofNat 5104, stack := stack} := by
+        then pcAfter pc branchTemplate else UInt256.ofNat 5103, stack := stack} := by
   have hbase : stack.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 5) : stack.length + n < 1024 := by omega
   have hz : ∀ x : UInt256, x.toNat = 0 ↔ x = 0 := by

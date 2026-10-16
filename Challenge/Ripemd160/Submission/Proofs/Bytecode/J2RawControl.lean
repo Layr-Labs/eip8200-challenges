@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace RecognitionRecurrence
 
 def finishRest (f : Frame) (rho : List UInt256) : List UInt256 :=
-  [f.off, f.word, f.full, m9f, c96,
+  [f.off, f.word, m9f, c96,
     f.stop] ++ rho
 
 theorem run_dispatch0 (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
@@ -22,10 +22,10 @@ theorem run_dispatch0 (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   have hv : Decode.isValidJumpDest s.executionEnv.code
-      (UInt256.ofNat 5077 + UInt256.ofNat 18 * UInt256.sar
+      (UInt256.ofNat 5074 + UInt256.ofNat 18 * UInt256.sar
         (UInt256.ofNat 32 - f.stop) (UInt256.ofNat 5)).toNat = true := by
     change Decode.isValidJumpDest s.executionEnv.code
-      (UInt256.add (UInt256.ofNat 5077) (UInt256.mul (UInt256.ofNat 18)
+      (UInt256.add (UInt256.ofNat 5074) (UInt256.mul (UInt256.ofNat 18)
         (UInt256.sar (UInt256.sub (UInt256.ofNat 32) f.stop) (UInt256.ofNat 5)))).toNat = true
     rw [sub32_stop]
     exact hvalid
@@ -35,26 +35,6 @@ theorem run_dispatch0 (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   simp only [firstTarget, dispatchTarget, ← sub32_stop]
   rfl
-
-theorem run_dispatch1 (s : State) (pc : UInt256) (x : UInt256) (f : Frame) (rho : List UInt256)
-    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code (blockPC 4) = true) :
-    runInstrSeq dispatch1Template {s with pc := pc, stack := x :: frame f rho} =
-      some {s with pc := if UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) (UInt256.ofNat 16) = 0
-        then pcAfter pc dispatch1Template else UInt256.ofNat (blockPC 4), stack := frame f rho} := by
-  have hbase : rho.length < 1024 := by omega
-  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  have hz : ∀ x : UInt256, x.toNat = 0 ↔ x = 0 := by
-    intro x; constructor
-    · intro h; apply Word.word_ext; exact h
-    · rintro rfl; rfl
-  have hmod : blockPC 4 % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = blockPC 4 := by decide
-  by_cases hc : UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) (UInt256.ofNat 16) = UInt256.ofNat 0
-  all_goals simp (discharger := omega) [dispatch1Template, frame, runInstrSeq, DataStepper.runInstr,
-    pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hrun, hbase, hcap, hvalid, Word.literal_eq_ofNat, Word.word_toNat_ofNat, RawExpressionAC.land_comm, hz, UInt256.isTrue, hc, hmod]
-  all_goals rfl
-
 
 theorem sub_toNat_zero (a b : UInt256) : (UInt256.sub a b).toNat = 0 ↔ a.toNat = b.toNat := by
   unfold UInt256.sub UInt256.toNat
@@ -71,9 +51,9 @@ theorem hsub_toNat_zero (a b : UInt256) : (a - b).toNat = 0 ↔ a.toNat = b.toNa
 theorem run_finish (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4891 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4888 = true) :
     runInstrSeq finishTemplate {s with pc := pc, stack := pending s f rho} =
-      some {s with pc := if f.stop.toNat < f.len.toNat then UInt256.ofNat 4891 else pcAfter pc finishTemplate,
+      some {s with pc := if f.stop.toNat < f.len.toNat then UInt256.ofNat 4888 else pcAfter pc finishTemplate,
                    stack := pending s f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
@@ -101,7 +81,6 @@ theorem run_result (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
 
 #print axioms sub32_stop
 #print axioms run_dispatch0
-#print axioms run_dispatch1
 #print axioms run_finish
 #print axioms run_result
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw

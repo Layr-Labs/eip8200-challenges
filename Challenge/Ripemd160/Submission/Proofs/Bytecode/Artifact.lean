@@ -9,7 +9,7 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5393 bytes, 3753 executable instructions and 280 data bytes, and SHA-256
+The exact candidate has 5392 bytes, 3752 executable instructions and 280 data bytes, and SHA-256
 `9710fffe8552dbf653d164c76e7c966b1ce9b1c6fadb20f8903da6391bc1d0d4`. PUSH rows carry their typed width and value.
 -/
 
@@ -3672,33 +3672,30 @@ private def submissionInstructionsChunk18 : List Instr :=
   .push 32 43592315948166097100638488473858977074172229521182329991325208097096707629152,
   op 0x80,
   op 0x19,
-  op 0x59,
-  op 0x36,
-  op 0x03,
   .push 32 3244493450063667868678674439968361782956185527883176199882357678282131398018,
   .push 0 0,
   .push 0 0,
-  op 0x86,
+  op 0x85,
   op 0x59,
   op 0x03,
   .push 1 5,
   op 0x1d,
   .push 1 18,
   op 0x02,
-  .push 2 5077,
+  .push 2 5074,
   op 0x01,
   op 0x56,
   op 0x5b,
   op 0x36,
   op 0x59,
-  op 0x16
+  op 0x16,
+  .push 2 4911
 ]
 
-@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 109 := by rfl
+@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 107 := by rfl
 
 private def submissionInstructionsChunk19 : List Instr :=
 [
-  .push 2 4914,
   op 0x57,
   .push 5 99006248207,
   op 0x18,
@@ -3713,7 +3710,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x1c,
   op 0x17,
   op 0x91,
-  op 0x85,
+  op 0x84,
   .push 1 2,
   op 0x1b,
   op 0x81,
@@ -3730,12 +3727,12 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x36,
   .push 1 16,
   op 0x16,
-  .push 2 5104,
+  .push 2 5103,
   op 0x57,
   .push 1 251,
-  op 0x87,
+  op 0x86,
   op 0x01,
-  op 0x96,
+  op 0x95,
   op 0x91,
   op 0x50,
   op 0x5b,
@@ -3744,10 +3741,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3762,10 +3759,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3780,10 +3777,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3798,10 +3795,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3816,10 +3813,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3834,10 +3831,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3852,10 +3849,10 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x01,
   op 0x91,
   op 0x35,
-  op 0x85,
+  op 0x84,
   op 0x84,
   op 0x17,
-  op 0x87,
+  op 0x86,
   op 0x81,
   op 0x03,
   op 0x18,
@@ -3870,13 +3867,15 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x83,
   op 0x18,
   op 0x36,
-  op 0x88,
+  op 0x87,
   op 0x10,
-  .push 2 4891,
+  .push 2 4888,
   op 0x57,
-  op 0x84,
+  op 0x36,
   op 0x83,
   op 0x03,
+  op 0x59,
+  op 0x01,
   .push 1 3,
   op 0x1b,
   op 0x1c,
@@ -3888,14 +3887,14 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0xf3,
   op 0x5b,
   op 0x36,
-  op 0x96,
+  op 0x95,
   op 0x91,
   op 0x50,
-  .push 2 5023,
+  .push 2 5020,
   op 0x56
 ]
 
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 195 := by rfl
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 196 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -3919,7 +3918,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
 
-theorem referenceInstructions_count : submissionInstructions.length = 3753 := by
+theorem referenceInstructions_count : submissionInstructions.length = 3752 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
@@ -4086,16 +4085,16 @@ private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEn
   54, 28, 115, 140, 164, 173, 252, 192, 255, 78, 54, 206, 254, 152, 141, 206, 195, 212, 185, 220, 143, 80, 80, 24, 95, 82, 89, 95, 243, 91, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16, 243, 129, 233,
   207, 95, 82, 89, 95, 243, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3,
   82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 20, 96, 15, 54, 98, 219, 20, 123, 4, 22, 129, 2, 56, 3, 96, 12, 57, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
-  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 128, 25, 89, 54, 3, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 95,
-  134, 89, 3, 96, 5, 29, 96, 18, 2, 97, 19, 213, 1, 86, 91, 54, 89, 22
+  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 128, 25, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 95, 133, 89, 3,
+  96, 5, 29, 96, 18, 2, 97, 19, 210, 1, 86, 91, 54, 89, 22, 97, 19, 47
 ] := by decide
 
 private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
-  97, 19, 50, 87, 100, 23, 13, 59, 117, 15, 24, 23, 97, 17, 213, 87, 89, 95, 243, 91, 96, 40, 28, 23, 145, 133, 96, 2, 27, 129, 129, 23, 96, 9, 129, 146, 5, 1, 24, 24, 145, 54, 96, 16, 22, 97, 19, 240, 87, 96,
-  251, 135, 1, 150, 145, 80, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132,
-  23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1,
-  145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 53, 131, 24, 54, 136, 16, 97, 19, 27, 87, 132, 131, 3, 96, 3, 27,
-  28, 23, 97, 17, 213, 87, 89, 95, 243, 91, 54, 150, 145, 80, 97, 19, 159, 86
+  87, 100, 23, 13, 59, 117, 15, 24, 23, 97, 17, 213, 87, 89, 95, 243, 91, 96, 40, 28, 23, 145, 132, 96, 2, 27, 129, 129, 23, 96, 9, 129, 146, 5, 1, 24, 24, 145, 54, 96, 16, 22, 97, 19, 239, 87, 96, 251, 134, 1,
+  149, 145, 80, 91, 129, 89, 1, 145, 53, 132, 132, 23, 134, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 132, 132, 23, 134, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 132, 132, 23, 134, 129,
+  3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 132, 132, 23, 134, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 132, 132, 23, 134, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 132,
+  132, 23, 134, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 132, 132, 23, 134, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 53, 131, 24, 54, 135, 16, 97, 19, 24, 87, 54, 131, 3, 89, 1, 96, 3, 27, 28,
+  23, 97, 17, 213, 87, 89, 95, 243, 91, 54, 149, 145, 80, 97, 19, 156, 86
 ] := by decide
 
 private theorem assemble_chunk0 :
@@ -4335,17 +4334,17 @@ private def tailPrefix : List Instr :=
   submissionInstructionsChunk17 ++
   submissionInstructionsChunk18
 
-private theorem tailPrefix_length : tailPrefix.length = 3558 := by
+private theorem tailPrefix_length : tailPrefix.length = 3556 := by
   simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length]
 
 private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4895 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 195) :
-    submissionArtifact.instructionPC (3558 + i) =
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 196) :
+    submissionArtifact.instructionPC (3556 + i) =
       4895 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk19.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
-    tailPrefix submissionInstructionsChunk19 [] 3558 4895
+    tailPrefix submissionInstructionsChunk19 [] 3556 4895
   · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil]
   · exact tailPrefix_length
   · exact tailPrefix_bytes_length
@@ -7909,11 +7908,11 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4553 :
-    Decode.isValidJumpDest submissionBytecode 4891 = true := by
-  have hp : submissionArtifact.instructionPC 3554 = 4891 := by
+    Decode.isValidJumpDest submissionBytecode 4888 = true := by
+  have hp : submissionArtifact.instructionPC 3551 = 4888 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3554 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3551 (by rfl)
   rw [hp] at h
   exact h
 
