@@ -152,16 +152,16 @@ def initTemplate : List Instr := [
   .push ⟨0, by decide⟩ (UInt256.ofNat 0)
 ]
 
-/-- The scanner's word chain: seven copies of `normalTemplate` at `4891 + 18 j` (`j < 7`), falling into the
-tail at `5017 = 4891 + 18 * 7`. A segment with `m` full words enters at block `7 - m`, so no per-word bound test
-runs. The entry is the computed jump `5017 + 18 * ((x - full) sar 5)`, where `x` is the segment's first offset;
-for `full = x + len - 32` this is `5017 - 18 * ceil ((len - 32) / 32)`. -/
+/-- The scanner's word chain: seven copies of `normalTemplate` at `4964 + 18 j` (`j < 7`), falling into the
+tail at `5090 = 4964 + 18 * 7`. A segment with `m` full words enters at block `7 - m`, so no per-word bound test
+runs. The entry is the computed jump `5090 + 18 * ((x - full) sar 5)`, where `x` is the segment's first offset;
+for `full = x + len - 32` this is `5090 - 18 * ceil ((len - 32) / 32)`. -/
 def dispatchTarget (x full : UInt256) : UInt256 :=
-  UInt256.add (UInt256.ofNat 5017)
+  UInt256.add (UInt256.ofNat 5090)
     (UInt256.mul (UInt256.ofNat 18) (UInt256.sar (UInt256.sub x full) (UInt256.ofNat 5)))
 
 /-- Block `j` of the chain; block 7 is the tail. -/
-def blockPC (j : Nat) : Nat := 4891 + 18 * j
+def blockPC (j : Nat) : Nat := 4964 + 18 * j
 
 /-- First entry: the offset is the literal zero just pushed, so `PUSH0` replaces `DUP3`. -/
 def dispatch0Template : List Instr := [ .op (.Dup ⟨3, by decide⟩),
@@ -171,23 +171,19 @@ def dispatch0Template : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op .SAR,
     .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MUL,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5017),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 5090),
     .op .ADD,
     .op .JUMP ]
 
 /-- Segment transition: drop the old offset left by the transition, then the same computed jump from the
 new frame's offset. -/
-def dispatch1Template : List Instr := [ .op .POP,
-    .op (.Dup ⟨3, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op .SUB,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 5),
-    .op .SAR,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 18),
-    .op .MUL,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5017),
-    .op .ADD,
-    .op .JUMP ]
+def transitionTarget (n : UInt256) : UInt256 :=
+  if UInt256.land n (UInt256.ofNat 16) = 0 then UInt256.ofNat (blockPC 0)
+  else UInt256.ofNat (blockPC 4)
+
+def dispatch1Template : List Instr := [
+  .op .POP, .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 16), .op .AND,
+  .push ⟨2, by decide⟩ (UInt256.ofNat (blockPC 4)), .op .JUMPI ]
 
 /-- Increment the saved offset before loading the old offset. This eliminates one
 swap while preserving the exact incoming and outgoing recognizer frames. The
@@ -224,7 +220,7 @@ def tailTemplate : List Instr := [
 
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
     .op (.Dup ⟨8, by decide⟩), .op .SUB,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5044), .op .JUMPI ]
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4891), .op .JUMPI ]
 
 def finalProjectionTemplate : List Instr := [
   .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .SUB,
