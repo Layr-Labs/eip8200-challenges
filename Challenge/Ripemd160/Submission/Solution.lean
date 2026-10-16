@@ -17,6 +17,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: be53db610fc4b24d92bed92337575d50935257483e01ed114b3c9fc7bdabd3f1.
--- 9208 bytes; local seedscore 640875.
+-- Current decoded SHA-256: d7d6d135759689aac1e53e3e9f5032385ce6280671b3f963e0be39a248b5c333.
+-- 9400 bytes; local seedscore 640620.
 -- Direct literal-word scanner; final partial-word mask derived from calldata size.
