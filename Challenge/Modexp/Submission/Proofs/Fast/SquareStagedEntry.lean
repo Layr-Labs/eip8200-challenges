@@ -15,17 +15,17 @@ open Monpro CiosCached
 /-- The square entry: row head 4293, frame word 3 := `mem[0xc0]` (`n1`; p2), and the row pointer
 `q := 0x1e0 - base` (zneg2: `-0x100` for eight limbs, the R4 marker `-0x80` for four). -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 5293, .op (.Swap ⟨1, by decide⟩), .op .POP,
+  [.op .JUMPDEST, .push 2 5297, .op (.Swap ⟨1, by decide⟩), .op .POP,
    .push 1 192, .op .MLOAD, .op (.Swap ⟨2, by decide⟩), .op .POP,
    .push 2 480, .op .SUB]
 
 def block : Block Artifact.submissionArtifact .Osaka 4245 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3305 10 4245 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3303 10 4245 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 4245).toNat = true :=
-  Artifact.isValidJumpDest_index 3305 (by rfl)
+  Artifact.isValidJumpDest_index 3303 (by rfl)
 
 /-- The entry's row pointer word. -/
 def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512 + 32 * n - 32)
@@ -38,7 +38,7 @@ theorem qWord_four : qWord 4 = UInt256.ofNat (2^256 - 128) := by decide
 def h1State (s : State) (mem : ByteArray) (n : Nat) (ent w5 inv m0 : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 4260
-           stack := [qWord n, UInt256.ofNat 5293, MachineState.readWord mem 192, ent, w5, allOnes,
+           stack := [qWord n, UInt256.ofNat 5297, MachineState.readWord mem 192, ent, w5, allOnes,
              MachineState.readWord mem 128, inv, m0] ++ rest
            memory := mem }
 

@@ -303,7 +303,7 @@ def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
 riding slots but the exit slot `z`, which picks the jump target `2441 + z`. -/
 def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotState z s mem 5518 n bsize esize msize (shiftEntry n)
+  slotState z s mem 5522 n bsize esize msize (shiftEntry n)
 
 /-- The wrapped `-32` the pointer walks add. -/
 theorem negK_literal :

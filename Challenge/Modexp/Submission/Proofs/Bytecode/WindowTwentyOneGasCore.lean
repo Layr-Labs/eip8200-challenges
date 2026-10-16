@@ -14,11 +14,11 @@ sixty windows and the tail with the return. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   table : Block artifact fork 748 WindowTwentyOneTableBuild.program
   setup : Block artifact fork 837 WindowPrecopyRoute.setupProgram
-  copy : Block artifact fork 845 WindowPrecopyRoute.copyProgram
-  pool : Block artifact fork 850 WindowPrecopyRoute.poolProgram
-  first : Block artifact fork 1165 WindowPrecopyRoute.firstProgram
-  head : Block artifact fork 1177 (WindowPrecopyRoute.routeWindows 0 60)
-  tail : Block artifact fork 2257 WindowPrecopyRoute.tailProgram
+  copy : Block artifact fork 841 WindowPrecopyRoute.copyProgram
+  pool : Block artifact fork 849 WindowPrecopyRoute.poolProgram
+  first : Block artifact fork 1164 WindowPrecopyRoute.firstProgram
+  head : Block artifact fork 1173 (WindowPrecopyRoute.routeWindows 0 60)
+  tail : Block artifact fork 2253 WindowPrecopyRoute.tailProgram
 
 /-- Table, setup, row stores, pool, first digit, 62 windows, the last digit and the
 return, from the normalized state at 879.  The exponent word and the spare modulus
@@ -48,29 +48,29 @@ def steps_core {artifact : ProgramArtifact} {fork : Fork}
     (s := WindowTwentyOneTable.framed template (UInt256.ofNat 837) base modulus 16 rest)
     (env.transfer rfl rfl) rfl hs
   have gc := Block.stepsX paths.copy
-    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 845) base modulus 16
+    (s := WindowTwentyOneTable.framed template (UInt256.ofNat 841) base modulus 16
       (UInt256.shiftRight exponent (UInt256.ofNat 3) ::
         WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
     (WindowPrecopyRoute.run_copyAt template base modulus exponent (rest.drop 2) hdrop)
   have gp := paths.pool.steps
-    (s := WindowPrecopyRoute.routeState template 850 base modulus exponent
+    (s := WindowPrecopyRoute.routeState template 849 base modulus exponent
       (WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
     (WindowPrecopyRoute.run_poolAt template base modulus exponent (rest.drop 2) hdrop)
   have gf := paths.first.steps
-    (s := WindowPrecopyRoute.routeState template 1165 base modulus exponent
+    (s := WindowPrecopyRoute.routeState template 1164 base modulus exponent
       (List.replicate 315 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
     (WindowPrecopyRoute.run_firstAt template base modulus exponent (rest.drop 2) hdrop)
   have gh := paths.head.steps
-    (s := WindowPrecopyRoute.routeState template 1177 base modulus exponent
+    (s := WindowPrecopyRoute.routeState template 1173 base modulus exponent
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat ::
         List.replicate 315 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl
     (WindowPrecopyRoute.run_headAt template base modulus exponent (rest.drop 2) hdrop)
   have gt := paths.tail.steps
-    (s := WindowPrecopyRoute.routeState template 2257 base modulus exponent
+    (s := WindowPrecopyRoute.routeState template 2253 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 15 modulus ++ WindowPrecopyRoute.frame modulus exponent (rest.drop 2)))
     (env.transfer rfl rfl) rfl

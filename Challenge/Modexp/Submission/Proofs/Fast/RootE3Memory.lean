@@ -59,7 +59,7 @@ theorem phaseSwitch_inv (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8
     minvW := (phaseSwitch_readWord mem n 2720 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.minvW
     ml := (phaseSwitch_readWord mem n 2752 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.ml
     tl := (phaseSwitch_readWord mem n 2784 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.tl
-    eoff := (phaseSwitch_readWord mem n 2816 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.eoff }
+    eoff := (phaseSwitch_readWord mem n 2656 (Or.inr (by omega)) (Or.inr (by omega))).trans inv.frame.eoff }
   modulus := phaseSwitch_preserves mem n 0 n mm (Or.inl (by omega)) (Or.inr (by omega)) inv.modulus
   neg := phaseSwitch_preserves mem n NEG n _ (Or.inl (by unfold NEG; omega))
     (Or.inl (by unfold NEG; omega)) inv.neg
@@ -134,7 +134,7 @@ theorem flagSet_inv (mem : ByteArray) (flag : UInt256) (n bsize mm minv : Nat)
     minvW := (flagSet_readWord mem flag 2720 (Or.inr (by omega))).trans inv.frame.minvW
     ml := (flagSet_readWord mem flag 2752 (Or.inr (by omega))).trans inv.frame.ml
     tl := (flagSet_readWord mem flag 2784 (Or.inr (by omega))).trans inv.frame.tl
-    eoff := (flagSet_readWord mem flag 2816 (Or.inr (by omega))).trans inv.frame.eoff }
+    eoff := (flagSet_readWord mem flag 2656 (Or.inr (by omega))).trans inv.frame.eoff }
   modulus := flagSet_preserves mem flag 0 n mm (Or.inl (by omega)) inv.modulus
   neg := flagSet_preserves mem flag NEG n _ (Or.inl (by unfold NEG; omega)) inv.neg
   cache := (flagSet_readWord mem flag 1698 (Or.inl (by omega))).trans inv.cache

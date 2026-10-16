@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.RootE3Correct
 import Challenge.Modexp.Submission.Proofs.Fast.RootE3Bindings
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace5
 import Challenge.Modexp.Submission.Proofs.Fast.ExpSubs
+import Challenge.Modexp.Submission.Proofs.CRT.CompletedImplementation
 -- The full-base miss bails into `modexpBig`; its cold-path proof and location
 -- certificates are pure `Proofs.Bytecode`.
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUMain
@@ -113,7 +114,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
 
 private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
-    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 2688) :
+    (hlo : 256 ≤ target) (hhi : target + 32 ≤ 2656) :
     MachineState.readWord (Setup.setupMem ByteArray.empty input m0) target =
       UInt256.ofNat 0 := by
   have hS := Setup.s32_le_256 input hm
@@ -144,7 +145,7 @@ private theorem fastSetup_V_MINV_zero (input : ByteArray) (hpath : Setup.FastPat
       (Or.inr (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
-    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
+    Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
     Setup.readWord_empty]
 
@@ -226,7 +227,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hdata : s.executionEnv.calldata = input) (hstack : s.callStack = [])
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
     (hmz : 32 < msize) (hm32 : msize ≤ 32 * n)
@@ -255,7 +256,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- Both are needed only on the diverted miss arms, and both are free where they
     -- are produced.  `bigC_correct` wants `ValidInput`, whose `size < 2 ^ 64`
     -- component `hcds` cannot supply, and an upper bound on `activeWords`, which the
-    -- carrier `Setup.fastSetupState input` fixes at exactly 89.
+    -- carrier `Setup.fastSetupState input` fixes at exactly 88.
     (hvalid : Challenge.Modexp.ValidInput input)
     (hactLe : s.activeWords.toNat ≤ 289)
     (htop : R1.TopBitSet mem) :
@@ -264,14 +265,16 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         (dispState s mem n bsize esize msize) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
-  have hact296 : 88 ≤ s.activeWords.toNat :=
-    Nat.le_trans (show 88 ≤ 89 by norm_num) hact
+  have hact296 : 88 ≤ s.activeWords.toNat := hact
   have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
-  let sub := Exp.subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
+  let eight : CRTLoopInterface.Implementation s bsize mm minv :=
+    HistoricalSearch.CompletedImplementation.implementation s bsize mm minv
+      (bindingEnv e) hact296 hcds hodd hminvlt hminvA
+  let sub := Exp.subs s n bsize mm minv eight hcode hfork hrun hnp hact296 hcds hn hn32 hmpos
     hminvlt hminvA hfast hminv1
   have hspec : Exp.SubSpec sub.mpMem sub.amMem n mm (Limbs.radix ^ n) minv := by
     dsimp only [sub]
-    exact Exp.specOf_subs s n bsize mm minv hcode hfork hrun hnp hact296 hcds hn hn32
+    exact Exp.specOf_subs s n bsize mm minv eight hcode hfork hrun hnp hact296 hcds hn hn32
       hmpos hminvlt hminvA hodd hfast hminv1
   have hbword : bsize < 2 ^ 256 := lt_of_le_of_lt hb (by norm_num)
   have hmmlt : mm < Limbs.radix ^ n := Model.fastRepresents_lt hmod0
@@ -342,7 +345,7 @@ theorem gasSteps_handled (input : ByteArray)
     exact h
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
-  have hact : 89 ≤ (Setup.fastSetupState input).activeWords.toNat := by
+  have hact : 88 ≤ (Setup.fastSetupState input).activeWords.toNat := by
     rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [Exp.fastSetup_calldata input]

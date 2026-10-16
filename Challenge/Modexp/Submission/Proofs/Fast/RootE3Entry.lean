@@ -62,7 +62,7 @@ theorem handled_of_asymmetric_three (input : ByteArray) (s : State) (memory : By
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
+    (hstack : s.callStack = []) (hactive : 88 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)
@@ -121,7 +121,7 @@ theorem handled_of_e3go_asymmetric_three (input : ByteArray) (s : State) (memory
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hstack : s.callStack = []) (hactive : 89 ≤ s.activeWords.toNat)
+    (hstack : s.callStack = []) (hactive : 88 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hn48 : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1)
     (hmz : 32 < msize)
     (hm32 : msize ≤ 32 * n)

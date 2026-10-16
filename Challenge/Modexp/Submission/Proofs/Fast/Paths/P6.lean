@@ -13,15 +13,15 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 556..559, pc 774..779. -/
 def blk1333 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 490 (.Dup ⟨4, by decide⟩),
-   pushAt 491 2 256,
-   opAt 492 .RETURN]
+  [opAt 488 (.Dup ⟨4, by decide⟩),
+   pushAt 489 2 256,
+   opAt 490 .RETURN]
 
 /-- Instructions 1471..1344, pc 2016..2016. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 493 .JUMPDEST,
-   opAt 494 .POP]
+  [opAt 491 .JUMPDEST,
+   opAt 492 .POP]
 
 /- `blk1345` (the oversize bail target `BAIL3`, pristine instructions 1345..1350) is
 deleted with the size test that was its only predecessor: nothing jumps to it any more,

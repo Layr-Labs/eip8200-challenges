@@ -3,7 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.WordBaseTail
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordBaseFinish
 
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Word

@@ -12,17 +12,17 @@ open Challenge.Modexp.Submission.Proofs.Fast
 theorem entry_jump (k : Nat) (hk : k ≤ 7) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (3606-37*k) = true := by
   interval_cases k
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2818 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2787 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2756 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2725 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2694 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2663 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2632 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2601 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2816 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2785 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2754 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2723 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2692 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2661 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2630 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2599 (by rfl)
 
-theorem square_jump : Decode.isValidJumpDest TnM128Candidate.bytecode 5293 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 4218 (by rfl)
+theorem square_jump : Decode.isValidJumpDest TnM128Candidate.bytecode 5297 = true :=
+  TnM128CandidateArtifact.isValidJumpDest_index 4220 (by rfl)
 
 #print axioms entry_jump
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128L1Jumps

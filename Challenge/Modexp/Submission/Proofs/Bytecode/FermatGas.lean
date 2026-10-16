@@ -7,6 +7,7 @@ set_option warningAsError true
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.FermatGas
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
+open HistoricalSearch
 open WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 
 def withModulus (template : State) (input : ByteArray) (tail : List UInt256)
@@ -18,9 +19,105 @@ def withModulus (template : State) (input : ByteArray) (tail : List UInt256)
 def joinState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
   withModulus template input tail (UInt256.ofNat 33)
 
-/-- From the join point at 31 every matching input reaches a returned state with the
-specification result: through the Fermat exit when the exponent is `p - 1` for one of
-the two special primes, and through the window core otherwise. -/
+private def fermatHandled {artifact : ProgramArtifact} {fork : Fork}
+    (paths : FermatNext.Paths artifact fork) (template : State) (env : Environment artifact fork template)
+    (hcall : template.callStack = []) (input : ByteArray) (tail : List UInt256) (htail : tail.length ≤ 590)
+    (hmatch : WindowTwentyOneInput.Matches input)
+    (hbn : FermatProgram.bn.toNat.Prime) (hsecp : FermatProgram.secp.toNat.Prime)
+    (he : (FermatNext.fermatDiff (WindowTwentyOneInput.modulusWord input)
+      (WindowTwentyOneInput.exponentWord input)).toNat = 0)
+    (hprime : (FermatProgram.primeValue (WindowTwentyOneInput.modulusWord input)).toNat ≠ 0) :
+    ∃ final : State, Nonempty (GasSteps (withModulus template input tail 9809) final) ∧
+      final.isDone = true ∧ final.toResult = .returned (spec input) := by
+  let ec := WindowTwentyOneGasRoute.context_env template env input
+  let m := WindowTwentyOneInput.modulusWord input
+  let e := WindowTwentyOneInput.exponentWord input
+  have hmNat : m.toNat = WindowTwentyOneInput.modulusValue input :=
+    WindowTwentyOneInput.modulusWord_toNat input
+  have hp : (WindowTwentyOneInput.modulusValue input).Prime := by
+    rw [← hmNat]
+    rcases (FermatProgram.primeValue_nonzero m).mp hprime with h | h
+    · rw [h]
+      exact hbn
+    · rw [h]
+      exact hsecp
+  have heq : m - UInt256.ofNat 1 = e := FermatNext.fermatDiff_zero m e he
+  have hsub : (m - UInt256.ofNat 1).toNat = m.toNat - 1 := by
+    have hm1 : 1 ≤ m.toNat := by have := hp.two_le; omega
+    conv_lhs => rw [Word.word_eq_ofNat_toNat m]
+    rw [Word.ofNat_sub_ofNat hm1 m.val.isLt, Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt (by have hb : m.toNat < 2^256 := m.val.isLt; omega)
+  have hexponent : WindowTwentyOneInput.exponentValue input =
+      WindowTwentyOneInput.modulusValue input - 1 := by
+    have h := congrArg UInt256.toNat heq
+    rw [hsub, WindowTwentyOneInput.exponentWord_toNat, hmNat] at h
+    exact h.symm
+  let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 9817)
+    (FermatMath.resultWord input) 0 (coreStack input tail)
+  have hr := FermatProgram.run_return (context template input) m (shiftWord input)
+    (coreStack input tail) (by simp [coreStack]; omega) rfl rfl
+  change WindowTwentyOneMsize.runInstructionsX FermatProgram.returnProgram
+    (withModulus template input tail (UInt256.ofNat 9809)) = some final at hr
+  have resultSteps : GasSteps (withModulus template input tail (UInt256.ofNat 9809)) final :=
+    WindowTwentyOneMsize.Block.stepsX paths.result (ec.transfer rfl rfl) rfl hr
+  refine ⟨final, ⟨resultSteps⟩, ?_, ?_⟩
+  · change (true && template.callStack.isEmpty) = true
+    rw [hcall]
+    rfl
+  · have h := WindowTwentyOneReturn.returned_result (context template input)
+      (UInt256.ofNat 9817) (FermatMath.resultWord input) 0 (coreStack input tail)
+    rw [← FermatMath.result_spec input hmatch hp hexponent] at h
+    exact h
+
+private def inverseHandled {artifact : ProgramArtifact} {fork : Fork}
+    (paths : FermatNext.Paths artifact fork) (template : State) (env : Environment artifact fork template)
+    (hcall : template.callStack = []) (input : ByteArray) (tail : List UInt256) (htail : tail.length ≤ 590)
+    (hmatch : WindowTwentyOneInput.Matches input)
+    (hm : WindowTwentyOneInput.modulusWord input = FermatProgram.bn)
+    (he : (FermatNext.fermatDiff (WindowTwentyOneInput.modulusWord input)
+      (WindowTwentyOneInput.exponentWord input)).toNat = 1) :
+    ∃ final : State, Nonempty (GasSteps (withModulus template input tail 9858) final) ∧
+      final.isDone = true ∧ final.toResult = .returned (spec input) := by
+  let ec := WindowTwentyOneGasRoute.context_env template env input
+  let m := WindowTwentyOneInput.modulusWord input
+  let e := WindowTwentyOneInput.exponentWord input
+  let b := shiftWord input
+  let final := FixedExponentProgram.finalState (context template input) 9858 b m e tail
+  have hr := FixedExponentProgram.run_program (context template input) 9858 b m e tail htail
+  change runInstructions FixedExponentProgram.program
+    (withModulus template input tail 9858) = some final at hr
+  have steps : GasSteps (withModulus template input tail 9858) final :=
+    paths.inverse.steps (ec.transfer rfl rfl) rfl hr
+  refine ⟨final, ⟨steps⟩, ?_, ?_⟩
+  · change (true && template.callStack.isEmpty) = true
+    rw [hcall]
+    rfl
+  · have heq := FermatNext.fermatDiff_one m e he
+    have heWord : e = UInt256.ofNat
+        21888242871839275222246405745257275088696311157297823662689037894645226208581 := by
+      rw [←heq,show m = FermatProgram.bn from hm]
+      decide
+    have heNat : WindowTwentyOneInput.exponentValue input =
+        21888242871839275222246405745257275088696311157297823662689037894645226208581 := by
+      rw [←WindowTwentyOneInput.exponentWord_toNat input]
+      change e.toNat = _
+      rw [heWord]
+      rfl
+    have hmPos : 0 < m.toNat := by rw [show m = FermatProgram.bn from hm]; decide
+    have hbNat : b.toNat = WindowTwentyOneInput.baseValue input :=
+      WindowTwentyOneInput.baseWord_toNat_of_le input hmatch.1
+    have hmNat : m.toNat = WindowTwentyOneInput.modulusValue input :=
+      WindowTwentyOneInput.modulusWord_toNat input
+    have result := WindowTwentyOneReturn.returned_result
+      (FixedExponentProgram.resultTemplate (context template input) b m)
+      (advancePC 1056 9858) (FixedExponent.value b m) 8 ([e,b] ++ tail)
+    change final.toResult = .returned (Precompile.natToBytes (FixedExponent.value b m).toNat 32) at result
+    rw [FixedExponent.value_toNat b m hmPos,hbNat,hmNat] at result
+    rw [WindowTwentyOneInput.spec_eq input hmatch,heNat,Algorithm.modPow_eq,
+      if_neg (show WindowTwentyOneInput.modulusValue input ≠ 0 by rw [←hmNat]; omega)]
+    exact result
+
+/-- Boundary facts choose an existing Fermat result, fixed inversion ladder, or complete window fallback. -/
 def handled {artifact : ProgramArtifact} {fork : Fork}
     (paths : FermatNext.Paths artifact fork) (legacy : WindowTwentyOneGasRoute.Paths artifact fork)
     (template : State) (env : Environment artifact fork template) (hcall : template.callStack = [])
@@ -33,68 +130,65 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   let m := WindowTwentyOneInput.modulusWord input
   let e := WindowTwentyOneInput.exponentWord input
   have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 745 = true := by
-    rw [ec.code]
-    exact paths.routeJump
+    rw [ec.code]; exact paths.routeJump
+  have htailjump : Decode.isValidJumpDest (context template input).executionEnv.code 9800 = true := by
+    rw [ec.code]; exact paths.tailJump
+  have hinvjump : Decode.isValidJumpDest (context template input).executionEnv.code 9818 = true := by
+    rw [ec.code]; exact paths.inverseJump
   have hraw := FermatNext.run_join (context template input) m e (shiftWord input :: tail)
     (by simp; omega) hjump
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
     WindowTwentyOneGasRoute.handled legacy template env hcall input tail htail hmatch
-  by_cases he : (FermatNext.fermatDiff m e).toNat = 0
-  · rw [if_pos he] at hraw
-    have joinSteps : GasSteps (joinState template input tail)
-        (withModulus template input tail (UInt256.ofNat 42)) :=
+  by_cases hs : (FermatNext.fermatDiff m e).toNat ≤ 1
+  · rw [if_pos hs] at hraw
+    have joinSteps : GasSteps (joinState template input tail) (withModulus template input tail 45) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
     have hpraw := FermatNext.run_prime (context template input) m (coreStack input tail)
       (by simp [coreStack]; omega) hjump
-    by_cases hprime : (FermatProgram.primeValue m).toNat = 0
-    · rw [if_pos hprime] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail (UInt256.ofNat 42))
+    by_cases hp : (FermatProgram.primeValue m).toNat = 0
+    · rw [if_pos hp] at hpraw
+      have primeSteps : GasSteps (withModulus template input tail 45)
           (WindowTwentyOneGasRoute.entryState template input tail) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       exact ⟨oldFinal, ⟨(joinSteps.trans primeSteps).trans oldTrace⟩, oldDone, oldResult⟩
-    · rw [if_neg hprime] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail (UInt256.ofNat 42))
-          (withModulus template input tail (UInt256.ofNat 92)) :=
+    · rw [if_neg hp] at hpraw
+      have primeSteps : GasSteps (withModulus template input tail 45) (withModulus template input tail 95) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
-      have hmNat : m.toNat = WindowTwentyOneInput.modulusValue input :=
-        WindowTwentyOneInput.modulusWord_toNat input
-      have hp : (WindowTwentyOneInput.modulusValue input).Prime := by
-        rw [← hmNat]
-        rcases (FermatProgram.primeValue_nonzero m).mp hprime with h | h
-        · rw [h]
-          exact hbn
-        · rw [h]
-          exact hsecp
-      have heq : m - UInt256.ofNat 1 = e := FermatNext.fermatDiff_zero m e he
-      have hsub : (m - UInt256.ofNat 1).toNat = m.toNat - 1 := by
-        have hm1 : 1 ≤ m.toNat := by have := hp.two_le; omega
-        conv_lhs => rw [Word.word_eq_ofNat_toNat m]
-        rw [Word.ofNat_sub_ofNat hm1 m.val.isLt, Word.word_toNat_ofNat]
-        exact Nat.mod_eq_of_lt (by have hb : m.toNat < 2^256 := m.val.isLt; omega)
-      have hexponent : WindowTwentyOneInput.exponentValue input =
-          WindowTwentyOneInput.modulusValue input - 1 := by
-        have h := congrArg UInt256.toNat heq
-        rw [hsub, WindowTwentyOneInput.exponentWord_toNat, hmNat] at h
-        exact h.symm
-      let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 100)
-        (FermatMath.resultWord input) 0 (coreStack input tail)
-      have hr := FermatProgram.run_return (context template input) m (shiftWord input)
-        (coreStack input tail) (by simp [coreStack]; omega) rfl rfl
-      change WindowTwentyOneMsize.runInstructionsX FermatProgram.returnProgram
-        (withModulus template input tail (UInt256.ofNat 92)) = some final at hr
-      have resultSteps : GasSteps (withModulus template input tail (UInt256.ofNat 92)) final :=
-        WindowTwentyOneMsize.Block.stepsX paths.result (ec.transfer rfl rfl) rfl hr
-      refine ⟨final, ⟨(joinSteps.trans primeSteps).trans resultSteps⟩, ?_, ?_⟩
-      · change (true && template.callStack.isEmpty) = true
-        rw [hcall]
-        rfl
-      · have h := WindowTwentyOneReturn.returned_result (context template input)
-          (UInt256.ofNat 100) (FermatMath.resultWord input) 0 (coreStack input tail)
-        rw [← FermatMath.result_spec input hmatch hp hexponent] at h
-        exact h
-  · rw [if_neg he] at hraw
-    have joinSteps : GasSteps (joinState template input tail)
-        (WindowTwentyOneGasRoute.entryState template input tail) :=
+      have hjraw := FermatNext.run_jumpTail (context template input) (m :: coreStack input tail)
+        (by simp [coreStack]; omega) htailjump
+      have jumpSteps : GasSteps (withModulus template input tail 95) (withModulus template input tail 9800) :=
+        paths.jumpTail.steps (ec.transfer rfl rfl) rfl hjraw
+      have commonSteps := (joinSteps.trans primeSteps).trans jumpSteps
+      have htraw := FermatNext.run_tail (context template input) m e (shiftWord input :: tail)
+        (by simp; omega) hinvjump
+      by_cases he : (FermatNext.fermatDiff m e).toNat = 0
+      · rw [if_pos he] at htraw
+        have tailSteps : GasSteps (withModulus template input tail 9800) (withModulus template input tail 9809) :=
+          paths.tail.steps (ec.transfer rfl rfl) rfl htraw
+        obtain ⟨final, ⟨trace⟩, done, result⟩ :=
+          fermatHandled paths template env hcall input tail htail hmatch hbn hsecp he hp
+        exact ⟨final, ⟨(commonSteps.trans tailSteps).trans trace⟩, done, result⟩
+      · have he1 : (FermatNext.fermatDiff m e).toNat = 1 := by omega
+        rw [if_neg he] at htraw
+        have tailSteps : GasSteps (withModulus template input tail 9800) (withModulus template input tail 9818) :=
+          paths.tail.steps (ec.transfer rfl rfl) rfl htraw
+        have higraw := FermatNext.run_inverseGuard (context template input) m (coreStack input tail)
+          (by simp [coreStack]; omega) hjump
+        by_cases hi : (FermatNext.inverseDiff m).toNat = 0
+        · rw [if_pos hi] at higraw
+          have guardSteps : GasSteps (withModulus template input tail 9818) (withModulus template input tail 9858) :=
+            paths.inverseGuard.steps (ec.transfer rfl rfl) rfl higraw
+          have hm : m = FermatProgram.bn := FermatNext.inverseDiff_zero m hi
+          obtain ⟨final, ⟨trace⟩, done, result⟩ :=
+            inverseHandled paths template env hcall input tail htail hmatch hm he1
+          exact ⟨final, ⟨((commonSteps.trans tailSteps).trans guardSteps).trans trace⟩, done, result⟩
+        · rw [if_neg hi] at higraw
+          have guardSteps : GasSteps (withModulus template input tail 9818)
+              (WindowTwentyOneGasRoute.entryState template input tail) :=
+            paths.inverseGuard.steps (ec.transfer rfl rfl) rfl higraw
+          exact ⟨oldFinal, ⟨((commonSteps.trans tailSteps).trans guardSteps).trans oldTrace⟩, oldDone, oldResult⟩
+  · rw [if_neg hs] at hraw
+    have joinSteps : GasSteps (joinState template input tail) (WindowTwentyOneGasRoute.entryState template input tail) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
     exact ⟨oldFinal, ⟨joinSteps.trans oldTrace⟩, oldDone, oldResult⟩
 

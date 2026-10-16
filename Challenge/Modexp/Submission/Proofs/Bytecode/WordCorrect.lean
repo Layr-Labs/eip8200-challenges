@@ -1,6 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WordExit
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
 /-!
 # Correctness of the one-word MODEXP arithmetic
@@ -15,6 +15,7 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.WordCorrect
 open EvmSemantics
 open EvmSemantics.EVM
 open Word
+open WordLoops
 open WordExit
 
 theorem land_toNat (a b : UInt256) :
@@ -136,6 +137,256 @@ theorem mulMod_ofNat (a b modulus : Nat)
     Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb,
     Nat.mod_eq_of_lt ((Nat.mod_lt _ hmodpos).trans hmodlt)]
 
+theorem bitStep_eq_zero (input : ByteArray) (byte : UInt256) (j : Nat)
+    (acc base : UInt256) (hbit : exponentBitNat byte j = 0)
+    (hj : j < 8) :
+    bitStep input byte j acc base =
+      UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input)) := by
+  unfold bitStep
+  rw [exponentBit_eq byte j hj, hbit]
+  exact select_zero _ _
+
+theorem bitStep_eq_one (input : ByteArray) (byte : UInt256) (j : Nat)
+    (acc base : UInt256) (hbit : exponentBitNat byte j = 1)
+    (hj : j < 8) :
+    bitStep input byte j acc base =
+      UInt256.mulMod
+        (UInt256.mulMod acc acc (UInt256.ofNat (modulusValue input))) base
+        (UInt256.ofNat (modulusValue input)) := by
+  unfold bitStep
+  rw [exponentBit_eq byte j hj, hbit]
+  exact select_one _ _
+
+def natBitStep (modulus : Nat) (byte : UInt256) (j acc base : Nat) : Nat :=
+  let square := (acc * acc) % modulus
+  if exponentBitNat byte j = 0 then square else (square * base) % modulus
+
+def natBitAfter (modulus : Nat) (byte : UInt256) (base : Nat) :
+    Nat → Nat → Nat
+  | 0, acc => acc
+  | j + 1, acc => natBitStep modulus byte j
+      (natBitAfter modulus byte base j acc) base
+
+theorem natBitStep_lt (modulus : Nat) (byte : UInt256) (j acc base : Nat)
+    (hmodpos : 0 < modulus) :
+    natBitStep modulus byte j acc base < modulus := by
+  unfold natBitStep
+  split
+  · exact Nat.mod_lt _ hmodpos
+  · exact Nat.mod_lt _ hmodpos
+
+theorem natBitAfter_lt (modulus : Nat) (byte : UInt256) (base acc j : Nat)
+    (hmodpos : 0 < modulus) (hacc : acc < modulus) :
+    natBitAfter modulus byte base j acc < modulus := by
+  induction j with
+  | zero => exact hacc
+  | succ j ih =>
+      rw [natBitAfter]
+      exact natBitStep_lt modulus byte j _ base hmodpos
+
+theorem bitStep_correct (input : ByteArray) (byte : UInt256) (j acc base : Nat)
+    (modulus : Nat) (hmodulus : modulusValue input = modulus)
+    (hmodpos : 0 < modulus) (hmodlt : modulus < 2 ^ 256)
+    (hacc : acc < 2 ^ 256) (hbase : base < 2 ^ 256) (hj : j < 8) :
+    bitStep input byte j (UInt256.ofNat acc) (UInt256.ofNat base) =
+      UInt256.ofNat (natBitStep modulus byte j acc base) := by
+  rcases exponentBitNat_zero_or_one byte j with hbit | hbit
+  · rw [bitStep_eq_zero input byte j _ _ hbit hj, hmodulus]
+    unfold natBitStep
+    rw [if_pos hbit]
+    exact mulMod_ofNat acc acc modulus hmodpos hmodlt hacc hacc
+  · rw [bitStep_eq_one input byte j _ _ hbit hj, hmodulus]
+    unfold natBitStep
+    rw [if_neg (by omega)]
+    have hsquare : (acc * acc) % modulus < 2 ^ 256 :=
+      (Nat.mod_lt _ hmodpos).trans hmodlt
+    rw [mulMod_ofNat acc acc modulus hmodpos hmodlt hacc hacc]
+    exact mulMod_ofNat ((acc * acc) % modulus) base modulus
+      hmodpos hmodlt hsquare hbase
+
+theorem bitAfter_correct (input : ByteArray) (byte : UInt256)
+    (j acc base modulus : Nat) (hmodulus : modulusValue input = modulus)
+    (hmodpos : 0 < modulus) (hmodlt : modulus < 2 ^ 256)
+    (hacc : acc < modulus) (hbase : base < modulus) (hj : j ≤ 8) :
+    bitAfter input byte (UInt256.ofNat base) j (UInt256.ofNat acc) =
+      UInt256.ofNat (natBitAfter modulus byte base j acc) := by
+  induction j with
+  | zero => rfl
+  | succ j ih =>
+      rw [bitAfter, ih (by omega),
+        WordBitSel.bitStepSel_eq input byte j _ (UInt256.ofNat base) (by omega)]
+      apply bitStep_correct input byte j _ base modulus hmodulus
+        hmodpos hmodlt
+      · exact (natBitAfter_lt modulus byte base acc j hmodpos hacc).trans hmodlt
+      · exact hbase.trans hmodlt
+      · omega
+
+def bitPrefix (byte : UInt256) : Nat → Nat
+  | 0 => 0
+  | j + 1 => 2 * bitPrefix byte j + exponentBitNat byte j
+
+theorem bitPrefix_ofNat_eight (n : Nat) (hn : n < 256) :
+    bitPrefix (UInt256.ofNat n) 8 = n := by
+  interval_cases n <;> decide
+
+theorem bitPrefix_eight (byte : UInt256) (hbyte : byte.toNat < 256) :
+    bitPrefix byte 8 = byte.toNat := by
+  calc
+    bitPrefix byte 8 = bitPrefix (UInt256.ofNat byte.toNat) 8 := by
+      rw [ofNat_toNat]
+    _ = byte.toNat := bitPrefix_ofNat_eight byte.toNat hbyte
+
+theorem mul_mod_reduced (a b modulus : Nat) :
+    ((a % modulus) * (b % modulus)) % modulus = (a * b) % modulus :=
+  (Nat.mul_mod a b modulus).symm
+
+theorem left_mod_mul (a b modulus : Nat) :
+    ((a % modulus) * b) % modulus = (a * b) % modulus := by
+  rw [Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod]
+
+theorem natBitAfter_eq (modulus : Nat) (byte : UInt256) (base acc j : Nat)
+    (hacc : acc < modulus) :
+    natBitAfter modulus byte base j acc =
+      (acc ^ (2 ^ j) * base ^ (bitPrefix byte j)) % modulus := by
+  induction j with
+  | zero => simp [natBitAfter, bitPrefix, Nat.mod_eq_of_lt hacc]
+  | succ j ih =>
+      rw [natBitAfter, natBitStep]
+      rcases exponentBitNat_zero_or_one byte j with hbit | hbit
+      · rw [if_pos hbit, ih, bitPrefix, hbit, Nat.add_zero]
+        rw [mul_mod_reduced]
+        congr 1
+        simp only [Nat.pow_succ, Nat.pow_mul]
+        ring
+      · rw [if_neg (by omega), ih, bitPrefix, hbit]
+        rw [mul_mod_reduced, left_mod_mul]
+        congr 1
+        simp only [Nat.pow_succ, Nat.pow_mul]
+        ring
+
+theorem bitAfter_eight_correct (input : ByteArray) (byte : UInt256)
+    (acc base modulus : Nat) (hmodulus : modulusValue input = modulus)
+    (hmodpos : 0 < modulus) (hmodlt : modulus < 2 ^ 256)
+    (hacc : acc < modulus) (hbase : base < modulus)
+    (hbyte : byte.toNat < 256) :
+    bitAfter input byte (UInt256.ofNat base) 8 (UInt256.ofNat acc) =
+      UInt256.ofNat ((acc ^ 256 * base ^ byte.toNat) % modulus) := by
+  rw [bitAfter_correct input byte 8 acc base modulus hmodulus hmodpos hmodlt
+      hacc hbase (by omega),
+    natBitAfter_eq modulus byte base acc 8 hacc,
+    bitPrefix_eight byte hbyte]
+  norm_num
+
+def exponentByte (input : ByteArray) (i : Nat) : UInt256 :=
+  byteWord input (expOffset input + i)
+
+theorem exponentByte_toNat (input : ByteArray) (i : Nat)
+    (hvalid : ValidInput input) (hi : i < exponentSize input) :
+    (exponentByte input i).toNat =
+      (YulSemantics.EVM.byteFrom input.toList (expOffset input + i)).toNat := by
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  have hoff : expOffset input + i < 2 ^ 256 := by
+    simp only [expOffset]
+    omega
+  have h := congrArg UInt256.toNat
+    (byteWord_eq input (expOffset input + i) hoff)
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt
+      ((YulSemantics.EVM.byteFrom input.toList (expOffset input + i)).toNat_lt.trans
+        (by norm_num))] at h
+  exact h
+
+theorem exponentByte_lt (input : ByteArray) (i : Nat)
+    (hvalid : ValidInput input) (hi : i < exponentSize input) :
+    (exponentByte input i).toNat < 256 := by
+  rw [exponentByte_toNat input i hvalid hi]
+  exact (YulSemantics.EVM.byteFrom input.toList (expOffset input + i)).toNat_lt
+
+def natExpStep (modulus : Nat) (byte : UInt256) (acc base : Nat) : Nat :=
+  (acc ^ 256 * base ^ byte.toNat) % modulus
+
+def natExpAfter (input : ByteArray) (modulus base : Nat) :
+    Nat → Nat → Nat
+  | 0, acc => acc
+  | i + 1, acc => natExpStep modulus (exponentByte input i)
+      (natExpAfter input modulus base i acc) base
+
+theorem natExpAfter_lt (input : ByteArray) (modulus base acc i : Nat)
+    (hmodpos : 0 < modulus) (hacc : acc < modulus) :
+    natExpAfter input modulus base i acc < modulus := by
+  induction i with
+  | zero => exact hacc
+  | succ i ih =>
+      rw [natExpAfter, natExpStep]
+      exact Nat.mod_lt _ hmodpos
+
+theorem expStep_correct (input : ByteArray) (i acc base modulus : Nat)
+    (hvalid : ValidInput input) (hi : i < exponentSize input)
+    (hmodulus : modulusValue input = modulus)
+    (hmodpos : 0 < modulus) (hmodlt : modulus < 2 ^ 256)
+    (hacc : acc < modulus) (hbase : base < modulus) :
+    expStep input i (UInt256.ofNat acc) (UInt256.ofNat base) =
+      UInt256.ofNat
+        (natExpStep modulus (exponentByte input i) acc base) := by
+  unfold expStep natExpStep exponentByte
+  exact bitAfter_eight_correct input (byteWord input (expOffset input + i))
+    acc base modulus hmodulus hmodpos hmodlt hacc hbase
+    (exponentByte_lt input i hvalid hi)
+
+theorem expAfter_correct (input : ByteArray) (count acc base modulus : Nat)
+    (hvalid : ValidInput input) (hcount : count ≤ exponentSize input)
+    (hmodulus : modulusValue input = modulus)
+    (hmodpos : 0 < modulus) (hmodlt : modulus < 2 ^ 256)
+    (hacc : acc < modulus) (hbase : base < modulus) :
+    expAfter input (UInt256.ofNat base) count (UInt256.ofNat acc) =
+      UInt256.ofNat (natExpAfter input modulus base count acc) := by
+  induction count with
+  | zero => rfl
+  | succ count ih =>
+      rw [expAfter, ih (by omega), natExpAfter]
+      exact expStep_correct input count
+        (natExpAfter input modulus base count acc) base modulus hvalid (by omega)
+        hmodulus hmodpos hmodlt
+        (natExpAfter_lt input modulus base acc count hmodpos hacc) hbase
+
+theorem natExpAfter_eq (input : ByteArray) (modulus base acc count : Nat)
+    (hvalid : ValidInput input) (hcount : count ≤ exponentSize input)
+    (hacc : acc < modulus) :
+    natExpAfter input modulus base count acc =
+      (acc ^ (256 ^ count) *
+        base ^ (Precompile.bytesToNatPadded input (expOffset input) count)) %
+        modulus := by
+  induction count with
+  | zero =>
+      simp [natExpAfter, Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width,
+        Nat.mod_eq_of_lt hacc]
+  | succ count ih =>
+      rw [natExpAfter, natExpStep, ih (by omega),
+        Challenge.EvmProof.Bytes.bytesToNatPadded_succ,
+        exponentByte_toNat]
+      · let a := acc ^ (256 ^ count)
+        let b := base ^
+          (Precompile.bytesToNatPadded input (expOffset input) count)
+        let digit :=
+          (YulSemantics.EVM.byteFrom input.toList (expOffset input + count)).toNat
+        calc
+          (((a * b) % modulus) ^ 256 * base ^ digit) % modulus =
+              ((((a * b) % modulus) ^ 256 % modulus) * base ^ digit) %
+                modulus := (left_mod_mul _ _ _).symm
+          _ = (((a * b) ^ 256 % modulus) * base ^ digit) % modulus := by
+            rw [← Nat.pow_mod]
+          _ = ((a * b) ^ 256 * base ^ digit) % modulus :=
+            left_mod_mul _ _ _
+          _ = (acc ^ (256 ^ (count + 1)) *
+                base ^
+                  (Precompile.bytesToNatPadded input (expOffset input) count *
+                    256 + digit)) % modulus := by
+            congr 1
+            simp only [a, b, Nat.pow_succ, Nat.pow_mul, Nat.pow_add]
+            ring
+      · exact hvalid
+      · omega
+
 theorem mod_ofNat (value modulus : Nat) (hmodpos : 0 < modulus)
     (hmodlt : modulus < 2 ^ 256) (hvalue : value < 2 ^ 256) :
     UInt256.ofNat value % UInt256.ofNat modulus =
@@ -170,9 +421,8 @@ def wordBase (input : ByteArray) : UInt256 :=
 def wordInitialAcc (input : ByteArray) : UInt256 :=
   UInt256.ofNat 1 % UInt256.ofNat (modulusValue input)
 
-/-- The one-word route finishes only with an empty exponent: the result is `1 % modulus`. -/
 def wordResult (input : ByteArray) : UInt256 :=
-  wordInitialAcc input
+  expAfter input (wordBase input) (exponentSize input) (wordInitialAcc input)
 
 theorem wordBase_correct (input : ByteArray) (hvalid : ValidInput input)
     (hmodpos : 0 < modulusValue input) (hmodlt : modulusValue input < 2 ^ 256) :
@@ -199,16 +449,27 @@ theorem residue_power_eq_modPow (base exponent modulus count : Nat)
     simp only [one_pow, one_mul]
     exact (Nat.pow_mod base exponent modulus).symm
 
-theorem wordResult_correct (input : ByteArray) (he : exponentSize input = 0)
+theorem wordResult_correct (input : ByteArray) (hvalid : ValidInput input)
     (hmodpos : 0 < modulusValue input) (hmodlt : modulusValue input < 2 ^ 256) :
     wordResult input = UInt256.ofNat
       (Precompile.modPow (baseNat input) (exponentNat input)
         (modulusValue input)) := by
-  rw [wordResult, wordInitialAcc_correct input hmodpos hmodlt, exponentNat, he,
-    Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width]
+  have hbase : baseNat input % modulusValue input < modulusValue input :=
+    Nat.mod_lt _ hmodpos
+  have hacc : 1 % modulusValue input < modulusValue input :=
+    Nat.mod_lt _ hmodpos
+  rw [wordResult, wordBase_correct input hvalid hmodpos hmodlt,
+    wordInitialAcc_correct input hmodpos hmodlt,
+    expAfter_correct input (exponentSize input) (1 % modulusValue input)
+      (baseNat input % modulusValue input) (modulusValue input) hvalid (by rfl)
+      rfl hmodpos hmodlt hacc hbase,
+    natExpAfter_eq input (modulusValue input)
+      (baseNat input % modulusValue input) (1 % modulusValue input)
+      (exponentSize input) hvalid (by rfl) hacc,
+    exponentNat]
   apply congrArg UInt256.ofNat
-  rw [← residue_power_eq_modPow (baseNat input) 0 (modulusValue input) 0 hmodpos]
-  simp
+  exact residue_power_eq_modPow (baseNat input) (exponentNat input)
+    (modulusValue input) (exponentSize input) hmodpos
 
 theorem outputShift_eq (input : ByteArray) (hword : modulusSize input ≤ 32) :
     outputShift input = UInt256.ofNat ((32 - modulusSize input) * 8) := by
@@ -295,8 +556,8 @@ theorem outputMemory_readPadded (input : ByteArray) (n : Nat)
       outputWord_toNat input n hmsize hword hn,
       shifted_div n (modulusSize input) k hword hk]
 
-theorem wordFinalState_result (input : ByteArray) (_hvalid : ValidInput input)
-    (he : exponentSize input = 0) (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
+theorem wordFinalState_result (input : ByteArray) (hvalid : ValidInput input)
+    (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hmodpos : 0 < modulusValue input) :
     (wordFinalState input (wordResult input) (wordBase input)).toResult =
       .returned (spec input) := by
@@ -313,7 +574,7 @@ theorem wordFinalState_result (input : ByteArray) (_hvalid : ValidInput input)
   have hresult : result < 256 ^ modulusSize input :=
     (Algorithm.modPow_lt hmodpos).trans hmodWidth
   rw [show wordResult input = UInt256.ofNat result by
-    exact wordResult_correct input he hmodpos hmodlt]
+    exact wordResult_correct input hvalid hmodpos hmodlt]
   change ExecutionResult.returned
       (MachineState.readPadded (outputMemory input (UInt256.ofNat result))
         0 (modulusSize input)) = ExecutionResult.returned (spec input)

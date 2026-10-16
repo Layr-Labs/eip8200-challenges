@@ -134,7 +134,7 @@ theorem run_mid_zero (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-theorem pcUncPop : Artifact.submissionArtifact.instructionPC 2406 = 3074 := by
+theorem pcUncPop : Artifact.submissionArtifact.instructionPC 2404 = 3074 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -496,7 +496,7 @@ zero, the counter is the outer `n` itself, and the scratch slot takes the
 unrolled-conversion entry `2940 + 116·[n = 4]`. -/
 theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hesize : UInt256.ofNat esize ≠ UInt256.ofNat 1)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -526,16 +526,14 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hv4 : (2785 + (UInt256.ofNat 116 * UInt256.ofNat 1).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by
-    have h : (UInt256.ofNat 116 * UInt256.ofNat 1).toNat = 116 := by decide
-    rw [h]
-  have hv8 : (2785 + (UInt256.ofNat 116 * UInt256.ofNat 0).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by
-    have h : (UInt256.ofNat 116 * UInt256.ofNat 0).toNat = 0 := by decide
-    rw [h]
+  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      (UInt256.ofNat 29 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by decide
+  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -591,10 +589,10 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 width sets the squaring flag and halves the loop counter. -/
 theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyte3 : UInt256.byteAt (UInt256.ofNat 0)
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) =
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) =
       UInt256.ofNat 3)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -607,7 +605,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hmod : esize % 2 ^ 256 = 1 % 2 ^ 256 := by
     have h := congrArg UInt256.toNat hsize1
@@ -624,17 +622,17 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [if_pos hmod]
   have hb3 : UInt256.eq (UInt256.ofNat 3)
       (UInt256.byteAt (UInt256.ofNat 0)
-        (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat)) =
+        (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)) =
       UInt256.ofNat 1 := by
     rw [hbyte3]
     unfold UInt256.eq
     simp
   have hb3t : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) =
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) =
       UInt256.ofNat 3 :=
     hbyte3
   have hb3m : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).val.val) =
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).val.val) =
       UInt256.ofNat 3 :=
     hbyte3
   have hmodl : esize %
@@ -642,14 +640,12 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [show (115792089237316195423570985008687907853269984665640564039457584007913129639936 :
         Nat) = 2 ^ 256 from rfl, hmod]
     rfl
-  have hv4 : (2785 + (UInt256.ofNat 116 * UInt256.ofNat 1).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by
-    have h : (UInt256.ofNat 116 * UInt256.ofNat 1).toNat = 116 := by decide
-    rw [h]
-  have hv8 : (2785 + (UInt256.ofNat 116 * UInt256.ofNat 0).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by
-    have h : (UInt256.ofNat 116 * UInt256.ofNat 0).toNat = 0 := by decide
-    rw [h]
+  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      (UInt256.ofNat 29 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by decide
+  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -708,10 +704,10 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 is not `3` leaves the squaring flag at zero and the loop counter at `n`. -/
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hsize1 : UInt256.ofNat esize = UInt256.ofNat 1)
     (hbyteNe : UInt256.byteAt (UInt256.ofNat 0)
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) ≠
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) ≠
       UInt256.ofNat 3)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -724,7 +720,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2816 32) =
+  have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hmod : esize % 2 ^ 256 = 1 % 2 ^ 256 := by
     have h := congrArg UInt256.toNat hsize1
@@ -745,15 +741,15 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.word_toNat_ofNat]
     rw [if_pos hmod]
   have hb3tne : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).toNat) ≠
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat) ≠
       UInt256.ofNat 3 := hbyteNe
   have hb3mne : UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
-      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2816).val.val) ≠
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).val.val) ≠
       UInt256.ofNat 3 := hbyteNe
   have hthree256 : (3 : Nat) % 2 ^ 256 = 3 := Nat.mod_eq_of_lt (by norm_num)
   have hbnT : ¬ (3 = (UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord mem 2816).toNat)).toNat) := by
+        (MachineState.readWord mem 2656).toNat)).toNat) := by
     intro h
     apply hbyteNe
     refine Challenge.EvmProof.Word.word_ext ?_
@@ -761,7 +757,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     exact h.symm
   have hbn : ¬ (3 = (UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord mem 2816).val.val)).toNat) := by
+        (MachineState.readWord mem 2656).val.val)).toNat) := by
     intro h
     apply hbyteNe
     refine Challenge.EvmProof.Word.word_ext ?_
@@ -769,20 +765,18 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     exact h.symm
   have hbn2 : ¬ (3 = ((UInt256.byteAt ⟨(0 : Fin UInt256.size)⟩
       (MachineState.readWord s.executionEnv.calldata
-        (MachineState.readWord mem 2816).val.val)).val).val) := by
+        (MachineState.readWord mem 2656).val.val)).val).val) := by
     intro h
     apply hbyteNe
     refine Challenge.EvmProof.Word.word_ext ?_
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, hthree256]
     exact h.symm
-  have hv4 : (2785 + (UInt256.ofNat 116 * UInt256.ofNat 1).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by
-    have h : (UInt256.ofNat 116 * UInt256.ofNat 1).toNat = 116 := by decide
-    rw [h]
-  have hv8 : (2785 + (UInt256.ofNat 116 * UInt256.ofNat 0).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by
-    have h : (UInt256.ofNat 116 * UInt256.ofNat 0).toNat = 0 := by decide
-    rw [h]
+  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      (UInt256.ofNat 29 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by decide
+  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -838,91 +832,91 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       hb3mne])
   all_goals (first | rfl | decide)
 @[simp] private theorem pcFact2700 :
-    Artifact.submissionArtifact.instructionPC 2463 = 3152 := by
+    Artifact.submissionArtifact.instructionPC 2461 = 3152 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 @[simp] private theorem pcFact4392 :
-    Artifact.submissionArtifact.instructionPC 4409 = 5518 := by
+    Artifact.submissionArtifact.instructionPC 4411 = 5522 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- Followup-PC facts for the shift-done, cleanup and stub blocks. -/
-@[simp] private theorem pc2701 : Artifact.submissionArtifact.instructionPC 2464 = 3153 := by
+@[simp] private theorem pc2701 : Artifact.submissionArtifact.instructionPC 2462 = 3153 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2702 : Artifact.submissionArtifact.instructionPC 2465 = 3156 := by
+@[simp] private theorem pc2702 : Artifact.submissionArtifact.instructionPC 2463 = 3156 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2703 : Artifact.submissionArtifact.instructionPC 2466 = 3157 := by
+@[simp] private theorem pc2703 : Artifact.submissionArtifact.instructionPC 2464 = 3157 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2704 : Artifact.submissionArtifact.instructionPC 2467 = 3158 := by
+@[simp] private theorem pc2704 : Artifact.submissionArtifact.instructionPC 2465 = 3158 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2705 : Artifact.submissionArtifact.instructionPC 2468 = 3161 := by
+@[simp] private theorem pc2705 : Artifact.submissionArtifact.instructionPC 2466 = 3161 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2706 : Artifact.submissionArtifact.instructionPC 2481 = 3182 := by
+@[simp] private theorem pc2706 : Artifact.submissionArtifact.instructionPC 2479 = 3182 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2707 : Artifact.submissionArtifact.instructionPC 2470 = 3164 := by
+@[simp] private theorem pc2707 : Artifact.submissionArtifact.instructionPC 2468 = 3164 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2708 : Artifact.submissionArtifact.instructionPC 2471 = 3165 := by
+@[simp] private theorem pc2708 : Artifact.submissionArtifact.instructionPC 2469 = 3165 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2709 : Artifact.submissionArtifact.instructionPC 2472 = 3166 := by
+@[simp] private theorem pc2709 : Artifact.submissionArtifact.instructionPC 2470 = 3166 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2710 : Artifact.submissionArtifact.instructionPC 2473 = 3169 := by
+@[simp] private theorem pc2710 : Artifact.submissionArtifact.instructionPC 2471 = 3169 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2711 : Artifact.submissionArtifact.instructionPC 2474 = 3172 := by
+@[simp] private theorem pc2711 : Artifact.submissionArtifact.instructionPC 2472 = 3172 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2712 : Artifact.submissionArtifact.instructionPC 2475 = 3173 := by
+@[simp] private theorem pc2712 : Artifact.submissionArtifact.instructionPC 2473 = 3173 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2713 : Artifact.submissionArtifact.instructionPC 2476 = 3174 := by
+@[simp] private theorem pc2713 : Artifact.submissionArtifact.instructionPC 2474 = 3174 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2714 : Artifact.submissionArtifact.instructionPC 2477 = 3176 := by
+@[simp] private theorem pc2714 : Artifact.submissionArtifact.instructionPC 2475 = 3176 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc2715 : Artifact.submissionArtifact.instructionPC 2478 = 3177 := by
+@[simp] private theorem pc2715 : Artifact.submissionArtifact.instructionPC 2476 = 3177 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4393 : Artifact.submissionArtifact.instructionPC 4410 = 5519 := by
+@[simp] private theorem pc4393 : Artifact.submissionArtifact.instructionPC 4412 = 5523 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4394 : Artifact.submissionArtifact.instructionPC 4411 = 5520 := by
+@[simp] private theorem pc4394 : Artifact.submissionArtifact.instructionPC 4413 = 5524 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4395 : Artifact.submissionArtifact.instructionPC 4412 = 5521 := by
+@[simp] private theorem pc4395 : Artifact.submissionArtifact.instructionPC 4414 = 5525 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4396 : Artifact.submissionArtifact.instructionPC 4413 = 5522 := by
+@[simp] private theorem pc4396 : Artifact.submissionArtifact.instructionPC 4415 = 5526 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4397 : Artifact.submissionArtifact.instructionPC 4414 = 5523 := by
+@[simp] private theorem pc4397 : Artifact.submissionArtifact.instructionPC 4416 = 5527 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4398 : Artifact.submissionArtifact.instructionPC 4415 = 5524 := by
+@[simp] private theorem pc4398 : Artifact.submissionArtifact.instructionPC 4417 = 5528 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4399 : Artifact.submissionArtifact.instructionPC 4416 = 5525 := by
+@[simp] private theorem pc4399 : Artifact.submissionArtifact.instructionPC 4418 = 5529 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4400 : Artifact.submissionArtifact.instructionPC 4417 = 5526 := by
+@[simp] private theorem pc4400 : Artifact.submissionArtifact.instructionPC 4419 = 5530 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4403 : Artifact.submissionArtifact.instructionPC 4420 = 5529 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] private theorem pc4402 : Artifact.submissionArtifact.instructionPC 4419 = 5528 := by
+@[simp] private theorem pc4403 : Artifact.submissionArtifact.instructionPC 4422 = 5533 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem pc4401 : Artifact.submissionArtifact.instructionPC 4418 = 5527 := by
+@[simp] private theorem pc4402 : Artifact.submissionArtifact.instructionPC 4421 = 5532 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4404 : Artifact.submissionArtifact.instructionPC 4421 = 5530 := by
+
+@[simp] private theorem pc4401 : Artifact.submissionArtifact.instructionPC 4420 = 5531 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4405 : Artifact.submissionArtifact.instructionPC 4422 = 5531 := by
+@[simp] private theorem pc4404 : Artifact.submissionArtifact.instructionPC 4423 = 5534 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4406 : Artifact.submissionArtifact.instructionPC 4423 = 5532 := by
+@[simp] private theorem pc4405 : Artifact.submissionArtifact.instructionPC 4424 = 5535 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4407 : Artifact.submissionArtifact.instructionPC 4424 = 5533 := by
+@[simp] private theorem pc4406 : Artifact.submissionArtifact.instructionPC 4425 = 5536 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4408 : Artifact.submissionArtifact.instructionPC 4425 = 5534 := by
+@[simp] private theorem pc4407 : Artifact.submissionArtifact.instructionPC 4426 = 5537 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4409 : Artifact.submissionArtifact.instructionPC 4426 = 5535 := by
+@[simp] private theorem pc4408 : Artifact.submissionArtifact.instructionPC 4427 = 5538 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4410 : Artifact.submissionArtifact.instructionPC 4427 = 5538 := by
+@[simp] private theorem pc4409 : Artifact.submissionArtifact.instructionPC 4428 = 5539 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem pc4411 : Artifact.submissionArtifact.instructionPC 4428 = 5539 := by
+@[simp] private theorem pc4410 : Artifact.submissionArtifact.instructionPC 4429 = 5542 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
+@[simp] private theorem pc4411 : Artifact.submissionArtifact.instructionPC 4430 = 5543 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 
 /-- `blk3346` with the squaring flag clear: drop the counter and jump to the
 cleanup tail. -/
 theorem run_shiftDone_check (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (hact : 89 ≤ s.activeWords.toNat)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :

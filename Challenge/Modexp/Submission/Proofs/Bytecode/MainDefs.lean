@@ -49,17 +49,17 @@ def trampoline1Path :
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 372 .JUMPDEST]
+  [opAt 370 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 373 0 0,
+  [pushAt 371 0 0,
+   opAt 372 .CALLDATALOAD,
+   pushAt 373 1 32,
    opAt 374 .CALLDATALOAD,
-   pushAt 375 1 32,
-   opAt 376 .CALLDATALOAD,
-   pushAt 377 1 64,
-   opAt 378 .CALLDATALOAD]
+   pushAt 375 1 64,
+   opAt 376 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
@@ -75,7 +75,7 @@ def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
 def tramp0Path : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) := []
-def tramp7DestPath := [opAt 372 .JUMPDEST]
+def tramp7DestPath := [opAt 370 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -137,15 +137,15 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs899 (i : Nat)
-    (hi : 372 ≤ i) (hii : i ≤ 379) :
+    (hi : 370 ≤ i) (hii : i ≤ 377) :
     Artifact.submissionArtifact.instructionPC i =
-      ([533,534,535,536,538,539,541,542] : List Nat)[i - 372]! := by
+      ([533,534,535,536,538,539,541,542] : List Nat)[i - 370]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump1196 :
     Decode.isValidJumpDest submissionBytecode 533 = true :=
-  Artifact.isValidJumpDest_index 372 (by rfl)
+  Artifact.isValidJumpDest_index 370 (by rfl)
 
 
 

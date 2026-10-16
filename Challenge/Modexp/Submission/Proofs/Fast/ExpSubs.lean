@@ -2,51 +2,18 @@ import Challenge.Modexp.Submission.Proofs.Fast.FusedMemory
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
 import Challenge.Modexp.Submission.Proofs.Fast.SquareResult
 import Challenge.Modexp.Submission.Proofs.Fast.SquareLoop
+import Challenge.Modexp.Submission.Proofs.Fast.CRTLoopInterface
 
 /-!
-# `Exp.subs` for the surviving widths only (M9 width-chain narrowing, layer W2)
+# Assemble the exponentiation subroutines
 
-Replacement for `Challenge/Modexp/Submission/Proofs/Fast/ExpSubs.lean` (keep the module name;
-checked here as `M9Width.ExpSubsFast` against `M9Width.CarryFullFast`, whose tree name is
-`Challenge.Modexp.Submission.Proofs.Fast.CarryFullFast` -- rename the import).  Differences
-from the tree's ExpSubs.lean, and nothing else:
-* imports `CarryFullFast` instead of `CarryFull`, and no longer imports `SquareFull`;
-* `eligible_of_frame`: `Frame` + `n ∈ {4, 8}` + `minv ≠ 1` gives `StagedOperand.eligible mem n`;
-* (n4a) the record has no `monpro` field any more, so `subsMonpro` and the `CarryFullFast`
-  import are gone: no consumer runs the generic multiply call;
-* `subsSquare` (the `¬ eligible` square through the generic `MONPRO`) is vacuous: its own
-  hypothesis `¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1)` contradicts `hfast`/`hminv1`;
-* `subs`, `subs_mpMem`, `subs_amMem`, `specOf_subs` take the same two hypotheses;
-  `specOf`, `specOf_of`, `subsSquareLoop`, the frame lemmas and every field of the
-  `Subroutines` record are verbatim.
-The one live caller is `ShiftCorrect.handled_of_dispatch` (line 207): it needs the two
-hypotheses added to its signature and passed here; `gasSteps_handled` (line 308) discharges
-them from the strengthened `FastPath` through `Setup.limbs_four_or_eight` and the
-`WidthBridge` lemmas `minv_ne_one_of_entry` (see WidthBridge.lean).
+The four-word retained square loop uses its concrete execution theorem. The
+replacement eight-word loop is supplied through an explicit execution and value
+contract. This assembly never appeals to the overwritten legacy eight-word row.
 -/
--- Keep the caller proofs in their original word normal form.
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
-/-!
-# The concrete subroutine instance of the driver
-
-`Fast.Exp` states the driver against the abstract record `Exp.Subroutines`
-(`MONPRO`, `ADDMOD` and the in-place `SQUARE(0x800) → 0x800`).  This module
-instantiates it: `MONPRO`'s memory effect from `CarryResult.monproMem`, `ADDMOD`
-from the pair `Fast.Csub.gasSteps_addmod` / `gasSteps_csub` (packaged in `Exp`
-as `gasSteps_addmodFull`), and `SQUARE` from `Fast.SquareFull.gasSteps_squareFull`
-(the widths the kernel does not accelerate) together with
-`Fast.SquareLoop.gasSteps_squareLoop` (the in-kernel square loop for `n ∈ {4, 8}`),
-with the arithmetic of `Fast.SquareResult`.  Keeping the instance out of `Exp`
-means that `Exp` and every abstract consumer (the fixed-exponent chain, the
-shift / RR-leading / full-base continuations) compile without the kernel
-developments; only the modules that pick the concrete `subs` import this one.
-
-The declarations stay in namespace `Exp`, so `Exp.subs`, `Exp.specOf_subs`, … keep
-their names.
--/
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.Exp
 
@@ -127,10 +94,9 @@ theorem sqLoopMem_frame' {s : State} {mem : ByteArray} {n bsize minv : Nat} (k :
    by rw [key.2.2.1]; exact hf.ml, by rw [key.2.2.2.1]; exact hf.tl,
    by rw [key.2.2.2.2]; exact hf.eoff⟩
 
-/-- The in-kernel square-loop step of the concrete instance: for `n ∈ {4, 8}`
-the kernel performs all `k` squares without leaving its row frame and returns to
-after the fused product (pc 1047) (`Fast.SquareLoop.gasSteps_squareLoop`). -/
-noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
+/-- The concrete four-word square loop, including its final product. The
+replacement eight-word trace is supplied separately through CRTLoopInterface. -/
+noncomputable def subsSquareLoopFour (s : State) (n bsize mm minv : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -138,7 +104,8 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
-    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) :
+    (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
+    (hfour : n = 4) :
     ∀ (k : Nat) (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
       (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 → tail.length ≤ 982 →
       tail[1]? = some (UInt256.ofNat (32 * n)) →
@@ -170,13 +137,14 @@ noncomputable def subsSquareLoop (s : State) (n bsize mm minv : Nat)
         rw [toNat_ofNat_self hminvlt, toNat_ofNat_self (by decide)] at hv
         exact hfast.2 hv
       exact Challenge.EvmProof.GasSteps.cast
-        (SquareLoop.gasSteps_squareLoop s mem p a mm k ret tail hcap hrun hcode hfork
-          hnp hact (by omega) hfast.1 hk hk16 hw hslotn hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
+        (SquareLoop.gasSteps_squareLoop4 s mem p a mm k ret tail hcap hrun hcode hfork
+          hnp hact (by omega) hfour hk hk16 hw hslotn hcds hf.s32 hf.tl hf.ml ha hm ham hmpos
           (odd_of_minvA hminvA) (by rw [hlow, hmi]; exact hminvA) hguard)
         rfl rfl
 
 /-- The concrete subroutine contracts. -/
 noncomputable def subs (s : State) (n bsize mm minv : Nat)
+    (eight : CRTLoopInterface.Implementation s bsize mm minv)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -209,20 +177,33 @@ noncomputable def subs (s : State) (n bsize mm minv : Nat)
   sqKeep ptr v mem hptr hdisj hrep :=
     SquareResult.sqMem_fastRepresents_outside s mem n ptr n v (by omega) (by omega)
       (Or.inl hptr) (Or.inl (by omega)) hdisj.symm hrep
-  sqLoopMem k mem := FusedMemory.memory s n k mem
-  squareLoop := subsSquareLoop s n bsize mm minv hcode hfork hrun hnp hact hcds hn
-    (by omega) hmpos hminvlt hminvA
+  sqLoopMem k mem := if n = 8 then eight.memory k mem else FusedMemory.memory s n k mem
+  squareLoop k ret tail mem a hfast hk hk16 hcap hw hslotn hf hm ha ham := by
+    by_cases he : n = 8
+    · subst n
+      change Challenge.EvmProof.GasSteps _ (retTo s (eight.memory k mem) (UInt256.ofNat 690) tail)
+      exact eight.run k ret tail mem a hfast.2 hk hk16 hcap hw hslotn hf hm ha ham
+    · have hfour : n = 4 := by omega
+      simpa only [if_neg he] using
+        subsSquareLoopFour s n bsize mm minv hcode hfork hrun hnp hact hcds hn
+          hn32 hmpos hminvlt hminvA hfour k ret tail mem a hfast hk hk16 hcap hw
+          hslotn hf hm ha ham
   sqLoopValue k mem a b hfast hk hf hm ha hb ham hbm := by
-    have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
-      have h := Model.readWord_of_fastRepresents hm (j := n - 1) (by omega)
-      rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
-        show n - 1 - (n - 1) = 0 from by omega, pow_zero, Nat.div_one] at h
-      exact h
-    have hmi : (MachineState.readWord mem 2720).toNat = minv := by
-      rw [hf.minvW, toNat_ofNat_self hminvlt]
-    obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
-    exact FusedMemory.represents s mem p a b mm k hfast (by omega) hk ha hb hm
-      (odd_of_minvA hminvA) ham hbm (by rw [hlow, hmi]; exact hminvA)
+    by_cases he : n = 8
+    · subst n
+      change Model.FastRepresents (eight.memory k mem) 256 8 _
+      exact eight.value k mem a b hk hf hm ha hb ham hbm
+    · simp only [if_neg he]
+      have hlow : (MachineState.readWord mem (32 * n - 32)).toNat = mm % Limbs.radix := by
+        have h := Model.readWord_of_fastRepresents hm (j := n - 1) (by omega)
+        rw [show (0 : Nat) + 32 * (n - 1) = 32 * n - 32 from by omega,
+          show n - 1 - (n - 1) = 0 from by omega, pow_zero, Nat.div_one] at h
+        exact h
+      have hmi : (MachineState.readWord mem 2720).toNat = minv := by
+        rw [hf.minvW, toNat_ofNat_self hminvlt]
+      obtain ⟨p, rfl⟩ : ∃ p, n = p + 2 := ⟨n - 2, by omega⟩
+      exact FusedMemory.represents s mem p a b mm k hfast (by omega) hk ha hb hm
+        (odd_of_minvA hminvA) ham hbm (by rw [hlow, hmi]; exact hminvA)
 
 /-- The value-level contract the concrete pair satisfies. -/
 theorem specOf (s : State) (n mm minv : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
@@ -273,6 +254,7 @@ unification: `unfold` turns the projection into a projection *of a
 constructor*, which `whnfCore` reduces without ever unfolding
 `CarryResult.monproMem` into its `writeBytes` / `rowsMem` recursion. -/
 theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
+    (eight : CRTLoopInterface.Implementation s bsize mm minv)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -282,13 +264,14 @@ theorem subs_mpMem (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
-    (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
+    (subs s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos
       hminvlt hminvA hfast hminv1).mpMem =
       fun pa pb pd mem => CarryResult.monproMem s mem pa pb n pd := by
   delta subs
   rfl
 
 theorem subs_amMem (s : State) (n bsize mm minv : Nat)
+    (eight : CRTLoopInterface.Implementation s bsize mm minv)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -298,7 +281,7 @@ theorem subs_amMem (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
-    (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
+    (subs s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos
       hminvlt hminvA hfast hminv1).amMem =
       fun pa pb pd mem => amMemOf mem pa pb n pd := by
   delta subs
@@ -306,6 +289,7 @@ theorem subs_amMem (s : State) (n bsize mm minv : Nat)
 
 /-- The value contract of the concrete instance, at the concrete instance. -/
 theorem specOf_subs (s : State) (n bsize mm minv : Nat)
+    (eight : CRTLoopInterface.Implementation s bsize mm minv)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -315,15 +299,15 @@ theorem specOf_subs (s : State) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hminvlt : minv < 2 ^ 256)
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0) (hodd : mm % 2 = 1)
     (hfast : n = 4 ∨ n = 8) (hminv1 : minv ≠ 1) :
-    SubSpec (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
+    SubSpec (subs s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos
         hminvlt hminvA hfast hminv1).mpMem
-      (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
+      (subs s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
         hminvA hfast hminv1).amMem n mm (Limbs.radix ^ n) minv :=
-  specOf_of (subs s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos
+  specOf_of (subs s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos
     hminvlt hminvA hfast hminv1)
-    (subs_mpMem s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
+    (subs_mpMem s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
       hminvA hfast hminv1)
-    (subs_amMem s n bsize mm minv hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
+    (subs_amMem s n bsize mm minv eight hcode hfork hrun hnp hact hcds hn (by omega) hmpos hminvlt
       hminvA hfast hminv1)
     hn (by omega) hodd hmpos hminvlt hminvA
 

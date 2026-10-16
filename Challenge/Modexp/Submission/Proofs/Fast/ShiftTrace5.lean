@@ -72,7 +72,7 @@ theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (
     rw [stepMem_readWord_disjoint mem n mm 2784 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.tl
   eoff := by
-    rw [stepMem_readWord_disjoint mem n mm 2816 hn
+    rw [stepMem_readWord_disjoint mem n mm 2656 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.eoff
 
 theorem stepInv_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -184,7 +184,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
     (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix))) :
     StepInv (m2Of mem input n) n bsize mm minv := by
-  have hm2high : ∀ addr, 2688 ≤ addr → (addr + 32 ≤ 2720 ∨ 2752 ≤ addr) →
+  have hm2high : ∀ addr, 2656 ≤ addr → (addr + 32 ≤ 2720 ∨ 2752 ≤ addr) →
       MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
     fun addr haddr h2720 => m2_readWord_disjoint mem input n addr (by omega) hn32
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
@@ -212,11 +212,11 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
         (Or.inl (by omega)) (Or.inl (by omega)),
       lowLimb_word mem n mm (by omega) hmod, newton8W_eq, Setup.neg_word, hminvDef]
   have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
-    ⟨by rw [hm2high 2688 le_rfl (Or.inl (by omega))]; exact hframe.s32,
+    ⟨by rw [hm2high 2688 (by omega) (Or.inl (by omega))]; exact hframe.s32,
      hminvW,
      by rw [hm2high 2752 (by omega) (Or.inr le_rfl)]; exact hframe.ml,
      by rw [hm2high 2784 (by omega) (Or.inr (by omega))]; exact hframe.tl,
-     by rw [hm2high 2816 (by omega) (Or.inr (by omega))]; exact hframe.eoff⟩
+     by rw [hm2high 2656 (by omega) (Or.inl (by omega))]; exact hframe.eoff⟩
   have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi

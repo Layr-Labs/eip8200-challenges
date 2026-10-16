@@ -40,7 +40,7 @@ abbrev Located :=
 
 def check65537 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1856 .JUMPDEST,
-   pushAt 1857 2 2816,
+   pushAt 1857 2 2656,
    opAt 1858 .MLOAD,
    opAt 1859 .CALLDATALOAD,
    pushAt 1860 1 232,
@@ -108,17 +108,17 @@ theorem jumpDest3953 :
 /-- `modexpBig` (pc 219), the target of every recogniser miss. -/
 theorem jumpDestBail :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 219 = true :=
-  Artifact.isValidJumpDest_index 148 (by rfl)
+  Artifact.isValidJumpDest_index 146 (by rfl)
 
 /-- `modexpBig` (pc 237), where the trampoline lands. -/
 theorem jumpDestBigC :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 219 = true :=
-  Artifact.isValidJumpDest_index 148 (by rfl)
+  Artifact.isValidJumpDest_index 146 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3181 = true :=
-  Artifact.isValidJumpDest_index 2480 (by rfl)
+  Artifact.isValidJumpDest_index 2478 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

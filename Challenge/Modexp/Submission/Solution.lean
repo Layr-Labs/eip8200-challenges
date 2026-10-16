@@ -10,13 +10,19 @@ set_option maxHeartbeats 5000000
 
 namespace Challenge.Modexp.Benchmark
 
+/-- The protected renderer and submission use the same chunks with different
+append association. Normalize that association without evaluating every byte. -/
+private theorem protectedBytecode_eq : bytecode = Challenge.Modexp.submissionBytecode := by
+  delta bytecode Challenge.Modexp.submissionBytecode Challenge.Modexp.submissionBytes
+  simp only [ByteArray.append_assoc]
+
 /-- Joins the fixed-width dispatch route to the fast multi-limb MODEXP
 implementation and the certified reference fallback. The fast kernel keeps its
 high carry and modulus word at offset 128 in the operand stack. -/
 theorem candidateFromWindow
     (route : Challenge.Modexp.Submission.Proofs.Bytecode.WindowRoute.Route) :
     Challenge.Modexp.Correct bytecode := by
-  change Challenge.Modexp.Correct Challenge.Modexp.submissionBytecode
+  rw [protectedBytecode_eq]
   exact Challenge.Modexp.Submission.Proofs.Fast.WindowCorrect.submission_correct_of
     route Challenge.Modexp.Submission.Proofs.Fast.Shift.gasSteps_handled
     Challenge.Modexp.Submission.Proofs.Fast.BigCUGlue.bigBailHandled

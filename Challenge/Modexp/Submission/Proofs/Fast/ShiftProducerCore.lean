@@ -111,7 +111,7 @@ theorem canonical_readWord (mem input : ByteArray) (n addr : Nat)
 theorem canonical_frame (mem input : ByteArray) (n bsize minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hf : Exp.Frame mem n bsize minv) :
     Exp.Frame (canonicalMemory mem input n) n bsize minv := by
-  have hh (addr : Nat) (ha : 2688 ≤ addr) :=
+  have hh (addr : Nat) (ha : 2656 ≤ addr) :=
     canonical_readWord mem input n addr (by omega) hn32
       (show (addr+32 ≤ 256 ∨ 256+32*n ≤ addr) ∧
         (addr+32 ≤ 512 ∨ 512+32*n ≤ addr) ∧
@@ -121,7 +121,7 @@ theorem canonical_frame (mem input : ByteArray) (n bsize minv : Nat)
     by rw [hh 2720 (by omega)]; exact hf.minvW,
     by rw [hh 2752 (by omega)]; exact hf.ml,
     by rw [hh 2784 (by omega)]; exact hf.tl,
-    by rw [hh 2816 (by omega)]; exact hf.eoff⟩
+    by rw [hh 2656 (by omega)]; exact hf.eoff⟩
 
 /-! The two guards have the same semantic predicate. Every fallback stage
 preserves the represented modulus and outer n/bsize, which is sufficient to

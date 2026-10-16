@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Word
 
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Word
@@ -46,6 +46,7 @@ theorem run_baseFinishTail (input : ByteArray) (base : UInt256)
   have hzeroWord : UInt256.ofNat 0 = (0 : UInt256) := by decide
   have hzeroRaw : ({ val := 0 } : UInt256) = 0 := by decide
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  have hzeroOne : UInt256.isZero (0 : UInt256) = UInt256.ofNat 1 := by decide
   simp (config := { maxSteps := 150000 })
     [baseFinishTailPath, opAt, pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -53,6 +54,6 @@ theorem run_baseFinishTail (input : ByteArray) (base : UInt256)
       baseFinishDispatchState, baseLoopState, expLoopState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, baseFinishPCs,
       Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      hmval, hzeroWord, hzeroRaw, honeWord, one_lt_eq_mod]
+      hmval, hzeroWord, hzeroRaw, honeWord, hzeroOne, one_lt_eq_mod]
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Word

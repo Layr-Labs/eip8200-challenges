@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Fast.DiagonalSchedule
 import Challenge.Modexp.Submission.Proofs.Fast.SgtStep
 import Challenge.Modexp.Submission.Proofs.Fast.SquareModel
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
@@ -46,25 +47,10 @@ def programA : List Instr :=
 
 /-- `DUP2 ADD DUP2 DUP2 ADD SWAP2 DUP9 DUP3` (idx 3700..3721). -/
 def programB1 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
+  [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD]
 
-/-- `SWAP2 DUP2 DUP2 LT SWAP2 MUL SWAP2 SUB DUP2 DUP2 LT DUP3 SWAP2 SUB SUB` (idx 3658..3840). -/
-def programB2 : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT,
-   .op (.Swap ⟨1, by decide⟩), .op .MUL, .op (.Swap ⟨1, by decide⟩), .op .SUB,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op (.Dup ⟨2, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩), .op .SUB, .op .SUB]
 
-/-- `SWAP1 DUP4 PUSH2 0x1840 ADD` (idx 3840..3840). -/
-def programB3a : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB]
 
-/-- `DUP1 MLOAD DUP3 ADD DUP1 SWAP2 MSTORE LT ADD` (idx 3840..3648). -/
-def programB3b : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩),
-   .op .MSTORE, .op .LT, .op .ADD]
 
 /-- `PUSH1 0x26 DUP7 ADD SWAP6 JUMP` (idx 3840..3840). -/
 def programB4 : List Instr :=
@@ -74,14 +60,7 @@ def programB4 : List Instr :=
 The two bytes it saves are re-placed as unreachable `JUMPDEST`s after the row's final
 `JUMP` (pc 5032..5032), so every pc and instruction index from 43 (idx 3720) on is unchanged. -/
 def programB23 : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
-   .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD,
-   .op .SUB,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
-   .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB,
-   .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+  [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB, .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE, .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
 
 /-- Everything after the `SGT` (idx 3700..3840). -/
 def programB : List Instr :=
@@ -94,10 +73,10 @@ theorem run_A (s : State) (P hd w3 ent w5 M w7 w8 w9 w10 w11 w12 w13 aprev : UIn
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat (UInt256.ofNat 2336 - P).toNat 32) =
       s.activeWords) :
     runInstructions programA
-      { s with pc := UInt256.ofNat 5293,
+      { s with pc := UInt256.ofNat 5297,
                stack := P :: hd :: w3 :: ent :: w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 ::
                  w13 :: aprev :: rest } =
-    some { s with pc := UInt256.ofNat 5303,
+    some { s with pc := UInt256.ofNat 5307,
                   stack := ⟨0⟩ :: aprev :: MachineState.readWord s.memory (UInt256.ofNat 2336 - P).toNat :: P :: hd :: w3 ::
                     ent :: w5 :: M :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 ::
                     MachineState.readWord s.memory (UInt256.ofNat 2336 - P).toNat :: rest } := by
@@ -114,73 +93,20 @@ theorem run_A (s : State) (P hd w3 ent w5 M w7 w8 w9 w10 w11 w12 w13 aprev : UIn
 theorem run_B1 (s : State) (tb x P hd w3 ent w5 M : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1010) :
     runInstructions programB1
-      { s with pc := UInt256.ofNat 5304,
+      { s with pc := UInt256.ofNat 5308,
                stack := tb :: x :: P :: hd :: w3 :: ent :: w5 :: M :: rest } =
-    some { s with pc := UInt256.ofNat 5312,
-                  stack := (x + tb) :: M :: x :: (x + tb) :: ((x + tb) + x) :: P :: hd ::
-                    w3 :: ent :: w5 :: M :: rest } := by
-  have h8 : rest.length + 8 < 1024 := by omega
-  have h9 : rest.length + 9 < 1024 := by omega
-  have h10 : rest.length + 10 < 1024 := by omega
-  have h11 : rest.length + 11 < 1024 := by omega
-  have h12 : rest.length + 12 < 1024 := by omega
-  simp [programB1, runInstructions, Challenge.EvmProof.Stepper.runInstr, h8, h9, h10, h11, h12,
-    List.exchange]
-  decide
-
-theorem run_B2 (s : State) (mmr x f b2 : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1016) :
-    runInstructions programB2
-      { s with pc := UInt256.ofNat 5315, stack := mmr :: x :: f :: b2 :: rest } =
-    some { s with pc := UInt256.ofNat 5330,
-                  stack := (((mmr - UInt256.lt f x) - UInt256.lt (mmr - UInt256.lt f x) (x * f)) - x * f) ::
-                    (x * f) :: b2 :: rest } := by
-  have h3 : rest.length + 3 < 1024 := by omega
-  have h4 : rest.length + 4 < 1024 := by omega
-  have h5 : rest.length + 5 < 1024 := by omega
-  have h6 : rest.length + 6 < 1024 := by omega
-  simp [programB2, runInstructions, Challenge.EvmProof.Stepper.runInstr, h3, h4, h5, h6,
-    List.exchange]
-  decide
-
-theorem run_B3a (s : State) (hi lo b2 P : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1016) :
-    runInstructions programB3a
-      { s with pc := UInt256.ofNat 5330, stack := hi :: lo :: b2 :: P :: rest } =
-    some { s with pc := UInt256.ofNat 5336,
-                  stack := (UInt256.ofNat 2080 - P) :: lo :: hi :: b2 :: P :: rest } := by
-  have h4 : rest.length + 4 < 1024 := by omega
-  have h5 : rest.length + 5 < 1024 := by omega
-  have h6 : rest.length + 6 < 1024 := by omega
-  simp [programB3a, runInstructions, Challenge.EvmProof.Stepper.runInstr, h4, h5, h6,
-    List.exchange, Challenge.EvmProof.Word.literal_eq_ofNat]
-  decide
-
-theorem run_B3b (s : State) (tA lo hi b2 P : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 1016)
-    (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat tA.toNat 32) =
-      s.activeWords) :
-    runInstructions programB3b
-      { s with pc := UInt256.ofNat 5336, stack := tA :: lo :: hi :: b2 :: P :: rest } =
-    some { s with pc := UInt256.ofNat 5345,
-                  stack := (UInt256.lt (lo + MachineState.readWord s.memory tA.toNat) lo + hi) ::
-                    b2 :: P :: rest
-                  memory := MachineState.writeBytes s.memory
-                    (Data.Bytes.natToBytesPadded (lo + MachineState.readWord s.memory tA.toNat).toNat 32)
-                    tA.toNat } := by
-  have h4 : rest.length + 4 < 1024 := by omega
-  have h5 : rest.length + 5 < 1024 := by omega
-  have h6 : rest.length + 6 < 1024 := by omega
-  have h7 : rest.length + 7 < 1024 := by omega
-  simp [programB3b, runInstructions, Challenge.EvmProof.Stepper.runInstr, h4, h5, h6, h7,
-    List.exchange, State.activeWordsAfterUInt256, hact]
-  decide
+    some { s with pc := UInt256.ofNat 5323,
+                  stack := UInt256.mulMod x (x + tb) M :: UInt256.lt (x + tb) x ::
+                    (x * (x + tb)) :: ((x + tb) + x) :: P :: hd :: w3 :: ent :: w5 :: M :: rest } := by
+  have h := DiagonalSchedule.diagonalPrefix_canonical s (UInt256.ofNat 5308) tb x P hd w3 ent w5 M rest hcap
+  have hp : advancePC 15 (UInt256.ofNat 5308) = UInt256.ofNat 5323 := by decide
+  simpa only [hp, programB1, DiagonalSchedule.diagonalPrefix] using h
 
 theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1015)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ent.toNat = true) :
     runInstructions programB4
-      { s with pc := UInt256.ofNat 5341, stack := C :: b2 :: P :: hd :: w3 :: ent :: rest } =
+      { s with pc := UInt256.ofNat 5344, stack := C :: b2 :: P :: hd :: w3 :: ent :: rest } =
     some { s with pc := ent,
                   stack := C :: b2 :: P :: hd :: w3 :: (ent + UInt256.ofNat 37) :: rest } := by
   have h6 : rest.length + 6 < 1024 := by omega
@@ -192,11 +118,7 @@ theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
 
 /-- The fused borrow up to the store address (pc 4997..5014). -/
 def programB23a : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL,
-   .op (.Swap ⟨4, by decide⟩), .op .LT, .op (.Swap ⟨2, by decide⟩), .op .MULMOD,
-   .op .SUB,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB,
-   .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB]
+  [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB]
 
 /-- Load/add/store and the two-subtraction carry (pc 5014..2336). -/
 def programB23b : List Instr :=
@@ -225,8 +147,8 @@ private theorem mul_comm' (a b : UInt256) : a * b = b * a := by
 theorem run_B23a (s : State) (x f M b2 P : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1013) :
     runInstructions programB23a
-      { s with pc := UInt256.ofNat 5312, stack := f :: M :: x :: f :: b2 :: P :: rest } =
-    some { s with pc := UInt256.ofNat 5330,
+      { s with pc := UInt256.ofNat 5323, stack := UInt256.mulMod x f M :: UInt256.lt f x :: (x * f) :: b2 :: P :: rest } =
+    some { s with pc := UInt256.ofNat 5333,
                   stack := (UInt256.ofNat 2080 - P) ::
                     (UInt256.lt (UInt256.mulMod x f M - UInt256.lt f x) (f * x) -
                       (UInt256.mulMod x f M - UInt256.lt f x)) ::
@@ -242,7 +164,7 @@ theorem run_B23a (s : State) (x f M b2 P : UInt256)
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
   simp [programB23a, runInstructions, Challenge.EvmProof.Stepper.runInstr, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10,
-    List.exchange, Challenge.EvmProof.Word.literal_eq_ofNat]
+    List.exchange, Challenge.EvmProof.Word.literal_eq_ofNat, mul_comm' x f]
   decide
 
 theorem run_B23b (s : State) (tA d lo b2 P : UInt256)
@@ -250,8 +172,8 @@ theorem run_B23b (s : State) (tA d lo b2 P : UInt256)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat tA.toNat 32) =
       s.activeWords) :
     runInstructions programB23b
-      { s with pc := UInt256.ofNat 5330, stack := tA :: d :: lo :: b2 :: P :: rest } =
-    some { s with pc := UInt256.ofNat 5341,
+      { s with pc := UInt256.ofNat 5333, stack := tA :: d :: lo :: b2 :: P :: rest } =
+    some { s with pc := UInt256.ofNat 5344,
                   stack := ((UInt256.gt lo (lo + MachineState.readWord s.memory tA.toNat) - d) - lo) ::
                     b2 :: P :: rest
                   memory := MachineState.writeBytes s.memory
@@ -276,8 +198,8 @@ theorem run_B23 (s : State) (x f M b2 P : UInt256)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       (UInt256.ofNat 2080 - P).toNat 32) = s.activeWords) :
     runInstructions programB23
-      { s with pc := UInt256.ofNat 5312, stack := f :: M :: x :: f :: b2 :: P :: rest } =
-    some { s with pc := UInt256.ofNat 5341,
+      { s with pc := UInt256.ofNat 5323, stack := UInt256.mulMod x f M :: UInt256.lt f x :: (x * f) :: b2 :: P :: rest } =
+    some { s with pc := UInt256.ofNat 5344,
                   stack := (UInt256.lt (x * f + MachineState.readWord s.memory (UInt256.ofNat 2080 - P).toNat)
                       (x * f) + (((UInt256.mulMod x f M - UInt256.lt f x) -
                         UInt256.lt (UInt256.mulMod x f M - UInt256.lt f x) (x * f)) - x * f)) :: b2 :: P :: rest
@@ -307,7 +229,7 @@ theorem run_B (s : State) (tb x P hd w3 ent w5 M : UInt256)
       (UInt256.ofNat 2080 - P).toNat 32) = s.activeWords)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ent.toNat = true) :
     runInstructions programB
-      { s with pc := UInt256.ofNat 5304,
+      { s with pc := UInt256.ofNat 5308,
                stack := tb :: x :: P :: hd :: w3 :: ent :: w5 :: M :: rest } =
     some { s with pc := ent,
                   stack := (UInt256.lt (loOf x tb + MachineState.readWord s.memory (UInt256.ofNat 2080 - P).toNat)

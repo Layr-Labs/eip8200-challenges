@@ -28,7 +28,7 @@ open WindowNibbleKernel WindowTwentyOneBinding
 /-- The multiply call state: the preclear trampoline, pc 5466, `[pa, pb, pdst, ret] ++ rest`. -/
 def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5462
+  { s with pc := UInt256.ofNat 5466
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -44,17 +44,17 @@ def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
 /-- The `common` JUMPDEST (instruction 3190, pc 4132 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3181 = true := by
-  exact Artifact.isValidJumpDest_index 2480 (by rfl)
+  exact Artifact.isValidJumpDest_index 2478 (by rfl)
 
 /-- The multiply row head (instruction 2703, pc 3543). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3313 = true := by
-  exact Artifact.isValidJumpDest_index 2572 (by rfl)
+  exact Artifact.isValidJumpDest_index 2570 (by rfl)
 
 /-- The square row head `sq_row` (instruction 3275, pc 4268). -/
 theorem jumpDestSqRow :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5293 = true := by
-  exact Artifact.isValidJumpDest_index 4218 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5297 = true := by
+  exact Artifact.isValidJumpDest_index 4220 (by rfl)
 
 /-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
@@ -64,7 +64,7 @@ theorem jumpDestRowHead' :
 
 /-- `jumpDestSqRow` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestSqRow' :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 5293).toNat = true := by
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 5297).toNat = true := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact jumpDestSqRow
 
@@ -72,15 +72,15 @@ theorem jumpDestSqRow' :
 with `hd = 2464` and `pa = pb = pdst = 2048`. -/
 example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
     ({ s with pc := UInt256.ofNat 3181
-              stack := UInt256.ofNat 5293 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
+              stack := UInt256.ofNat 5297 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
                 UInt256.ofNat 512 :: ret :: tail
               memory := mem } : State) =
-      commonState s mem 5293 512 512 (UInt256.ofNat 512) ret tail := rfl
+      commonState s mem 5297 512 512 (UInt256.ofNat 512) ret tail := rfl
 
 /-- The multiply call state (`Exp.mpCall s mem pa pb pd ret tail`) is definitionally
 `dispatchState`. -/
 example (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256) :
-    ({ s with pc := UInt256.ofNat 5462
+    ({ s with pc := UInt256.ofNat 5466
               stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd :: ret :: tail
               memory := mem } : State) =
       dispatchState s mem pa pb (UInt256.ofNat pd) ret tail := rfl
@@ -129,7 +129,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3182 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 2481 54 3182 TnM128Setup.fullEntryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 2479 54 3182 TnM128Setup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)

@@ -21,15 +21,15 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 5444), switch at idx 2604 (pc 3357, jump back to 2811). -/
 def phases : RootE3PhaseRun.PhaseBlocks Artifact.submissionArtifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2459 2 3146
+  exitHead := WindowTwentyOneSlice.block Artifact.allWellFormed 2457 2 3146
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2461 5 3148
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 2459 5 3148
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2466 14 3157
+  switch := WindowTwentyOneSlice.block Artifact.allWellFormed 2464 14 3157
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest2811 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2704 = true :=
-  Artifact.isValidJumpDest_index 2095 (by rfl)
+  Artifact.isValidJumpDest_index 2093 (by rfl)
 
 /-! ## Junction lemmas
 
@@ -94,12 +94,12 @@ widths the dispatcher selects between. -/
 theorem shiftEntry_eq_entryWord (n : Nat) (hn : n = 4 ∨ n = 8) :
     Shift.shiftEntry n = ShiftCacheModel.entryWord n := by
   rcases hn with rfl | rfl <;> rfl
-/-- The word at 2816 (the exponent offset) survives the cache store at 1698. -/
+/-- The word at 2656 (the exponent offset) survives the cache store at 1698. -/
 theorem m2_readWord_2816 (mem input : ByteArray) (n : Nat) :
-    MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2816 =
-      MachineState.readWord (m2Of mem input n) 2816 := by
+    MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2656 =
+      MachineState.readWord (m2Of mem input n) 2656 := by
   unfold m2Of
-  rw [ShiftCacheModel.read_disjoint _ n 2816 (Or.inr (by omega))]
+  rw [ShiftCacheModel.read_disjoint _ n 2656 (Or.inr (by omega))]
 
 /-- The E3 prologue's published memory in the cache model's spelling. -/
 theorem prologue_e3_end_eq (mem input : ByteArray) (n : Nat) :
@@ -131,7 +131,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : E
     GasSteps (shiftDoneState (UInt256.ofNat 0) s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
         (n / 4)) := by
-  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5518 = true := by
+  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5522 = true := by
     rw [e.code]; exact jumpDest5444
   have hd2811 : Decode.isValidJumpDest s.executionEnv.code 2704 = true := by
     rw [e.code]; exact jumpDest2811
@@ -194,13 +194,13 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     rw [m1_readWord_disjoint mem input n 2752 (by omega) hn8
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]
     exact hframe.ml
-  have heoff : MachineState.readWord (m2Of mem input n) 2816 = UInt256.ofNat (96 + bsize) := by
-    rw [m2_readWord_disjoint mem input n 2816 (by omega) hn8
+  have heoff : MachineState.readWord (m2Of mem input n) 2656 = UInt256.ofNat (96 + bsize) := by
+    rw [m2_readWord_disjoint mem input n 2656 (by omega) hn8
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
         Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩
-      (Or.inr (by omega))]
+      (Or.inl (by omega))]
     exact hframe.eoff
-  have heoff' : MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2816 =
+  have heoff' : MachineState.readWord (preMem (negStep (m1Of mem input n) n n).memory) 2656 =
       UInt256.ofNat (96 + bsize) :=
     (m2_readWord_2816 mem input n).trans heoff
   have hse := shiftEntry_eq_entryWord n hfast

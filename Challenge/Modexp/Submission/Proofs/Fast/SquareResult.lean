@@ -365,12 +365,12 @@ theorem sqMem_frame (s : State) (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32
       MachineState.readWord (sqMem s mem n) 2720 = MachineState.readWord mem 2720 ∧
       MachineState.readWord (sqMem s mem n) 2752 = MachineState.readWord mem 2752 ∧
       MachineState.readWord (sqMem s mem n) 2784 = MachineState.readWord mem 2784 ∧
-      MachineState.readWord (sqMem s mem n) 2816 = MachineState.readWord mem 2816 :=
+      MachineState.readWord (sqMem s mem n) 2656 = MachineState.readWord mem 2656 :=
   ⟨sqMem_readWord_high s mem n 2688 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2720 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2752 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2784 hn hn32 (by omega),
-   sqMem_readWord_high s mem n 2816 hn hn32 (by omega)⟩
+   sqMem_readWord_high s mem n 2656 hn hn32 (by omega)⟩
 
 /-- Every represented block disjoint from `SUBB`, from the CIOS scratch and from
 the block at `2048` survives a `SQUARE` call. -/

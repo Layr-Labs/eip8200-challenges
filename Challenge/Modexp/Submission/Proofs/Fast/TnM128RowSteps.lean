@@ -13,16 +13,16 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel StagedOperand
 open CiosCached CiosCachedMacCore CiosReadonly CiosCachedMidMemory TnM128ReductionSteps
 
-def l1PC (n : Nat) : Nat := if n = 4 then 5383 else 3347
+def l1PC (n : Nat) : Nat := if n = 4 then 5387 else 3347
 
 /-- The multiply row head of each width (msplit: one loop per width). -/
-def headPC (n : Nat) : Nat := if n = 4 then 5349 else 3313
+def headPC (n : Nat) : Nat := if n = 4 then 5353 else 3313
 
 theorem head_jump (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest TnM128Candidate.bytecode (UInt256.ofNat (headPC n)).toNat = true := by
   rcases hn with rfl | rfl
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 4269 (by rfl)
-  · exact TnM128CandidateArtifact.isValidJumpDest_index 2572 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 4271 (by rfl)
+  · exact TnM128CandidateArtifact.isValidJumpDest_index 2570 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (q : UInt256) :
     TnCacheRowModel.CacheState :=

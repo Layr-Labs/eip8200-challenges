@@ -2,15 +2,15 @@ import Challenge.EvmProof.Bytecode
 import Challenge.Modexp.Submission.Bytes
 import EvmSemantics.Data.Hex
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 40000
 
 namespace Challenge.Modexp
 
 def submissionHex : String := (include_str "bytecode.hex").trimAscii.copy
 def submissionBytecode : ByteArray := submissionBytes
 
-@[simp] theorem submissionBytecode_size : submissionBytecode.size = 5540 := by
-  change submissionBytes.size = 5540
+@[simp] theorem submissionBytecode_size : submissionBytecode.size = 10915 := by
+  change submissionBytes.size = 10915
   exact submissionBytes_size
 
 theorem submissionBytecode_roundtrip :

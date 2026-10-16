@@ -135,7 +135,7 @@ theorem preserves_frame (memory : ByteArray) (n bsize inverse : Nat)
     exact hf.ml
   · rw [preserves_high memory n 2784 hn hn8 (by decide)]
     exact hf.tl
-  · rw [preserves_high memory n 2816 hn hn8 (by decide)]
+  · rw [preserves_high memory n 2656 hn hn8 (by decide)]
     exact hf.eoff
 
 #print axioms result_correct
