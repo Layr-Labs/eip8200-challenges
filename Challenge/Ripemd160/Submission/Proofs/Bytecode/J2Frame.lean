@@ -49,6 +49,32 @@ private theorem facts_closed (n : Nat) (hn : Allowed n) :
 theorem facts (n k : Nat) (hn : Allowed n) (hk : k≤last n) : Facts n k :=
   facts_closed n hn ⟨k,by have := last_lt n hn; omega⟩ hk
 
+/-! ### Position in the unrolled word chain
+
+Word `k` runs in chain block `blk n k`: its segment's tail is word `segTail n k`, and the chain ends at block 7
+(the tail), so a word `r` places before its tail runs in block `7 - r`. -/
+
+def segTail (n k : Nat) : Nat := min (last n) (8*(k/8)+7)
+def blk (n k : Nat) : Nat := 7 - (segTail n k - k)
+
+def ChainFacts (n k : Nat) : Prop :=
+  blk n k ≤ 7 ∧
+  (isTail n k → blk n k = 7) ∧
+  (¬ isTail n k → blk n k < 7 ∧ blk n (k+1) = blk n k + 1) ∧
+  (k = 0 → J2Raw.dispatchTarget (UInt256.ofNat 0) (fullW n 0) = UInt256.ofNat (J2Raw.blockPC (blk n 0))) ∧
+  (isTail n k → k < last n →
+    J2Raw.dispatchTarget (UInt256.ofNat (offset (k+1))) (fullW n (k+1)) =
+      UInt256.ofNat (J2Raw.blockPC (blk n (k+1))))
+
+private theorem chain_closed (n : Nat) (hn : Allowed n) :
+    ∀ k : Fin 32, k.val ≤ last n → ChainFacts n k.val := by
+  rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+  all_goals unfold ChainFacts
+  all_goals decide
+
+theorem chain (n k : Nat) (hn : Allowed n) (hk : k≤last n) : ChainFacts n k :=
+  chain_closed n hn ⟨k,by have := last_lt n hn; omega⟩ hk
+
 /-- At a nonfinal 251-byte boundary, the tail shift is always five bytes. -/
 private theorem boundary_shift_closed (n : Nat) (hn : Allowed n) :
     ∀ k : Fin 32, k.val < last n → isTail n k.val →
@@ -128,6 +154,7 @@ theorem transition_guard_iff (n k : Nat) (hn : Allowed n) (hk : k<last n) (ht : 
   exact (hnext ht hk).2.2.2
 
 #print axioms facts
+#print axioms chain
 #print axioms normal_next
 #print axioms tail_acc
 #print axioms transition_next

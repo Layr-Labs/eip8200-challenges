@@ -66,7 +66,7 @@ theorem from_entry (input : ByteArray)
     have hb := RecognitionAccumulator.allowed_bounds input.size hn
     have gf := EarlySerializeFallback.gasSteps input hfit hb.1
       s.memory (EarlySerializeReturn.prepared_memory_size input saved) rho hc
-    have gfm : GasSteps (J2Moves.atState s 4955 rho)
+    have gfm : GasSteps (J2Moves.atState s 4565 rho)
         (StackTail.append (PaddingTrace.padFramed input) rho) := by
       simpa only [J2Moves.atState, EarlySerializeFallback.incoming, s,
         EarlySerializeReturn.prepared, RecognitionSelectorResult.copied,

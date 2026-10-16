@@ -1,3 +1,46 @@
+# Patterned scanner as a computed-jump word chain — local 645,176 gas
+
+Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
+Base: frontier 24e0bd4d6 (646,197). Exact image: **5,380 bytes**, 3,750 executable instructions,
+SHA-256 `72aec7764aec68267480122b0e99d88b5ae550e5946d6a3cbd3fef8c9011cc3b`.
+`seedscore`: **645,176** on all 31 corpus seeds (sd 0), **-1,021**.
+
+## The change
+
+The patterned scanner loop (`JUMPDEST; word body; DUP4 DUP3 LT PUSH2 JUMPI`, 73 gas per word, 34 of it loop
+control) ran 60 times per corpus frame. A segment has at most seven full words before its tail word (251-byte
+segments), so the loop is replaced by a straight chain of seven copies of the unchanged word body
+(`normalTemplate`, 18 bytes each, at `4891 + 18 j`) that falls into the unchanged tail at `5017`. A segment with
+`m` full words is entered at block `7 - m` by a computed jump
+
+    DUP4 (PUSH0 | DUP3) SUB PUSH1 5 SAR PUSH1 18 MUL PUSH2 5017 ADD JUMP
+
+i.e. `5017 + 18 * ((off - full) sar 5) = 5017 - 18 * ceil((len - 32) / 32)` (37/36 gas per segment entry,
+replacing the `size < 33` test of the first entry and the `off < full` guard of a transition). Per word: 51 gas
+instead of 73. The first entry uses `PUSH0` for the zero offset.
+
+Layout: PCs 0..4546 and 4598..4876 are unchanged byte for byte (same instruction indices). The transition block
+(old 4547..4597) moves behind the tail (boundary projection 5044, transition 5049, `POP` + dispatch 5085); its old
+51 bytes now hold the padding footer loop (4547, was 4937; the `PUSH2` at 172 is relocated), the miss handler
+(4565, was 4955) and 26 unreachable filler bytes (21 `STOP` + one `PUSH4 0`), chosen so that the instruction count
+of 4547..4597 stays 43 and every later index up to 4876 is unchanged. The 280 digest bytes stay last (they are
+read relative to `CODESIZE`).
+
+## Proof changes
+
+* `J2RawBase`: `dispatchTarget`, `blockPC`, `dispatch0Template`/`dispatch1Template`; the guard and to-tail
+  templates are gone; finish/result jump literals relocated. `J2RawControl`: `run_dispatch0`/`run_dispatch1`.
+* `J2Frame`: `segTail`, `blk n k = 7 - (segTail n k - k)` and `ChainFacts` (block bounds, the block step, and
+  the two dispatch identities at segment starts), closed by `decide` over the 14 allowed lengths.
+* `J2Moves`/`J2Loop`: the loop state of word `k` is at `blockPC (blk n k)`; a normal word moves one block, a
+  nonfinal tail runs tail -> boundary -> transition -> dispatch. `J2Sites`: the seven block sites and the new
+  dispatch/tail/transition sites and jump-destination facts.
+* Relocated indices/PCs: `EarlySerializeReturn` (return at 5041), `EarlySerializeFallback` (miss handler 4565),
+  `PaddingTrace`/`PaddingTraceCore`/`DirectGuardBase` (footer loop 4547..4564), `J2Payload` (code size 5380),
+  `J2Correct`; `Bytes`, `Bytecode`, `Artifact` (chunks 17..19, counts and the legacy index lemmas).
+
+---
+
 # Nonfinal segment-tail projection — local 646,197 gas
 
 Current exact runtime: **5,242 bytes**, decoded SHA-256

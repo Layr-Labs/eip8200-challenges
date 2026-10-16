@@ -343,7 +343,7 @@ noncomputable def gasSteps_lengthLoop (input : ByteArray) (hfit : CalldataFits i
           subst hj1
           exact hz) hz)
 
-/-- The footer setup (172..191) pushes the loop head 4937, the bit length and the rounded length
+/-- The footer setup (172..191) pushes the loop head 4547, the bit length and the rounded length
 offset; at 187 the offset gets its `+ 89` and `DUP3 JUMP` enters the loop head. -/
 def footerA := lengthFooterSetupPath.take 9
 def footerB := lengthFooterSetupPath.drop 9
@@ -355,7 +355,7 @@ def footerRounded (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 187
     stack := PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) :: bitLengthWord input ::
-      UInt256.ofNat 4937 :: padFrame input }
+      UInt256.ofNat 4547 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerA (input : ByteArray) :
@@ -371,9 +371,9 @@ private theorem run_footerA (input : ByteArray) :
 (same shape as `footerRounded`), so the block run below never unfolds the loop's memory recursion. -/
 def footerEntered (input : ByteArray) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 4937
+    pc := UInt256.ofNat 4547
     stack := (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 4937 :: padFrame input }
+      bitLengthWord input :: UInt256.ofNat 4547 :: padFrame input }
 
 private theorem footerEntered_eq (input : ByteArray) :
     footerEntered input = lengthLoopState input 0 := by
@@ -391,9 +391,9 @@ finish inside the memory budget. -/
 def footerPreJump (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 191
-    stack := UInt256.ofNat 4937 ::
+    stack := UInt256.ofNat 4547 ::
       (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 4937 :: padFrame input }
+      bitLengthWord input :: UInt256.ofNat 4547 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerB3 (input : ByteArray) :

@@ -9,17 +9,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open J2Raw J2Frame J2End J2Moves RecognitionAccumulator
 
 def loopState (s : State) (n k : Nat) (rho : List UInt256) : State :=
-  atState s (if isTail n k then 4910 else 4885) (frame (current s.executionEnv.calldata n k) rho)
-
-theorem full_iff (input : ByteArray) (n k : Nat) (hn : Allowed n) (hk : k≤last n) (hk0 : 0 < k) :
-    (current input n k).off.toNat < (current input n k).full.toNat ↔ ¬ isTail n k := by
-  obtain ⟨ho,hf,he,hl,hr,_⟩ := facts n k hn hk
-  simpa only [current, ho] using hr hk0
-
-theorem first_iff (input : ByteArray) (n : Nat) (hn : Allowed n) :
-    (current input n 0).len.toNat < 33 ↔ isTail n 0 := by
-  obtain ⟨ho,hf,he,hl,hr,_⟩ := facts n 0 hn (by omega)
-  simpa only [current] using hf rfl
+  atState s (blockPC (blk n k)) (frame (current s.executionEnv.calldata n k) rho)
 
 theorem finish_iff (s : State) (n k : Nat) (hn : Allowed n) (hk : k≤last n) (ht : isTail n k) :
     (tailResult s (current s.executionEnv.calldata n k)).stop.toNat =
@@ -27,32 +17,9 @@ theorem finish_iff (s : State) (n k : Nat) (hn : Allowed n) (hk : k≤last n) (h
   obtain ⟨ho,hf,he,hl,hr,hfin,_⟩ := facts n k hn hk
   simpa only [tailResult, current, he, hl] using hfin ht
 
-def route_normal (s : State) (rho : List UInt256) (moves : Moves s rho)
-    (n k : Nat) (hn : Allowed n) (hk : k≤last n) (hk0 : 0 < k) :
-    GasSteps (atState s 4903 (frame (current s.executionEnv.calldata n k) rho)) (loopState s n k rho) := by
-  have g := moves.normalGuard (current s.executionEnv.calldata n k)
-  have h := full_iff s.executionEnv.calldata n k hn hk hk0
-  by_cases ht : isTail n k
-  · have hc := h.not.mpr (not_not_intro ht)
-    simpa only [if_neg hc, loopState, if_pos ht] using g
-  · have hc := h.mpr ht
-    simpa only [if_pos hc, loopState, if_neg ht] using g
-
-def route_transition (s : State) (rho : List UInt256) (moves : Moves s rho)
-    (n k : Nat) (hn : Allowed n) (hk : k≤last n) (hk0 : 0 < k) (x : UInt256)
-    (hx : x.toNat < (current s.executionEnv.calldata n k).full.toNat ↔
-      (current s.executionEnv.calldata n k).off.toNat < (current s.executionEnv.calldata n k).full.toNat) :
-    GasSteps (atState s 4588 (x :: frame (current s.executionEnv.calldata n k) rho)) (loopState s n k rho) := by
-  have g := moves.transitionGuard x (current s.executionEnv.calldata n k)
-  have h := hx.trans (full_iff s.executionEnv.calldata n k hn hk hk0)
-  by_cases ht : isTail n k
-  · have hc := h.not.mpr (not_not_intro ht)
-    have g0 : GasSteps (atState s 4588 (x :: frame (current s.executionEnv.calldata n k) rho))
-        (atState s 4594 (frame (current s.executionEnv.calldata n k) rho)) := by
-      simpa only [if_neg hc] using g
-    simpa only [loopState, if_pos ht] using g0.trans (moves.toTail _)
-  · have hc := h.mpr ht
-    simpa only [if_pos hc, loopState, if_neg ht] using g
+theorem tail_pc (n k : Nat) (hn : Allowed n) (hk : k≤last n) (ht : isTail n k) :
+    blockPC (blk n k) = 5017 := by
+  rw [(chain n k hn hk).2.1 ht]; rfl
 
 def one (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n k : Nat) (hn : Allowed n) (hk : k<last n)
@@ -69,35 +36,29 @@ def one (s : State) (rho : List UInt256) (moves : Moves s rho)
     have g01 := moves.tailBoundary (current s.executionEnv.calldata n k)
       (by simp only [current, hsize]) hf (boundary_shift _ n k hn hk ht)
     have g2 := moves.transition (tailResult s (current s.executionEnv.calldata n k)) (by simp only [tailResult, current, hsize])
-    have g012 : GasSteps (atState s 4910 (frame (current s.executionEnv.calldata n k) rho))
-        (atState s 4588 ((current s.executionEnv.calldata n k).off :: frame (current s.executionEnv.calldata n (k+1)) rho)) := by
+    have g012 : GasSteps (atState s 5017 (frame (current s.executionEnv.calldata n k) rho))
+        (atState s 5085 ((current s.executionEnv.calldata n k).off :: frame (current s.executionEnv.calldata n (k+1)) rho)) := by
       have hoff : (tailResult s (current s.executionEnv.calldata n k)).off = (current s.executionEnv.calldata n k).off := rfl
       simpa only [transition_next s n k hn hk ht, hoff] using g01.trans g2
-    have hx : ((current s.executionEnv.calldata n k).off).toNat < (current s.executionEnv.calldata n (k+1)).full.toNat ↔
-        (current s.executionEnv.calldata n (k+1)).off.toNat < (current s.executionEnv.calldata n (k+1)).full.toNat := by
-      have hg := transition_guard_iff n k hn hk ht
-      obtain ⟨ho1,_⟩ := facts n (k+1) hn (by omega)
-      simpa only [current, ho1] using hg
-    simpa only [loopState, if_pos ht] using g012.trans
-      (route_transition s rho moves n (k+1) hn (by omega) (by omega) _ hx)
-  · have g0 := moves.normal (current s.executionEnv.calldata n k)
-    have g1 : GasSteps (atState s 4885 (frame (current s.executionEnv.calldata n k) rho))
-        (atState s 4903 (frame (current s.executionEnv.calldata n (k+1)) rho)) := by
-      simpa only [normal_next s n k hn (by omega) ht] using g0
-    simpa only [loopState, if_neg ht] using g1.trans (route_normal s rho moves n (k+1) hn (by omega) (by omega))
+    have hc := chain n (k+1) hn (by omega)
+    have g3 := moves.dispatch (current s.executionEnv.calldata n k).off
+      (current s.executionEnv.calldata n (k+1)) (blk n (k+1)) hc.1
+      ((chain n k hn (by omega)).2.2.2.2 ht hk)
+    have g := g012.trans g3
+    simpa only [loopState, tail_pc n k hn (by omega) ht] using g
+  · have hc := (chain n k hn (by omega)).2.2.1 ht
+    have g0 := moves.normal (blk n k) hc.1 (current s.executionEnv.calldata n k)
+    rw [normal_next s n k hn (by omega) ht, ← hc.2] at g0
+    exact g0
 
 def start (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
     GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (loopState s n 0 rho) := by
   have g0 : GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 4877 (frame (current s.executionEnv.calldata n 0) rho)) := by
     simpa only [hsize, init_current s.executionEnv.calldata n hn] using moves.init
-  have g1 := moves.first (current s.executionEnv.calldata n 0) (by simp only [current, hsize])
-  have h := first_iff s.executionEnv.calldata n hn
-  by_cases ht : isTail n 0
-  · have hc := h.mpr ht
-    simpa only [if_pos hc, loopState, if_pos ht] using g0.trans g1
-  · have hc : ¬ (current s.executionEnv.calldata n 0).len.toNat < 33 := fun x => ht (h.mp x)
-    simpa only [if_neg hc, loopState, if_neg ht] using g0.trans g1
+  have hc := chain n 0 hn (by omega)
+  have g1 := moves.first (current s.executionEnv.calldata n 0) (blk n 0) hc.1 (hc.2.2.2.1 rfl)
+  exact g0.trans g1
 
 def words (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n m : Nat) (hn : Allowed n) (hm : m≤last n)
@@ -109,14 +70,14 @@ def words (s : State) (rho : List UInt256) (moves : Moves s rho)
 
 def accumulate (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n) :
-    GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 4930 (frame (endFrame s n) rho)) := by
+    GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 5037 (frame (endFrame s n) rho)) := by
   have g0 := (start s rho moves n hn hsize).trans (words s rho moves n (last n) hn (by omega) hsize)
   have ht : isTail n (last n) := Or.inl rfl
   have hc := (finish_iff s n (last n) hn (by omega) ht).mpr rfl
   have hfinal : (current s.executionEnv.calldata n (last n)).stop.toNat =
       (current s.executionEnv.calldata n (last n)).len.toNat := hc
-  have g1 : GasSteps (loopState s n (last n) rho) (atState s 4930 (frame (endFrame s n) rho)) := by
-    simpa only [loopState, if_pos ht, endFrame] using
+  have g1 : GasSteps (loopState s n (last n) rho) (atState s 5037 (frame (endFrame s n) rho)) := by
+    simpa only [loopState, tail_pc n (last n) hn (by omega) ht, endFrame] using
       moves.tailFinal (current s.executionEnv.calldata n (last n))
         (by simp only [current, hsize]) hfinal
   exact g0.trans g1
@@ -124,23 +85,23 @@ def accumulate (s : State) (rho : List UInt256) (moves : Moves s rho)
 def gasSteps_hit (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n)
     (hzero : J2Accumulator.resultAcc s.executionEnv.calldata n=0) :
-    GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 4934 (finishRest (endFrame s n) rho)) := by
+    GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 5041 (finishRest (endFrame s n) rho)) := by
   have hc : (endFrame s n).acc.toNat=0 := by rw [end_acc s n hn, hzero]; rfl
   have g := moves.result (endFrame s n)
-  have gr : GasSteps (atState s 4930 (frame (endFrame s n) rho)) (atState s 4934 (finishRest (endFrame s n) rho)) := by
+  have gr : GasSteps (atState s 5037 (frame (endFrame s n) rho)) (atState s 5041 (finishRest (endFrame s n) rho)) := by
     simpa only [if_pos hc] using g
   exact (accumulate s rho moves n hn hsize).trans gr
 
 def gasSteps_miss (s : State) (rho : List UInt256) (moves : Moves s rho)
     (n : Nat) (hn : Allowed n) (hsize : s.executionEnv.calldata.size=n)
     (hzero : J2Accumulator.resultAcc s.executionEnv.calldata n≠0) :
-    GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 4955 (finishRest (endFrame s n) rho)) := by
+    GasSteps (atState s 4804 (clamp (UInt256.ofNat s.executionEnv.calldata.size) :: rho)) (atState s 4565 (finishRest (endFrame s n) rho)) := by
   have hc : (endFrame s n).acc.toNat≠0 := by
     intro h; apply hzero; apply Word.word_ext
     change (J2Accumulator.resultAcc s.executionEnv.calldata n).toNat = 0
     simpa only [end_acc s n hn] using h
   have g := moves.result (endFrame s n)
-  have gr : GasSteps (atState s 4930 (frame (endFrame s n) rho)) (atState s 4955 (finishRest (endFrame s n) rho)) := by
+  have gr : GasSteps (atState s 5037 (frame (endFrame s n) rho)) (atState s 4565 (finishRest (endFrame s n) rho)) := by
     simpa only [if_neg hc] using g
   exact (accumulate s rho moves n hn hsize).trans gr
 
