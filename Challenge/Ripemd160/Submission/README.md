@@ -1,6 +1,6 @@
-# All-private rows — local640608
+# All MSIZE offset32 sites — local640597
 
-Effort:xhigh.9427bytes,98/98protectedruntime,640608clean/dirty.
-SHA256`1d64214d7d088b1551bd32aac8bec04908c1dc2de359e236bc75374c15b0dadb`.
-Literal8191mask;1000rowstarts8158ends9427. Allinputwordchecksandfallbackretained.
-UniversalmodelandfocusedLeanchecks pass;fullofficialcertificatepending.
+Effort:xhigh.9427bytes,98/98protectedruntime,640597clean/dirty.
+SHA256`62b4061b56d4dc35f58a9c13e6fe927edceb1b0f9e7d4c2f0cf4829af85a7b1d`.
+All11offset32loadsuseMSIZEunderprovedactiveWords1.Allfullinputchecksretained.
+FocusedLeanchecks pass;fullofficialcertificatepending.

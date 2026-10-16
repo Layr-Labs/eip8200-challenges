@@ -46,47 +46,55 @@ def tailPC : Fin 14 → Nat
  | ⟨12, _⟩ => 6907
  | ⟨13, _⟩ => 8182
 def tailIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4876
- | ⟨1, _⟩ => 4401
- | ⟨2, _⟩ => 3746
- | ⟨3, _⟩ => 4261
- | ⟨4, _⟩ => 4450
+ | ⟨0, _⟩ => 4885
+ | ⟨1, _⟩ => 4406
+ | ⟨2, _⟩ => 3747
+ | ⟨3, _⟩ => 4265
+ | ⟨4, _⟩ => 4455
  | ⟨5, _⟩ => 3533
- | ⟨6, _⟩ => 4583
- | ⟨7, _⟩ => 4073
- | ⟨8, _⟩ => 3871
- | ⟨9, _⟩ => 3774
- | ⟨10, _⟩ => 4848
- | ⟨11, _⟩ => 5027
- | ⟨12, _⟩ => 4733
- | ⟨13, _⟩ => 5095
+ | ⟨6, _⟩ => 4589
+ | ⟨7, _⟩ => 4076
+ | ⟨8, _⟩ => 3873
+ | ⟨9, _⟩ => 3775
+ | ⟨10, _⟩ => 4856
+ | ⟨11, _⟩ => 5036
+ | ⟨12, _⟩ => 4740
+ | ⟨13, _⟩ => 5105
 def returnPC : Fin 14 → Nat
  | ⟨0, _⟩ => 7664
  | ⟨1, _⟩ => 6387
  | ⟨2, _⟩ => 5165
- | ⟨3, _⟩ => 6198
- | ⟨4, _⟩ => 6528
- | ⟨5, _⟩ => 4903
- | ⟨6, _⟩ => 6748
- | ⟨7, _⟩ => 5928
- | ⟨8, _⟩ => 5611
- | ⟨9, _⟩ => 5361
- | ⟨10, _⟩ => 7597
- | ⟨11, _⟩ => 8135
- | ⟨12, _⟩ => 7369
- | ⟨13, _⟩ => 9424
+ | ⟨3, _⟩ => 6197
+ | ⟨4, _⟩ => 6527
+ | ⟨5, _⟩ => 4902
+ | ⟨6, _⟩ => 6747
+ | ⟨7, _⟩ => 5927
+ | ⟨8, _⟩ => 5610
+ | ⟨9, _⟩ => 5360
+ | ⟨10, _⟩ => 7596
+ | ⟨11, _⟩ => 8134
+ | ⟨12, _⟩ => 7368
+ | ⟨13, _⟩ => 9423
 
+
+def cmpTemplate (k : Nat) : List Instr :=
+ if k=1 then [.push ⟨32, by decide⟩ (PatternedWordData.expectedWordAt k),
+   .op .MSIZE, .op .CALLDATALOAD, .op .XOR]
+ else DirectLiteralRawV4.cmpTemplate k
 
 def revTemplate (chain : Bool) : Nat → List Instr
  | 0 => []
  | k+1 => (if (chain = true ∧ (k=30)) then [.op .JUMPDEST] else []) ++
     (cmpTemplate k ++ orTemplate) ++ revTemplate chain k
 
-def prefixTemplate (i : Fin 14) : List Instr := [
-   .push ⟨32, by decide⟩ (ZeroTailModel.expectedLast (nval i)),
-   .push ⟨if last (nval i) = 0 then 0 else if last (nval i) < 8 then 1 else 2,
-     by split <;> (try split) <;> decide⟩ (UInt256.ofNat (32 * last (nval i))),
-   .op .CALLDATALOAD, .op .XOR]
+def lastOffset (i : Fin 14) : List Instr :=
+ if last (nval i) = 1 then [.op .MSIZE] else
+ [.push ⟨if last (nval i) = 0 then 0 else if last (nval i) < 8 then 1 else 2,
+     by split <;> (try split) <;> decide⟩ (UInt256.ofNat (32 * last (nval i)))]
+
+def prefixTemplate (i : Fin 14) : List Instr :=
+ [.push ⟨32, by decide⟩ (ZeroTailModel.expectedLast (nval i))] ++
+ lastOffset i ++ [.op .CALLDATALOAD, .op .XOR]
 
 def tailTemplate (i : Fin 14) : List Instr :=
   (prefixTemplate i ++ revTemplate false (last (nval i))) ++ resultTemplate
@@ -141,6 +149,7 @@ structure Env (s : State) : Prop where
   code : s.executionEnv.code = Artifact.submissionArtifact.code
   fork : s.fork = .Osaka
   run : s.halt = .Running
+  active : s.activeWords = UInt256.ofNat 1
   np : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
     s.executionEnv.fork s.executionEnv.codeAddr = false
 
@@ -151,8 +160,23 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
     (by simpa [atState] using (site_pc p).symm) (form p) hraw
 
 
+theorem run_cmpSize (s : State) (pc : UInt256) (k : Nat) (hk : k<32)
+    (a : UInt256) (rho : List UInt256) (hs : rho.length ≤ 990)
+    (hrun : s.halt = .Running) (ha : s.activeWords = UInt256.ofNat 1) :
+    runInstrSeq (cmpTemplate k) {s with pc:=pc,stack:=a::rho} =
+      some {s with pc:=pcAfter pc (cmpTemplate k),stack:=diff s.executionEnv.calldata k::a::rho} := by
+  by_cases hk1 : k=1
+  · subst k
+    have hcap (n : Nat) (hn : n ≤ 20) : rho.length+n<1024 := by omega
+    simp (discharger := omega) [cmpTemplate,diff,runInstrSeq,DataStepper.runInstr,pcAfter,
+      hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,
+      Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange,MachineState.msize,ha]
+    repeat first | apply And.intro | rfl
+  · simpa only [cmpTemplate,if_neg hk1] using DirectLiteralRawV4.run_cmp s pc k hk a rho hs hrun
+
 theorem run_revTemplate (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) (chain : Bool)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (ha : s.activeWords = UInt256.ofNat 1) (chain : Bool)
     (k : Nat) (hk : k ≤ 32) :
     runInstrSeq (revTemplate chain k) {s with pc:=pc,stack:=a::rho} =
       some {s with pc:=pcAfter pc (revTemplate chain k),stack:=rev s.executionEnv.calldata a k ::rho} := by
@@ -165,7 +189,7 @@ theorem run_revTemplate (s : State) (pc : UInt256) (a : UInt256) (rho : List UIn
       by_cases h : (chain = true ∧ (k=30))
       · simpa only [dest,if_pos h] using run_jd s pc (a::rho) (by simp;omega) hrun
       · simp [dest,h,runInstrSeq,pcAfter]
-    have hc := run_cmp s (pcAfter pc dest) k (by omega) a rho hs hrun
+    have hc := run_cmpSize s (pcAfter pc dest) k (by omega) a rho hs hrun ha
     have ho := run_or s (pcAfter (pcAfter pc dest) (cmpTemplate k))
       (diff s.executionEnv.calldata k) a rho hs hrun
     have hco := DenseScheduleTrace.runInstrSeq_append_running hc hrun ho
@@ -177,20 +201,27 @@ theorem run_revTemplate (s : State) (pc : UInt256) (a : UInt256) (rho : List UIn
     simpa only [revTemplate,dest,DenseScheduleTrace.pcAfter_append,rev] using hall
 
 theorem run_prefix (s : State) (pc : UInt256) (i : Fin 14) (rho : List UInt256)
-    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (ha : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq (prefixTemplate i) {s with pc:=pc,stack:=rho} =
       some {s with pc:=pcAfter pc (prefixTemplate i),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)::rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length+n<1024 := by omega
   have hk : last (nval i) < 32 := by fin_cases i <;> decide
   have hoff : (UInt256.ofNat (32*last (nval i))).toNat = 32*last (nval i) := by
     rw [Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  by_cases hk1 : last (nval i)=1
+  · simp (discharger := omega) [prefixTemplate,lastOffset,hk1,ZeroTailModel.tailDiff,
+      runInstrSeq,DataStepper.runInstr,pcAfter,hrun,show rho.length<1024 by omega,hcap,
+      UInt256.succ,Instr.size,Nat.add_assoc,Word.literal_eq_ofNat,
+      List.getElem?_cons_zero,List.exchange,MachineState.msize,ha]
+    repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
   by_cases hk0 : last (nval i)=0
-  · simp (discharger := omega) [prefixTemplate,ZeroTailModel.tailDiff, hk0, runInstrSeq,DataStepper.runInstr,
+  · simp (discharger := omega) [prefixTemplate,lastOffset,hk1,ZeroTailModel.tailDiff, hk0, runInstrSeq,DataStepper.runInstr,
       pcAfter,hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,
       Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
     repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
   by_cases hk8 : last (nval i)<8
-  all_goals simp (discharger := omega) [prefixTemplate,ZeroTailModel.tailDiff,hk0,hk8,runInstrSeq,DataStepper.runInstr,
+  all_goals simp (discharger := omega) [prefixTemplate,lastOffset,hk1,ZeroTailModel.tailDiff,hk0,hk8,runInstrSeq,DataStepper.runInstr,
     pcAfter,hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,hoff,
     Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
   all_goals repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
@@ -204,9 +235,9 @@ theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
     (hv : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
     runInstrSeq (tailTemplate i) (atState s (tailPC i) rho) =
       some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4565) rho) := by
-  have hp := run_prefix s (UInt256.ofNat (tailPC i)) i rho hs e.run
+  have hp := run_prefix s (UInt256.ofNat (tailPC i)) i rho hs e.run e.active
   have hr := run_revTemplate s (pcAfter (UInt256.ofNat (tailPC i)) (prefixTemplate i))
-    (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)) rho hs e.run false (last (nval i)) (by fin_cases i <;> decide)
+    (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)) rho hs e.run e.active false (last (nval i)) (by fin_cases i <;> decide)
   have hpr := DenseScheduleTrace.runInstrSeq_append_running hp e.run hr
   rw [← ZeroTailModel.result] at hpr
   have hf := run_result s
