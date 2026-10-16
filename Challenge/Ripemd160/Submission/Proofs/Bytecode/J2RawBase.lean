@@ -48,8 +48,9 @@ def tailResult (s : State) (f : Frame) : Frame :=
   { f with
     acc := UInt256.lor
       (UInt256.shiftRight (UInt256.xor f.word (MachineState.readWord s.executionEnv.calldata f.off.toNat))
-        (UInt256.shiftLeft (UInt256.sub f.off f.full) (UInt256.ofNat 3))) f.acc }
-/-- Segment end after a transition, in the exact shape the bytecode computes
+        (if f.stop.toNat < f.len.toNat then UInt256.ofNat 40
+          else UInt256.shiftLeft (UInt256.sub f.off f.full) (UInt256.ofNat 3))) f.acc }
+/-- Legacy segment end, in the exact shape the old transition template computes
 (`PUSH1 251 DUP6 ADD DUP1 CALLDATASIZE SUB DUP1 CALLDATASIZE SAR AND ADD`): with `x = stop + 251` and
 `d = len - x`, it is `x + (d &&& (d sar len))`.  Transitions only happen on the long lengths
 (`len ≥ 256`), where `d sar len` is the sign mask of `d`, so this is `min x len`; the frame facts
@@ -72,11 +73,26 @@ def tw (w : UInt256) : UInt256 :=
       (UInt256.mul (UInt256.ofNat 14) PatternedSwar.M))
     (UInt256.lor w (UInt256.shiftLeft c96 (UInt256.ofNat 2))))
 
-def transitionResult (f : Frame) : Frame :=
+/-- Result of the retained, saturated `transitionTemplate`, which is no longer
+the artifact's transition site. The current hoisted result is `transitionResult`. -/
+def legacyTransitionResult (f : Frame) : Frame :=
   { f with word := tw f.word
            off := f.stop
            stop := emin f.stop f.len
            full := UInt256.sub (emin f.stop f.len) (UInt256.ofNat 32) }
+
+/-- The hoisted branch selects the exact next stop, without a saturation step. -/
+def transitionStop (f : Frame) : UInt256 :=
+  if UInt256.land f.len (UInt256.ofNat 16) = 0 then UInt256.add (UInt256.ofNat 251) f.stop
+  else f.len
+
+/-- Raw result of the current hoisted transition. Both branches use the final
+calldata length for the full-word limit. -/
+def transitionResult (f : Frame) : Frame :=
+  { f with word := tw f.word
+           off := f.stop
+           stop := transitionStop f
+           full := UInt256.sub f.len (UInt256.ofNat 32) }
 
 /-! ### Masking with `0xE0` instead of `~0x1F`
 
@@ -152,16 +168,16 @@ def initTemplate : List Instr := [
   .push ⟨0, by decide⟩ (UInt256.ofNat 0)
 ]
 
-/-- The scanner's word chain: seven copies of `normalTemplate` at `4891 + 18 j` (`j < 7`), falling into the
-tail at `5017 = 4891 + 18 * 7`. A segment with `m` full words enters at block `7 - m`, so no per-word bound test
-runs. The entry is the computed jump `5017 + 18 * ((x - full) sar 5)`, where `x` is the segment's first offset;
-for `full = x + len - 32` this is `5017 - 18 * ceil ((len - 32) / 32)`. -/
+/-- The scanner's word chain: seven copies of `normalTemplate` at `4956 + 18 j` (`j < 7`), falling into the
+tail at `5082 = 4956 + 18 * 7`. A segment with `m` full words enters at block `7 - m`, so no per-word bound test
+runs. The entry is the computed jump `5082 + 18 * ((x - full) sar 5)`, where `x` is the segment's first offset;
+for `full = x + len - 32` this is `5082 - 18 * ceil ((len - 32) / 32)`. -/
 def dispatchTarget (x full : UInt256) : UInt256 :=
-  UInt256.add (UInt256.ofNat 5017)
+  UInt256.add (UInt256.ofNat 5082)
     (UInt256.mul (UInt256.ofNat 18) (UInt256.sar (UInt256.sub x full) (UInt256.ofNat 5)))
 
 /-- Block `j` of the chain; block 7 is the tail. -/
-def blockPC (j : Nat) : Nat := 4891 + 18 * j
+def blockPC (j : Nat) : Nat := 4956 + 18 * j
 
 /-- First entry: the offset is the literal zero just pushed, so `PUSH0` replaces `DUP3`. -/
 def dispatch0Template : List Instr := [ .op (.Dup ⟨3, by decide⟩),
@@ -171,23 +187,19 @@ def dispatch0Template : List Instr := [ .op (.Dup ⟨3, by decide⟩),
     .op .SAR,
     .push ⟨1, by decide⟩ (UInt256.ofNat 18),
     .op .MUL,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5017),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 5082),
     .op .ADD,
     .op .JUMP ]
 
 /-- Segment transition: drop the old offset left by the transition, then the same computed jump from the
 new frame's offset. -/
-def dispatch1Template : List Instr := [ .op .POP,
-    .op (.Dup ⟨3, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op .SUB,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 5),
-    .op .SAR,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 18),
-    .op .MUL,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5017),
-    .op .ADD,
-    .op .JUMP ]
+def transitionTarget (n : UInt256) : UInt256 :=
+  if UInt256.land n (UInt256.ofNat 16) = 0 then UInt256.ofNat (blockPC 0)
+  else UInt256.ofNat (blockPC 4)
+
+def dispatch1Template : List Instr := [
+  .op .POP, .op .CALLDATASIZE, .push ⟨1, by decide⟩ (UInt256.ofNat 16), .op .AND,
+  .push ⟨2, by decide⟩ (UInt256.ofNat (blockPC 4)), .op .JUMPI ]
 
 /-- Increment the saved offset before loading the old offset. This eliminates one
 swap while preserving the exact incoming and outgoing recognizer frames. The
@@ -223,8 +235,8 @@ def tailTemplate : List Instr := [
   .op (.Dup ⟨3, by decide⟩), .op .XOR]
 
 def finishTemplate : List Instr := [ .op .CALLDATASIZE,
-    .op (.Dup ⟨8, by decide⟩), .op .SUB,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 5044), .op .JUMPI ]
+    .op (.Dup ⟨8, by decide⟩), .op .LT,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4891), .op .JUMPI ]
 
 def finalProjectionTemplate : List Instr := [
   .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .SUB,
