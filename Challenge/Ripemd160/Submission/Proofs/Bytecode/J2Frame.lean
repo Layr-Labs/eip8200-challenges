@@ -38,7 +38,7 @@ def Facts (n k : Nat) : Prop :=
     fullW n k = fullW n (k+1) ∧ stop n k = stop n (k+1)) ∧
   (isTail n k →
     (if stop n k < n then UInt256.ofNat 40
-      else UInt256.shiftLeft (UInt256.sub (UInt256.ofNat (offset k)) (fullW n k)) (UInt256.ofNat 3)) =
+      else UInt256.shiftLeft (UInt256.add (UInt256.sub (UInt256.ofNat (offset k)) (UInt256.ofNat n)) (UInt256.ofNat 32)) (UInt256.ofNat 3)) =
       J2Accumulator.shift n k) ∧
   (n ≠ 256 → isTail n k → k < last n →
     UInt256.ofNat (stop n k) = UInt256.ofNat (offset (k+1)) ∧
@@ -94,7 +94,7 @@ theorem transition_chain (n k : Nat) (hn : Allowed n) (hn256 : n ≠ 256)
 final tail consults `full`. This matches the ordered finish branch. -/
 theorem tail_shift (n k : Nat) (hn : Allowed n) (hk : k ≤ last n) (ht : isTail n k) :
     (if stop n k < n then UInt256.ofNat 40
-      else UInt256.shiftLeft (UInt256.sub (UInt256.ofNat (offset k)) (fullW n k)) (UInt256.ofNat 3)) =
+      else UInt256.shiftLeft (UInt256.add (UInt256.sub (UInt256.ofNat (offset k)) (UInt256.ofNat n)) (UInt256.ofNat 32)) (UInt256.ofNat 3)) =
       J2Accumulator.shift n k :=
   (facts n k hn hk).2.2.2.2.2.1 ht
 

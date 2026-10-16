@@ -43,7 +43,7 @@ private def codePrefix : ByteArray :=
  ++   submissionByteChunk16
  ++   submissionByteChunk17
  ++   submissionByteChunk18
-private theorem codePrefix_size : codePrefix.size = 4895 := by
+private theorem codePrefix_size : codePrefix.size = 4919 := by
   simp only [codePrefix, ByteArray.size_append,
     submissionByteChunk0_size,
     submissionByteChunk1_size,
@@ -67,25 +67,25 @@ private theorem codePrefix_size : codePrefix.size = 4895 := by
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk19 := rfl
 
 private theorem tableRead (n : Nat) :
-    MachineState.readPadded submissionBytecode (5393 - 20*((14357627/n)%16)) 20 =
-      MachineState.readPadded submissionByteChunk19 (498 - 20*((14357627/n)%16)) 20 := by
+    MachineState.readPadded submissionBytecode (5480 - 20*((14357627/n)%16)) 20 =
+      MachineState.readPadded submissionByteChunk19 (561 - 20*((14357627/n)%16)) 20 := by
   rw [code_split, readPadded_append_right _ _ _ _ (by rw [codePrefix_size]; omega), codePrefix_size]
   congr 1
   omega
 
 private theorem tablePayload (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionByteChunk19 (498 - 20*((14357627/n)%16)) 20 =
+    MachineState.readPadded submissionByteChunk19 (561 - 20*((14357627/n)%16)) 20 =
       MachineState.readPadded payload (280 - 20*((14357627/n)%16)) 20 := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
 private theorem selected_nat (n : Nat) (hn : Allowed n) :
-    (selected (UInt256.ofNat 5393) n).toNat = 5393 - 20*((14357627/n)%16) := by
+    (selected (UInt256.ofNat 5480) n).toNat = 5480 - 20*((14357627/n)%16) := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 5393) n).toNat 20 =
+    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 5480) n).toNat 20 =
       MachineState.readPadded payload (280 - 20*((14357627/n)%16)) 20 := by
   rw [selected_nat n hn, tableRead]
   exact tablePayload n hn
