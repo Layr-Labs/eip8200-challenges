@@ -1,331 +1,164 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.TwoLengthFlagAddition
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedLengthLookup
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2EntryWindow
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardSize
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcArm
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.SizeLookupFlag
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardSize
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionAccumulator
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.newArtifactByteLength
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.SignedSizeFlag
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternEntryLogic
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.ShortPatternEntrySteps
-
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ReverseSerializeReturn
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 set_option warningAsError true
 set_option maxRecDepth 100000
-set_option maxHeartbeats 20000000
+set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
-
-/-!
-# The patterned guard
-
-Entered at pc 439 when the first calldata byte is 7, or when a short or
-1000-byte input does not start with the repeated `0x61` word.  A size mask sends the
-eleven short patterned lengths to the scanner; a second test sends 256, 376 and
-1000.  Every other length falls through into the tiny-input arm.
--/
-
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry
+open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM YulEvmCompiler
+open StackRoundTrace StackRoundTemplate
 
-open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-
-abbrev Located := DirectGuard.Located
-
-private def sound (path : List Located) {s t : State}
-    (h : DirectGuard.run path s = some t)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code := by rfl)
-    (hfork : s.fork = .Osaka := by rfl)
-    (hrun : s.halt = .Running := by rfl)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false := by
-        exact deployAddress_not_precompile) : GasSteps s t :=
-  Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
-    path hcode hfork h hrun hnp
-
-@[simp] private theorem entryPC61 : Artifact.submissionArtifact.instructionPC 3522 = 4785 := J2EntryWindow.pcB 2
-
-private theorem isValidJumpDest_of_pc (idx pc : Nat)
-    (hpc : Artifact.submissionArtifact.instructionPC idx = pc)
-    (hget : Artifact.submissionArtifact.instructions[idx]? = some (.op .JUMPDEST)) :
-    Decode.isValidJumpDest submissionBytecode pc = true := by
-  subst hpc
-  exact Artifact.submissionArtifact.isValidJumpDest_index idx hget
-
-private theorem guard_match_dest : Decode.isValidJumpDest submissionBytecode 4785 = true :=
-  isValidJumpDest_of_pc 3522 4785 entryPC61 (J2EntryWindow.getB 2)
-
-private theorem calldatasize_step (input : ByteArray) (pc : Nat) (stk : List UInt256)
-    (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
-    DataStepper.runInstr (.op .CALLDATASIZE) (PatternedScan.stS input pc stk) =
-      some (PatternedScan.stS input (pc + 1) (UInt256.ofNat input.size :: stk)) := by
-  unfold DataStepper.runInstr
-  rw [if_pos (by simpa using hlen)]
-  simp only [PatternedScan.stS, Challenge.Ripemd160.initialState_calldata,
-    Challenge.EvmProof.Word.succ_ofNat hpc]
-
-/-! ## Program counters in the guard window -/
-
-private theorem pc3836 : Artifact.submissionArtifact.instructionPC 3440 = 4598 := J2EntryWindow.pc 0
-private theorem pc3837 : Artifact.submissionArtifact.instructionPC 3441 = 4599 := J2EntryWindow.pc 1
-private theorem pc3843 : Artifact.submissionArtifact.instructionPC 3447 = 4625 := J2EntryWindow.pc 7
-private theorem packedPC3745 : Artifact.submissionArtifact.instructionPC 3456 = 4640 := J2EntryWindow.pc 16
-private theorem packedPC3735 : Artifact.submissionArtifact.instructionPC 3449 = 4627 := J2EntryWindow.pc 9
-
-@[simp] private theorem sizeHitPC3837 : Artifact.submissionArtifact.instructionPC 3442 = 4601 := J2EntryWindow.pc 2
-@[simp] private theorem sizeHitPC3838 : Artifact.submissionArtifact.instructionPC 3443 = 4619 := J2EntryWindow.pc 3
-@[simp] private theorem sizeHitPC3839 : Artifact.submissionArtifact.instructionPC 3444 = 4620 := J2EntryWindow.pc 4
-@[simp] private theorem sizeHitPC3840 : Artifact.submissionArtifact.instructionPC 3445 = 4621 := J2EntryWindow.pc 5
-@[simp] private theorem sizeHitPC3841 : Artifact.submissionArtifact.instructionPC 3446 = 4622 := J2EntryWindow.pc 6
-
-private theorem packedPC3736 : Artifact.submissionArtifact.instructionPC 3450 = 4630 := J2EntryWindow.pc 10
-private theorem packedPC3737 : Artifact.submissionArtifact.instructionPC 3451 = 4631 := J2EntryWindow.pc 11
-private theorem packedPC3738 : Artifact.submissionArtifact.instructionPC 3452 = 4634 := J2EntryWindow.pc 12
-private theorem packedPC3739 : Artifact.submissionArtifact.instructionPC 3453 = 4635 := J2EntryWindow.pc 13
-private theorem packedPC3740 : Artifact.submissionArtifact.instructionPC 3454 = 4636 := J2EntryWindow.pc 14
-private theorem packedPC3743 : Artifact.submissionArtifact.instructionPC 3455 = 4637 := J2EntryWindow.pc 15
-
-
-
-
-
-
-/-! ## The size mask -/
-
-private def maskEntry : List Located :=
-  [DirectGuard.opAt 3440 .JUMPDEST (by exact J2EntryWindow.get 0)]
-
-private def sizePrefix : List Located :=
-  [DirectGuard.pushAt 3441 1 1 (by exact J2EntryWindow.get 1),
-   DirectGuard.pushAt 3442 17 342276208914615837337402008677671501826 (by exact J2EntryWindow.get 2),
-   DirectGuard.opAt 3443 .CALLDATASIZE (by exact J2EntryWindow.get 3),
-   DirectGuard.opAt 3444 .SHR (by exact J2EntryWindow.get 4),
-   DirectGuard.opAt 3445 .AND (by exact J2EntryWindow.get 5),
-   DirectGuard.pushAt 3446 2 4785 (by exact J2EntryWindow.get 6)]
-
-private def maskJump : List Located :=
-  [DirectGuard.opAt 3447 .JUMPI (by exact J2EntryWindow.get 7)]
-
-private def maskRestore : List Located :=
-  [DirectGuard.opAt 3448 .CALLDATASIZE (by exact J2EntryWindow.get 8)]
-
-private def guardMatchTail : List Located :=
-  [DirectGuard.opAt 3522 .JUMPDEST (by exact J2EntryWindow.getB 2)]
-
+private def shortTemplate : List Instr := [
+ .op .JUMPDEST, .push 0 0, .push 32 28948022349768971278010700369584604374341282260324016856826403983149888438272,
+ .op .CALLDATASIZE, .op .SHL, .op .SLT,
+ .push 2 8191, .op .CALLDATASIZE, .push 7 34711266746334640,
+ .op .DIV, .op .AND, .op .JUMPI]
+private def longTemplate (n target : Nat) : List Instr := [
+ .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
+ .push 2 (UInt256.ofNat target), .op .JUMPI]
+private theorem short_slice : (Artifact.submissionArtifact.instructions.drop 3417).take shortTemplate.length = shortTemplate := by rfl
+private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3429).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
+private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3434).take (longTemplate 376 6883).length = longTemplate 376 6883 := by rfl
+private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
+ change submissionBytecode.size < 2^256
+ rw [referenceBytecode_size]
+ decide
+private def shortSite : GenericRoundSite Artifact.submissionArtifact .Osaka shortTemplate :=
+ StackSiteBuilder.ofSlice shortTemplate 3417 short_slice
+  (by change 3417 + shortTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+  code_bound (StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
+private def long256Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 256 7805) :=
+ StackSiteBuilder.ofSlice (longTemplate 256 7805) 3429 long256_slice
+  (by change 3429 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+  code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 7805) (by decide)) (by decide)
+private def long376Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 376 6883) :=
+ StackSiteBuilder.ofSlice (longTemplate 376 6883) 3434 long376_slice
+  (by change 3434 + (longTemplate 376 6883).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+  code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 6883) (by decide)) (by decide)
+private theorem short_pc : shortSite.startPC = UInt256.ofNat 4570 := by
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3417) = _
+ rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4623 := by
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3429) = _
+ rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4632 := by
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3434) = _
+ rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
-  UInt256.land 1 (UInt256.shiftRight 342276208914615837337402008677671501826
-    (UInt256.ofNat input.size))
-
+ UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
+private def source (input : ByteArray) : UInt256 := DirectDigestRaw.selected 8191 input.size
 private theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input) = sizeFlag input := by
-  have h := SizeLookupFlag.flag (UInt256.ofNat input.size)
-  rw [SizeLookupFlag.mask_literal] at h
-  simpa only [sizeBit, sizeFlag, Word.literal_eq_ofNat] using h
+ unfold sizeBit
+ rw [show (0 : UInt256) = UInt256.ofNat 0 from rfl, SignedSizeFlag.flag]
+ have h := SizeLookupFlag.flag (UInt256.ofNat input.size)
+ rw [SizeLookupFlag.mask_literal] at h
+ simpa only [sizeFlag,Word.literal_eq_ofNat] using h
+private theorem hdiv (a b : UInt256) : a / b = UInt256.div a b := rfl
+private theorem short_raw (input : ByteArray) :
+ runInstrSeq shortTemplate (PatternedScan.stS input 4570 []) =
+  if UInt256.isTrue (sizeBit input) then
+   if Decode.isValidJumpDest submissionBytecode (source input).toNat then
+    some (PatternedScan.patternedEntry input) else none
+  else some (PatternedScan.stS input 4623 []) := by
+ simp (config := {maxSteps := 400000}) [shortTemplate,runInstrSeq,DataStepper.runInstr,
+  sizeBit,source,DirectDigestRaw.selected,PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,
+  initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,hdiv,
+  RawExpressionAC.land_comm]
+ split_ifs <;> simp_all
+private theorem long_raw (input : ByteArray) (n target pc : Nat) :
+ runInstrSeq (longTemplate n target) (PatternedScan.stS input pc []) =
+  if UInt256.isTrue (UInt256.eq (UInt256.ofNat n) (UInt256.ofNat input.size)) then
+   if Decode.isValidJumpDest submissionBytecode (UInt256.ofNat target).toNat then
+    some (PatternedScan.stS input target []) else none
+  else some (PatternedScan.stS input (pc+9) []) := by
+ simp (config := {maxSteps := 400000}) [longTemplate,runInstrSeq,DataStepper.runInstr,
+  PatternedScan.stS,initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat, Nat.add_assoc]
+ split_ifs <;> simp_all
 
-private theorem run_mask_entry (input : ByteArray) :
-    DirectGuard.run maskEntry (PatternedScan.stS input 4598 []) =
-      some (PatternedScan.stS input 4599 []) :=
-  PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3440 4598 [] (by norm_num) pc3836)
-    (PatternedScan.stepS_jumpdest input 4598 [] (by simp) (by norm_num))
+private def soundShort (input : ByteArray) (t : State) (hr : runInstrSeq shortTemplate (PatternedScan.stS input 4570 []) = some t) :
+ GasSteps (PatternedScan.stS input 4570 []) t :=
+ RecognitionLift.gasSteps_of_raw shortSite _ _ rfl rfl rfl deployAddress_not_precompile short_pc.symm
+  (RecognitionLift.advancesAll_sound _ (by decide)) hr
+private def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 7805) (PatternedScan.stS input 4623 []) = some t) :
+ GasSteps (PatternedScan.stS input 4623 []) t :=
+ RecognitionLift.gasSteps_of_raw long256Site _ _ rfl rfl rfl deployAddress_not_precompile long256_pc.symm
+  (RecognitionLift.advancesAll_sound _ (by decide)) hr
+private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 6883) (PatternedScan.stS input 4632 []) = some t) :
+ GasSteps (PatternedScan.stS input 4632 []) t :=
+ RecognitionLift.gasSteps_of_raw long376Site _ _ rfl rfl rfl deployAddress_not_precompile long376_pc.symm
+  (RecognitionLift.advancesAll_sound _ (by decide)) hr
+private theorem selected_valid (input : ByteArray) (hn : RecognitionAccumulator.Allowed input.size) :
+ Decode.isValidJumpDest submissionBytecode (source input).toNat = true := by
+ obtain ⟨i,hi⟩ := ReverseLiteralScan.allowed_index input.size hn
+ change Decode.isValidJumpDest submissionBytecode (DirectDigestRaw.selected 8191 input.size).toNat = true
+ rw [← hi]
+ exact ReverseSerializeReturn.storeSite.valid i
+private theorem short_false (input : ByteArray) (hfit : CalldataFits input)
+ (hn : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) :
+ ¬ UInt256.isTrue (sizeBit input) := by
+ have h : UInt256.isZero (sizeBit input) = UInt256.ofNat 1 := (sizeBit_flag input).trans (sizeFlag_fail input hfit hn)
+ intro ht
+ change (sizeBit input).toNat ≠ 0 at ht
+ rw [UInt256.isZero,if_neg ht] at h
+ exact (by decide : UInt256.ofNat 0 ≠ UInt256.ofNat 1) h
+private theorem long_false (input : ByteArray) (hfit : CalldataFits input) (n : Nat) (hn : n < 2^256) (hs : input.size ≠ n) :
+ ¬ UInt256.isTrue (UInt256.eq (UInt256.ofNat n) (UInt256.ofNat input.size)) := by
+ rw [DirectGuard.size_eq_zero input n (Nat.lt_trans hfit (by norm_num)) hn hs]
+ decide
 
-private theorem run_size_prefix (input : ByteArray) :
-    DirectGuard.run sizePrefix (PatternedScan.stS input 4599 []) =
-      some (PatternedScan.stS input 4625 [4785, sizeBit input]) := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3441 = 4599 := pc3837
-  simp (config := {maxSteps := 400000}) [sizePrefix, sizeBit, DirectGuard.opAt,
-    DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS, initialState, hpc,
-    DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
-    Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat, RawExpressionAC.land_comm]
-
-private theorem run_mask_match (input : ByteArray) (hc : UInt256.isTrue (sizeBit input)) :
-    DirectGuard.run maskJump (PatternedScan.stS input 4625 [4785, sizeBit input]) =
-      some (PatternedScan.stS input 4785 []) :=
-  PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3447 4625 [4785, sizeBit input] (by norm_num) pc3843)
-    (PatternedScan.stepS_jumpi_taken input 4625 4785 4785 (sizeBit input) []
-      (by simp) (by norm_num) (by rfl) hc guard_match_dest)
-
-private theorem run_mask_fall (input : ByteArray) (hc : ¬ UInt256.isTrue (sizeBit input)) :
-    DirectGuard.run maskJump (PatternedScan.stS input 4625 [4785, sizeBit input]) =
-      some (PatternedScan.stS input 4626 []) :=
-  PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3447 4625 [4785, sizeBit input] (by norm_num) pc3843)
-    (PatternedScan.stepS_jumpi_fall input 4625 4785 (sizeBit input) []
-      (by simp) (by norm_num) hc)
-
-private theorem run_guard_match_tail (input : ByteArray) (rho : List UInt256)
-    (hv : rho = PatternedScan.entryRho input.size) :
-    DirectGuard.run guardMatchTail (PatternedScan.stS input 4785 rho) =
-      some (PatternedScan.patternedEntry input) := by
-  subst hv
-  have hlen : (PatternedScan.entryRho input.size).length < 1024 := lt_of_le_of_lt (PatternedScan.entryRho_length input.size) (by decide)
-  simp
-    [hlen, guardMatchTail, DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp,
-     PatternedScan.stS, PatternedScan.patternedEntry,
-     Challenge.EvmProof.DataStepper.runLocatedBlock,
-     Challenge.EvmProof.DataStepper.runLocated,
-     Challenge.EvmProof.DataStepper.runInstr,
-     Challenge.EvmProof.Word.succ_ofNat_mod]
-
-private theorem entryRho_small (n : Nat) (_hsize : n = 56 ∨ n = 120 ∨ n = 63 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 119 ∨ n = 55 ∨ n = 1 ∨ n = 31 ∨ n = 32) :
-    [] = PatternedScan.entryRho n := rfl
-
-private theorem entryRho_large (n : Nat) (_hsize : n = 256 ∨ n = 376 ∨ n = 1000) :
-    [] = PatternedScan.entryRho n := rfl
-
-private theorem run_mask_restore (input : ByteArray) :
-    DirectGuard.run maskRestore (PatternedScan.stS input 4626 []) =
-      some (PatternedScan.stS input 4627 [UInt256.ofNat input.size]) :=
-  PatternedScan.blockOfS _
-    (PatternedScan.pcFactS input 3448 4626 [] (by norm_num) (J2EntryWindow.pc 8))
-    (calldatasize_step input 4626 [] (by simp) (by norm_num))
-
-private def gasSteps_mask_prefix (input : ByteArray) :
-    GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 4625 [4785, sizeBit input]) :=
-  (sound maskEntry (run_mask_entry input)).trans (sound sizePrefix (run_size_prefix input))
-
-private def gasSteps_mask_match (input : ByteArray) (hsize : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32) :
-    GasSteps (DirectGuard.guardEntry input) (PatternedScan.patternedEntry input) := by
-  have hf := sizeFlag_hit input hsize
-  rw [← sizeBit_flag] at hf
-  have hc : UInt256.isTrue (sizeBit input) := by
+def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : RecognitionAccumulator.Allowed input.size) (_h1000 : input.size ≠ 1000) :
+ GasSteps (DirectGuard.guardEntry input) (PatternedScan.patternedEntry input) := by
+ by_cases hs : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32
+ · have hc : UInt256.isTrue (sizeBit input) := by
+    have h := (sizeBit_flag input).trans (sizeFlag_hit input hs)
     change (sizeBit input).toNat ≠ 0
     intro hz
-    rw [UInt256.isZero, if_pos hz] at hf
-    exact (by decide : UInt256.ofNat 1 ≠ UInt256.ofNat 0) hf
-  exact (gasSteps_mask_prefix input).trans
-    ((sound maskJump (run_mask_match input hc)).trans
-      (sound guardMatchTail (run_guard_match_tail input _ (entryRho_small input.size hsize))))
+    rw [UInt256.isZero,if_pos hz] at h
+    exact (by decide : UInt256.ofNat 1 ≠ UInt256.ofNat 0) h
+   exact soundShort input _ (by rw [short_raw,if_pos hc,if_pos (selected_valid input hn)])
+ · have hns : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by tauto
+   have g0 := soundShort input _ (by rw [short_raw,if_neg (short_false input hfit hns)])
+   have hl : input.size = 256 ∨ input.size = 376 := by unfold RecognitionAccumulator.Allowed at hn; omega
+   by_cases h : input.size = 256
+   · have hv : Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 7805).toNat = true := by
+      have hp : source input = UInt256.ofNat 7805 := by
+       unfold source
+       rw [h]
+       decide
+      simpa only [hp] using selected_valid input hn
+     have gj := sound256 input (PatternedScan.stS input 7805 []) (by rw [long_raw,DirectGuard.size_eq_one input 256 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
+     have he : PatternedScan.stS input 7805 [] = PatternedScan.patternedEntry input := by
+      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]; decide
+     exact g0.trans (GasSteps.cast gj rfl he)
+   · have h256 : input.size ≠ 256 := h
+     have h : input.size = 376 := by omega
+     have g1 := sound256 input _ (by rw [long_raw,if_neg (long_false input hfit 256 (by decide) h256)])
+     have hv : Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 6883).toNat = true := by
+      have hp : source input = UInt256.ofNat 6883 := by
+       unfold source
+       rw [h]
+       decide
+      simpa only [hp] using selected_valid input hn
+     have gj := sound376 input (PatternedScan.stS input 6883 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
+     have he : PatternedScan.stS input 6883 [] = PatternedScan.patternedEntry input := by
+      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]; decide
+     exact g0.trans (g1.trans (GasSteps.cast gj rfl he))
 
-private def gasSteps_mask_fail (input : ByteArray) (hfit : CalldataFits input)
-    (hbad : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32) :
-    GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 4627 [UInt256.ofNat input.size]) := by
-  have hf := sizeFlag_fail input hfit hbad
-  rw [← sizeBit_flag] at hf
-  have hc : ¬ UInt256.isTrue (sizeBit input) := by
-    intro ht
-    change (sizeBit input).toNat ≠ 0 at ht
-    rw [UInt256.isZero, if_neg ht] at hf
-    exact (by decide : UInt256.ofNat 0 ≠ UInt256.ofNat 1) hf
-  exact (gasSteps_mask_prefix input).trans
-    ((sound maskJump (run_mask_fall input hc)).trans (sound maskRestore (run_mask_restore input)))
+def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ RecognitionAccumulator.Allowed input.size) (_h1000 : input.size ≠ 1000) :
+ GasSteps (DirectGuard.guardEntry input) (AbcArm.armEntry input) := by
+ have hns : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by unfold RecognitionAccumulator.Allowed at hn; omega
+ have h256 : input.size ≠ 256 := by unfold RecognitionAccumulator.Allowed at hn; omega
+ have h376 : input.size ≠ 376 := by unfold RecognitionAccumulator.Allowed at hn; omega
+ have g0 := soundShort input _ (by rw [short_raw,if_neg (short_false input hfit hns)])
+ have g1 := sound256 input _ (by rw [long_raw,if_neg (long_false input hfit 256 (by decide) h256)])
+ have g2 := sound376 input _ (by rw [long_raw,if_neg (long_false input hfit 376 (by decide) h376)])
+ exact g0.trans (g1.trans g2)
 
-/-! ## The 256 / 376 / 1000 test -/
-
-private def lengthCond (input : ByteArray) : UInt256 :=
-  UInt256.lor (UInt256.eq 376 (UInt256.ofNat input.size))
-    (UInt256.eq 256 (UInt256.ofNat input.size))
-
-private def lengthPrefix : List Located :=
-  [DirectGuard.pushAt 3449 2 256 (by exact J2EntryWindow.get 9),
-   DirectGuard.opAt 3450 .EQ (by exact J2EntryWindow.get 10),
-   DirectGuard.pushAt 3451 2 376 (by exact J2EntryWindow.get 11),
-   DirectGuard.opAt 3452 .CALLDATASIZE (by exact J2EntryWindow.get 12),
-   DirectGuard.opAt 3453 .EQ (by exact J2EntryWindow.get 13),
-   DirectGuard.opAt 3454 .ADD (by exact J2EntryWindow.get 14),
-   DirectGuard.pushAt 3455 2 4785 (by exact J2EntryWindow.get 15)]
-
-private def lengthJump : List Located :=
-  [DirectGuard.opAt 3456 .JUMPI (by exact J2EntryWindow.get 16)]
-
-private theorem run_length_prefix (input : ByteArray) :
-    DirectGuard.run lengthPrefix (PatternedScan.stS input 4627 [UInt256.ofNat input.size]) =
-      some (PatternedScan.stS input 4640 [4785, lengthCond input]) := by
-  have heq (a b : UInt256) : UInt256.eq a b = UInt256.eq b a := by
-    simp [UInt256.eq, eq_comm]
-  simp (config := {maxSteps := 400000}) [lengthPrefix, lengthCond,
-    DirectGuard.opAt, DirectGuard.pushAt, DirectGuard.wfOp, PatternedScan.stS,
-    initialState, DataStepper.runLocatedBlock, DataStepper.runLocated,
-    DataStepper.runInstr, Word.literal_eq_ofNat, Word.succ_ofNat_mod,
-    Word.ofNat_add_mod, Word.word_toNat_ofNat,
-    packedPC3735, packedPC3736, packedPC3737, packedPC3738, packedPC3739,
-    packedPC3740, packedPC3743, heq, RawExpressionAC.lor_comm]
-
-  have hadd (a b : UInt256) : UInt256.add a b = a + b := rfl
-  simpa only [heq, hadd, RawExpressionAC.lor_comm] using
-    TwoLengthFlagAddition.add_flags_eq_or (UInt256.ofNat input.size)
-
-private theorem lengthCond_true (input : ByteArray) (hsize : input.size = 256 ∨ input.size = 376) :
-    UInt256.isTrue (lengthCond input) := by
-  have hlt : input.size < 2 ^ 256 := by omega
-  rcases hsize with h | h
-  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376,
-      DirectGuard.size_eq_one input 256 h,
-      DirectGuard.size_eq_zero input 376 hlt (by norm_num) (by omega)]
-    decide
-  · rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376,
-      DirectGuard.size_eq_zero input 256 hlt (by norm_num) (by omega),
-      DirectGuard.size_eq_one input 376 h]
-    decide
-
-private theorem lengthCond_false (input : ByteArray) (hfit : CalldataFits input)
-    (h256 : input.size ≠ 256) (h376 : input.size ≠ 376) :
-    ¬ UInt256.isTrue (lengthCond input) := by
-  have hlt : input.size < 2 ^ 256 := Nat.lt_trans hfit (by norm_num)
-  rw [lengthCond, Word.literal_eq_ofNat 256, Word.literal_eq_ofNat 376,
-    DirectGuard.size_eq_zero input 256 hlt (by norm_num) h256,
-    DirectGuard.size_eq_zero input 376 hlt (by norm_num) h376]
-  decide
-
-private def gasSteps_length_match (input : ByteArray)
-    (hsize : input.size = 256 ∨ input.size = 376) :
-    GasSteps (PatternedScan.stS input 4627 [UInt256.ofNat input.size]) (PatternedScan.patternedEntry input) := by
-  have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4640 [4785, lengthCond input]) =
-      some (PatternedScan.stS input 4785 []) :=
-    PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 3456 4640 _ (by norm_num) packedPC3745)
-      (PatternedScan.stepS_jumpi_taken input 4640 4785 4785 (lengthCond input) []
-        (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
-        (lengthCond_true input hsize) guard_match_dest)
-  exact (sound lengthPrefix (run_length_prefix input)).trans
-      ((sound lengthJump hj).trans
-        (sound guardMatchTail (run_guard_match_tail input _
-          (entryRho_large input.size (hsize.elim Or.inl (fun h => Or.inr (Or.inl h)))))))
-
-private def gasSteps_length_fail (input : ByteArray) (hfit : CalldataFits input)
-    (h256 : input.size ≠ 256) (h376 : input.size ≠ 376) :
-    GasSteps (PatternedScan.stS input 4627 [UInt256.ofNat input.size]) (AbcArm.armEntry input) := by
-  have hj : DirectGuard.run lengthJump (PatternedScan.stS input 4640 [4785, lengthCond input]) =
-      some (AbcArm.armEntry input) :=
-    PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 3456 4640 _ (by norm_num) packedPC3745)
-      (PatternedScan.stepS_jumpi_fall input 4640 4785 (lengthCond input) []
-        (by simp) (by norm_num) (lengthCond_false input hfit h256 h376))
-  exact (sound lengthPrefix (run_length_prefix input)).trans (sound lengthJump hj)
-
-/-! ## Public routes -/
-
-/-- Long admissions enter at the shared JUMPDEST with an empty saved tail. -/
-def gasSteps_big_entry (input : ByteArray) (hsize : input.size = 256 ∨ input.size = 376 ∨ input.size = 1000) :
-    GasSteps (PatternedScan.stS input 4785 []) (PatternedScan.patternedEntry input) :=
-  sound guardMatchTail (run_guard_match_tail input _ (entryRho_large input.size hsize))
-
-private theorem small_or_large (n : Nat) (h : RecognitionAccumulator.Allowed n) :
-    (n = 56 ∨ n = 120 ∨ n = 63 ∨ n = 64 ∨ n = 65 ∨ n = 128 ∨ n = 119 ∨ n = 55 ∨ n = 1 ∨ n = 31 ∨ n = 32) ∨
-      (n ≠ 56 ∧ n ≠ 120 ∧ n ≠ 63 ∧ n ≠ 64 ∧ n ≠ 65 ∧ n ≠ 128 ∧ n ≠ 119 ∧ n ≠ 55 ∧ n ≠ 1 ∧ n ≠ 31 ∧ n ≠ 32) ∧
-        (n = 256 ∨ n = 376 ∨ n = 1000) := by
-  unfold RecognitionAccumulator.Allowed at h
-  omega
-
-/-- An allowed length with first byte 7 reaches the scanner. -/
-def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input)
-    (hallowed : RecognitionAccumulator.Allowed input.size) (h1000 : input.size ≠ 1000) :
-    GasSteps (DirectGuard.guardEntry input) (PatternedScan.patternedEntry input) := by
-  by_cases hsmall : input.size = 56 ∨ input.size = 120 ∨ input.size = 63 ∨ input.size = 64 ∨ input.size = 65 ∨ input.size = 128 ∨ input.size = 119 ∨ input.size = 55 ∨ input.size = 1 ∨ input.size = 31 ∨ input.size = 32
-  · exact gasSteps_mask_match input hsmall
-  · have hcases := small_or_large input.size hallowed
-    have hbad : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by
-      omega
-    have hlarge : input.size = 256 ∨ input.size = 376 := by omega
-    exact (gasSteps_mask_fail input hfit hbad).trans (gasSteps_length_match input hlarge)
-
-/-- Any other length falls through into the tiny-input arm. -/
-def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input)
-    (hdis : ¬ RecognitionAccumulator.Allowed input.size) (_h1000 : input.size ≠ 1000) :
-    GasSteps (DirectGuard.guardEntry input) (AbcArm.armEntry input) := by
-  unfold RecognitionAccumulator.Allowed at hdis
-  have hbad : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by
-    omega
-  exact (gasSteps_mask_fail input hfit hbad).trans
-    (gasSteps_length_fail input hfit (by omega) (by omega))
-
+#print axioms gasSteps_allowed
+#print axioms gasSteps_to_arm
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Patterned128Entry

@@ -37,11 +37,11 @@ structure Moves (s : State) (rho : List UInt256) where
   fusedBoundary (f : J2Raw.Frame) (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
       (hfinal : f.stop.toNat < f.len.toNat) (h256 : s.executionEnv.calldata.size = 256) :
     GasSteps (atState s 5544 (frame f rho))
-      (atState s (if (fusedAcc s f).toNat = 0 then fusedReturnPC else 4565) (finishRest f rho))
+      (atState s (if (fusedAcc s f).toNat = 0 then fusedReturnPC else 4785) (finishRest f rho))
   transition (f : J2Raw.Frame) (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size) :
     GasSteps (atState s 4881 (frame f rho))
       (atState s (transitionTarget (UInt256.ofNat s.executionEnv.calldata.size)).toNat
         (frame (transitionResult f) rho))
   result (f : J2Raw.Frame) : GasSteps (atState s 5566 (frame f rho))
-    (atState s (if f.acc.toNat=0 then 5570 else 4565) (finishRest f rho))
+    (atState s (if f.acc.toNat=0 then 5570 else 4785) (finishRest f rho))
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Moves

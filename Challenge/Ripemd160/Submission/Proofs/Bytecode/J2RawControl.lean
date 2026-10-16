@@ -66,9 +66,9 @@ theorem run_finish (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
 
 theorem run_result (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
     runInstrSeq resultTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := if f.acc.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4565,
+      some {s with pc := if f.acc.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4785,
                    stack := finishRest f rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega

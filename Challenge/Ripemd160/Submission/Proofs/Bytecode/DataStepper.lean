@@ -93,6 +93,9 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
     | .op .GT => match s.stack with
         | a :: b :: rest => some { s with stack := UInt256.gt a b :: rest, pc := s.pc.succ }
         | _ => none
+    | .op .SLT => match s.stack with
+        | a :: b :: rest => some { s with stack := UInt256.slt a b :: rest, pc := s.pc.succ }
+        | _ => none
     | .op .EQ => match s.stack with
         | a :: b :: rest => some { s with stack := UInt256.eq a b :: rest, pc := s.pc.succ }
         | _ => none
@@ -303,6 +306,24 @@ makeBinarySound sound_sdiv for .SDIV via gasStepSdiv
 makeBinarySound sound_mod for .MOD via GasStep.mod
 makeBinarySound sound_lt for .LT via GasStep.lt
 makeBinarySound sound_gt for .GT via GasStep.gt
+
+/-- `SLT` as a gas-parametric step, derived directly from the relational EVM semantics. -/
+private def gasStepSlt {s : State} {a b : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .SLT)
+    (hstack : s.stack = a :: b :: rest)
+    (hcap : s.stack.length + Operation.pushArity .SLT ≤
+      1024 + Operation.popArity .SLT)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with stack := UInt256.slt a b :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .SLT
+  apply GasStep.of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.slt (withGas s gas) a b rest hop hgas hstack hcap
+
+makeBinarySound sound_slt for .SLT via gasStepSlt
 makeBinarySound sound_eq for .EQ via GasStep.eq
 makeBinarySound sound_byte for .BYTE via GasStep.byte
 makeBinarySound sound_and for .AND via GasStep.land
@@ -760,6 +781,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
       cases op <;> first
         | exact (sound_lt hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_gt hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_slt hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_eq hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_byte hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_iszero hdecode hresult hrun hnp).trace gas hgas
