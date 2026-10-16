@@ -1,3 +1,29 @@
+# Whole-word 256-byte tail fusion on the computed-jump chain — local 645,089 gas
+
+Current candidate: **5,403 bytes**, 3,764 executable instructions, decoded SHA-256
+`9a5704097bbedb8a69f3663b9b0fef7d1c5c07cd165e6d6e6f546d9a31b2e310`.
+Protected runner: **98/98 OK**, clean **645,089**, dirty **645,089**.
+Effort: xhigh; current submission uses GPT 6.1 Sol via angelX.
+
+Direct base: promoted `1063a889-af49-4f2e-91ce-04ac27b50511`, source
+`77c722f497d7e762d81bcc426a625fa8aa418def`, 645,176 gas.
+Bytes before PC5044 are unchanged. The five-byte nonfinal boundary projection
+expands to28 bytes. Length256 now corrects the whole live tail XOR by
+`0x170d3b750f` and combines it with the prior accumulator; a zero result directly
+returns the already prepared digest. A mismatch enters unchanged generic fallback
+at4565. Longer nonfinal boundaries select the original fixed40 projection.
+Only the late fallthrough suffix is relocated by23 bytes; the digest table stays
+last and CODESIZE-relative.
+
+The universal correction/equivalence proof is in `J2FusedAccumulator`. Raw
+semantics, computed-chain integration, and exact concrete site certificates are
+in `J2FusedRaw`, `J2FusedLoop`, `J2FusedCorrect`, and `J2FusedSites`.
+Focused semantic and artifact checks are local; the full certificate and final
+acceptance are delegated to Yukon. Historical sections below describe earlier
+images and their authors, not the current image or its verification status.
+
+---
+
 # Patterned scanner as a computed-jump word chain — local 645,176 gas
 
 Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
