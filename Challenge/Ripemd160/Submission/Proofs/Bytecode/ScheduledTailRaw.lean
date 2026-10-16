@@ -156,26 +156,8 @@ theorem run_chunk2 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 #print axioms run_chunk2
 
-/-- The last instruction before the block exit at 4537: the `h3` sum, still unmasked. -/
-def chunk3a : List Instr := [ .op .ADD ]
-
-/-- The stack at the block exit (4537): the continuation is in slot 16. -/
-def stack3a (q : Input) (rho : List UInt256) : List UInt256 := [ (UInt256.add (UInt256.add q.h4 q.la) (UInt256.shiftRight q.rb (UInt256.ofNat 144))), q.le, (UInt256.shiftRight q.ra (UInt256.ofNat 144)), q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, (UInt256.land q.lower (UInt256.add q.h0 (UInt256.add q.lb (UInt256.shiftRight q.rc (UInt256.ofNat 144))))), q.h3, q.h2, (UInt256.land q.lower (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight (UInt256.mul q.ld q.factor) (UInt256.ofNat 23)) (UInt256.shiftRight q.re (UInt256.ofNat 144))))), (UInt256.land q.lower (UInt256.add q.h1 (UInt256.add (UInt256.shiftRight q.rd (UInt256.ofNat 144)) q.lc))), q.off, q.limit ] ++ rho
-theorem run_chunk3a (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
-    (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
-    runInstrSeq chunk3a {s with pc := pc, stack := stack3 q rho} =
-      some {s with pc := pcAfter pc chunk3a, stack := stack3a q rho} := by
-  have hcap (n : Nat) (hn : n ≤ 43) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [chunk3a, stack3, stack3a, runInstrSeq,
-    DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
-    Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
-    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.add_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.land_assoc]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
-#print axioms run_chunk3a
-
-/-- The tail the loop targets now run after the exit: mask and place `h3`, then `h2`. -/
-def chunk3b : List Instr := [ .op (.Dup ⟨4, by decide⟩),
+def chunk3 : List Instr := [ .op .ADD,
+    .op (.Dup ⟨4, by decide⟩),
     .op .AND,
     .op (.Swap ⟨9, by decide⟩),
     .op .ADD,
@@ -185,29 +167,28 @@ def chunk3b : List Instr := [ .op (.Dup ⟨4, by decide⟩),
     .op (.Swap ⟨8, by decide⟩) ]
 
 def stack4 (q : Input) (rho : List UInt256) : List UInt256 := [ q.h2, q.factor, q.lower, q.cache140, q.cache350, q.cache310, q.cache190, (UInt256.land q.lower (UInt256.add (UInt256.add q.h0 q.lb) (UInt256.shiftRight q.rc (UInt256.ofNat 144)))), (UInt256.land q.lower (UInt256.add q.h4 (UInt256.add (UInt256.shiftRight q.rb (UInt256.ofNat 144)) q.la))), (UInt256.land q.lower (UInt256.add q.h3 (UInt256.add (UInt256.shiftRight q.ra (UInt256.ofNat 144)) q.le))), (UInt256.land q.lower (UInt256.add q.h2 (UInt256.add (UInt256.shiftRight q.re (UInt256.ofNat 144)) (UInt256.shiftRight (UInt256.mul q.ld q.factor) (UInt256.ofNat 23))))), (UInt256.land q.lower (UInt256.add (UInt256.add q.h1 q.lc) (UInt256.shiftRight q.rd (UInt256.ofNat 144)))), q.off, q.limit ] ++ rho
-theorem run_chunk3b (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
+theorem run_chunk3 (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
-    runInstrSeq chunk3b {s with pc := pc, stack := stack3a q rho} =
-      some {s with pc := pcAfter pc chunk3b, stack := stack4 q rho} := by
+    runInstrSeq chunk3 {s with pc := pc, stack := stack3 q rho} =
+      some {s with pc := pcAfter pc chunk3, stack := stack4 q rho} := by
   have hcap (n : Nat) (hn : n ≤ 43) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [chunk3b, stack3a, stack4, runInstrSeq,
+  simp (discharger := omega) [chunk3, stack3, stack4, runInstrSeq,
     DataStepper.runInstr, UInt256.succ, pcAfter, Instr.size, hrun, hcap,
     Nat.add_assoc, List.getElem?_cons_zero, List.exchange,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals simp only [neutral_hadd, neutral_hmul, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.add_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.land_assoc]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
-#print axioms run_chunk3b
+#print axioms run_chunk3
 
-/-- The resident tail up to the block exit at 4537. -/
-def template : List Instr := chunk0 ++ chunk1 ++ chunk2 ++ chunk3a
+def template : List Instr := chunk0 ++ chunk1 ++ chunk2 ++ chunk3
 theorem run_template (s : State) (pc : UInt256) (q : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 980) (hrun : s.halt = .Running) :
     runInstrSeq template {s with pc := pc, stack := stack0 q rho} =
-      some {s with pc := pcAfter pc template, stack := stack3a q rho} := by
+      some {s with pc := pcAfter pc template, stack := stack4 q rho} := by
   have h0 := run_chunk0 s (pc) q rho hstack hrun
   have h1 := run_chunk1 s (pcAfter (pc) chunk0) q rho hstack hrun
   have h2 := run_chunk2 s (pcAfter (pcAfter (pc) chunk0) chunk1) q rho hstack hrun
-  have h3 := run_chunk3a s (pcAfter (pcAfter (pcAfter (pc) chunk0) chunk1) chunk2) q rho hstack hrun
+  have h3 := run_chunk3 s (pcAfter (pcAfter (pcAfter (pc) chunk0) chunk1) chunk2) q rho hstack hrun
   have hsum1 := DenseScheduleTrace.runInstrSeq_append_running h0 (by exact hrun) h1
   have hsum2 := DenseScheduleTrace.runInstrSeq_append_running hsum1 (by exact hrun) h2
   have hsum3 := DenseScheduleTrace.runInstrSeq_append_running hsum2 (by exact hrun) h3

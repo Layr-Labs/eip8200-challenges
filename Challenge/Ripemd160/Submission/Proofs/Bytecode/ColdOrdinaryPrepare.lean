@@ -32,7 +32,7 @@ def gasSteps_padAll (s : State) (h : Compression.HashState) (off limit : UInt256
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 74, stack := frame h off limit rho}
+    GasSteps {s with pc := UInt256.ofNat 65, stack := frame h off limit rho}
       {s with
         pc := UInt256.ofNat 824
         stack := frame h off (UInt256.ofNat StaggerPersistentLoopRaw.outPC) rho
@@ -86,6 +86,9 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
   · change input.size = i * 64 ∧ input.size < 256 at hh
     have hf : s.executionEnv.calldata.size < 2^256 := by
       rw [ctx.calldata]; exact calldata_lt_uint256 input hfit
+    have gp := StaggerPersistentPadPrefix.gasSteps_prefix s (frame h off limit rho)
+      (by simp only [frame, List.length_append, List.length_cons, List.length_nil]; omega)
+      hr hcode hfork hnp
     have ha : 35 ≤ s.activeWords.toNat := ctx.active
     have hoff : s.executionEnv.calldata.size ≤ off.toNat := by
       have hb := messagePointer_bound input hfit i hi
@@ -100,12 +103,12 @@ def gasSteps_prepare (s : State) (input : ByteArray) (i : Nat) (h : Compression.
     rw [scheduledState_hit s i hhs]
     let qh : State :=
       {s with memory := StaggerTablePad.padRealResult s.memory (UInt256.ofNat s.executionEnv.calldata.size)}
-    have gb' : GasSteps {s with pc := UInt256.ofNat 74, stack := frame h off limit rho}
+    have gb' : GasSteps {s with pc := UInt256.ofNat 65, stack := frame h off limit rho}
         {qh with pc := UInt256.ofNat 824, stack := frame h off (UInt256.ofNat StaggerPersistentLoopRaw.outPC) rho} := by
       apply gb.cast rfl
       rfl
     simpa only [LoopCompletionControl.blockPC, DriverTrace.blockOffset, if_pos hh,
-      StaggerPersistentLoopRaw.blockCont] using gb'
+      StaggerPersistentLoopRaw.blockCont] using gp.trans gb'
   · change ¬ (input.size = i * 64 ∧ input.size < 256) at hh
     have hhs : ¬ (s.executionEnv.calldata.size = DriverTrace.blockOffset i ∧
         s.executionEnv.calldata.size < 256) := by

@@ -46,24 +46,36 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
 
 
 
+private theorem serialize_append (s : State) (h : Compression.HashState)
+    (off limit : UInt256) (headWords tailWords : List UInt256) :
+    StackTail.append (StaggerPersistentSerialize.result s h off limit headWords) tailWords =
+      StaggerPersistentSerialize.result s h off limit (headWords ++ tailWords) := by
+  rfl
+
+
 def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
     (_hcal : s.executionEnv.calldata = input) (_h32 : input.size = 32)
     (hactive : s.activeWords = UInt256.ofNat 35)
     (rho : List UInt256) (hcap : rho.length ≤ 20) :
     GasSteps (StackTail.append (Shared32Core.entryState s) rho)
-      (StaggerPersistentSerialize.result s s.memory StackRunBridge.initialHashState
-        (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho) := by
+      (StackTail.append (Shared32Core.resultState s) rho) := by
   let masks := Shared32Core.maskRho ++ rho
   have hm : masks.length ≤ 880 := by simp only [masks, Shared32Core.maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gb := Shared32Core.gasSteps_body s e StackRunBridge.initialHashState
     (UInt256.ofNat 1056) (UInt256.ofNat 4733) masks (by omega)
     (by rw [hactive]; decide)
-  have ge := StaggerPersistentLoopSites.gasSteps_exit s s.memory StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) masks (by omega) e.run
+  have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (Shared32Core.resultHash s)
+    (UInt256.ofNat 1056) (UInt256.ofNat 4733) Shared32Core.resultCont masks (by omega) e.run
     (StaggerPersistentLoopSites.valid_out s e.code)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s s.memory StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho (by omega) e.run e.code e.fork e.np
+  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) Shared32Core.resultCont
+    (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np
+  have hresult : StackTail.append (Shared32Core.resultState s) rho =
+      StaggerPersistentSerialize.result s (Shared32Core.resultHash s)
+        (UInt256.ofNat 1056) Shared32Core.resultCont masks :=
+    serialize_append s (Shared32Core.resultHash s) (UInt256.ofNat 1056)
+      Shared32Core.resultCont Shared32Core.maskRho rho
+  rw [hresult]
   simpa only [StackTail.append, Shared32Core.entryState,
     StaggerPersistentFrame.frame, Shared32Core.maskRho, masks,
     List.append_assoc, List.cons_append, List.nil_append] using gb.trans (ge.trans go)
@@ -80,9 +92,7 @@ theorem correct (input : ByteArray) (h32 : input.size = 32)
   have gc := gasSteps_core s e input rfl h32 (Shared32Start.table_active input) rho hcap
   have trace := entryPrefix.trans (gs.trans gc)
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl rfl
-  exact StaggerPersistentSerialize.returned_spec_of_hashArray s input s.memory
-    StackRunBridge.initialHashState (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho
-    (Shared32Core.resultHash_spec s input h32 (Shared32Start.table_ready input h32))
+  exact Shared32Core.returned_spec s input h32 (Shared32Start.table_ready input h32)
 
 #print axioms gasSteps_start
 #print axioms gasSteps_core

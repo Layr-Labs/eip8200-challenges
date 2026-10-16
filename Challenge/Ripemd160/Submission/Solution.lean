@@ -17,6 +17,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: ee079ca9f0082d4467838e39b5fc4aea02691b850db2a6dae2d45637b58a4d10.
--- 6488 bytes; local seedscore 644415.
--- Block exit before the last tail step (DUP16 JUMP at 4537); targets finish the tail.
+-- Current decoded SHA-256: 64c4651194c4da4e98ba8abf68ec5333fd24c5431ddd21d983b7a16d63b8dcb5.
+-- 6604 bytes; local seedscore 641791.
+-- Direct literal-word scanner; final partial-word mask derived from calldata size.

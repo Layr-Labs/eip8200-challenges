@@ -97,12 +97,12 @@ def padEntry (input : ByteArray) : State :=
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc114 :
-    Artifact.submissionArtifact.instructionPC 114 = 196 := by
+    Artifact.submissionArtifact.instructionPC 114 = 195 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci114 :
-    Artifact.instructionPC 114 = 196 := by
-  change Artifact.submissionArtifact.instructionPC 114 = 196
+    Artifact.instructionPC 114 = 195 := by
+  change Artifact.submissionArtifact.instructionPC 114 = 195
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc115 :

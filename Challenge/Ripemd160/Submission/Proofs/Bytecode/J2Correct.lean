@@ -1,9 +1,9 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionDigest
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Loop
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Sites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectLiteralScanV4
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeReturn
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeShortReturn
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeFallback
 
 set_option warningAsError true
@@ -41,37 +41,45 @@ theorem from_entry (input : ByteArray)
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let saved : List UInt256 := [PatternedScan.segEnd input.size]
   let s := EarlySerializeReturn.prepared input saved
-  have e : J2Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
-  have hactive : s.activeWords = UInt256.ofNat 1 := rfl
+  have e : DirectLiteralScanV4.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
   have gprepare := EarlySerializeReturn.gasSteps_prepare input saved (by simp [saved])
   have gp : GasSteps (PatternedScan.patternedEntry input)
-      (J2Moves.atState s 4804 [J2Raw.clamp (UInt256.ofNat input.size)]) := by
-    exact GasSteps.cast gprepare rfl (by
-      rw [EarlySerializeReturn.prepared_atState]
-      rfl)
-  have moves := J2Sites.moves s e [] (by decide) hactive
-  by_cases hz : J2Accumulator.resultAcc input input.size = 0
-  · let rho := J2Raw.finishRest (J2End.endFrame s input.size) []
-    have hc : rho.length ≤ 990 := by simp [rho, J2Raw.finishRest]
-    have gh := J2Loop.gasSteps_hit s [] moves input.size hn rfl hz
-    have gr := EarlySerializeReturn.gasSteps_return input saved rho hc
-    have trace : GasSteps (initialState submissionBytecode input 0)
-        (EarlySerializeReturn.output input rho) :=
-      hentry.trans (gp.trans (gh.trans gr))
-    exact of_returned input _ trace (EarlySerializeReturn.output_halt input rho) rfl
-      (EarlySerializeReturn.output_spec input rho hn hz)
-  · let rho := J2Raw.finishRest (J2End.endFrame s input.size) []
-    have hc : rho.length ≤ 20 := by simp [rho, J2Raw.finishRest]
-    have gm := J2Loop.gasSteps_miss s [] moves input.size hn rfl hz
+      (J2Moves.atState s 4804 saved) := by
+    exact GasSteps.cast gprepare rfl (EarlySerializeReturn.prepared_atState input saved)
+  have gs := DirectLiteralScanV4.gasSteps_scan s e saved (by simp [saved]) hn
+  have gs' : GasSteps (J2Moves.atState s 4804 saved)
+      (J2Moves.atState s
+        (if (DirectLiteralModel.result input input.size).toNat = 0 then (if DirectLiteralScanV4.phase input.size=0 then 6121 else 6105) else 4565) saved) := gs
+  by_cases hz : (DirectLiteralModel.result input input.size).toNat = 0
+  · rw [if_pos hz] at gs'
+    have hzword : DirectLiteralModel.result input input.size = 0 := by
+      apply Word.word_ext
+      exact hz
+    have heq := (DirectLiteralModel.result_zero_iff input input.size hn rfl).mp hzword
+    have hold := (J2Accumulator.resultAcc_zero_iff input input.size hn rfl).mpr heq
+    by_cases hphase : DirectLiteralScanV4.phase input.size=0
+    · rw [if_pos hphase] at gs'
+      have gr := EarlySerializeShortReturn.gasSteps_return input saved saved (by simp [saved])
+      have trace : GasSteps (initialState submissionBytecode input 0)
+          (EarlySerializeShortReturn.output input saved) := hentry.trans (gp.trans (gs'.trans gr))
+      exact of_returned input _ trace (EarlySerializeShortReturn.output_halt input saved) rfl
+        (EarlySerializeShortReturn.output_spec input saved hn hold)
+    · rw [if_neg hphase] at gs'
+      have gr := EarlySerializeReturn.gasSteps_return input saved saved (by simp [saved])
+      have trace : GasSteps (initialState submissionBytecode input 0)
+          (EarlySerializeReturn.output input saved) := hentry.trans (gp.trans (gs'.trans gr))
+      exact of_returned input _ trace (EarlySerializeReturn.output_halt input saved) rfl
+        (EarlySerializeReturn.output_spec input saved hn hold)
+  · rw [if_neg hz] at gs'
     have hb := RecognitionAccumulator.allowed_bounds input.size hn
     have gf := EarlySerializeFallback.gasSteps input hfit hb.1
-      s.memory (EarlySerializeReturn.prepared_memory_size input saved) rho hc
-    have gfm : GasSteps (J2Moves.atState s 4565 rho)
-        (StackTail.append (PaddingTrace.padFramed input) rho) := by
+      s.memory (EarlySerializeReturn.prepared_memory_size input saved) saved (by simp [saved])
+    have gfm : GasSteps (J2Moves.atState s 4565 saved)
+        (StackTail.append (PaddingTrace.padFramed input) saved) := by
       simpa only [J2Moves.atState, EarlySerializeFallback.incoming, s,
         EarlySerializeReturn.prepared, RecognitionSelectorResult.copied,
         EarlySerializeReturn.beforeCopy, EarlySerializeReturn.base] using gf
-    exact hgeneric rho hc (hentry.trans (gp.trans (gm.trans gfm)))
+    exact hgeneric saved (by simp [saved]) (hentry.trans (gp.trans (gs'.trans gfm)))
 
 #print axioms of_returned
 #print axioms from_entry

@@ -2,6 +2,7 @@ import Challenge.Ripemd160.ProofSupport.InitialState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Moves
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Accumulator
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Payload
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionByteSelectorRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -22,7 +23,7 @@ open J2Moves RecognitionSelectorRaw RecognitionSelectorResult StackRoundTrace St
 def base (input : ByteArray) : State := initialState submissionBytecode input 0
 
 def source (input : ByteArray) : UInt256 :=
-  selected (UInt256.ofNat submissionBytecode.size) input.size
+  RecognitionByteSelectorRaw.selected (UInt256.ofNat submissionBytecode.size) input.size
 
 def beforeCopy (input : ByteArray) (rho : List UInt256) : State :=
   atState (base input) 4803 (12 :: source input :: 20 :: rho)
@@ -33,7 +34,7 @@ def prepared (input : ByteArray) (rho : List UInt256) : State :=
 
 /-- The final return uses the prepared memory, not an unrelated running state. -/
 def output (input : ByteArray) (rho : List UInt256) : State :=
-  RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat 5042) rho
+  RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat 6106) rho
 
 @[simp] theorem prepared_pc (input : ByteArray) (rho : List UInt256) :
     (prepared input rho).pc = UInt256.ofNat 4804 := by
@@ -86,7 +87,7 @@ theorem prepared_np (input : ByteArray) (rho : List UInt256) :
   deployAddress_not_precompile
 
 theorem source_environment (input : ByteArray) (rho : List UInt256) :
-    source input = selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
+    source input = RecognitionByteSelectorRaw.selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
       (prepared input rho).executionEnv.calldata.size := rfl
 
 @[simp] theorem atState_prepared_memory (input : ByteArray) (rho : List UInt256)
@@ -118,7 +119,7 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 namespace prefixSite
-abbrev template : List Instr := RecognitionSelectorRaw.prefixTemplate
+abbrev template : List Instr := RecognitionByteSelectorRaw.prefixTemplate
 theorem actual_slice :
     (Artifact.submissionArtifact.instructions.drop 3523).take template.length = template := by rfl
 
@@ -141,19 +142,19 @@ end prefixSite
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3700).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3732).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3700 actual_slice
-    (by change 3700 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3732 actual_slice
+    (by change 3732 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 5042 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3700) = UInt256.ofNat 5042
+theorem site_pc : site.startPC = UInt256.ofNat 6106 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3732) = UInt256.ofNat 6106
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem end_pc : pcAfter (UInt256.ofNat 5042) template = UInt256.ofNat 5044 := by decide
+theorem end_pc : pcAfter (UInt256.ofNat 6106) template = UInt256.ofNat 6108 := by decide
 
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -161,11 +162,11 @@ end finishSite
 
 private theorem copy_decoded (input : ByteArray) (rho : List UInt256) :
     (beforeCopy input rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3534 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3532 .CODECOPY
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3534
+  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3532
     rfl _ .CODECOPY none hd (by rfl)
-  change (UInt256.ofNat 4803).toNat = Artifact.submissionArtifact.instructionPC 3534
+  change (UInt256.ofNat 4803).toNat = Artifact.submissionArtifact.instructionPC 3532
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- Only prefix + CODECOPY: the next instruction is the scanner initializer. -/
@@ -173,7 +174,7 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
     GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
   have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
       some (beforeCopy input rho) := by
-    have h := run_prefix (base input) (UInt256.ofNat 4786) rho (by omega) rfl
+    have h := RecognitionByteSelectorRaw.run_prefix (base input) (UInt256.ofNat 4786) rho (by omega) rfl
     simpa only [prefixSite.end_pc, beforeCopy, atState, source, base, initialState] using h
   have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
     (atState (base input) 4786 rho) (beforeCopy input rho)
@@ -195,35 +196,35 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
     show (20 : UInt256).toNat = 20 from rfl] using gc
 
 private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) :
-    (atState (prepared input saved) 5041 rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3699 .MSIZE
+    (atState (prepared input saved) 6105 rho).decodedOp = some .MSIZE := by
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3731 .MSIZE
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
-    (atState (prepared input saved) 5041 rho) 3699 rfl _ .MSIZE none hd (by rfl)
-  change (UInt256.ofNat 5041).toNat = Artifact.submissionArtifact.instructionPC 3699
+    (atState (prepared input saved) 6105 rho) 3731 rfl _ .MSIZE none hd (by rfl)
+  change (UInt256.ofNat 6105).toNat = Artifact.submissionArtifact.instructionPC 3731
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The recognizer may replace the entire stack; only the prepared memory matters. -/
 def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.length ≤ 990) :
-    GasSteps (atState (prepared input saved) 5041 rho) (output input rho) := by
+    GasSteps (atState (prepared input saved) 6105 rho) (output input rho) := by
   have gs := Msize.step (size_decoded input saved rho)
     (by change rho.length < 1024; omega) rfl deployAddress_not_precompile
   have hf : runInstrSeq finishSite.template
-      (atState (prepared input saved) 5042 (32 :: rho)) =
-      some (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 5042) rho) :=
-    run_finish (prepared input saved) (UInt256.ofNat 5042) rho (by omega) rfl
+      (atState (prepared input saved) 6106 (32 :: rho)) =
+      some (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 6106) rho) :=
+    run_finish (prepared input saved) (UInt256.ofNat 6106) rho (by omega) rfl
   have gf := RecognitionLift.gasSteps_of_raw finishSite.site
-    (atState (prepared input saved) 5042 (32 :: rho))
-    (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 5042) rho)
+    (atState (prepared input saved) 6106 (32 :: rho))
+    (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 6106) rho)
     (prepared_code input saved) (prepared_fork input saved) (prepared_run input saved)
     (prepared_np input saved) finishSite.site_pc.symm finishSite.form hf
-  have hpc : (UInt256.ofNat 5041).succ = UInt256.ofNat 5042 := by decide
-  have gs' : GasSteps (atState (prepared input saved) 5041 rho)
-      (atState (prepared input saved) 5042 (32 :: rho)) := by
+  have hpc : (UInt256.ofNat 6105).succ = UInt256.ofNat 6106 := by decide
+  have gs' : GasSteps (atState (prepared input saved) 6105 rho)
+      (atState (prepared input saved) 6106 (32 :: rho)) := by
     simpa only [atState, prepared_activeWords, Word.word_toNat_ofNat,
       Word.literal_eq_ofNat, hpc,
       show (1 : Nat) % 2^256 = 1 from by decide, Nat.mul_one] using gs
-  have gout : RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 5042) rho =
+  have gout : RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat 6106) rho =
       output input rho := rfl
   exact gs'.trans (gout ▸ gf)
 
@@ -269,7 +270,7 @@ theorem return_correct (input : ByteArray) (saved rho : List UInt256)
     (hcap : rho.length ≤ 990) (hn : RecognitionAccumulator.Allowed input.size)
     (hz : J2Accumulator.resultAcc input input.size = 0) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (withGas (atState (prepared input saved) 5041 rho) gas)
+      Eval (withGas (atState (prepared input saved) 6105 rho) gas)
         (.returned (spec input)) := by
   let trace := gasSteps_return input saved rho hcap
   refine ⟨trace.cost, fun gas hgas => ?_⟩
@@ -277,7 +278,7 @@ theorem return_correct (input : ByteArray) (saved rho : List UInt256)
     simp [withGas, State.isDone, State.isHalted, State.isRunning,
       output_halt, output_callStack])
   rw [State.toResult_returned _ (by simp [withGas])] at heval
-  change Eval (withGas (atState (prepared input saved) 5041 rho) gas)
+  change Eval (withGas (atState (prepared input saved) 6105 rho) gas)
     (.returned (output input rho).hReturn) at heval
   simpa only [output_spec input rho hn hz] using heval
 

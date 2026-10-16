@@ -29,13 +29,6 @@ def hashes (input : ByteArray) : Nat → Compression.HashState
     hashes input (n + 1) =
       PersistentStaggerFunctional.result (scheduledState (states input n) n).memory (hashes input n) := rfl
 
-/-- The last hash is the last block's result. -/
-theorem hashes_last (input : ByteArray) (n : Nat) (hn : 0 < n) :
-    hashes input n =
-      PersistentStaggerFunctional.result (states input n).memory (hashes input (n - 1)) := by
-  obtain ⟨k, rfl⟩ : ∃ k, n = k + 1 := ⟨n - 1, by omega⟩
-  rfl
-
 theorem states_executionEnv (input : ByteArray) (n : Nat) :
     (states input n).executionEnv = (PadSkipEntry.entryState input).executionEnv := by
   induction n with

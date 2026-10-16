@@ -24,8 +24,8 @@ def gasSteps_body (s : State) (e : Env s) (h : Compression.HashState)
     GasSteps
       {s with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with
-        pc := UInt256.ofNat 4537
-        stack := PersistentStaggerTailBridge.preStack s.memory h off limit rho} := by
+        pc := UInt256.ofNat 4545
+        stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (Functional.result s.memory h) off limit rho} := by
   have gb := StaggerPersistentBootstrapBridge.gasSteps_body s h off limit rho
     hstack e.run hactive e.code e.fork e.np
   have gt := PersistentStaggerTailBridge.gasSteps s h
@@ -50,10 +50,12 @@ def entryState (s : State) : State :=
 def resultHash (s : State) : Compression.HashState :=
   Functional.result s.memory StackRunBridge.initialHashState
 
-/-- The exit keeps the output PC in its slot; the epilogue reads the exit stack. -/
+/-- Dispatch consumes the output PC and leaves the old hash word in its slot. -/
+def resultCont : UInt256 := Word.ofUInt32 StackRunBridge.initialHashState.h2
+
 def resultState (s : State) : State :=
-  StaggerPersistentSerialize.result s s.memory StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) []
+  StaggerPersistentSerialize.result s (resultHash s)
+    (UInt256.ofNat 1056) resultCont maskRho
 
 def gasSteps (s : State) (e : Env s) (input : ByteArray)
     (_hcal : s.executionEnv.calldata = input) (_h32 : input.size = 32)
@@ -62,12 +64,12 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray)
   have gb := gasSteps_body s e StackRunBridge.initialHashState
     (UInt256.ofNat 1056) (UInt256.ofNat 4733) maskRho (by decide)
     (by rw [hactive]; decide)
-  have ge := StaggerPersistentLoopSites.gasSteps_exit s s.memory StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) maskRho (by decide) e.run
+  have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
+    (UInt256.ofNat 1056) (UInt256.ofNat 4733) resultCont maskRho (by decide) e.run
     (StaggerPersistentLoopSites.valid_out s e.code)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s s.memory StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) [] (by decide) e.run e.code e.fork e.np
+  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) resultCont
+    (resultHash s) [] (by decide) e.run e.code e.fork e.np
   exact gb.trans (ge.trans go)
 
 theorem blockCount32 (input : ByteArray) (h32 : input.size = 32) :
@@ -92,8 +94,8 @@ theorem returned_spec (s : State) (input : ByteArray) (h32 : input.size = 32)
     (hready : StaggerMessage.Ready s.memory
       (fun k => (CompressionCorrect.schedule (Padding.paddedMessage input) 0)[k]!)) :
     (resultState s).hReturn = spec input :=
-  StaggerPersistentSerialize.returned_spec_of_hashArray s input s.memory
-    StackRunBridge.initialHashState (UInt256.ofNat 1056) (UInt256.ofNat 4733) []
+  StaggerPersistentSerialize.returned_spec_of_hashArray s input
+    (UInt256.ofNat 1056) resultCont maskRho (resultHash s)
     (resultHash_spec s input h32 hready)
 
 @[simp] theorem resultState_halt (s : State) : (resultState s).halt = .Returned := rfl

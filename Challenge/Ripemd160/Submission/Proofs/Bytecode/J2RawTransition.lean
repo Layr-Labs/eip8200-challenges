@@ -32,28 +32,6 @@ theorem add_negative_eq_sub (a b : UInt256) :
   congr 1
   simp [sub_eq_add_neg, UInt256.ofNat]
 
-theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
-    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
-    (hactive : s.activeWords = UInt256.ofNat 1) :
-    runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame (transitionResult f) rho} := by
-  have hbase : rho.length < 1024 := by omega
-  have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
-  simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [transitionTemplate, transitionResult, frame, c114,
-      tw, emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr,
-      pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-      Nat.add_assoc, hrun, MachineState.msize, hactive, hbase, hcap, signed_sentinel_div9, add_negative_eq_sub, ← hlen,
-      Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [signed_sentinel_div9, add_negative_eq_sub, hsub_eq, hadd_eq, hmul_eq,
-    RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm,
-    RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm,
-    RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm,
-    RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm,
-    RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals repeat first | apply And.intro | exact True.intro | rfl
-
-
-#print axioms run_transition
+#print axioms signed_sentinel_div9
+#print axioms add_negative_eq_sub
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw
