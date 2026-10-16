@@ -127,16 +127,16 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 namespace prefixSite
 abbrev template : List Instr := DirectDigestRaw.prefixTemplate
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3523).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3518).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3523 actual_slice
-    (by change 3523 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3518 actual_slice
+    (by change 3518 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 4786 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3523) = UInt256.ofNat 4786
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3518) = UInt256.ofNat 4786
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
@@ -144,20 +144,20 @@ theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances i
 end prefixSite
 
 def storeIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4881
- | ⟨1, _⟩ => 4402
- | ⟨2, _⟩ => 3743
- | ⟨3, _⟩ => 4261
- | ⟨4, _⟩ => 4451
- | ⟨5, _⟩ => 3529
- | ⟨6, _⟩ => 4585
- | ⟨7, _⟩ => 4072
- | ⟨8, _⟩ => 3869
- | ⟨9, _⟩ => 3771
- | ⟨10, _⟩ => 4852
- | ⟨11, _⟩ => 5032
- | ⟨12, _⟩ => 4736
- | ⟨13, _⟩ => 5101
+ | ⟨0, _⟩ => 4876
+ | ⟨1, _⟩ => 4397
+ | ⟨2, _⟩ => 3738
+ | ⟨3, _⟩ => 4256
+ | ⟨4, _⟩ => 4446
+ | ⟨5, _⟩ => 3524
+ | ⟨6, _⟩ => 4580
+ | ⟨7, _⟩ => 4067
+ | ⟨8, _⟩ => 3864
+ | ⟨9, _⟩ => 3766
+ | ⟨10, _⟩ => 4847
+ | ⟨11, _⟩ => 5027
+ | ⟨12, _⟩ => 4731
+ | ⟨13, _⟩ => 5096
 
 namespace storeSite
 abbrev template (i : Fin 14) : List Instr :=
@@ -191,21 +191,9 @@ theorem form (i : Fin 14) : ∀ instruction ∈ (template i).dropLast, Recogniti
   RecognitionLift.advancesAll_sound _ (by fin_cases i <;> decide)
 end storeSite
 
-def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
+def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
     (i : Fin 14) (hn : input.size = ReverseLiteralScan.nval i) :
-    GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
-  have hv : Decode.isValidJumpDest (base input).executionEnv.code
-      (DirectDigestRaw.selected (UInt256.ofNat 8191) input.size).toNat = true := by
-    rw [hn]
-    exact storeSite.valid i
-  have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
-      some (loaded input rho) := by
-    have h := DirectDigestRaw.run_prefix (base input) (UInt256.ofNat 4786) rho hcap rfl hv
-    change runInstrSeq prefixSite.template (atState (base input) 4786 rho) = some (loaded input rho) at h
-    exact h
-  have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
-    (atState (base input) 4786 rho) (loaded input rho) rfl rfl rfl
-    deployAddress_not_precompile prefixSite.site_pc.symm prefixSite.form hp
+    GasSteps (loaded input rho) (prepared input rho) := by
   have hac : (base input).activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
     simp [State.activeWordsAfterUInt256,base,initialState,Word.word_toNat_ofNat]
     rfl
@@ -223,23 +211,40 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
     (by change DirectDigestRaw.selected (UInt256.ofNat 8191) input.size = (storeSite.site i).startPC
         rw [hn]; exact (storeSite.site_pc i).symm)
     (storeSite.form i) hr'
-  exact gp.trans gj
+  exact gj
+
+def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
+    (i : Fin 14) (hn : input.size = ReverseLiteralScan.nval i) :
+    GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
+  have hv : Decode.isValidJumpDest (base input).executionEnv.code
+      (DirectDigestRaw.selected (UInt256.ofNat 8191) input.size).toNat = true := by
+    rw [hn]
+    exact storeSite.valid i
+  have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
+      some (loaded input rho) := by
+    have h := DirectDigestRaw.run_prefix (base input) (UInt256.ofNat 4786) rho hcap rfl hv
+    change runInstrSeq prefixSite.template (atState (base input) 4786 rho) = some (loaded input rho) at h
+    exact h
+  have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
+    (atState (base input) 4786 rho) (loaded input rho) rfl rfl rfl
+    deployAddress_not_precompile prefixSite.site_pc.symm prefixSite.form hp
+  exact gp.trans (gasSteps_prepare_loaded input rho hcap i hn)
 
 def returnIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4891
- | ⟨1, _⟩ => 4412
- | ⟨2, _⟩ => 3753
- | ⟨3, _⟩ => 4276
- | ⟨4, _⟩ => 4466
- | ⟨5, _⟩ => 3544
- | ⟨6, _⟩ => 4600
- | ⟨7, _⟩ => 4092
- | ⟨8, _⟩ => 3894
- | ⟨9, _⟩ => 3796
- | ⟨10, _⟩ => 4877
- | ⟨11, _⟩ => 5077
- | ⟨12, _⟩ => 4801
- | ⟨13, _⟩ => 5266
+ | ⟨0, _⟩ => 4886
+ | ⟨1, _⟩ => 4407
+ | ⟨2, _⟩ => 3748
+ | ⟨3, _⟩ => 4271
+ | ⟨4, _⟩ => 4461
+ | ⟨5, _⟩ => 3539
+ | ⟨6, _⟩ => 4595
+ | ⟨7, _⟩ => 4087
+ | ⟨8, _⟩ => 3889
+ | ⟨9, _⟩ => 3791
+ | ⟨10, _⟩ => 4872
+ | ⟨11, _⟩ => 5072
+ | ⟨12, _⟩ => 4796
+ | ⟨13, _⟩ => 5261
 
 def finishIndex (i : Fin 14) : Nat := returnIndex i + 1
 

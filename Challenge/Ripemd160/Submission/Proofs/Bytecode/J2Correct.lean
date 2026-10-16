@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedStep
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionDigest
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ReverseLiteralScan
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ReverseSerializeReturn
@@ -27,10 +28,10 @@ theorem of_returned (input : ByteArray) (t : State)
   rw [hout] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
 
-theorem from_entry (input : ByteArray)
+theorem from_prepared (input : ByteArray)
     (hn : RecognitionAccumulator.Allowed input.size)
     (hfit : CalldataFits input)
-    (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input))
+    (hentry : GasSteps (initialState submissionBytecode input 0) (ReverseSerializeReturn.prepared input (PatternedScan.entryRho input.size)))
     (hgeneric : ∀ rho : List UInt256, rho.length ≤ 20 →
       GasSteps (initialState submissionBytecode input 0)
         (StackTail.append (PaddingTrace.padFramed input) rho) →
@@ -43,10 +44,10 @@ theorem from_entry (input : ByteArray)
   let s := ReverseSerializeReturn.prepared input saved
   have e : ReverseLiteralScan.Env s := ⟨rfl, rfl, rfl, rfl, deployAddress_not_precompile⟩
   obtain ⟨i, hi⟩ := ReverseLiteralScan.allowed_index input.size hn
-  have gprepare := ReverseSerializeReturn.gasSteps_prepare input saved (by omega) i hi.symm
-  have gp : GasSteps (PatternedScan.patternedEntry input)
+  have gp : GasSteps (ReverseSerializeReturn.prepared input saved)
       (J2Moves.atState s (ReverseLiteralScan.tailPC i) saved) := by
-    exact GasSteps.cast gprepare rfl (ReverseSerializeReturn.prepared_atState input saved i hi.symm)
+    rw [← ReverseSerializeReturn.prepared_atState input saved i hi.symm]
+    exact GasSteps.refl _
   have gs := ReverseLiteralScan.gasSteps_for s e saved (by omega) i hi.symm
   have gs' : GasSteps (J2Moves.atState s (ReverseLiteralScan.tailPC i) saved)
       (J2Moves.atState s
@@ -73,6 +74,49 @@ theorem from_entry (input : ByteArray)
         ReverseSerializeReturn.prepared, ReverseSerializeReturn.base] using gf
     exact hgeneric saved (by omega) (hentry.trans (gp.trans (gs'.trans gfm)))
 
+theorem from_entry (input : ByteArray)
+    (hn : RecognitionAccumulator.Allowed input.size)
+    (hfit : CalldataFits input)
+    (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input))
+    (hgeneric : ∀ rho : List UInt256, rho.length ≤ 20 →
+      GasSteps (initialState submissionBytecode input 0)
+        (StackTail.append (PaddingTrace.padFramed input) rho) →
+      ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+        Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  obtain ⟨i, hi⟩ := ReverseLiteralScan.allowed_index input.size hn
+  have gp := ReverseSerializeReturn.gasSteps_prepare_loaded input (PatternedScan.entryRho input.size)
+    (by have h := PatternedScan.entryRho_length input.size; omega) i hi.symm
+  exact from_prepared input hn hfit (hentry.trans gp) hgeneric
+
+theorem from_loaded1000 (input : ByteArray)
+    (hsize : input.size = 1000)
+    (hfit : CalldataFits input)
+    (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.stS input 8158 []))
+    (hgeneric : ∀ rho : List UInt256, rho.length ≤ 20 →
+      GasSteps (initialState submissionBytecode input 0)
+        (StackTail.append (PaddingTrace.padFramed input) rho) →
+      ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+        Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  have hn : RecognitionAccumulator.Allowed input.size := by
+    unfold RecognitionAccumulator.Allowed; omega
+  have gp := ReverseSerializeReturn.gasSteps_prepare_loaded input [] (by simp) ⟨13, by decide⟩
+    (by exact hsize)
+  have source_eq : ReverseSerializeReturn.source input = UInt256.ofNat 8158 := by
+    unfold ReverseSerializeReturn.source DirectDigestRaw.selected
+    rw [hsize]; decide
+  have he : ReverseSerializeReturn.loaded input [] = PatternedScan.stS input 8158 [] := by
+    simp only [ReverseSerializeReturn.loaded,ReverseSerializeReturn.base,source_eq,PatternedScan.stS]
+  have gp' : GasSteps (PatternedScan.stS input 8158 [])
+      (ReverseSerializeReturn.prepared input (PatternedScan.entryRho input.size)) := by
+    simpa only [he,PatternedScan.entryRho] using gp
+  exact from_prepared input hn hfit (hentry.trans gp') hgeneric
+
 #print axioms of_returned
+#print axioms from_prepared
 #print axioms from_entry
+#print axioms from_loaded1000
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Correct
