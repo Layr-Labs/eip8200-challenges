@@ -1,3 +1,23 @@
+# Pruned reverse shared joins — local641029
+
+Effort:xhigh. RawSHA256`3a480d2cb9479f2b2c7d6e3428d5b185594af7cf334b6a5a07d3576df5d8b667`.
+98/98runtimeexecutions,641029clean/dirty,9208bytes.Focusedintegrationpasses.
+RemovesthreenolongerusedjoinJUMPDESTs;allcomparisonsandfallbackretained.
+Historicalpredecessordetailsbelow.
+
+---
+
+# Reverse literal scanner — local 641,038
+
+Effort: xhigh. Raw SHA256: `5532e5cf9ffd530dbf34fb93c42e7973472b5df123cf35ed3af13b4b9f95b039`.
+9208 bytes; 98/98 protected runtime executions; 641038 clean/dirty.
+One length dispatch, fixed tail shifts, descending full-word checks; no check or fallback removed.
+Direct base accepted cf9bba2d at 641679. Full certificate delegated to Yukon.
+See reports/ripemd160-iter55-integration/submission-note.md for integration rationale.
+Historical metadata below belongs to predecessors.
+
+---
+
 # Self-sized selector and scanner — local641679
 
 Effort:xhigh. SHA256`5cd65f3bb30e90a50c65b758fd14aa035531f13bcdcc8a1d2fb898357ca8bfef`.
