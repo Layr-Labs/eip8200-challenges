@@ -2,6 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionEntryPrelude
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionDigest
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Loop
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2FusedCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Sites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeReturn
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeFallback
@@ -28,7 +29,7 @@ theorem of_returned (input : ByteArray) (t : State)
   rw [hout] at heval
   simpa [GasCost.withGas_initialState_zero] using heval
 
-theorem from_entry (input : ByteArray)
+theorem from_entry (c : J2FusedSites.Certificates) (input : ByteArray)
     (hn : RecognitionAccumulator.Allowed input.size)
     (hfit : CalldataFits input)
     (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input))
@@ -49,11 +50,25 @@ theorem from_entry (input : ByteArray)
     exact GasSteps.cast gprepare rfl (by
       rw [EarlySerializeReturn.prepared_atState]
       rfl)
-  have moves := J2Sites.moves s e [] (by decide) hactive
+  have moves := J2Sites.moves c s e [] (by decide) hactive
+  by_cases h256 : input.size = 256
+  · by_cases hz : J2FusedAccumulator.resultAcc256 input = 0
+    · let rho := J2FusedLoop.rest256 s []
+      have hc : rho.length ≤ 990 := by simp [rho, J2FusedLoop.rest256, J2Raw.finishRest]
+      have gr := J2FusedSites.gasSteps_return c input saved rho hc
+      have gh := J2FusedCorrect.hit input saved moves h256 hz gr
+      have trace : GasSteps (initialState submissionBytecode input 0)
+          (J2FusedCorrect.output input rho) := hentry.trans (gp.trans gh)
+      exact of_returned input _ trace (J2FusedCorrect.output_halt input rho) rfl
+        (J2FusedCorrect.output_spec input rho h256 hz)
+    · let rho := J2FusedLoop.rest256 s []
+      have hc : rho.length ≤ 20 := by simp [rho, J2FusedLoop.rest256, J2Raw.finishRest]
+      have gm := J2FusedCorrect.miss input saved hfit moves h256 hz
+      exact hgeneric rho hc (hentry.trans (gp.trans gm))
   by_cases hz : J2Accumulator.resultAcc input input.size = 0
   · let rho := J2Raw.finishRest (J2End.endFrame s input.size) []
     have hc : rho.length ≤ 990 := by simp [rho, J2Raw.finishRest]
-    have gh := J2Loop.gasSteps_hit s [] moves input.size hn rfl hz
+    have gh := J2Loop.gasSteps_hit s [] moves input.size hn rfl h256 hz
     have gr := EarlySerializeReturn.gasSteps_return input saved rho hc
     have trace : GasSteps (initialState submissionBytecode input 0)
         (EarlySerializeReturn.output input rho) :=
@@ -62,7 +77,7 @@ theorem from_entry (input : ByteArray)
       (EarlySerializeReturn.output_spec input rho hn hz)
   · let rho := J2Raw.finishRest (J2End.endFrame s input.size) []
     have hc : rho.length ≤ 20 := by simp [rho, J2Raw.finishRest]
-    have gm := J2Loop.gasSteps_miss s [] moves input.size hn rfl hz
+    have gm := J2Loop.gasSteps_miss s [] moves input.size hn rfl h256 hz
     have hb := RecognitionAccumulator.allowed_bounds input.size hn
     have gf := EarlySerializeFallback.gasSteps input hfit hb.1
       s.memory (EarlySerializeReturn.prepared_memory_size input saved) rho hc

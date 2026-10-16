@@ -75,6 +75,17 @@ private theorem chain_closed (n : Nat) (hn : Allowed n) :
 theorem chain (n k : Nat) (hn : Allowed n) (hk : k≤last n) : ChainFacts n k :=
   chain_closed n hn ⟨k,by have := last_lt n hn; omega⟩ hk
 
+/-- The surviving nonfinal boundaries have only length376 or1000. Their next
+chain entry is block4 or block0 respectively, independently of the SWAR data. -/
+theorem transition_chain (n k : Nat) (hn : Allowed n) (hn256 : n ≠ 256)
+    (hk : k < last n) (ht : isTail n k) :
+    J2Raw.transitionTarget (UInt256.ofNat n) = UInt256.ofNat (J2Raw.blockPC (blk n (k+1))) := by
+  have hclosed : ∀ j : Fin 32, j.val < last n → isTail n j.val →
+      J2Raw.transitionTarget (UInt256.ofNat n) = UInt256.ofNat (J2Raw.blockPC (blk n (j.val+1))) := by
+    rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
+    all_goals first | contradiction | decide
+  exact hclosed ⟨k, by have := last_lt n hn; omega⟩ hk ht
+
 /-- At a nonfinal 251-byte boundary, the tail shift is always five bytes. -/
 private theorem boundary_shift_closed (n : Nat) (hn : Allowed n) :
     ∀ k : Fin 32, k.val < last n → isTail n k.val →
