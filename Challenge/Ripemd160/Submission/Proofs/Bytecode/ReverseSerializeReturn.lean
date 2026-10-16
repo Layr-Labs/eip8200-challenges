@@ -37,9 +37,11 @@ def prepared (input : ByteArray) (rho : List UInt256) : State :=
     memory := MachineState.writeBytes ByteArray.empty
       (Data.Bytes.natToBytesPadded (RecognitionDigest.paddedDigestWord input.size).toNat 32) 0}
 
+def finishPC (i : Fin 14) : Nat := ReverseLiteralScan.returnPC i + 1
+
 /-- The final return uses the prepared memory, not an unrelated running state. -/
 def output (input : ByteArray) (rho : List UInt256) (i : Fin 14) : State :=
-  RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat (ReverseLiteralScan.returnPC i+1)) rho
+  RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat (finishPC i)) rho
 
 theorem prepared_atState (input : ByteArray) (rho : List UInt256) (i : Fin 14)
     (hn : input.size = ReverseLiteralScan.nval i) :
@@ -142,20 +144,20 @@ theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances i
 end prefixSite
 
 def storeIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4872
- | ⟨1, _⟩ => 4397
- | ⟨2, _⟩ => 3742
- | ⟨3, _⟩ => 4257
- | ⟨4, _⟩ => 4446
+ | ⟨0, _⟩ => 4881
+ | ⟨1, _⟩ => 4402
+ | ⟨2, _⟩ => 3743
+ | ⟨3, _⟩ => 4261
+ | ⟨4, _⟩ => 4451
  | ⟨5, _⟩ => 3529
- | ⟨6, _⟩ => 4579
- | ⟨7, _⟩ => 4069
- | ⟨8, _⟩ => 3867
- | ⟨9, _⟩ => 3770
- | ⟨10, _⟩ => 4844
- | ⟨11, _⟩ => 5023
- | ⟨12, _⟩ => 4729
- | ⟨13, _⟩ => 5091
+ | ⟨6, _⟩ => 4585
+ | ⟨7, _⟩ => 4072
+ | ⟨8, _⟩ => 3869
+ | ⟨9, _⟩ => 3771
+ | ⟨10, _⟩ => 4852
+ | ⟨11, _⟩ => 5032
+ | ⟨12, _⟩ => 4736
+ | ⟨13, _⟩ => 5101
 
 namespace storeSite
 abbrev template (i : Fin 14) : List Instr :=
@@ -224,36 +226,38 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
   exact gp.trans gj
 
 def returnIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4882
- | ⟨1, _⟩ => 4407
- | ⟨2, _⟩ => 3752
- | ⟨3, _⟩ => 4272
- | ⟨4, _⟩ => 4461
+ | ⟨0, _⟩ => 4891
+ | ⟨1, _⟩ => 4412
+ | ⟨2, _⟩ => 3753
+ | ⟨3, _⟩ => 4276
+ | ⟨4, _⟩ => 4466
  | ⟨5, _⟩ => 3544
- | ⟨6, _⟩ => 4594
- | ⟨7, _⟩ => 4089
- | ⟨8, _⟩ => 3892
- | ⟨9, _⟩ => 3795
- | ⟨10, _⟩ => 4869
- | ⟨11, _⟩ => 5068
- | ⟨12, _⟩ => 4794
- | ⟨13, _⟩ => 5256
+ | ⟨6, _⟩ => 4600
+ | ⟨7, _⟩ => 4092
+ | ⟨8, _⟩ => 3894
+ | ⟨9, _⟩ => 3796
+ | ⟨10, _⟩ => 4877
+ | ⟨11, _⟩ => 5077
+ | ⟨12, _⟩ => 4801
+ | ⟨13, _⟩ => 5266
+
+def finishIndex (i : Fin 14) : Nat := returnIndex i + 1
 
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
 
 theorem actual_slice (i : Fin 14) :
-    (Artifact.submissionArtifact.instructions.drop (returnIndex i+1)).take template.length = template := by
+    (Artifact.submissionArtifact.instructions.drop (finishIndex i)).take template.length = template := by
   fin_cases i <;> rfl
 
 def site (i : Fin 14) : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template (returnIndex i+1) (actual_slice i)
-    (by change returnIndex i+1+template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template (finishIndex i) (actual_slice i)
+    (by change finishIndex i+template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; fin_cases i <;> decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc (i : Fin 14) : (site i).startPC = UInt256.ofNat (ReverseLiteralScan.returnPC i+1) := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC (returnIndex i+1)) = _
+theorem site_pc (i : Fin 14) : (site i).startPC = UInt256.ofNat (finishPC i) := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC (finishIndex i)) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
 
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
@@ -277,11 +281,12 @@ def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.l
       (atState (prepared input saved) (ReverseLiteralScan.returnPC i+1) (32 :: rho)) =
       some (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat (ReverseLiteralScan.returnPC i+1)) rho) :=
     run_finish (prepared input saved) (UInt256.ofNat (ReverseLiteralScan.returnPC i+1)) rho (by omega) rfl
+  have hfinish : finishPC i = ReverseLiteralScan.returnPC i+1 := by simp [finishPC]
   have gf := RecognitionLift.gasSteps_of_raw (finishSite.site i)
     (atState (prepared input saved) (ReverseLiteralScan.returnPC i+1) (32 :: rho))
     (RecognitionSelectorRaw.returned (prepared input saved) (UInt256.ofNat (ReverseLiteralScan.returnPC i+1)) rho)
     (prepared_code input saved) (prepared_fork input saved) (prepared_run input saved)
-    (prepared_np input saved) (finishSite.site_pc i).symm finishSite.form hf
+    (prepared_np input saved) (by rw [finishSite.site_pc,hfinish]; rfl) finishSite.form hf
   have hpc : (UInt256.ofNat (ReverseLiteralScan.returnPC i)).succ = UInt256.ofNat (ReverseLiteralScan.returnPC i+1) := by
     fin_cases i <;> decide
   have gs' : GasSteps (atState (prepared input saved) (ReverseLiteralScan.returnPC i) rho)
@@ -289,6 +294,11 @@ def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.l
     simpa only [atState, prepared_activeWords, Word.word_toNat_ofNat,
       Word.literal_eq_ofNat, hpc,
       show (1 : Nat) % 2^256 = 1 from by decide, Nat.mul_one] using gs
+  have he : RecognitionSelectorRaw.returned (prepared input saved)
+      (UInt256.ofNat (ReverseLiteralScan.returnPC i+1)) rho = output input rho i := by
+    simp only [output,hfinish,RecognitionSelectorRaw.returned,prepared,base]
+    rfl
+  rw [he] at gf
   exact gs'.trans gf
 
 @[simp] theorem output_halt (input : ByteArray) (rho : List UInt256) (i : Fin 14) :
