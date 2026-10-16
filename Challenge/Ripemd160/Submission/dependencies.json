@@ -90,13 +90,13 @@
     "submissionId": "fe67a6d0-68a5-4dad-90d5-8bab814e133f"
   },
   {
-    "submissionId": "1991c997-0048-4982-851f-3e3d4db310d4",
-    "rationale": "Retains the accepted 644876 pre-scanner entry, compressor and early-serializer source lineage; replaces its generated-word recognizer with literal-word streaming.",
-    "evidence": "Retains accepted entry/compressor/fallback source lineage and exact byte-recognition design through subsequent local literal scanners. The new direct byte selector changes only the17-byte prefix at4786 and reference digest table layout; the current recognizer suffix is unchanged from641903."
-  },
-  {
     "submissionId": "72642442-8d39-4e38-9d33-1cc2f28d3fdf",
     "rationale": "Retains the four-word source entry guards, generic compressor and fallback, early-copy serializer design, and reference digest values. Replaces its scanner with literal comparisons and now co-designs digest-table layout with a direct masked byte offset.",
     "evidence": "Entry and compressor bytes before PC4786 remain unchanged from the immediate 641903 local derivative. PC4786..4803 changes the selector prefix; PC4804..6123 retains the proved literal recognizer. The final480bytes relocate unchanged reference20-byte digest values. J2Payload proves each new allowed-length lookup."
+  },
+  {
+    "submissionId": "cf9bba2d-7ce1-4fff-8fc0-c1e92afecee7",
+    "rationale": "Immediate accepted 641679 base, promoted source ebb1ea4468fd9a248834da151fb2b9820543ad02. Retains entire image outside [4804,8240), including quotient/CODESIZE digest selector, all padded digest windows, early full-word CODECOPY state, entry guards, generic arbitrary-input fallback and compressor. The new reverse scanner replaces only the old recognition schedule and its semantic adapters.",
+    "evidence": "Decoded candidate SHA256 5532e5cf9ffd530dbf34fb93c42e7973472b5df123cf35ed3af13b4b9f95b039 versus cf9bba2d SHA256 5cd65f3bb30e90a50c65b758fd14aa035531f13bcdcc8a1d2fb898357ca8bfef: bytes [0,4804) and [8240,9208) equal. ReverseSerializeReturn carries the predecessor padded-copy preparation and memory/spec theorems; ReverseLiteralScan supplies replacement certified recognition paths."
   }
 ]

@@ -1,14 +1,14 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionSelectorResult
 import Challenge.Ripemd160.Submission.Bytecode
 import Challenge.EvmProof.Memory
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionAbsoluteSelectorRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.CombinedSelectorRaw
 
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 3000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Payload
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open RecognitionAccumulator RecognitionDigest RecognitionAbsoluteSelectorRaw
+open RecognitionAccumulator RecognitionDigest CombinedSelectorRaw
 
 private theorem readPadded_append_right (a b : ByteArray) (start n : Nat)
     (hstart : a.size ≤ start) :
@@ -67,7 +67,7 @@ private theorem codePrefix_size : codePrefix.size = 4804 := by
     submissionByteChunk18_size]
 private theorem code_split : submissionBytecode = codePrefix ++ submissionByteChunk19 := rfl
 
-private def sourceNat (n : Nat) : Nat := (10025211223323981654 / n) &&& 9208
+private def sourceNat (n : Nat) : Nat := (4126384768455473537 / n) &&& 8191
 
 private theorem tableRead (n : Nat) (hn : Allowed n) :
     MachineState.readPadded submissionBytecode (sourceNat n) 32 =
@@ -92,7 +92,179 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
     MachineState.readPadded submissionByteChunk19 (sourceNat n - 4804) 32 =
       RecognitionDigest.paddedDigest n := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  · change MachineState.readPadded submissionByteChunk19 4236 32 = _
+  · change MachineState.readPadded submissionByteChunk19 1725 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 691 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 1288 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 2613 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 1017 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 2191 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 2338 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 841 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 345 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 3374 32 = _
+    rw [submissionByteChunk19]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 2863 32 = _
     rw [submissionByteChunk19]
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_right _ _ _ _ (by decide)]
@@ -119,188 +291,7 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_left _ _ _ _ (by decide)]
     rfl
-  · change MachineState.readPadded submissionByteChunk19 3676 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3828 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 4332 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 4076 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3996 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3604 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3948 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3532 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 4116 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3492 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 3436 32 = _
-    rw [submissionByteChunk19]
-    rw [readPadded_append_right _ _ _ _ (by decide)]
-    rw [readPadded_append_left _ _ _ _ (by decide)]
-    rfl
-  · change MachineState.readPadded submissionByteChunk19 4292 32 = _
+  · change MachineState.readPadded submissionByteChunk19 3125 32 = _
     rw [submissionByteChunk19]
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_right _ _ _ _ (by decide)]
@@ -329,7 +320,7 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_left _ _ _ _ (by decide)]
     rfl
-  · change MachineState.readPadded submissionByteChunk19 3716 32 = _
+  · change MachineState.readPadded submissionByteChunk19 1814 32 = _
     rw [submissionByteChunk19]
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_right _ _ _ _ (by decide)]
@@ -341,17 +332,26 @@ private theorem tablePayload (n : Nat) (hn : Allowed n) :
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_right _ _ _ _ (by decide)]
+    rw [readPadded_append_left _ _ _ _ (by decide)]
+    rfl
+  · change MachineState.readPadded submissionByteChunk19 109 32 = _
+    rw [submissionByteChunk19]
     rw [readPadded_append_right _ _ _ _ (by decide)]
     rw [readPadded_append_left _ _ _ _ (by decide)]
     rfl
 
 private theorem selected_nat (n : Nat) (hn : Allowed n) :
-    (selected (UInt256.ofNat 9208) n).toNat = sourceNat n := by
+    (selected (UInt256.ofNat 9581) n).toNat = sourceNat n := by
   rcases hn with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
   all_goals decide
 
 theorem read_selected (n : Nat) (hn : Allowed n) :
-    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 9208) n).toNat 32 =
+    MachineState.readPadded submissionBytecode (selected (UInt256.ofNat 9581) n).toNat 32 =
       RecognitionDigest.paddedDigest n := by
   rw [selected_nat n hn, tableRead n hn]
   exact tablePayload n hn
