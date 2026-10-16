@@ -71,9 +71,9 @@ theorem run_terminal (s : State) (pc : UInt256) (rho : List UInt256)
 def lo : Nat → Nat | 0 => 0 | 1 => 1 | 2 => 2 | 3 => 3 | 4 => 4 | 5 => 8 | _ => 12
 def hi : Nat → Nat | 0 => 0 | 1 => 1 | 2 => 2 | 3 => 3 | 4 => 7 | 5 => 11 | _ => 31
 def entryPC : Nat → Nat | 0 => 4804 | 1 => 4848 | 2 => 4894 | 3 => 4940 | 4 => 4986 | 5 => 5147 | _ => 5312
-def entryIndex : Nat → Nat | 0 => 3533 | 1 => 3542 | 2 => 3552 | 3 => 3562 | 4 => 3572 | 5 => 3597 | _ => 3622
+def entryIndex : Nat → Nat | 0 => 3531 | 1 => 3540 | 2 => 3550 | 3 => 3560 | 4 => 3570 | 5 => 3595 | _ => 3620
 def cleanPC : Nat → Nat | 0 => 4848 | 1 => 4893 | 2 => 4939 | 3 => 4985 | 4 => 5146 | _ => 5311
-def cleanIndex : Nat → Nat | 0 => 3542 | 1 => 3551 | 2 => 3561 | 3 => 3571 | 4 => 3596 | _ => 3621
+def cleanIndex : Nat → Nat | 0 => 3540 | 1 => 3549 | 2 => 3559 | 3 => 3569 | 4 => 3594 | _ => 3619
 def bound (j : Nat) : Nat := 32*hi j+33
 
 def entry (s : State) (rho : List UInt256) (j : Nat) : State :=
@@ -113,8 +113,8 @@ def template : Piece → List Instr
  | .result => resultTemplate
 
 def index : Piece → Nat
- | .first => 3533 | .firstTail => 3734 | .firstResult => 3741 | .test j => entryIndex j.val | .clean j => cleanIndex j.val
- | .terminal => 3622 | .tail => 3721 | .result => 3729
+ | .first => 3531 | .firstTail => 3732 | .firstResult => 3739 | .test j => entryIndex j.val | .clean j => cleanIndex j.val
+ | .terminal => 3620 | .tail => 3719 | .result => 3727
 
 def pc : Piece → Nat
  | .first => 4804 | .firstTail => 6108 | .firstResult => 6117 | .test j => entryPC j.val | .clean j => cleanPC j.val
@@ -183,9 +183,9 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw (site p) _ _ e.code e.fork e.run e.np (site_pc p).symm (form p) h
 
 theorem valid_tail : Decode.isValidJumpDest Artifact.submissionArtifact.code 6091 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3721 = 6091 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3719 = 6091 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3721 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3719 (by rfl)
   rw [hp] at h
   exact h
 
@@ -209,9 +209,9 @@ theorem nextWord (j : Fin 6) : lo (j.val+1) = hi j.val+1 := by
   fin_cases j <;> decide
 
 theorem valid_firstTail : Decode.isValidJumpDest Artifact.submissionArtifact.code 6108 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3734 = 6108 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3732 = 6108 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3734 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3732 (by rfl)
   rw [hp] at h
   exact h
 

@@ -1,3 +1,19 @@
+# Absolute quotient-mask serializer — local 641707
+
+Effort: xhigh. Runtime SHA256
+`054fca0eef7cc7b9fa286be8e51f53b753136a64e1249b45a5b26e546cdfc089`.
+9216 bytes; 3744 executable instructions; 98/98 protected local executions;
+641707 gas in each clean/dirty frame aggregate. Pending full Yukon validation.
+Selector source is `(910065310 / input.size) & 9184`; CODECOPY copies a complete
+canonical padded32-byte ABI word to memory0. The17-byte selector interval,
+scanner boundaries and return PCs are unchanged. J2Payload uses segmented
+literal windows to avoid reducing a multi-kilobyte flat list for each read.
+Universal selector, padded-copy memory and payload-window proofs pass locally;
+exact artifact and semantic integration checks are in progress. Full certificate
+is delegated to Yukon as requested. Historical metadata below is not current.
+
+---
+
 # Four-word scanner — local644636
 
 SHA256a2b01a200655fbdda80b340a96339cce33e6239f12f52191812165968c2f2581.
