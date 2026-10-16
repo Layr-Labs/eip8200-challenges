@@ -1,6 +1,6 @@
 import Init.Data.ByteArray
 set_option warningAsError true
-set_option maxRecDepth 10000
+set_option maxRecDepth 100000
 
 /-!
 # Reducible frozen RIPEMD-160 submission bytes
@@ -344,15 +344,14 @@ abbrev submissionByteChunk18 : ByteArray := ByteArray.mk #[
   80, 24, 95, 82, 89, 95, 243, 91, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97,
   16, 243, 129, 233, 207, 95, 82, 89, 95, 243, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96,
   8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97,
-  255, 255, 2, 1, 96, 3, 82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 20, 97, 1, 224, 54, 99, 125, 102,
-  90, 116, 4, 22, 56, 3, 96, 12, 57
-
+  255, 255, 2, 1, 96, 3, 82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 32, 56, 54, 104, 0, 139, 32, 180,
+  125, 228, 124, 55, 86, 4, 22, 95, 57
 ]
 
 @[simp] theorem submissionByteChunk18_size : submissionByteChunk18.size = 177 := by
   rfl
 
-abbrev submissionByteChunk19 : ByteArray := ByteArray.mk #[
+abbrev submissionTailPart0 : ByteArray := ByteArray.mk #[
   127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53,
   90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 96, 33, 54, 16, 97, 23, 220, 87, 127, 167, 204, 241,
   22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 31, 68, 105,
@@ -406,32 +405,259 @@ abbrev submissionByteChunk19 : ByteArray := ByteArray.mk #[
   84, 121, 158, 195, 97, 3, 160, 53, 24, 23, 127, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164,
   201, 238, 19, 56, 93, 130, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 97, 3, 192, 53, 24,
   23, 127, 136, 173, 210, 247, 28, 65, 102, 139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 3, 224, 53, 24, 91, 54, 96, 248, 2, 96, 255, 22, 28,
-  23, 97, 17, 213, 87, 89, 95, 243, 91, 54, 96, 248, 2, 96, 255, 22, 28, 97, 17, 213, 87, 89, 95, 243,
-  71, 82, 114, 186, 70, 124, 166, 113, 109, 187, 28, 25, 168, 77, 227, 85, 240, 101, 130, 154, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 247, 119, 65, 5, 211, 100, 6, 80, 84, 28, 46, 123, 193, 155,
-  254, 155, 81, 73, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 55, 136, 14, 229, 226, 232, 33, 224,
-  84, 11, 177, 70, 227, 59, 55, 52, 35, 22, 231, 237, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  216, 226, 232, 75, 173, 25, 252, 133, 219, 173, 181, 95, 165, 70, 118, 49, 206, 20, 21, 3, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 138, 20, 176, 200, 146, 135, 179, 155, 26, 47, 115, 170, 121, 161, 206, 149,
-  176, 78, 120, 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 219, 77, 144, 179, 190, 130, 142, 167,
-  206, 216, 216, 121, 219, 206, 162, 193, 213, 254, 32, 127, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 3, 224, 53, 24, 91, 54, 56, 2, 97, 0, 255, 22, 28,
+  23, 97, 17, 213, 87, 89, 95, 243, 91, 54, 56, 2, 97, 0, 255, 22, 28, 97, 17, 213, 87, 89, 95, 243,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 77, 226, 11, 107, 31, 178, 175, 68, 35, 112, 196, 14, 83, 165, 10, 202,
-  54, 15, 195, 188, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 246, 206, 168, 210, 164, 145, 245, 220,
-  39, 106, 161, 247, 97, 139, 77, 122, 85, 46, 196, 173, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  26, 207, 65, 176, 159, 135, 172, 201, 131, 194, 160, 67, 245, 4, 76, 143, 113, 197, 45, 189, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 40, 223, 175, 20, 237, 153, 83, 244, 156, 122, 187, 86, 19, 8, 208, 198,
-  75, 196, 193, 121, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 149, 103, 214, 132, 220, 137, 205,
-  84, 98, 14, 70, 2, 159, 91, 218, 14, 202, 183, 135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  91, 233, 37, 158, 148, 120, 32, 45, 208, 193, 244, 235, 12, 78, 208, 68, 45, 190, 178, 205, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 198, 197, 60, 70, 207, 8, 222, 28, 83, 117, 177, 90, 248, 103, 106, 45,
-  50, 239, 82, 138, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 134, 60, 89, 133, 136, 189, 114, 164,
-  186, 191, 54, 198, 187, 1, 242, 123, 189, 192, 236, 212, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0
 ]
 
-@[simp] theorem submissionByteChunk19_size : submissionByteChunk19.size = 1800 := by
+@[simp] theorem submissionTailPart0_size : submissionTailPart0.size = 3436 := by rfl
+
+abbrev submissionTailPart1 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 198, 197, 60, 70, 207, 8, 222, 28, 83, 117, 177, 90,
+  248, 103, 106, 45, 50, 239, 82, 138
+]
+
+@[simp] theorem submissionTailPart1_size : submissionTailPart1.size = 32 := by rfl
+
+abbrev submissionTailPart2 : ByteArray := ByteArray.mk (Array.replicate 24 0)
+
+@[simp] theorem submissionTailPart2_size : submissionTailPart2.size = 24 := by rfl
+
+abbrev submissionTailPart3 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 40, 223, 175, 20, 237, 153, 83, 244, 156, 122, 187, 86,
+  19, 8, 208, 198, 75, 196, 193, 121
+]
+
+@[simp] theorem submissionTailPart3_size : submissionTailPart3.size = 32 := by rfl
+
+abbrev submissionTailPart4 : ByteArray := ByteArray.mk (Array.replicate 8 0)
+
+@[simp] theorem submissionTailPart4_size : submissionTailPart4.size = 8 := by rfl
+
+abbrev submissionTailPart5 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 43, 149, 103, 214, 132, 220, 137, 205, 84, 98, 14, 70,
+  2, 159, 91, 218, 14, 202, 183, 135
+]
+
+@[simp] theorem submissionTailPart5_size : submissionTailPart5.size = 32 := by rfl
+
+abbrev submissionTailPart6 : ByteArray := ByteArray.mk (Array.replicate 40 0)
+
+@[simp] theorem submissionTailPart6_size : submissionTailPart6.size = 40 := by rfl
+
+abbrev submissionTailPart7 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 138, 20, 176, 200, 146, 135, 179, 155, 26, 47, 115, 170,
+  121, 161, 206, 149, 176, 78, 120, 23
+]
+
+@[simp] theorem submissionTailPart7_size : submissionTailPart7.size = 32 := by rfl
+
+abbrev submissionTailPart8 : ByteArray := ByteArray.mk (Array.replicate 40 0)
+
+@[simp] theorem submissionTailPart8_size : submissionTailPart8.size = 40 := by rfl
+
+abbrev submissionTailPart9 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 219, 77, 144, 179, 190, 130, 142, 167, 206, 216, 216, 121,
+  219, 206, 162, 193, 213, 254, 32, 127
+]
+
+@[simp] theorem submissionTailPart9_size : submissionTailPart9.size = 32 := by rfl
+
+abbrev submissionTailPart10 : ByteArray := ByteArray.mk (Array.replicate 8 0)
+
+@[simp] theorem submissionTailPart10_size : submissionTailPart10.size = 8 := by rfl
+
+abbrev submissionTailPart11 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 134, 60, 89, 133, 136, 189, 114, 164, 186, 191, 54, 198,
+  187, 1, 242, 123, 189, 192, 236, 212
+]
+
+@[simp] theorem submissionTailPart11_size : submissionTailPart11.size = 32 := by rfl
+
+abbrev submissionTailPart12 : ByteArray := ByteArray.mk (Array.replicate 80 0)
+
+@[simp] theorem submissionTailPart12_size : submissionTailPart12.size = 80 := by rfl
+
+abbrev submissionTailPart13 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 207, 65, 176, 159, 135, 172, 201, 131, 194, 160, 67,
+  245, 4, 76, 143, 113, 197, 45, 189
+]
+
+@[simp] theorem submissionTailPart13_size : submissionTailPart13.size = 32 := by rfl
+
+abbrev submissionTailPart14 : ByteArray := ByteArray.mk (Array.replicate 88 0)
+
+@[simp] theorem submissionTailPart14_size : submissionTailPart14.size = 88 := by rfl
+
+abbrev submissionTailPart15 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 71, 82, 114, 186, 70, 124, 166, 113, 109, 187, 28, 25,
+  168, 77, 227, 85, 240, 101, 130, 154
+]
+
+@[simp] theorem submissionTailPart15_size : submissionTailPart15.size = 32 := by rfl
+
+abbrev submissionTailPart16 : ByteArray := ByteArray.mk (Array.replicate 16 0)
+
+@[simp] theorem submissionTailPart16_size : submissionTailPart16.size = 16 := by rfl
+
+abbrev submissionTailPart17 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 55, 136, 14, 229, 226, 232, 33, 224, 84, 11, 177, 70,
+  227, 59, 55, 52, 35, 22, 231, 237
+]
+
+@[simp] theorem submissionTailPart17_size : submissionTailPart17.size = 32 := by rfl
+
+abbrev submissionTailPart18 : ByteArray := ByteArray.mk (Array.replicate 48 0)
+
+@[simp] theorem submissionTailPart18_size : submissionTailPart18.size = 48 := by rfl
+
+abbrev submissionTailPart19 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 216, 226, 232, 75, 173, 25, 252, 133, 219, 173, 181, 95,
+  165, 70, 118, 49, 206, 20, 21, 3
+]
+
+@[simp] theorem submissionTailPart19_size : submissionTailPart19.size = 32 := by rfl
+
+abbrev submissionTailPart20 : ByteArray := ByteArray.mk (Array.replicate 8 0)
+
+@[simp] theorem submissionTailPart20_size : submissionTailPart20.size = 8 := by rfl
+
+abbrev submissionTailPart21 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 226, 11, 107, 31, 178, 175, 68, 35, 112, 196, 14,
+  83, 165, 10, 202, 54, 15, 195, 188
+]
+
+@[simp] theorem submissionTailPart21_size : submissionTailPart21.size = 32 := by rfl
+
+abbrev submissionTailPart22 : ByteArray := ByteArray.mk (Array.replicate 88 0)
+
+@[simp] theorem submissionTailPart22_size : submissionTailPart22.size = 88 := by rfl
+
+abbrev submissionTailPart23 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 233, 37, 158, 148, 120, 32, 45, 208, 193, 244, 235,
+  12, 78, 208, 68, 45, 190, 178, 205
+]
+
+@[simp] theorem submissionTailPart23_size : submissionTailPart23.size = 32 := by rfl
+
+abbrev submissionTailPart24 : ByteArray := ByteArray.mk (Array.replicate 24 0)
+
+@[simp] theorem submissionTailPart24_size : submissionTailPart24.size = 24 := by rfl
+
+abbrev submissionTailPart25 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 246, 206, 168, 210, 164, 145, 245, 220, 39, 106, 161, 247,
+  97, 139, 77, 122, 85, 46, 196, 173
+]
+
+@[simp] theorem submissionTailPart25_size : submissionTailPart25.size = 32 := by rfl
+
+abbrev submissionTailPart26 : ByteArray := ByteArray.mk (Array.replicate 8 0)
+
+@[simp] theorem submissionTailPart26_size : submissionTailPart26.size = 8 := by rfl
+
+abbrev submissionTailPart27 : ByteArray := ByteArray.mk #[
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 6, 247, 119, 65, 5, 211, 100, 6, 80, 84, 28,
+  46, 123, 193, 155, 254, 155, 81, 73
+]
+
+@[simp] theorem submissionTailPart27_size : submissionTailPart27.size = 32 := by rfl
+
+abbrev submissionTailPart28 : ByteArray := ByteArray.mk (Array.replicate 40 0)
+
+@[simp] theorem submissionTailPart28_size : submissionTailPart28.size = 40 := by rfl
+
+abbrev submissionByteChunk19 : ByteArray :=
+  submissionTailPart0 ++ (submissionTailPart1 ++ (submissionTailPart2 ++ (submissionTailPart3 ++ (submissionTailPart4 ++ (submissionTailPart5 ++ (submissionTailPart6 ++ (submissionTailPart7 ++ (submissionTailPart8 ++ (submissionTailPart9 ++ (submissionTailPart10 ++ (submissionTailPart11 ++ (submissionTailPart12 ++ (submissionTailPart13 ++ (submissionTailPart14 ++ (submissionTailPart15 ++ (submissionTailPart16 ++ (submissionTailPart17 ++ (submissionTailPart18 ++ (submissionTailPart19 ++ (submissionTailPart20 ++ (submissionTailPart21 ++ (submissionTailPart22 ++ (submissionTailPart23 ++ (submissionTailPart24 ++ (submissionTailPart25 ++ (submissionTailPart26 ++ (submissionTailPart27 ++ (submissionTailPart28))))))))))))))))))))))))))))
+
+@[simp] theorem submissionByteChunk19_size : submissionByteChunk19.size = 4404 := by
   rfl
 
 abbrev submissionBytes : ByteArray :=
@@ -457,7 +683,7 @@ abbrev submissionBytes : ByteArray :=
  ++ submissionByteChunk19
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytes_size : submissionBytes.size = 6604 := by
+@[simp] theorem referenceBytes_size : submissionBytes.size = 9208 := by
   simp [submissionBytes]
 
 set_option maxRecDepth 100000 in

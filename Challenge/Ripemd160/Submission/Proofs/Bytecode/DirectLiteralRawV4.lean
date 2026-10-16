@@ -25,11 +25,11 @@ def branchTemplate (k : Nat) : List Instr := [
 def dropOrTemplate : List Instr := [.op .OR]
 def lastTemplate : List Instr := [.push ⟨2, by decide⟩ (UInt256.ofNat 1025)]
 def tailTemplate : List Instr := [.op .JUMPDEST, .op .CALLDATASIZE,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 248), .op .MUL,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 255), .op .AND, .op .SHR, .op .OR]
+  .op .CODESIZE, .op .MUL,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 255), .op .AND, .op .SHR, .op .OR]
 def resultTemplate : List Instr := [.push ⟨2, by decide⟩ (UInt256.ofNat 4565), .op .JUMPI]
 def shifted (n : UInt256) (_bound : UInt256) : UInt256 :=
-  UInt256.land (UInt256.ofNat 255) (UInt256.mul (UInt256.ofNat 248) n)
+  UInt256.land (UInt256.ofNat 255) (UInt256.mul (UInt256.ofNat 9208) n)
 
 def firstCmp : List Instr := cmpTemplate 0
 def firstBranch : List Instr := [.push ⟨1, by decide⟩ (UInt256.ofNat 33),
@@ -67,11 +67,12 @@ theorem run_firstBranch (s : State) (pc : UInt256) (rho : List UInt256)
   all_goals rfl
 
 theorem run_firstTail (s : State) (pc d : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code.size = 9208) :
     runInstrSeq firstTail {s with pc := pc, stack := d::rho} =
       some {s with pc := pcAfter pc firstTail, stack := UInt256.shiftRight d (shifted (UInt256.ofNat s.executionEnv.calldata.size) 0) :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [firstTail, tailTemplate, shifted, runInstrSeq, DataStepper.runInstr, pcAfter,
+  simp (discharger := omega) [firstTail, tailTemplate, shifted, hcode, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, show rho.length < 1024 by omega, hcap, UInt256.succ, Instr.size,
     Nat.add_assoc, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   repeat first | apply And.intro | rfl
@@ -142,11 +143,12 @@ theorem run_last (s : State) (pc : UInt256) (rho : List UInt256)
     UInt256.succ, Instr.size, Word.word_toNat_ofNat, Word.literal_eq_ofNat, List.getElem?_cons_zero, List.exchange]
 
 theorem run_tail (s : State) (pc : UInt256) (bound d a : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code.size = 9208) :
     runInstrSeq tailTemplate {s with pc := pc, stack := d::a::rho} =
       some {s with pc := pcAfter pc tailTemplate, stack := UInt256.lor (UInt256.shiftRight d (shifted (UInt256.ofNat s.executionEnv.calldata.size) bound)) a :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
-  simp (discharger := omega) [tailTemplate, shifted, runInstrSeq, DataStepper.runInstr, pcAfter,
+  simp (discharger := omega) [tailTemplate, shifted, hcode, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, show rho.length < 1024 by omega, hcap, UInt256.succ, Instr.size, Nat.add_assoc,
     Word.word_toNat_ofNat, Word.literal_eq_ofNat, List.getElem?_cons_zero, List.exchange]
   repeat first | apply And.intro | rfl

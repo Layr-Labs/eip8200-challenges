@@ -77,7 +77,7 @@ theorem from_entry (input : ByteArray)
     have gfm : GasSteps (J2Moves.atState s 4565 saved)
         (StackTail.append (PaddingTrace.padFramed input) saved) := by
       simpa only [J2Moves.atState, EarlySerializeFallback.incoming, s,
-        EarlySerializeReturn.prepared, RecognitionSelectorResult.copied,
+        EarlySerializeReturn.prepared, RecognitionPaddedResult.copied,
         EarlySerializeReturn.beforeCopy, EarlySerializeReturn.base] using gf
     exact hgeneric saved (by simp [saved]) (hentry.trans (gp.trans (gs'.trans gfm)))
 
