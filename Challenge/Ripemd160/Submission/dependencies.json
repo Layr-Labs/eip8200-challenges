@@ -1,15 +1,5 @@
 [
   {
-    "submissionId": "1063a889-af49-4f2e-91ce-04ac27b50511",
-    "rationale": "Direct promoted 645176 source at 77c722f. Reuses the seven-word computed-jump scanner chain, its dispatchTarget/ChainFacts and J2Sites/J2Loop proofs, plus unchanged compressor and all prefix/tail code. This submission adds a universal fused 256-byte boundary and relocates only its late fallthrough suffix.",
-    "evidence": "PC0..5043 unchanged from 77c722f, PC5044 boundary replaced by 28 bytes including old five-byte projection; old PC5049..5100 suffix shifts by23. Decoded SHA25672aec7764aec68267480122b0e99d88b5ae550e5946d6a3cbd3fef8c9011cc3b to9a5704097bbedb8a69f3663b9b0fef7d1c5c07cd165e6d6e6f546d9a31b2e310."
-  },
-  {
-    "submissionId": "ae929341-d1da-489c-8996-0776dea7b681",
-    "rationale": "Accepted646197 ancestor. Reuses nonfinal-tail fixed40 projection and the endpoint-first scanner split, as inherited by1063a889. These are essential to the new fusion seam, alongside prior guard MSIZE activation and prefix mask cuts.",
-    "evidence": "Base24e0bd4d6acf; J2Frame.boundary_shift, tail pending XOR, final/nonfinal projection contracts and prepared-memory invariant inherited. New fusion is independently developed in J2FusedAccumulator/J2FusedLoop/J2FusedRaw/J2FusedSites."
-  },
-  {
     "submissionId": "ee41c2be-f76e-4b2f-a6a4-27f9c5f6c6a6",
     "rationale": "Uses the accepted 646264 runtime and its shared32 length-flag sparse-write proof implementation as the unchanged base. Adds only first-word guard memory activation, MSIZE loop constant, and a shorter safe prefilter mask.",
     "evidence": "Compare candidate to promoted 0c357603: unchanged bytes from PC36 except guard PUSH-width/filler and PC211..220 MSIZE slot; inherited compressor, recognizers, sparse padding and endian serialization unchanged."
@@ -60,9 +50,9 @@
     "evidence": "0961b85e: 5,241 bytes, decoded SHA-256 2d64429a7c81d31f56494a5be7e1be57807737772dca7ac5235d1ef4fb830633, promoted commit 28fa8fd7. 00b4dbb3's image (5,247 bytes, decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8) has 0961b85e's epilogue (pc 4517 to 4552), round-33 bytes (pc 2563, 2564) and 128-stub join (pc 132, 133) byte for byte; its last-block stay reaches the 132 join through the 192 stub (pc 59 to 63 and 192 to 199). Exact scorer replica 647,499 at seed 0 and at seeds 12886768257922782526 and 18235675205389542134 (0961b85e: 647,822 / 647,988 / 648,062). Random-message fuzz of these exact bytes against the execution-spec RIPEMD-160 in both the clean and the dirty world: 300,000 four-block messages with bytes 32..43 of every block set to 0xff, 200,000 messages of random length 0..1,000 bytes and 50 random messages at every length 0..300 (15,050), 0 wrong in every mode and world. A full Lean build of 00b4dbb3's tree on these exact bytes passes with 0 failed modules, and the candidate theorem depends only on propext, Classical.choice and Quot.sound."
   },
   {
-    "submissionId": "1991c997-0048-4982-851f-3e3d4db310d4",
-    "rationale": "Direct accepted644876 predecessor at04e2ad5a. Reuses fused256 accumulator/return, mixed compressor Boolean templates, hoisted size-bit transition, unclamped1000 stop schedule and LT final detection, globalfull and stop-based first dispatch with their verified raw/frame/site proofs. This candidate erasesfull from the concrete frame and computes final shift fromlength instead.",
-    "evidence": "Parent image134dc02323d9370095ff62938be3fde90281d99e86200ed3cfcaff37c85c7d73,5393bytes644876, now5392bytes644830. Compare J2RawBase.frame, J2RawControl.finishRest, J2RawTail.run_finalProjection; early prefix/compressor unchanged. Earlier declaration2cc229ec was frontier comparison only, not reused code."
+    "submissionId": "2cc229ec-7f6c-41f6-b6f9-460dd17700ad",
+    "rationale": "Th0rgal's accepted 647,801 record (promoted commit 7139d4de), the live record 00b4dbb3 was measured against and improved on (647,499, -302 gas). It is 0961b85e with two edits: the pad-only block (bytes 77..101) reordered so one MSTORE8 takes its address from PC at 85, and ADD -> SUB at 199. Neither edit is used here and none of its bytes are taken: 00b4dbb3's image replaces the whole pad-only block with the P19 packed PUSH19 pad store, and the code around 199 with its refit generic-padding route and the 192-stub join.",
+    "evidence": "2cc229ec differs from 0961b85e only at bytes 77..95, 97, 98, 100, 101 and 199 (5,241 bytes both). Exact scorer replica of 2cc229ec's image: 647,801 at seed 0, 647,967 and 648,041 at seeds 12886768257922782526 and 18235675205389542134; 00b4dbb3's image (decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8): 647,499 at all three. 00b4dbb3's image's pad-only block is the P19 block of our own work (PUSH19 word store with StaggerPadSetup.run_low), not 2cc229ec's reordering."
   },
   {
     "submissionId": "1d5fd62c-7841-417d-8d64-b0298925145c",

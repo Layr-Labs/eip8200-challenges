@@ -107,18 +107,19 @@ private theorem correct_ordinary (input : ByteArray) (hfit : CalldataFits input)
     exact gasSteps_block input hfit hpositive i hi (maskRho rho) hm rho rfl
   have gs := gasSteps_ordinary input hfit hpositive hn32 rho hcap
   have gb := run_blocks input (states input) (hashes input) (maskRho rho) hfit hm hambient
-    (fun hc i hi => states_last input hfit hpositive hc i hi) hblock
+    (fun hc i hi => states_last input hfit hpositive hc i hi) (fun i _ => rfl) hblock
   let count := DriverTrace.blockCount input
   have a := hambient count (Nat.le_refl _)
-  have go := StaggerPersistentSerialize.gasSteps (states input count)
-    (blockOff input (count - 1))
-    (Word.ofUInt32 (hashes input (count - 1)).h2) (hashes input count) rho
+  have go := StaggerPersistentSerialize.gasSteps (states input count) (states input count).memory
+    (hashes input (count - 1)) (blockOff input (count - 1))
+    (StaggerPersistentLoopRaw.blockCont input (count - 1) (LoopCompletionControl.cont input (count - 1))) rho
     (by omega) a.running a.code a.fork a.notPrecompile
   have trace := entryPrefix.trans (gs.trans (gb.trans go))
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl
   · exact states_callStack input count
-  · exact StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ (maskRho rho) _
-      (hashArray_hashes input hfit hpositive count (Nat.le_refl _))
+  · apply StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ _ _ rho
+    rw [← hashes_last input count (DriverTrace.blockCount_pos input)]
+    exact hashArray_hashes input hfit hpositive count (Nat.le_refl _)
 
 end Ordinary
 
@@ -171,7 +172,9 @@ private theorem correct_shared32 (input : ByteArray) (h32 : input.size = 32)
   have gc := Shared32TailCorrect.gasSteps_core s e input rfl h32 (Shared32Start.table_active input) rho hcap
   have trace := entryPrefix.trans (gs.trans gc)
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl rfl
-  exact Shared32Core.returned_spec s input h32 (Shared32Start.table_ready input h32)
+  exact StaggerPersistentSerialize.returned_spec_of_hashArray s input s.memory
+    StackRunBridge.initialHashState (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho
+    (Shared32Core.resultHash_spec s input h32 (Shared32Start.table_ready input h32))
 
 end Shared32
 

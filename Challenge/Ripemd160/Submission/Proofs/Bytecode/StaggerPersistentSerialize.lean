@@ -1,5 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFinish
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentOutput
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PreSerialize
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerTailBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ClosedEndianLiteralBounds
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedOutputMath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HashAfterModel
@@ -13,36 +15,26 @@ open StackRoundTrace StackRoundTemplate
 
 def value (h : Compression.HashState) : UInt256 :=
   DenseScheduleTemplate.packedWord (StaggerPersistentOutput.packedHash h)
-/-- The finish path leaves the exit offset word below the result. -/
-def result (s : State) (h : Compression.HashState) (off limit : UInt256)
+/-- The epilogue's final state, entered at 4733 with the block-exit stack of the last block. -/
+def result (s : State) (memory : ByteArray) (h : Compression.HashState) (off cont : UInt256)
     (rho : List UInt256) : State :=
-  StaggerPersistentFinish.terminalResult (StaggerPersistentOutput.prepared s h) (UInt256.ofNat 4775)
-    (StaggerPersistentFinish.finish DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16
-      (StaggerPersistentOutput.packedHash h))
-    (off :: limit :: rho)
+  PreSerialize.resultQ s h (PersistentStaggerTailBridge.exitQ memory h off cont) rho
 
-theorem result_hReturn (s : State) (h : Compression.HashState) (off limit : UInt256)
+theorem result_hReturn (s : State) (memory : ByteArray) (h : Compression.HashState) (off cont : UInt256)
     (rho : List UInt256) :
-    (result s h off limit rho).hReturn = Data.Bytes.natToBytesPadded (value h).toNat 32 :=
-  StaggerPersistentFinish.hReturn_eq s h (UInt256.ofNat 4775) (off :: limit :: rho)
+    (result s memory h off cont rho).hReturn =
+      Data.Bytes.natToBytesPadded (value (PersistentStaggerFunctional.result memory h)).toNat 32 := by
+  rw [result, PreSerialize.resultQ_hReturn, PersistentStaggerTailBridge.exitQ,
+    PersistentStaggerTailBridge.result_eq]
+  rfl
 
-def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
+def gasSteps (s : State) (memory : ByteArray) (h : Compression.HashState) (off cont : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4733, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
-      (result s h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)) := by
-  have gp := StaggerPersistentOutput.gasSteps s off limit h
-    (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho) (by simp; omega) hrun hcode hfork hnp
-  have gs := StaggerPersistentFinish.gasSteps_stages (StaggerPersistentOutput.prepared s h)
-    (StaggerPersistentOutput.packedHash h) off limit DenseScheduleTemplate.mask8
-    DenseScheduleTemplate.mask16 rho (by omega) hcode hfork hrun hnp
-  have gt := StaggerPersistentFinish.gasSteps_terminal (StaggerPersistentOutput.prepared s h)
-    (StaggerPersistentFinish.finish DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16
-      (StaggerPersistentOutput.packedHash h))
-    (off :: limit :: DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
-    (by simp; omega) hcode hfork hrun hnp
-  exact gp.trans (gs.trans gt)
+    GasSteps {s with pc := UInt256.ofNat 4733, stack := PersistentStaggerTailBridge.preStack memory h off cont (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
+      (result s memory h off cont rho) :=
+  PreSerialize.gasStepsQ s h (PersistentStaggerTailBridge.exitQ memory h off cont) rho hstack hrun hcode hfork hnp
 #print axioms gasSteps
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentSerialize

@@ -9,8 +9,9 @@ set_option maxHeartbeats 2000000
 /-!
 # Structural certificate for the frozen RIPEMD-160 artifact
 
-The exact candidate has 5392 bytes, 3752 executable instructions and 280 data bytes, and SHA-256
-`9710fffe8552dbf653d164c76e7c966b1ce9b1c6fadb20f8903da6391bc1d0d4`. PUSH rows carry their typed width and value.
+The exact candidate has 6488 bytes, 3770 executable instructions and 1364 data bytes (the 1084-byte
+pad table image, then the 280 digest bytes), and SHA-256
+`ee079ca9f0082d4467838e39b5fc4aea02691b850db2a6dae2d45637b58a4d10`. PUSH rows carry their typed width and value.
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -26,130 +27,130 @@ def op (opcode : UInt8) : Instr :=
 
 private def submissionInstructionsChunk0 : List Instr :=
 [
-  .push ⟨5, by decide⟩ (UInt256.ofNat 71077102108),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push 5 71077102108,
+  .push 0 0,
   op 0x35,
   op 0x16,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 245),
+  .push 1 245,
   op 0x57,
   op 0x36,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1000),
+  .push 2 1000,
   op 0x03,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4598),
+  .push 2 4598,
   op 0x57,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push 0 0,
   op 0x35,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 255),
+  .push 1 255,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 97),
+  .push 1 97,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4782),
+  .push 2 4782,
   op 0x57,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push 0 0,
   op 0x51,
   op 0x35,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 960),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
+  .push 2 960,
+  .push 2 968,
   op 0x35,
   op 0x82,
   op 0x14,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 210),
+  .push 1 210,
   op 0x56,
   op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  op 0x8c,
+  .push 1 128,
+  op 0x8f,
   op 0x01,
   op 0x59,
   op 0x10,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
+  .push 2 4733,
   op 0x57,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 48),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 131),
+  .push 2 5105,
   op 0x56,
+  op 0x00,
   op 0x5b,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
+  op 0x84,
+  op 0x16,
+  op 0x99,
+  op 0x01,
+  op 0x01,
+  op 0x82,
+  op 0x16,
+  op 0x98,
+  op 0x50,
+  .push 2 1084,
+  .push 2 5124,
+  .push 1 28,
+  op 0x39,
   op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
-  op 0x37,
-  op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+  .push 1 3,
   op 0x1b,
   op 0x80,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x52,
   op 0x80,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+  .push 2 666,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 522),
-  op 0x52,
-  .push ⟨19, by decide⟩ (UInt256.ofNat 2854495385411919762116571938898990272765493376),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-  op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
+  .push 2 4733,
   op 0x9c,
   op 0x50,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 824),
+  .push 2 824,
   op 0x56,
-  op 0x04,
-  op 0x04,
+  .push 19 0,
   op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-  op 0x5b,
-  op 0x9c,
+  .push 1 64,
+  op 0x9f,
   op 0x50,
-  op 0x9a,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-  op 0x01,
-  op 0x9a,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 461),
+  .push 2 5105,
   op 0x56,
+  op 0x00,
+  op 0x00,
+  .push 3 0,
   op 0x5b,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
+  .push 2 4733,
   op 0x9c,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  .push 1 32,
   op 0x14,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 165),
+  .push 1 128,
+  .push 1 165,
   op 0x53,
   op 0x85,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 188),
+  .push 1 188,
   op 0x53,
-  .push ⟨3, by decide⟩ (UInt256.ofNat 497),
+  .push 3 497,
   op 0x57,
   op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  .push 1 128,
   op 0x8c,
   op 0x36,
   op 0x01,
   op 0x53,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
+  .push 2 4547,
   op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+  .push 1 3,
   op 0x1b,
   op 0x36,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
+  .push 2 968,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 63),
+  .push 1 63,
   op 0x17,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 89),
+  .push 1 89,
   op 0x01,
   op 0x82,
   op 0x56,
   op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 131),
+  .push 2 5100,
   op 0x56,
+  op 0x00,
   op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 48),
+  .push 1 48,
   op 0x9f,
   op 0x50,
   op 0x50,
   op 0x50,
   op 0x50,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 461),
+  .push 2 461,
   op 0x56,
   op 0x5b,
   op 0x59,
@@ -159,14 +160,14 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x83,
   op 0x14,
   op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 64),
+  .push 2 64,
   op 0x82,
   op 0x03,
   op 0x35,
   op 0x83,
   op 0x14,
   op 0x16,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  .push 1 96,
   op 0x82,
   op 0x03,
   op 0x91,
@@ -175,9 +176,9 @@ private def submissionInstructionsChunk0 : List Instr :=
   op 0x14,
   op 0x16,
   op 0x81,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 210),
+  .push 1 210,
   op 0x57,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4706),
+  .push 2 4706,
   op 0x57,
   op 0x5b,
   op 0x5b
@@ -187,68 +188,68 @@ private def submissionInstructionsChunk0 : List Instr :=
 
 private def submissionInstructionsChunk1 : List Instr :=
 [
-  .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255),
-  .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455),
+  .push 30 1766820105243087041267848467410591083712559083657179364930612997358944255,
+  .push 31 450552876409790643671482431940419874915447411150352389258589821042463539455,
   op 0x36,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1056),
+  .push 0 0,
+  .push 2 1056,
   op 0x37,
   op 0x36,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1056),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 1732584193),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 4023233417),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 2562383102),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 271733878),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
-  .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
-  .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
-  .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
-  .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
-  .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
-  .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498),
-  .push ⟨8, by decide⟩ (UInt256.ofNat 18446744073709551423),
+  .push 2 1056,
+  .push 4 1732584193,
+  .push 4 4023233417,
+  .push 4 2562383102,
+  .push 4 271733878,
+  .push 4 3285377520,
+  .push 13 475368975196266490007815979009,
+  .push 13 1109194275457955143345843994625,
+  .push 27 822752278660603021099785336477205875632903651089438293180284928,
+  .push 27 822752278660603021055183846080144629349832214544141570168324096,
+  .push 4 4294967295,
+  .push 13 158456325065422163343096938498,
+  .push 8 18446744073709551423,
   op 0x36,
   op 0x16,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 143),
+  .push 1 143,
   op 0x57,
   op 0x5b,
   op 0x8b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  .push 1 32,
   op 0x01,
   op 0x51,
   op 0x80,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+  .push 1 8,
   op 0x1c,
   op 0x81,
   op 0x18,
   op 0x8f,
   op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 257),
+  .push 2 257,
   op 0x02,
   op 0x18,
   op 0x8f,
   op 0x81,
   op 0x80,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+  .push 1 16,
   op 0x1c,
   op 0x18,
   op 0x16,
-  .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+  .push 3 65537,
   op 0x02,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x52,
   op 0x5b,
   op 0x8b,
   op 0x51,
   op 0x80,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+  .push 1 8,
   op 0x1c,
   op 0x81,
   op 0x18,
   op 0x8f,
   op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 257)
+  .push 2 257
 ]
 
 @[simp] private theorem submissionInstructionsChunk1_length : submissionInstructionsChunk1.length = 62 := by rfl
@@ -260,150 +261,150 @@ private def submissionInstructionsChunk2 : List Instr :=
   op 0x8f,
   op 0x81,
   op 0x80,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+  .push 1 16,
   op 0x1c,
   op 0x18,
   op 0x16,
-  .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+  .push 3 65537,
   op 0x02,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+  .push 1 252,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 146),
+  .push 1 146,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  .push 1 128,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 178),
+  .push 1 178,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 196),
+  .push 1 196,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 236),
+  .push 1 236,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 218),
+  .push 1 218,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 268),
+  .push 2 268,
   op 0x51,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 286),
+  .push 2 286,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+  .push 1 176,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 168),
+  .push 1 168,
   op 0x51,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 266),
+  .push 2 266,
   op 0x51,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+  .push 2 270,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 142),
+  .push 1 142,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 172),
+  .push 1 172,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 232),
+  .push 1 232,
   op 0x51,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 258),
+  .push 2 258,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 228),
+  .push 1 228,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 180),
+  .push 1 180,
   op 0x51,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 262),
+  .push 2 262,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 146),
+  .push 1 146,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 134),
+  .push 1 134,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 236),
+  .push 1 236,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  .push 1 224,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 138),
+  .push 1 138,
   op 0x51,
   op 0x80,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 900),
+  .push 2 900,
   op 0x52,
   op 0x8b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+  .push 1 216,
   op 0x52,
   op 0x82,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 882),
+  .push 2 882,
   op 0x52,
   op 0x84,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+  .push 1 126,
   op 0x52,
   op 0x84,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+  .push 2 864,
   op 0x52,
   op 0x82,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 846),
+  .push 2 846,
   op 0x52,
   op 0x80,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+  .push 2 828,
   op 0x52,
   op 0x83,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+  .push 2 936,
   op 0x52,
   op 0x83,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 558),
+  .push 2 558,
   op 0x52,
   op 0x87,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 540),
+  .push 2 540,
   op 0x52,
   op 0x85,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 108),
+  .push 1 108,
   op 0x52,
   op 0x8d,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 684),
+  .push 2 684,
   op 0x52,
   op 0x8f,
   op 0x58,
   op 0x52,
   op 0x8d,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 414),
+  .push 2 414,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 756),
+  .push 2 756,
   op 0x52,
   op 0x80,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+  .push 2 522,
   op 0x52,
   op 0x8d,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 90),
+  .push 1 90,
   op 0x52,
   op 0x87,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+  .push 1 72,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+  .push 1 54,
   op 0x52,
   op 0x85,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 504),
+  .push 2 504,
   op 0x52,
   op 0x83,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
+  .push 2 1080,
   op 0x52,
   op 0x83,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+  .push 2 486,
   op 0x52,
   op 0x88,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
+  .push 2 1062,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 972),
-  op 0x52,
-  op 0x83,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+  .push 2 972,
   op 0x52,
   op 0x83,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+  .push 2 1008,
+  op 0x52,
+  op 0x83,
+  .push 2 648,
   op 0x52,
   op 0x88,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+  .push 2 630,
   op 0x52,
   op 0x83,
-  .push ⟨3, by decide⟩ (UInt256.ofNat 612),
+  .push 3 612,
   op 0x52,
   op 0x58,
   op 0x52,
   op 0x88,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+  .push 2 288,
   op 0x52,
-  .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015)
+  .push 22 95780971281817308448866066055358605703522837925462015
 ]
 
 @[simp] private theorem submissionInstructionsChunk2_length : submissionInstructionsChunk2.length = 149 := by rfl
@@ -411,51 +412,51 @@ private def submissionInstructionsChunk2 : List Instr :=
 private def submissionInstructionsChunk3 : List Instr :=
 [
   op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+  .push 2 594,
   op 0x52,
   op 0x88,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+  .push 2 1044,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+  .push 2 720,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+  .push 2 270,
   op 0x52,
   op 0x81,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+  .push 2 396,
   op 0x52,
   op 0x80,
   op 0x58,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 468),
+  .push 2 468,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+  .push 1 18,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 360),
+  .push 2 360,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+  .push 1 198,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+  .push 2 324,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+  .push 1 252,
   op 0x52,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push 0 0,
   op 0x52,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+  .push 2 450,
   op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x52,
   op 0x5b,
   op 0x88,
   op 0x81,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+  .push 1 23,
   op 0x1c,
   op 0x88,
   op 0x88,
   op 0x8d,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
+  .push 4 1352829926,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+  .push 2 486,
   op 0x51,
   op 0x01,
   op 0x8d,
@@ -469,7 +470,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x16,
   op 0x84,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x01,
   op 0x84,
@@ -483,25 +484,25 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x17,
   op 0x84,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x51,
   op 0x8e,
   op 0x01,
   op 0x01,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
+  .push 4 1352829926,
   op 0x01,
   op 0x16,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x83,
   op 0x01,
   op 0x16,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
+  .push 4 1352829926,
   op 0x8e,
   op 0x86,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+  .push 1 23,
   op 0x1c,
   op 0x93,
   op 0x83,
@@ -511,7 +512,7 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x83,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+  .push 1 252,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -519,45 +520,45 @@ private def submissionInstructionsChunk3 : List Instr :=
   op 0x16,
   op 0x85,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x84,
   op 0x01,
   op 0x86,
   op 0x16,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1b,
   op 0x8e,
   op 0x17,
   op 0x90,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1b,
   op 0x8d,
   op 0x17,
   op 0x93,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1b,
   op 0x8f,
   op 0x17,
   op 0x91,
   op 0x85,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+  .push 1 23,
   op 0x1c,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1b,
   op 0x8c,
   op 0x17,
   op 0x92,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1b,
   op 0x8b,
   op 0x17,
-  .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
-  .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 360),
+  .push 22 95780971281817308448866066055358605703522833630494720,
+  .push 22 95780971281817308448866066055358605703522837925462015,
+  .push 2 360,
   op 0x51,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+  .push 1 23,
   op 0x8c,
   op 0x8a
 ]
@@ -566,7 +567,7 @@ private def submissionInstructionsChunk3 : List Instr :=
 
 private def submissionInstructionsChunk4 : List Instr :=
 [
-  .push ⟨22, by decide⟩ (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
+  .push 22 30169115476673038213297653277143730720156734734729216,
   op 0x98,
   op 0x86,
   op 0x8c,
@@ -580,7 +581,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x89,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+  .push 1 54,
   op 0x51,
   op 0x01,
   op 0x89,
@@ -589,7 +590,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -615,7 +616,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 774),
+  .push 2 774,
   op 0x51,
   op 0x01,
   op 0x89,
@@ -623,7 +624,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -660,7 +661,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x16,
   op 0x8d,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+  .push 1 18,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -686,7 +687,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x8d,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 882),
+  .push 2 882,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -694,7 +695,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -722,7 +723,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x8d,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+  .push 2 396,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -731,7 +732,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x16,
   op 0x8d,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -757,7 +758,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x8d,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
+  .push 2 1080,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -765,7 +766,7 @@ private def submissionInstructionsChunk4 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -799,7 +800,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+  .push 2 1044,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -808,7 +809,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x16,
   op 0x81,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -834,7 +835,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+  .push 2 288,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -842,7 +843,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -869,7 +870,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+  .push 2 936,
   op 0x51,
   op 0x01,
   op 0x89,
@@ -878,7 +879,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -904,16 +905,16 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x89,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 810),
+  .push 2 810,
   op 0x51,
   op 0x01,
   op 0x89,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163338801971201),
+  .push 13 158456325065422163338801971201,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -939,7 +940,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+  .push 2 324,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -949,7 +950,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -974,7 +975,7 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x18,
   op 0x8c,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+  .push 2 864,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -982,9 +983,9 @@ private def submissionInstructionsChunk5 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+  .push 13 1109194275457955143375908765704,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -1015,7 +1016,7 @@ private def submissionInstructionsChunk5 : List Instr :=
 
 private def submissionInstructionsChunk6 : List Instr :=
 [
-  .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+  .push 2 450,
   op 0x51,
   op 0x01,
   op 0x90,
@@ -1025,7 +1026,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x16,
   op 0x89,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -1040,7 +1041,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x16,
   op 0x8b,
   op 0x8f,
-  .push ⟨22, by decide⟩ (UInt256.ofNat 34535016170389834383797866734609369064725060249452544),
+  .push 22 34535016170389834383797866734609369064725060249452544,
   op 0x96,
   op 0x8b,
   op 0x89,
@@ -1055,7 +1056,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x18,
   op 0x84,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
+  .push 2 1062,
   op 0x51,
   op 0x01,
   op 0x88,
@@ -1064,7 +1065,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -1092,14 +1093,14 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x51,
   op 0x01,
   op 0x85,
   op 0x01,
   op 0x8c,
   op 0x8d,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450021900025857),
+  .push 13 2376844875981332450021900025857,
   op 0x86,
   op 0x83,
   op 0x94,
@@ -1132,7 +1133,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x17,
   op 0x18,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 990),
+  .push 2 990,
   op 0x51,
   op 0x01,
   op 0x88,
@@ -1140,9 +1141,9 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 20123953283308614743486684463105),
+  .push 13 20123953283308614743486684463105,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x89,
   op 0x01,
@@ -1156,7 +1157,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x84,
   op 0x16,
   op 0x95,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 1518500249),
+  .push 4 1518500249,
   op 0x01,
   op 0x98,
   op 0x86,
@@ -1173,7 +1174,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+  .push 1 252,
   op 0x51,
   op 0x01,
   op 0x89,
@@ -1182,7 +1183,7 @@ private def submissionInstructionsChunk6 : List Instr :=
   op 0x16,
   op 0x8b,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x82,
   op 0x01,
@@ -1216,16 +1217,16 @@ private def submissionInstructionsChunk6 : List Instr :=
 
 private def submissionInstructionsChunk7 : List Instr :=
 [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+  .push 1 72,
   op 0x51,
   op 0x8a,
   op 0x01,
   op 0x01,
   op 0x84,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290078236213249),
+  .push 13 9982748479121596290078236213249,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x85,
   op 0x01,
@@ -1255,7 +1256,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+  .push 1 198,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -1264,7 +1265,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -1292,14 +1293,14 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 504),
+  .push 2 504,
   op 0x51,
   op 0x01,
   op 0x8a,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450086324535312),
+  .push 13 2376844875981332450086324535312,
   op 0x09,
   op 0x88,
   op 0x1c,
@@ -1330,7 +1331,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+  .push 2 324,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -1339,7 +1340,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -1367,16 +1368,16 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 684),
+  .push 2 684,
   op 0x51,
   op 0x01,
   op 0x8a,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
+  .push 13 475368975196266490020700880900,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -1405,7 +1406,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+  .push 2 1008,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -1414,7 +1415,7 @@ private def submissionInstructionsChunk7 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -1448,16 +1449,16 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 954),
+  .push 2 954,
   op 0x51,
   op 0x01,
   op 0x8a,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+  .push 13 1109194275457955143375908765704,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -1486,7 +1487,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+  .push 2 450,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -1495,7 +1496,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -1523,16 +1524,16 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 36),
+  .push 1 36,
   op 0x51,
   op 0x01,
   op 0x8a,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+  .push 13 9982748479121596290348819152960,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -1559,7 +1560,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x18,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+  .push 2 828,
   op 0x51,
   op 0x01,
   op 0x88,
@@ -1568,7 +1569,7 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+  .push 1 18,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -1596,14 +1597,14 @@ private def submissionInstructionsChunk8 : List Instr :=
   op 0x16,
   op 0x17,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+  .push 2 486,
   op 0x51,
   op 0x01,
   op 0x88,
   op 0x01,
   op 0x8f,
   op 0x8d,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450021900025857),
+  .push 13 2376844875981332450021900025857,
   op 0x8f,
   op 0x93,
   op 0x87,
@@ -1645,14 +1646,14 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x01,
   op 0x84,
   op 0x01,
-  .push ⟨22, by decide⟩ (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+  .push 22 40945789247971450477386360121479348807026276516919705,
   op 0x9a,
   op 0x01,
   op 0x85,
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -1680,7 +1681,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+  .push 2 666,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -1688,7 +1689,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x85,
   op 0x01,
@@ -1716,18 +1717,18 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+  .push 1 126,
   op 0x51,
   op 0x01,
   op 0x88,
   op 0x01,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+  .push 13 9982748479121596290348819152960,
   op 0x8e,
   op 0x91,
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -1755,7 +1756,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x18,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 558),
+  .push 2 558,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -1765,7 +1766,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x84,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -1781,7 +1782,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x8c,
   op 0x8a,
   op 0x81,
-  .push ⟨23, by decide⟩ (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
+  .push 23 136726760529788758926252426176837954510549114783656865,
   op 0x97,
   op 0x84,
   op 0x8d,
@@ -1790,7 +1791,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x17,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 972),
+  .push 2 972,
   op 0x51,
   op 0x01,
   op 0x88,
@@ -1799,7 +1800,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x16,
   op 0x8d,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -1820,7 +1821,7 @@ private def submissionInstructionsChunk9 : List Instr :=
   op 0x17,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 306),
+  .push 2 306,
   op 0x51,
   op 0x89,
   op 0x01,
@@ -1833,9 +1834,9 @@ private def submissionInstructionsChunk9 : List Instr :=
 
 private def submissionInstructionsChunk10 : List Instr :=
 [
-  .push ⟨13, by decide⟩ (UInt256.ofNat 4912146077028087063507156074528),
+  .push 13 4912146077028087063507156074528,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -1856,7 +1857,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x17,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x51,
   op 0x01,
   op 0x87,
@@ -1865,7 +1866,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -1886,7 +1887,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x17,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+  .push 1 18,
   op 0x51,
   op 0x01,
   op 0x87,
@@ -1894,7 +1895,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -1917,7 +1918,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x8b,
   op 0x17,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+  .push 2 828,
   op 0x51,
   op 0x01,
   op 0x89,
@@ -1927,7 +1928,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x16,
   op 0x8d,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c,
   op 0x8b,
   op 0x01,
@@ -1947,7 +1948,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x17,
   op 0x8c,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+  .push 2 612,
   op 0x51,
   op 0x8a,
   op 0x01,
@@ -1977,7 +1978,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x8a,
   op 0x17,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+  .push 2 936,
   op 0x51,
   op 0x01,
   op 0x88,
@@ -1987,7 +1988,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2007,7 +2008,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x19,
   op 0x17,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 468),
+  .push 2 468,
   op 0x51,
   op 0x89,
   op 0x01,
@@ -2015,9 +2016,9 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨14, by decide⟩ (UInt256.ofNat 162100820541926873095598711505920),
+  .push 14 162100820541926873095598711505920,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2047,7 +2048,7 @@ private def submissionInstructionsChunk10 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c
 ]
 
@@ -2073,7 +2074,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x19,
   op 0x17,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 234),
+  .push 1 234,
   op 0x51,
   op 0x89,
   op 0x01,
@@ -2081,9 +2082,9 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 4912146077028087063374012088321),
+  .push 13 4912146077028087063374012088321,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2102,7 +2103,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x88,
   op 0x17,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+  .push 1 54,
   op 0x51,
   op 0x87,
   op 0x01,
@@ -2112,7 +2113,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -2132,7 +2133,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x19,
   op 0x17,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 414),
+  .push 2 414,
   op 0x51,
   op 0x87,
   op 0x01,
@@ -2140,13 +2141,13 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x01,
   op 0x8e,
   op 0x8d,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163338801971201),
+  .push 13 158456325065422163338801971201,
   op 0x8f,
   op 0x93,
   op 0x87,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -2166,18 +2167,18 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x8a,
   op 0x17,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+  .push 1 198,
   op 0x51,
   op 0x01,
   op 0x01,
-  .push ⟨22, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
+  .push 22 45805601672572416830120737830960963807809187239029665,
   op 0x97,
   op 0x01,
   op 0x85,
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2204,7 +2205,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x18,
   op 0x8e,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+  .push 2 576,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -2213,7 +2214,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -2240,7 +2241,7 @@ private def submissionInstructionsChunk11 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 702),
+  .push 2 702,
   op 0x51,
   op 0x87,
   op 0x01,
@@ -2254,13 +2255,13 @@ private def submissionInstructionsChunk11 : List Instr :=
 
 private def submissionInstructionsChunk12 : List Instr :=
 [
-  .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
+  .push 13 475368975196266490020700880900,
   op 0x8f,
   op 0x93,
   op 0x87,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2287,7 +2288,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x8f,
   op 0x18,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 90),
+  .push 1 90,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -2296,7 +2297,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -2310,7 +2311,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x83,
   op 0x16,
   op 0x94,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 541184315),
+  .push 4 541184315,
   op 0x01,
   op 0x90,
   op 0x86,
@@ -2326,7 +2327,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 792),
+  .push 2 792,
   op 0x51,
   op 0x83,
   op 0x01,
@@ -2336,7 +2337,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x88,
   op 0x01,
@@ -2363,7 +2364,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x16,
   op 0x87,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 900),
+  .push 2 900,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -2375,7 +2376,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x8d,
   op 0x91,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x85,
   op 0x01,
@@ -2404,7 +2405,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+  .push 2 594,
   op 0x51,
   op 0x85,
   op 0x01,
@@ -2414,7 +2415,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2441,7 +2442,7 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x16,
   op 0x89,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+  .push 2 630,
   op 0x51,
   op 0x85,
   op 0x01,
@@ -2449,9 +2450,9 @@ private def submissionInstructionsChunk12 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨14, by decide⟩ (UInt256.ofNat 80971182108430725466132102251008),
+  .push 14 80971182108430725466132102251008,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2486,7 +2487,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x8c,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+  .push 1 54,
   op 0x51,
   op 0x01,
   op 0x83,
@@ -2495,7 +2496,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+  .push 1 19,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2523,16 +2524,16 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 738),
+  .push 2 738,
   op 0x51,
   op 0x01,
   op 0x83,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨14, by decide⟩ (UInt256.ofNat 80971182108430725466132102251008),
+  .push 14 80971182108430725466132102251008,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2561,7 +2562,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+  .push 2 450,
   op 0x51,
   op 0x01,
   op 0x83,
@@ -2570,7 +2571,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2598,16 +2599,16 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x89,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 378),
+  .push 2 378,
   op 0x51,
   op 0x01,
   op 0x83,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450021900025857),
+  .push 13 2376844875981332450021900025857,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2636,7 +2637,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x8c,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+  .push 1 198,
   op 0x51,
   op 0x01,
   op 0x83,
@@ -2645,7 +2646,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2673,7 +2674,7 @@ private def submissionInstructionsChunk13 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 846),
+  .push 2 846,
   op 0x51,
   op 0x01,
   op 0x83,
@@ -2686,9 +2687,9 @@ private def submissionInstructionsChunk13 : List Instr :=
 
 private def submissionInstructionsChunk14 : List Instr :=
 [
-  .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
+  .push 13 475368975196266490020700880900,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2717,7 +2718,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+  .push 1 252,
   op 0x51,
   op 0x01,
   op 0x83,
@@ -2726,7 +2727,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x8a,
   op 0x01,
@@ -2754,16 +2755,16 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+  .push 2 648,
   op 0x51,
   op 0x01,
   op 0x83,
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨14, by decide⟩ (UInt256.ofNat 80971182108430725463937373962241),
+  .push 14 80971182108430725463937373962241,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -2790,7 +2791,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x8a,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -2798,7 +2799,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x89,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x87,
   op 0x01,
@@ -2813,7 +2814,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x8b,
   op 0x8f,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 2400959708),
+  .push 4 2400959708,
   op 0x99,
   op 0x86,
   op 0x89,
@@ -2829,7 +2830,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x18,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 108),
+  .push 1 108,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -2837,7 +2838,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x85,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x85,
   op 0x01,
@@ -2864,7 +2865,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x18,
   op 0x8a,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 1026),
+  .push 2 1026,
   op 0x51,
   op 0x01,
   op 0x89,
@@ -2874,7 +2875,7 @@ private def submissionInstructionsChunk14 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -2908,17 +2909,17 @@ private def submissionInstructionsChunk14 : List Instr :=
 
 private def submissionInstructionsChunk15 : List Instr :=
 [
-  .push ⟨2, by decide⟩ (UInt256.ofNat 342),
+  .push 2 342,
   op 0x51,
   op 0x01,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 2840853838),
+  .push 4 2840853838,
   op 0x98,
   op 0x01,
   op 0x83,
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 21),
+  .push 1 21,
   op 0x1c,
   op 0x85,
   op 0x01,
@@ -2945,7 +2946,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x18,
   op 0x8e,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+  .push 2 396,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -2955,7 +2956,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+  .push 1 24,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -2980,7 +2981,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x8d,
   op 0x18,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+  .push 2 522,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -2988,9 +2989,9 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+  .push 13 1109194275457955143375908765704,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -3017,7 +3018,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x18,
   op 0x8a,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+  .push 2 720,
   op 0x51,
   op 0x8d,
   op 0x01,
@@ -3027,7 +3028,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x16,
   op 0x8d,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x84,
   op 0x01,
@@ -3052,7 +3053,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x18,
   op 0x8a,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 756),
+  .push 2 756,
   op 0x51,
   op 0x01,
   op 0x8c,
@@ -3061,7 +3062,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 21),
+  .push 1 21,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -3085,7 +3086,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x18,
   op 0x8c,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+  .push 1 252,
   op 0x51,
   op 0x8a,
   op 0x01,
@@ -3095,7 +3096,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -3120,7 +3121,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x18,
   op 0x8a,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 432),
+  .push 2 432,
   op 0x51,
   op 0x8a,
   op 0x01,
@@ -3130,7 +3131,7 @@ private def submissionInstructionsChunk15 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25)
+  .push 1 25
 ]
 
 @[simp] private theorem submissionInstructionsChunk15_length : submissionInstructionsChunk15.length = 223 := by rfl
@@ -3170,7 +3171,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x16,
   op 0x8a,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x81,
   op 0x01,
@@ -3197,7 +3198,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x18,
   op 0x8e,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+  .push 1 216,
   op 0x51,
   op 0x8c,
   op 0x01,
@@ -3205,9 +3206,9 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+  .push 13 9982748479121596290348819152960,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  .push 1 26,
   op 0x1c,
   op 0x86,
   op 0x01,
@@ -3232,7 +3233,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x89,
   op 0x18,
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+  .push 1 162,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -3242,7 +3243,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x16,
   op 0x8b,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -3269,7 +3270,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x18,
   op 0x8a,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 540),
+  .push 2 540,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -3278,7 +3279,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x86,
   op 0x16,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x86,
   op 0x01,
@@ -3303,7 +3304,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x18,
   op 0x8b,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 972),
+  .push 2 972,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -3313,7 +3314,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x16,
   op 0x8b,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+  .push 1 20,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -3339,7 +3340,7 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x8a,
   op 0x18,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 918),
+  .push 2 918,
   op 0x51,
   op 0x01,
   op 0x8b,
@@ -3347,9 +3348,9 @@ private def submissionInstructionsChunk16 : List Instr :=
   op 0x01,
   op 0x85,
   op 0x16,
-  .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+  .push 13 1109194275457955143375908765704,
   op 0x09,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 21),
+  .push 1 21,
   op 0x1c,
   op 0x86,
   op 0x01,
@@ -3378,7 +3379,7 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x18,
   op 0x8b,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+  .push 2 594,
   op 0x51,
   op 0x01,
   op 0x8a,
@@ -3388,7 +3389,7 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x16,
   op 0x8b,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+  .push 1 22,
   op 0x1c,
   op 0x01,
   op 0x83,
@@ -3410,7 +3411,7 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x8a,
   op 0x17,
   op 0x18,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push 0 0,
   op 0x51,
   op 0x85,
   op 0x01,
@@ -3420,13 +3421,13 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x16,
   op 0x8c,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+  .push 1 25,
   op 0x1c,
   op 0x87,
   op 0x01,
   op 0x8d,
   op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+  .push 2 612,
   op 0x51,
   op 0x8b,
   op 0x82,
@@ -3443,7 +3444,7 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x16,
   op 0x8d,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+  .push 1 28,
   op 0x1c,
   op 0x83,
   op 0x01,
@@ -3461,7 +3462,7 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x18,
   op 0x85,
   op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+  .push 1 198,
   op 0x51,
   op 0x01,
   op 0x01,
@@ -3469,12 +3470,12 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x16,
   op 0x8e,
   op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+  .push 1 27,
   op 0x1c,
   op 0x83,
   op 0x01,
   op 0x93,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1c,
   op 0x01,
   op 0x96,
@@ -3484,18 +3485,18 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x93,
   op 0x50,
   op 0x96,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1c,
   op 0x01,
   op 0x94,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1c,
   op 0x92,
   op 0x50,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1c,
   op 0x97,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  .push 1 144,
   op 0x1c,
   op 0x95,
   op 0x1c,
@@ -3515,6 +3516,393 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x9a,
   op 0x01,
   op 0x01,
+  op 0x8f,
+  op 0x56,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  op 0x81,
+  op 0x81,
+  op 0x53,
+  .push 1 1,
+  op 0x01,
+  op 0x90,
+  .push 1 8,
+  op 0x1c,
+  op 0x90,
+  op 0x81,
+  op 0x83,
+  op 0x57,
+  .push 1 198,
+  op 0x56,
+  op 0x5b,
+  .push 0 0,
+  .push 0 0,
+  op 0x52,
+  .push 1 245,
+  op 0x56,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  .push 4 0,
+  op 0x5b,
+  op 0x36,
+  .push 1 1,
+  .push 17 342276208914615837337402008677671501826,
+  op 0x36,
+  op 0x1c,
+  op 0x16,
+  .push 2 4785,
+  op 0x57
+]
+
+@[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 216 := by rfl
+
+private def submissionInstructionsChunk18 : List Instr :=
+[
+  .push 2 256,
+  op 0x14,
+  .push 2 376,
+  op 0x36,
+  op 0x14,
+  op 0x01,
+  .push 2 4782,
+  op 0x57,
+  .push 0 0,
+  op 0x35,
+  .push 1 232,
+  op 0x1d,
+  op 0x36,
+  .push 3 2127393,
+  op 0x02,
+  op 0x18,
+  .push 1 245,
+  op 0x57,
+  .push 20 95383801997447390147238369573240532004699299169,
+  op 0x36,
+  op 0x1c,
+  .push 20 802931186561056611446976448233794645126013734992,
+  op 0x18,
+  .push 0 0,
+  op 0x52,
+  op 0x59,
+  .push 0 0,
+  op 0xf3,
+  op 0x5b,
+  .push 20 972889429405991776604892044862621566948497025487,
+  .push 0 0,
+  op 0x52,
+  op 0x59,
+  .push 0 0,
+  op 0xf3,
+  op 0x5b,
+  op 0x89,
+  .push 1 16,
+  op 0x52,
+  .push 1 12,
+  op 0x52,
+  op 0x01,
+  op 0x88,
+  op 0x01,
+  .push 1 8,
+  op 0x52,
+  op 0x89,
+  .push 1 4,
+  op 0x52,
+  op 0x8a,
+  .push 0 0,
+  op 0x52,
+  .push 1 16,
+  op 0x51,
+  op 0x8f,
+  op 0x81,
+  op 0x16,
+  .push 4 4294967295,
+  op 0x02,
+  op 0x01,
+  op 0x8e,
+  op 0x81,
+  op 0x16,
+  .push 2 65535,
+  op 0x02,
+  op 0x01,
+  .push 1 3,
+  op 0x52,
+  .push 1 32,
+  .push 0 0,
+  op 0xf3,
+  op 0x5b,
+  .push 1 251,
+  op 0x5b,
+  .push 1 20,
+  .push 1 15,
+  op 0x36,
+  .push 3 14357627,
+  op 0x04,
+  op 0x16,
+  op 0x81,
+  op 0x02,
+  op 0x38,
+  op 0x03,
+  .push 1 12,
+  op 0x39,
+  .push 32 43592315948166097100638488473858977074172229521182329991325208097096707629152,
+  op 0x80,
+  op 0x19,
+  op 0x59,
+  op 0x83,
+  op 0x03,
+  .push 32 3244493450063667868678674439968361782956185527883176199882357678282131398018,
+  .push 0 0,
+  .push 0 0,
+  op 0x83,
+  .push 0 0,
+  op 0x03,
+  .push 1 5,
+  op 0x1d,
+  .push 1 18,
+  op 0x02,
+  .push 2 5017,
+  op 0x01,
+  op 0x56,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01
+]
+
+@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 109 := by rfl
+
+private def submissionInstructionsChunk19 : List Instr :=
+[
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x59,
+  op 0x01,
+  op 0x91,
+  op 0x35,
+  op 0x85,
+  op 0x84,
+  op 0x17,
+  op 0x87,
+  op 0x81,
+  op 0x03,
+  op 0x18,
+  op 0x84,
+  op 0x18,
+  op 0x93,
+  op 0x18,
+  op 0x17,
+  op 0x5b,
+  op 0x81,
+  op 0x35,
+  op 0x83,
+  op 0x18,
+  op 0x36,
+  op 0x88,
+  op 0x03,
+  .push 2 5044,
+  op 0x57,
+  op 0x84,
+  op 0x83,
+  op 0x03,
+  .push 1 3,
+  op 0x1b,
+  op 0x1c,
+  op 0x17,
+  .push 2 4565,
+  op 0x57,
+  op 0x59,
+  .push 0 0,
+  op 0xf3,
+  op 0x5b,
+  .push 1 40,
+  op 0x1c,
+  op 0x17,
+  op 0x91,
+  op 0x85,
+  .push 1 2,
+  op 0x1b,
+  op 0x81,
+  op 0x81,
+  op 0x17,
+  .push 1 9,
+  op 0x81,
+  op 0x92,
+  op 0x05,
+  op 0x01,
+  op 0x18,
+  op 0x18,
+  op 0x91,
+  .push 1 251,
+  op 0x87,
+  op 0x01,
+  op 0x80,
+  op 0x36,
+  op 0x03,
+  op 0x80,
+  op 0x36,
+  op 0x1d,
+  op 0x16,
+  op 0x01,
+  op 0x59,
+  op 0x81,
+  op 0x03,
+  op 0x94,
+  op 0x50,
+  op 0x96,
+  op 0x91,
+  op 0x50,
+  op 0x83,
+  op 0x82,
+  op 0x03,
+  .push 1 5,
+  op 0x1d,
+  .push 1 18,
+  op 0x02,
+  .push 2 5017,
+  op 0x01,
+  op 0x56
+]
+
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 192 := by rfl
+
+/-- The appended loop continuations `Z` (5100) and `T` (5105). -/
+private def submissionInstructionsChunk20 : List Instr :=
+[
+  op 0x5b,
+  .push 1 128,
+  op 0x9f,
+  op 0x50,
+  op 0x5b,
   op 0x84,
   op 0x16,
   op 0x99,
@@ -3523,370 +3911,16 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x82,
   op 0x16,
   op 0x98,
-  op 0x9c,
-  op 0x56,
-  op 0x5b,
-  op 0x81,
-  op 0x81,
-  op 0x53,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 1),
+  op 0x50,
+  op 0x9a,
+  .push 1 64,
   op 0x01,
-  op 0x90,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 8),
-  op 0x1c,
-  op 0x90,
-  op 0x81,
-  op 0x83,
-  op 0x57,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 198),
-  op 0x56,
-  op 0x5b,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 245),
-  op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 0),
-  op 0x5b,
-  op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 1),
-  .push ⟨17, by decide⟩ (UInt256.ofNat 342276208914615837337402008677671501826),
-  op 0x36,
-  op 0x1c,
-  op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57
-]
-
-@[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 216 := by rfl
-
-private def submissionInstructionsChunk18 : List Instr :=
-[
-  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
-  op 0x14,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 376),
-  op 0x36,
-  op 0x14,
-  op 0x01,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4782),
-  op 0x57,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 232),
-  op 0x1d,
-  op 0x36,
-  .push ⟨3, by decide⟩ (UInt256.ofNat 2127393),
-  op 0x02,
-  op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 245),
-  op 0x57,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169),
-  op 0x36,
-  op 0x1c,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992),
-  op 0x18,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 972889429405991776604892044862621566948497025487),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x5b,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  op 0x50,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-  op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 12),
-  op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 8),
-  op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 4),
-  op 0x52,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-  op 0x51,
-  op 0x80,
-  op 0x85,
-  op 0x16,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
-  op 0x02,
-  op 0x01,
-  op 0x80,
-  op 0x84,
-  op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
-  op 0x02,
-  op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-  op 0x52,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 251),
-  op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 20),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 15),
-  op 0x36,
-  .push ⟨3, by decide⟩ (UInt256.ofNat 14357627),
-  op 0x04,
-  op 0x16,
-  op 0x81,
-  op 0x02,
-  op 0x38,
-  op 0x03,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 12),
-  op 0x39,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x83,
-  op 0x59,
-  op 0x03,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 5),
-  op 0x1d,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 82),
-  op 0x02,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 5544),
-  op 0x01,
+  op 0x9a,
+  .push 2 461,
   op 0x56
 ]
 
-@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 99 := by rfl
-
-private def submissionInstructionsChunk19 : List Instr :=
-[
-  op 0x5b,
-  op 0x36,
-  op 0x59,
-  op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4876),
-  op 0x57,
-  .push ⟨5, by decide⟩ (UInt256.ofNat 99006248207),
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4565),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 40),
-  op 0x1c,
-  op 0x17,
-  op 0x91,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 58577174555348192978982968886748000443418933419088755925843248380473700876672),
-  op 0x81,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 6357212742440889160509779569104434156650116805172423123734926180826603195918),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x18,
-  op 0x91,
-  op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-  op 0x16,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 5573),
-  op 0x57,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 251),
-  op 0x84,
-  op 0x01,
-  op 0x93,
-  op 0x91,
-  op 0x50,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x59,
-  op 0x01,
-  op 0x91,
-  op 0x35,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 72199773289150098322932496534828930779097755144458234048132375910816422010783),
-  op 0x84,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 43592315948166097100638488473858977074172229521182329991325208097096707629152),
-  op 0x81,
-  op 0x03,
-  op 0x18,
-  op 0x84,
-  op 0x18,
-  op 0x93,
-  op 0x18,
-  op 0x17,
-  op 0x5b,
-  op 0x81,
-  op 0x35,
-  op 0x83,
-  op 0x18,
-  op 0x36,
-  op 0x85,
-  op 0x10,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4853),
-  op 0x57,
-  op 0x36,
-  op 0x83,
-  op 0x03,
-  op 0x59,
-  op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-  op 0x1b,
-  op 0x1c,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4565),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x5b,
-  op 0x36,
-  op 0x93,
-  op 0x91,
-  op 0x50,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 5298),
-  op 0x56
-]
-
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 196 := by rfl
+@[simp] private theorem submissionInstructionsChunk20_length : submissionInstructionsChunk20.length = 20 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -3909,15 +3943,16 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk17
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
+ ++ submissionInstructionsChunk20
 
-theorem referenceInstructions_count : submissionInstructions.length = 3744 := by
-  simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
+theorem referenceInstructions_count : submissionInstructions.length = 3770 := by
+  simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length, submissionInstructionsChunk20_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
   100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17, 246, 87, 95, 53, 96, 255, 2, 96, 97, 1, 97, 18, 174, 87, 95, 81, 53, 97, 3, 192, 97, 3, 200, 53, 130, 20, 96, 210, 86, 91, 96,
-  128, 140, 1, 89, 16, 97, 18, 125, 87, 96, 48, 96, 131, 86, 91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82, 128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 54, 82, 97, 18, 125, 156, 80, 97, 3, 56, 86, 4, 4, 91, 96, 64, 91, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91, 97, 18, 125, 156, 96, 32,
-  20, 96, 128, 96, 165, 83, 133, 96, 188, 83, 98, 0, 1, 241, 87, 91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 96, 128, 96, 131, 86, 91, 96,
+  128, 143, 1, 89, 16, 97, 18, 125, 87, 97, 19, 241, 86, 0, 91, 132, 22, 153, 1, 1, 130, 22, 152, 80, 97, 4, 60, 97, 20, 4, 96, 28, 57, 54, 96, 3, 27, 128, 96, 162, 82, 128, 97, 2, 154, 82, 96, 144, 82, 97,
+  18, 125, 156, 80, 97, 3, 56, 86, 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 96, 64, 159, 80, 97, 19, 241, 86, 0, 0, 98, 0, 0, 0, 91, 97, 18, 125, 156, 96, 32,
+  20, 96, 128, 96, 165, 83, 133, 96, 188, 83, 98, 0, 1, 241, 87, 91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 97, 19, 236, 86, 0, 91, 96,
   48, 159, 80, 80, 80, 80, 97, 1, 205, 86, 91, 89, 130, 3, 53, 131, 20, 22, 97, 0, 64, 130, 3, 53, 131, 20, 22, 96, 96, 130, 3, 145, 53, 131, 20, 22, 129, 96, 210, 87, 97, 18, 98, 87, 91, 91
 ] := by decide
 
@@ -4067,7 +4102,7 @@ private theorem submissionInstructionsChunk17_assemble : Challenge.EvmProof.PcEn
   150, 139, 2, 136, 28, 149, 138, 141, 22, 135, 23, 136, 24, 141, 24, 139, 24, 97, 2, 82, 81, 1, 138, 1, 1, 132, 22, 139, 2, 96, 22, 28, 1, 131, 22, 152, 138, 2, 135, 28, 138, 135, 2, 136, 28, 140, 139, 131, 25, 138,
   23, 24, 95, 81, 133, 1, 1, 139, 1, 22, 140, 2, 96, 25, 28, 135, 1, 141, 22, 97, 2, 100, 81, 139, 130, 142, 133, 25, 23, 24, 1, 1, 136, 1, 142, 22, 141, 2, 96, 28, 28, 131, 1, 140, 142, 2, 139, 28, 155, 129,
   131, 142, 25, 23, 24, 133, 1, 96, 198, 81, 1, 1, 143, 22, 142, 2, 96, 27, 28, 131, 1, 147, 96, 144, 28, 1, 150, 80, 140, 2, 147, 80, 150, 96, 144, 28, 1, 148, 96, 144, 28, 146, 80, 96, 144, 28, 151, 96, 144, 28,
-  149, 28, 1, 143, 1, 136, 22, 159, 1, 135, 22, 159, 1, 134, 22, 154, 1, 1, 132, 22, 153, 1, 1, 130, 22, 152, 156, 86, 91, 129, 129, 83, 96, 1, 1, 144, 96, 8, 28, 144, 129, 131, 87, 96, 198, 86, 91, 95, 95, 82,
+  149, 28, 1, 143, 1, 136, 22, 159, 1, 135, 22, 159, 1, 134, 22, 154, 1, 1, 143, 86, 0, 0, 0, 0, 0, 0, 0, 0, 91, 129, 129, 83, 96, 1, 1, 144, 96, 8, 28, 144, 129, 131, 87, 96, 198, 86, 91, 95, 95, 82,
   96, 245, 86, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 99, 0, 0, 0, 0, 91, 54, 96, 1, 112, 1, 1, 128, 0, 0, 0, 0, 0, 3, 129, 128, 0, 1, 128, 0, 0,
   2, 54, 28, 22, 97, 18, 177, 87
 ] := by decide
@@ -4075,27 +4110,22 @@ private theorem submissionInstructionsChunk17_assemble : Challenge.EvmProof.PcEn
 private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18 = [
   97, 1, 0, 20, 97, 1, 120, 54, 20, 1, 97, 18, 174, 87, 95, 53, 96, 232, 29, 54, 98, 32, 118, 33, 2, 24, 96, 245, 87, 115, 16, 181, 40, 89, 5, 22, 178, 98, 175, 214, 144, 26, 176, 43, 33, 241, 110, 170, 221, 97,
   54, 28, 115, 140, 164, 173, 252, 192, 255, 78, 54, 206, 254, 152, 141, 206, 195, 212, 185, 220, 143, 80, 80, 24, 95, 82, 89, 95, 243, 91, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16, 243, 129, 233,
-  207, 95, 82, 89, 95, 243, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3,
-  82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 20, 96, 15, 54, 98, 219, 20, 123, 4, 22, 129, 2, 56, 3, 96, 12, 57, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16,
-  53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 95, 131, 89, 3, 96, 5, 29, 96, 82, 2, 97, 21, 168, 1, 86
+  207, 95, 82, 89, 95, 243, 91, 137, 96, 16, 82, 96, 12, 82, 1, 136, 1, 96, 8, 82, 137, 96, 4, 82, 138, 95, 82, 96, 16, 81, 143, 129, 22, 99, 255, 255, 255, 255, 2, 1, 142, 129, 22, 97, 255, 255, 2, 1, 96, 3,
+  82, 96, 32, 95, 243, 91, 96, 251, 91, 96, 20, 96, 15, 54, 98, 219, 20, 123, 4, 22, 129, 2, 56, 3, 96, 12, 57, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
+  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 128, 25, 89, 131, 3, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 95,
+  131, 95, 3, 96, 5, 29, 96, 18, 2, 97, 19, 153, 1, 86, 91, 129, 89, 1
 ] := by decide
 
 private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
-  91, 54, 89, 22, 97, 19, 12, 87, 100, 23, 13, 59, 117, 15, 24, 23, 97, 17, 213, 87, 89, 95, 243, 91, 96, 40, 28, 23, 145, 127, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129,
-  129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 129, 128, 129, 23, 127, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 129, 3, 24,
-  24, 145, 54, 96, 16, 22, 97, 21, 197, 87, 96, 251, 132, 1, 147, 145, 80, 91, 129, 89, 1, 145, 53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159,
-  159, 159, 159, 159, 159, 159, 132, 23, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 129, 3, 24, 132, 24, 147, 24, 23, 91,
-  129, 89, 1, 145, 53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 132, 23, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96,
-  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159,
-  159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 132, 23, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
-  96, 96, 96, 96, 96, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159,
-  159, 159, 132, 23, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145,
-  53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 132, 23, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
-  96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159,
-  159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 132, 23, 127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96,
-  96, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 127, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 159, 132, 23,
-  127, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 53, 131, 24, 54, 133, 16, 97,
-  18, 245, 87, 54, 131, 3, 89, 1, 96, 3, 27, 28, 23, 97, 17, 213, 87, 89, 95, 243, 91, 54, 147, 145, 80, 97, 20, 178, 86
+  145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23,
+  91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132,
+  24, 147, 24, 23, 91, 129, 89, 1, 145, 53, 133, 132, 23, 135, 129, 3, 24, 132, 24, 147, 24, 23, 91, 129, 53, 131, 24, 54, 136, 3, 97, 19, 180, 87, 132, 131, 3, 96, 3, 27, 28, 23, 97, 17, 213, 87, 89, 95, 243, 91,
+  96, 40, 28, 23, 145, 133, 96, 2, 27, 129, 129, 23, 96, 9, 129, 146, 5, 1, 24, 24, 145, 96, 251, 135, 1, 128, 54, 3, 128, 54, 29, 22, 1, 89, 129, 3, 148, 80, 150, 145, 80, 131, 130, 3, 96, 5, 29, 96, 18, 2,
+  97, 19, 153, 1, 86
+] := by decide
+
+private theorem submissionInstructionsChunk20_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk20 = [
+  91, 96, 128, 159, 80, 91, 132, 22, 153, 1, 1, 130, 22, 152, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86
 ] := by decide
 
 private theorem assemble_chunk0 :
@@ -4174,7 +4204,13 @@ private theorem assemble_chunk18 :
     Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk18 = submissionByteChunk18 := by
   rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk18_assemble]
 
-private def submissionData : List UInt8 := [
+/-- The pad-only table image copied by `CODECOPY` at 73: zero except `0x80` at offsets 39, 57
+and 525. It precedes the 280 digest bytes, which stay last. -/
+private def padImageData : List UInt8 :=
+  List.replicate 39 0 ++ [0x80] ++ List.replicate 17 0 ++ [0x80] ++ List.replicate 467 0 ++ [0x80] ++
+    List.replicate 558 0
+
+private def digestData : List UInt8 := [
   0x4d, 0xe2, 0x0b, 0x6b, 0x1f, 0xb2, 0xaf, 0x44, 0x23, 0x70, 0xc4, 0x0e,
   0x53, 0xa5, 0x0a, 0xca, 0x36, 0x0f, 0xc3, 0xbc, 0xdb, 0x4d, 0x90, 0xb3,
   0xbe, 0x82, 0x8e, 0xa7, 0xce, 0xd8, 0xd8, 0x79, 0xdb, 0xce, 0xa2, 0xc1,
@@ -4201,9 +4237,15 @@ private def submissionData : List UInt8 := [
   0xb0, 0x4e, 0x78, 0x17
 ]
 
+private def submissionData : List UInt8 := padImageData ++ digestData
+
 private theorem assemble_chunk19 :
-    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk19 ++ mkCode submissionData = submissionByteChunk19 := by
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk19 = submissionByteChunk19 := by
   rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk19_assemble]
+
+private theorem assemble_chunk20 :
+    Challenge.EvmProof.PcEncoding.assemble submissionInstructionsChunk20 ++ mkCode submissionData = submissionByteChunk20 := by
+  rw [Challenge.EvmProof.PcEncoding.assemble, submissionInstructionsChunk20_assemble]
   rfl
 
 theorem assemble_referenceInstructions :
@@ -4211,7 +4253,7 @@ theorem assemble_referenceInstructions :
   rw [ArtifactSegment.mkCode_append]
   change Challenge.EvmProof.PcEncoding.assemble submissionInstructions ++ mkCode submissionData = submissionBytecode
   simp only [submissionInstructions, ArtifactSegment.assemble_append, ByteArray.append_assoc,
-    assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14, assemble_chunk15, assemble_chunk16, assemble_chunk17, assemble_chunk18, assemble_chunk19, submissionBytecode, submissionBytes]
+    assemble_chunk0, assemble_chunk1, assemble_chunk2, assemble_chunk3, assemble_chunk4, assemble_chunk5, assemble_chunk6, assemble_chunk7, assemble_chunk8, assemble_chunk9, assemble_chunk10, assemble_chunk11, assemble_chunk12, assemble_chunk13, assemble_chunk14, assemble_chunk15, assemble_chunk16, assemble_chunk17, assemble_chunk18, assemble_chunk19, assemble_chunk20, submissionBytecode, submissionBytes]
 
 def submissionArtifact : Challenge.EvmProof.DataProgramArtifact where
   code := submissionBytecode
@@ -4310,7 +4352,12 @@ private theorem chunk17_byteLength :
   rfl
 
 private theorem chunk18_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 226 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 268 := by
+  rw [← ArtifactByteLength.byteLength_eq_assemble]
+  rfl
+
+private theorem chunk19_byteLength :
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19).length = 205 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
@@ -4333,23 +4380,24 @@ private def tailPrefix : List Instr :=
   submissionInstructionsChunk15 ++
   submissionInstructionsChunk16 ++
   submissionInstructionsChunk17 ++
-  submissionInstructionsChunk18
+  submissionInstructionsChunk18 ++
+  submissionInstructionsChunk19
 
-private theorem tailPrefix_length : tailPrefix.length = 3548 := by
-  simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length]
+private theorem tailPrefix_length : tailPrefix.length = 3750 := by
+  simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
-private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4853 := by
-  simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
+private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 5100 := by
+  simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength, chunk19_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 196) :
-    submissionArtifact.instructionPC (3548 + i) =
-      4853 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk19.take i)).length := by
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 20) :
+    submissionArtifact.instructionPC (3750 + i) =
+      5100 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk20.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
-    tailPrefix submissionInstructionsChunk19 [] 3548 4853
-  · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil]
+    tailPrefix submissionInstructionsChunk20 [] 3750 5100
+  · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil, List.append_assoc]
   · exact tailPrefix_length
   · exact tailPrefix_bytes_length
-  · simpa only [submissionInstructionsChunk19_length] using hi
+  · simpa only [submissionInstructionsChunk20_length] using hi
 
 def instructionPC (index : Nat) : Nat :=
   submissionArtifact.instructionPC index
@@ -5195,16 +5243,6 @@ set_option maxRecDepth 100000 in
   rfl
 
 set_option maxRecDepth 100000 in
-@[simp] theorem validJumpDest_132 :
-    Decode.isValidJumpDest submissionBytecode 131 = true := by
-  have hp : submissionArtifact.instructionPC 71 = 131 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]
-    rfl
-  have h := submissionArtifact.isValidJumpDest_index 71 (by rfl)
-  rw [hp] at h
-  exact h
-
-set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_210 :
     Decode.isValidJumpDest submissionBytecode 4547 = true := by
   have hp : submissionArtifact.instructionPC 3397 = 4547 := by
@@ -6016,123 +6054,123 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc84 :
-    submissionArtifact.instructionPC 45 = 72 := by
+    submissionArtifact.instructionPC 45 = 69 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci84 :
-    instructionPC 45 = 72 := by
-  change submissionArtifact.instructionPC 45 = 72
+    instructionPC 45 = 69 := by
+  change submissionArtifact.instructionPC 45 = 69
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc85 :
-    submissionArtifact.instructionPC 46 = 73 := by
+    submissionArtifact.instructionPC 46 = 70 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci85 :
-    instructionPC 46 = 73 := by
-  change submissionArtifact.instructionPC 46 = 73
+    instructionPC 46 = 70 := by
+  change submissionArtifact.instructionPC 46 = 70
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc86 :
-    submissionArtifact.instructionPC 47 = 75 := by
+    submissionArtifact.instructionPC 47 = 71 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci86 :
-    instructionPC 47 = 75 := by
-  change submissionArtifact.instructionPC 47 = 75
+    instructionPC 47 = 71 := by
+  change submissionArtifact.instructionPC 47 = 71
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc87 :
-    submissionArtifact.instructionPC 48 = 76 := by
+    submissionArtifact.instructionPC 48 = 72 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci87 :
-    instructionPC 48 = 76 := by
-  change submissionArtifact.instructionPC 48 = 76
+    instructionPC 48 = 72 := by
+  change submissionArtifact.instructionPC 48 = 72
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc89 :
-    submissionArtifact.instructionPC 50 = 79 := by
+    submissionArtifact.instructionPC 50 = 74 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci89 :
-    instructionPC 50 = 79 := by
-  change submissionArtifact.instructionPC 50 = 79
+    instructionPC 50 = 74 := by
+  change submissionArtifact.instructionPC 50 = 74
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc90 :
-    submissionArtifact.instructionPC 51 = 80 := by
+    submissionArtifact.instructionPC 51 = 77 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci90 :
-    instructionPC 51 = 80 := by
-  change submissionArtifact.instructionPC 51 = 80
+    instructionPC 51 = 77 := by
+  change submissionArtifact.instructionPC 51 = 77
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc91 :
-    submissionArtifact.instructionPC 52 = 81 := by
+    submissionArtifact.instructionPC 52 = 80 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci91 :
-    instructionPC 52 = 81 := by
-  change submissionArtifact.instructionPC 52 = 81
+    instructionPC 52 = 80 := by
+  change submissionArtifact.instructionPC 52 = 80
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc92 :
-    submissionArtifact.instructionPC 53 = 84 := by
+    submissionArtifact.instructionPC 53 = 82 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci92 :
-    instructionPC 53 = 84 := by
-  change submissionArtifact.instructionPC 53 = 84
+    instructionPC 53 = 82 := by
+  change submissionArtifact.instructionPC 53 = 82
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc93 :
-    submissionArtifact.instructionPC 54 = 85 := by
+    submissionArtifact.instructionPC 54 = 83 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci93 :
-    instructionPC 54 = 85 := by
-  change submissionArtifact.instructionPC 54 = 85
+    instructionPC 54 = 83 := by
+  change submissionArtifact.instructionPC 54 = 83
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc94 :
-    submissionArtifact.instructionPC 55 = 87 := by
+    submissionArtifact.instructionPC 55 = 84 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci94 :
-    instructionPC 55 = 87 := by
-  change submissionArtifact.instructionPC 55 = 87
+    instructionPC 55 = 84 := by
+  change submissionArtifact.instructionPC 55 = 84
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc95 :
-    submissionArtifact.instructionPC 56 = 88 := by
+    submissionArtifact.instructionPC 56 = 86 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci95 :
-    instructionPC 56 = 88 := by
-  change submissionArtifact.instructionPC 56 = 88
+    instructionPC 56 = 86 := by
+  change submissionArtifact.instructionPC 56 = 86
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -6793,233 +6831,233 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cgPc43 :
-    submissionArtifact.instructionPC 42 = 68 := by
+    submissionArtifact.instructionPC 42 = 66 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci43 :
-    instructionPC 42 = 68 := by
-  change submissionArtifact.instructionPC 42 = 68
+    instructionPC 42 = 66 := by
+  change submissionArtifact.instructionPC 42 = 66
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc44 :
-    submissionArtifact.instructionPC 43 = 69 := by
+    submissionArtifact.instructionPC 43 = 67 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci44 :
-    instructionPC 43 = 69 := by
-  change submissionArtifact.instructionPC 43 = 69
+    instructionPC 43 = 67 := by
+  change submissionArtifact.instructionPC 43 = 67
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc45 :
-    submissionArtifact.instructionPC 44 = 71 := by
+    submissionArtifact.instructionPC 44 = 68 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci45 :
-    instructionPC 44 = 71 := by
-  change submissionArtifact.instructionPC 44 = 71
+    instructionPC 44 = 68 := by
+  change submissionArtifact.instructionPC 44 = 68
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc50 :
-    submissionArtifact.instructionPC 49 = 77 := by
+    submissionArtifact.instructionPC 49 = 73 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci50 :
-    instructionPC 49 = 77 := by
-  change submissionArtifact.instructionPC 49 = 77
+    instructionPC 49 = 73 := by
+  change submissionArtifact.instructionPC 49 = 73
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc60 :
-    submissionArtifact.instructionPC 57 = 90 := by
+    submissionArtifact.instructionPC 57 = 87 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci60 :
-    instructionPC 57 = 90 := by
-  change submissionArtifact.instructionPC 57 = 90
+    instructionPC 57 = 87 := by
+  change submissionArtifact.instructionPC 57 = 87
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc61 :
-    submissionArtifact.instructionPC 58 = 93 := by
+    submissionArtifact.instructionPC 58 = 88 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci61 :
-    instructionPC 58 = 93 := by
-  change submissionArtifact.instructionPC 58 = 93
+    instructionPC 58 = 88 := by
+  change submissionArtifact.instructionPC 58 = 88
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc66 :
-    submissionArtifact.instructionPC 62 = 117 := by
+    submissionArtifact.instructionPC 62 = 95 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci66 :
-    instructionPC 62 = 117 := by
-  change submissionArtifact.instructionPC 62 = 117
+    instructionPC 62 = 95 := by
+  change submissionArtifact.instructionPC 62 = 95
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc67 :
-    submissionArtifact.instructionPC 63 = 120 := by
+    submissionArtifact.instructionPC 63 = 96 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci67 :
-    instructionPC 63 = 120 := by
-  change submissionArtifact.instructionPC 63 = 120
+    instructionPC 63 = 96 := by
+  change submissionArtifact.instructionPC 63 = 96
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc68 :
-    submissionArtifact.instructionPC 64 = 121 := by
+    submissionArtifact.instructionPC 64 = 98 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci68 :
-    instructionPC 64 = 121 := by
-  change submissionArtifact.instructionPC 64 = 121
+    instructionPC 64 = 98 := by
+  change submissionArtifact.instructionPC 64 = 98
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc69 :
-    submissionArtifact.instructionPC 65 = 122 := by
+    submissionArtifact.instructionPC 65 = 99 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci69 :
-    instructionPC 65 = 122 := by
-  change submissionArtifact.instructionPC 65 = 122
+    instructionPC 65 = 99 := by
+  change submissionArtifact.instructionPC 65 = 99
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc70 :
-    submissionArtifact.instructionPC 66 = 125 := by
+    submissionArtifact.instructionPC 66 = 102 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci70 :
-    instructionPC 66 = 125 := by
-  change submissionArtifact.instructionPC 66 = 125
+    instructionPC 66 = 102 := by
+  change submissionArtifact.instructionPC 66 = 102
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc84 :
-    submissionArtifact.instructionPC 69 = 128 := by
+    submissionArtifact.instructionPC 69 = 107 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci84 :
-    instructionPC 69 = 128 := by
-  change submissionArtifact.instructionPC 69 = 128
+    instructionPC 69 = 107 := by
+  change submissionArtifact.instructionPC 69 = 107
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc85 :
-    submissionArtifact.instructionPC 70 = 129 := by
+    submissionArtifact.instructionPC 70 = 108 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci85 :
-    instructionPC 70 = 129 := by
-  change submissionArtifact.instructionPC 70 = 129
+    instructionPC 70 = 108 := by
+  change submissionArtifact.instructionPC 70 = 108
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc86 :
-    submissionArtifact.instructionPC 72 = 132 := by
+    submissionArtifact.instructionPC 72 = 129 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci86 :
-    instructionPC 72 = 132 := by
-  change submissionArtifact.instructionPC 72 = 132
+    instructionPC 72 = 129 := by
+  change submissionArtifact.instructionPC 72 = 129
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc87 :
-    submissionArtifact.instructionPC 73 = 133 := by
+    submissionArtifact.instructionPC 73 = 131 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci87 :
-    instructionPC 73 = 133 := by
-  change submissionArtifact.instructionPC 73 = 133
+    instructionPC 73 = 131 := by
+  change submissionArtifact.instructionPC 73 = 131
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc89 :
-    submissionArtifact.instructionPC 74 = 134 := by
+    submissionArtifact.instructionPC 74 = 132 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci89 :
-    instructionPC 74 = 134 := by
-  change submissionArtifact.instructionPC 74 = 134
+    instructionPC 74 = 132 := by
+  change submissionArtifact.instructionPC 74 = 132
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc90 :
-    submissionArtifact.instructionPC 75 = 135 := by
+    submissionArtifact.instructionPC 75 = 133 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci90 :
-    instructionPC 75 = 135 := by
-  change submissionArtifact.instructionPC 75 = 135
+    instructionPC 75 = 133 := by
+  change submissionArtifact.instructionPC 75 = 133
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc91 :
-    submissionArtifact.instructionPC 76 = 137 := by
+    submissionArtifact.instructionPC 76 = 136 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci91 :
-    instructionPC 76 = 137 := by
-  change submissionArtifact.instructionPC 76 = 137
+    instructionPC 76 = 136 := by
+  change submissionArtifact.instructionPC 76 = 136
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc92 :
-    submissionArtifact.instructionPC 77 = 138 := by
+    submissionArtifact.instructionPC 77 = 137 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci92 :
-    instructionPC 77 = 138 := by
-  change submissionArtifact.instructionPC 77 = 138
+    instructionPC 77 = 137 := by
+  change submissionArtifact.instructionPC 77 = 137
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc93 :
-    submissionArtifact.instructionPC 78 = 139 := by
+    submissionArtifact.instructionPC 78 = 138 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci93 :
-    instructionPC 78 = 139 := by
-  change submissionArtifact.instructionPC 78 = 139
+    instructionPC 78 = 138 := by
+  change submissionArtifact.instructionPC 78 = 138
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc94 :
-    submissionArtifact.instructionPC 79 = 142 := by
+    submissionArtifact.instructionPC 79 = 139 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci94 :
-    instructionPC 79 = 142 := by
-  change submissionArtifact.instructionPC 79 = 142
+    instructionPC 79 = 139 := by
+  change submissionArtifact.instructionPC 79 = 139
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -7853,10 +7891,10 @@ set_option maxRecDepth 100000 in
 
 @[simp] theorem validJumpDest_128 :
     Decode.isValidJumpDest submissionBytecode 128 = true := by
-  have hp : submissionArtifact.instructionPC 69 = 128 := by
+  have hp : submissionArtifact.instructionPC 71 = 128 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 69 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 71 (by rfl)
   rw [hp] at h
   exact h
 
@@ -7909,11 +7947,11 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4553 :
-    Decode.isValidJumpDest submissionBytecode 4853 = true := by
-  have hp : submissionArtifact.instructionPC 3548 = 4853 := by
+    Decode.isValidJumpDest submissionBytecode 5044 = true := by
+  have hp : submissionArtifact.instructionPC 3702 = 5044 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3548 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3702 (by rfl)
   rw [hp] at h
   exact h
 

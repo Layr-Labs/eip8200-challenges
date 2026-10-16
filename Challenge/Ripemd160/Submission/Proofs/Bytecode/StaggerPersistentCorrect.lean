@@ -51,9 +51,11 @@ noncomputable def gasSteps_start (input : ByteArray) (hfit : CalldataFits input)
 
 def result (input : ByteArray) (states : Nat → State) (hashes : Nat → Compression.HashState) : State :=
   StaggerPersistentSerialize.result (states (DriverTrace.blockCount input))
-    (hashes (DriverTrace.blockCount input))
+    (states (DriverTrace.blockCount input)).memory
+    (hashes (DriverTrace.blockCount input - 1))
     (blockOff input (DriverTrace.blockCount input - 1))
-    (Word.ofUInt32 (hashes (DriverTrace.blockCount input - 1)).h2) maskRho
+    (StaggerPersistentLoopRaw.blockCont input (DriverTrace.blockCount input - 1)
+      (LoopCompletionControl.cont input (DriverTrace.blockCount input - 1))) []
 
 noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpositive : 0 < input.size) (hn32 : input.size ≠ 32)
     (states : Nat → State) (hashes : Nat → Compression.HashState)
@@ -63,18 +65,23 @@ noncomputable def fullTrace (input : ByteArray) (hfit : CalldataFits input) (hpo
     (hlast : ¬ (input.size % 64 = 0 ∧ input.size < 256) → ∀ i, i < DriverTrace.blockCount input →
       ((msize (states (i + 1))).toNat < (offsetWord i + UInt256.ofNat 128).toNat ↔
         i + 1 = DriverTrace.blockCount input))
+    (hhash : ∀ i, i < DriverTrace.blockCount input →
+      hashes (i + 1) = PersistentStaggerFunctional.result (states (i + 1)).memory (hashes i))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState input (states i) (hashes (i - 1)) (hashes i) i (DriverTrace.blockCount input) maskRho)
         (postState input (states (i + 1)) (hashes i) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     GasSteps (initialState submissionBytecode input 0) (result input states hashes) := by
   have gs := gasSteps_start input hfit hpositive hn32 entryPrefix
-  have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hlast hblock
+  have gb := run_blocks input states hashes maskRho hfit (by decide) hambient hlast hhash hblock
   have a := hambient (DriverTrace.blockCount input) (Nat.le_refl _)
   have go := StaggerPersistentSerialize.gasSteps (states (DriverTrace.blockCount input))
+    (states (DriverTrace.blockCount input)).memory
+    (hashes (DriverTrace.blockCount input - 1))
     (blockOff input (DriverTrace.blockCount input - 1))
-    (Word.ofUInt32 (hashes (DriverTrace.blockCount input - 1)).h2)
-    (hashes (DriverTrace.blockCount input)) [] (by decide) a.running a.code a.fork a.notPrecompile
+    (StaggerPersistentLoopRaw.blockCont input (DriverTrace.blockCount input - 1)
+      (LoopCompletionControl.cont input (DriverTrace.blockCount input - 1))) [] (by decide)
+    a.running a.code a.fork a.notPrecompile
   rw [← hszero, ← hhzero] at gs
   exact gs.trans (gb.trans go)
 
@@ -86,6 +93,8 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (hlast : ¬ (input.size % 64 = 0 ∧ input.size < 256) → ∀ i, i < DriverTrace.blockCount input →
       ((msize (states (i + 1))).toNat < (offsetWord i + UInt256.ofNat 128).toNat ↔
         i + 1 = DriverTrace.blockCount input))
+    (hhash : ∀ i, i < DriverTrace.blockCount input →
+      hashes (i + 1) = PersistentStaggerFunctional.result (states (i + 1)).memory (hashes i))
     (hblock : ∀ i, i < DriverTrace.blockCount input →
       GasSteps (loopState input (states i) (hashes (i - 1)) (hashes i) i (DriverTrace.blockCount input) maskRho)
         (postState input (states (i + 1)) (hashes i) (hashes (i + 1)) i (DriverTrace.blockCount input) maskRho))
@@ -95,11 +104,14 @@ theorem correct_of_blocks (input : ByteArray) (hfit : CalldataFits input) (hposi
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := fullTrace input hfit hpositive hn32 states hashes hszero hhzero hambient hlast hblock entryPrefix
+  let trace := fullTrace input hfit hpositive hn32 states hashes hszero hhzero hambient hlast hhash hblock entryPrefix
   have hr : (result input states hashes).halt = .Returned := rfl
   have hc : (result input states hashes).callStack = [] := hcalls
+  have hcount : 0 < DriverTrace.blockCount input := DriverTrace.blockCount_pos input
+  have hlastHash := hhash (DriverTrace.blockCount input - 1) (by omega)
+  rw [show DriverTrace.blockCount input - 1 + 1 = DriverTrace.blockCount input by omega] at hlastHash
   have hb : (result input states hashes).hReturn = spec input :=
-    StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ maskRho _ hfinal
+    StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ _ _ [] (by rw [← hlastHash]; exact hfinal)
   refine ⟨trace.cost, fun gas hgas => ?_⟩
   have heval := eval_of_steps (trace.trace gas hgas) (by
     simp [withGas, State.isDone, State.isHalted, State.isRunning, hc, hr])

@@ -25,31 +25,27 @@ theorem run_tail (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 theorem run_finalProjection (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
-    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hfinal : f.len.toNat ≤ f.stop.toNat)
-    (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
-    (hactive : s.activeWords = UInt256.ofNat 1) :
+    (hstack : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq finalProjectionTemplate {s with pc := pc, stack := pending s f rho} =
       some {s with pc := pcAfter pc finalProjectionTemplate, stack := frame (tailResult s f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [finalProjectionTemplate, pending, tailDiff, tailResult, frame, Nat.not_lt_of_ge hfinal, runInstrSeq, DataStepper.runInstr,
+    [finalProjectionTemplate, pending, tailDiff, tailResult, frame, runInstrSeq, DataStepper.runInstr,
       pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-      Nat.add_assoc, hrun, hbase, hcap, ← hlen, MachineState.msize, hactive,
-      Word.word_toNat_ofNat, Word.literal_eq_ofNat]
-  all_goals simp only [hadd_eq, hmul_eq, hsub_eq, RawExpressionAC.xor_comm, RawExpressionAC.add_comm]
+      Nat.add_assoc, hrun, hbase, hcap, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals simp only [hadd_eq, hmul_eq, hsub_eq, RawExpressionAC.xor_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 theorem run_boundaryProjection (s : State) (pc : UInt256) (f : Frame) (rho : List UInt256)
     (hstack : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hboundary : f.stop.toNat < f.len.toNat) :
+    (hshift : UInt256.shiftLeft (UInt256.sub f.off f.full) (UInt256.ofNat 3) = UInt256.ofNat 40) :
     runInstrSeq boundaryProjectionTemplate {s with pc := pc, stack := pending s f rho} =
       some {s with pc := pcAfter pc boundaryProjectionTemplate, stack := frame (tailResult s f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [boundaryProjectionTemplate, pending, tailDiff, tailResult, frame, hboundary,
+    [boundaryProjectionTemplate, pending, tailDiff, tailResult, frame, hshift,
       runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
       List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hcap,
       Word.word_toNat_ofNat, Word.literal_eq_ofNat]
@@ -57,6 +53,4 @@ theorem run_boundaryProjection (s : State) (pc : UInt256) (f : Frame) (rho : Lis
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 
 #print axioms run_tail
-#print axioms run_finalProjection
-#print axioms run_boundaryProjection
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Raw

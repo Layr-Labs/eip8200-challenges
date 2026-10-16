@@ -1,132 +1,104 @@
-# Four-word scanner — local644636
+# Block exit before the last tail step — local 644,415 gas
 
-SHA256a2b01a200655fbdda80b340a96339cce33e6239f12f52191812165968c2f2581.
-5862bytes3744instructions,98/98protectedexecutions,644636clean/dirty.
-Frame[acc,off,word,stop], perwordliteralconstants. Firstdispatchstride82.
-Universalrawproofs,abstractcontrolproofs,exactartifactandsitebindingspass;
-fullcertificate delegatedtoYukon. Effort:xhigh.
+Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
+Base: 4472e4f8f (644,819, the CODECOPY pad table below). Exact image: **6,488 bytes**, 3,770 executable
+instructions, 1,364 data bytes, SHA-256 `ee079ca9f0082d4467838e39b5fc4aea02691b850db2a6dae2d45637b58a4d10`.
+`seedscore`: **644,415** on all 31 corpus seeds (sd 0), **-404**.
 
-Historicalmetadata follows,not current.
+## The change
 
----
+The compression body used to end with `DUP5 AND SWAP10 ADD ADD DUP3 AND SWAP9 SWAP13 JUMP` (4537..4546):
+mask the `h3` sum and place it, sum, mask and place `h2`, then jump to the continuation, leaving the old `h2`
+in its slot. At 4537 the continuation is exactly sixteen deep, so the block now exits there with
+`DUP16 JUMP` and the targets finish the tail:
 
-# Literal scanner constants — local644720
+* the digest epilogue (4733) stores the five words straight from the exit stack. Only `h0` (stored last, at
+  offset 0) must be masked; the `h3` and `h2` sums are stored unmasked because of their 32-byte stores only the low
+  four bytes survive the lower stores that follow. No placement swaps and no `POP`s of the six resident
+  constants; the byte swap reads its masks from slots 16 and 15. 99 -> 81 gas per final block, -18 net of the
+  exit (32 final blocks per corpus).
+* every loop target runs the eight tail instructions and a `POP` (+2 gas per non-final block, 31 per corpus):
+  the pad target at 64 inline (65..73); the 128 target `JUMPDEST PUSH1 0x40 SWAP16 POP PUSH2 T JUMP`; the 192
+  target via `Z` (5100: `JUMPDEST PUSH1 0x80 SWAP16 POP`) into `T`; the generic last-block test at 48 now reads the
+  offset with `DUP16` and stays through `PUSH2 T JUMP`. `T` (5105) is `JUMPDEST <tail copy> SWAP11 PUSH1 0x40 ADD
+  SWAP11 PUSH2 0x01cd JUMP`. The continuation is replaced in slot 16 before the tail copy (`PUSH1 v SWAP16 POP`),
+  so after the copy the frame already holds it.
 
-Decoded SHA256a6f10586b77a2dac35411e9be8874dc5033bd16446a5ace25522d348b8b58612.
-5480bytes3746instructions,98/98protected executions,644720clean/dirty.
-Six-wordframe; directliteral m9f initialization and literal sentinel/c14
-transitionprefix. Universal raw proofs and exactimage/site checks pass;
-fullcertificate delegatedtoYukon. Effort:xhigh.
+Layout: the 29 filler bytes freed at 99..127 by the CODECOPY pad table make room for the inline pad copy; the old
+join at 131 is gone; `Z`/`T` are appended after the last instruction (5099), the pad image moves to 5124. Every
+PC and instruction index outside 64..142 and 192..197 is unchanged (fillers keep the instruction counts).
 
-Historical metadata below is not current.
+## Proof changes
 
----
-
-# Six-word scanner — local644830
-
-Decoded SHA2563e8bdee71603c96793baddaecde68033c887b3abf19590677d6dd8a2165955e6.
-5392bytes3752instructions,98/98protected executions,644830clean/dirty.
-Concrete full slot erased; finalshift=((off−len)+32)<<3, MSIZE=32. Six-word
-frame and five-word miss residual. Effort:xhigh. Raw/abstract checks pass;
-exact artifact adapters checked, full certificate delegated to Yukon.
-Accepted parent1991c997 at04e2ad5a is644876, preserved separately.
-
-Historical metadata below is not current.
-
----
-
-# Global full, stop-based initial dispatch — local644876
-
-Current5393bytes,3753instructions; decoded SHA-256
-`134dc02323d9370095ff62938be3fde90281d99e86200ed3cfcaff37c85c7d73`.
-Runtime98/98OK,644876clean/dirty. Effort:xhigh.
-
-Full=length−32 is initialized once, never rewritten by transitions. First
-computed dispatch uses32−clampedStop independently of full. Generic/special
-cleanup SWAP7 SWAP2 POP preserves the frame. New tail5077, chain4951+18*j,
-result5097, return5101, specialized376arm5104. Raw/abstract and exact-site
-checks pass; full certificate and official acceptance remain pending Yukon.
-
-Historical notes below have obsolete PCs/sizes.
-
----
-
-# Unclamped generic stop — local644939
-
-Current image5403bytes,3763 executable instructions, decoded SHA-256
-`8c88bf3de84bf824fd4e5fc7be2b23f38eaed7c99f004699efa3742404075186`.
-Trusted runtime98/98OK, clean/dirty644939/644939. Effort:xhigh.
-
-Generic stop advances251 without a minimum; finish tests stop<len. Full is
-len−32 after the first transition. Nonfinal projection remains literal40;
-final1000 shift remains72. New tail5082, chain4956+18*j, result5102,
-return5106, specialized376 arm5109. Raw/abstract/concrete changed-region
-proofs pass; complete certificate and official acceptance remain pending.
-
-Historical descriptions below have obsolete sizes/PCs.
+* `ScheduledTailRaw`: `chunk3` split into `chunk3a` (the `ADD` at 4536) and `chunk3b` (the eight tail
+  instructions); the resident template ends at `stack3a` (4537). `ScheduledTailFrame`: `run_tail` to 4537,
+  `copyTemplate`/`run_copy` (tail copy + `POP` = combined frame, continuation kept), `exit_h0..h4` (the exit
+  stack's masked words and the low 32 bits of the two sums).
+* `PersistentStaggerTailBridge`: `exitQ`, `preStack` (the block-exit stack of a block run on a memory from a hash),
+  `run_copy`, `result_eq`; `StaggerPersistentTailSite`, `ScheduledTailBridge`, `ColdOrdinaryBlock`,
+  `Shared32Core` end at 4537.
+* `PreSerialize.lean` (new): `stores_eq` (the unmasked stores give exactly the masked image), `run_storeQ`,
+  the DUP16/DUP15 stages, the sites at 4734 and 4757 and `gasStepsQ`; `StaggerPersistentSerialize` /
+  `SerializeMath` restated over the exit stack (`result s memory h off cont rho`).
+* `LoopPreRaw.lean` (new) and `StaggerPersistentLoopSites` (rewritten): exit, pad entry, 128/192 targets, `Z`,
+  `T`, last-block head/exit/stay over `preStack`. `StaggerPersistentLoopInduction`: `postState`/`exitState` are
+  exit stacks, the pad block's frame starts at 74 with continuation 64 (`LoopCompletionControl.blockPC`),
+  `run_blocks` takes `hhash` (each hash is the previous block's `result`). Callers (`StaggerPersistentCorrect`,
+  `ColdOrdinaryCorrect`, `ColdTailCorrect`, `GenericFramedCorrect`, `PersistentStaggerIteration`,
+  `Shared32TailCorrect`) pass `hhash` by `rfl`.
+* `ColdOrdinarySites`/`ColdOrdinaryPrepare`: the pad low block moves by nine bytes (74..107).
+* Obsolete sites removed: the 6-`POP` output template, the old stages site, the join/advance at 131..142.
+* `Bytes`/`Artifact`: chunks 0, 17, 18, 19 and a new chunk 20 (the appended code and the data); the
+  `validJumpDest_132` lemma (131 is no longer a `JUMPDEST`) is dropped.
 
 ---
 
-# Hoisted transition classifier — local645008
+# Pad-only table by one code copy — local 644,819 gas
 
-Current candidate: **5411 bytes**, **3771 instructions**, decoded SHA-256
-`71b16440dc9e626373e538a6b2043445da188b7e1b91209175426d73f18bd831`.
-Protected runtime **98/98 OK**, clean/dirty **645008/645008**. Effort: xhigh.
+Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.
+Base: 321727a71 (645,176). Exact image: **6,464 bytes**, 3,750 executable instructions, 1,364 data bytes,
+SHA-256 `f2181b5b66ad3b264363dbf0f5a7c90f9725128d996106027fcb134ca3f80941`.
+`seedscore`: **644,819** on all 31 corpus seeds (sd 0), **-357**.
 
-Size-bit branch moved to4936. The1000-byte arm runs generic stop/cleanup at4944
-and falls through to4964. The376-byte arm at5117 sets stop=CALLDATASIZE,
-cleans the frame, and jumps to5036. This saves17 gas versus645025. Universal
-raw semantics are in J2HoistRaw; exact sites/composition in J2HoistSites;
-reachable specialized minimum is proved by J2Frame.transition_min.
+## The change
 
-Full certificate validation and promotion remain pending Yukon, not inferred
-from runtime samples. Historical descriptions below have different lengths
-and PCs. No full local certificate build is required before submission.
+The pad-only block (entered at 64 by the 64- and 128-byte inputs, 21 times per corpus) used to clear the table
+`[28, 1112)` with `CALLDATACOPY` from past the end of the calldata, store `0x80` as a word at 522, and store a
+packed `PUSH19` word at 54 that puts `0x80` at 67 and 85. It now copies a 1084-byte image from the code instead:
 
----
+    PUSH2 0x043c PUSH2 0x13ec PUSH1 0x1c CODECOPY      ; image at code 5100 -> memory 28
 
-# Transition branch/fallthrough — local 645,025 gas
+The image is zero except `0x80` at offsets 39, 57 and 525 (memory 67, 85, 553), so the memory after the three
+length stores is exactly the old image. Two word stores (18 gas) go, and `CALLDATASIZE` becomes a `PUSH2` (+1), so
+the block is 17 gas cheaper. The image is data, placed between the last instruction (5099) and the 280 digest
+bytes, which stay last because the digest selector reads them relative to `CODESIZE`.
 
-Current image: **5,397 bytes**, **3,759 instructions**, SHA-256
-`9710fffe8552dbf653d164c76e7c966b1ce9b1c6fadb20f8903da6391bc1d0d4`.
-**98/98** protected executions OK; clean and dirty gas **645,025**.
-Effort: xhigh; GPT 6.1 Sol through angelX.
+Layout: the pad code now ends at 98 (the branch moves from 117 to 90); 99..127 are 29 filler bytes (7 `STOP`,
+one `PUSH21 0`) that keep instruction 69 at 128, so every other PC and instruction index is unchanged.
 
-Only lengths376/1000 take the remaining nonfinal transitions. The branch at4955
-selects block4 (5036) for376, and falls through to block0 (4964) for1000.
-This saves16 gas at each of four measured transitions, on top of the carried
-whole-word256 fusion. The initial arithmetic dispatch remains, with its base
-literal relocated to5090. See J2RawControl.run_dispatch1 and
-J2Frame.transition_chain for raw and control-state semantics.
+## Proof changes
 
-Full validation is delegated to Yukon; local gas evidence is not acceptance.
-Historical image descriptions follow below and have different PCs/lengths.
+* `PadImageStore.lean` (new): `padImage`, `padImage_getD`, and `image_chain`: the image copy followed by the three
+  length stores equals `StaggerTablePad.padRealChain` (byte-level ext proof).
+* `PadImageCode.lean` (new): `code_image`, the code bytes at 5100..6183 are `padImage` (`decide +kernel` on the
+  last `Bytes` chunk; plain `decide` times out).
+* `StaggerPadSetup`: `lowTemplate` split into `lowPushTemplate` (65..72) and `lowStoreTemplate` (74..89), with
+  `run_lowPush` / `run_lowStore`; `ColdOrdinarySites.gasSteps_low` composes the two sites with
+  `Codecopy.step` at 73 and `image_chain`, so its statement (65 -> 90, memory `padRealChain`) and all callers are
+  unchanged apart from the branch PC 117 -> 90 (instruction 62 -> 56).
+* `J2Payload` (code size 6464, last chunk 1569 bytes), `Bytes`, `Bytecode`, `Artifact` (chunk 0, data =
+  image ++ digests), and the `instructionPC` literals of `Artifact`/`DirectGuardBase` for instructions 41..68.
 
----
+## Notes for later work
 
-# Whole-word 256-byte tail fusion on the computed-jump chain — local 645,089 gas
-
-Current candidate: **5,403 bytes**, 3,764 executable instructions, decoded SHA-256
-`9a5704097bbedb8a69f3663b9b0fef7d1c5c07cd165e6d6e6f546d9a31b2e310`.
-Protected runner: **98/98 OK**, clean **645,089**, dirty **645,089**.
-Effort: xhigh; current submission uses GPT 6.1 Sol via angelX.
-
-Direct base: promoted `1063a889-af49-4f2e-91ce-04ac27b50511`, source
-`77c722f497d7e762d81bcc426a625fa8aa418def`, 645,176 gas.
-Bytes before PC5044 are unchanged. The five-byte nonfinal boundary projection
-expands to28 bytes. Length256 now corrects the whole live tail XOR by
-`0x170d3b750f` and combines it with the prior accumulator; a zero result directly
-returns the already prepared digest. A mismatch enters unchanged generic fallback
-at4565. Longer nonfinal boundaries select the original fixed40 projection.
-Only the late fallthrough suffix is relocated by23 bytes; the digest table stays
-last and CODESIZE-relative.
-
-The universal correction/equivalence proof is in `J2FusedAccumulator`. Raw
-semantics, computed-chain integration, and exact concrete site certificates are
-in `J2FusedRaw`, `J2FusedLoop`, `J2FusedCorrect`, and `J2FusedSites`.
-Focused semantic and artifact checks are local; the full certificate and final
-acceptance are delegated to Yukon. Historical sections below describe earlier
-images and their authors, not the current image or its verification status.
+The assigned idea (drop POPs of the digest epilogue at 4733) does not work as stated: the six popped slots are
+not stale producer junk but the six resident compression constants (`0x2..2`, `0xffffffff`, the rotation
+multipliers) that sit above the five chaining words for every block, and every alternative to `POP` (`SWAP`/`DUP`
+of the words) costs more. The follow-up that does work is to leave the compression earlier: at 4537 the
+continuation is exactly 16 deep, so `DUP16 JUMP` there and copying the last eight tail instructions (plus a `POP`)
+into each loop target lets the final block store its words without masks or placement swaps. A measured
+prototype on this image is 644,415 (-404 more); its proof touches the tail split, all loop targets and the loop
+induction, and its layout needs the 29 bytes this change frees at 99..127.
 
 ---
 

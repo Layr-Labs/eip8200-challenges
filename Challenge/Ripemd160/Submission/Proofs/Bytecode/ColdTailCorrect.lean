@@ -68,18 +68,19 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
     exact gasSteps_block input hfit hpositive i hi (maskRho rho) hm rho rfl
   have gs := gasSteps_start input hfit hpositive hn32 rho hcap
   have gb := run_blocks input (states input) (hashes input) (maskRho rho) hfit hm hambient
-    (fun hc i hi => states_last input hfit hpositive hc i hi) hblock
+    (fun hc i hi => states_last input hfit hpositive hc i hi) (fun i _ => rfl) hblock
   let count := DriverTrace.blockCount input
   have a := hambient count (Nat.le_refl _)
-  have go := StaggerPersistentSerialize.gasSteps (states input count)
-    (blockOff input (count - 1))
-    (Word.ofUInt32 (hashes input (count - 1)).h2) (hashes input count) rho
+  have go := StaggerPersistentSerialize.gasSteps (states input count) (states input count).memory
+    (hashes input (count - 1)) (blockOff input (count - 1))
+    (StaggerPersistentLoopRaw.blockCont input (count - 1) (LoopCompletionControl.cont input (count - 1))) rho
     (by omega) a.running a.code a.fork a.notPrecompile
   have trace := entryPrefix.trans (gs.trans (gb.trans go))
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl
   · exact states_callStack input count
-  · exact StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ (maskRho rho) _
-      (hashArray_hashes input hfit hpositive count (Nat.le_refl _))
+  · apply StaggerPersistentSerialize.returned_spec_of_hashArray _ input _ _ _ _ rho
+    rw [← hashes_last input count (DriverTrace.blockCount_pos input)]
+    exact hashArray_hashes input hfit hpositive count (Nat.le_refl _)
 
 #print axioms gasSteps_start
 #print axioms correct

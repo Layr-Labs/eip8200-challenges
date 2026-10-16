@@ -11,38 +11,8 @@ set_option maxRecDepth 30000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate StaggerPersistentEntryRaw StaggerPersistentFrame PairedMask32Cache
-/-! The block-advance code at 133..142 (`POP SWAP11 PUSH1 0x40 ADD SWAP11 PUSH2 0x1cd JUMP`):
-the increment lives in StaggerPersistentLoopSites, the swap back and the jump to the loop head
-are here. -/
-
-def jumpCode : List Instr := PadJump.template 461
-theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 78).take jumpCode.length = jumpCode := by rfl
-def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 78 jump_slice
-    (by change 78 + jumpCode.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 139 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 78) = UInt256.ofNat 139
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-
-def swapCode : List Instr := StaggerPersistentLoopRaw.backTemplate
-
-theorem swap_slice :
-    (Artifact.submissionArtifact.instructions.drop 77).take swapCode.length = swapCode := by rfl
-
-def swapSite : GenericRoundSite Artifact.submissionArtifact .Osaka swapCode :=
-  StackSiteBuilder.ofSlice swapCode 77 swap_slice
-    (by change 77 + swapCode.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    StackRoundData.artifact_code_bound
-    (StackRoundData.templateWellFormed_mem (instructions := swapCode) (by decide)) (by decide)
-
-theorem swap_pc : swapSite.startPC = UInt256.ofNat 138 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 77) = UInt256.ofNat 138
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+/-! Valid jump destinations of the loop: the block exit's targets 48, 64, 128, 192, the output
+entry 4733, the loop head 461, and the appended continuations `Z` (5100) and `T` (5105). -/
 
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4733).toNat = true := by
@@ -86,21 +56,11 @@ theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submission
 
 theorem valid_stub128 (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 128).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 69 = 128 := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 69 (by rfl)
-  rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 128 = true
-  rw [hcode]
-  exact h
-
-theorem valid_adv (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 131).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 71 = 131 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 71 = 128 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have h := Artifact.submissionArtifact.isValidJumpDest_index 71 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 131 = true
+  change Decode.isValidJumpDest s.executionEnv.code 128 = true
   rw [hcode]
   exact h
 
@@ -114,33 +74,24 @@ theorem valid_stub192 (s : State) (hcode : s.executionEnv.code = Artifact.submis
   rw [hcode]
   exact h
 
-/-- The advanced offset goes back into slot 11. -/
-def gasSteps_swapBack (s : State) (off limit : UInt256) (h : Compression.HashState)
-    (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 138, stack := exitFrame h off limit rho}
-      {s with pc := UInt256.ofNat 139, stack := frame h off limit rho} := by
-  apply PadLift.gasSteps_of_raw swapSite {s with pc := UInt256.ofNat 138, stack := exitFrame h off limit rho} _ hcode hfork hrun hnp swap_pc.symm
-  · exact PadLift.advancesAll_sound _ (by decide)
-  · have hr := StaggerPersistentLoopRaw.run_back s (UInt256.ofNat 138) h off limit rho (by omega) hrun
-    have he : pcAfter (UInt256.ofNat 138) StaggerPersistentLoopRaw.backTemplate = UInt256.ofNat 139 := by decide
-    rw [he] at hr
-    exact hr
+theorem valid_cont192 (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 5100).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3750 = 5100 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3750 (by rfl)
+  rw [hpc] at h
+  change Decode.isValidJumpDest s.executionEnv.code 5100 = true
+  rw [hcode]
+  exact h
 
-/-- Jump back to the loop head. -/
-def gasSteps_back (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1000)
-    (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 139, stack := rho}
-      {s with pc := UInt256.ofNat 461, stack := rho} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 139, stack := rho} _ hcode hfork hrun hnp jump_pc.symm
-  · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template s (UInt256.ofNat 139) rho 461 (by omega) hrun (valid_loop s hcode)
+theorem valid_advance (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 5105).toNat = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3754 = 5105 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3754 (by rfl)
+  rw [hpc] at h
+  change Decode.isValidJumpDest s.executionEnv.code 5105 = true
+  rw [hcode]
+  exact h
 
-#print axioms gasSteps_back
-#print axioms gasSteps_swapBack
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentEntrySites

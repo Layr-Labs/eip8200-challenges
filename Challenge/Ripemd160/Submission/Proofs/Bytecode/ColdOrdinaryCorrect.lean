@@ -15,7 +15,7 @@ theorem correct (input : ByteArray) (hfit : CalldataFits input)
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   apply StaggerPersistentCorrect.correct_of_blocks input hfit hpositive hn32 (states input) (hashes input)
     (states_zero input) (hashes_zero input) ?_
-    (fun hc i hi => states_last input hfit hpositive hc i hi) ?_
+    (fun hc i hi => states_last input hfit hpositive hc i hi) (fun i _ => rfl) ?_
     (hashArray_hashes input hfit hpositive _ (Nat.le_refl _))
     (states_callStack input _) entryPrefix
   · intro i _

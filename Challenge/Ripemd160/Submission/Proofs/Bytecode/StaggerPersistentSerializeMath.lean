@@ -50,19 +50,13 @@ theorem bytes_eq_spec (input : ByteArray) :
     ← HashSpecBridge.paddedHash_eq_hash input]
   rfl
 
-theorem returned_spec (s : State) (input : ByteArray) (off limit : UInt256)
-    (rho : List UInt256) :
-    (result s (StackRunBridge.hashStateAfter input (DriverTrace.blockCount input)) off limit rho).hReturn = spec input := by
-  rw [result_hReturn]
-  exact bytes_eq_spec input
-theorem returned_spec_of_hashArray (s : State) (input : ByteArray) (off limit : UInt256)
-    (rho : List UInt256) (h : Compression.HashState)
-    (hh : CompressionCorrect.hashArray h =
+theorem returned_spec_of_hashArray (s : State) (input : ByteArray) (memory : ByteArray)
+    (h : Compression.HashState) (off cont : UInt256) (rho : List UInt256)
+    (hh : CompressionCorrect.hashArray (PersistentStaggerFunctional.result memory h) =
       CompressionSeamBridge.hashAfter input (DriverTrace.blockCount input)) :
-    (result s h off limit rho).hReturn = spec input := by
+    (result s memory h off cont rho).hReturn = spec input := by
   rw [result_hReturn, bytes_eq_digest, hh, spec_eq,
     ← HashSpecBridge.paddedHash_eq_hash input]
   rfl
 #print axioms returned_spec_of_hashArray
-#print axioms returned_spec
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentSerialize

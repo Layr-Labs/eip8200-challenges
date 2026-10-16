@@ -330,19 +330,19 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_60 : Artifact.submissionArtifact.instructionPC 3483 = 4732 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 58 = 93 := by
+@[simp] theorem pc_direct_61 : Artifact.submissionArtifact.instructionPC 58 = 88 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 62 = 117 := by
+@[simp] theorem pc_direct_62 : Artifact.submissionArtifact.instructionPC 62 = 95 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_63 : Artifact.submissionArtifact.instructionPC 63 = 120 := by
+@[simp] theorem pc_direct_63 : Artifact.submissionArtifact.instructionPC 63 = 96 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_64 : Artifact.submissionArtifact.instructionPC 64 = 121 := by
+@[simp] theorem pc_direct_64 : Artifact.submissionArtifact.instructionPC 64 = 98 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_65 : Artifact.submissionArtifact.instructionPC 62 = 117 := by
+@[simp] theorem pc_direct_65 : Artifact.submissionArtifact.instructionPC 62 = 95 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_66 : Artifact.submissionArtifact.instructionPC 63 = 120 := by
+@[simp] theorem pc_direct_66 : Artifact.submissionArtifact.instructionPC 63 = 96 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_67 : Artifact.submissionArtifact.instructionPC 64 = 121 := by
+@[simp] theorem pc_direct_67 : Artifact.submissionArtifact.instructionPC 64 = 98 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_68 : Artifact.submissionArtifact.instructionPC 88 = 156 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
