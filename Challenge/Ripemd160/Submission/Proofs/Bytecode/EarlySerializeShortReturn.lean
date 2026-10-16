@@ -2,7 +2,7 @@ import Challenge.Ripemd160.ProofSupport.InitialState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Moves
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Accumulator
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Payload
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionByteSelectorRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionAbsoluteSelectorRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -23,7 +23,7 @@ open J2Moves RecognitionSelectorRaw RecognitionSelectorResult StackRoundTrace St
 def base (input : ByteArray) : State := initialState submissionBytecode input 0
 
 def source (input : ByteArray) : UInt256 :=
-  RecognitionByteSelectorRaw.selected (UInt256.ofNat submissionBytecode.size) input.size
+  RecognitionAbsoluteSelectorRaw.selected (UInt256.ofNat submissionBytecode.size) input.size
 
 def beforeCopy (input : ByteArray) (rho : List UInt256) : State :=
   atState (base input) 4803 (12 :: source input :: 20 :: rho)
@@ -87,7 +87,7 @@ theorem prepared_np (input : ByteArray) (rho : List UInt256) :
   deployAddress_not_precompile
 
 theorem source_environment (input : ByteArray) (rho : List UInt256) :
-    source input = RecognitionByteSelectorRaw.selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
+    source input = RecognitionAbsoluteSelectorRaw.selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
       (prepared input rho).executionEnv.calldata.size := rfl
 
 @[simp] theorem atState_prepared_memory (input : ByteArray) (rho : List UInt256)
@@ -119,7 +119,7 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 namespace prefixSite
-abbrev template : List Instr := RecognitionByteSelectorRaw.prefixTemplate
+abbrev template : List Instr := RecognitionAbsoluteSelectorRaw.prefixTemplate
 theorem actual_slice :
     (Artifact.submissionArtifact.instructions.drop 3523).take template.length = template := by rfl
 
@@ -142,16 +142,16 @@ end prefixSite
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3744).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3742).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3744 actual_slice
-    (by change 3744 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3742 actual_slice
+    (by change 3742 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 6122 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3744) = UInt256.ofNat 6122
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3742) = UInt256.ofNat 6122
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem end_pc : pcAfter (UInt256.ofNat 6122) template = UInt256.ofNat 6124 := by decide
@@ -162,11 +162,11 @@ end finishSite
 
 private theorem copy_decoded (input : ByteArray) (rho : List UInt256) :
     (beforeCopy input rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3532 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3530 .CODECOPY
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3532
+  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3530
     rfl _ .CODECOPY none hd (by rfl)
-  change (UInt256.ofNat 4803).toNat = Artifact.submissionArtifact.instructionPC 3532
+  change (UInt256.ofNat 4803).toNat = Artifact.submissionArtifact.instructionPC 3530
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- Only prefix + CODECOPY: the next instruction is the scanner initializer. -/
@@ -174,7 +174,7 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
     GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
   have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
       some (beforeCopy input rho) := by
-    have h := RecognitionByteSelectorRaw.run_prefix (base input) (UInt256.ofNat 4786) rho (by omega) rfl
+    have h := RecognitionAbsoluteSelectorRaw.run_prefix (base input) (UInt256.ofNat 4786) rho (by omega) rfl
     simpa only [prefixSite.end_pc, beforeCopy, atState, source, base, initialState] using h
   have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
     (atState (base input) 4786 rho) (beforeCopy input rho)
@@ -197,11 +197,11 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
 
 private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) :
     (atState (prepared input saved) 6121 rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3743 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3741 .MSIZE
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
-    (atState (prepared input saved) 6121 rho) 3743 rfl _ .MSIZE none hd (by rfl)
-  change (UInt256.ofNat 6121).toNat = Artifact.submissionArtifact.instructionPC 3743
+    (atState (prepared input saved) 6121 rho) 3741 rfl _ .MSIZE none hd (by rfl)
+  change (UInt256.ofNat 6121).toNat = Artifact.submissionArtifact.instructionPC 3741
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The recognizer may replace the entire stack; only the prepared memory matters. -/
