@@ -13,10 +13,11 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode := by
   change Challenge.Ripemd160.Correct Challenge.Ripemd160.submissionBytecode
   exact Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard.correct_of_recognition
     Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect.from_entry
+      Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect.from_loaded1000
 
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 49c732950c37515eacd32b65b51abc8ea2ef2f29774270871052a504c1cc62da.
--- 9427 bytes; local seedscore 640563.
+-- Current decoded SHA-256: cdb20d09a3556af3e3f11f6a45cced4932276a3e5fd6758f61ad438c90b87b70.
+-- 9427 bytes; local seedscore 640404.
 -- Direct literal-word scanner; final partial-word mask derived from calldata size.

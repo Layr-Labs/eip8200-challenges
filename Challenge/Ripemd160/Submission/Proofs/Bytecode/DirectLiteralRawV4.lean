@@ -27,7 +27,7 @@ def lastTemplate : List Instr := [.push ⟨2, by decide⟩ (UInt256.ofNat 1025)]
 def tailTemplate : List Instr := [.op .JUMPDEST, .op .CALLDATASIZE,
   .op .CODESIZE, .op .MUL,
   .push ⟨2, by decide⟩ (UInt256.ofNat 255), .op .AND, .op .SHR, .op .OR]
-def resultTemplate : List Instr := [.push ⟨2, by decide⟩ (UInt256.ofNat 4565), .op .JUMPI]
+def resultTemplate : List Instr := [.push ⟨2, by decide⟩ (UInt256.ofNat 4785), .op .JUMPI]
 def shifted (n : UInt256) (_bound : UInt256) : UInt256 :=
   UInt256.land (UInt256.ofNat 255) (UInt256.mul (UInt256.ofNat 9208) n)
 
@@ -155,9 +155,9 @@ theorem run_tail (s : State) (pc : UInt256) (bound d a : UInt256) (rho : List UI
 
 theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
     runInstrSeq resultTemplate {s with pc := pc, stack := a::rho} =
-      some {s with pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4565, stack := rho} := by
+      some {s with pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4785, stack := rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   by_cases hz : a.toNat=0
   all_goals simp (discharger := omega) [resultTemplate, hz, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, show rho.length < 1024 by omega,

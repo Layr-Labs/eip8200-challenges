@@ -101,6 +101,10 @@ theorem correct_of_recognition
       RecognitionAccumulator.Allowed input.size →
       GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input) →
       ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+        Eval (initialState submissionBytecode input gas) (.returned (spec input)))
+    (scanner1000Correct : ∀ (input : ByteArray), CalldataFits input → input.size = 1000 →
+      GasSteps (initialState submissionBytecode input 0) (PatternedScan.stS input 8158 []) →
+      ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
         Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
     Correct submissionBytecode := by
   intro input hfit
@@ -138,18 +142,18 @@ theorem correct_of_recognition
         rw [he]
         exact AbcArm.wordCond_empty
       exact StackCorrect.correct input hfit hpositive
-        (harm.trans (AbcArm.gasSteps_miss input hw))
+        (harm.trans ((AbcArm.gasSteps_miss input hw).trans
+          (Patterned128Entry.gasSteps_after_arm_miss input hfit hallowed)))
   by_cases h1000 : input.size = 1000
   swap
   · exact fromGuard h1000 ((EntryPrefilter.gasSteps_fall input hpass).trans
       (sound sizePath (run_size_taken input hfit h1000)))
   by_cases href : referenceWord input = KnownInputData.fullWord
   swap
-  · exact scannerCorrect input hfit (by unfold RecognitionAccumulator.Allowed; omega)
+  · exact scanner1000Correct input hfit h1000
       ((EntryPrefilter.gasSteps_fall input hpass).trans
         ((sound sizePath (run_size_fall input h1000)).trans
-          ((sound anchorPath (run_anchor_taken input href)).trans
-            (Patterned128Entry.gasSteps_big_entry input (Or.inr (Or.inr h1000))))))
+          (sound anchorPath (run_anchor_taken input href))))
   by_cases ht : input = KnownInputData.targetInput
   · subst input
     exact correct_target
