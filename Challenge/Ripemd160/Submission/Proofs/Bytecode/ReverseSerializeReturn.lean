@@ -2,8 +2,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionPaddedResult
 import Challenge.Ripemd160.ProofSupport.InitialState
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Moves
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Accumulator
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2Payload
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CombinedSelectorRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectDigestRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Artifact
@@ -25,17 +24,18 @@ open J2Moves RecognitionSelectorRaw RecognitionSelectorResult StackRoundTrace St
 def base (input : ByteArray) : State := initialState submissionBytecode input 0
 
 def source (input : ByteArray) : UInt256 :=
-  CombinedSelectorRaw.selected (UInt256.ofNat submissionBytecode.size) input.size
+  DirectDigestRaw.selected (UInt256.ofNat 8191) input.size
 
-def beforeCopy (input : ByteArray) (rho : List UInt256) : State :=
-  atState (base input) 4805 (0 :: source input :: 32 :: source input :: rho)
-
-/-- State at the scanner initializer, after CODECOPY and before any MSIZE. -/
-def copied (input : ByteArray) (rho : List UInt256) : State :=
-  RecognitionPaddedResult.copied (beforeCopy input rho) (source input) (source input::rho)
+def loaded (input : ByteArray) (rho : List UInt256) : State :=
+  {base input with pc := source input,stack := rho}
 
 def prepared (input : ByteArray) (rho : List UInt256) : State :=
-  {copied input rho with pc:=UInt256.add (UInt256.ofNat 32) (source input), stack:=rho}
+  {base input with
+    pc := UInt256.add (UInt256.ofNat 24) (source input)
+    stack := rho
+    activeWords := UInt256.ofNat 1
+    memory := MachineState.writeBytes ByteArray.empty
+      (Data.Bytes.natToBytesPadded (RecognitionDigest.paddedDigestWord input.size).toNat 32) 0}
 
 /-- The final return uses the prepared memory, not an unrelated running state. -/
 def output (input : ByteArray) (rho : List UInt256) (i : Fin 14) : State :=
@@ -44,9 +44,9 @@ def output (input : ByteArray) (rho : List UInt256) (i : Fin 14) : State :=
 theorem prepared_atState (input : ByteArray) (rho : List UInt256) (i : Fin 14)
     (hn : input.size = ReverseLiteralScan.nval i) :
     prepared input rho = atState (prepared input rho) (ReverseLiteralScan.tailPC i) rho := by
-  have ht : UInt256.add (UInt256.ofNat 32) (source input) = UInt256.ofNat (ReverseLiteralScan.tailPC i) := by
+  have ht : UInt256.add (UInt256.ofNat 24) (source input) = UInt256.ofNat (ReverseLiteralScan.tailPC i) := by
     unfold source
-    simp only [CombinedSelectorRaw.selected]
+    simp only [DirectDigestRaw.selected]
     rw [hn]
     exact ReverseLiteralScan.source_target i
   simp only [prepared,atState]
@@ -60,13 +60,12 @@ theorem prepared_atState (input : ByteArray) (rho : List UInt256) (i : Fin 14)
 
 @[simp] theorem prepared_memory (input : ByteArray) (rho : List UInt256) :
     (prepared input rho).memory = MachineState.writeBytes ByteArray.empty
-      (MachineState.readPadded submissionBytecode (source input).toNat 32) 0 := by
-  simp only [prepared, copied, RecognitionPaddedResult.copied, beforeCopy, atState, base, initialState]
+      (Data.Bytes.natToBytesPadded (RecognitionDigest.paddedDigestWord input.size).toNat 32) 0 := rfl
 
 @[simp] theorem prepared_memory_size (input : ByteArray) (rho : List UInt256) :
     (prepared input rho).memory.size = 32 := by
   rw [prepared_memory, MachineState.writeBytes_size]
-  simp [Memory.readPadded_size]
+  simp [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
 
 @[simp] theorem prepared_code (input : ByteArray) (rho : List UInt256) :
     (prepared input rho).executionEnv.code = Artifact.submissionArtifact.code := rfl
@@ -92,8 +91,11 @@ theorem prepared_np (input : ByteArray) (rho : List UInt256) :
   deployAddress_not_precompile
 
 theorem source_environment (input : ByteArray) (rho : List UInt256) :
-    source input = CombinedSelectorRaw.selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
-      (prepared input rho).executionEnv.calldata.size := rfl
+    source input = DirectDigestRaw.selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
+      (prepared input rho).executionEnv.calldata.size := by
+  change DirectDigestRaw.selected (UInt256.ofNat 8191) input.size =
+    DirectDigestRaw.selected (UInt256.ofNat submissionBytecode.size) input.size
+  rw [referenceBytecode_size]
 
 @[simp] theorem atState_prepared_memory (input : ByteArray) (rho : List UInt256)
     (pc : Nat) (stack : List UInt256) :
@@ -124,7 +126,7 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 namespace prefixSite
-abbrev template : List Instr := CombinedSelectorRaw.prefixTemplate
+abbrev template : List Instr := DirectDigestRaw.prefixTemplate
 theorem actual_slice :
     (Artifact.submissionArtifact.instructions.drop 3523).take template.length = template := by rfl
 
@@ -138,101 +140,114 @@ theorem site_pc : site.startPC = UInt256.ofNat 4786 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3523) = UInt256.ofNat 4786
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-theorem end_pc : pcAfter (UInt256.ofNat 4786) template = UInt256.ofNat 4805 := by decide
-
 theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by decide)
 end prefixSite
 
-private theorem copy_decoded (input : ByteArray) (rho : List UInt256) :
-    (beforeCopy input rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3531 .CODECOPY
-    (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3531
-    rfl _ .CODECOPY none hd (by rfl)
-  change (UInt256.ofNat 4805).toNat = Artifact.submissionArtifact.instructionPC 3531
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+def storeIndex : Fin 14 → Nat
+ | ⟨0, _⟩ => 4432
+ | ⟨1, _⟩ => 3744
+ | ⟨2, _⟩ => 4035
+ | ⟨3, _⟩ => 4412
+ | ⟨4, _⟩ => 3763
+ | ⟨5, _⟩ => 3903
+ | ⟨6, _⟩ => 4328
+ | ⟨7, _⟩ => 4237
+ | ⟨8, _⟩ => 4083
+ | ⟨9, _⟩ => 4298
+ | ⟨10, _⟩ => 4486
+ | ⟨11, _⟩ => 4527
+ | ⟨12, _⟩ => 3943
+ | ⟨13, _⟩ => 4550
 
-namespace jumpSite
-abbrev template : List Instr := CombinedSelectorRaw.jumpTemplate
-theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3532).take template.length = template := by rfl
+namespace storeSite
+abbrev template (i : Fin 14) : List Instr :=
+  DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord (ReverseLiteralScan.nval i))
+theorem actual_slice (i : Fin 14) :
+    (Artifact.submissionArtifact.instructions.drop (storeIndex i)).take (template i).length = template i := by
+  fin_cases i <;> rfl
 
-def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3532 actual_slice
-    (by change 3532+template.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
+def site (i : Fin 14) : GenericRoundSite Artifact.submissionArtifact .Osaka (template i) :=
+  StackSiteBuilder.ofSlice (template i) (storeIndex i) (actual_slice i)
+    (by change storeIndex i+(template i).length ≤ Artifact.submissionInstructions.length
+        rw [Artifact.referenceInstructions_count]; fin_cases i <;> decide)
+    code_bound (StackRoundData.templateWellFormed_mem (instructions := template i) (by fin_cases i <;> decide))
+    (by fin_cases i <;> decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 4806 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3532) = UInt256.ofNat 4806
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+theorem site_pc (i : Fin 14) : (site i).startPC =
+    DirectDigestRaw.selected (UInt256.ofNat 8191) (ReverseLiteralScan.nval i) := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC (storeIndex i)) = _
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
 
-theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances instruction :=
-  RecognitionLift.advancesAll_sound _ (by decide)
-end jumpSite
+theorem valid (i : Fin 14) : Decode.isValidJumpDest Artifact.submissionArtifact.code
+    (DirectDigestRaw.selected (UInt256.ofNat 8191) (ReverseLiteralScan.nval i)).toNat = true := by
+  have hp : Artifact.submissionArtifact.instructionPC (storeIndex i) =
+      (DirectDigestRaw.selected (UInt256.ofNat 8191) (ReverseLiteralScan.nval i)).toNat := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
+  have h := Artifact.submissionArtifact.isValidJumpDest_index (storeIndex i) (by fin_cases i <;> rfl)
+  rw [hp] at h
+  exact h
+
+theorem form (i : Fin 14) : ∀ instruction ∈ (template i).dropLast, RecognitionLift.Advances instruction :=
+  RecognitionLift.advancesAll_sound _ (by fin_cases i <;> decide)
+end storeSite
 
 def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
     (i : Fin 14) (hn : input.size = ReverseLiteralScan.nval i) :
     GasSteps (atState (base input) 4786 rho) (prepared input rho) := by
-  have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
-      some (beforeCopy input rho) := by
-    have h := CombinedSelectorRaw.run_prefix (base input) (UInt256.ofNat 4786) rho (by omega) rfl
-    simpa only [prefixSite.end_pc, beforeCopy, atState, source, base, initialState] using h
-  have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
-    (atState (base input) 4786 rho) (beforeCopy input rho)
-    (show (base input).executionEnv.code = Artifact.submissionArtifact.code from rfl)
-    (show (base input).fork = .Osaka from rfl)
-    (show (base input).halt = .Running from rfl)
-    deployAddress_not_precompile prefixSite.site_pc.symm prefixSite.form hp
-  have hac : (beforeCopy input rho).activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
-    simp [State.activeWordsAfterUInt256, beforeCopy, atState, base, initialState,
-      Word.word_toNat_ofNat]
-    rfl
-  have gc := Codecopy.step 0 (source input) 32 (source input::rho) (copy_decoded input rho) rfl
-    (by change (0 :: source input :: 32 :: source input :: rho).length + 0 ≤ 1024 + 3; simp; omega)
-    rfl deployAddress_not_precompile
-  have gc' : GasSteps (beforeCopy input rho) (copied input rho) := by
-    simpa only [copied, RecognitionPaddedResult.copied, hac,
-      show (beforeCopy input rho).memory = ByteArray.empty from rfl,
-      show (0 : UInt256).toNat = 0 from rfl,
-      show (32 : UInt256).toNat = 32 from rfl] using gc
-  have ht : UInt256.add (UInt256.ofNat 32) (source input) = UInt256.ofNat (ReverseLiteralScan.tailPC i) := by
-    unfold source
-    simp only [CombinedSelectorRaw.selected]
+  have hv : Decode.isValidJumpDest (base input).executionEnv.code
+      (DirectDigestRaw.selected (UInt256.ofNat 8191) input.size).toNat = true := by
     rw [hn]
-    exact ReverseLiteralScan.source_target i
-  have hv : Decode.isValidJumpDest (copied input rho).executionEnv.code
-      (UInt256.add (UInt256.ofNat 32) (source input)).toNat = true := by
-    rw [ht]
-    change Decode.isValidJumpDest Artifact.submissionArtifact.code (UInt256.ofNat (ReverseLiteralScan.tailPC i)).toNat = true
-    have hb : ReverseLiteralScan.tailPC i < 2^256 := by fin_cases i <;> decide
-    rw [Word.word_toNat_ofNat,Nat.mod_eq_of_lt hb]
-    exact ReverseLiteralScan.valid_tail i
-  have hr := CombinedSelectorRaw.run_jump (copied input rho) (UInt256.ofNat 4806) (source input) rho hcap rfl hv
-  have hr' : runInstrSeq jumpSite.template (copied input rho) = some (prepared input rho) := by
-    simpa only [jumpSite.template,prepared,copied,RecognitionPaddedResult.copied,beforeCopy,atState,
-      show (UInt256.ofNat 4805).succ=UInt256.ofNat 4806 from by decide] using hr
-  have gj := RecognitionLift.gasSteps_of_raw jumpSite.site
-    (copied input rho) (prepared input rho) rfl rfl rfl deployAddress_not_precompile
-    jumpSite.site_pc.symm jumpSite.form hr'
-  exact gp.trans (gc'.trans gj)
+    exact storeSite.valid i
+  have hp : runInstrSeq prefixSite.template (atState (base input) 4786 rho) =
+      some (loaded input rho) := by
+    have hv' : Decode.isValidJumpDest (base input).executionEnv.code
+        (DirectDigestRaw.selected (UInt256.ofNat (base input).executionEnv.code.size) input.size).toNat = true := by
+      change Decode.isValidJumpDest submissionBytecode
+        (DirectDigestRaw.selected (UInt256.ofNat submissionBytecode.size) input.size).toNat = true
+      rw [referenceBytecode_size]; exact hv
+    have h := DirectDigestRaw.run_prefix (base input) (UInt256.ofNat 4786) rho hcap rfl hv'
+    have hcodesize : (base input).executionEnv.code.size = 8191 := referenceBytecode_size
+    rw [hcodesize] at h
+    change runInstrSeq prefixSite.template (atState (base input) 4786 rho) = some (loaded input rho) at h
+    exact h
+  have gp := RecognitionLift.gasSteps_of_raw prefixSite.site
+    (atState (base input) 4786 rho) (loaded input rho) rfl rfl rfl
+    deployAddress_not_precompile prefixSite.site_pc.symm prefixSite.form hp
+  have hac : (base input).activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
+    simp [State.activeWordsAfterUInt256,base,initialState,Word.word_toNat_ofNat]
+    rfl
+  have hr := DirectDigestRaw.run_store (base input) (source input)
+    (RecognitionDigest.paddedDigestWord input.size) rho hcap rfl
+  have he : DirectDigestRaw.stored (base input) (source input)
+      (RecognitionDigest.paddedDigestWord input.size) rho = prepared input rho := by
+    simp only [DirectDigestRaw.stored,prepared,hac,DirectDigestRaw.store_pc]
+    rfl
+  have hr' : runInstrSeq (storeSite.template i) (loaded input rho) = some (prepared input rho) := by
+    rw [he] at hr
+    simpa only [storeSite.template,hn,loaded] using hr
+  have gj := RecognitionLift.gasSteps_of_raw (storeSite.site i)
+    (loaded input rho) (prepared input rho) rfl rfl rfl deployAddress_not_precompile
+    (by change DirectDigestRaw.selected (UInt256.ofNat 8191) input.size = (storeSite.site i).startPC
+        rw [hn]; exact (storeSite.site_pc i).symm)
+    (storeSite.form i) hr'
+  exact gp.trans gj
 
 def returnIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4662
- | ⟨1, _⟩ => 3994
- | ⟨2, _⟩ => 4289
- | ⟨3, _⟩ => 5220
- | ⟨4, _⟩ => 4125
- | ⟨5, _⟩ => 4997
- | ⟨6, _⟩ => 5042
- | ⟨7, _⟩ => 4087
- | ⟨8, _⟩ => 3829
- | ⟨9, _⟩ => 5659
- | ⟨10, _⟩ => 5378
- | ⟨11, _⟩ => 5822
- | ⟨12, _⟩ => 5822
- | ⟨13, _⟩ => 5822
+ | ⟨0, _⟩ => 4444
+ | ⟨1, _⟩ => 3756
+ | ⟨2, _⟩ => 4045
+ | ⟨3, _⟩ => 4429
+ | ⟨4, _⟩ => 3780
+ | ⟨5, _⟩ => 3920
+ | ⟨6, _⟩ => 4343
+ | ⟨7, _⟩ => 4259
+ | ⟨8, _⟩ => 4110
+ | ⟨9, _⟩ => 4325
+ | ⟨10, _⟩ => 4511
+ | ⟨11, _⟩ => 3694
+ | ⟨12, _⟩ => 3694
+ | ⟨13, _⟩ => 3694
 
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
@@ -292,21 +307,27 @@ def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.l
 @[simp] theorem output_callStack (input : ByteArray) (rho : List UInt256) (i : Fin 14) :
     (output input rho i).callStack = [] := rfl
 
-private theorem selected_read (input : ByteArray) (hn : RecognitionAccumulator.Allowed input.size) :
-    MachineState.readPadded submissionBytecode (source input).toNat 32 =
-      RecognitionDigest.paddedDigest input.size := by
-  unfold source
-  rw [referenceBytecode_size]
-  exact J2Payload.read_selected input.size hn
+private theorem write_empty (b : ByteArray) : MachineState.writeBytes ByteArray.empty b 0 = b := by
+  apply ByteArray.ext_getElem
+  · rw [MachineState.writeBytes_size]
+    split
+    · next h => simpa using h.symm
+    · simp
+  · intro i hi hj
+    rw [← Memory.getD0_eq_getElem _ _ hi, ← Memory.getD0_eq_getElem _ _ hj,
+      MachineState.writeBytes_getElem?_getD]
+    simp only [Nat.zero_le, Nat.zero_add, true_and, Nat.sub_zero, if_pos hj]
 
-/-- The digest stored by preparation persists through any loop pc/stack updates. -/
+private theorem word_bytes (n : Nat) (hn : RecognitionAccumulator.Allowed n) :
+    Data.Bytes.natToBytesPadded (RecognitionDigest.paddedDigestWord n).toNat 32 = RecognitionDigest.paddedDigest n := by
+  rcases hn with rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl|rfl
+  all_goals rw [Memory.natToBytesPadded_eq_natToBE]; decide
+
+/-- Canonical full-word stores, proved independently of CODECOPY payload lookup. -/
 theorem prepared_digest (input : ByteArray) (rho : List UInt256)
     (hn : RecognitionAccumulator.Allowed input.size) :
     (prepared input rho).memory = RecognitionDigest.paddedDigest input.size := by
-  change (copied input rho).memory = _
-  apply RecognitionPaddedResult.copied_memory
-  simpa only [beforeCopy, atState, base, source,
-    initialState, referenceBytecode_size] using J2Payload.read_selected input.size hn
+  rw [prepared_memory,write_empty,word_bytes input.size hn]
 
 theorem atState_prepared_digest (input : ByteArray) (rho : List UInt256)
     (pc : Nat) (stack : List UInt256) (hn : RecognitionAccumulator.Allowed input.size) :
