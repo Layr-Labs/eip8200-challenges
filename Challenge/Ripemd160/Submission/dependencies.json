@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "1063a889-af49-4f2e-91ce-04ac27b50511",
+    "rationale": "Direct promoted 645176 source at 77c722f. Reuses the seven-word computed-jump scanner chain, its dispatchTarget/ChainFacts and J2Sites/J2Loop proofs, plus unchanged compressor and all prefix/tail code. This submission adds a universal fused 256-byte boundary and relocates only its late fallthrough suffix.",
+    "evidence": "PC0..5043 unchanged from 77c722f, PC5044 boundary replaced by 28 bytes including old five-byte projection; old PC5049..5100 suffix shifts by23. Decoded SHA25672aec7764aec68267480122b0e99d88b5ae550e5946d6a3cbd3fef8c9011cc3b to9a5704097bbedb8a69f3663b9b0fef7d1c5c07cd165e6d6e6f546d9a31b2e310."
+  },
+  {
+    "submissionId": "ae929341-d1da-489c-8996-0776dea7b681",
+    "rationale": "Accepted646197 ancestor. Reuses nonfinal-tail fixed40 projection and the endpoint-first scanner split, as inherited by1063a889. These are essential to the new fusion seam, alongside prior guard MSIZE activation and prefix mask cuts.",
+    "evidence": "Base24e0bd4d6acf; J2Frame.boundary_shift, tail pending XOR, final/nonfinal projection contracts and prepared-memory invariant inherited. New fusion is independently developed in J2FusedAccumulator/J2FusedLoop/J2FusedRaw/J2FusedSites."
+  },
+  {
     "submissionId": "ee41c2be-f76e-4b2f-a6a4-27f9c5f6c6a6",
     "rationale": "Uses the accepted 646264 runtime and its shared32 length-flag sparse-write proof implementation as the unchanged base. Adds only first-word guard memory activation, MSIZE loop constant, and a shorter safe prefilter mask.",
     "evidence": "Compare candidate to promoted 0c357603: unchanged bytes from PC36 except guard PUSH-width/filler and PC211..220 MSIZE slot; inherited compressor, recognizers, sparse padding and endian serialization unchanged."

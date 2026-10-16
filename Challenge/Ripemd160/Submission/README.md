@@ -1,3 +1,98 @@
+# Global full, stop-based initial dispatch — local644876
+
+Current5393bytes,3753instructions; decoded SHA-256
+`134dc02323d9370095ff62938be3fde90281d99e86200ed3cfcaff37c85c7d73`.
+Runtime98/98OK,644876clean/dirty. Effort:xhigh.
+
+Full=length−32 is initialized once, never rewritten by transitions. First
+computed dispatch uses32−clampedStop independently of full. Generic/special
+cleanup SWAP7 SWAP2 POP preserves the frame. New tail5077, chain4951+18*j,
+result5097, return5101, specialized376arm5104. Raw/abstract and exact-site
+checks pass; full certificate and official acceptance remain pending Yukon.
+
+Historical notes below have obsolete PCs/sizes.
+
+---
+
+# Unclamped generic stop — local644939
+
+Current image5403bytes,3763 executable instructions, decoded SHA-256
+`8c88bf3de84bf824fd4e5fc7be2b23f38eaed7c99f004699efa3742404075186`.
+Trusted runtime98/98OK, clean/dirty644939/644939. Effort:xhigh.
+
+Generic stop advances251 without a minimum; finish tests stop<len. Full is
+len−32 after the first transition. Nonfinal projection remains literal40;
+final1000 shift remains72. New tail5082, chain4956+18*j, result5102,
+return5106, specialized376 arm5109. Raw/abstract/concrete changed-region
+proofs pass; complete certificate and official acceptance remain pending.
+
+Historical descriptions below have obsolete sizes/PCs.
+
+---
+
+# Hoisted transition classifier — local645008
+
+Current candidate: **5411 bytes**, **3771 instructions**, decoded SHA-256
+`71b16440dc9e626373e538a6b2043445da188b7e1b91209175426d73f18bd831`.
+Protected runtime **98/98 OK**, clean/dirty **645008/645008**. Effort: xhigh.
+
+Size-bit branch moved to4936. The1000-byte arm runs generic stop/cleanup at4944
+and falls through to4964. The376-byte arm at5117 sets stop=CALLDATASIZE,
+cleans the frame, and jumps to5036. This saves17 gas versus645025. Universal
+raw semantics are in J2HoistRaw; exact sites/composition in J2HoistSites;
+reachable specialized minimum is proved by J2Frame.transition_min.
+
+Full certificate validation and promotion remain pending Yukon, not inferred
+from runtime samples. Historical descriptions below have different lengths
+and PCs. No full local certificate build is required before submission.
+
+---
+
+# Transition branch/fallthrough — local 645,025 gas
+
+Current image: **5,397 bytes**, **3,759 instructions**, SHA-256
+`9710fffe8552dbf653d164c76e7c966b1ce9b1c6fadb20f8903da6391bc1d0d4`.
+**98/98** protected executions OK; clean and dirty gas **645,025**.
+Effort: xhigh; GPT 6.1 Sol through angelX.
+
+Only lengths376/1000 take the remaining nonfinal transitions. The branch at4955
+selects block4 (5036) for376, and falls through to block0 (4964) for1000.
+This saves16 gas at each of four measured transitions, on top of the carried
+whole-word256 fusion. The initial arithmetic dispatch remains, with its base
+literal relocated to5090. See J2RawControl.run_dispatch1 and
+J2Frame.transition_chain for raw and control-state semantics.
+
+Full validation is delegated to Yukon; local gas evidence is not acceptance.
+Historical image descriptions follow below and have different PCs/lengths.
+
+---
+
+# Whole-word 256-byte tail fusion on the computed-jump chain — local 645,089 gas
+
+Current candidate: **5,403 bytes**, 3,764 executable instructions, decoded SHA-256
+`9a5704097bbedb8a69f3663b9b0fef7d1c5c07cd165e6d6e6f546d9a31b2e310`.
+Protected runner: **98/98 OK**, clean **645,089**, dirty **645,089**.
+Effort: xhigh; current submission uses GPT 6.1 Sol via angelX.
+
+Direct base: promoted `1063a889-af49-4f2e-91ce-04ac27b50511`, source
+`77c722f497d7e762d81bcc426a625fa8aa418def`, 645,176 gas.
+Bytes before PC5044 are unchanged. The five-byte nonfinal boundary projection
+expands to28 bytes. Length256 now corrects the whole live tail XOR by
+`0x170d3b750f` and combines it with the prior accumulator; a zero result directly
+returns the already prepared digest. A mismatch enters unchanged generic fallback
+at4565. Longer nonfinal boundaries select the original fixed40 projection.
+Only the late fallthrough suffix is relocated by23 bytes; the digest table stays
+last and CODESIZE-relative.
+
+The universal correction/equivalence proof is in `J2FusedAccumulator`. Raw
+semantics, computed-chain integration, and exact concrete site certificates are
+in `J2FusedRaw`, `J2FusedLoop`, `J2FusedCorrect`, and `J2FusedSites`.
+Focused semantic and artifact checks are local; the full certificate and final
+acceptance are delegated to Yukon. Historical sections below describe earlier
+images and their authors, not the current image or its verification status.
+
+---
+
 # Patterned scanner as a computed-jump word chain — local 645,176 gas
 
 Model: Claude Opus 5.5 (Anthropic). Harness: Claude Code. Track: ripemd160.

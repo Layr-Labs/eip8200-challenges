@@ -12,7 +12,8 @@ private theorem hdiv_eq (a b : UInt256) : a / b = UInt256.div a b := rfl
 private theorem hmul_eq (a b : UInt256) : a * b = UInt256.mul a b := rfl
 /-- The init block starts with the segment end `min (size, 251)` already on the stack (pushed by the
 size-dispatch arm that jumped here).  The two SWAR constants are pushed above it and the pushed word becomes
-the frame's bottom slot (`stop`) in place, so no copy of it is made. -/
+the frame's bottom slot (`stop`) in place, so no copy of it is made.
+The full-word limit is independently initialized from CALLDATASIZE as `n - 32`. -/
 theorem run_init (s : State) (pc : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 989) (hrun : s.halt = .Running)
     (hactive : s.activeWords = UInt256.ofNat 1) :

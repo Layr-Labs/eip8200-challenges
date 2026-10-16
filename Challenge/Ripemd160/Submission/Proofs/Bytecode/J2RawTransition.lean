@@ -37,11 +37,11 @@ theorem run_transition (s : State) (pc : UInt256) (f : Frame) (rho : List UInt25
     (hlen : f.len = UInt256.ofNat s.executionEnv.calldata.size)
     (hactive : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq transitionTemplate {s with pc := pc, stack := frame f rho} =
-      some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame (transitionResult f) rho} := by
+      some {s with pc := pcAfter pc transitionTemplate, stack := f.off :: frame (legacyTransitionResult f) rho} := by
   have hbase : rho.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 30) : rho.length + n < 1024 := by omega
   simp (config := { maxSteps := 600000 }) (discharger := omega)
-    [transitionTemplate, transitionResult, frame, c114,
+    [transitionTemplate, legacyTransitionResult, frame, c114,
       tw, emin, clamp, aligned, advance, runInstrSeq, DataStepper.runInstr,
       pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
       Nat.add_assoc, hrun, MachineState.msize, hactive, hbase, hcap, signed_sentinel_div9, add_negative_eq_sub, ← hlen,
