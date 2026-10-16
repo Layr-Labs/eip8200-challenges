@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ReverseLiteralRaw
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CombinedSelectorRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectDigestRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ZeroTailModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DenseScheduleTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
@@ -30,60 +31,63 @@ def nval : Fin 14 → Nat
  | ⟨12, _⟩ => 376
  | ⟨13, _⟩ => 1000
 def tailPC : Fin 14 → Nat
- | ⟨0, _⟩ => 6561
- | ⟨1, _⟩ => 5527
- | ⟨2, _⟩ => 6124
- | ⟨3, _⟩ => 7449
- | ⟨4, _⟩ => 5853
- | ⟨5, _⟩ => 7027
- | ⟨6, _⟩ => 7174
- | ⟨7, _⟩ => 5677
- | ⟨8, _⟩ => 5181
- | ⟨9, _⟩ => 8210
- | ⟨10, _⟩ => 7699
- | ⟨11, _⟩ => 7961
- | ⟨12, _⟩ => 6650
- | ⟨13, _⟩ => 4945
+ | ⟨0, _⟩ => 7719
+ | ⟨1, _⟩ => 6085
+ | ⟨2, _⟩ => 6664
+ | ⟨3, _⟩ => 7611
+ | ⟨4, _⟩ => 6159
+ | ⟨5, _⟩ => 6387
+ | ⟨6, _⟩ => 7440
+ | ⟨7, _⟩ => 7074
+ | ⟨8, _⟩ => 6766
+ | ⟨9, _⟩ => 7256
+ | ⟨10, _⟩ => 7828
+ | ⟨11, _⟩ => 8022
+ | ⟨12, _⟩ => 6515
+ | ⟨13, _⟩ => 8100
 def tailIndex : Fin 14 → Nat
- | ⟨0, _⟩ => 4653
- | ⟨1, _⟩ => 3985
- | ⟨2, _⟩ => 4282
- | ⟨3, _⟩ => 5206
- | ⟨4, _⟩ => 4111
- | ⟨5, _⟩ => 4983
- | ⟨6, _⟩ => 5030
- | ⟨7, _⟩ => 4068
- | ⟨8, _⟩ => 3805
- | ⟨9, _⟩ => 5635
- | ⟨10, _⟩ => 5356
- | ⟨11, _⟩ => 5453
- | ⟨12, _⟩ => 4675
- | ⟨13, _⟩ => 3638
+ | ⟨0, _⟩ => 4444
+ | ⟨1, _⟩ => 3748
+ | ⟨2, _⟩ => 4043
+ | ⟨3, _⟩ => 4423
+ | ⟨4, _⟩ => 3768
+ | ⟨5, _⟩ => 3909
+ | ⟨6, _⟩ => 4339
+ | ⟨7, _⟩ => 4246
+ | ⟨8, _⟩ => 4091
+ | ⟨9, _⟩ => 4308
+ | ⟨10, _⟩ => 4499
+ | ⟨11, _⟩ => 4540
+ | ⟨12, _⟩ => 3950
+ | ⟨13, _⟩ => 4563
 def returnPC : Fin 14 → Nat
- | ⟨0, _⟩ => 6605
- | ⟨1, _⟩ => 5571
- | ⟨2, _⟩ => 6165
- | ⟨3, _⟩ => 7531
- | ⟨4, _⟩ => 5935
- | ⟨5, _⟩ => 7109
- | ⟨6, _⟩ => 7253
- | ⟨7, _⟩ => 5797
- | ⟨8, _⟩ => 5339
- | ⟨9, _⟩ => 8368
- | ⟨10, _⟩ => 7854
- | ⟨11, _⟩ => 9578
- | ⟨12, _⟩ => 9578
- | ⟨13, _⟩ => 9578
+ | ⟨0, _⟩ => 7759
+ | ⟨1, _⟩ => 6125
+ | ⟨2, _⟩ => 6704
+ | ⟨3, _⟩ => 7689
+ | ⟨4, _⟩ => 6237
+ | ⟨5, _⟩ => 6465
+ | ⟨6, _⟩ => 7518
+ | ⟨7, _⟩ => 7190
+ | ⟨8, _⟩ => 6920
+ | ⟨9, _⟩ => 7410
+ | ⟨10, _⟩ => 7982
+ | ⟨11, _⟩ => 6011
+ | ⟨12, _⟩ => 6011
+ | ⟨13, _⟩ => 6011
 
-def joinPC (k : Nat) : Nat := if k=30 then 8371 else if k=10 then 9152 else 9308
+def joinPC (k : Nat) : Nat := if k=30 then 4804 else if k=10 then 5585 else 5741
 
 def revTemplate (chain : Bool) : Nat → List Instr
  | 0 => []
  | k+1 => (if (chain = true ∧ (k=30 ∨ k=10 ∨ k=6)) then [.op .JUMPDEST] else []) ++
     (cmpTemplate k ++ orTemplate) ++ revTemplate chain k
 
-def prefixTemplate (i : Fin 14) : List Instr :=
-  [.op .JUMPDEST] ++ cmpTemplate (last (nval i)) ++ shrTemplate (ReverseLiteralRaw.shift (nval i))
+def prefixTemplate (i : Fin 14) : List Instr := [
+   .push ⟨32, by decide⟩ (ZeroTailModel.expectedLast (nval i)),
+   .push ⟨if last (nval i) = 0 then 0 else if last (nval i) < 8 then 1 else 2,
+     by split <;> (try split) <;> decide⟩ (UInt256.ofNat (32 * last (nval i))),
+   .op .CALLDATALOAD, .op .XOR]
 
 def tailTemplate (i : Fin 14) : List Instr :=
   if last (nval i) ≤ 3 then (prefixTemplate i ++ revTemplate false (last (nval i))) ++ resultTemplate
@@ -94,11 +98,11 @@ def chainK (i : Fin 3) : Nat := if i=0 then 7 else if i=1 then 11 else 31
 def chainTemplate (i : Fin 3) : List Instr :=
   revTemplate true (chainK i) ++ resultTemplate
 
-def chainPC (i : Fin 3) : Nat := if i=0 then 9308 else if i=1 then 9152 else 8371
+def chainPC (i : Fin 3) : Nat := if i=0 then 5741 else if i=1 then 5585 else 4804
 def chainIndex : Fin 3 → Nat
- | ⟨0, _⟩ => 5784
- | ⟨1, _⟩ => 5763
- | ⟨2, _⟩ => 5662
+ | ⟨0, _⟩ => 3656
+ | ⟨1, _⟩ => 3635
+ | ⟨2, _⟩ => 3534
 
 inductive Piece where
  | tail (i : Fin 14)
@@ -198,38 +202,43 @@ theorem run_revTemplate (s : State) (pc : UInt256) (a : UInt256) (rho : List UIn
 theorem run_prefix (s : State) (pc : UInt256) (i : Fin 14) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq (prefixTemplate i) {s with pc:=pc,stack:=rho} =
-      some {s with pc:=pcAfter pc (prefixTemplate i),stack:=tailValue s.executionEnv.calldata (nval i)::rho} := by
+      some {s with pc:=pcAfter pc (prefixTemplate i),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)::rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length+n<1024 := by omega
   have hk : last (nval i) < 32 := by fin_cases i <;> decide
-  have hd := run_jd s pc rho (by omega) hrun
-  have hc := run_cmp0 s (pcAfter pc [.op .JUMPDEST]) (last (nval i)) hk rho hs hrun
-  have hdc := DenseScheduleTrace.runInstrSeq_append_running hd hrun hc
-  have hsh := run_shr s (pcAfter pc ([.op .JUMPDEST] ++ cmpTemplate (last (nval i))))
-    (diff s.executionEnv.calldata (last (nval i))) (ReverseLiteralRaw.shift (nval i)) rho hs hrun
-  simp only [DenseScheduleTrace.pcAfter_append] at hsh
-  have hall := DenseScheduleTrace.runInstrSeq_append_running hdc hrun hsh
-  simpa only [prefixTemplate,tailValue,DenseScheduleTrace.pcAfter_append] using hall
+  have hoff : (UInt256.ofNat (32*last (nval i))).toNat = 32*last (nval i) := by
+    rw [Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
+  by_cases hk0 : last (nval i)=0
+  · simp (discharger := omega) [prefixTemplate,ZeroTailModel.tailDiff, hk0, runInstrSeq,DataStepper.runInstr,
+      pcAfter,hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,
+      Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
+    repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
+  by_cases hk8 : last (nval i)<8
+  all_goals simp (discharger := omega) [prefixTemplate,ZeroTailModel.tailDiff,hk0,hk8,runInstrSeq,DataStepper.runInstr,
+    pcAfter,hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,hoff,
+    Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
+  all_goals repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
 
 theorem tail_end (i : Fin 14) (h : last (nval i) ≤ 3) :
     pcAfter (UInt256.ofNat (tailPC i)) (tailTemplate i) = UInt256.ofNat (returnPC i) := by
   fin_cases i <;> (try {norm_num [nval,last] at h}) <;> decide
 
 theorem chain_end (i : Fin 3) :
-    pcAfter (UInt256.ofNat (chainPC i)) (chainTemplate i) = UInt256.ofNat 9578 := by
+    pcAfter (UInt256.ofNat (chainPC i)) (chainTemplate i) = UInt256.ofNat 6011 := by
   fin_cases i <;> decide
 
 theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 990)
     (i : Fin 14) (hi : last (nval i) ≤ 3)
     (hv : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
     runInstrSeq (tailTemplate i) (atState s (tailPC i) rho) =
-      some (atState s (if (result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4565) rho) := by
+      some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4565) rho) := by
   have hp := run_prefix s (UInt256.ofNat (tailPC i)) i rho hs e.run
   have hr := run_revTemplate s (pcAfter (UInt256.ofNat (tailPC i)) (prefixTemplate i))
-    (tailValue s.executionEnv.calldata (nval i)) rho hs e.run false (last (nval i)) (by omega)
+    (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)) rho hs e.run false (last (nval i)) (by omega)
   have hpr := DenseScheduleTrace.runInstrSeq_append_running hp e.run hr
-  rw [rev_tail] at hpr
+  rw [← ZeroTailModel.result] at hpr
   have hf := run_result s
     (pcAfter (pcAfter (UInt256.ofNat (tailPC i)) (prefixTemplate i)) (revTemplate false (last (nval i))))
-    (result s.executionEnv.calldata (nval i)) rho hs e.run hv
+    (ZeroTailModel.result s.executionEnv.calldata (nval i)) rho hs e.run hv
   have hall := DenseScheduleTrace.runInstrSeq_append_running hpr e.run hf
   have he := tail_end i hi
   simp only [tailTemplate,if_pos hi,DenseScheduleTrace.pcAfter_append] at he
@@ -239,7 +248,7 @@ theorem run_chain (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
     (i : Fin 3) (a : UInt256)
     (hv : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
     runInstrSeq (chainTemplate i) (atState s (chainPC i) (a::rho)) =
-      some (atState s (if (rev s.executionEnv.calldata a (chainK i)).toNat=0 then 9578 else 4565) rho) := by
+      some (atState s (if (rev s.executionEnv.calldata a (chainK i)).toNat=0 then 6011 else 4565) rho) := by
   have hk : chainK i ≤ 32 := by fin_cases i <;> decide
   have hr := run_revTemplate s (UInt256.ofNat (chainPC i)) a rho hs e.run true (chainK i) hk
   have hf := run_result s (pcAfter (UInt256.ofNat (chainPC i)) (revTemplate true (chainK i)))
@@ -247,7 +256,7 @@ theorem run_chain (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
   have hall := DenseScheduleTrace.runInstrSeq_append_running hr e.run hf
   have he := chain_end i
   simp only [chainTemplate,DenseScheduleTrace.pcAfter_append] at he
-  change pcAfter (pcAfter (UInt256.ofNat (chainPC i)) (revTemplate true (chainK i))) resultTemplate = UInt256.ofNat 9578 at he
+  change pcAfter (pcAfter (UInt256.ofNat (chainPC i)) (revTemplate true (chainK i))) resultTemplate = UInt256.ofNat 6011 at he
   rw [he] at hall
   change runInstrSeq (revTemplate true (chainK i) ++ resultTemplate) _ = _
   by_cases hz : (rev s.executionEnv.calldata a (chainK i)).toNat=0
@@ -264,29 +273,22 @@ theorem join_eq (i : Fin 14) (hi : ¬last (nval i) ≤ 3) :
     joinPC (last (nval i)-1) = chainPC (chainId i) := by
   fin_cases i <;> (try {exfalso; exact hi (by decide)}) <;> decide
 
-theorem large_return (i : Fin 14) (hi : ¬last (nval i) ≤ 3) : returnPC i = 9578 := by
+theorem large_return (i : Fin 14) (hi : ¬last (nval i) ≤ 3) : returnPC i = 6011 := by
   fin_cases i <;> (try {exfalso; exact hi (by decide)}) <;> decide
 
 theorem run_large (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 990)
     (i : Fin 14) (hi : ¬last (nval i) ≤ 3)
     (hv : Decode.isValidJumpDest s.executionEnv.code (joinPC (last (nval i)-1)) = true) :
     runInstrSeq (tailTemplate i) (atState s (tailPC i) rho) =
-      some (atState s (chainPC (chainId i)) (tailValue s.executionEnv.calldata (nval i)::rho)) := by
+      some (atState s (chainPC (chainId i)) (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)::rho)) := by
   have hp := run_prefix s (UInt256.ofNat (tailPC i)) i rho hs e.run
   have hv' : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat (joinPC (last (nval i)-1))).toNat = true := by
     have hj : joinPC (last (nval i)-1) < 2^256 := by unfold joinPC; split <;> (try split) <;> decide
     simpa only [Word.word_toNat_ofNat,Nat.mod_eq_of_lt hj] using hv
   have hj := run_jump s (pcAfter (UInt256.ofNat (tailPC i)) (prefixTemplate i))
-    (joinPC (last (nval i)-1)) (tailValue s.executionEnv.calldata (nval i)::rho) (by simp;omega) e.run hv'
+    (joinPC (last (nval i)-1)) (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)::rho) (by simp;omega) e.run hv'
   have hall := DenseScheduleTrace.runInstrSeq_append_running hp e.run hj
   simpa only [tailTemplate,if_neg hi,atState,join_eq i hi] using hall
-
-theorem valid_tail (i : Fin 14) : Decode.isValidJumpDest Artifact.submissionArtifact.code (tailPC i) = true := by
-  have hp : Artifact.submissionArtifact.instructionPC (tailIndex i) = tailPC i := by
-    rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index (tailIndex i) (by fin_cases i <;> rfl)
-  rw [hp] at h
-  exact h
 
 theorem valid_chain (i : Fin 3) : Decode.isValidJumpDest Artifact.submissionArtifact.code (chainPC i) = true := by
   have hp : Artifact.submissionArtifact.instructionPC (chainIndex i) = chainPC i := by
@@ -303,13 +305,13 @@ theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code
   exact h
 
 theorem source_target (i : Fin 14) :
-    UInt256.add (UInt256.ofNat 32) (CombinedSelectorRaw.selected 0 (nval i)) = UInt256.ofNat (tailPC i) := by
+    UInt256.add (UInt256.ofNat 24) (DirectDigestRaw.selected (UInt256.ofNat 8191) (nval i)) = UInt256.ofNat (tailPC i) := by
   fin_cases i <;> decide
 
 def gasSteps_for (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 988)
     (i : Fin 14) (hn : s.executionEnv.calldata.size = nval i) :
     GasSteps (atState s (tailPC i) rho)
-      (atState s (if (result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4565) rho) := by
+      (atState s (if (ZeroTailModel.result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4565) rho) := by
   have hvf : Decode.isValidJumpDest s.executionEnv.code 4565 = true := by rw [e.code]; exact valid_fallback
   by_cases hi : last (nval i) ≤ 3
   · have hr := run_small s e rho (by omega) i hi hvf
@@ -320,9 +322,9 @@ def gasSteps_for (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length �
       exact valid_chain (chainId i)
     have ht := run_large s e rho (by omega) i hi hvj
     have gt := lift (.tail i) s _ e rho ht
-    have hc := run_chain s e rho (by omega) (chainId i) (tailValue s.executionEnv.calldata (nval i)) hvf
-    rw [chainK_eq i hi,rev_tail] at hc
-    have gc := lift (.chain (chainId i)) s _ e (tailValue s.executionEnv.calldata (nval i)::rho) hc
+    have hc := run_chain s e rho (by omega) (chainId i) (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)) hvf
+    rw [chainK_eq i hi,← ZeroTailModel.result] at hc
+    have gc := lift (.chain (chainId i)) s _ e (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)::rho) hc
     simpa only [hn,pc,large_return i hi] using gt.trans gc
 
 theorem allowed_index (n : Nat) (hn : RecognitionAccumulator.Allowed n) : ∃ i : Fin 14, nval i=n := by

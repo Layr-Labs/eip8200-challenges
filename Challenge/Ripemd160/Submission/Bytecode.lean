@@ -7,7 +7,7 @@ set_option maxRecDepth 100000
 /-!
 # Structural binding for the frozen raw-EVM RIPEMD-160 artifact
 
-The candidate bytecode has 9581 bytes. Its decoded SHA-256 is recorded in
+The candidate bytecode has 8191 bytes. Its decoded SHA-256 is recorded in
 `Submission/README.md`; the hex file remains the external raw input.
 -/
 
@@ -21,7 +21,7 @@ set_option maxRecDepth 50000 in
 def submissionBytecode : ByteArray := submissionBytes
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytecode_size : submissionBytecode.size = 9581 := by
+@[simp] theorem referenceBytecode_size : submissionBytecode.size = 8191 := by
   simp [submissionBytecode]
 
 set_option maxRecDepth 100000 in

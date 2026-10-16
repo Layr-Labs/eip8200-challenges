@@ -49,13 +49,13 @@ theorem from_entry (input : ByteArray)
   have gs := ReverseLiteralScan.gasSteps_for s e saved (by simp [saved]) i hi.symm
   have gs' : GasSteps (J2Moves.atState s (ReverseLiteralScan.tailPC i) saved)
       (J2Moves.atState s
-        (if (DirectLiteralModel.result input input.size).toNat = 0 then ReverseLiteralScan.returnPC i else 4565) saved) := gs
-  by_cases hz : (DirectLiteralModel.result input input.size).toNat = 0
+        (if (ZeroTailModel.result input input.size).toNat = 0 then ReverseLiteralScan.returnPC i else 4565) saved) := gs
+  by_cases hz : (ZeroTailModel.result input input.size).toNat = 0
   · rw [if_pos hz] at gs'
-    have hzword : DirectLiteralModel.result input input.size = 0 := by
+    have hzword : ZeroTailModel.result input input.size = 0 := by
       apply Word.word_ext
       exact hz
-    have heq := (DirectLiteralModel.result_zero_iff input input.size hn rfl).mp hzword
+    have heq := (ZeroTailModel.result_zero_iff input input.size hn rfl).mp hzword
     have hold := (J2Accumulator.resultAcc_zero_iff input input.size hn rfl).mpr heq
     have gr := ReverseSerializeReturn.gasSteps_return input saved saved (by simp [saved]) i
     have trace : GasSteps (initialState submissionBytecode input 0)
@@ -69,8 +69,7 @@ theorem from_entry (input : ByteArray)
     have gfm : GasSteps (J2Moves.atState s 4565 saved)
         (StackTail.append (PaddingTrace.padFramed input) saved) := by
       simpa only [J2Moves.atState, EarlySerializeFallback.incoming, s,
-        ReverseSerializeReturn.prepared, ReverseSerializeReturn.copied, RecognitionPaddedResult.copied,
-        ReverseSerializeReturn.beforeCopy, ReverseSerializeReturn.base] using gf
+        ReverseSerializeReturn.prepared, ReverseSerializeReturn.base] using gf
     exact hgeneric saved (by simp [saved]) (hentry.trans (gp.trans (gs'.trans gfm)))
 
 #print axioms of_returned

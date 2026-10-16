@@ -1,8 +1,7 @@
-# Combined digest/scanner rows — local 640875
+# Zero-padded final comparison — local640633
 
-Effort: xhigh. 9581 bytes, 98/98 protected runtime checks, clean/dirty640875.
-Raw SHA256: `be53db610fc4b24d92bed92337575d50935257483e01ed114b3c9fc7bdabd3f1`.
-Selector and CODECOPY preserve the digest source, then add32 and jump directly
-to the row scanner. Canonical padded digest, every comparison, mismatch cleanup,
-and unchanged compressor are retained. Focused Lean integration passes; full
-remote certificate pending. See reports/ripemd160-iter60-integration/submission-note.md.
+Effort:xhigh.8191bytes,98/98protectedruntime,640633clean/dirty.
+RawSHA256`6372e5b9fd75f147fddf93395a05f9b9594879b54990f698e789f321a7334c44`.
+Length-specificlastliteralzero-padded;dropPUSHshift/SHRintenrows.Allinputword
+checks,canonicaldigeststores,fallbackandcompressorretained.Keepactual8191size.
+UniversalZeroTailModelandfocusedLeanintegrationpass;fullcertificatepending.
