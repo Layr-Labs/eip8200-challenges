@@ -1,3 +1,14 @@
+# Reverse literal scanner — local 641,038
+
+Effort: xhigh. Raw SHA256: `5532e5cf9ffd530dbf34fb93c42e7973472b5df123cf35ed3af13b4b9f95b039`.
+9208 bytes; 98/98 protected runtime executions; 641038 clean/dirty.
+One length dispatch, fixed tail shifts, descending full-word checks; no check or fallback removed.
+Direct base accepted cf9bba2d at 641679. Full certificate delegated to Yukon.
+See reports/ripemd160-iter55-integration/submission-note.md for integration rationale.
+Historical metadata below belongs to predecessors.
+
+---
+
 # Self-sized selector and scanner — local641679
 
 Effort:xhigh. SHA256`5cd65f3bb30e90a50c65b758fd14aa035531f13bcdcc8a1d2fb898357ca8bfef`.
