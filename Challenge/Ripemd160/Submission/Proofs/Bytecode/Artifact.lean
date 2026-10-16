@@ -3674,7 +3674,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x52,
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975872),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  op 0x59,
   op 0x35,
   op 0x18,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
@@ -3687,6 +3687,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -4402,7 +4403,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x52,
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755545344850576737753366528),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  op 0x59,
   op 0x35,
   op 0x18,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
@@ -4415,6 +4416,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -4591,7 +4593,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x52,
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549956536595165141270528),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  op 0x59,
   op 0x35,
   op 0x18,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
@@ -4604,6 +4606,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -4724,7 +4727,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x52,
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+  op 0x59,
   op 0x35,
   op 0x18,
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
@@ -4737,6 +4740,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -5401,7 +5405,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0xf3
 ]
 
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 1730 := by rfl
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 1734 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -5425,7 +5429,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
 
-theorem referenceInstructions_count : submissionInstructions.length = 5259 := by
+theorem referenceInstructions_count : submissionInstructions.length = 5263 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
@@ -5596,8 +5600,8 @@ private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEn
 
 private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
   91, 115, 55, 136, 14, 229, 226, 232, 33, 224, 84, 11, 177, 70, 227, 59, 55, 52, 35, 22, 231, 237, 95, 82, 127, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 31,
-  68, 105, 142, 179, 216, 253, 0, 96, 32, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17,
-  213, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  68, 105, 142, 179, 216, 253, 0, 89, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213,
+  87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -5622,18 +5626,18 @@ private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEn
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 9, 6, 247,
   119, 65, 5, 211, 100, 6, 80, 84, 28, 46, 123, 193, 155, 254, 155, 81, 73, 95, 82, 127, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 96, 32, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213, 87, 89, 95, 243,
+  0, 0, 89, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213, 87, 89, 95, 243, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 219, 77, 144, 179, 190, 130, 142, 167, 206, 216, 216, 121, 219, 206, 162, 193, 213, 254, 32, 127, 95, 82, 127, 7, 44, 81,
   118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 0, 95, 53, 24, 97, 17, 213, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 216, 226, 232, 75, 173, 25, 252, 133, 219, 173, 181, 95, 165, 70, 118, 49, 206, 20, 21, 3, 95, 82, 127,
-  167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 0, 0, 0, 0, 0, 0, 0, 0, 96, 32, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195,
-  232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 0, 0, 0, 0, 0, 0, 0, 0, 89, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232,
+  13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 138, 20, 176,
   200, 146, 135, 179, 155, 26, 47, 115, 170, 121, 161, 206, 149, 176, 78, 120, 23, 95, 82, 127, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216,
-  253, 34, 96, 32, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213, 87, 89, 95, 243,
+  253, 34, 89, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 17, 213, 87, 89, 95, 243, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 246, 206, 168, 210, 164, 145, 245, 220, 39, 106, 161, 247, 97, 139, 77, 122,
@@ -5909,7 +5913,7 @@ private theorem tailPrefix_length : tailPrefix.length = 3529 := by
 private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4801 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1730) :
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1734) :
     submissionArtifact.instructionPC (3529 + i) =
       4801 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk19.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact

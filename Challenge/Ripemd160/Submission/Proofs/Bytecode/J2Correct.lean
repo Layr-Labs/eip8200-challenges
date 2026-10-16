@@ -40,7 +40,7 @@ theorem from_entry (input : ByteArray)
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   let saved : List UInt256 := [PatternedScan.segEnd input.size]
   let s := ReverseSerializeReturn.prepared input saved
-  have e : ReverseLiteralScan.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
+  have e : ReverseLiteralScan.Env s := ⟨rfl, rfl, rfl, rfl, deployAddress_not_precompile⟩
   obtain ⟨i, hi⟩ := ReverseLiteralScan.allowed_index input.size hn
   have gprepare := ReverseSerializeReturn.gasSteps_prepare input saved (by simp [saved]) i hi.symm
   have gp : GasSteps (PatternedScan.patternedEntry input)
