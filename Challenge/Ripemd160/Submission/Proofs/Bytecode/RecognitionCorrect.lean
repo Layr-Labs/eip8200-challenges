@@ -10,7 +10,7 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
     (hentry : GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  apply J2Correct.from_entry input hn hfit hentry
+  apply J2Correct.from_entry J2FusedSites.certificates input hn hfit hentry
   intro rho hcap hg
   have hb := RecognitionAccumulator.allowed_bounds input.size hn
   exact GenericFramedCorrect.correct input hfit hb.1 rho hcap hg
