@@ -26,12 +26,12 @@ structure Site (template : List Instr) (pc : Nat) where
   pc_eq : site.startPC = UInt256.ofNat pc
 
 structure Certificates where
-  branch : Site branchTemplate 4891
+  branch : Site branchTemplate 4853
   predicate : Site predicateTemplate fusedPC
   projection : Site projectionTemplate non256PC
   finish : Site fullReturnTemplate fusedReturnPC
   non256_valid : Decode.isValidJumpDest Artifact.submissionArtifact.code non256PC = true
-  projection_end : pcAfter (UInt256.ofNat non256PC) projectionTemplate = UInt256.ofNat 4919
+  projection_end : pcAfter (UInt256.ofNat non256PC) projectionTemplate = UInt256.ofNat 4881
 
 private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
   change submissionBytecode.size < 2^256
@@ -40,53 +40,53 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 
 namespace branchSite
 abbrev template : List Instr := branchTemplate
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3548).take template.length = template := by rfl
+def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
+  StackSiteBuilder.ofSlice template 3548 actual_slice
+    (by change 3548 + template.length ≤ Artifact.submissionInstructions.length
+        rw [Artifact.referenceInstructions_count]; decide)
+    code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
+theorem site_pc : site.startPC = UInt256.ofNat 4853 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3548) = UInt256.ofNat 4853
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+end branchSite
+
+namespace predicateSite
+abbrev template : List Instr := predicateTemplate
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3554).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 3554 actual_slice
     (by change 3554 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4891 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3554) = UInt256.ofNat 4891
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-end branchSite
-
-namespace predicateSite
-abbrev template : List Instr := predicateTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3560).take template.length = template := by rfl
-def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3560 actual_slice
-    (by change 3560 + template.length ≤ Artifact.submissionInstructions.length
-        rw [Artifact.referenceInstructions_count]; decide)
-    code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4899 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3560) = UInt256.ofNat 4899
+theorem site_pc : site.startPC = UInt256.ofNat 4861 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3554) = UInt256.ofNat 4861
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end predicateSite
 
 namespace projectionSite
 abbrev template : List Instr := projectionTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3568).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3562).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3568 actual_slice
-    (by change 3568 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3562 actual_slice
+    (by change 3562 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4914 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3568) = UInt256.ofNat 4914
+theorem site_pc : site.startPC = UInt256.ofNat 4876 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3562) = UInt256.ofNat 4876
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end projectionSite
 
 namespace finishSite
 abbrev template : List Instr := fullReturnTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3565).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3559).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3565 actual_slice
-    (by change 3565 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3559 actual_slice
+    (by change 3559 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4911 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3565) = UInt256.ofNat 4911
+theorem site_pc : site.startPC = UInt256.ofNat 4873 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3559) = UInt256.ofNat 4873
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end finishSite
 
@@ -96,8 +96,8 @@ def certificates : Certificates where
   projection := ⟨projectionSite.site, projectionSite.site_pc⟩
   finish := ⟨finishSite.site, finishSite.site_pc⟩
   non256_valid := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 3568 (by rfl)
-    have hp : Artifact.submissionArtifact.instructionPC 3568 = 4914 := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 3562 (by rfl)
+    have hp : Artifact.submissionArtifact.instructionPC 3562 = 4876 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
     simpa only [J2Moves.non256PC, hp] using h
   projection_end := by decide
@@ -113,23 +113,23 @@ private def lift {template : List Instr} {pc : Nat} (site : Site template pc)
 private def branch (c : Certificates) (s : State) (e : Env s)
     (stack : List UInt256) (hs : stack.length ≤ 1018)
     (hactive : s.activeWords = UInt256.ofNat 1) :
-    GasSteps (atState s 4891 stack)
+    GasSteps (atState s 4853 stack)
       (atState s (if UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) 32 = 0
         then fusedPC else non256PC) stack) := by
   apply lift c.branch s _ e stack (RecognitionLift.advancesAll_sound _ (by decide))
   have hv : Decode.isValidJumpDest s.executionEnv.code non256PC = true := by
     rw [e.code]; exact c.non256_valid
-  have h := run_branch s (UInt256.ofNat 4891) stack hs e.run hactive hv
+  have h := run_branch s (UInt256.ofNat 4853) stack hs e.run hactive hv
   by_cases hm : UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) 32 = 0
-  all_goals simpa only [atState, hm, if_true, if_false,
-    show pcAfter (UInt256.ofNat 4891) branchTemplate = UInt256.ofNat fusedPC from by decide] using h
+  all_goals simpa only [atState, hm, if_true, if_false, J2Moves.non256PC,
+    show pcAfter (UInt256.ofNat 4853) branchTemplate = UInt256.ofNat fusedPC from by decide] using h
 
 def longBoundary (c : Certificates) (s : State) (e : Env s)
     (f : J2Raw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990)
     (hactive : s.activeWords = UInt256.ofNat 1)
     (hmask : UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) 32 ≠ 0)
     (hboundary : f.stop.toNat < f.len.toNat) :
-    GasSteps (atState s 4891 (pending s f rho)) (atState s 4919 (frame (tailResult s f) rho)) := by
+    GasSteps (atState s 4853 (pending s f rho)) (atState s 4881 (frame (tailResult s f) rho)) := by
   have gb := branch c s e (pending s f rho)
     (by simp [pending, frame]; omega) hactive
   rw [if_neg hmask] at gb
@@ -145,7 +145,7 @@ def fusedBoundary (c : Certificates) (s : State) (e : Env s)
     (f : J2Raw.Frame) (rho : List UInt256) (hs : rho.length ≤ 990)
     (hactive : s.activeWords = UInt256.ofNat 1) (h256 : s.executionEnv.calldata.size = 256)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 4565 = true) :
-    GasSteps (atState s 4891 (pending s f rho))
+    GasSteps (atState s 4853 (pending s f rho))
       (atState s (if (fusedAcc s f).toNat = 0 then fusedReturnPC else 4565) (finishRest f rho)) := by
   have gb := branch c s e (pending s f rho)
     (by simp [pending, frame]; omega) hactive

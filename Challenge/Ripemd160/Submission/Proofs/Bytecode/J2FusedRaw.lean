@@ -13,7 +13,7 @@ open StackRoundTrace J2Raw J2Moves
 /-- One-word memory makes `CALLDATASIZE MSIZE AND` distinguish the only
 non-final-boundary lengths: 256 has bit 5 clear; 376 and 1000 have it set. -/
 def branchTemplate : List Instr := [ .op .JUMPDEST, .op .CALLDATASIZE, .op .MSIZE,
-  .op .AND, .push ⟨2, by decide⟩ (UInt256.ofNat non256PC), .op .JUMPI ]
+  .op .AND, .push ⟨2, by decide⟩ (UInt256.ofNat 4876), .op .JUMPI ]
 
 def projectionTemplate : List Instr := [ .op .JUMPDEST,
   .push ⟨1, by decide⟩ (UInt256.ofNat 40), .op .SHR, .op .OR ]
@@ -28,17 +28,17 @@ def returnTemplate : List Instr := [ .push ⟨0, by decide⟩ 0, .op .RETURN ]
 theorem run_branch (s : State) (pc : UInt256) (stack : List UInt256)
     (hs : stack.length ≤ 1018) (hrun : s.halt = .Running)
     (hactive : s.activeWords = UInt256.ofNat 1)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code non256PC = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4876 = true) :
     runInstrSeq branchTemplate {s with pc := pc, stack := stack} =
       some {s with pc := if UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) 32 = 0
-        then pcAfter pc branchTemplate else UInt256.ofNat non256PC, stack := stack} := by
+        then pcAfter pc branchTemplate else UInt256.ofNat 4876, stack := stack} := by
   have hbase : stack.length < 1024 := by omega
   have hcap (n : Nat) (hn : n ≤ 5) : stack.length + n < 1024 := by omega
   have hz : ∀ x : UInt256, x.toNat = 0 ↔ x = 0 := by
     intro x; constructor
     · intro h; apply Word.word_ext; exact h
     · rintro rfl; rfl
-  have hmod : non256PC % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = non256PC := by decide
+  have hmod : 4876 % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 4876 := by decide
   by_cases hc : UInt256.land (UInt256.ofNat s.executionEnv.calldata.size) (UInt256.ofNat 32) = UInt256.ofNat 0
   all_goals simp (discharger := omega) [branchTemplate, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, Nat.add_assoc, hrun, hactive,
@@ -93,6 +93,7 @@ theorem run_fullReturn (s : State) (pc : UInt256) (rho : List UInt256)
   all_goals rfl
 
 #print axioms run_branch
+#print axioms run_projection
 #print axioms run_predicate
 #print axioms run_return
 #print axioms run_fullReturn
