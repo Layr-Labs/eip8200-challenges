@@ -6,11 +6,11 @@ set_option maxHeartbeats 4000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectDigestRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof StackRoundTrace
 def selected (_codesize : UInt256) (size : Nat) : UInt256 :=
-  UInt256.land (UInt256.div (UInt256.ofNat 18726849680929476) (UInt256.ofNat size)) (UInt256.ofNat 8191)
+  UInt256.land (UInt256.div (UInt256.ofNat 34711266746334640) (UInt256.ofNat size)) (UInt256.ofNat 8191)
 
 def prefixTemplate : List Instr := [
  .push ⟨2, by decide⟩ (UInt256.ofNat 8191), .op .CALLDATASIZE,
- .push ⟨7, by decide⟩ (UInt256.ofNat 18726849680929476), .op .DIV, .op .AND, .op .JUMP]
+ .push ⟨7, by decide⟩ (UInt256.ofNat 34711266746334640), .op .DIV, .op .AND, .op .JUMP]
 
 def storeTemplate (word : UInt256) : List Instr := [
  .op .JUMPDEST, .push ⟨20, by decide⟩ word,

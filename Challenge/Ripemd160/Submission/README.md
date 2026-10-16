@@ -1,6 +1,6 @@
-# Inline256/376 — local640620
+# All-private rows — local640608
 
-Effort:xhigh.9400bytes,98/98protectedruntime,640620clean/dirty.
-SHA256`d7d6d135759689aac1e53e3e9f5032385ce6280671b3f963e0be39a248b5c333`.
-Literal8191selector; allinputwordchecks; canonicaldigeststores; unchangedfallback.
-UniversalZeroTailModelandfocusedLeanintegrationpass;fullcertificatepending.
+Effort:xhigh.9427bytes,98/98protectedruntime,640608clean/dirty.
+SHA256`1d64214d7d088b1551bd32aac8bec04908c1dc2de359e236bc75374c15b0dadb`.
+Literal8191mask;1000rowstarts8158ends9427. Allinputwordchecksandfallbackretained.
+UniversalmodelandfocusedLeanchecks pass;fullofficialcertificatepending.
