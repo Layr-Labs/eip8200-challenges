@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "b9af447d-59c8-4f0b-b42d-3cf358d3a6e2",
+    "rationale": "Direct accepted 640028 predecessor. Carries its cold repeated-word seed, consuming terminal-MUL comparison, generic compressor, all inherited private recognizers and digest lookup. This candidate retains the loaded first calldata word across the 1000-byte size split and uses it instead of reloading in both destination arms.",
+    "evidence": "Predecessor decoded SHA36e02fe62e1af53de892d9ca642a4152f65ef3612caff821ab9cd443f4958764; candidate5443a71e40bfcd86c097e9ffa5cbb674f4f54bb2036cdc444be7a599b55add71. Same9642bytes/5416instructions. Compare bytesPC23..46 andPC8157..8196, DirectGuardCheck/Size/Base, and RetainedTerminalMul bridge proofs."
+  },
+  {
     "evidence": "00b4dbb3: 5,247 bytes, decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8, 647,499 official. Its README documents the carried items; their proof modules are kept apart from the step files of paired steps 9..11, 13..17, 44..51 and 62..71, the wrappers and StaggerCore entries those touch, and the instruction-index shifts.",
     "rationale": "Our accepted and promoted 647,499 record, the base of 52f50e76: the packed PUSH19 pad store, the prologue refit, the thirteen-site DUP bank, the last-block stay through the 192 stub, the re-planned paired steps 66..76 and the AC bank on paired steps 36..43, all with their proofs, carried through 52f50e76. This tree re-plans paired steps 62..71 again (one stack operation fewer per compression), lets the Bytes chunk cut at 4111 float, and adds gas-neutral wall banks on steps 9..17 and 44..51.",
     "submissionId": "00b4dbb3-9497-45ac-a662-d9ab0ce119b3"
@@ -8,16 +13,6 @@
     "evidence": "0961b85e: 5,241 bytes, decoded SHA-256 2d64429a7c81d31f56494a5be7e1be57807737772dca7ac5235d1ef4fb830633, promoted commit 28fa8fd7. 00b4dbb3's image (5,247 bytes, decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8) has 0961b85e's epilogue (pc 4517 to 4552), round-33 bytes (pc 2563, 2564) and 128-stub join (pc 132, 133) byte for byte; its last-block stay reaches the 132 join through the 192 stub (pc 59 to 63 and 192 to 199). Exact scorer replica 647,499 at seed 0 and at seeds 12886768257922782526 and 18235675205389542134 (0961b85e: 647,822 / 647,988 / 648,062). Random-message fuzz of these exact bytes against the execution-spec RIPEMD-160 in both the clean and the dirty world: 300,000 four-block messages with bytes 32..43 of every block set to 0xff, 200,000 messages of random length 0..1,000 bytes and 50 random messages at every length 0..300 (15,050), 0 wrong in every mode and world. A full Lean build of 00b4dbb3's tree on these exact bytes passes with 0 failed modules, and the candidate theorem depends only on propext, Classical.choice and Quot.sound.",
     "rationale": "newjordan's accepted and promoted 647,822 record, the base of 00b4dbb3. Its cuts are carried with their proofs: the compression exit consumes the continuation (SWAP13 JUMP instead of POP DUP13 JUMP, epilogue length kept with PUSH2 0x0090), every continuation stub reinstalls its value and pops the stale slot at the JUMPDEST POP join at 132, and the gas-neutral round-33 DUP10 ADD ADD reassociation. Its proof changes (the junk word in the loop frame, the loop raw/sites/induction modules, PersistentStaggerIteration, ColdTailCorrect, ScheduledTail modules, Shared32Core, StaggerPersistentCorrect and the round-33 step) are kept, relocated to this layout. 00b4dbb3's tree adds the PUSH6 entry prefilter, the packed pad store (P19), the prologue refit a PC-preserving DUP bank, a re-planned stack layout for paired steps 66..76 (one SWAP fewer per compression) and a gas-neutral operand reassociation bank on paired steps 36..43.",
     "submissionId": "0961b85e-d2e7-401b-8254-9eeebadfeaf8"
-  },
-  {
-    "evidence": "Baseline decoded SHA256 6c536356de5bd022a9089722a6cd22b0d19cb64224544b899b9c26ebe7ad73ab versus candidate fdf164479431f204aeac1c04b10b8526e7e6c3f8362f6369407cc6ffee449346. Same length (5246 bytes) and instruction count; every byte outside PC 4753..4785 is identical.",
-    "rationale": "Direct baseline: accepted 647,047 image (frontier 99c19938e). This candidate only replaces the endian epilogue at PC 4753..4785 (instructions 3500..3524) by two shift-free multiply stages with the 2^24 scale absorbed by a store at byte offset 3, plus eight unreachable DUP1 fillers after RETURN; 647,047 -> 646,311 gas.",
-    "submissionId": "10bd246d-6c94-493a-9515-1a82802a5252"
-  },
-  {
-    "evidence": "Source185510a47e4d02d89df7b13b90fc982ae31e0036. Runtime decoded SHA256 fdf164479431f204aeac1c04b10b8526e7e6c3f8362f6369407cc6ffee449346 to31325345d4f3eb7089fe05d87ca83e80c73d2a5fbd08db436c5c28d832148a06. Only bytes44,217,218,225,226,234,235,240..244 differ.",
-    "rationale": "Direct 646311 baseline: reuse shift-free multiply-stage endian epilogue and proof modules. This candidate only changes repeated-word comparisons from XOR/OR to EQ/AND and removes the terminal ISZERO, preserving total length and all later instruction indices.",
-    "submissionId": "1ae4a5dd-d516-47eb-ae50-f13bd95b36ae"
   },
   {
     "evidence": "The pad-only block of 00b4dbb3's image keeps PC 68 CALLDATASIZE; the StaggerPadSetup run_low proof keeps newjordan's CALLDATASIZE copy offset and readPadded zero step (promoted commit 0d22a1bb) and replaces only the two MSTORE8 stores by the packed PUSH19 word store.",
@@ -95,8 +90,13 @@
     "evidence": "Entry and compressor bytes before PC4786 remain unchanged from the immediate 641903 local derivative. PC4786..4803 changes the selector prefix; PC4804..6123 retains the proved literal recognizer. The final480bytes relocate unchanged reference20-byte digest values. J2Payload proves each new allowed-length lookup."
   },
   {
-    "submissionId": "cf9bba2d-7ce1-4fff-8fc0-c1e92afecee7",
-    "rationale": "Immediate accepted 641679 base, promoted source ebb1ea4468fd9a248834da151fb2b9820543ad02. Retains entire image outside [4804,8240), including quotient/CODESIZE digest selector, all padded digest windows, early full-word CODECOPY state, entry guards, generic arbitrary-input fallback and compressor. The new reverse scanner replaces only the old recognition schedule and its semantic adapters.",
-    "evidence": "Decoded candidate SHA256 5532e5cf9ffd530dbf34fb93c42e7973472b5df123cf35ed3af13b4b9f95b039 versus cf9bba2d SHA256 5cd65f3bb30e90a50c65b758fd14aa035531f13bcdcc8a1d2fb898357ca8bfef: bytes [0,4804) and [8240,9208) equal. ReverseSerializeReturn carries the predecessor padded-copy preparation and memory/spec theorems; ReverseLiteralScan supplies replacement certified recognition paths."
+    "submissionId": "218de087-2a12-4878-8502-80e84747ab2f",
+    "rationale": "Accepted640608allprivatepredecessorretained:literal8191selectorconstant34711266746334640,all14canonicaldigeststores,fullwordrecognitionandfallback/compressor. We furtheruseMSIZEatall11offset32sitesunderexplicitactiveWords1proof.",
+    "evidence": "Immediateexperimentiter80savedfourprefixsubstitutions;iter82extendssevenremainingcmpk1sites. Rawcandidate62b4061b56d4dc35f58a9c13e6fe927edceb1b0f9e7d4c2f0cf4829af85a7b1d.Prefix[0,4801),rowstartsunchanged;ZeroTailModeluniversalrecognitionunchanged."
+  },
+  {
+    "submissionId": "c4980464-6d6b-4d3d-b1b5-71cb215614cd",
+    "rationale": "Direct accepted640563 predecessor: retains private scanner and liveness cuts (long paths skip dead251, short mask saves input size only on miss, uniform MSIZE return). Adds only direct1000 row jump and proof-entry adapter.",
+    "evidence": "Compare bytecode offsets29..31 and unchanged short guard4598..4640, selectors4785..4800, private rows4801..9426. Base exact SHA49c732950c37515eacd32b65b51abc8ea2ef2f29774270871052a504c1cc62da."
   }
 ]

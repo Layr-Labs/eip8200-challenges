@@ -156,14 +156,27 @@ private theorem jump245 : Decode.isValidJumpDest submissionBytecode 245 = true :
   change Decode.isValidJumpDest Artifact.submissionArtifact.code 245 = true
   simpa only [hp] using h
 
+/-- Keep the large concrete code image out of the symbolic state reduction.
+Only JUMP consults code, and its decoder premise is supplied separately. -/
+private theorem run_cleanup_state (s : State) (m : ByteArray) (hm : m.size = 32)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 245 = true)
+    (hrun : s.halt = .Running) :
+    DataStepper.runLocatedBlock cleanupPath
+      {s with
+        memory := m, activeWords := UInt256.ofNat 1,
+        pc := UInt256.ofNat 4785, stack := []} =
+      some {s with
+        memory := zero32, activeWords := UInt256.ofNat 1,
+        pc := UInt256.ofNat 246, stack := []} := by
+  obtain ⟨p0, p1, p2, p3, p4, p5, pd⟩ := cleanup_pcs
+  simp [cleanupPath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+    DataStepper.runInstr, p0, p1, p2, p3, p4, p5, pd, hv, hrun,
+    State.activeWordsAfterUInt256, MachineState.activeWordsAfter, clear_word m hm]
+
 private theorem run_cleanup (input : ByteArray) (m : ByteArray) (hm : m.size = 32) :
     DataStepper.runLocatedBlock cleanupPath (incoming input m []) =
       some (cleared input) := by
-  obtain ⟨p0, p1, p2, p3, p4, p5, pd⟩ := cleanup_pcs
-  simp [cleanupPath, DataStepper.runLocatedBlock, DataStepper.runLocated,
-    DataStepper.runInstr, incoming, cleared, initialState,
-    p0, p1, p2, p3, p4, p5, pd, jump245,
-    State.activeWordsAfterUInt256, MachineState.activeWordsAfter, clear_word m hm]
+  exact run_cleanup_state (initialState submissionBytecode input 0) m hm jump245 rfl
 
 def copyPrefix : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
   Artifact.padEnterPath ++ Artifact.padCopyPath

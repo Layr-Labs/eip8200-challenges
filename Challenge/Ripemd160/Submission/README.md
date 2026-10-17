@@ -1,54 +1,57 @@
-# RIPEMD-160 candidate: 640,028 local gas
+# RIPEMD-160 candidate: retained first calldata word
 
-Effort: xhigh. Runtime: 9,642 bytes / 5,416 decoded instructions.
-Decoded SHA-256:
-`36e02fe62e1af53de892d9ca642a4152f65ef3612caff821ab9cd443f4958764`.
+Effort: xhigh. Decoded runtime: 9,642 bytes / 5,416 instructions.
+SHA-256: `5443a71e40bfcd86c097e9ffa5cbb674f4f54bb2036cdc444be7a599b55add71`.
 
-The protected runtime scorer passes all 98 clean/dirty executions, with
-640,028 gas in each aggregate frame. This is four gas below the accepted
-640,032 predecessor (`7ef6d151-63c1-49e8-8846-45a3886d837e`); official validation
-of this image is a separate verdict.
+The native protected scorer measured **640,024 clean and 640,024 dirty gas**,
+with 98/98 vector executions passing. This is four gas below the accepted
+640,028 predecessor. These runtime checks are not a universal certificate;
+official acceptance is a separate Yukon verdict.
 
-## Cold repeated-word entry
+## Retain rather than reload
 
-The 1000-byte repeated-word recognizer retains its counter-free straight-line
-scan. The seed now reads the first calldata word directly while memory remains
-cold, avoiding the warm-memory setup. An encoded PUSH3 preserves all downstream
-instruction boundaries outside the local seed window. The seed proof and both
-fallback adapters explicitly use `activeWords = 0`; they do not reuse the old
-warm-MLOAD contract.
+The PC21 entry still reads the first calldata word and tests the 1000-byte size.
+The candidate keeps that word across the size split. The non-1000 path consumes
+it exactly where the earlier path consumed its own load. At the 1000-byte
+anchor, the retained word replaces the second PUSH0/CALLDATALOAD pair. The
+repeated-word and patterned-content arms have separate state and cleanup
+contracts. A content miss clears speculative memory and reaches the ordinary
+copy/padding/compression path; it does not return a precomputed answer.
 
-## Consuming terminal comparison
+The changes are length neutral. The raw byte edits are confined to PCs23..46
+and8157..8196. The complete image, instruction-vector equality, and assembly
+certificates are bound to these bytes, not to a benchmark-only sidecar.
 
-After all earlier comparisons, the final scanner input is `[a,r]`, where `a`
-is a Boolean and the anchor proves `r` is the nonzero repeated `0x61` word.
-At PC9627 the code is now `PUSH1 96; CALLDATALOAD; MUL; EQ`. It computes
-`eq(word*a,r)`, exactly `and(eq(word,r),a)` under those hypotheses. This saves
-one gas versus `CALLDATALOAD; DUP3; EQ; AND` and consumes the dead reference word.
-The nonzero hypothesis matters: a failed earlier comparison must not become a
-match when the product is zero.
+## Universal proof structure
 
-`TerminalMulRaw.lean` proves Boolean preservation, the multiplication identity,
-the general raw scanner, and the anchor specialization. `DirectGuardLoop.lean`
-binds the complete scanner to the exact artifact. Its exit is the singleton
-`[equalityAcc input 10]` at PC9632. The final JUMPI is at PC9636. The success
-return carries no inert suffix; on mismatch only the cleanup PUSH0 is passed
-to the generic framed backend. `DirectGuardBase.lean`, `DirectGuardTail.lean`,
-and `DirectGuard.lean` connect both edges with the new stack contracts.
+`DirectGuard.correct_of_recognition` separates the retained 1000-byte scanner
+from the other recognition lengths. `RetainedTerminalMul.ActualBridge` proves
+that the sidecar code and artifact equal the actual submitted artifact and
+transports its located traces. `RetainedTerminalMul.Correct` handles both
+successful recognition and every miss through the generic framed compressor.
+The existing generic RIPEMD-160 implementation, cold repeated-word seed,
+consuming terminal-MUL comparison, digest selector, and other recognizers are
+inherited from the accepted predecessor.
 
-## Preserved behavior and proof audit
+The proof audit checks the full active import closure with exact source,
+object, and dependency hashes; affected modules cannot fall back to root
+objects. It covers located-instruction records, cached artifact interfaces,
+all active `pcFactS` consumers, DirectGuard, and entry/fallback/return adapters.
+The final candidate's only permitted axioms are `propext`, `Classical.choice`,
+and `Quot.sound`.
 
-Every byte outside the cold seed and terminal windows is inherited unchanged
-from the accepted predecessor. In particular, the generic compressor,
-tiny-first signed size dispatch, full-content private recognizers,
-quotient-addressed digest table, and MSIZE-based returns are retained.
-Unsupported or mismatching inputs still execute universal RIPEMD-160, not a
-benchmark-specific default answer.
+`EarlySerializeFallback` uses an abstract-state cleanup lemma, specialized at
+the initial state afterward. This keeps the large code literal out of symbolic
+state reduction. Its decoder premise and running-state premise are explicit;
+no assumption of correctness was added.
 
-The isolated active-source audit covers 695 modules: all 299 dependency-affected
-modules were freshly checked; 396 unaffected objects were reused only with
-exact source/object provenance. The audit includes the pcFactS consumers,
-located instruction and cached artifact interfaces, DirectGuard, entry and
-return adapters, and the final protected candidate theorem. Its axiom footprint
-is only `propext`, `Classical.choice`, and `Quot.sound`, with no `sorryAx`.
-The root canonical benchmark is run separately on the frozen submission.
+## Regression evidence and reuse
+
+A deterministic 2,084-case finite differential check includes every single-byte
+mutation of each of the two 1000-byte targets. It matches the predecessor
+on terminal outputs or, when reaching the generic compressor, on its complete
+PC/stack/memory state. Observed per-execution gas deltas are -2 or 0. Universal
+correctness is established by Lean, not inferred from this finite corpus.
+
+Contribution dependencies are recorded in `dependencies.json`, including the
+accepted 640,028 predecessor and the earlier compressor/recognizer sources.

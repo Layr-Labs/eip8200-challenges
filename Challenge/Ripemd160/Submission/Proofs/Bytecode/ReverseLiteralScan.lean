@@ -15,7 +15,7 @@ open StackRoundTrace StackRoundTemplate DirectLiteralRawV4 DirectLiteralModel J2
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.ReverseLiteralScan
 
 abbrev lengths : List Nat := [1,31,32,55,56,63,64,65,119,120,128,256,376,1000]
-def nval : Fin 14 → Nat
+def nval : Fin 13 → Nat
  | ⟨0, _⟩ => 1
  | ⟨1, _⟩ => 31
  | ⟨2, _⟩ => 32
@@ -29,8 +29,7 @@ def nval : Fin 14 → Nat
  | ⟨10, _⟩ => 128
  | ⟨11, _⟩ => 256
  | ⟨12, _⟩ => 376
- | ⟨13, _⟩ => 1000
-def tailPC : Fin 14 → Nat
+def tailPC : Fin 13 → Nat
  | ⟨0, _⟩ => 7624
  | ⟨1, _⟩ => 6347
  | ⟨2, _⟩ => 5125
@@ -44,8 +43,7 @@ def tailPC : Fin 14 → Nat
  | ⟨10, _⟩ => 7443
  | ⟨11, _⟩ => 7829
  | ⟨12, _⟩ => 6907
- | ⟨13, _⟩ => 8182
-def tailIndex : Fin 14 → Nat
+def tailIndex : Fin 13 → Nat
  | ⟨0, _⟩ => 4873
  | ⟨1, _⟩ => 4394
  | ⟨2, _⟩ => 3735
@@ -59,8 +57,7 @@ def tailIndex : Fin 14 → Nat
  | ⟨10, _⟩ => 4844
  | ⟨11, _⟩ => 5024
  | ⟨12, _⟩ => 4728
- | ⟨13, _⟩ => 5093
-def returnPC : Fin 14 → Nat
+def returnPC : Fin 13 → Nat
  | ⟨0, _⟩ => 7664
  | ⟨1, _⟩ => 6387
  | ⟨2, _⟩ => 5165
@@ -74,7 +71,6 @@ def returnPC : Fin 14 → Nat
  | ⟨10, _⟩ => 7596
  | ⟨11, _⟩ => 8134
  | ⟨12, _⟩ => 7368
- | ⟨13, _⟩ => 9423
 
 
 def cmpTemplate (k : Nat) : List Instr :=
@@ -87,20 +83,20 @@ def revTemplate (chain : Bool) : Nat → List Instr
  | k+1 => (if (chain = true ∧ (k=30)) then [.op .JUMPDEST] else []) ++
     (cmpTemplate k ++ orTemplate) ++ revTemplate chain k
 
-def lastOffset (i : Fin 14) : List Instr :=
+def lastOffset (i : Fin 13) : List Instr :=
  if last (nval i) = 1 then [.op .MSIZE] else
  [.push ⟨if last (nval i) = 0 then 0 else if last (nval i) < 8 then 1 else 2,
      by split <;> (try split) <;> decide⟩ (UInt256.ofNat (32 * last (nval i)))]
 
-def prefixTemplate (i : Fin 14) : List Instr :=
+def prefixTemplate (i : Fin 13) : List Instr :=
  [.push ⟨32, by decide⟩ (ZeroTailModel.expectedLast (nval i))] ++
  lastOffset i ++ [.op .CALLDATALOAD, .op .XOR]
 
-def tailTemplate (i : Fin 14) : List Instr :=
+def tailTemplate (i : Fin 13) : List Instr :=
   (prefixTemplate i ++ revTemplate false (last (nval i))) ++ resultTemplate
 
 inductive Piece where
- | tail (i : Fin 14)
+ | tail (i : Fin 13)
 
 def template : Piece → List Instr
  | .tail i => tailTemplate i
@@ -200,7 +196,7 @@ theorem run_revTemplate (s : State) (pc : UInt256) (a : UInt256) (rho : List UIn
     have hall := DenseScheduleTrace.runInstrSeq_append_running hdc hrun hi
     simpa only [revTemplate,dest,DenseScheduleTrace.pcAfter_append,rev] using hall
 
-theorem run_prefix (s : State) (pc : UInt256) (i : Fin 14) (rho : List UInt256)
+theorem run_prefix (s : State) (pc : UInt256) (i : Fin 13) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq (prefixTemplate i) {s with pc:=pc,stack:=rho} =
@@ -226,12 +222,12 @@ theorem run_prefix (s : State) (pc : UInt256) (i : Fin 14) (rho : List UInt256)
     Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
   all_goals repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
 
-theorem tail_end (i : Fin 14) :
+theorem tail_end (i : Fin 13) :
     pcAfter (UInt256.ofNat (tailPC i)) (tailTemplate i) = UInt256.ofNat (returnPC i) := by
   fin_cases i <;> decide
 
 theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 990)
-    (i : Fin 14)
+    (i : Fin 13)
     (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
     runInstrSeq (tailTemplate i) (atState s (tailPC i) rho) =
       some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4785) rho) := by
@@ -255,12 +251,12 @@ theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code
   rw [hp] at h
   exact h
 
-theorem source_target (i : Fin 14) :
+theorem source_target (i : Fin 13) :
     UInt256.add (UInt256.ofNat 24) (DirectDigestRaw.selected (UInt256.ofNat 8191) (nval i)) = UInt256.ofNat (tailPC i) := by
   fin_cases i <;> decide
 
 def gasSteps_for (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 988)
-    (i : Fin 14) (hn : s.executionEnv.calldata.size = nval i) :
+    (i : Fin 13) (hn : s.executionEnv.calldata.size = nval i) :
     GasSteps (atState s (tailPC i) rho)
       (atState s (if (ZeroTailModel.result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4785) rho) := by
   have hvf : Decode.isValidJumpDest s.executionEnv.code 4785 = true := by rw [e.code]; exact valid_fallback
@@ -268,7 +264,7 @@ def gasSteps_for (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length �
   have gt := lift (.tail i) s _ e rho hr
   simpa only [hn,pc] using gt
 
-theorem allowed_index (n : Nat) (hn : RecognitionAccumulator.Allowed n) : ∃ i : Fin 14, nval i=n := by
+theorem allowed_index (n : Nat) (hn : RecognitionAccumulator.Allowed n) (hne : n ≠ 1000) : ∃ i : Fin 13, nval i=n := by
   rcases hn with h|h|h|h|h|h|h|h|h|h|h|h|h|h
   · exact ⟨0, h.symm⟩
   · exact ⟨1, h.symm⟩
@@ -283,7 +279,7 @@ theorem allowed_index (n : Nat) (hn : RecognitionAccumulator.Allowed n) : ∃ i 
   · exact ⟨10, h.symm⟩
   · exact ⟨11, h.symm⟩
   · exact ⟨12, h.symm⟩
-  · exact ⟨13, h.symm⟩
+  · exact False.elim (hne h)
 
 #print axioms gasSteps_for
 #print axioms allowed_index

@@ -37,13 +37,13 @@ def prepared (input : ByteArray) (rho : List UInt256) : State :=
     memory := MachineState.writeBytes ByteArray.empty
       (Data.Bytes.natToBytesPadded (RecognitionDigest.paddedDigestWord input.size).toNat 32) 0}
 
-def finishPC (i : Fin 14) : Nat := ReverseLiteralScan.returnPC i + 1
+def finishPC (i : Fin 13) : Nat := ReverseLiteralScan.returnPC i + 1
 
 /-- The final return uses the prepared memory, not an unrelated running state. -/
-def output (input : ByteArray) (rho : List UInt256) (i : Fin 14) : State :=
+def output (input : ByteArray) (rho : List UInt256) (i : Fin 13) : State :=
   RecognitionSelectorRaw.returned (prepared input rho) (UInt256.ofNat (finishPC i)) rho
 
-theorem prepared_atState (input : ByteArray) (rho : List UInt256) (i : Fin 14)
+theorem prepared_atState (input : ByteArray) (rho : List UInt256) (i : Fin 13)
     (hn : input.size = ReverseLiteralScan.nval i) :
     prepared input rho = atState (prepared input rho) (ReverseLiteralScan.tailPC i) rho := by
   have ht : UInt256.add (UInt256.ofNat 24) (source input) = UInt256.ofNat (ReverseLiteralScan.tailPC i) := by
@@ -125,7 +125,7 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 
-def storeIndex : Fin 14 → Nat
+def storeIndex : Fin 13 → Nat
  | ⟨0, _⟩ => 4869
  | ⟨1, _⟩ => 4390
  | ⟨2, _⟩ => 3731
@@ -139,28 +139,27 @@ def storeIndex : Fin 14 → Nat
  | ⟨10, _⟩ => 4840
  | ⟨11, _⟩ => 5020
  | ⟨12, _⟩ => 4724
- | ⟨13, _⟩ => 5089
 
 namespace storeSite
-abbrev template (i : Fin 14) : List Instr :=
+abbrev template (i : Fin 13) : List Instr :=
   DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord (ReverseLiteralScan.nval i))
-theorem actual_slice (i : Fin 14) :
+theorem actual_slice (i : Fin 13) :
     (Artifact.submissionArtifact.instructions.drop (storeIndex i)).take (template i).length = template i := by
   fin_cases i <;> rfl
 
-def site (i : Fin 14) : GenericRoundSite Artifact.submissionArtifact .Osaka (template i) :=
+def site (i : Fin 13) : GenericRoundSite Artifact.submissionArtifact .Osaka (template i) :=
   StackSiteBuilder.ofSlice (template i) (storeIndex i) (actual_slice i)
     (by change storeIndex i+(template i).length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; fin_cases i <;> decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template i) (by fin_cases i <;> decide))
     (by fin_cases i <;> decide)
 
-theorem site_pc (i : Fin 14) : (site i).startPC =
+theorem site_pc (i : Fin 13) : (site i).startPC =
     DirectDigestRaw.selected (UInt256.ofNat 8191) (ReverseLiteralScan.nval i) := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC (storeIndex i)) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
 
-theorem valid (i : Fin 14) : Decode.isValidJumpDest Artifact.submissionArtifact.code
+theorem valid (i : Fin 13) : Decode.isValidJumpDest Artifact.submissionArtifact.code
     (DirectDigestRaw.selected (UInt256.ofNat 8191) (ReverseLiteralScan.nval i)).toNat = true := by
   have hp : Artifact.submissionArtifact.instructionPC (storeIndex i) =
       (DirectDigestRaw.selected (UInt256.ofNat 8191) (ReverseLiteralScan.nval i)).toNat := by
@@ -169,12 +168,12 @@ theorem valid (i : Fin 14) : Decode.isValidJumpDest Artifact.submissionArtifact.
   rw [hp] at h
   exact h
 
-theorem form (i : Fin 14) : ∀ instruction ∈ (template i).dropLast, RecognitionLift.Advances instruction :=
+theorem form (i : Fin 13) : ∀ instruction ∈ (template i).dropLast, RecognitionLift.Advances instruction :=
   RecognitionLift.advancesAll_sound _ (by fin_cases i <;> decide)
 end storeSite
 
 def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho.length ≤ 990)
-    (i : Fin 14) (hn : input.size = ReverseLiteralScan.nval i) :
+    (i : Fin 13) (hn : input.size = ReverseLiteralScan.nval i) :
     GasSteps (loaded input rho) (prepared input rho) := by
   have hac : (base input).activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
     simp [State.activeWordsAfterUInt256,base,initialState,Word.word_toNat_ofNat]
@@ -195,7 +194,7 @@ def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho
     (storeSite.form i) hr'
   exact gj
 
-def returnIndex : Fin 14 → Nat
+def returnIndex : Fin 13 → Nat
  | ⟨0, _⟩ => 4879
  | ⟨1, _⟩ => 4400
  | ⟨2, _⟩ => 3741
@@ -209,24 +208,23 @@ def returnIndex : Fin 14 → Nat
  | ⟨10, _⟩ => 4865
  | ⟨11, _⟩ => 5065
  | ⟨12, _⟩ => 4789
- | ⟨13, _⟩ => 5254
 
-def finishIndex (i : Fin 14) : Nat := returnIndex i + 1
+def finishIndex (i : Fin 13) : Nat := returnIndex i + 1
 
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
 
-theorem actual_slice (i : Fin 14) :
+theorem actual_slice (i : Fin 13) :
     (Artifact.submissionArtifact.instructions.drop (finishIndex i)).take template.length = template := by
   fin_cases i <;> rfl
 
-def site (i : Fin 14) : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
+def site (i : Fin 13) : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template (finishIndex i) (actual_slice i)
     (by change finishIndex i+template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; fin_cases i <;> decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc (i : Fin 14) : (site i).startPC = UInt256.ofNat (finishPC i) := by
+theorem site_pc (i : Fin 13) : (site i).startPC = UInt256.ofNat (finishPC i) := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC (finishIndex i)) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
 
@@ -234,7 +232,7 @@ theorem form : ∀ instruction ∈ template.dropLast, RecognitionLift.Advances i
   RecognitionLift.advancesAll_sound _ (by decide)
 end finishSite
 
-private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) (i : Fin 14) :
+private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) (i : Fin 13) :
     (atState (prepared input saved) (ReverseLiteralScan.returnPC i) rho).decodedOp = some .MSIZE := by
   have hd := Artifact.submissionArtifact.decodeAt_op_index (returnIndex i) .MSIZE
     (by fin_cases i <;> rfl) (by decide) trivial
@@ -243,7 +241,7 @@ private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) (i :
   change (UInt256.ofNat (ReverseLiteralScan.returnPC i)).toNat = Artifact.submissionArtifact.instructionPC (returnIndex i)
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
 
-def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.length ≤ 990) (i : Fin 14) :
+def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.length ≤ 990) (i : Fin 13) :
     GasSteps (atState (prepared input saved) (ReverseLiteralScan.returnPC i) rho) (output input rho i) := by
   have gs := Msize.step (size_decoded input saved rho i)
     (by change rho.length < 1024; omega) rfl deployAddress_not_precompile
@@ -271,10 +269,10 @@ def gasSteps_return (input : ByteArray) (saved rho : List UInt256) (hcap : rho.l
   rw [he] at gf
   exact gs'.trans gf
 
-@[simp] theorem output_halt (input : ByteArray) (rho : List UInt256) (i : Fin 14) :
+@[simp] theorem output_halt (input : ByteArray) (rho : List UInt256) (i : Fin 13) :
     (output input rho i).halt = .Returned := rfl
 
-@[simp] theorem output_callStack (input : ByteArray) (rho : List UInt256) (i : Fin 14) :
+@[simp] theorem output_callStack (input : ByteArray) (rho : List UInt256) (i : Fin 13) :
     (output input rho i).callStack = [] := rfl
 
 private theorem write_empty (b : ByteArray) : MachineState.writeBytes ByteArray.empty b 0 = b := by
@@ -304,7 +302,7 @@ theorem atState_prepared_digest (input : ByteArray) (rho : List UInt256)
     (atState (prepared input rho) pc stack).memory = RecognitionDigest.paddedDigest input.size :=
   prepared_digest input rho hn
 
-theorem output_spec (input : ByteArray) (rho : List UInt256) (i : Fin 14)
+theorem output_spec (input : ByteArray) (rho : List UInt256) (i : Fin 13)
     (hn : RecognitionAccumulator.Allowed input.size)
     (hz : J2Accumulator.resultAcc input input.size = 0) :
     (output input rho i).hReturn = spec input := by

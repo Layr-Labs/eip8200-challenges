@@ -92,9 +92,10 @@ private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemp
  GasSteps (PatternedScan.stS input 4694 []) t :=
  RecognitionLift.gasSteps_of_raw long376Site _ _ rfl rfl rfl deployAddress_not_precompile long376_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-private theorem selected_valid (input : ByteArray) (hn : RecognitionAccumulator.Allowed input.size) :
+private theorem selected_valid (input : ByteArray) (hn : RecognitionAccumulator.Allowed input.size)
+  (hne : input.size ≠ 1000) :
  Decode.isValidJumpDest submissionBytecode (source input).toNat = true := by
- obtain ⟨i,hi⟩ := ReverseLiteralScan.allowed_index input.size hn
+ obtain ⟨i,hi⟩ := ReverseLiteralScan.allowed_index input.size hn hne
  change Decode.isValidJumpDest submissionBytecode (DirectDigestRaw.selected 8191 input.size).toNat = true
  rw [← hi]
  exact ReverseSerializeReturn.storeSite.valid i
@@ -120,7 +121,7 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
     intro hz
     rw [UInt256.isZero,if_pos hz] at h
     exact (by decide : UInt256.ofNat 1 ≠ UInt256.ofNat 0) h
-   exact soundShort input _ (by rw [short_raw,if_pos hc,if_pos (selected_valid input hn)])
+   exact soundShort input _ (by rw [short_raw,if_pos hc,if_pos (selected_valid input hn _h1000)])
  · have hns : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by tauto
    have gs := soundShort input _ (by rw [short_raw,if_neg (short_false input hfit hns)])
    have hl : input.size = 256 ∨ input.size = 376 := by unfold RecognitionAccumulator.Allowed at hn; omega
@@ -135,7 +136,7 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
        unfold source
        rw [h]
        decide
-      simpa only [hp] using selected_valid input hn
+      simpa only [hp] using selected_valid input hn _h1000
      have gj := sound256 input (PatternedScan.stS input 7805 []) (by rw [long_raw,DirectGuard.size_eq_one input 256 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
      have he : PatternedScan.stS input 7805 [] = PatternedScan.patternedEntry input := by
       simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]; decide
@@ -148,7 +149,7 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
        unfold source
        rw [h]
        decide
-      simpa only [hp] using selected_valid input hn
+      simpa only [hp] using selected_valid input hn _h1000
      have gj := sound376 input (PatternedScan.stS input 6883 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
      have he : PatternedScan.stS input 6883 [] = PatternedScan.patternedEntry input := by
       simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]; decide

@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.ActualBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeFallback
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.GenericFramedCorrect
@@ -40,7 +41,7 @@ private def gasSteps_matched (input : ByteArray)
     GasSteps (initialState submissionBytecode input 0) (sizeMatched input) :=
   (EntryPrefilter.gasSteps_fall input hpass).trans
     ((sound sizePath (run_size_fall input hsize)).trans
-      (sound anchorPath (run_anchor_fall input href)))
+      (RetainedActual115.gasSteps_anchor_fall input href))
 
 def gasSteps_target :
     GasSteps (initialState submissionBytecode KnownInputData.targetInput 0)
@@ -96,12 +97,12 @@ private def gasSteps_repeat_miss (input : ByteArray)
 /-- Combine the common scanner contract with the entry dispatch and generic arm. -/
 theorem correct_of_recognition
     (scannerCorrect : ∀ (input : ByteArray), CalldataFits input →
-      RecognitionAccumulator.Allowed input.size →
+      RecognitionAccumulator.Allowed input.size → input.size ≠ 1000 →
       GasSteps (initialState submissionBytecode input 0) (PatternedScan.patternedEntry input) →
       ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
         Eval (initialState submissionBytecode input gas) (.returned (spec input)))
     (scanner1000Correct : ∀ (input : ByteArray), CalldataFits input → input.size = 1000 →
-      GasSteps (initialState submissionBytecode input 0) (PatternedScan.stS input 8158 []) →
+      GasSteps (initialState submissionBytecode input 0) ({(PatternedScan.stS input 8157 []) with stack := [MachineState.readWord input 0]}) →
       ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
         Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
     Correct submissionBytecode := by
@@ -119,7 +120,7 @@ theorem correct_of_recognition
         Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
     intro h1000 hguard
     by_cases hallowed : RecognitionAccumulator.Allowed input.size
-    · exact scannerCorrect input hfit hallowed
+    · exact scannerCorrect input hfit hallowed h1000
         (hguard.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed h1000))
     have harm : GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) :=
       hguard.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed h1000)
@@ -151,7 +152,7 @@ theorem correct_of_recognition
   · exact scanner1000Correct input hfit h1000
       ((EntryPrefilter.gasSteps_fall input hpass).trans
         ((sound sizePath (run_size_fall input h1000)).trans
-          (sound anchorPath (run_anchor_taken input href))))
+          (RetainedActual115.gasSteps_anchor_taken input href)))
   by_cases ht : input = KnownInputData.targetInput
   · subst input
     exact correct_target
