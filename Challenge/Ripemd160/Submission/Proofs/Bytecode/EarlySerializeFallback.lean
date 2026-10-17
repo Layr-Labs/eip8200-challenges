@@ -221,6 +221,32 @@ theorem run_copyPrefix_warmEmpty (input : ByteArray) (hfit : CalldataFits input)
     activeWords_absorb input.size hpos]
   rfl
 
+theorem run_copyPrefix_coldEmpty (input : ByteArray) (hfit : CalldataFits input)
+    (_hpos : 0 < input.size) :
+    DataStepper.runLocatedBlock copyPrefix ({initialState submissionBytecode input 0 with
+        pc := UInt256.ofNat 246, activeWords := UInt256.ofNat 0}) =
+      some (PaddingTrace.padCopied input) := by
+  obtain ⟨p0, p1, p2, p3, p4, p5, p6, p7⟩ := prefix_pcs
+  have hsize : input.size % 2 ^ 256 = input.size := Nat.mod_eq_of_lt
+    (Nat.lt_trans hfit (by norm_num))
+  have hsize' : input.size %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      input.size := hsize
+  have hm8 : UInt256.ofNat
+      450552876409790643671482431940419874915447411150352389258589821042463539455 =
+      DenseScheduleTemplate.mask8 := by decide
+  have hm16 : UInt256.ofNat
+      1766820105243087041267848467410591083712559083657179364930612997358944255 =
+      DenseScheduleTemplate.mask16 := by decide
+  simp [copyPrefix, Artifact.padEnterPath, Artifact.padCopyPath,
+    DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
+    PaddingTrace.padCopied, PaddingTrace.padCopyDone,
+    PaddingTrace.padLengthReady, PaddingTrace.padEntry, Main.initializedState,
+    Execution.mainStart, Execution.atPC, initialState,
+    p0, p1, p2, p3, p4, p5, p6, p7, hsize, hsize', hm8, hm16,
+    Padding.messageOffset, State.activeWordsAfterUInt256]
+  rfl
+
 /-- Scanner misses with a nonempty input rejoin the ordinary framed padding
 state, preserving any lower stack of at most twenty words. -/
 def gasSteps (input : ByteArray) (hfit : CalldataFits input) (hpos : 0 < input.size)

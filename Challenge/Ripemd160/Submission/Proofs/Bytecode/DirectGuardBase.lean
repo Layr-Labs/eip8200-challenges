@@ -69,21 +69,20 @@ def entryDest : Located := opAt 154 .JUMPDEST
 /-- The reference word and the tail word seed the accumulator. -/
 def checkEntryPath : List Located :=
   [pushAt 19 0 0,
-   opAt 20 .MLOAD,
-   opAt 21 .CALLDATALOAD,
-   pushAt 22 2 968,
-   opAt 23 .CALLDATALOAD,
-   opAt 24 (.Dup ⟨1, by decide⟩),
-   opAt 25 .EQ]
+   opAt 20 .CALLDATALOAD,
+   pushAt 21 3 968,
+   opAt 22 .CALLDATALOAD,
+   opAt 23 (.Dup ⟨1, by decide⟩),
+   opAt 24 .EQ]
 
 /-- The matching edge drops the comparison accumulator; no legacy zero is live. -/
 def tailPath : List Located :=
-  [pushAt 5411 3 4706,
-   opAt 5412 .JUMPI]
+  [pushAt 5410 3 4706,
+   opAt 5411 .JUMPI]
 
 /-- Off the measured path: the divert lands on the generic arm's entry. -/
 def fallbackPath : List Located :=
-  [pushAt 5413 0 0, pushAt 5414 1 245, opAt 5415 .JUMP, entryDest]
+  [pushAt 5412 0 0, pushAt 5413 1 245, opAt 5414 .JUMP, entryDest]
 
 def returnPath : List Located :=
   [pushAt 3458 20 972889429405991776604892044862621566948497025487,
@@ -118,34 +117,38 @@ attribute [simp] Challenge.Ripemd160.initialState_stack
 
 def sizeMatched (input : ByteArray) : State := atPC input 33
 
-def spentCells (input : ByteArray) : List UInt256 :=
-  [UInt256.ofNat 0, referenceWord input]
+def spentCells (_input : ByteArray) : List UInt256 :=
+  []
 
-/-- Only the generic miss adapter needs the legacy zero counter. -/
-def returnCells (input : ByteArray) : List UInt256 :=
-  [referenceWord input]
+/-- The terminal comparison consumes the reference; no repeated-route suffix remains. -/
+def returnCells (_input : ByteArray) : List UInt256 :=
+  []
+
+/-- Only the miss cleanup PUSH0 survives into the generic backend, not the reference word. -/
+def genericMissCells (input : ByteArray) : List UInt256 :=
+  UInt256.ofNat 0 :: spentCells input
 
 def fallbackState (input : ByteArray) : State :=
-  StackTail.append ({ atPC input 246 with activeWords := UInt256.ofNat 1 }) (spentCells input)
+  StackTail.append ({ atPC input 246 with activeWords := UInt256.ofNat 0 }) (genericMissCells input)
 
-/-- Counter-free scanner entry; the legacy loop counter is restored only on a miss. -/
+/-- Counter-free scanner entry; terminal MUL consumes both the accumulator and reference. -/
 def loopState (input : ByteArray) (n : Nat) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 9429
-    activeWords := UInt256.ofNat 1
+    activeWords := UInt256.ofNat 0
     stack := [equalityAcc input n, referenceWord input] }
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9633
-    activeWords := UInt256.ofNat 1
-    stack := [equalityAcc input 10, referenceWord input] }
+    pc := UInt256.ofNat 9632
+    activeWords := UInt256.ofNat 0
+    stack := [equalityAcc input 10] }
 
-/-- The equality-accumulator branch at PC9637 jumps to answer `JUMPDEST` 4706. -/
+/-- The equality-accumulator branch at PC9636 jumps to answer `JUMPDEST` 4706. -/
 def returnHopState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 4706
-    activeWords := UInt256.ofNat 1
+    activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
 def returnHopPath : List Located :=
@@ -154,13 +157,13 @@ def returnHopPath : List Located :=
 def returnEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 4707
-    activeWords := UInt256.ofNat 1
+    activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
 def tailDivertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9638
-    activeWords := UInt256.ofNat 1
+    pc := UInt256.ofNat 9637
+    activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
 def storeWord (memory : ByteArray) (address : Nat) (word : UInt256) : ByteArray :=
@@ -224,15 +227,15 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_20 : Artifact.submissionArtifact.instructionPC 20 = 34 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_21 : Artifact.submissionArtifact.instructionPC 22 = 36 := by
+@[simp] theorem pc_direct_21 : Artifact.submissionArtifact.instructionPC 22 = 39 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_22 : Artifact.submissionArtifact.instructionPC 23 = 39 := by
+@[simp] theorem pc_direct_22 : Artifact.submissionArtifact.instructionPC 23 = 40 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_23 : Artifact.submissionArtifact.instructionPC 24 = 40 := by
+@[simp] theorem pc_direct_23 : Artifact.submissionArtifact.instructionPC 24 = 41 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_24 : Artifact.submissionArtifact.instructionPC 25 = 41 := by
+@[simp] theorem pc_direct_24 : Artifact.submissionArtifact.instructionPC 25 = 42 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_25 : Artifact.submissionArtifact.instructionPC 26 = 42 := by
+@[simp] theorem pc_direct_25 : Artifact.submissionArtifact.instructionPC 26 = 45 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_26 : Artifact.submissionArtifact.instructionPC 125 = 210 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

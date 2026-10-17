@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardSize
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.CounterFreeSeedRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.ColdWideSeedRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
@@ -15,7 +15,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
-private def seed := CounterFreeSeedRaw.template
+private def seed := ColdWideSeedRaw.template
 private theorem seed_slice :
     (Artifact.submissionArtifact.instructions.drop 19).take seed.length = seed := by rfl
 private theorem seed_pc : Artifact.submissionArtifact.instructionPC 19 = 33 := by
@@ -39,14 +39,21 @@ private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 33 := by
 
 private theorem run_seed (input : ByteArray) :
     runInstrSeq seed (sizeMatched input) = some (loopState input 0) := by
-  simpa only [seed, sizeMatched, atPC, loopState, List.append_nil,
+  -- The cold seed preserves the shared state; collapse its redundant zero-memory
+  -- update before simplifying projections, without unfolding the bytecode.
+  have hcold : loopState input 0 =
+      { initialState submissionBytecode input 0 with
+        pc := UInt256.ofNat 9429
+        stack := [equalityAcc input 0, referenceWord input] } := by rfl
+  rw [hcold]
+  simpa only [seed, sizeMatched, atPC, List.append_nil,
     Challenge.Ripemd160.initialState_calldata, Challenge.Ripemd160.initialState_stack,
     Word.literal_eq_ofNat] using
-    CounterFreeSeedRaw.run (initialState submissionBytecode input 0)
-      (UInt256.ofNat 33) [] (by decide) rfl rfl rfl
+    ColdWideSeedRaw.run (initialState submissionBytecode input 0)
+      (UInt256.ofNat 33) [] (by decide) rfl
       Artifact.validJumpDest_9429
 
-/-- Warm memory, form the counter-free equality seed, and jump to the scanner. -/
+/-- Without expanding memory, form the counter-free equality seed, and jump to the scanner. -/
 def gasSteps_checkEntry (input : ByteArray) :
     GasSteps (sizeMatched input) (loopState input 0) :=
   RecognitionLift.gasSteps_of_raw seed_site _ _ (by rfl) (by rfl) (by rfl)

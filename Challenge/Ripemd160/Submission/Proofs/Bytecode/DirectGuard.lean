@@ -27,9 +27,10 @@ private def sound (path : List Located) {s t : State}
   Challenge.EvmProof.DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     path hcode hfork h hrun hnp
 
-private def gasSteps_loop (input : ByteArray) :
+private def gasSteps_loop (input : ByteArray)
+    (href : referenceWord input = KnownInputData.fullWord) :
     GasSteps (loopState input 0) (loopExitState input) := by
-  exact gasSteps_unrolled_loop input
+  exact gasSteps_unrolled_loop input href
 
 /-- A 1000-byte input whose first word is the repeated `0x61` word reaches the
 seed block. -/
@@ -50,7 +51,7 @@ def gasSteps_target :
   (gasSteps_matched KnownInputData.targetInput
       (EntryPrefilter.condition_of_fullWord _ href) KnownInputData.targetInput_size href).trans
     ((gasSteps_checkEntry KnownInputData.targetInput).trans
-      ((gasSteps_loop KnownInputData.targetInput).trans
+      ((gasSteps_loop KnownInputData.targetInput href).trans
         ((sound tailPath run_tail_target).trans
           ((sound returnHopPath (run_return_hop KnownInputData.targetInput)).trans
             (gasSteps_direct_return KnownInputData.targetInput)))))
@@ -88,7 +89,7 @@ private def gasSteps_repeat_miss (input : ByteArray)
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
   (gasSteps_matched input hpass hsize href).trans
     ((gasSteps_checkEntry input).trans
-      ((gasSteps_loop input).trans
+      ((gasSteps_loop input href).trans
         ((sound tailPath (run_tail_divert input hsize href hne)).trans
           (sound fallbackPath (run_fallback_clear input)))))
 
@@ -157,20 +158,20 @@ theorem correct_of_recognition
   · have hpos : 0 < input.size := by omega
     have gp := StackTail.gasSteps EarlySerializeFallback.copyPrefix
       (s := { initialState submissionBytecode input 0 with
-        pc := UInt256.ofNat 246, activeWords := UInt256.ofNat 1 })
-      (t := PaddingTrace.padCopied input) (spentCells input)
-      (by change 0 + (spentCells input).length + 8 < 1024; simp [spentCells])
+        pc := UInt256.ofNat 246, activeWords := UInt256.ofNat 0 })
+      (t := PaddingTrace.padCopied input) (genericMissCells input)
+      (by change 0 + (genericMissCells input).length + 8 < 1024; simp [genericMissCells, spentCells])
       (by
         exact
-          EarlySerializeFallback.run_copyPrefix_warmEmpty input hfit hpos)
+          EarlySerializeFallback.run_copyPrefix_coldEmpty input hfit hpos)
       rfl rfl rfl deployAddress_not_precompile
     have gp' : GasSteps (fallbackState input)
-        (StackTail.append (PaddingTrace.padCopied input) (spentCells input)) := by
+        (StackTail.append (PaddingTrace.padCopied input) (genericMissCells input)) := by
       simpa only [fallbackState, atPC] using gp
-    exact GenericFramedCorrect.correct input hfit hpos (spentCells input)
-      (by simp [spentCells])
+    exact GenericFramedCorrect.correct input hfit hpos (genericMissCells input)
+      (by simp [genericMissCells, spentCells])
       ((gasSteps_repeat_miss input hpass h1000 href ht).trans
-        (gp'.trans (PaddingTail.gasSteps_push input (spentCells input) (by simp [spentCells]))))
+        (gp'.trans (PaddingTail.gasSteps_push input (genericMissCells input) (by simp [genericMissCells, spentCells]))))
 
 #print axioms correct_of_recognition
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
