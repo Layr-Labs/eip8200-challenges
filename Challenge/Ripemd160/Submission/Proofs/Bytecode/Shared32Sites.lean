@@ -205,7 +205,7 @@ def lift (s t : State) (e : Env s) (stack : List UInt256)
 end table
 
 namespace guard
-abbrev template : List Instr := [ .push ⟨3, by decide⟩ (UInt256.ofNat 497), .op .JUMPI ]
+abbrev template : List Instr := [ .push ⟨3, by decide⟩ (UInt256.ofNat 9667), .op .JUMPI ]
 theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 91).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
   StackSiteBuilder.ofSlice template 91 actual_slice

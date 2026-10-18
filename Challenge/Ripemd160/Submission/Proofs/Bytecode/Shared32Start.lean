@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Trace
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Hook32Dispatch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Alignment
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Spec
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTrace
@@ -75,7 +76,10 @@ def gasSteps_align (input : ByteArray) (h32 : input.size = 32) :
     (by rw [PaddingTrace.initialFrame_length]; decide) h32
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246))
+    (hmiss0 : MachineState.readWord input 0 ≠ Hook32.word0)
+    (hmiss1 : MachineState.readWord input 0 ≠ Hook32.word1)
+    (hmiss2 : MachineState.readWord input 0 ≠ Hook32.word2) :
     GasSteps (initialState submissionBytecode input 0) (atState (tableState input) 824 bodyFrame) := by
   have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
   let s := PaddingTrace.padCopied input
@@ -95,6 +99,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) [] (by decide) hactive
     (by decide) h32 rfl
+    (by change MachineState.readWord input 0 ≠ Hook32.word0; exact hmiss0) (by change MachineState.readWord input 0 ≠ Hook32.word1; exact hmiss1) (by change MachineState.readWord input 0 ≠ Hook32.word2; exact hmiss2)
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
@@ -118,6 +123,62 @@ theorem table_ready (input : ByteArray) (h32 : input.size = 32) :
   exact StaggerMessage.ready_dual0 (copiedMemory input) (Shared32Table.words (copiedMemory input)) _
     (Shared32Table.words_clean (copiedMemory input) 6 (by decide) (by decide))
     (Shared32Spec.ready_spec input h32)
+
+
+/-- The hook has written only sparse scheduling memory; it leaves all opaque
+stack suffix cells intact. -/
+def hookBase (input : ByteArray) : State :=
+  { PaddingTrace.padCopied input with
+    memory := sparseMemory (PaddingTrace.padCopied input).memory }
+
+def hookStack (rho : List UInt256) : List UInt256 :=
+  Pair13Endian.stk factorPlusWord (UInt256.ofNat 4294967295)
+    (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
+    (fusedCoefficientWord 0 2)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho
+
+/-- Common prefix before the three comparisons, for an arbitrary bounded suffix. -/
+def gasSteps_before_hook (input : ByteArray) (h32 : input.size = 32)
+    (rho : List UInt256) (hcap : rho.length ≤ 20) :
+    GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
+      (atState (hookBase input) 160 ((UInt256.ofNat 1) :: hookStack rho)) := by
+  let s := PaddingTrace.padCopied input
+  have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
+  have hframe : PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by
+    rw [entry_frame_eq input h32]
+  have ga : GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
+      (atState s 143 (entryFrame ++ rho)) := by
+    have g := Shared32Alignment.gasSteps s e (PaddingTrace.initialFrame input ++ rho)
+      (by rw [List.length_append, PaddingTrace.initialFrame_length]; omega) h32
+    simpa only [PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using g
+  have gb := Shared32Trace.gasSteps_before_hook s e factorPlusWord (UInt256.ofNat 4294967295)
+    (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
+    (fusedCoefficientWord 0 2)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega)
+    (copied_active input h32) (by decide) h32 rfl
+  exact ga.trans gb
+
+/-- Close all literal hits before delegating the miss to the old compressor. -/
+theorem correct_of_miss (input : ByteArray) (h32 : input.size = 32)
+    (rho : List UInt256) (hcap : rho.length ≤ 20)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0)
+      (StackTail.append (PaddingTrace.padFramed input) rho))
+    (miss : MachineState.readWord input 0 ≠ Hook32.word0 →
+      MachineState.readWord input 0 ≠ Hook32.word1 →
+      MachineState.readWord input 0 ≠ Hook32.word2 →
+      ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+        Eval (initialState submissionBytecode input gas) (.returned (spec input))) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  have e : Env (hookBase input) := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
+  apply Hook32Dispatch.correct input h32 (hookBase input) e (hookStack rho)
+    (by simp only [hookStack, Pair13Endian.stk, List.length_cons]; omega) rfl rfl
+    (entryPrefix.trans (gasSteps_before_hook input h32 rho hcap)) miss
+
 
 #print axioms gasSteps
 #print axioms table_ready

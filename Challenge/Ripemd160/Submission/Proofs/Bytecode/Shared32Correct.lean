@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTail
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Core
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Start
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.GasCost
@@ -41,11 +42,14 @@ def resultState (input : ByteArray) : State :=
   Shared32Core.resultState (Shared32Start.tableState input)
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246))
+    (hmiss0 : MachineState.readWord input 0 ≠ Hook32.word0)
+    (hmiss1 : MachineState.readWord input 0 ≠ Hook32.word1)
+    (hmiss2 : MachineState.readWord input 0 ≠ Hook32.word2) :
     GasSteps (initialState submissionBytecode input 0) (resultState input) := by
   let s := Shared32Start.tableState input
   have e : Shared32Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
-  have gs := Shared32Start.gasSteps input h32 entryPrefix
+  have gs := Shared32Start.gasSteps input h32 entryPrefix hmiss0 hmiss1 hmiss2
   have gc := Shared32Core.gasSteps s e input rfl h32 (Shared32Start.table_active input)
   exact gs.trans gc
 
@@ -54,7 +58,15 @@ theorem correct (input : ByteArray) (h32 : input.size = 32)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (Execution.atPC input 246)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  exact eval_of_initial_returned input (resultState input) (gasSteps input h32 entryPrefix)
+  have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
+  have ep : GasSteps (initialState submissionBytecode input 0)
+      (StackTail.append (Execution.atPC input 246) []) := by
+    simpa only [StackTail.append, List.append_nil] using entryPrefix
+  apply Shared32Start.correct_of_miss input h32 [] (by simp)
+    (ep.trans (PaddingTail.gasSteps_prefix input hfit [] (by simp)))
+  intro hmiss0 hmiss1 hmiss2
+  exact eval_of_initial_returned input (resultState input)
+    (gasSteps input h32 entryPrefix hmiss0 hmiss1 hmiss2)
     (Shared32Core.resultState_halt _) (by rfl)
     (Shared32Core.returned_spec _ input h32 (Shared32Start.table_ready input h32))
 

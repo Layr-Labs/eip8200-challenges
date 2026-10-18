@@ -126,7 +126,10 @@ section Shared32
 open Shared32Scratch Shared32Sites Paired144WordRound Shared32Start
 
 private def gasSteps_shared32 (input : ByteArray) (h32 : input.size = 32)
-    (rho : List UInt256) (hcap : rho.length ≤ 20) :
+    (rho : List UInt256) (hcap : rho.length ≤ 20)
+    (hmiss0 : MachineState.readWord input 0 ≠ Hook32.word0)
+    (hmiss1 : MachineState.readWord input 0 ≠ Hook32.word1)
+    (hmiss2 : MachineState.readWord input 0 ≠ Hook32.word2) :
     GasSteps (StackTail.append (PaddingTrace.padFramed input) rho)
       (atState (tableState input) 824 (bodyFrame ++ rho)) := by
   let s := PaddingTrace.padCopied input
@@ -145,6 +148,7 @@ private def gasSteps_shared32 (input : ByteArray) (h32 : input.size = 32)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
     (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega) hactive
     (by decide) h32 rfl
+    (by change MachineState.readWord input 0 ≠ Hook32.word0; exact hmiss0) (by change MachineState.readWord input 0 ≠ Hook32.word1; exact hmiss1) (by change MachineState.readWord input 0 ≠ Hook32.word2; exact hmiss2)
   have g5 := Shared32Trace.gasSteps_table s e factorPlusWord
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
     (fusedCoefficientWord 0 2)
@@ -165,9 +169,11 @@ private theorem correct_shared32 (input : ByteArray) (h32 : input.size = 32)
       (StackTail.append (PaddingTrace.padFramed input) rho)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  apply Shared32Start.correct_of_miss input h32 rho hcap entryPrefix
+  intro hmiss0 hmiss1 hmiss2
   let s := Shared32Start.tableState input
   have e : Shared32Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
-  have gs := gasSteps_shared32 input h32 rho hcap
+  have gs := gasSteps_shared32 input h32 rho hcap hmiss0 hmiss1 hmiss2
   have gc := Shared32TailCorrect.gasSteps_core s e input rfl h32 (Shared32Start.table_active input) rho hcap
   have trace := entryPrefix.trans (gs.trans gc)
   apply Shared32Correct.eval_of_initial_returned input _ trace rfl rfl

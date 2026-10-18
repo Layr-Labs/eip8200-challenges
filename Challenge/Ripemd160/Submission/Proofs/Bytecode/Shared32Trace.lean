@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Sites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Hook32Gas
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -13,7 +14,7 @@ open Shared32Scratch Shared32Sites
 /-- The 32-byte block, entered from the alignment guard at 143: the continuation slot becomes the
 output entry 4733, the sentinel `0x80` and the length byte (the low byte of the resident
 coefficient word in slot 4) are stored, then the flag is consumed at160 and joins the lower half at497. -/
-def gasSteps_sparse (s : State) (e : Env s)
+def gasSteps_before_hook (s : State) (e : Env s)
     (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
     (hactive : s.activeWords = UInt256.ofNat 34)
@@ -21,8 +22,9 @@ def gasSteps_sparse (s : State) (e : Env s)
     (_h32 : s.executionEnv.calldata.size = 32) (hlim : lim = UInt256.ofNat 32) :
     GasSteps
       (atState s 143 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
-      (atState {s with memory := sparseMemory s.memory} 498
-        (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho)) := by
+      (atState {s with memory := sparseMemory s.memory} 160
+      ((UInt256.ofNat 1) ::
+        stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho)) := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho
   let F0 := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
@@ -51,17 +53,34 @@ def gasSteps_sparse (s : State) (e : Env s)
         DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
       (by simp only [List.length_cons]; omega) e.run hactive hbyte hone
     simpa only [sparse.template, sparse.end_pc, atState, sM, F0, stk] using h
-  have g5 : GasSteps (atState sM 160 (UInt256.ofNat 1 :: F0)) (atState sM 497 F0) := by
-    apply guard.lift sM (atState sM 497 F0) eM (UInt256.ofNat 1 :: F0)
-    have hc (n : Nat) (hn : n ≤ 3) : F0.length + n < 1024 := by omega
-    have hv := valid_lower sM eM
-    simp (config := { maxSteps := 100000 }) (discharger := omega) [guard.template, atState, runInstrSeq,
-      DataStepper.runInstr, eM.run, hc, List.length_cons, Nat.add_assoc, UInt256.isTrue, hv]
+  exact g0.trans (g1.trans (g2.trans g4))
+
+def gasSteps_sparse (s : State) (e : Env s)
+    (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
+    (rho : List UInt256) (hstack : rho.length ≤ 880)
+    (hactive : s.activeWords = UInt256.ofNat 34)
+    (hone : UInt8.ofNat (a4.toNat % 256) = 1)
+    (_h32 : s.executionEnv.calldata.size = 32) (hlim : lim = UInt256.ofNat 32)
+    (hmiss0 : MachineState.readWord s.executionEnv.calldata 0 ≠ Hook32.word0)
+    (hmiss1 : MachineState.readWord s.executionEnv.calldata 0 ≠ Hook32.word1)
+    (hmiss2 : MachineState.readWord s.executionEnv.calldata 0 ≠ Hook32.word2) :
+    GasSteps
+      (atState s 143 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
+      (atState {s with memory := sparseMemory s.memory} 498
+        (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho)) := by
+  let F0 := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho
+  have hF0 : F0.length ≤ 900 := by simp only [F0, stk, List.length_cons]; omega
+  let sM : State := {s with memory := sparseMemory s.memory}
+  have eM : Env sM := ⟨e.code, e.fork, e.run, e.np⟩
+  have g4 := gasSteps_before_hook s e ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim rho
+    hstack hactive hone _h32 hlim
+  have g5 := Hook32.gas_from_160 sM eM F0 hmiss0 hmiss1 hmiss2 (by omega)
   have g6 : GasSteps (atState sM 497 F0) (atState sM 498 F0) := by
     apply lower.lift sM (atState sM 498 F0) eM F0
     simpa only [lower.template, atState, show UInt256.ofNat 497 + UInt256.ofNat 1 = UInt256.ofNat 498 by decide] using
       PadJump.run_merge sM (UInt256.ofNat 497) F0 (by omega) e.run
-  exact g0.trans (g1.trans (g2.trans (g4.trans (g5.trans g6))))
+  exact g4.trans (g5.trans g6)
+
 
 def gasSteps_table (s : State) (e : Env s)
     (ret a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)

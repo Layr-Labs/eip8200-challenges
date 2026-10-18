@@ -17,8 +17,8 @@ def artifact : DataProgramArtifact where
   instructions := instructions
   data := []
   assembly_eq := exact_assembly
-theorem candidate_size : candidateCode.size = 9667 := by
-  change candidateBytes.toArray.size = 9667
+theorem candidate_size : candidateCode.size = 9876 := by
+  change candidateBytes.toArray.size = 9876
   simp only [List.size_toArray, candidateBytes, List.length_append, prefix0_bytes_count, prefix1_bytes_count, prefix2_bytes_count, prefix3_bytes_count, prefix4_bytes_count, prefix5_bytes_count, prefix6_bytes_count, prefix7_bytes_count, prefix8_bytes_count, prefix9_bytes_count, prefix10_bytes_count, prefix11_bytes_count, prefix12_bytes_count, prefix13_bytes_count, prefix14_bytes_count, prefix15_bytes_count, prefix16_bytes_count, prefix17_bytes_count, prefix18_bytes_count, prefix19_bytes_count, literal0_bytes_count, suffix0_bytes_count]
 #print axioms exact_assembly
 #print axioms candidate_size
