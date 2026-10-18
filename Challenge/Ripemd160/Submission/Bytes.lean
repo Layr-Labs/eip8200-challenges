@@ -698,19 +698,15 @@ abbrev submissionTailPart36 : ByteArray := ByteArray.mk #[
 @[simp] theorem submissionTailPart36_size : submissionTailPart36.size = 18 := by rfl
 
 abbrev submissionUnrolledTail : ByteArray := ByteArray.mk #[
-  91, 144, 91, 97, 3, 160, 53, 130, 20, 22, 97, 3, 128, 53, 130, 20, 22, 97, 3, 192, 53, 130, 20, 22, 97, 3, 64, 53, 130, 20, 22, 97, 3, 32, 53, 130, 20, 22, 97, 3, 96, 53, 130, 20, 22, 97, 2, 224, 53, 130,
-  20, 22, 97, 2, 192, 53, 130, 20, 22, 97, 3, 0, 53, 130, 20, 22, 97, 2, 128, 53, 130, 20, 22, 97, 2, 96, 53, 130, 20, 22, 97, 2, 160, 53, 130, 20, 22, 97, 2, 32, 53, 130, 20, 22, 97, 2, 0, 53, 130, 20,
-  22, 97, 2, 64, 53, 130, 20, 22, 97, 1, 192, 53, 130, 20, 22, 97, 1, 160, 53, 130, 20, 22, 97, 1, 224, 53, 130, 20, 22, 97, 1, 96, 53, 130, 20, 22, 97, 1, 64, 53, 130, 20, 22, 97, 1, 128, 53, 130, 20, 22,
-  97, 1, 0, 53, 130, 20, 22, 96, 224, 53, 130, 20, 22, 97, 1, 32, 53, 130, 20, 22, 96, 160, 53, 130, 20, 22, 96, 128, 53, 130, 20, 22, 96, 192, 53, 130, 20, 22, 96, 64, 53, 130, 20, 22, 96, 32, 53, 130, 20, 22,
-  96, 96, 53, 2, 20, 98, 0, 18, 98, 87, 95, 96, 245, 86, 0
+  91, 144, 91, 97, 3, 160, 53, 130, 20, 22, 97, 3, 128, 53, 130, 20, 22, 97, 3, 192, 53, 130, 20, 22, 97, 3, 64, 53, 130, 20, 22, 97, 3, 32, 53, 130, 20, 22, 97, 3, 96, 53, 130, 20, 22, 97, 2, 224, 53, 130, 20, 22, 97, 2, 192, 53, 130, 20, 22, 97, 3, 0, 53, 130, 20, 22, 97, 2, 128, 53, 130, 20, 22, 97, 2, 96, 53, 130, 20, 22, 97, 2, 160, 53, 130, 20, 22, 97, 2, 32, 53, 130, 20, 22, 97, 2, 0, 53, 130, 20, 22, 97, 2, 64, 53, 130, 20, 22, 97, 1, 192, 53, 130, 20, 22, 97, 1, 160, 53, 130, 20, 22, 97, 1, 224, 53, 130, 20, 22, 97, 1, 96, 53, 130, 20, 22, 97, 1, 64, 53, 130, 20, 22, 97, 1, 128, 53, 130, 20, 22, 97, 1, 0, 53, 130, 20, 22, 96, 224, 53, 130, 20, 22, 97, 1, 32, 53, 130, 20, 22, 96, 160, 53, 130, 20, 22, 96, 128, 53, 130, 20, 22, 96, 192, 53, 130, 20, 22, 96, 64, 53, 130, 20, 22, 96, 32, 53, 130, 20, 22, 96, 96, 53, 2, 24, 97, 37, 190, 87, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16, 243, 129, 233, 207, 95, 82, 89, 95, 243, 91, 95, 96, 245, 86
 ]
 
-@[simp] theorem submissionUnrolledTail_size : submissionUnrolledTail.size = 215 := by rfl
+@[simp] theorem submissionUnrolledTail_size : submissionUnrolledTail.size = 240 := by rfl
 
 abbrev submissionByteChunk19 : ByteArray :=
   submissionTailPart0 ++ (submissionTailPart1 ++ (submissionTailPart2 ++ (submissionTailPart3 ++ (submissionTailPart4 ++ (submissionTailPart5 ++ (submissionTailPart6 ++ (submissionTailPart7 ++ (submissionTailPart8 ++ (submissionTailPart9 ++ (submissionTailPart10 ++ (submissionTailPart11 ++ (submissionTailPart12 ++ (submissionTailPart13 ++ (submissionTailPart14 ++ (submissionTailPart15 ++ (submissionTailPart16 ++ (submissionTailPart17 ++ (submissionTailPart18 ++ (submissionTailPart19 ++ (submissionTailPart20 ++ (submissionTailPart21 ++ (submissionTailPart22 ++ (submissionTailPart23 ++ (submissionTailPart24 ++ (submissionTailPart25 ++ (submissionTailPart26 ++ (submissionTailPart27 ++ (submissionTailPart28 ++ (submissionTailPart29 ++ (submissionTailPart30 ++ (submissionTailPart31 ++ (submissionTailPart32 ++ (submissionTailPart33 ++ (submissionTailPart34 ++ (submissionTailPart35 ++ (submissionTailPart36)))))))))))))))))))))))))))))))))))) ++ submissionUnrolledTail
 
-@[simp] theorem submissionByteChunk19_size : submissionByteChunk19.size = 4841 := by
+@[simp] theorem submissionByteChunk19_size : submissionByteChunk19.size = 4866 := by
   rfl
 
 abbrev submissionBytes : ByteArray :=
@@ -736,7 +732,7 @@ abbrev submissionBytes : ByteArray :=
  ++ submissionByteChunk19
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytes_size : submissionBytes.size = 9642 := by
+@[simp] theorem referenceBytes_size : submissionBytes.size = 9667 := by
   simp [submissionBytes]
 
 set_option maxRecDepth 100000 in

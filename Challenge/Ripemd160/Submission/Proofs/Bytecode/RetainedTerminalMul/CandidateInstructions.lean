@@ -44,15 +44,15 @@ theorem literal_count : literalInstructions.length = 161 := by
 
 
 def suffixInstructions : List Instr := suffix0
-theorem suffix_count : suffixInstructions.length = 167 := by
+theorem suffix_count : suffixInstructions.length = 173 := by
   simp only [suffixInstructions, List.length_append, suffix0_count]
 
 
-/-- All 5416 typed instructions decoded from the supplied iter107 image.
+/-- All 5422 typed instructions decoded from the supplied iter107 image.
 This is NOT the installed root Artifact and carries no whole-image DataCert. -/
 def instructions : List Instr := prefixInstructions ++ literalInstructions ++ suffixInstructions
 
-theorem instruction_count : instructions.length = 5416 := by
+theorem instruction_count : instructions.length = 5422 := by
   simp only [instructions, List.length_append, prefix_count, literal_count, suffix_count]
 
 /-- Exact candidate instruction-vector slice, not just an assembly byte match. -/

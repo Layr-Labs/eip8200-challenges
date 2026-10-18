@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalXorRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RepeatedByteWord
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ExactGuardSpec
@@ -76,21 +77,21 @@ def checkEntryPath : List Located :=
 
 /-- The matching edge drops the comparison accumulator; no legacy zero is live. -/
 def tailPath : List Located :=
-  [pushAt 5410 3 4706,
+  [pushAt 5410 2 9662,
    opAt 5411 .JUMPI]
 
 /-- Off the measured path: the divert lands on the generic arm's entry. -/
 def fallbackPath : List Located :=
-  [pushAt 5412 0 0, pushAt 5413 1 245, opAt 5414 .JUMP, entryDest]
+  [opAt 5418 .JUMPDEST, pushAt 5419 0 0, pushAt 5420 1 245, opAt 5421 .JUMP, entryDest]
 
 def returnPath : List Located :=
-  [pushAt 3458 20 972889429405991776604892044862621566948497025487,
-   pushAt 3459 0 0,
-   opAt 3460 .MSTORE]
+  [pushAt 5412 20 972889429405991776604892044862621566948497025487,
+   pushAt 5413 0 0,
+   opAt 5414 .MSTORE]
 
 def returnFinishPath : List Located :=
-  [pushAt 3462 0 0,
-   opAt 3463 .RETURN]
+  [pushAt 5416 0 0,
+   opAt 5417 .RETURN]
 
 def atPC (input : ByteArray) (pc : Nat) : State :=
   { initialState submissionBytecode input 0 with pc := UInt256.ofNat pc }
@@ -142,27 +143,26 @@ def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 9632
     activeWords := UInt256.ofNat 0
-    stack := [equalityAcc input 10] }
+    stack := [TerminalXorRaw.mismatch input] }
 
 /-- The equality-accumulator branch at PC9636 jumps to answer `JUMPDEST` 4706. -/
 def returnHopState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4706
+    pc := UInt256.ofNat 9636
     activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
-def returnHopPath : List Located :=
-  [opAt 3457 .JUMPDEST]
+def returnHopPath : List Located := []
 
 def returnEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4707
+    pc := UInt256.ofNat 9636
     activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
 def tailDivertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9637
+    pc := UInt256.ofNat 9662
     activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
@@ -174,7 +174,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4732
+    pc := UInt256.ofNat 9661
     stack := returnCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -183,14 +183,14 @@ def returnedState (input : ByteArray) : State :=
 
 def storedReturnState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4730
+    pc := UInt256.ofNat 9659
     stack := returnCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedReturnState (input : ByteArray) : State :=
   { storedReturnState input with
-    pc := UInt256.ofNat 4731
+    pc := UInt256.ofNat 9660
     stack := UInt256.ofNat 32 :: returnCells input }
 
 abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock

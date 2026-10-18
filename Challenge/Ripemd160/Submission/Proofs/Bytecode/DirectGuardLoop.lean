@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardEarly
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalMulRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalXorRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
@@ -12,7 +12,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
-private def scanner := TerminalMulRaw.template
+private def scanner := TerminalXorRaw.template
 private theorem scanner_slice :
     (Artifact.submissionArtifact.instructions.drop 5260).take scanner.length = scanner := by
   rfl
@@ -46,7 +46,7 @@ private theorem run_scanner (input : ByteArray)
     runInstrSeq scanner (scannerEntry input) = some (loopExitState input) := by
   simpa only [scanner, scannerEntry, loopExitState, List.append_nil,
     Challenge.Ripemd160.initialState_calldata, Word.literal_eq_ofNat] using
-    TerminalMulRaw.run_equalityAcc
+    TerminalXorRaw.run_equalityAcc
       ({ initialState submissionBytecode input 0 with activeWords := UInt256.ofNat 0 })
       [] (by decide) rfl href
 

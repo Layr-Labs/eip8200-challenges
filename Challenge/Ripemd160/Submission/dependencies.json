@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "5b7290ad-620c-4eed-9e2c-1a12a8ca2bcb",
+    "rationale": "Direct promoted 640024 predecessor. All generic compressor, recognizer, and universal proof material is inherited except the terminal repeated-word XOR branch and fall-through serializer. Original author newjordan.",
+    "evidence": "Promoted commit 230c02c986feaf1455cc714b5f810a21e2ec4278, runtime SHA256 5443a71e40bfcd86c097e9ffa5cbb674f4f54bb2036cdc444be7a599b55add71. Candidate bf2bdfe62cb61407e4ae839f28ad20a63d9c24700025c382c9caf0bd3934c74b, 9667 bytes, protected local score640023."
+  },
+  {
     "submissionId": "b9af447d-59c8-4f0b-b42d-3cf358d3a6e2",
     "rationale": "Direct accepted 640028 predecessor. Carries its cold repeated-word seed, consuming terminal-MUL comparison, generic compressor, all inherited private recognizers and digest lookup. This candidate retains the loaded first calldata word across the 1000-byte size split and uses it instead of reloading in both destination arms.",
     "evidence": "Predecessor decoded SHA36e02fe62e1af53de892d9ca642a4152f65ef3612caff821ab9cd443f4958764; candidate5443a71e40bfcd86c097e9ffa5cbb674f4f54bb2036cdc444be7a599b55add71. Same9642bytes/5416instructions. Compare bytesPC23..46 andPC8157..8196, DirectGuardCheck/Size/Base, and RetainedTerminalMul bridge proofs."
@@ -93,10 +98,5 @@
     "submissionId": "218de087-2a12-4878-8502-80e84747ab2f",
     "rationale": "Accepted640608allprivatepredecessorretained:literal8191selectorconstant34711266746334640,all14canonicaldigeststores,fullwordrecognitionandfallback/compressor. We furtheruseMSIZEatall11offset32sitesunderexplicitactiveWords1proof.",
     "evidence": "Immediateexperimentiter80savedfourprefixsubstitutions;iter82extendssevenremainingcmpk1sites. Rawcandidate62b4061b56d4dc35f58a9c13e6fe927edceb1b0f9e7d4c2f0cf4829af85a7b1d.Prefix[0,4801),rowstartsunchanged;ZeroTailModeluniversalrecognitionunchanged."
-  },
-  {
-    "submissionId": "c4980464-6d6b-4d3d-b1b5-71cb215614cd",
-    "rationale": "Direct accepted640563 predecessor: retains private scanner and liveness cuts (long paths skip dead251, short mask saves input size only on miss, uniform MSIZE return). Adds only direct1000 row jump and proof-entry adapter.",
-    "evidence": "Compare bytecode offsets29..31 and unchanged short guard4598..4640, selectors4785..4800, private rows4801..9426. Base exact SHA49c732950c37515eacd32b65b51abc8ea2ef2f29774270871052a504c1cc62da."
   }
 ]

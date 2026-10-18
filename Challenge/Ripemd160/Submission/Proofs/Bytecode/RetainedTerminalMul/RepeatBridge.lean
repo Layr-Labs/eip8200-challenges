@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.LocatedBridge
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalMulRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.TerminalXorRaw
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -14,7 +14,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode
 open StackRoundTrace StackRoundTemplate RetainedIntegration105
 
-private def scanner := TerminalMulRaw.template
+private def scanner := TerminalXorRaw.template
 
 theorem actual_scanner_slice :
     (RetainedBridge111.Candidate.instructions.drop 5260).take scanner.length = scanner := by
@@ -53,13 +53,13 @@ def gasSteps_scanner (s : State) (rho : List UInt256) (e : RetainedLocated113.En
         [DirectGuard.equalityAcc s.executionEnv.calldata 0,
          KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho}
       {s with pc := UInt256.ofNat 9632, stack :=
-        [DirectGuard.equalityAcc s.executionEnv.calldata 10] ++ rho} := by
+        [TerminalXorRaw.mismatch s.executionEnv.calldata] ++ rho} := by
   apply RecognitionLift.gasSteps_of_raw scannerSite
     {s with pc := UInt256.ofNat 9429, stack :=
       [DirectGuard.equalityAcc s.executionEnv.calldata 0,
        KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho}
     _ e.code e.fork e.run e.np scannerSite_pc.symm scanner_advances
-  simpa only [scanner] using TerminalMulRaw.run_equalityAcc s rho (by omega) e.run href
+  simpa only [scanner] using TerminalXorRaw.run_equalityAcc s rho (by omega) e.run href
 
 /-- Candidate-specific decoded execution from PC21 through the repeated-word
 anchor, seed, all full-word comparisons, and terminal MUL at PC9629. -/
@@ -68,7 +68,7 @@ def gasSteps_anchor_scanner (s : State) (rho : List UInt256) (e : RetainedLocate
     (href : KnownInputCompactState.referenceWord s.executionEnv.calldata = KnownInputData.fullWord) :
     GasSteps {s with pc := UInt256.ofNat 21, stack := rho}
       {s with pc := UInt256.ofNat 9632, stack :=
-        [DirectGuard.equalityAcc s.executionEnv.calldata 10] ++ rho} :=
+        [TerminalXorRaw.mismatch s.executionEnv.calldata] ++ rho} :=
   (RetainedLocated113.gasSteps_anchor_repeat s rho e hs href).trans
     (gasSteps_scanner s rho e hs href)
 
