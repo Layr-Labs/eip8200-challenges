@@ -35,7 +35,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 4733) rho (by omega) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 9667) rho (by omega) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
@@ -48,8 +48,8 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
 
 private theorem serialize_append (s : State) (h : Compression.HashState)
     (off limit : UInt256) (headWords tailWords : List UInt256) :
-    StackTail.append (StaggerPersistentSerialize.result s h off limit headWords) tailWords =
-      StaggerPersistentSerialize.result s h off limit (headWords ++ tailWords) := by
+    StackTail.append (Return32Serialize.result s h off limit headWords) tailWords =
+      Return32Serialize.result s h off limit (headWords ++ tailWords) := by
   rfl
 
 
@@ -62,16 +62,21 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
   let masks := Shared32Core.maskRho ++ rho
   have hm : masks.length ≤ 880 := by simp only [masks, Shared32Core.maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gb := Shared32Core.gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) masks (by omega)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9667) masks (by omega)
     (by rw [hactive]; decide)
   have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (Shared32Core.resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) Shared32Core.resultCont masks (by omega) e.run
-    (StaggerPersistentLoopSites.valid_out s e.code)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9667) Shared32Core.resultCont masks (by omega) e.run
+    (by
+        have hpc : Artifact.submissionArtifact.instructionPC 5422 = 9667 := by
+          rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+        have h := Artifact.submissionArtifact.isValidJumpDest_index 5422 (by rfl)
+        rw [hpc] at h
+        rw [e.code]; exact h)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) Shared32Core.resultCont
-    (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np
+  have go := Return32Serialize.gasSteps s (UInt256.ofNat 1056) Shared32Core.resultCont
+    (Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np (by rw [_hcal]; exact _h32)
   have hresult : StackTail.append (Shared32Core.resultState s) rho =
-      StaggerPersistentSerialize.result s (Shared32Core.resultHash s)
+      Return32Serialize.result s (Shared32Core.resultHash s)
         (UInt256.ofNat 1056) Shared32Core.resultCont masks :=
     serialize_append s (Shared32Core.resultHash s) (UInt256.ofNat 1056)
       Shared32Core.resultCont Shared32Core.maskRho rho

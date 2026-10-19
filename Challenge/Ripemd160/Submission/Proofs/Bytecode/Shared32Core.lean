@@ -1,7 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Sites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerTailBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentLoopSites
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentSerializeMath
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Return32SerializeMath
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 4000000
@@ -45,7 +45,7 @@ def entryState (s : State) : State :=
   {s with
     pc := UInt256.ofNat 824
     stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-      (UInt256.ofNat 1056) (UInt256.ofNat 4733) maskRho}
+      (UInt256.ofNat 1056) (UInt256.ofNat 9667) maskRho}
 
 def resultHash (s : State) : Compression.HashState :=
   Functional.result s.memory StackRunBridge.initialHashState
@@ -54,7 +54,7 @@ def resultHash (s : State) : Compression.HashState :=
 def resultCont : UInt256 := Word.ofUInt32 StackRunBridge.initialHashState.h2
 
 def resultState (s : State) : State :=
-  StaggerPersistentSerialize.result s (resultHash s)
+  Return32Serialize.result s (resultHash s)
     (UInt256.ofNat 1056) resultCont maskRho
 
 def gasSteps (s : State) (e : Env s) (input : ByteArray)
@@ -62,14 +62,19 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray)
     (hactive : s.activeWords = UInt256.ofNat 35) :
     GasSteps (entryState s) (resultState s) := by
   have gb := gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) maskRho (by decide)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9667) maskRho (by decide)
     (by rw [hactive]; decide)
   have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 4733) resultCont maskRho (by decide) e.run
-    (StaggerPersistentLoopSites.valid_out s e.code)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9667) resultCont maskRho (by decide) e.run
+    (by
+        have hpc : Artifact.submissionArtifact.instructionPC 5422 = 9667 := by
+          rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+        have h := Artifact.submissionArtifact.isValidJumpDest_index 5422 (by rfl)
+        rw [hpc] at h
+        rw [e.code]; exact h)
     e.code e.fork e.np
-  have go := StaggerPersistentSerialize.gasSteps s (UInt256.ofNat 1056) resultCont
-    (resultHash s) [] (by decide) e.run e.code e.fork e.np
+  have go := Return32Serialize.gasSteps s (UInt256.ofNat 1056) resultCont
+    (resultHash s) [] (by decide) e.run e.code e.fork e.np (by rw [_hcal]; exact _h32)
   exact gb.trans (ge.trans go)
 
 theorem blockCount32 (input : ByteArray) (h32 : input.size = 32) :
@@ -94,7 +99,7 @@ theorem returned_spec (s : State) (input : ByteArray) (h32 : input.size = 32)
     (hready : StaggerMessage.Ready s.memory
       (fun k => (CompressionCorrect.schedule (Padding.paddedMessage input) 0)[k]!)) :
     (resultState s).hReturn = spec input :=
-  StaggerPersistentSerialize.returned_spec_of_hashArray s input
+  Return32Serialize.returned_spec_of_hashArray s input
     (UInt256.ofNat 1056) resultCont maskRho (resultHash s)
     (resultHash_spec s input h32 hready)
 

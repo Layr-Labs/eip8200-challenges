@@ -14,10 +14,10 @@ open Shared32Scratch
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- `PUSH2 4733 SWAP13 PUSH1 32 EQ` at144: the continuation slot becomes the output entry 4733 (the
+/-- `PUSH2 9667 SWAP13 PUSH1 32 EQ` at144: the continuation slot becomes the output entry 9667 (the
 single block then jumps straight to the output). The displaced length is retained as the 32-byte predicate. -/
 def headTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 9667),
     .op (.Swap ⟨12, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 32),
     .op .EQ ]
@@ -30,7 +30,7 @@ theorem run_head (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt25
         stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho} =
       some {s with
         pc := pcAfter pc headTemplate
-        stack := UInt256.eq (UInt256.ofNat 32) lim :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho} := by
+        stack := UInt256.eq (UInt256.ofNat 32) lim :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 9667) rho} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [headTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, Instr.size, UInt256.succ, stk, Nat.add_assoc,

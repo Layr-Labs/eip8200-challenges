@@ -11,7 +11,7 @@ open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory Pair13Endian
 open Shared32Scratch Shared32Sites
 
 /-- The 32-byte block, entered from the alignment guard at 143: the continuation slot becomes the
-output entry 4733, the sentinel `0x80` and the length byte (the low byte of the resident
+output entry 9667, the sentinel `0x80` and the length byte (the low byte of the resident
 coefficient word in slot 4) are stored, then the flag is consumed at160 and joins the lower half at497. -/
 def gasSteps_sparse (s : State) (e : Env s)
     (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
@@ -22,9 +22,9 @@ def gasSteps_sparse (s : State) (e : Env s)
     GasSteps
       (atState s 143 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
       (atState {s with memory := sparseMemory s.memory} 498
-        (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho)) := by
+        (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 9667) rho)) := by
   let F := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho
-  let F0 := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 4733) rho
+  let F0 := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 9667) rho
   have hF : F.length ≤ 900 := by simp only [F, stk, List.length_cons]; omega
   have hF0 : F0.length ≤ 900 := by simp only [F0, stk, List.length_cons]; omega
   let sM : State := {s with memory := sparseMemory s.memory}
@@ -47,7 +47,7 @@ def gasSteps_sparse (s : State) (e : Env s)
   have g4 : GasSteps (atState s 153 (v :: UInt256.ofNat 1 :: F0)) (atState sM 160 (UInt256.ofNat 1 :: F0)) := by
     apply sparse.lift s (atState sM 160 (UInt256.ofNat 1 :: F0)) e (v :: UInt256.ofNat 1 :: F0)
     have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 153) v (UInt256.ofNat 1) ret mw a2 a3 a4
-      (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 1056 :: UInt256.ofNat 4733 ::
+      (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 1056 :: UInt256.ofNat 9667 ::
         DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
       (by simp only [List.length_cons]; omega) e.run hactive hbyte hone
     simpa only [sparse.template, sparse.end_pc, atState, sM, F0, stk] using h

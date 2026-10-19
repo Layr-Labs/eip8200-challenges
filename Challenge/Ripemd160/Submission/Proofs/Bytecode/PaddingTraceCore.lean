@@ -385,10 +385,10 @@ def initialFrame (input : ByteArray) : List UInt256 :=
 @[simp] theorem initialFrame_length (input : ByteArray) : (initialFrame input).length = 15 := by
   simp [initialFrame, StaggerPersistentFrame.frame]
 
-/-- The frame of the cold padding code: the cold block installed the output entry 4733 in slot 12. -/
+/-- The frame of the cold padding code: the cold block installed the output entry 9667 in slot 12. -/
 def padFrame (_input : ByteArray) : List UInt256 :=
   StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056)
-    (UInt256.ofNat 4733) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+    (UInt256.ofNat 9667) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 
 @[simp] theorem padFrame_length (input : ByteArray) : (padFrame input).length = 15 := by
   simp [padFrame, StaggerPersistentFrame.frame]
