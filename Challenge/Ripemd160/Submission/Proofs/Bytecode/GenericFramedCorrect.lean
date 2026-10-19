@@ -73,7 +73,7 @@ private noncomputable def gasSteps_ordinary (input : ByteArray) (hfit : Calldata
       | exact GasSteps.cast
           (StaggerPersistentLoopSites.gasSteps_join s
             (StaggerPersistentFrame.frame h (UInt256.ofNat 1056)
-              (UInt256.ofNat 48) (maskRho rho))
+              (UInt256.ofNat 222) (maskRho rho))
             (by simp only [StaggerPersistentFrame.frame, maskRho, List.length_append,
                   List.length_cons, List.length_nil]; omega)
             (PadSkipEntry.entryState_halt input) (PadSkipEntry.entryState_code input)

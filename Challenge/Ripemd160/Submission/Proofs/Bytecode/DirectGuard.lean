@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Low64RepeatMath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.ActualBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackCorrect
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.EarlySerializeFallback
@@ -29,9 +30,9 @@ private def sound (path : List Located) {s t : State}
     path hcode hfork h hrun hnp
 
 private def gasSteps_loop (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord) :
+    (_href : referenceWord input = KnownInputData.fullWord) :
     GasSteps (loopState input 0) (loopExitState input) := by
-  exact gasSteps_unrolled_loop input href
+  exact gasSteps_unrolled_loop input
 
 /-- A 1000-byte input whose first word is the repeated `0x61` word reaches the
 seed block. -/
@@ -85,13 +86,15 @@ private theorem correct_target :
 
 private def gasSteps_repeat_miss (input : ByteArray)
     (hpass : EntryPrefilter.condition input = 0) (hsize : input.size = 1000)
-    (href : referenceWord input = KnownInputData.fullWord)
+    (href : Low64RepeatMath.condition input = 0)
     (hne : input ≠ KnownInputData.targetInput) :
     GasSteps (initialState submissionBytecode input 0) (fallbackState input) :=
-  (gasSteps_matched input hpass hsize href).trans
+  ((EntryPrefilter.gasSteps_fall input hpass).trans
+    ((sound sizePath (run_size_fall input hsize)).trans
+      (RetainedActual115.gasSteps_anchor_low_fall input href))).trans
     ((gasSteps_checkEntry input).trans
-      ((gasSteps_loop input href).trans
-        ((sound tailPath (run_tail_divert input hsize href hne)).trans
+      ((gasSteps_unrolled_loop input).trans
+        ((sound tailPath (run_tail_divert_low input hsize href hne)).trans
           (sound fallbackPath (run_fallback_clear input)))))
 
 /-- Combine the common scanner contract with the entry dispatch and generic arm. -/
@@ -147,7 +150,7 @@ theorem correct_of_recognition
   swap
   · exact fromGuard h1000 ((EntryPrefilter.gasSteps_fall input hpass).trans
       (sound sizePath (run_size_taken input hfit h1000)))
-  by_cases href : referenceWord input = KnownInputData.fullWord
+  by_cases href : Low64RepeatMath.condition input = 0
   swap
   · exact scanner1000Correct input hfit h1000
       ((EntryPrefilter.gasSteps_fall input hpass).trans

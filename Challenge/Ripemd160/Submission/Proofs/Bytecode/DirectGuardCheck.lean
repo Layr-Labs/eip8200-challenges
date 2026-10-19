@@ -18,7 +18,7 @@ open KnownInputCompactState StackRoundTrace StackRoundTemplate
 private def seed := RetainedIntegration105.repeatTemplate
 private theorem seed_slice :
     (Artifact.submissionArtifact.instructions.drop 20).take seed.length = seed := by rfl
-private theorem seed_pc : Artifact.submissionArtifact.instructionPC 20 = 34 := by
+private theorem seed_pc : Artifact.submissionArtifact.instructionPC 20 = 41 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem seed_bounds :
     20 + seed.length ≤ Artifact.submissionArtifact.instructions.length := by
@@ -33,7 +33,7 @@ private def seed_site : GenericRoundSite Artifact.submissionArtifact .Osaka seed
   StackSiteBuilder.ofSlice seed 20 seed_slice seed_bounds
     (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem seed_wf) (by decide)
-private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 34 := by
+private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 41 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 20) = _
   rw [seed_pc]
 

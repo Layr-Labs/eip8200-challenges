@@ -23,7 +23,7 @@ last-block test 48. -/
 def contNat (input : ByteArray) (i : Nat) : Nat :=
   if input.size % 64 = 0 ∧ input.size < 256 then
     (if input.size = i * 64 then 64 else input.size - 64 * i)
-  else 48
+  else 222
 
 def cont (input : ByteArray) (i : Nat) : UInt256 := UInt256.ofNat (contNat input i)
 
@@ -41,7 +41,7 @@ def offIndex (input : ByteArray) (i : Nat) : Nat :=
   if input.size = i * 64 ∧ input.size < 256 then i - 1 else i
 
 theorem cont_cold (input : ByteArray) (hz : ¬ (input.size % 64 = 0 ∧ input.size < 256)) (i : Nat) :
-    cont input i = UInt256.ofNat 48 := by
+    cont input i = UInt256.ofNat 222 := by
   simp only [cont, contNat, if_neg hz]
 
 theorem cont_aligned (input : ByteArray) (hz : input.size % 64 = 0 ∧ input.size < 256) (i : Nat)

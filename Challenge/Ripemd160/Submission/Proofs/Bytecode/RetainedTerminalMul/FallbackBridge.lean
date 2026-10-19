@@ -24,17 +24,17 @@ def copyTemplate : List Instr :=
    .op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 1056)]
 
 theorem actual_copy_slice :
-    (RetainedBridge111.Candidate.instructions.drop 154).take copyTemplate.length = copyTemplate := by rfl
+    (RetainedBridge111.Candidate.instructions.drop 148).take copyTemplate.length = copyTemplate := by rfl
 
 def copySite : GenericRoundSite RetainedBridge111.Candidate.artifact .Osaka copyTemplate :=
-  StackSiteBuilder.ofSlice copyTemplate 154 actual_copy_slice
-    (by change 154 + copyTemplate.length ≤ RetainedBridge111.Candidate.instructions.length
+  StackSiteBuilder.ofSlice copyTemplate 148 actual_copy_slice
+    (by change 148 + copyTemplate.length ≤ RetainedBridge111.Candidate.instructions.length
         rw [RetainedBridge111.Candidate.instruction_count]; decide)
     RetainedLocated113.code_bound
     (StackRoundData.templateWellFormed_mem (by decide)) (by decide)
 
 theorem copySite_pc : copySite.startPC = UInt256.ofNat 245 := by
-  change UInt256.ofNat (RetainedBridge111.Candidate.artifact.instructionPC 154) = _
+  change UInt256.ofNat (RetainedBridge111.Candidate.artifact.instructionPC 148) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem copy_advances : ∀ i ∈ copyTemplate.dropLast, RecognitionLift.Advances i := by

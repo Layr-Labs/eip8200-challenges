@@ -203,7 +203,7 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
             Nat.add_sub_cancel] using gb.trans gd
       · have hc := LoopCompletionControl.cont_cold input hal i
         rw [hc] at gb
-        have gd := StaggerPersistentLoopSites.gasSteps_dispatch s' h' (offsetWord i) (UInt256.ofNat 48) (Word.ofUInt32 (hashes i).h2)
+        have gd := StaggerPersistentLoopSites.gasSteps_dispatch s' h' (offsetWord i) (UInt256.ofNat 222) (Word.ofUInt32 (hashes i).h2)
           rho (by omega) a.running (StaggerPersistentLoopSites.valid_gl s' a.code) a.code a.fork a.notPrecompile
         have hl := hlast hal i hi
         by_cases hn : i + 1 < count

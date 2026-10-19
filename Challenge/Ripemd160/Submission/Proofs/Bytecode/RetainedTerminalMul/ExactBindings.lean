@@ -7,7 +7,7 @@ namespace RetainedIntegration105.ExactBindings
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode
 open StackRoundTrace RetainedIntegration105
-def anchorBytes : List UInt8 := [95, 53, 128, 96, 255, 2, 96, 97, 1, 97, 31, 221, 87]
+def anchorBytes : List UInt8 := [95, 53, 128, 103, 97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87]
 def repeatBytes : List UInt8 := [97, 3, 200, 53, 129, 20, 97, 36, 213, 86]
 def storeBytes : List UInt8 := [91, 115, 134, 60, 89, 133, 136, 189, 114, 164, 186, 191, 54, 198, 187, 1, 242, 123, 189, 192, 236, 212, 95, 82]
 def resultBytes : List UInt8 := [97, 18, 177, 87]

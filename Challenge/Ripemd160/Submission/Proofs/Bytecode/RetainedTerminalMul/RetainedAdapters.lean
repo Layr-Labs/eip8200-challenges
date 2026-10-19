@@ -2,10 +2,11 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.Retain
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CounterFreeSeedRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ZeroTailModel
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Low64RepeatMath
 
 set_option warningAsError true
 set_option maxRecDepth 100000
-set_option maxHeartbeats 1500000
+set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
 
 /-! Focused, artifact-independent adapters. These are not a new submission
@@ -17,36 +18,33 @@ open StackRoundTrace StackRoundTemplate DirectLiteralModel DirectLiteralRawV4
 open DenseScheduleTrace (runInstrSeq_append_running pcAfter_append)
 open RetainedFirstWordResearch
 
+/-- Low-64 screen: `SHL(calldata[0] XOR 0x6161616161616161, 192)`. -/
 def anchorWord (input : ByteArray) : UInt256 :=
-  UInt256.add (UInt256.ofNat 97)
-    (UInt256.mul (UInt256.ofNat 255) (MachineState.readWord input 0))
+  Low64RepeatMath.condition input
 
-theorem anchorWord_eq (input : ByteArray) : anchorWord input = DirectGuard.fullTerm input := by
-  rw [anchorWord, DirectGuard.fullTerm, Word.word_add_comm]
-  congr 1
-  exact RawExpressionAC.mul_comm _ _
+theorem anchorWord_eq (input : ByteArray) : anchorWord input = Low64RepeatMath.condition input := rfl
 
-theorem anchorWord_isTrue (input : ByteArray)
-    (hne : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord) :
+theorem anchorWord_isTrue (input : ByteArray) (hne : anchorWord input ≠ 0) :
     UInt256.isTrue (anchorWord input) := by
   intro hz
-  apply hne
-  apply DirectGuard.fullTerm_eq_zero input
-  rw [← anchorWord_eq]
-  exact Word.word_ext hz
+  exact hne (Word.word_ext hz)
 
+/-- A repeated `0x61` word makes the low 64 bits match, so the shifted XOR is zero. -/
 theorem anchorWord_false (input : ByteArray)
     (h : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
     ¬ UInt256.isTrue (anchorWord input) := by
+  have h0 : anchorWord input = 0 := by
+    unfold KnownInputCompactState.referenceWord at h
+    unfold anchorWord Low64RepeatMath.condition
+    rw [h]
+    decide
   intro ht
-  apply ht
-  rw [anchorWord_eq, DirectGuard.fullTerm, h, DirectGuard.fullWord_anchor]
-  rfl
+  exact ht (by rw [h0]; rfl)
 
 def anchorPrefix : List Instr :=
   [.push ⟨0, by decide⟩ 0, .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩),
-   .push ⟨1, by decide⟩ 255, .op .MUL, .push ⟨1, by decide⟩ 97,
-   .op .ADD, .push ⟨2, by decide⟩ 8157]
+   .push ⟨8, by decide⟩ 0x6161616161616161, .op .XOR, .push ⟨1, by decide⟩ 192,
+   .op .SHL, .push ⟨2, by decide⟩ 8157]
 
 theorem run_anchor_prefix (s : State) (pc : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running) :
@@ -56,19 +54,20 @@ theorem run_anchor_prefix (s : State) (pc : UInt256) (rho : List UInt256)
   simp (discharger := omega) [anchorPrefix, runInstrSeq, DataStepper.runInstr,
     pcAfter, hrun, show rho.length < 1024 by omega, hcap, UInt256.succ,
     Instr.size, Nat.add_assoc, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
-    anchorWord, KnownInputCompactState.referenceWord, List.getElem?_cons_zero]
+    anchorWord, Low64RepeatMath.condition, Low64Anchor.low64,
+    KnownInputCompactState.referenceWord, List.getElem?_cons_zero]
   repeat first | apply And.intro | rfl
 
 def anchorTemplate : List Instr := anchorPrefix ++ [.op .JUMPI]
 
 theorem run_anchor_taken (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
-    (hne : KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ KnownInputData.fullWord)
+    (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0)
     (hv : Decode.isValidJumpDest s.executionEnv.code 8157 = true) :
     runInstrSeq anchorTemplate {s with pc := UInt256.ofNat 21, stack := rho} =
       some {s with pc := UInt256.ofNat 8157, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
   have hp := run_anchor_prefix s (UInt256.ofNat 21) rho hs hrun
-  have ht := anchorWord_isTrue s.executionEnv.calldata hne
+  have ht := anchorWord_isTrue s.executionEnv.calldata (by rwa [anchorWord_eq])
   have hj : runInstrSeq [.op .JUMPI]
       {s with pc := pcAfter (UInt256.ofNat 21) anchorPrefix, stack := [UInt256.ofNat 8157, anchorWord s.executionEnv.calldata, MachineState.readWord s.executionEnv.calldata 0] ++ rho} =
       some {s with pc := UInt256.ofNat 8157, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
@@ -80,30 +79,49 @@ theorem run_anchor_fall (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (heq : KnownInputCompactState.referenceWord s.executionEnv.calldata = KnownInputData.fullWord) :
     runInstrSeq anchorTemplate {s with pc := UInt256.ofNat 21, stack := rho} =
-      some {s with pc := UInt256.ofNat 34, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
   have hp := run_anchor_prefix s (UInt256.ofNat 21) rho hs hrun
   have ht := anchorWord_false s.executionEnv.calldata heq
   have hj : runInstrSeq [.op .JUMPI]
       {s with pc := pcAfter (UInt256.ofNat 21) anchorPrefix, stack := [UInt256.ofNat 8157, anchorWord s.executionEnv.calldata, MachineState.readWord s.executionEnv.calldata 0] ++ rho} =
-      some {s with pc := UInt256.ofNat 34, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
     simp [runInstrSeq, DataStepper.runInstr, hrun,
       show rho.length + 3 < 1024 by omega, ht, pcAfter, anchorPrefix, Instr.size,
       UInt256.succ, Word.word_toNat_ofNat]
     rfl
   exact runInstrSeq_append_running hp hrun hj
 
-/-- PC34..44: no PUSH0/MLOAD/CALLDATALOAD warm-up; reuse retained r. -/
+/-- PC41..50: no PUSH0/MLOAD/CALLDATALOAD warm-up; reuse retained r. -/
+theorem run_anchor_low_fall (s : State) (rho : List UInt256)
+    (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
+    (heq : Low64RepeatMath.condition s.executionEnv.calldata = 0) :
+    runInstrSeq anchorTemplate {s with pc := UInt256.ofNat 21, stack := rho} =
+      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+  have hp := run_anchor_prefix s (UInt256.ofNat 21) rho hs hrun
+  have ht : ¬ UInt256.isTrue (anchorWord s.executionEnv.calldata) := by
+    rw [anchorWord_eq, heq]
+    decide
+  have hj : runInstrSeq [.op .JUMPI]
+      {s with pc := pcAfter (UInt256.ofNat 21) anchorPrefix, stack := [UInt256.ofNat 8157, anchorWord s.executionEnv.calldata, MachineState.readWord s.executionEnv.calldata 0] ++ rho} =
+      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+    simp [runInstrSeq, DataStepper.runInstr, hrun,
+      show rho.length + 3 < 1024 by omega, ht, pcAfter, anchorPrefix, Instr.size,
+      UInt256.succ, Word.word_toNat_ofNat]
+    rfl
+  exact runInstrSeq_append_running hp hrun hj
+
+/-- PC41..50: no PUSH0/MLOAD/CALLDATALOAD warm-up; reuse retained r. -/
 def repeatTemplate : List Instr := CounterFreeSeedRaw.Seed.template ++ CounterFreeSeedRaw.jumpTemplate
 
 theorem run_repeat (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hv : Decode.isValidJumpDest s.executionEnv.code 9429 = true) :
-    runInstrSeq repeatTemplate {s with pc := UInt256.ofNat 34, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
+    runInstrSeq repeatTemplate {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
       some {s with pc := UInt256.ofNat 9429, stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0, KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} := by
-  have hc := CounterFreeSeedRaw.Seed.run_template s (UInt256.ofNat 34)
+  have hc := CounterFreeSeedRaw.Seed.run_template s (UInt256.ofNat 41)
     (MachineState.readWord s.executionEnv.calldata 0) rho (by omega) hrun
   have hj := CounterFreeSeedRaw.run_jump s
-    (pcAfter (UInt256.ofNat 34) CounterFreeSeedRaw.Seed.template)
+    (pcAfter (UInt256.ofNat 41) CounterFreeSeedRaw.Seed.template)
     ([DirectGuard.equalityAcc s.executionEnv.calldata 0,
       KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho)
     (by simp; omega) hrun hv

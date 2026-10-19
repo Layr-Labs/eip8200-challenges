@@ -69,9 +69,9 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
   have ge := StaggerPersistentLoopSites.gasSteps_dispatch s (Shared32Core.resultHash s)
     (UInt256.ofNat 1056) (UInt256.ofNat 9667) Shared32Core.resultCont masks (by omega) e.run
     (by
-        have hpc : Artifact.submissionArtifact.instructionPC 5422 = 9667 := by
+        have hpc : Artifact.submissionArtifact.instructionPC 5416 = 9667 := by
           rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-        have h := Artifact.submissionArtifact.isValidJumpDest_index 5422 (by rfl)
+        have h := Artifact.submissionArtifact.isValidJumpDest_index 5416 (by rfl)
         rw [hpc] at h
         rw [e.code]; exact h)
     e.code e.fork e.np

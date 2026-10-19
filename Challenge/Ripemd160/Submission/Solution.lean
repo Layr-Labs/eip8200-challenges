@@ -29,6 +29,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode :=
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 372fbf58a935494e0f44805c42275464382b570fe1b8ee59ccdcfdd427bdf569.
--- 9715 bytes; split cold continuation join at 210, hot128 falls through without a pad.
--- The protected benchmark, not these comments, is the gas and correctness authority.
+-- Current decoded SHA-256: cf1f1a482b2838cf29be047a9e12f17111868ce0ea36eb3603341afefb411703.
+-- 9715 bytes; low64 shifted-XOR anchor, generic continuation relocated to 222.
+-- The protected benchmark, not these comments, is the score and correctness authority.

@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardSize
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.LocatedBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Low64RepeatMath
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -71,13 +72,13 @@ def gasSteps_miss (s : State) (rho : List UInt256) (e : Env s)
 
 def gasSteps_anchor_return (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 980) (ha : s.activeWords = UInt256.ofNat 0)
-    (hne : KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ KnownInputData.fullWord)
+    (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0)
     (hz : retainedResult s.executionEnv.calldata = 0) :=
   RetainedLocated113.gasSteps_anchor_return s rho e.toSidecar hs ha hne hz
 
 def gasSteps_anchor_miss (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 980) (ha : s.activeWords = UInt256.ofNat 0)
-    (hne : KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ KnownInputData.fullWord)
+    (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0)
     (hn : retainedResult s.executionEnv.calldata ≠ 0) :=
   RetainedLocated113.gasSteps_anchor_miss s rho e.toSidecar hs ha hne hn
 
@@ -100,9 +101,19 @@ def gasSteps_anchor_fall (input : ByteArray)
   simpa only [DirectGuard.sizeMatched, DirectGuard.atPC,
     List.append_nil, initialState_calldata, initialState_stack, RetainedLocated113.pc] using h
 
+def gasSteps_anchor_low_fall (input : ByteArray)
+    (href : Low64RepeatMath.condition input = 0) :
+    GasSteps (DirectGuard.atPC input 21) (DirectGuard.sizeMatched input) := by
+  have h := RetainedLocated113.lift .anchor (initialState submissionBytecode input 0) _
+    (initialEnv input).toSidecar []
+    (RetainedIntegration105.run_anchor_low_fall (initialState submissionBytecode input 0) []
+      (by decide) rfl href)
+  simpa only [DirectGuard.sizeMatched, DirectGuard.atPC,
+    List.append_nil, initialState_calldata, initialState_stack, RetainedLocated113.pc] using h
+
 /-- The taken edge enters the private 1000-byte scanner with the retained word. -/
 def gasSteps_anchor_taken (input : ByteArray)
-    (href : KnownInputCompactState.referenceWord input ≠ KnownInputData.fullWord) :
+    (href : Low64RepeatMath.condition input ≠ 0) :
     GasSteps (DirectGuard.atPC input 21)
       {PatternedScan.stS input 8157 [] with stack := [MachineState.readWord input 0]} := by
   have hv : Decode.isValidJumpDest submissionBytecode 8157 = true := by

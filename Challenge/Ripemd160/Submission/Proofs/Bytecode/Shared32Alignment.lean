@@ -17,24 +17,24 @@ abbrev template : List Instr :=
     .op .JUMPI ]
 
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 174).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 168).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 174 actual_slice
-    (by change 174 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 168 actual_slice
+    (by change 168 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 447 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 174) = UInt256.ofNat 447
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 168) = UInt256.ofNat 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_padding (s : State) (e : Env s) :
     Decode.isValidJumpDest s.executionEnv.code 143 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 80 = 143 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 78 = 143 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 80 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 78 (by rfl)
   rw [hpc] at h
   rw [e.code]
   exact h

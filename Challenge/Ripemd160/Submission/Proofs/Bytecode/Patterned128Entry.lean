@@ -21,33 +21,33 @@ private def shortTemplate : List Instr := [
 private def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
  .push 2 (UInt256.ofNat target), .op .JUMPI]
-private theorem short_slice : (Artifact.submissionArtifact.instructions.drop 3412).take shortTemplate.length = shortTemplate := by rfl
-private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3445).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
-private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3450).take (longTemplate 376 6883).length = longTemplate 376 6883 := by rfl
+private theorem short_slice : (Artifact.submissionArtifact.instructions.drop 3406).take shortTemplate.length = shortTemplate := by rfl
+private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3439).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
+private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3444).take (longTemplate 376 6883).length = longTemplate 376 6883 := by rfl
 private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
  change submissionBytecode.size < 2^256
  rw [referenceBytecode_size]
  decide
 private def shortSite : GenericRoundSite Artifact.submissionArtifact .Osaka shortTemplate :=
- StackSiteBuilder.ofSlice shortTemplate 3412 short_slice
-  (by change 3412 + shortTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice shortTemplate 3406 short_slice
+  (by change 3406 + shortTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
 private def long256Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 256 7805) :=
- StackSiteBuilder.ofSlice (longTemplate 256 7805) 3445 long256_slice
-  (by change 3445 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 256 7805) 3439 long256_slice
+  (by change 3439 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 7805) (by decide)) (by decide)
 private def long376Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 376 6883) :=
- StackSiteBuilder.ofSlice (longTemplate 376 6883) 3450 long376_slice
-  (by change 3450 + (longTemplate 376 6883).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 376 6883) 3444 long376_slice
+  (by change 3444 + (longTemplate 376 6883).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 6883) (by decide)) (by decide)
 private theorem short_pc : shortSite.startPC = UInt256.ofNat 4565 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3412) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3406) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4685 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3445) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3439) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4694 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3450) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3444) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
@@ -162,21 +162,21 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ Rec
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (Artifact.submissionArtifact.instructions.drop 3455).take fallbackTemplate.length = fallbackTemplate := by rfl
-private theorem generic_slice : (Artifact.submissionArtifact.instructions.drop 154).take genericTemplate.length = genericTemplate := by rfl
+private theorem fallback_slice : (Artifact.submissionArtifact.instructions.drop 3449).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem generic_slice : (Artifact.submissionArtifact.instructions.drop 148).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3455 fallback_slice
-  (by change 3455 + fallbackTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 3449 fallback_slice
+  (by change 3449 + fallbackTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite Artifact.submissionArtifact .Osaka genericTemplate :=
- StackSiteBuilder.ofSlice genericTemplate 154 generic_slice
-  (by change 154 + genericTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice genericTemplate 148 generic_slice
+  (by change 148 + genericTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
 private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4703 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3455) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3449) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 154) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 148) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def gasSteps_fallback (input : ByteArray) :
  GasSteps (PatternedScan.stS input 4703 []) (PatternedScan.stS input 246 []) := by

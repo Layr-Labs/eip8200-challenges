@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.SuccessBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Low64RepeatMath
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -24,8 +25,8 @@ private theorem take_plus (xs : List Instr) (m n : Nat) :
 
 /-- The three success chunks are exactly one contiguous candidate-vector slice. -/
 theorem actual_data_success_slice :
-    (RetainedBridge111.Candidate.instructions.drop 5088).take 166 =
-      dataAndResult ++ ((RetainedBridge111.Candidate.instructions.drop 5251).take 3) := by
+    (RetainedBridge111.Candidate.instructions.drop 5082).take 166 =
+      dataAndResult ++ ((RetainedBridge111.Candidate.instructions.drop 5245).take 3) := by
   rw [show 166 = 163 + 3 by decide, take_plus]
   rw [show 163 = 161 + 2 by decide, take_plus]
   simp only [List.drop_drop, dataAndResult]
@@ -40,7 +41,7 @@ theorem actual_repeat_seed_slice :
 
 def entrySuccessPath : List Instr :=
   ((RetainedBridge111.Candidate.instructions.drop 11).take 9) ++
-  ((RetainedBridge111.Candidate.instructions.drop 5088).take 166)
+  ((RetainedBridge111.Candidate.instructions.drop 5082).take 166)
 
 /-- Dynamic path from the size1000 anchor all the way through actual RETURN.
     Exact typed-vector slices only: a located-instruction/GasSteps lift is still required. -/
@@ -49,7 +50,7 @@ theorem run_entry_success (s : State) (rho : List UInt256)
     (ha : s.activeWords = UInt256.ofNat 0)
     (hvAnchor : Decode.isValidJumpDest s.executionEnv.code 8157 = true)
     (hvMiss : Decode.isValidJumpDest s.executionEnv.code 4785 = true)
-    (hne : KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ KnownInputData.fullWord)
+    (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0)
     (hz : retainedResult s.executionEnv.calldata = 0) :
     runInstrSeq entrySuccessPath {s with pc := UInt256.ofNat 21, stack := rho} =
       some (returned (stored s ExactBindings.digest) rho) := by

@@ -17,7 +17,7 @@ def cleanupTemplate : List Instr :=
    .op .MSTORE, .push ⟨1, by decide⟩ (UInt256.ofNat 245), .op .JUMP]
 
 theorem actual_cleanup_slice :
-    (RetainedBridge111.Candidate.instructions.drop 3502).take 6 = cleanupTemplate := by rfl
+    (RetainedBridge111.Candidate.instructions.drop 3496).take 6 = cleanupTemplate := by rfl
 
 /-- The cleanup erases the speculative word, but does not undo its allocation.
     The generic entry proof must absorb the remaining high-water mark. -/
@@ -48,7 +48,7 @@ theorem run_content_miss_cleanup (s : State) (rho : List UInt256)
     (hn : s.executionEnv.calldata.size = 1000)
     (hm : s.executionEnv.calldata ≠ PatternedInputData.patternedInput) :
     runInstrSeq (dataAndResult ++
-      ((RetainedBridge111.Candidate.instructions.drop 3502).take 6))
+      ((RetainedBridge111.Candidate.instructions.drop 3496).take 6))
       {s with pc := UInt256.ofNat 8157, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
       some (cleared (stored s ExactBindings.digest) rho) := by
   apply runInstrSeq_append_running (run_content_miss s rho hs hrun ha hvMiss hn hm)

@@ -5,6 +5,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundData
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.newArtifactByteLength
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Low64RepeatMath
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -33,12 +34,12 @@ def template : Piece → List Instr
   | .genericDest => [.op .JUMPDEST]
 
 def index : Piece → Nat
-  | .data => 5088 | .result => 5249 | .success => 5251 | .cleanup => 3502
-  | .anchor => 11 | .repeat => 20 | .genericDest => 154
+  | .data => 5082 | .result => 5243 | .success => 5245 | .cleanup => 3496
+  | .anchor => 11 | .repeat => 20 | .genericDest => 148
 
 def pc : Piece → Nat
   | .data => 8157 | .result => 9416 | .success => 9420 | .cleanup => 4785
-  | .anchor => 21 | .repeat => 34 | .genericDest => 245
+  | .anchor => 21 | .repeat => 41 | .genericDest => 245
 
 theorem actual_slice (p : Piece) :
     (RetainedBridge111.Candidate.instructions.drop (index p)).take (template p).length = template p := by
@@ -92,9 +93,9 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw (site p) _ _ e.code e.fork e.run e.np (site_pc p).symm (form p) h
 
 theorem valid_miss : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 4785 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 3502 = 4785 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 3496 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 3502 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 3496 (by rfl)
   rw [hp] at h
   exact h
 
@@ -132,23 +133,23 @@ def gasSteps_return (s : State) (rho : List UInt256) (e : Env s)
   exact hd.trans (hr.trans ht)
 
 theorem valid_generic : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 245 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 154 = 245 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 148 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 154 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 148 (by rfl)
   rw [hp] at h
   exact h
 
 theorem valid_anchor : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 8157 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5088 = 8157 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5082 = 8157 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5088 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5082 (by rfl)
   rw [hp] at h
   exact h
 
 theorem valid_repeat : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 9429 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5260 = 9429 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5254 = 9429 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5260 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5254 (by rfl)
   rw [hp] at h
   exact h
 
@@ -180,7 +181,7 @@ def gasSteps_miss (s : State) (rho : List UInt256) (e : Env s)
 /-- The taken entry anchor and success path are decoded execution of the candidate. -/
 def gasSteps_anchor_return (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 980) (ha : s.activeWords = UInt256.ofNat 0)
-    (hne : KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ KnownInputData.fullWord)
+    (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0)
     (hz : retainedResult s.executionEnv.calldata = 0) :
     GasSteps {s with pc := UInt256.ofNat 21, stack := rho}
       (returned (stored s ExactBindings.digest) rho) := by
@@ -191,7 +192,7 @@ def gasSteps_anchor_return (s : State) (rho : List UInt256) (e : Env s)
 /-- The taken entry anchor and miss path restore the original frame at PC245. -/
 def gasSteps_anchor_miss (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 980) (ha : s.activeWords = UInt256.ofNat 0)
-    (hne : KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ KnownInputData.fullWord)
+    (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0)
     (hn : retainedResult s.executionEnv.calldata ≠ 0) :
     GasSteps {s with pc := UInt256.ofNat 21, stack := rho}
       (cleared (stored s ExactBindings.digest) rho) := by
