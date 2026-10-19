@@ -164,13 +164,11 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
             rho (by omega) a.running (StaggerPersistentEntrySites.valid_stub192 s' a.code) a.code a.fork a.notPrecompile
           have gs := StaggerPersistentLoopSites.gasSteps_stub192 s' h' (offsetWord i) (Word.ofUInt32 (hashes i).h2)
             rho (by omega) a.running a.code a.fork a.notPrecompile
-          have ga := StaggerPersistentLoopSites.gasSteps_advance s' h' (offsetWord i) (UInt256.ofNat 128) (Word.ofUInt32 (hashes i).h2)
-            rho (by omega) a.running a.code a.fork a.notPrecompile
-          rw [next_offset i count hi hbound] at ga
+          rw [next_offset i count hi hbound] at gs
           have hc1 : LoopCompletionControl.cont input (i + 1) = UInt256.ofNat 128 := by
             rw [LoopCompletionControl.cont_aligned input hal (i + 1) hn]; congr 1; omega
           simpa only [I, if_pos hn1, loopState, loopCont, if_neg hn, blockPC_msg input (i + 1) hn, blockOff_msg input (i + 1) hn, hc1]
-            using gb.trans (gd.trans (gs.trans ga))
+            using gb.trans (gd.trans gs)
         else if h128 : input.size - 64 * i = 128 then
           have hn : ¬ (input.size = (i + 1) * 64 ∧ input.size < 256) := fun h => by omega
           have hn1 : i + 1 < count := by
@@ -213,12 +211,10 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
             fun h => by have := hl.mp h; omega
           have gs := StaggerPersistentLoopSites.gasSteps_glStay s' h' (offsetWord i) (Word.ofUInt32 (hashes i).h2)
             rho (by omega) a.running hge a.code a.fork a.notPrecompile
-          have ga := StaggerPersistentLoopSites.gasSteps_advance s' h' (offsetWord i) (UInt256.ofNat 48) (Word.ofUInt32 (hashes i).h2)
-            rho (by omega) a.running a.code a.fork a.notPrecompile
-          rw [next_offset i count hi hbound] at ga
+          rw [next_offset i count hi hbound] at gs
           have hp1 := LoopCompletionControl.cold_not_pad input hal (i + 1)
           simpa only [I, if_pos hn, loopState, loopCont, if_neg hp1, blockPC_msg input (i + 1) hp1, blockOff_msg input (i + 1) hp1,
-            LoopCompletionControl.cont_cold input hal (i + 1)] using gb.trans (gd.trans (gs.trans ga))
+            LoopCompletionControl.cont_cold input hal (i + 1)] using gb.trans (gd.trans gs)
         · have he : i + 1 = count := by omega
           have hi1 : count - 1 = i := by omega
           have hlt : (msize s').toNat < (offsetWord i + UInt256.ofNat 128).toNat := hl.mpr he

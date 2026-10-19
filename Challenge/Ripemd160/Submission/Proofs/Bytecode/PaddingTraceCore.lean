@@ -61,129 +61,129 @@ def padEntry (input : ByteArray) : State :=
 (116..123) and the footer loop tail (3412..3416) in this layout. -/
 
 @[simp] private theorem padPc99 :
-    Artifact.submissionArtifact.instructionPC 98 = 172 := by
+    Artifact.submissionArtifact.instructionPC 97 = 172 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci99 :
-    Artifact.instructionPC 98 = 172 := by
-  change Artifact.submissionArtifact.instructionPC 98 = 172
+    Artifact.instructionPC 97 = 172 := by
+  change Artifact.submissionArtifact.instructionPC 97 = 172
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc108 :
-    Artifact.submissionArtifact.instructionPC 107 = 187 := by
+    Artifact.submissionArtifact.instructionPC 106 = 187 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci108 :
-    Artifact.instructionPC 107 = 187 := by
-  change Artifact.submissionArtifact.instructionPC 107 = 187
+    Artifact.instructionPC 106 = 187 := by
+  change Artifact.submissionArtifact.instructionPC 106 = 187
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc109 :
-    Artifact.submissionArtifact.instructionPC 108 = 189 := by
+    Artifact.submissionArtifact.instructionPC 107 = 189 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci109 :
-    Artifact.instructionPC 108 = 189 := by
-  change Artifact.submissionArtifact.instructionPC 108 = 189
+    Artifact.instructionPC 107 = 189 := by
+  change Artifact.submissionArtifact.instructionPC 107 = 189
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc110 :
-    Artifact.submissionArtifact.instructionPC 109 = 190 := by
+    Artifact.submissionArtifact.instructionPC 108 = 190 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci110 :
-    Artifact.instructionPC 109 = 190 := by
-  change Artifact.submissionArtifact.instructionPC 109 = 190
+    Artifact.instructionPC 108 = 190 := by
+  change Artifact.submissionArtifact.instructionPC 108 = 190
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc114 :
-    Artifact.submissionArtifact.instructionPC 113 = 195 := by
+    Artifact.submissionArtifact.instructionPC 112 = 195 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci114 :
-    Artifact.instructionPC 113 = 195 := by
-  change Artifact.submissionArtifact.instructionPC 113 = 195
+    Artifact.instructionPC 112 = 195 := by
+  change Artifact.submissionArtifact.instructionPC 112 = 195
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc115 :
-    Artifact.submissionArtifact.instructionPC 114 = 197 := by
+    Artifact.submissionArtifact.instructionPC 113 = 197 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci115 :
-    Artifact.instructionPC 114 = 197 := by
-  change Artifact.submissionArtifact.instructionPC 114 = 197
+    Artifact.instructionPC 113 = 197 := by
+  change Artifact.submissionArtifact.instructionPC 113 = 197
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc116 :
-    Artifact.submissionArtifact.instructionPC 115 = 198 := by
+    Artifact.submissionArtifact.instructionPC 114 = 198 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci116 :
-    Artifact.instructionPC 115 = 198 := by
-  change Artifact.submissionArtifact.instructionPC 115 = 198
+    Artifact.instructionPC 114 = 198 := by
+  change Artifact.submissionArtifact.instructionPC 114 = 198
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc117 :
-    Artifact.submissionArtifact.instructionPC 116 = 199 := by
+    Artifact.submissionArtifact.instructionPC 115 = 199 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci117 :
-    Artifact.instructionPC 116 = 199 := by
-  change Artifact.submissionArtifact.instructionPC 116 = 199
+    Artifact.instructionPC 115 = 199 := by
+  change Artifact.submissionArtifact.instructionPC 115 = 199
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc118 :
-    Artifact.submissionArtifact.instructionPC 117 = 201 := by
+    Artifact.submissionArtifact.instructionPC 116 = 201 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci118 :
-    Artifact.instructionPC 117 = 201 := by
-  change Artifact.submissionArtifact.instructionPC 117 = 201
+    Artifact.instructionPC 116 = 201 := by
+  change Artifact.submissionArtifact.instructionPC 116 = 201
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc119 :
-    Artifact.submissionArtifact.instructionPC 118 = 202 := by
+    Artifact.submissionArtifact.instructionPC 117 = 202 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci119 :
-    Artifact.instructionPC 118 = 202 := by
-  change Artifact.submissionArtifact.instructionPC 118 = 202
+    Artifact.instructionPC 117 = 202 := by
+  change Artifact.submissionArtifact.instructionPC 117 = 202
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc120 :
-    Artifact.submissionArtifact.instructionPC 119 = 203 := by
+    Artifact.submissionArtifact.instructionPC 118 = 203 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci120 :
-    Artifact.instructionPC 119 = 203 := by
-  change Artifact.submissionArtifact.instructionPC 119 = 203
+    Artifact.instructionPC 118 = 203 := by
+  change Artifact.submissionArtifact.instructionPC 118 = 203
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc121 :
-    Artifact.submissionArtifact.instructionPC 120 = 204 := by
+    Artifact.submissionArtifact.instructionPC 119 = 204 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci121 :
-    Artifact.instructionPC 120 = 204 := by
-  change Artifact.submissionArtifact.instructionPC 120 = 204
+    Artifact.instructionPC 119 = 204 := by
+  change Artifact.submissionArtifact.instructionPC 119 = 204
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc122 :
-    Artifact.submissionArtifact.instructionPC 121 = 205 := by
+    Artifact.submissionArtifact.instructionPC 120 = 205 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci122 :
-    Artifact.instructionPC 121 = 205 := by
-  change Artifact.submissionArtifact.instructionPC 121 = 205
+    Artifact.instructionPC 120 = 205 := by
+  change Artifact.submissionArtifact.instructionPC 120 = 205
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc123 :
-    Artifact.submissionArtifact.instructionPC 122 = 206 := by
+    Artifact.submissionArtifact.instructionPC 121 = 206 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci123 :
-    Artifact.instructionPC 122 = 206 := by
-  change Artifact.submissionArtifact.instructionPC 122 = 206
+    Artifact.instructionPC 121 = 206 := by
+  change Artifact.submissionArtifact.instructionPC 121 = 206
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
@@ -899,9 +899,9 @@ theorem validJump4949 :
 
 private theorem validJump198 :
     Decode.isValidJumpDest submissionBytecode 198 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 115 = 198 := padPc116
+  have hpc : Artifact.submissionArtifact.instructionPC 114 = 198 := padPc116
   rw [← hpc]
-  exact Artifact.submissionArtifact.isValidJumpDest_index 115 (by rfl)
+  exact Artifact.submissionArtifact.isValidJumpDest_index 114 (by rfl)
 
 private theorem validJump461 :
     Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 461).toNat = true :=
