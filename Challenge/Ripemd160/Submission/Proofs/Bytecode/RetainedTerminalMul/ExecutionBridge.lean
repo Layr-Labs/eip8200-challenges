@@ -18,7 +18,7 @@ open StackRoundTrace RetainedIntegration105
 theorem run_actual_data (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0) :
-    runInstrSeq ((Candidate.instructions.drop 5082).take 161)
+    runInstrSeq ((Candidate.instructions.drop 5077).take 161)
       {s with pc := UInt256.ofNat 8157, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
       some {(stored s ExactBindings.digest) with
         pc := pcAfter (UInt256.ofNat 8157) (literalTemplate ExactBindings.digest), stack := retainedResult s.executionEnv.calldata :: rho} := by
@@ -32,7 +32,7 @@ theorem run_actual_data_known (s : State) (rho : List UInt256)
     (ha : s.activeWords = UInt256.ofNat 0)
     (hn : s.executionEnv.calldata.size = 1000)
     (hz : retainedResult s.executionEnv.calldata = 0) :
-    runInstrSeq ((Candidate.instructions.drop 5082).take 161)
+    runInstrSeq ((Candidate.instructions.drop 5077).take 161)
       {s with pc := UInt256.ofNat 8157, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
       some {(stored s ExactBindings.digest) with
         pc := pcAfter (UInt256.ofNat 8157) (literalTemplate ExactBindings.digest), stack := UInt256.ofNat 0 :: rho} ∧

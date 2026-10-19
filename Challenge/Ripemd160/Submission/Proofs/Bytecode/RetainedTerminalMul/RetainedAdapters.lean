@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcSeedRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.RetainedFirstWordRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.CounterFreeSeedRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ZeroTailModel
@@ -43,7 +44,7 @@ theorem anchorWord_false (input : ByteArray)
 
 def anchorPrefix : List Instr :=
   [.push ⟨0, by decide⟩ 0, .op .CALLDATALOAD, .op (.Dup ⟨0, by decide⟩),
-   .push ⟨8, by decide⟩ 0x6161616161616161, .op .XOR, .push ⟨1, by decide⟩ 192,
+   .push ⟨15, by decide⟩ 0x6161616161616161, .op .XOR, .push ⟨1, by decide⟩ 192,
    .op .SHL, .push ⟨2, by decide⟩ 8157]
 
 theorem run_anchor_prefix (s : State) (pc : UInt256) (rho : List UInt256)
@@ -79,12 +80,12 @@ theorem run_anchor_fall (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (heq : KnownInputCompactState.referenceWord s.executionEnv.calldata = KnownInputData.fullWord) :
     runInstrSeq anchorTemplate {s with pc := UInt256.ofNat 21, stack := rho} =
-      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 48, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
   have hp := run_anchor_prefix s (UInt256.ofNat 21) rho hs hrun
   have ht := anchorWord_false s.executionEnv.calldata heq
   have hj : runInstrSeq [.op .JUMPI]
       {s with pc := pcAfter (UInt256.ofNat 21) anchorPrefix, stack := [UInt256.ofNat 8157, anchorWord s.executionEnv.calldata, MachineState.readWord s.executionEnv.calldata 0] ++ rho} =
-      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 48, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
     simp [runInstrSeq, DataStepper.runInstr, hrun,
       show rho.length + 3 < 1024 by omega, ht, pcAfter, anchorPrefix, Instr.size,
       UInt256.succ, Word.word_toNat_ofNat]
@@ -96,14 +97,14 @@ theorem run_anchor_low_fall (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (heq : Low64RepeatMath.condition s.executionEnv.calldata = 0) :
     runInstrSeq anchorTemplate {s with pc := UInt256.ofNat 21, stack := rho} =
-      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 48, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
   have hp := run_anchor_prefix s (UInt256.ofNat 21) rho hs hrun
   have ht : ¬ UInt256.isTrue (anchorWord s.executionEnv.calldata) := by
     rw [anchorWord_eq, heq]
     decide
   have hj : runInstrSeq [.op .JUMPI]
       {s with pc := pcAfter (UInt256.ofNat 21) anchorPrefix, stack := [UInt256.ofNat 8157, anchorWord s.executionEnv.calldata, MachineState.readWord s.executionEnv.calldata 0] ++ rho} =
-      some {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 48, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} := by
     simp [runInstrSeq, DataStepper.runInstr, hrun,
       show rho.length + 3 < 1024 by omega, ht, pcAfter, anchorPrefix, Instr.size,
       UInt256.succ, Word.word_toNat_ofNat]
@@ -111,23 +112,14 @@ theorem run_anchor_low_fall (s : State) (rho : List UInt256)
   exact runInstrSeq_append_running hp hrun hj
 
 /-- PC41..50: no PUSH0/MLOAD/CALLDATALOAD warm-up; reuse retained r. -/
-def repeatTemplate : List Instr := CounterFreeSeedRaw.Seed.template ++ CounterFreeSeedRaw.jumpTemplate
+def repeatTemplate : List Instr := PcSeedRaw.seedTemplate
 
 theorem run_repeat (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hv : Decode.isValidJumpDest s.executionEnv.code 9429 = true) :
-    runInstrSeq repeatTemplate {s with pc := UInt256.ofNat 41, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
-      some {s with pc := UInt256.ofNat 9429, stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0, KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} := by
-  have hc := CounterFreeSeedRaw.Seed.run_template s (UInt256.ofNat 41)
-    (MachineState.readWord s.executionEnv.calldata 0) rho (by omega) hrun
-  have hj := CounterFreeSeedRaw.run_jump s
-    (pcAfter (UInt256.ofNat 41) CounterFreeSeedRaw.Seed.template)
-    ([DirectGuard.equalityAcc s.executionEnv.calldata 0,
-      KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho)
-    (by simp; omega) hrun hv
-  have hh := runInstrSeq_append_running hc hrun hj
-  simpa only [repeatTemplate, DirectGuard.equalityAcc,
-    KnownInputCompactState.referenceWord] using hh
+    runInstrSeq repeatTemplate {s with pc := UInt256.ofNat 48, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
+      some {s with pc := UInt256.ofNat 9429, stack := [PcSeedRaw.seed s.executionEnv.calldata, KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} :=
+  PcSeedRaw.run_seed s rho hs hrun hv
 
 /-- One compare+OR for k>0. k=1 uses MSIZE=32, not an immediate. -/
 def positiveStep (k : Nat) : List Instr :=

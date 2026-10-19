@@ -12,15 +12,15 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
-private def scanner := TerminalXorRaw.template
+private def scanner := PcSeedRaw.template
 private theorem scanner_slice :
-    (Artifact.submissionArtifact.instructions.drop 5254).take scanner.length = scanner := by
+    (Artifact.submissionArtifact.instructions.drop 5249).take scanner.length = scanner := by
   rfl
-private theorem scanner_pc : Artifact.submissionArtifact.instructionPC 5254 = 9429 := by
+private theorem scanner_pc : Artifact.submissionArtifact.instructionPC 5249 = 9429 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem scanner_bounds :
-    5254 + scanner.length ≤ Artifact.submissionArtifact.instructions.length := by
-  change 5254 + scanner.length ≤ Artifact.submissionInstructions.length
+    5249 + scanner.length ≤ Artifact.submissionArtifact.instructions.length := by
+  change 5249 + scanner.length ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   decide
 private theorem scanner_wf : StackRoundData.TemplateWellFormed scanner := by decide
@@ -28,24 +28,24 @@ private theorem scanner_advances : ∀ i ∈ scanner.dropLast, RecognitionLift.A
   apply RecognitionLift.advancesAll_sound
   decide
 private def scanner_site : GenericRoundSite Artifact.submissionArtifact .Osaka scanner :=
-  StackSiteBuilder.ofSlice scanner 5254 scanner_slice scanner_bounds
+  StackSiteBuilder.ofSlice scanner 5249 scanner_slice scanner_bounds
     (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem scanner_wf) (by decide)
 private theorem scanner_site_pc : scanner_site.startPC = UInt256.ofNat 9429 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5254) = _
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5249) = _
   rw [scanner_pc]
 
 private def scannerEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 9429
     activeWords := UInt256.ofNat 0
-    stack := [equalityAcc input 0, referenceWord input] }
+    stack := [PcSeedRaw.seed input, referenceWord input] }
 
 private theorem run_scanner (input : ByteArray) :
     runInstrSeq scanner (scannerEntry input) = some (loopExitState input) := by
-  simpa only [scanner, scannerEntry, loopExitState, List.append_nil,
+  simpa only [scanner, scannerEntry, loopExitState, List.append_nil, KnownInputCompactState.referenceWord,
     Challenge.Ripemd160.initialState_calldata, Word.literal_eq_ofNat] using
-    TerminalXorRaw.run_unconditional
+    PcSeedRaw.run
       ({ initialState submissionBytecode input 0 with activeWords := UInt256.ofNat 0 })
       [] (by decide) rfl
 

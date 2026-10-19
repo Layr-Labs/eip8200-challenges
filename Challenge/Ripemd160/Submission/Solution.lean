@@ -29,6 +29,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode :=
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: cf1f1a482b2838cf29be047a9e12f17111868ce0ea36eb3603341afefb411703.
--- 9715 bytes; low64 shifted-XOR anchor, generic continuation relocated to 222.
--- The protected benchmark, not these comments, is the score and correctness authority.
+-- Current decoded SHA-256: d51ba727876bd28433d2370aadb783dda5bad67fd3851a0d26c6f80a68a05884.
+-- 9715 bytes; PC48 equality seed and universally proved fullword scan coverage.
+-- Only the protected benchmark is authoritative for correctness and gas.

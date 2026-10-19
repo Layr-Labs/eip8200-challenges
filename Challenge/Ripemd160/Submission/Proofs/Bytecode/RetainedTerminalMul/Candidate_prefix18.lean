@@ -267,6 +267,7 @@ def prefix18 : List Instr := [
   op 0x18,
   op 0x17,
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
 ]
 
 theorem prefix18_count : prefix18.length = 256 := by decide
