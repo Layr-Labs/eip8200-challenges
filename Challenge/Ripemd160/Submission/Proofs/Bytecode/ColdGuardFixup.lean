@@ -92,15 +92,6 @@ theorem run_head (s : State) (pc a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
     List.getElem?_cons_zero, List.exchange]
   rfl
 
-theorem run_guard_miss (s : State) (stack : List UInt256)
-    (hstack : stack.length ≤ 1000) (hrun : s.halt = .Running) :
-    runInstrSeq guard.template {s with pc := UInt256.ofNat 160, stack := UInt256.ofNat 0 :: stack} =
-      some {s with pc := UInt256.ofNat 165, stack := stack} := by
-  have hcap (n : Nat) (hn : n ≤ 3) : stack.length+n < 1024 := by omega
-  simp [guard.template, runInstrSeq, DataStepper.runInstr, hrun, hcap,
-    UInt256.isTrue, pcAfter, Nat.add_assoc, List.length_cons]
-  rfl
-
 /-- A guard miss at 449 that is not 32 bytes long reaches the sentinel store at 166 with the two
 scratch bytes written and the output entry 9667 in the continuation slot. -/
 def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt256)
@@ -142,7 +133,6 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
   have hF : StaggerPersistentFrame.frame h off limit rho = F := rfl
   have hF0 : StaggerPersistentFrame.frame h off (UInt256.ofNat 9667) rho = F0 := rfl
   have hF0len : F0.length ≤ 900 := by simp only [F0, cstk, List.length_cons]; omega
-  let v := UInt256.ofNat 32
   let b := UInt8.ofNat ((UInt256.ofNat 128).toNat % 256)
   let c := UInt8.ofNat (a4.toNat % 256)
   let sW : State := {s with memory := wMemory s.memory b c}
@@ -156,30 +146,22 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     have hh := run_head s (UInt256.ofNat 144) a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off limit rho
       (by omega) hrun
     simpa only [head.template, head.end_pc, atState, F, F0, heq] using hh
-  have g3 : GasSteps (atState s 151 (UInt256.ofNat 0 :: F0)) (atState s 153 (v :: UInt256.ofNat 0 :: F0)) := by
-    apply fold.lift s (atState s 153 (v :: UInt256.ofNat 0 :: F0)) e (UInt256.ofNat 0 :: F0)
-    have hh := Shared32SparseRun.run_fold s (UInt256.ofNat 151) (UInt256.ofNat 0 :: F0) (by simp [F0, cstk]; omega) hrun
-    simpa only [fold.template, fold.end_pc, atState] using hh
-  have g4 : GasSteps (atState s 153 (v :: UInt256.ofNat 0 :: F0)) (atState sW 160 (UInt256.ofNat 0 :: F0)) := by
-    apply sparse.lift s (atState sW 160 (UInt256.ofNat 0 :: F0)) e (v :: UInt256.ofNat 0 :: F0)
-    have hh := Shared32SparseRun.run_sparse s (UInt256.ofNat 153) (UInt256.ofNat 0) F0
-      hF0len hrun hactive
+  have g3 : GasSteps (atState s 151 (UInt256.ofNat 0 :: F0)) (atState sW 165 F0) := by
+    apply combined.lift s (atState sW 165 F0) e (UInt256.ofNat 0 :: F0)
+    have hh := Shared32SparseRun.run_combined_miss s F0 hF0len hrun hactive
     have hm : Shared32SparseRun.copied s.memory s.executionEnv.code = wMemory s.memory b c := by
       rw [hcode, Shared32Codecopy.copied_sparse s.memory hmemsize hzero]
       have hb : b = 128 := by decide
       have hc : c = 1 := by decide
       simp only [Shared32Scratch.sparseMemory, wMemory, hb, hc]
-    simpa only [sparse.template, sparse.end_pc, atState, sW, hm, v] using hh
-  have g5 : GasSteps (atState sW 160 (UInt256.ofNat 0 :: F0)) (atState sW 165 F0) := by
-    apply guard.lift sW (atState sW 165 F0) eW (UInt256.ofNat 0 :: F0)
-    exact run_guard_miss sW F0 (by omega) hrun
+    simpa only [combined.template, atState, sW, hm] using hh
   have g6 : GasSteps (atState sW 165 F0) (atState sW 166 F0) := by
     apply missTail.lift sW (atState sW 166 F0) eW F0
     have hc : F0.length < 1024 := by omega
     simp [missTail.template, runInstrSeq, DataStepper.runInstr, atState, eW.run, hc]
     rfl
   rw [hF, hF0]
-  exact g0.trans (g1.trans (g3.trans (g4.trans (g5.trans g6))))
+  exact g0.trans (g1.trans (g3.trans g6))
 
 #print axioms restore
 #print axioms gasSteps_partial

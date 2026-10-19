@@ -7,15 +7,15 @@ namespace RetainedIntegration105.ExactBindings
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Ripemd160.Submission.Proofs.Bytecode
 open StackRoundTrace RetainedIntegration105
-def anchorBytes : List UInt8 := [95, 53, 128, 103, 97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87]
-def repeatBytes : List UInt8 := [97, 3, 200, 53, 129, 20, 97, 36, 213, 86]
+def anchorBytes : List UInt8 := [95, 53, 128, 110, 0, 0, 0, 0, 0, 0, 0, 97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87]
+def repeatBytes : List UInt8 := [88, 53, 129, 20, 97, 36, 213, 86]
 def storeBytes : List UInt8 := [91, 115, 134, 60, 89, 133, 136, 189, 114, 164, 186, 191, 54, 198, 187, 1, 242, 123, 189, 192, 236, 212, 95, 82]
 def resultBytes : List UInt8 := [97, 18, 177, 87]
 def digest : UInt256 := 766350606435067737561421097975693824639675460820
 theorem anchor_binding : YulEvmCompiler.assembleBytes (anchorTemplate) = anchorBytes := by decide
 #print axioms anchor_binding
 
-theorem repeat_binding : YulEvmCompiler.assembleBytes (repeatTemplate) = repeatBytes := by decide
+theorem repeat_binding : Challenge.EvmProof.PcEncoding.assembleBytes (repeatTemplate) = repeatBytes := by decide
 #print axioms repeat_binding
 
 theorem store_binding : YulEvmCompiler.assembleBytes (storeTemplate digest) = storeBytes := by decide

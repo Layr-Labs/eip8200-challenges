@@ -13,12 +13,12 @@ def Advances (instruction : Instr) : Prop :=
     instruction = .op .DIV ∨ instruction = .op .MOD ∨ instruction = .op .LT ∨
     instruction = .op .SUB ∨ instruction = .op .CODECOPY ∨ instruction = .op .MSIZE ∨
     instruction = .op .SAR ∨ instruction = .op .GT ∨ instruction = .op .SDIV ∨
-    instruction = .op .SLT
+    instruction = .op .SLT ∨ instruction = .op .PC
 
 theorem runInstr_pc_extra {instruction : Instr} {s t : State}
     (hform : Advances instruction) (hresult : DataStepper.runInstr instruction s = some t) :
     t.pc = s.pc + UInt256.ofNat instruction.size := by
-  rcases hform with hold | hcl | hd | hm | hl | hs | hc | hms | hsar | hgt | hsdiv | hslt
+  rcases hform with hold | hcl | hd | hm | hl | hs | hc | hms | hsar | hgt | hsdiv | hslt | hpc
   · exact PersistentLoopLift.runInstr_pc_extra hold hresult
   all_goals subst instruction
   all_goals by_cases hcap : s.stack.length < 1024
@@ -46,7 +46,7 @@ theorem runInstr_pc_extra {instruction : Instr} {s t : State}
 
 def advancesCheck : Instr → Bool
   | .op .CALLDATALOAD | .op .DIV | .op .MOD | .op .LT |
-    .op .SUB | .op .CODECOPY | .op .MSIZE | .op .SAR | .op .GT | .op .SDIV | .op .SLT => true
+    .op .SUB | .op .CODECOPY | .op .MSIZE | .op .SAR | .op .GT | .op .SDIV | .op .SLT | .op .PC => true
   | i => PersistentLoopLift.advancesCheck i
 
 theorem advancesCheck_sound (instruction : Instr)

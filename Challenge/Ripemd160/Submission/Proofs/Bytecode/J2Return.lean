@@ -22,10 +22,10 @@ def afterCopy (s : State) (rho : List UInt256) : State :=
 def output (s : State) (rho : List UInt256) : State :=
   RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 4939) rho
 
-private theorem pc_3606 : Artifact.submissionArtifact.instructionPC 3539 = 4807 := by
+private theorem pc_3606 : Artifact.submissionArtifact.instructionPC 3539 = 4920 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3596 = 4938 := by
+private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3596 = 4977 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 private theorem beforeCopy_pc (s : State) (rho : List UInt256) :

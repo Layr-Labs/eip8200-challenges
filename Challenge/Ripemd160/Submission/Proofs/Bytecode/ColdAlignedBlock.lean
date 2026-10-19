@@ -12,17 +12,17 @@ enter at 461 without pretending the body itself begins there. -/
 def joinTemplate : List Instr := [.op .JUMPDEST]
 
 theorem join_slice :
-    (Artifact.submissionArtifact.instructions.drop 173).take joinTemplate.length = joinTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 168).take joinTemplate.length = joinTemplate := by rfl
 
 def joinSite : GenericRoundSite Artifact.submissionArtifact .Osaka joinTemplate :=
-  StackSiteBuilder.ofSlice joinTemplate 173 join_slice
-    (by change 173 + joinTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice joinTemplate 168 join_slice
+    (by change 168 + joinTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := joinTemplate) (by decide)) (by decide)
 
 theorem join_pc : joinSite.startPC = UInt256.ofNat 461 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 173) = UInt256.ofNat 461
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 168) = UInt256.ofNat 461
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_join (s : State) (stack : List UInt256) (hstack : stack.length < 1024)
@@ -41,17 +41,17 @@ def gasSteps_join (s : State) (stack : List UInt256) (hstack : stack.length < 10
 /-- The shared path enters the same one-instruction marker at PC 497,
 then starts its lower-half/table body at 498. -/
 theorem sharedJoin_slice :
-    (Artifact.submissionArtifact.instructions.drop 200).take joinTemplate.length = joinTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 195).take joinTemplate.length = joinTemplate := by rfl
 
 def sharedJoinSite : GenericRoundSite Artifact.submissionArtifact .Osaka joinTemplate :=
-  StackSiteBuilder.ofSlice joinTemplate 200 sharedJoin_slice
-    (by change 200 + joinTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice joinTemplate 195 sharedJoin_slice
+    (by change 195 + joinTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := joinTemplate) (by decide)) (by decide)
 
 theorem sharedJoin_pc : sharedJoinSite.startPC = LoopCompletionControl.sharedTailPC := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 200) = UInt256.ofNat 497
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 195) = UInt256.ofNat 497
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_sharedJoin (s : State) (stack : List UInt256) (hstack : stack.length < 1024)

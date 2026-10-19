@@ -18,7 +18,7 @@ open KnownInputCompactState StackRoundTrace StackRoundTemplate
 private def seed := RetainedIntegration105.repeatTemplate
 private theorem seed_slice :
     (Artifact.submissionArtifact.instructions.drop 20).take seed.length = seed := by rfl
-private theorem seed_pc : Artifact.submissionArtifact.instructionPC 20 = 41 := by
+private theorem seed_pc : Artifact.submissionArtifact.instructionPC 20 = 48 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem seed_bounds :
     20 + seed.length ≤ Artifact.submissionArtifact.instructions.length := by
@@ -33,7 +33,7 @@ private def seed_site : GenericRoundSite Artifact.submissionArtifact .Osaka seed
   StackSiteBuilder.ofSlice seed 20 seed_slice seed_bounds
     (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem seed_wf) (by decide)
-private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 41 := by
+private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 48 := by
   change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 20) = _
   rw [seed_pc]
 
@@ -43,7 +43,7 @@ private theorem run_seed (input : ByteArray) :
   have hcold : loopState input 0 =
       { initialState submissionBytecode input 0 with
         pc := UInt256.ofNat 9429
-        stack := [equalityAcc input 0, referenceWord input] } := by rfl
+        stack := [PcSeedRaw.seed input, referenceWord input] } := by rfl
   rw [hcold]
   simpa only [seed, sizeMatched, atPC, List.append_nil,
     Challenge.Ripemd160.initialState_calldata, Challenge.Ripemd160.initialState_stack, RetainedIntegration105.repeatTemplate,

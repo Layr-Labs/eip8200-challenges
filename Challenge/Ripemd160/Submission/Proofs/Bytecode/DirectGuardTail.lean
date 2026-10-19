@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcSeedMath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Low64RepeatMath
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuardLoop
@@ -71,45 +72,21 @@ theorem condWord_zero (r : UInt256) :
 `PUSH3 4706 JUMPI` exit at 9632 reaches the answer block. Stated for any input
 with a zero accumulator; the `JUMPI` runs as its own step (`PatternedScan.stepS_jumpi_taken`), since one `simp` over the
 whole path does not finish inside the memory budget. -/
-private theorem mismatch_zero (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord)
-    (hz : reverseAcc input 10 = UInt256.ofNat 0) :
-    TerminalXorRaw.mismatch input = 0 := by
-  have h := TerminalXorRaw.isZero_mismatch input href
-  rw [equalityAcc_reverse, hz] at h
-  unfold UInt256.isZero at h
-  split at h
-  · exact Word.word_ext (by assumption)
-  · contradiction
-
-private theorem mismatch_nonzero (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord)
-    (hz : reverseAcc input 10 ≠ 0) :
-    (TerminalXorRaw.mismatch input).toNat ≠ 0 := by
-  intro he
-  have h := TerminalXorRaw.isZero_mismatch input href
-  rw [equalityAcc_reverse] at h
-  unfold UInt256.isZero at h
-  have hn : (reverseAcc input 10).toNat ≠ 0 := fun hn => hz (Word.word_ext hn)
-  simp only [he, hn, if_pos, if_neg] at h
-  contradiction
-
-private theorem tail_push_pc : Artifact.submissionArtifact.instructionPC 5404 = 9632 := by
+private theorem tail_push_pc : Artifact.submissionArtifact.instructionPC 5399 = 9632 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem tail_jump_pc : Artifact.submissionArtifact.instructionPC 5405 = 9635 := by
+private theorem tail_jump_pc : Artifact.submissionArtifact.instructionPC 5400 = 9635 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem valid_terminal_miss : Decode.isValidJumpDest submissionBytecode 9662 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 5412 = 9662 := by
+  have hp : Artifact.submissionArtifact.instructionPC 5407 = 9662 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 5412 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 5407 (by rfl)
   rw [hp] at h
   exact h
 
-theorem run_tail_zero (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord)
-    (hz : reverseAcc input 10 = UInt256.ofNat 0) :
-    run tailPath (loopExitState input) = some (returnHopState input) := by
-  have hm := mismatch_zero input href hz
+theorem run_tail_target :
+    run tailPath (loopExitState KnownInputData.targetInput) =
+      some (returnHopState KnownInputData.targetInput) := by
+  have hm := PcSeedMath.mismatch_target
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, returnHopState, returnCells,
     tail_push_pc, tail_jump_pc, hm, UInt256.isTrue,
@@ -117,38 +94,18 @@ theorem run_tail_zero (input : ByteArray)
     Challenge.EvmProof.DataStepper.runInstr,
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
-theorem run_tail_target :
-    run tailPath (loopExitState KnownInputData.targetInput) =
-      some (returnHopState KnownInputData.targetInput) := by
-  have href : referenceWord KnownInputData.targetInput = KnownInputData.fullWord := by
-    simpa [referenceWord, KnownInputData.expectedWord] using
-      (KnownInputData.targetInput_readWord 0 (by decide))
-  exact run_tail_zero _ href reverseAcc_target_zero
-
 theorem run_return_hop (input : ByteArray) :
     run returnHopPath (returnHopState input) = some (returnEntry input) := by rfl
 
-theorem run_tail_divert_acc (input : ByteArray)
-    (href : referenceWord input = KnownInputData.fullWord)
-    (hneAcc : reverseAcc input 10 ≠ 0) :
-    run tailPath (loopExitState input) = some (tailDivertState input) := by
-  have hm := mismatch_nonzero input href hneAcc
-  simp (config := { maxSteps := 1000000 })
-    [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, returnCells,
-    tail_push_pc, tail_jump_pc, hm, UInt256.isTrue, valid_terminal_miss,
-    Challenge.EvmProof.DataStepper.runLocatedBlock, Challenge.EvmProof.DataStepper.runLocated,
-    Challenge.EvmProof.DataStepper.runInstr,
-    Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
-
 theorem run_fallback_clear (input : ByteArray) :
     run fallbackPath (tailDivertState input) = some (fallbackState input) := by
-  have hdestpc : Artifact.submissionArtifact.instructionPC 5412 = 9662 := by
+  have hdestpc : Artifact.submissionArtifact.instructionPC 5407 = 9662 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hzeropc : Artifact.submissionArtifact.instructionPC 5413 = 9663 := by
+  have hzeropc : Artifact.submissionArtifact.instructionPC 5408 = 9663 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpushpc : Artifact.submissionArtifact.instructionPC 5414 = 9664 := by
+  have hpushpc : Artifact.submissionArtifact.instructionPC 5409 = 9664 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hjumppc : Artifact.submissionArtifact.instructionPC 5415 = 9666 := by
+  have hjumppc : Artifact.submissionArtifact.instructionPC 5410 = 9666 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, entryDest, opAt, pushAt, wfOp, tailDivertState, fallbackState,
@@ -159,19 +116,13 @@ theorem run_fallback_clear (input : ByteArray) :
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat]
 
-theorem run_tail_divert (input : ByteArray) (hsize : input.size = 1000)
-    (href : referenceWord input = KnownInputData.fullWord)
-    (hne : input ≠ KnownInputData.targetInput) :
-    run tailPath (loopExitState input) = some (tailDivertState input) :=
-  run_tail_divert_acc input href (fun hz => hne (reverseAcc_zero_target input hsize href hz))
-
 theorem run_tail_divert_low (input : ByteArray) (hsize : input.size = 1000)
     (hcond : Low64RepeatMath.condition input = 0)
     (hne : input ≠ KnownInputData.targetInput) :
     run tailPath (loopExitState input) = some (tailDivertState input) := by
-  have hm : (TerminalXorRaw.mismatch input).toNat ≠ 0 := by
+  have hm : (PcSeedRaw.mismatch input).toNat ≠ 0 := by
     intro hz
-    exact hne (Low64RepeatMath.mismatch_zero_target input hsize hcond (Word.word_ext hz))
+    exact hne (PcSeedMath.mismatch_zero_target input hsize hcond (Word.word_ext hz))
   simp (config := { maxSteps := 1000000 })
     [tailPath, opAt, pushAt, wfOp, loopExitState, tailDivertState, returnCells,
       tail_push_pc, tail_jump_pc, hm, UInt256.isTrue, valid_terminal_miss,
@@ -179,17 +130,17 @@ theorem run_tail_divert_low (input : ByteArray) (hsize : input.size = 1000)
       Challenge.EvmProof.DataStepper.runInstr,
       Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
-@[simp] private theorem terminal_pc_5412 : Artifact.submissionArtifact.instructionPC 5406 = 9636 := by
+@[simp] private theorem terminal_pc_5412 : Artifact.submissionArtifact.instructionPC 5401 = 9636 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5413 : Artifact.submissionArtifact.instructionPC 5407 = 9657 := by
+@[simp] private theorem terminal_pc_5413 : Artifact.submissionArtifact.instructionPC 5402 = 9657 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5414 : Artifact.submissionArtifact.instructionPC 5408 = 9658 := by
+@[simp] private theorem terminal_pc_5414 : Artifact.submissionArtifact.instructionPC 5403 = 9658 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5415 : Artifact.submissionArtifact.instructionPC 5409 = 9659 := by
+@[simp] private theorem terminal_pc_5415 : Artifact.submissionArtifact.instructionPC 5404 = 9659 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5416 : Artifact.submissionArtifact.instructionPC 5410 = 9660 := by
+@[simp] private theorem terminal_pc_5416 : Artifact.submissionArtifact.instructionPC 5405 = 9660 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5417 : Artifact.submissionArtifact.instructionPC 5411 = 9661 := by
+@[simp] private theorem terminal_pc_5417 : Artifact.submissionArtifact.instructionPC 5406 = 9661 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem run_return_store (input : ByteArray) :
@@ -222,13 +173,13 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 5409 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 5404 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 5409 := by
+      Artifact.submissionArtifact.instructionPC 5404 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 5409
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 5404
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, returnCells]) (by rfl)

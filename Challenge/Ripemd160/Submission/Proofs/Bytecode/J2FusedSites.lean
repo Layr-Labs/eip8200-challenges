@@ -97,7 +97,7 @@ def certificates : Certificates where
   finish := ⟨finishSite.site, finishSite.site_pc⟩
   non256_valid := by
     have h := Artifact.submissionArtifact.isValidJumpDest_index 3562 (by rfl)
-    have hp : Artifact.submissionArtifact.instructionPC 3562 = 4876 := by
+    have hp : Artifact.submissionArtifact.instructionPC 3562 = 4943 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
     simpa only [J2Moves.non256PC, hp] using h
   projection_end := by decide

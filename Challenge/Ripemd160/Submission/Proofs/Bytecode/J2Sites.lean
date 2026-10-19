@@ -292,70 +292,70 @@ end boundaryProjectionSite
 theorem valid_block0 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 4970 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3587 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3587 = 4970 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3587 = 4968 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block1 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5052 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3605 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3605 = 5052 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3605 = 4986 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block2 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5134 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3623 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3623 = 5134 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3623 = 5004 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block3 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5216 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3641 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3641 = 5216 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3641 = 5022 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block4 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5298 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3659 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3659 = 5298 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3659 = 5040 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block5 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5380 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3677 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3677 = 5380 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3677 = 5058 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block6 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5462 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3695 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3695 = 5462 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3695 = 5076 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_block7 (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5544 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3713 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3713 = 5544 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3713 = 5094 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_boundary (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 4853 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3548 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3548 = 4853 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3548 = 4929 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
 theorem valid_miss (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 4565 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3412 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3412 = 4565 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3412 = 4617 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 
