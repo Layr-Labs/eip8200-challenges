@@ -168,8 +168,8 @@ def gasSteps_dispatch (s : State) (h : Compression.HashState) (off cont junk : U
 
 /-- The 192 stub pushes its next continuation before jumping to the shared join. -/
 def stub192Push : GenericRoundSite Artifact.submissionArtifact .Osaka (StaggerPersistentLoopRaw.pushContTemplate 128) :=
-  StackSiteBuilder.ofSlice (StaggerPersistentLoopRaw.pushContTemplate 128) 113 (by rfl)
-    (by change 113 + (StaggerPersistentLoopRaw.pushContTemplate 128).length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (StaggerPersistentLoopRaw.pushContTemplate 128) 112 (by rfl)
+    (by change 112 + (StaggerPersistentLoopRaw.pushContTemplate 128).length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := (StaggerPersistentLoopRaw.pushContTemplate 128)) (by decide))
@@ -205,7 +205,7 @@ def stub128Set : GenericRoundSite Artifact.submissionArtifact .Osaka (StaggerPer
     (by decide)
 
 theorem stub192Push_pc : stub192Push.startPC = UInt256.ofNat 193 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 113) = UInt256.ofNat 193
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 112) = UInt256.ofNat 193
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem glPush_pc : glPush.startPC = UInt256.ofNat 59 := by
@@ -229,11 +229,11 @@ def jumpdestSite (idx : Nat)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := [.op .JUMPDEST]) (by decide)) (by decide)
 
-def stub192Dest := jumpdestSite 112 (by rfl) (by rw [Artifact.referenceInstructions_count]; decide)
+def stub192Dest := jumpdestSite 111 (by rfl) (by rw [Artifact.referenceInstructions_count]; decide)
 def stub128Dest := jumpdestSite 70 (by rfl) (by rw [Artifact.referenceInstructions_count]; decide)
 
 theorem stub192Dest_pc : stub192Dest.startPC = UInt256.ofNat 192 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 112) = UInt256.ofNat 192
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 111) = UInt256.ofNat 192
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem stub128Dest_pc : stub128Dest.startPC = UInt256.ofNat 128 := by
@@ -250,7 +250,7 @@ def advJumpSite (idx : Nat)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := PadJump.template1 131) (by decide)) (by decide)
 
-def stub192Jump := advJumpSite 114 (by rfl) (by rw [Artifact.referenceInstructions_count]; decide)
+def stub192Jump := advJumpSite 113 (by rfl) (by rw [Artifact.referenceInstructions_count]; decide)
 /-- `PUSH1 0x83 JUMP` at 61: the last-block stay hops to the shared join at 131. -/
 def glHopJump : GenericRoundSite Artifact.submissionArtifact .Osaka (PadJump.template1 131) :=
   StackSiteBuilder.ofSlice (PadJump.template1 131) 39 (by rfl)
@@ -260,7 +260,7 @@ def glHopJump : GenericRoundSite Artifact.submissionArtifact .Osaka (PadJump.tem
     (StackRoundData.templateWellFormed_mem (instructions := PadJump.template1 131) (by decide)) (by decide)
 
 theorem stub192Jump_pc : stub192Jump.startPC = UInt256.ofNat 195 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 114) = UInt256.ofNat 195
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 113) = UInt256.ofNat 195
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem glHopJump_pc : glHopJump.startPC = UInt256.ofNat 61 := by

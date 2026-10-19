@@ -52,7 +52,7 @@ theorem run_fold (s : State) (pc : UInt256) (F : List UInt256)
 word (below the retained flag) at188. -/
 def template : List Instr :=
   [.push ⟨2, by decide⟩ (UInt256.ofNat 5000),
-   .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .CODECOPY, .op .JUMPDEST]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 162), .op .CODECOPY]
 
 def copied (memory code : ByteArray) : ByteArray :=
   MachineState.writeBytes memory (MachineState.readPadded code 5000 32) 162
@@ -77,7 +77,7 @@ theorem run_sparse (s : State) (pc flag : UInt256) (F : List UInt256)
     hrun, hcap, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
     List.getElem?_cons_zero, State.activeWordsAfterUInt256, hword, copied, add_eq_hAdd]
 
-theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [97,19,136,96,162,57,91] := by decide
+theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [97,19,136,97,0,162,57] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =
