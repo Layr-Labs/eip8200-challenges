@@ -1,8 +1,10 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Codecopy
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.EvmProof.Ops
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DataProgram
 import YulEvmCompiler.Instr
 set_option warningAsError true
+set_option maxHeartbeats 2000000
 /-!
 # A reusable symbolic stepper for pure EVM bytecode
 
@@ -193,6 +195,15 @@ def runInstr (instruction : Instr) (s : State) : Option State :=
             activeWords := s.activeWordsAfterUInt256_2
               destOff.toNat size.toNat srcOff.toNat size.toNat }
         | _ => none
+    | .op .CODECOPY => match s.stack with
+        | destOff :: srcOff :: size :: rest => some { s with
+            stack := rest
+            pc := s.pc.succ
+            memory := MachineState.writeBytes s.memory
+              (MachineState.readPadded s.executionEnv.code srcOff.toNat size.toNat)
+              destOff.toNat
+            activeWords := s.activeWordsAfterUInt256 destOff.toNat size.toNat }
+        | _ => none
     | .op .JUMP => match s.stack with
         | dest :: rest =>
             if Decode.isValidJumpDest s.executionEnv.code dest.toNat then
@@ -229,6 +240,7 @@ def instrCost : Instr → State → Nat
   | .op .MSTORE, s => Gas.totalCost s .MSTORE
   | .op .MSTORE8, s => Gas.totalCost s .MSTORE8
   | .op .MCOPY, s => Gas.totalCost s .MCOPY
+  | .op .CODECOPY, s => Gas.totalCost s .CODECOPY
   | .op .RETURN, s => Gas.totalCost s .RETURN
   | .op op, s => Gas.baseCost s.fork op
 
@@ -656,6 +668,32 @@ private def sound_mcopy {s t : State}
     | _ :: _ :: [] => simp [hstack] at hresult
   · simp [runInstr, hcap] at hresult
 
+private def sound_codecopy {s t : State}
+    (hdecode : s.decodedOp = some .CODECOPY)
+    (hresult : runInstr (.op .CODECOPY) s = some t)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) : GasSteps s t := by
+  refine ⟨instrCost (.op .CODECOPY) s, ?_⟩
+  intro gas hgas
+  by_cases hcap : s.stack.length < 1024
+  · rw [runInstr, if_pos hcap] at hresult
+    match hstack : s.stack with
+    | destOff :: srcOff :: size :: rest =>
+      simp [hstack] at hresult
+      subst t
+      let g := Challenge.Ripemd160.Submission.Proofs.Bytecode.Codecopy.step destOff srcOff size rest hdecode hstack
+        (stackCap s .CODECOPY hcap) hrun hnp
+      have hg : g.cost ≤ gas := by
+        simpa [g, Challenge.Ripemd160.Submission.Proofs.Bytecode.Codecopy.step, GasStep.of_running, GasSteps.one,
+          instrCost, Gas.totalCost, hstack] using hgas
+      simpa [g, Challenge.Ripemd160.Submission.Proofs.Bytecode.Codecopy.step, GasStep.of_running, GasSteps.one,
+        instrCost, Gas.totalCost, hstack] using g.trace gas hg
+    | [] => simp [hstack] at hresult
+    | _ :: [] => simp [hstack] at hresult
+    | _ :: _ :: [] => simp [hstack] at hresult
+  · simp [runInstr, hcap] at hresult
+
 private def sound_jump {s t : State}
     (hdecode : s.decodedOp = some .JUMP)
     (hresult : runInstr (.op .JUMP) s = some t)
@@ -799,6 +837,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | exact (sound_codesize hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_calldatasize hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_calldatacopy hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_codecopy hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | StackMemFlow op =>
       cases op <;> first
@@ -812,6 +851,7 @@ def runInstr_sound {instruction : Instr} {s t : State}
         | exact (sound_jumpi hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_jumpdest hdecode hresult hrun hnp).trace gas hgas
         | exact (sound_mcopy hdecode hresult hrun hnp).trace gas hgas
+        | exact (sound_codecopy hdecode hresult hrun hnp).trace gas hgas
         | simp [runInstr] at hresult
     | Dup n => exact (sound_dup n hdecode hresult hrun hnp).trace gas hgas
     | Swap n => exact (sound_swap n hdecode hresult hrun hnp).trace gas hgas

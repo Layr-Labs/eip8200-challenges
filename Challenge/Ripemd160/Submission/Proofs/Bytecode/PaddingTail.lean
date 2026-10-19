@@ -53,7 +53,9 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile
     (by exact Nat.lt_trans hfit (by norm_num)) hn32
-    (padGuardMiss_active input hfit hpos) rfl
+    (padGuardMiss_active input hfit hpos)
+    (by rw [padGuardMiss_memory]; have hh := Shared32Scratch.copiedMemory_size input hpos; omega)
+    (by rw [padGuardMiss_memory]; intro a ha hb; exact Shared32Scratch.copiedMemory_zero input a (by omega)) rfl
   exact g.trans gp
 
 def gasSteps_setup (input : ByteArray) (hfit : CalldataFits input)

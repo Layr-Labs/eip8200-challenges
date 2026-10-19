@@ -160,6 +160,10 @@ def instrCostWithoutMemory : Instr → State → Nat
       | _ :: _ :: size :: _ =>
           Gas.baseCost s.fork .CALLDATACOPY + Gas.copyWordCost size
       | _ => Gas.baseCost s.fork .CALLDATACOPY
+  | .op .CODECOPY, s => match s.stack with
+      | _ :: _ :: size :: _ =>
+          Gas.baseCost s.fork .CODECOPY + Gas.copyWordCost size
+      | _ => Gas.baseCost s.fork .CODECOPY
   | .op .MLOAD, s => Gas.baseCost s.fork .MLOAD
   | .op .MSTORE, s => Gas.baseCost s.fork .MSTORE
   | .op .MSTORE8, s => Gas.baseCost s.fork .MSTORE8
@@ -182,7 +186,7 @@ theorem runInstr_cost_potential {instruction : Instr} {s t : State}
       repeat' first | split at hresult | simp_all
     all_goals subst t
     all_goals simp_all [DataStepper.instrCost, instrCostWithoutMemory, Gas.totalCost,
-      Gas.calldatacopyTotal, Gas.mloadTotal, Gas.mstoreTotal,
+      Gas.calldatacopyTotal, Gas.codecopyTotal, Gas.mloadTotal, Gas.mstoreTotal,
       Gas.mstore8Total, Gas.mcopyTotal, Gas.returnTotal,
       State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
       oneRangeBasePotential, oneRange32Potential, oneRange1Potential,
@@ -233,6 +237,7 @@ copy length; ordinary loads, stores, and returns are included because their
 memory expansion is already separated by `instrCostWithoutMemory`. -/
 def CopyFree : Instr → Bool
   | .op .CALLDATACOPY => false
+  | .op .CODECOPY => false
   | .op .MCOPY => false
   | _ => true
 

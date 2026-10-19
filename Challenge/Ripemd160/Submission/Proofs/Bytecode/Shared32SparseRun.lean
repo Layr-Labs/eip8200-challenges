@@ -38,12 +38,12 @@ theorem run_head (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt25
   rfl
 
 /-- The `PUSH1 0x80` at151: the sentinel byte for 165. -/
-def foldTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 128) ]
+def foldTemplate : List Instr := [ .push ⟨1, by decide⟩ (UInt256.ofNat 32) ]
 
 theorem run_fold (s : State) (pc : UInt256) (F : List UInt256)
     (hstack : F.length ≤ 900) (hrun : s.halt = .Running) :
     runInstrSeq foldTemplate {s with pc := pc, stack := F} =
-      some {s with pc := pcAfter pc foldTemplate, stack := UInt256.ofNat 128 :: F} := by
+      some {s with pc := pcAfter pc foldTemplate, stack := UInt256.ofNat 32 :: F} := by
   have hcap : F.length < 1024 := by omega
   simp [foldTemplate, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, Instr.size,
     UInt256.succ, Word.literal_eq_ofNat]
@@ -51,30 +51,33 @@ theorem run_fold (s : State) (pc : UInt256) (F : List UInt256)
 /-- The two sparse padding bytes: `0x80` at 165 and the low byte `1` of the resident coefficient
 word (below the retained flag) at188. -/
 def template : List Instr :=
-  [ .push ⟨1, by decide⟩ (UInt256.ofNat 165),
-    .op .MSTORE8,
-    .op (.Dup ⟨5, by decide⟩),
-    .push ⟨1, by decide⟩ (UInt256.ofNat 188),
-    .op .MSTORE8 ]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 5000),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .CODECOPY, .op .JUMPDEST]
 
-theorem run_sparse (s : State) (pc v flag x0 x1 x2 x3 x4 : UInt256) (G : List UInt256)
-    (hstack : G.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : s.activeWords = UInt256.ofNat 34)
-    (hbyte : UInt8.ofNat (v.toNat % 256) = 128)
-    (hone : UInt8.ofNat (x4.toNat % 256) = 1) :
-    runInstrSeq template {s with pc := pc, stack := v :: flag :: x0 :: x1 :: x2 :: x3 :: x4 :: G} =
+def copied (memory code : ByteArray) : ByteArray :=
+  MachineState.writeBytes memory (MachineState.readPadded code 5000 32) 162
+
+theorem run_sparse (s : State) (pc flag : UInt256) (F : List UInt256)
+    (hstack : F.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 34 ≤ s.activeWords.toNat) :
+    runInstrSeq template {s with pc := pc, stack := UInt256.ofNat 32 :: flag :: F} =
       some {s with
         pc := pcAfter pc template
-        stack := flag :: x0 :: x1 :: x2 :: x3 :: x4 :: G
-        memory := sparseMemory s.memory} := by
-  have hcap (n : Nat) (hn : n ≤ 27) : G.length + n < 1024 := by omega
-  have hcap0 : G.length < 1024 := by omega
+        stack := flag :: F
+        memory := copied s.memory s.executionEnv.code} := by
+  have hcap (n : Nat) (hn : n ≤ 27) : F.length + n < 1024 := by omega
+  have hword : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 162 32) = s.activeWords := by
+    have h : MachineState.activeWordsAfter s.activeWords.toNat 162 32 = s.activeWords.toNat := by
+      simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0)]
+      apply Nat.max_eq_left
+      omega
+    rw [h]
+    exact (Word.word_eq_ofNat_toNat _).symm
   simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr, pcAfter,
-    hrun, hcap, hcap0, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
-    List.getElem?_cons_zero, State.activeWordsAfterUInt256,
-    hactive, MachineState.activeWordsAfter, hbyte, hone, sparseMemory, add_eq_hAdd]
+    hrun, hcap, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
+    List.getElem?_cons_zero, State.activeWordsAfterUInt256, hword, copied, add_eq_hAdd]
 
-theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [96,165,83,133,96,188,83] := by decide
+theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [97,19,136,96,162,57,91] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =

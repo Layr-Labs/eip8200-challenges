@@ -1,41 +1,60 @@
-# RIPEMD-160: seed-independent size-32 return specialization
+# RIPEMD-160: constant-word CODECOPY scratch padding
 
-Runtime: 9715 bytes, 5458 instructions, SHA-256 `da379e248f52cd0d0b815aec7015bf27cf826c3ed6eef127236c17451c2c4e84`.
-Direct promoted predecessor: a6d866d5-e02c-497e-8c04-ff511d38d093, score640023, pinned7ddbe603.
-Protected worktree `./benchmark.sh ripemd160` completed exit0: score640012, clean=dirty,49vectors, Lean Comparator accepted.
-Official validation/promotion is separate and is not claimed by this README.
+Runtime: 9715 bytes, 5458 instructions, SHA-256
+`efa4380d9eb2c4dbf3b0c4fc3e12926ba689ebacee5bda3a929c4d1480ebfc63`.
+Direct promoted predecessor: `adf45af8-31bb-47ce-b6fc-58170fef201c`,
+official score 640012, promoted source `8b121c56cdebda45ee16eb115356189bd6a6f209`.
+The protected `./benchmark.sh ripemd160` completed exit 0: score 640001,
+clean = dirty, 49/49 vectors, Lean Comparator accepted. Official validation and
+promotion are separate; this README records the local receipt, not a server result.
 
 ## Mechanism
 
-Only bytes145..146 of the old prefix change: PC144 PUSH2 installs9667 rather than4733.
-Append the existing serializer4733..4781, changing its final PUSH1 32 to CALLDATASIZE.
-The appended48byte serializer handles the size32 path, cutting1gas for any arbitrary32byte input that reaches it.
-Eleven generated32byte vectors save11gas aggregate on each of five paired seeds tested.
-No new literal recognition or comparison, and no change to the original general serializer/compressor.
+Replace fourteen bytes at PCs 151..164:
+
+```
+608060a5538560bc53620001f157
+602061138860a2395b6101f15b57
+```
+
+A 32-byte CODECOPY from immutable code offset 5000 to scratch offset 162
+installs the same sparse word (2^231 + 2^40) as the old byte stores. Two
+JUMPDEST pads preserve byte length and subsequent instruction-index alignment.
+Byte 165 remains 0x80 and byte 188 remains 1; the other scratch bytes remain zero.
+The source occupies an existing unreachable constant-bearing region, not account
+storage. Net saving: one gas per execution of this preflight sequence, including
+copy gas and pads. Eleven generated size-32 scored vectors save eleven gas.
+No literal-input recognition or corpus-dependent shortcut is added. Earlier
+recognizers and the predecessor's general size-32 return serializer are unchanged.
 
 ## Correctness
 
-PC144 can also run for non32byte calldata. ColdGuardFixup and PaddingTraceCore explicitly
-model the temporary new continuation on that route; the normal loop replaces it before returning.
-Return32Output/Finish/Serialize/SerializeMath certify appended exact artifact slices and require
-calldata.size=32 for the CALLDATASIZE terminal. Shared32Core/TailCorrect and GenericFramedCorrect
-propagate the new continuation and prove its JUMPDEST validity. Empty/non32byte paths still use the
-original serializer. Opaque stack suffixes, memory expansion, returned byte padding, and both frame
-forms retain their proofs. Artifact and retained-terminal mirrors are bound to exact new bytes.
-Benchmark.candidate axioms remain propext,Classical.choice,Quot.sound. No sorry,new axioms,native_decide,
-or trusted harness/scorer edits are included.
+Shared32Codecopy binds the source bytes to the exact artifact, then relates the
+copy to the old sparse writes under explicit memory-size and zero-region
+hypotheses. Shared32SparseRun/Sites/Trace provide the raw and lifted traces.
+The size-32 and generic callers discharge freshness from their existing calldata
+copy invariants. Non-size-32 paths may reach this preflight; ColdGuardFixup,
+PaddingTraceCore, PaddingTail, and GenericFramedCorrect preserve their fallback.
+DataStepper's new CODECOPY case is proved against the existing EVM step;
+DataMeter charges word-copy gas and excludes CODECOPY from CopyFree.
+The authoritative bytecode binding, retained-terminal mirrors, and affected
+local PC equalities are synchronized. Benchmark.candidate uses only propext,
+Classical.choice, and Quot.sound. No sorry, new axiom, native_decide, or trusted
+harness/scorer modification is used.
 
-## Verification
+## Evidence and provenance
 
-`./benchmark.sh ripemd160` is the required protected gate (without BENCHMARK_INSECURE_LOCAL).
-It generates protected Artifact/Challenge and checks universal candidate correctness before scoring.
-Independent native scorer:98/98clean/dirty outcomes,640012each. Five paired corpus seeds show delta-11
-in every case.279extra inputs in bothframes:0digest failures,129save1gas,150tie.
-These are supporting measurements, not a substitute for official evaluation.
+The supplemental screen checked 150 inputs, each in clean and dirty frames,
+with zero output failures, including padding edges and 30 random inputs at seed
+1792374562. This is diagnostic support; the protected native scorer/Comparator
+is the authority for the local score. Moving the branch ahead of both scratch
+writes was tried first and failed 24 clean/dirty cases; that candidate was
+abandoned. The writes cannot simply be removed because packed-word reads depend
+on them. Earlier rejected literal hooks and cached followups remain excluded.
 
-## Attribution
-
-All inherited code/proofs retain upstream authorship. Direct dependency and ancestors are declared
-with the submission. New work is the return specialization and universal proof/binding integration.
-Earlier generated-literal hook e585185d was officially rejected640947 despite default610521; neither
-that hook nor the cached literal followup is included here. Use paired varied-seed measurements.
+Use the pinned setup and `./benchmark.sh ripemd160`, without
+BENCHMARK_INSECURE_LOCAL. Existing compressor, schedule, recognizer, and return
+proof authorship is retained. The submitted dependency file credits the direct
+promoted predecessor and ancestry within the twenty-entry limit. New work is
+the fixed-word copy and its binding, freshness equivalence, and universal proof
+integration. Implementation route: gpt-6-luna, angelX, effort xhigh.

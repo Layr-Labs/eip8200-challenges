@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Codecopy
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Sites
 
 set_option warningAsError true
@@ -16,8 +17,10 @@ coefficient word in slot 4) are stored, then the flag is consumed at160 and join
 def gasSteps_sparse (s : State) (e : Env s)
     (ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 880)
+    (hmemsize : 194 ≤ s.memory.size)
+    (hzero : ∀ a, 162 ≤ a → a < 194 → s.memory[a]?.getD 0 = 0)
     (hactive : s.activeWords = UInt256.ofNat 34)
-    (hone : UInt8.ofNat (a4.toNat % 256) = 1)
+    (_hone : UInt8.ofNat (a4.toNat % 256) = 1)
     (_h32 : s.executionEnv.calldata.size = 32) (hlim : lim = UInt256.ofNat 32) :
     GasSteps
       (atState s 143 (stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho))
@@ -29,8 +32,7 @@ def gasSteps_sparse (s : State) (e : Env s)
   have hF0 : F0.length ≤ 900 := by simp only [F0, stk, List.length_cons]; omega
   let sM : State := {s with memory := sparseMemory s.memory}
   have eM : Env sM := ⟨e.code, e.fork, e.run, e.np⟩
-  let v := UInt256.ofNat 128
-  have hbyte : UInt8.ofNat (v.toNat % 256) = 128 := by decide
+  let v := UInt256.ofNat 32
   have g0 : GasSteps (atState s 143 F) (atState s 144 F) := by
     apply special.lift s (atState s 144 F) e F
     simpa only [special.template, atState, show UInt256.ofNat 143 + UInt256.ofNat 1 = UInt256.ofNat 144 by decide] using
@@ -46,11 +48,12 @@ def gasSteps_sparse (s : State) (e : Env s)
     simpa only [fold.template, fold.end_pc, atState] using h
   have g4 : GasSteps (atState s 153 (v :: UInt256.ofNat 1 :: F0)) (atState sM 160 (UInt256.ofNat 1 :: F0)) := by
     apply sparse.lift s (atState sM 160 (UInt256.ofNat 1 :: F0)) e (v :: UInt256.ofNat 1 :: F0)
-    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 153) v (UInt256.ofNat 1) ret mw a2 a3 a4
-      (a5 :: a6 :: a7 :: a8 :: a9 :: a10 :: UInt256.ofNat 1056 :: UInt256.ofNat 9667 ::
-        DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)
-      (by simp only [List.length_cons]; omega) e.run hactive hbyte hone
-    simpa only [sparse.template, sparse.end_pc, atState, sM, F0, stk] using h
+    have h := Shared32SparseRun.run_sparse s (UInt256.ofNat 153) (UInt256.ofNat 1) F0
+      hF0 e.run (by rw [hactive]; decide)
+    have hm : Shared32SparseRun.copied s.memory s.executionEnv.code = sparseMemory s.memory := by
+      rw [e.code]
+      exact Shared32Codecopy.copied_sparse s.memory hmemsize hzero
+    simpa only [sparse.template, sparse.end_pc, atState, sM, hm, v] using h
   have g5 : GasSteps (atState sM 160 (UInt256.ofNat 1 :: F0)) (atState sM 497 F0) := by
     apply guard.lift sM (atState sM 497 F0) eM (UInt256.ofNat 1 :: F0)
     have hc (n : Nat) (hn : n ≤ 3) : F0.length + n < 1024 := by omega

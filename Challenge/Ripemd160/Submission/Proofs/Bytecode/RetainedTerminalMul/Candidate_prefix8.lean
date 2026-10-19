@@ -266,7 +266,7 @@ def prefix8 : List Instr := [
   op 0x17,
   op 0x8a,
   op 0x18,
-  op 0x16
+  op 0x16,
 ]
 
 theorem prefix8_count : prefix8.length = 256 := by decide
