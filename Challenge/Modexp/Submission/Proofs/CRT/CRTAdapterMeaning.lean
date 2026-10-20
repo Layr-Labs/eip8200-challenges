@@ -143,7 +143,7 @@ theorem retain_model (s : State)
     retainModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 (UInt256.ofNat (2^244-1)) minv
       pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest =
       {s with
-        pc := UInt256.ofNat 8725
+        pc := UInt256.ofNat 8648
         memory := retainedMemory s.memory
         stack := [UInt256.ofNat 5858, P, n0, n1, n2, n3, n4, n5, n6, n7, n8,
           UInt256.ofNat (2^244-1), minv, pbi, hd, w3, ent, m32, allones, m128, m64,
@@ -159,7 +159,7 @@ theorem exit_model (s : State)
     exitModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv
       pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest =
       {s with
-        pc := UInt256.ofNat 8997
+        pc := UInt256.ofNat 8976
         memory := exitMemory s.memory
         stack := [UInt256.ofNat 3942, pbi, hd, w3, ent, m32, allones, m128, m64,
           m0, tl, m96, inv, MachineState.readWord s.memory 1760, cachedTop s.memory,

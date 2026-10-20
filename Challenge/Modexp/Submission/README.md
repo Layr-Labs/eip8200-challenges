@@ -1,35 +1,60 @@
-# MODEXP candidate v10: CRT Montgomery squaring peephole schedule + Fermat dispatch optimization (-3,054 gas)
+# MODEXP candidate v11: CRT Montgomery squaring Phase B/A reordering + retain/exit address preloading (-6,159 gas)
 
-This candidate modifies the promoted MODEXP baseline `9b6eb630-5eaf-47cf-9e87-8edfc1dde265`
-(commit `97cb39d3ddee7d4eccb468820300a41c4124c974`) and our earlier verified submission
-`f992ebce-abaf-4912-acfe-1b8abc6da1ce`. All changes are confined to the permitted
+This candidate modifies our promoted MODEXP baseline `e506ac91-39f1-41fe-a002-90b33fd36e18`
+(409,127 seed-0 gas, 412,399 official gas) and upstream promoted baseline
+`9b6eb630-5eaf-47cf-9e87-8edfc1dde265` (commit `97cb39d3ddee7d4eccb468820300a41c4124c974`,
+412,181 seed-0 gas, 415,686 official gas). All changes are confined to the permitted
 `Challenge/Modexp/Submission` directory.
 
 | Artifact identity | Value |
 |---|---|
-| Decoded bytecode SHA-256 | `f7bfe2f8dbd4f810b9f43ec5d91af31d1a714e904cd8770e19167bb4b7e1b8c6` |
+| Decoded bytecode SHA-256 | `d48e64f9207a8efe5f33f2d2f67aa18cea44320c11e015208bebcb83fae80974` |
 | Bytecode size | 10,915 bytes |
 | Decoded instructions | 8,722 |
-| Protected native benchmark, seed zero | 409,127 gas; 44 correct vectors |
+| Protected native benchmark, seed zero | 406,022 gas; 44 correct vectors |
 
 On identical seed-zero inputs, the promoted v9 baseline (`9b6eb630`) uses 412,181 gas,
-the public e-man07 `f801e2ad` image uses 454,419 gas, and local v8 uses 453,287 gas.
-This candidate (`v10`) uses **409,127 gas**, saving **3,054 gas** against promoted v9
-(`9b6eb630`), **2,992 gas** against `f992ebce`, and **45,292 gas** (9.97%) against
-`f801e2ad`.
+our promoted v10 baseline (`e506ac91`) uses 409,127 gas, the public e-man07 `f801e2ad`
+image uses 454,419 gas, and local v8 uses 453,287 gas. This candidate (`v11`) uses
+**406,022 gas**, saving **3,105 gas** against promoted v10 (`e506ac91`), **6,159 gas**
+against promoted v9 (`9b6eb630`), and **48,397 gas** (10.65%) against `f801e2ad`.
 
 ## Changes
 
-- **CRT Montgomery squaring kernel peephole schedule (`PC 5859..8507`, -2,992 gas)**:
-  Eliminates 72 instructions (74 bytes) per 2048-bit CRT squaring iteration across four
-  definitionally-preserving (`by rfl`) stack-scheduling rewrites in `CRTKernelExecution.lean`
-  (`p1` double-accumulator addition in `col1..col15`, `p2` carry shift-add in `col0..col15`,
-  `p3` Montgomery `MULMOD` accumulation in `col0..col8`, and `p4` initial `col0` square-and-`MULMOD`
-  ordering), saving **176 gas per CRT squaring** (`-176` gas on `generated RSA-2048 #01 e=3` and
-  `-2,816` gas on `generated RSA-2048 #02 e=65537`).
-- **Fermat/inversion positive-branch dispatch (`PC 90..101`, -56 gas)** and **short-base calldata
-  loader stack scheduling (`PC 112..136`, -6 gas)**: Saves 17 gas each on `eipExample1` and
-  `eipExample2`, and 14 gas each on `bn254Fermat` and `bn254ModularInversion`.
+- **Cut 4A — CRT Montgomery squaring kernel Phase B-before-Phase A operand reordering +
+  11-instruction `cancel` tail (`PC 5859..8454`, -2,703 gas)**:
+  Eliminates 53 additional instructions (53 bytes, 159 gas) per 2048-bit CRT squaring
+  iteration on top of Cut 3 (-72 instructions, -74 bytes, -176 gas/squaring), for a
+  combined reduction of **125 instructions (127 bytes, 335 gas) per CRT squaring**
+  (`17 × 335 = 5,695 gas` total across `generated RSA-2048 #01 e=3` and
+  `generated RSA-2048 #02 e=65537`). Specifically:
+  - In `col3..col13`, off-diagonal pair multiplication reorders Phase B (`MUL`, `ADD`, `MUL`)
+    before Phase A (`MULMOD`, `ADD`, `MULMOD`), consuming shared operand copies directly
+    and saving 2 instructions (6 gas) per column (`-22 instructions, -66 gas/squaring`).
+  - In `col1..col15`, omitting the trailing `SWAP1` of `p1` leaves `acc_w` above `acc_m`
+    entering the Montgomery phase; reordering Montgomery Phase B before Phase A saves
+    2 instructions (6 gas) per column in `col9..col15` (`-14 instructions, -42 gas/squaring`)
+    and, combined with an 11-instruction `cancel` tail, saves 2 instructions (6 gas) per
+    column in `col1..col8` (`-16 instructions, -48 gas/squaring`).
+  - In `col0`, applying the 11-instruction `cancel` tail saves 1 instruction (3 gas)
+    (`-1 instruction, -3 gas/squaring`).
+- **Cut 4B — `retainProgram` descending address preloading & `mask` reuse (`PC 8479..8648`, -360 gas)**:
+  Preloads `1600`, copies `mask` once via `DUP12`, and preloads `1568..1344` in descending
+  order at the start of `retainProgram`, replacing all 8 duplicate `PUSH2 addr; MLOAD`
+  pairs with `DUP2`/`DUP3` and consuming the copied `mask` directly on the 8th `AND`.
+  Shrinks `retainProgram` from 117 instructions (193 bytes) to 109 instructions (169 bytes),
+  saving **24 gas per retain × 15 retains = 360 gas** on `generated RSA-2048 #02 e=65537`.
+- **Cut 4C — `exitProgram` early stack cleanup & descending address preloading (`PC 8800..8976`, -42 gas)**:
+  Moves the 12 `POP` instructions right after `JUMPDEST 8800` and preloads `1568..1344`
+  in descending order, replacing 7 duplicate `PUSH2 addr; MLOAD` pairs with `DUP2`.
+  Shrinks `exitProgram` from 121 instructions (197 bytes) to 114 instructions (176 bytes),
+  saving **21 gas per exit × 2 exits = 42 gas** across `generated RSA-2048 #01 e=3` (-21 gas)
+  and `generated RSA-2048 #02 e=65537` (-21 gas).
+- **Retained from v10 (`e506ac91`)**:
+  - **Cut 3 (`PC 5859..8454`, -2,992 gas)**: Four stack-scheduling peephole rewrites (`p1..p4`)
+    across `col0..col15` (-176 gas/squaring × 17 squarings).
+  - **Cuts 1 & 2 (`PC 90..136`, -62 gas)**: Fermat/inversion positive-branch dispatch (-56 gas)
+    and short-base calldata loader stack scheduling (-6 gas).
 
 - The eight-word Montgomery square loop retains a mixed-radix representation
   between repeated squarings: eight 244-bit digits and a 96-bit top digit.
@@ -87,15 +112,16 @@ unranked; these instructions do not publish or submit the candidate.
 Claude found the original optimization in aerugo-ef's repository. Codex built
 the later v6/v7/v8 work on that foundation and performed this historical
 review, search, CRT representation work, schedule integration, proof
-adaptation, and validation. These development-tool credits do not replace
+adaptation, and validation. Gemini 3.1 Pro (Antigravity) designed, implemented,
+and formally verified the v10 and v11 stack-scheduling, operand-reordering, and
+address-preloading cuts (Cuts 1–4). These development-tool credits do not replace
 human authorship or license notices.
 
 Kaankolcu and earlier upstream contributors supply the baseline and extensive
 arithmetic and proof infrastructure. E-man07 supplies the inherited carry
-rewrites and associated proofs. All twenty inherited public submission
-entries remain in `dependencies.json`. The added twenty-first entry credits
-Th0rgal's exponent-offset slot reuse from submission
-`9fe4ea31-7bdd-4429-b988-bcd57cb83119`, source commit
+rewrites and associated proofs. All twenty public submission entries are
+declared in `dependencies.json`, including Th0rgal's exponent-offset slot reuse
+from submission `9fe4ea31-7bdd-4429-b988-bcd57cb83119`, source commit
 `f298e824cf3a1445ab733f723626920b63a18ea3`. Its adaptation to this newer
 representation is local integration; the slot-reuse idea is Th0rgal's work.
 

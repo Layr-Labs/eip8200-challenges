@@ -1,13 +1,13 @@
 [
   {
-    "submissionId": "9b6eb630-5eaf-47cf-9e87-8edfc1dde265",
-    "rationale": "Direct promoted upstream baseline (aerugo-ef v9, commit 97cb39d3ddee7d4eccb468820300a41c4124c974, seed-0 gas 412,181, official score 415,686). This submission builds directly on its bytecode and Lean 4 formal proof tree, adding four definitionally-preserving stack-scheduling peephole optimizations across the 16 columns of the n=8 CRT Montgomery squaring kernel (-176 gas per squaring, -2,992 gas across the 17 CRT squarings in RSA-2048 e=3 and e=65537) plus two zero-shift optimizations in the Fermat/inversion dispatch header (-62 gas), reducing seed-0 gas by 3,054 to 409,127.",
-    "evidence": "Promoted commit 97cb39d3ddee7d4eccb468820300a41c4124c974; decoded SHA-256 ff73338585203ffe1d0516f324aa84219936f742a1e6a93ee072bc209d9d1207. Compare Challenge/Modexp/Submission/bytecode.hex, Bytes.lean, Proofs/CRT/CRTKernelExecution.lean, CRTControl.lean, CRTGasSteps.lean, CRTGasStepsNormalized.lean, CRTLoopFrames.lean, CRTLoopOperations.lean, CRTAdapterMeaning.lean, Proofs/Fast/CRTArtifactBlocks.lean, TnM128CandidateBytes.lean, TnM128CandidateArtifact.lean, and Proofs/Bytecode/{FermatNext,ArtifactWindowPaths,FermatGas,ShiftJumpTargets}.lean."
+    "submissionId": "e506ac91-39f1-41fe-a002-90b33fd36e18",
+    "rationale": "Our direct promoted predecessor submission (v10, official score 412,399 gas, seed-0 score 409,127 gas), which introduced Cuts 1 & 2 (-62 gas in Fermat/short-base dispatch, originally submitted in f992ebce-abaf-4912-acfe-1b8abc6da1ce) and Cut 3 (-2,992 gas across the 16 columns of the n=8 CRT Montgomery squaring kernel). This candidate (v11) builds directly on e506ac91's bytecode and Lean 4 formal proof tree, adding Cut 4 (-3,105 additional gas across the CRT kernel Phase B/A operand reordering, retainProgram address preloading, and exitProgram address preloading), reducing seed-0 gas by a further 3,105 to 406,022 (-6,159 gas total vs 9b6eb630).",
+    "evidence": "Promoted submission e506ac91-39f1-41fe-a002-90b33fd36e18 (decoded SHA-256 f7bfe2f8dbd4f810b9f43ec5d91af31d1a714e904cd8770e19167bb4b7e1b8c6). Bytes at PC 0..5858 and PC 8998..10915 are identical to e506ac91; PC 5859..8998 adds Cut 4A (-53 instrs/squaring in kernelProgram), Cut 4B (-8 instrs/retain in retainProgram), and Cut 4C (-7 instrs/exit in exitProgram)."
   },
   {
-    "submissionId": "f992ebce-abaf-4912-acfe-1b8abc6da1ce",
-    "rationale": "Our earlier verified submission containing Cuts 1 & 2 (-62 gas in FermatNext.lean and short-base calldata loading at PC 90..136). Those two cuts are retained unchanged here and composed with Cut 3 (-2,992 gas in the n=8 CRT Montgomery squaring kernel at PC 5859..8800).",
-    "evidence": "Verified submission f992ebce-abaf-4912-acfe-1b8abc6da1ce (seed-0 gas 412,119, official draw 415,826). Bytes at PC 0..5858 are identical to f992ebce."
+    "submissionId": "9b6eb630-5eaf-47cf-9e87-8edfc1dde265",
+    "rationale": "Promoted upstream baseline (aerugo-ef v9, commit 97cb39d3ddee7d4eccb468820300a41c4124c974, seed-0 gas 412,181, official score 415,686). Supplies the retained mixed-radix n=8 CRT Montgomery squaring loop, inline R4 squaring schedule, guarded BN254 addition chain, and full Lean 4 formal proof tree on which our v10 (e506ac91) and v11 candidates are built.",
+    "evidence": "Promoted commit 97cb39d3ddee7d4eccb468820300a41c4124c974; decoded SHA-256 ff73338585203ffe1d0516f324aa84219936f742a1e6a93ee072bc209d9d1207. Compare Challenge/Modexp/Submission/bytecode.hex, Bytes.lean, Proofs/CRT/CRTKernelExecution.lean, CRTControl.lean, CRTGasSteps.lean, CRTGasStepsNormalized.lean, CRTLoopFrames.lean, CRTLoopOperations.lean, CRTAdapterMeaning.lean, Proofs/Fast/CRTArtifactBlocks.lean, TnM128CandidateBytes.lean, TnM128CandidateArtifact.lean, and Proofs/Bytecode/{FermatNext,ArtifactWindowPaths,FermatGas,ShiftJumpTargets}.lean."
   },
   {
     "submissionId": "f801e2ad-315d-4b5f-b8c9-8f9d91104ed2",
