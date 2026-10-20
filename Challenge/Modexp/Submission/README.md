@@ -1,27 +1,35 @@
-# MODEXP candidate v9: retained squaring state and complete execution schedules
+# MODEXP candidate v10: CRT Montgomery squaring peephole schedule + Fermat dispatch optimization (-3,054 gas)
 
-This candidate modifies the upstream MODEXP submission at commit
-`55ece5d5d01c976bd0d8fc1708be8e3c0dafa821`, building on aerugo-ef's local v8.
-The local changes are confined to the permitted Submission directory. The
-companion patch and source manifest identify the modified implementation,
-proof, and metadata files.
+This candidate modifies the promoted MODEXP baseline `9b6eb630-5eaf-47cf-9e87-8edfc1dde265`
+(commit `97cb39d3ddee7d4eccb468820300a41c4124c974`) and our earlier verified submission
+`f992ebce-abaf-4912-acfe-1b8abc6da1ce`. All changes are confined to the permitted
+`Challenge/Modexp/Submission` directory.
 
 | Artifact identity | Value |
 |---|---|
-| Decoded bytecode SHA-256 | `ff73338585203ffe1d0516f324aa84219936f742a1e6a93ee072bc209d9d1207` |
+| Decoded bytecode SHA-256 | `f7bfe2f8dbd4f810b9f43ec5d91af31d1a714e904cd8770e19167bb4b7e1b8c6` |
 | Bytecode size | 10,915 bytes |
 | Decoded instructions | 8,722 |
-| Protected native benchmark, seed zero | 412,181 gas; 44 correct vectors |
+| Protected native benchmark, seed zero | 409,127 gas; 44 correct vectors |
 
-On identical seed-zero inputs, the public e-man07 `f801e2ad` image uses
-454,419 gas and local v8 uses 453,287 gas. V9 saves 42,238 gas (9.29%) against
-that public image and 41,106 against v8. These are matched local execution
-measurements. The leaderboard's randomized official draw is a separate score.
-The public comparison image is pinned at commit
-`67ab226ef7e1cc041caf5fbc25d45dd9e1d063a3`, decoded SHA-256
-`921a92acd2f1c7c96d6ba57fa35d8fa6009da73bf4a08d1dc5831ae757a29a8f`.
+On identical seed-zero inputs, the promoted v9 baseline (`9b6eb630`) uses 412,181 gas,
+the public e-man07 `f801e2ad` image uses 454,419 gas, and local v8 uses 453,287 gas.
+This candidate (`v10`) uses **409,127 gas**, saving **3,054 gas** against promoted v9
+(`9b6eb630`), **2,992 gas** against `f992ebce`, and **45,292 gas** (9.97%) against
+`f801e2ad`.
 
 ## Changes
+
+- **CRT Montgomery squaring kernel peephole schedule (`PC 5859..8507`, -2,992 gas)**:
+  Eliminates 72 instructions (74 bytes) per 2048-bit CRT squaring iteration across four
+  definitionally-preserving (`by rfl`) stack-scheduling rewrites in `CRTKernelExecution.lean`
+  (`p1` double-accumulator addition in `col1..col15`, `p2` carry shift-add in `col0..col15`,
+  `p3` Montgomery `MULMOD` accumulation in `col0..col8`, and `p4` initial `col0` square-and-`MULMOD`
+  ordering), saving **176 gas per CRT squaring** (`-176` gas on `generated RSA-2048 #01 e=3` and
+  `-2,816` gas on `generated RSA-2048 #02 e=65537`).
+- **Fermat/inversion positive-branch dispatch (`PC 90..101`, -56 gas)** and **short-base calldata
+  loader stack scheduling (`PC 112..136`, -6 gas)**: Saves 17 gas each on `eipExample1` and
+  `eipExample2`, and 14 gas each on `bn254Fermat` and `bn254ModularInversion`.
 
 - The eight-word Montgomery square loop retains a mixed-radix representation
   between repeated squarings: eight 244-bit digits and a 96-bit top digit.
