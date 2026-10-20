@@ -17,38 +17,38 @@ are here. -/
 
 def jumpCode : List Instr := PadJump.template 461
 theorem jump_slice :
-    (Artifact.submissionArtifact.instructions.drop 71).take jumpCode.length = jumpCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 58).take jumpCode.length = jumpCode := by rfl
 def jumpSite : GenericRoundSite Artifact.submissionArtifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 71 jump_slice
-    (by change 71 + jumpCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice jumpCode 58 jump_slice
+    (by change 58 + jumpCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := jumpCode) (by decide)) (by decide)
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 139 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 71) = UInt256.ofNat 139
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 58) = UInt256.ofNat 139
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def swapCode : List Instr := StaggerPersistentLoopRaw.backTemplate
 
 theorem swap_slice :
-    (Artifact.submissionArtifact.instructions.drop 70).take swapCode.length = swapCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 57).take swapCode.length = swapCode := by rfl
 
 def swapSite : GenericRoundSite Artifact.submissionArtifact .Osaka swapCode :=
-  StackSiteBuilder.ofSlice swapCode 70 swap_slice
-    (by change 70 + swapCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice swapCode 57 swap_slice
+    (by change 57 + swapCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := swapCode) (by decide)) (by decide)
 
 theorem swap_pc : swapSite.startPC = UInt256.ofNat 138 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 70) = UInt256.ofNat 138
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 57) = UInt256.ofNat 138
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4733).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3453 = 4733 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 3440 = 4733 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3453 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3440 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 4733 = true
   rw [hcode]
@@ -56,9 +56,9 @@ theorem valid_finish (s : State) (hcode : s.executionEnv.code = Artifact.submiss
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 461).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 168 = 461 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 155 = 461 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 168 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 155 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 461 = true
   rw [hcode]
@@ -66,9 +66,9 @@ theorem valid_loop (s : State) (hcode : s.executionEnv.code = Artifact.submissio
 
 theorem valid_gl (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 222).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 125 = 222 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 112 = 222 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 125 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 112 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 222 = true
   rw [hcode]
@@ -76,9 +76,9 @@ theorem valid_gl (s : State) (hcode : s.executionEnv.code = Artifact.submissionA
 
 theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 64).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 34 = 64 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 21 = 64 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 34 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 21 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 64 = true
   rw [hcode]
@@ -86,9 +86,9 @@ theorem valid_pad (s : State) (hcode : s.executionEnv.code = Artifact.submission
 
 theorem valid_stub128 (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 128).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 63 = 128 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 50 = 128 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 63 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 50 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 128 = true
   rw [hcode]
@@ -96,9 +96,9 @@ theorem valid_stub128 (s : State) (hcode : s.executionEnv.code = Artifact.submis
 
 theorem valid_adv (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 210).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 116 = 210 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 103 = 210 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 116 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 103 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 210 = true
   rw [hcode]
@@ -106,9 +106,9 @@ theorem valid_adv (s : State) (hcode : s.executionEnv.code = Artifact.submission
 
 theorem valid_stub192 (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 192).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 103 = 192 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 90 = 192 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 103 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 90 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 192 = true
   rw [hcode]

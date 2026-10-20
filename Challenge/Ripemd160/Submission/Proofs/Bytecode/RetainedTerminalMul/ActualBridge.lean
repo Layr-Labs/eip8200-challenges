@@ -93,7 +93,7 @@ private def initialEnv (input : ByteArray) : Env (initialState submissionBytecod
 /-- The anchor fall-through retains the first word at the cold seed entry. -/
 def gasSteps_anchor_fall (input : ByteArray)
     (href : KnownInputCompactState.referenceWord input = KnownInputData.fullWord) :
-    GasSteps (DirectGuard.atPC input 21) (DirectGuard.sizeMatched input) := by
+    GasSteps (DirectGuard.atPC input 18) (DirectGuard.sizeMatched input) := by
   have h := RetainedLocated113.lift .anchor (initialState submissionBytecode input 0) _
     (initialEnv input).toSidecar []
     (RetainedIntegration105.run_anchor_fall (initialState submissionBytecode input 0) []
@@ -103,7 +103,7 @@ def gasSteps_anchor_fall (input : ByteArray)
 
 def gasSteps_anchor_low_fall (input : ByteArray)
     (href : Low64RepeatMath.condition input = 0) :
-    GasSteps (DirectGuard.atPC input 21) (DirectGuard.sizeMatched input) := by
+    GasSteps (DirectGuard.atPC input 18) (DirectGuard.sizeMatched input) := by
   have h := RetainedLocated113.lift .anchor (initialState submissionBytecode input 0) _
     (initialEnv input).toSidecar []
     (RetainedIntegration105.run_anchor_low_fall (initialState submissionBytecode input 0) []
@@ -114,7 +114,7 @@ def gasSteps_anchor_low_fall (input : ByteArray)
 /-- The taken edge enters the private 1000-byte scanner with the retained word. -/
 def gasSteps_anchor_taken (input : ByteArray)
     (href : Low64RepeatMath.condition input ≠ 0) :
-    GasSteps (DirectGuard.atPC input 21)
+    GasSteps (DirectGuard.atPC input 18)
       {PatternedScan.stS input 8157 [] with stack := [MachineState.readWord input 0]} := by
   have hv : Decode.isValidJumpDest submissionBytecode 8157 = true := by
     rw [← candidateCode_eq_actual]

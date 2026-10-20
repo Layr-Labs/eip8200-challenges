@@ -36,7 +36,7 @@ theorem size_eq_one (input : ByteArray) (k : Nat)
   simp
 
 def sizePath : List Located := sizePrefix ++ [opAt 10 .JUMPI]
-def anchorPath : List Located := anchorPrefix ++ [opAt 19 .JUMPI]
+def anchorPath : List Located := anchorPrefix ++ [opAt 17 .JUMPI]
 
 private theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :
@@ -47,15 +47,15 @@ private theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UI
   simp only [PatternedScan.stS, Challenge.Ripemd160.initialState_calldata,
     Challenge.EvmProof.Word.succ_ofNat hpc]
 
-private theorem pc_g6 : Artifact.submissionArtifact.instructionPC 6 = 12 := by
+private theorem pc_g6 : Artifact.submissionArtifact.instructionPC 6 = 9 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_g7 : Artifact.submissionArtifact.instructionPC 7 = 13 := by
+private theorem pc_g7 : Artifact.submissionArtifact.instructionPC 7 = 10 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_g8 : Artifact.submissionArtifact.instructionPC 8 = 16 := by
+private theorem pc_g8 : Artifact.submissionArtifact.instructionPC 8 = 13 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_g9 : Artifact.submissionArtifact.instructionPC 9 = 17 := by
+private theorem pc_g9 : Artifact.submissionArtifact.instructionPC 9 = 14 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem pc_g10 : Artifact.submissionArtifact.instructionPC 10 = 20 := by
+private theorem pc_g10 : Artifact.submissionArtifact.instructionPC 10 = 17 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem isValidJumpDest_of_pc (idx pc : Nat)
     (hpc : Artifact.submissionArtifact.instructionPC idx = pc)
@@ -65,9 +65,9 @@ private theorem isValidJumpDest_of_pc (idx pc : Nat)
   exact Artifact.submissionArtifact.isValidJumpDest_index idx hget
 
 theorem generic_dest : Decode.isValidJumpDest submissionBytecode 245 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 143 = 245 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 130 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  exact isValidJumpDest_of_pc 143 245 hpc (by rfl)
+  exact isValidJumpDest_of_pc 130 245 hpc (by rfl)
 
 /-- The size word `1000 - size`. -/
 def sizeWord (input : ByteArray) : UInt256 :=
@@ -90,25 +90,25 @@ theorem sizeWord_false (input : ByteArray) (h : input.size = 1000) :
   rfl
 
 theorem run_size_prefix (input : ByteArray) :
-    run sizePrefix (PatternedScan.stS input 12 []) =
-      some (PatternedScan.stS input 20 [4565, sizeWord input]) := by
+    run sizePrefix (PatternedScan.stS input 9 []) =
+      some (PatternedScan.stS input 17 [4565, sizeWord input]) := by
   let n := UInt256.ofNat input.size
   let l0 : Located := opAt 6 .CALLDATASIZE
   have h0 := PatternedScan.blockOfS l0
-    (PatternedScan.pcFactS input 6 12 [] (by norm_num) pc_g6)
-    (stepS_calldatasize input 12 [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 6 9 [] (by norm_num) pc_g6)
+    (stepS_calldatasize input 9 [] (by simp) (by norm_num))
   let l1 : Located := pushAt 7 2 1000
   have h1 := PatternedScan.blockOfS l1
-    (PatternedScan.pcFactS input 7 13 [n] (by norm_num) pc_g7)
-    (PatternedScan.stepS_push input 13 2 1000 [n] (by simp) (by decide) (by decide) (by norm_num))
+    (PatternedScan.pcFactS input 7 10 [n] (by norm_num) pc_g7)
+    (PatternedScan.stepS_push input 10 2 1000 [n] (by simp) (by decide) (by decide) (by norm_num))
   let l2 : Located := opAt 8 .SUB
   have h2 := PatternedScan.blockOfS l2
-    (PatternedScan.pcFactS input 8 16 [1000, n] (by norm_num) pc_g8)
-    (PatternedScan.stepS_sub input 16 1000 n [] (by simp) (by norm_num))
+    (PatternedScan.pcFactS input 8 13 [1000, n] (by norm_num) pc_g8)
+    (PatternedScan.stepS_sub input 13 1000 n [] (by simp) (by norm_num))
   let l3 : Located := pushAt 9 2 4565
   have h3 := PatternedScan.blockOfS l3
-    (PatternedScan.pcFactS input 9 17 [1000 - n] (by norm_num) pc_g9)
-    (PatternedScan.stepS_push input 17 2 4565 [1000 - n]
+    (PatternedScan.pcFactS input 9 14 [1000 - n] (by norm_num) pc_g9)
+    (PatternedScan.stepS_push input 14 2 4565 [1000 - n]
       (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := DataStepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
@@ -117,26 +117,26 @@ theorem run_size_prefix (input : ByteArray) :
 
 theorem run_size_taken (input : ByteArray) (hfit : CalldataFits input)
     (hne : input.size ≠ 1000) :
-    run sizePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 4565 []) := by
+    run sizePath (PatternedScan.stS input 9 []) = some (PatternedScan.stS input 4565 []) := by
   have hj : run [opAt 10 .JUMPI]
-      (PatternedScan.stS input 20 [4565, sizeWord input]) =
+      (PatternedScan.stS input 17 [4565, sizeWord input]) =
       some (PatternedScan.stS input 4565 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 10 20 _ (by norm_num) pc_g10)
-      (PatternedScan.stepS_jumpi_taken input 20 4565 4565 _ []
+      (PatternedScan.pcFactS input 10 17 _ (by norm_num) pc_g10)
+      (PatternedScan.stepS_jumpi_taken input 17 4565 4565 _ []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (sizeWord_isTrue input hfit hne) Artifact.validJumpDest_4601)
   exact DataStepper.runLocatedBlock_append sizePrefix [opAt 10 .JUMPI] _ _ _
     (run_size_prefix input) rfl hj
 
 theorem run_size_fall (input : ByteArray) (h : input.size = 1000) :
-    run sizePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 21 []) := by
+    run sizePath (PatternedScan.stS input 9 []) = some (PatternedScan.stS input 18 []) := by
   have hj : run [opAt 10 .JUMPI]
-      (PatternedScan.stS input 20 [4565, sizeWord input]) =
-      some (PatternedScan.stS input 21 []) := by
+      (PatternedScan.stS input 17 [4565, sizeWord input]) =
+      some (PatternedScan.stS input 18 []) := by
     exact PatternedScan.blockOfS _
-      (PatternedScan.pcFactS input 10 20 _ (by norm_num) pc_g10)
-      (PatternedScan.stepS_jumpi_fall input 20 4565 _ [] (by simp) (by norm_num)
+      (PatternedScan.pcFactS input 10 17 _ (by norm_num) pc_g10)
+      (PatternedScan.stepS_jumpi_fall input 17 4565 _ [] (by simp) (by norm_num)
         (sizeWord_false input h))
   exact DataStepper.runLocatedBlock_append sizePrefix [opAt 10 .JUMPI] _ _ _
     (run_size_prefix input) rfl hj

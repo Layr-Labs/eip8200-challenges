@@ -13,10 +13,10 @@ in the external binding report.
 namespace Challenge.Ripemd160
 
 abbrev submissionByteChunk0 : ByteArray := ByteArray.mk #[
-  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232,
-  3, 97, 17, 213, 87, 95, 53, 128, 110, 0, 0, 0, 0, 0, 0, 0,
-  97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87,
-  88, 53, 129, 20, 97, 36, 213, 86, 0, 0, 0, 0, 0, 0, 0, 0,
+  97, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17,
+  213, 87, 95, 53, 128, 127, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
+  97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
+  97, 97, 97, 97, 97, 97, 24, 97, 31, 221, 87, 88, 97, 36, 210, 86,
   91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82,
   128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -710,13 +710,13 @@ abbrev submissionTailPart35 : ByteArray := ByteArray.mk #[
 @[simp] theorem submissionTailPart35_size : submissionTailPart35.size = 128 := by rfl
 
 abbrev submissionTailPart36 : ByteArray := ByteArray.mk #[
-  216, 253, 34, 89, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 95, 95, 95, 95
+  216, 253, 34, 89, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 91
 ]
 
 @[simp] theorem submissionTailPart36_size : submissionTailPart36.size = 18 := by rfl
 
 abbrev submissionUnrolledTail : ByteArray := ByteArray.mk #[
-  91, 144, 91, 97, 3, 200, 53, 130, 20, 22, 97, 3, 176, 53, 130, 20,
+  53, 129, 20, 97, 3, 200, 53, 130, 20, 22, 97, 3, 176, 53, 130, 20,
   22, 97, 3, 144, 53, 130, 20, 22, 97, 3, 112, 53, 130, 20, 22, 97,
   3, 80, 53, 130, 20, 22, 97, 3, 48, 53, 130, 20, 22, 97, 3, 16,
   53, 130, 20, 22, 97, 2, 240, 53, 130, 20, 22, 97, 2, 208, 53, 130,
@@ -728,7 +728,7 @@ abbrev submissionUnrolledTail : ByteArray := ByteArray.mk #[
   1, 80, 53, 130, 20, 22, 97, 1, 48, 53, 130, 20, 22, 97, 1, 16,
   53, 130, 20, 22, 96, 240, 53, 130, 20, 22, 96, 208, 53, 130, 20, 22,
   96, 176, 53, 130, 20, 22, 96, 144, 53, 130, 20, 22, 96, 112, 53, 130,
-  20, 22, 96, 80, 53, 130, 20, 22, 96, 16, 53, 2, 24, 97, 37, 190,
+  20, 22, 96, 80, 53, 130, 20, 22, 96, 32, 53, 2, 24, 97, 37, 190,
   87, 115, 170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247,
   97, 16, 243, 129, 233, 207, 95, 82, 89, 95, 243, 91, 95, 96, 245, 86,
   91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82,
@@ -771,12 +771,12 @@ set_option maxRecDepth 50000 in
   simp [submissionBytes]
 
 set_option maxRecDepth 100000 in
-@[simp] theorem referenceBytes_get_zero : submissionBytes[0] = 0x64 := by
+@[simp] theorem referenceBytes_get_zero : submissionBytes[0] = 0x61 := by
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem referenceBytes_extract_entry :
-    submissionBytes.extract 1 6 = ByteArray.mk #[0x10, 0x8c, 0x86, 0x82, 0x1c] := by
+    submissionBytes.extract 1 3 = ByteArray.mk #[0x82, 0x1c] := by
   rfl
 
 end Challenge.Ripemd160

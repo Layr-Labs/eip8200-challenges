@@ -63,30 +63,21 @@ private theorem foldAcc_eq_one_iff (input : ByteArray) (r a : UInt256) (xs : Lis
 
 private theorem reference_ne_zero (input : ByteArray) (hcond : Low64RepeatMath.condition input = 0) :
     referenceWord input ≠ 0 := by
-  intro hz
-  have hshl : UInt256.shiftLeft
-      (UInt256.xor (UInt256.ofNat Low64Anchor.low64) (referenceWord input))
-      (UInt256.ofNat 192) = 0 := by
-    simpa [Low64RepeatMath.condition, referenceWord, Low64Anchor.low64] using hcond
-  have hmod := Low64Anchor.low64_of_shl (referenceWord input) hshl
-  rw [hz] at hmod
-  have hzero : (0 : UInt256).toNat = 0 := by
-    rw [show (0 : UInt256) = UInt256.ofNat 0 from rfl, Word.word_toNat_ofNat]
-    exact Nat.zero_mod _
-  simp [hzero, Low64Anchor.B, Nat.zero_mod] at hmod
-
+  have href := (Low64RepeatMath.condition_zero_iff input).1 hcond
+  rw [href]
+  decide
 
 private theorem seed_boolean (input : ByteArray) : BooleanWord (seed input) :=
   eq_boolean _ _
 
 theorem mismatch_zero_words (input : ByteArray)
     (hcond : Low64RepeatMath.condition input = 0) (hm : mismatch input = 0) :
-    MachineState.readWord input 48 = MachineState.readWord input 0 ∧
+    MachineState.readWord input 59 = MachineState.readWord input 0 ∧
       ∀ off ∈ PcSeedRaw.offsets, MachineState.readWord input off = MachineState.readWord input 0 := by
   have hfbool := foldAcc_boolean input (MachineState.readWord input 0) (seed input)
     PcSeedRaw.offsets.dropLast (seed_boolean input)
   have hmprod := (KnownInputLogic.wordXor_eq_zero_iff _ _).1 hm
-  change UInt256.mul (MachineState.readWord input 16)
+  change UInt256.mul (MachineState.readWord input 32)
     (foldAcc input (MachineState.readWord input 0) (seed input) PcSeedRaw.offsets.dropLast) =
       MachineState.readWord input 0 at hmprod
   have hf : foldAcc input (MachineState.readWord input 0) (seed input) PcSeedRaw.offsets.dropLast = 1 := by
@@ -98,9 +89,9 @@ theorem mismatch_zero_words (input : ByteArray)
     (seed input) PcSeedRaw.offsets.dropLast (seed_boolean input)).1 hf
   refine ⟨((eq_one_iff _ _).1 hall.1).symm, ?_⟩
   intro off ho
-  have hh : off ∈ PcSeedRaw.offsets.dropLast ∨ off = 16 := by
+  have hh : off ∈ PcSeedRaw.offsets.dropLast ∨ off = 32 := by
     change off ∈ [968,944,912,880,848,816,784,752,720,688,656,624,592,560,528,
-      496,464,432,400,368,336,304,272,240,208,176,144,112,80] ∨ off = 16
+      496,464,432,400,368,336,304,272,240,208,176,144,112,80] ∨ off = 32
     simpa only [PcSeedRaw.offsets, List.mem_cons, List.not_mem_nil, or_false, or_assoc] using ho
   rcases hh with ho | rfl
   · exact hall.2 off ho
@@ -110,15 +101,17 @@ theorem mismatch_zero_target (input : ByteArray) (hsize : input.size = 1000)
     (hcond : Low64RepeatMath.condition input = 0) (hm : mismatch input = 0) :
     input = KnownInputData.targetInput := by
   have hall := mismatch_zero_words input hcond hm
-  have hmain (k : Nat) (hk : k < 30) :
+  have h0 : MachineState.readWord input 0 = KnownInputData.fullWord := by
+    simpa [referenceWord] using (Low64RepeatMath.condition_zero_iff input).1 hcond
+  have h32 : MachineState.readWord input 32 = MachineState.readWord input 0 :=
+    hall.2 32 (by decide)
+  have h59 : MachineState.readWord input 59 = MachineState.readWord input 0 := hall.1
+  have hmain (k : Nat) (hk1 : 2 ≤ k) (hk2 : k < 30) :
       MachineState.readWord input (16+32*k) = MachineState.readWord input 0 := by
-    by_cases h1 : k = 1
-    · subst k; exact hall.1
-    · apply hall.2
-      interval_cases k <;> simp_all [PcSeedRaw.offsets]
+    apply hall.2
+    interval_cases k <;> simp_all [PcSeedRaw.offsets]
   have h968 := hall.2 968 (by decide)
-  have hmod := Low64Anchor.low64_of_shl (MachineState.readWord input 0) hcond
-  have hb := PcSeedCoverage.all_bytes input hmain h968 hmod
+  have hb := PcSeedCoverage.all_bytes input h0 h32 h59 hmain h968
   apply ByteArray.ext_getElem
   · exact hsize.trans KnownInputData.targetInput_size.symm
   · intro j hj hjtarget
@@ -138,6 +131,7 @@ theorem mismatch_zero_target (input : ByteArray) (hsize : input.size = 1000)
     simp only [Option.getD_some] at hbyte
     rw [KnownInputData.targetInput_getElem j hjtarget]
     exact hbyte
+
 theorem target_readWord (off : Nat) (ho : off ≤ 968) :
     MachineState.readWord KnownInputData.targetInput off = KnownInputData.fullWord := by
   have hread : MachineState.readPadded KnownInputData.targetInput off 32 =
@@ -164,7 +158,7 @@ theorem target_readWord (off : Nat) (ho : off ≤ 968) :
 theorem mismatch_target : mismatch KnownInputData.targetInput = 0 := by
   have hseed : seed KnownInputData.targetInput = 1 := by
     unfold seed
-    rw [target_readWord 0 (by decide), target_readWord 48 (by decide)]
+    rw [target_readWord 0 (by decide), target_readWord 59 (by decide)]
     decide
   have hfold : foldAcc KnownInputData.targetInput KnownInputData.fullWord 1
       PcSeedRaw.offsets.dropLast = 1 := by
@@ -175,7 +169,7 @@ theorem mismatch_target : mismatch KnownInputData.targetInput = 0 := by
     have hh : ∀ n ∈ PcSeedRaw.offsets.dropLast, n ≤ 968 := by decide
     exact hh off ho
   unfold mismatch
-  rw [target_readWord 16 (by decide), target_readWord 0 (by decide), hseed, hfold]
+  rw [target_readWord 32 (by decide), target_readWord 0 (by decide), hseed, hfold]
   decide
 
 #print axioms mismatch_target

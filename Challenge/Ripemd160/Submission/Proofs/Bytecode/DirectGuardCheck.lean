@@ -17,12 +17,12 @@ open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
 private def seed := RetainedIntegration105.repeatTemplate
 private theorem seed_slice :
-    (Artifact.submissionArtifact.instructions.drop 20).take seed.length = seed := by rfl
-private theorem seed_pc : Artifact.submissionArtifact.instructionPC 20 = 48 := by
+    (Artifact.submissionArtifact.instructions.drop 18).take seed.length = seed := by rfl
+private theorem seed_pc : Artifact.submissionArtifact.instructionPC 18 = 59 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem seed_bounds :
-    20 + seed.length ≤ Artifact.submissionArtifact.instructions.length := by
-  change 20 + seed.length ≤ Artifact.submissionInstructions.length
+    18 + seed.length ≤ Artifact.submissionArtifact.instructions.length := by
+  change 18 + seed.length ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   decide
 private theorem seed_wf : StackRoundData.TemplateWellFormed seed := by decide
@@ -30,29 +30,29 @@ private theorem seed_advances : ∀ i ∈ seed.dropLast, RecognitionLift.Advance
   apply RecognitionLift.advancesAll_sound
   decide
 private def seed_site : GenericRoundSite Artifact.submissionArtifact .Osaka seed :=
-  StackSiteBuilder.ofSlice seed 20 seed_slice seed_bounds
+  StackSiteBuilder.ofSlice seed 18 seed_slice seed_bounds
     (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem seed_wf) (by decide)
-private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 48 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 20) = _
+private theorem seed_site_pc : seed_site.startPC = UInt256.ofNat 59 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 18) = _
   rw [seed_pc]
 
 private theorem run_seed (input : ByteArray) :
     runInstrSeq seed (sizeMatched input) = some (loopState input 0) := by
-  -- The seed consumes the retained first word and leaves memory cold.
+  -- The seed pushes PC=59 above the retained first word and jumps to 9426 with cold memory.
   have hcold : loopState input 0 =
       { initialState submissionBytecode input 0 with
-        pc := UInt256.ofNat 9429
-        stack := [PcSeedRaw.seed input, referenceWord input] } := by rfl
+        pc := UInt256.ofNat 9426
+        stack := [UInt256.ofNat 59, referenceWord input] } := by rfl
   rw [hcold]
   simpa only [seed, sizeMatched, atPC, List.append_nil,
     Challenge.Ripemd160.initialState_calldata, Challenge.Ripemd160.initialState_stack, RetainedIntegration105.repeatTemplate,
     Word.literal_eq_ofNat] using
     RetainedIntegration105.run_repeat (initialState submissionBytecode input 0)
       [] (by decide) rfl
-      Artifact.validJumpDest_9429
+      Artifact.validJumpDest_9426
 
-/-- Without expanding memory, form the counter-free equality seed, and jump to the scanner. -/
+/-- Without expanding memory, push PC=59 and jump to the scanner at 9426. -/
 def gasSteps_checkEntry (input : ByteArray) :
     GasSteps (sizeMatched input) (loopState input 0) :=
   RecognitionLift.gasSteps_of_raw seed_site _ _ (by rfl) (by rfl) (by rfl)

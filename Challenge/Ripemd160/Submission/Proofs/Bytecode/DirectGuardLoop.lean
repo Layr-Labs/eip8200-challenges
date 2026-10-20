@@ -14,13 +14,13 @@ open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
 private def scanner := PcSeedRaw.template
 private theorem scanner_slice :
-    (Artifact.submissionArtifact.instructions.drop 5249).take scanner.length = scanner := by
+    (Artifact.submissionArtifact.instructions.drop 5233).take scanner.length = scanner := by
   rfl
-private theorem scanner_pc : Artifact.submissionArtifact.instructionPC 5249 = 9429 := by
+private theorem scanner_pc : Artifact.submissionArtifact.instructionPC 5233 = 9426 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem scanner_bounds :
-    5249 + scanner.length ≤ Artifact.submissionArtifact.instructions.length := by
-  change 5249 + scanner.length ≤ Artifact.submissionInstructions.length
+    5233 + scanner.length ≤ Artifact.submissionArtifact.instructions.length := by
+  change 5233 + scanner.length ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   decide
 private theorem scanner_wf : StackRoundData.TemplateWellFormed scanner := by decide
@@ -28,18 +28,18 @@ private theorem scanner_advances : ∀ i ∈ scanner.dropLast, RecognitionLift.A
   apply RecognitionLift.advancesAll_sound
   decide
 private def scanner_site : GenericRoundSite Artifact.submissionArtifact .Osaka scanner :=
-  StackSiteBuilder.ofSlice scanner 5249 scanner_slice scanner_bounds
+  StackSiteBuilder.ofSlice scanner 5233 scanner_slice scanner_bounds
     (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem scanner_wf) (by decide)
-private theorem scanner_site_pc : scanner_site.startPC = UInt256.ofNat 9429 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5249) = _
+private theorem scanner_site_pc : scanner_site.startPC = UInt256.ofNat 9426 := by
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5233) = _
   rw [scanner_pc]
 
 private def scannerEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9429
+    pc := UInt256.ofNat 9426
     activeWords := UInt256.ofNat 0
-    stack := [PcSeedRaw.seed input, referenceWord input] }
+    stack := [UInt256.ofNat 59, referenceWord input] }
 
 private theorem run_scanner (input : ByteArray) :
     runInstrSeq scanner (scannerEntry input) = some (loopExitState input) := by

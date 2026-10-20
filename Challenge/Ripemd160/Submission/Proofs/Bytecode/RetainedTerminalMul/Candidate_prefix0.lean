@@ -9,9 +9,9 @@ private def op (byte : UInt8) : Instr :=
   | some decoded => .op decoded
   | none => .op .INVALID
 
--- PC 0, index 0; 256 instructions.
+-- PC 0, index 0; 232 instructions.
 def prefix0 : List Instr := [
-  .push ⟨5, by decide⟩ (UInt256.ofNat 71077102108),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 33308),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x35,
   op 0x16,
@@ -25,26 +25,13 @@ def prefix0 : List Instr := [
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x35,
   op 0x80,
-  .push ⟨15, by decide⟩ (UInt256.ofNat 7016996765293437281),
+  .push ⟨32, by decide⟩ (UInt256.ofNat 44046402572626160612103472728795008085361523578694645928734845681441465000289),
   op 0x18,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
-  op 0x1b,
   .push ⟨2, by decide⟩ (UInt256.ofNat 8157),
   op 0x57,
   op 0x58,
-  op 0x35,
-  op 0x81,
-  op 0x14,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 9429),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 9426),
   op 0x56,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x5b,
   .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
   op 0x36,
@@ -259,12 +246,12 @@ def prefix0 : List Instr := [
 
 ]
 
-theorem prefix0_count : prefix0.length = 245 := by decide
+theorem prefix0_count : prefix0.length = 232 := by decide
 def prefix0Bytes : List UInt8 := [
-  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232,
-  3, 97, 17, 213, 87, 95, 53, 128, 110, 0, 0, 0, 0, 0, 0, 0,
-  97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87,
-  88, 53, 129, 20, 97, 36, 213, 86, 0, 0, 0, 0, 0, 0, 0, 0,
+  97, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17,
+  213, 87, 95, 53, 128, 127, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
+  97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97, 97,
+  97, 97, 97, 97, 97, 97, 24, 97, 31, 221, 87, 88, 97, 36, 210, 86,
   91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82,
   128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

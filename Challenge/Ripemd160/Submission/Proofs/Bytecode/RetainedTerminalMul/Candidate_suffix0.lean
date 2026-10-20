@@ -9,20 +9,20 @@ private def op (byte : UInt8) : Instr :=
   | some decoded => .op decoded
   | none => .op .INVALID
 
--- PC 9416, index 5249; 173 instructions.
+-- PC 9416, index 5225; 209 instructions.
 def suffix0 : List Instr := [
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
   op 0x57,
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x5b,
-  op 0x90,
-  op 0x5b,
+  op 0x35,
+  op 0x81,
+  op 0x14,
   .push ⟨2, by decide⟩ (UInt256.ofNat 968),
   op 0x35,
   op 0x82,
@@ -168,7 +168,7 @@ def suffix0 : List Instr := [
   op 0x82,
   op 0x14,
   op 0x16,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
   op 0x35,
   op 0x02,
   op 0x18,
@@ -225,7 +225,7 @@ def suffix0 : List Instr := [
 
 theorem suffix0_count : suffix0.length = 209 := by decide
 def suffix0Bytes : List UInt8 := [
-  97, 18, 177, 87, 89, 95, 243, 95, 95, 95, 95, 91, 144, 91, 97, 3,
+  97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 91, 53, 129, 20, 97, 3,
   200, 53, 130, 20, 22, 97, 3, 176, 53, 130, 20, 22, 97, 3, 144, 53,
   130, 20, 22, 97, 3, 112, 53, 130, 20, 22, 97, 3, 80, 53, 130, 20,
   22, 97, 3, 48, 53, 130, 20, 22, 97, 3, 16, 53, 130, 20, 22, 97,
@@ -238,7 +238,7 @@ def suffix0Bytes : List UInt8 := [
   22, 97, 1, 48, 53, 130, 20, 22, 97, 1, 16, 53, 130, 20, 22, 96,
   240, 53, 130, 20, 22, 96, 208, 53, 130, 20, 22, 96, 176, 53, 130, 20,
   22, 96, 144, 53, 130, 20, 22, 96, 112, 53, 130, 20, 22, 96, 80, 53,
-  130, 20, 22, 96, 16, 53, 2, 24, 97, 37, 190, 87, 115, 170, 105, 222,
+  130, 20, 22, 96, 32, 53, 2, 24, 97, 37, 190, 87, 115, 170, 105, 222,
   238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16, 243, 129, 233,
   207, 95, 82, 89, 95, 243, 91, 95, 96, 245, 86, 91, 80, 80, 80, 80,
   80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82,
