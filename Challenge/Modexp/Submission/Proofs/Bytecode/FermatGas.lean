@@ -144,21 +144,21 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     have joinSteps : GasSteps (joinState template input tail) (withModulus template input tail 45) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
     have hpraw := FermatNext.run_prime (context template input) m (coreStack input tail)
-      (by simp [coreStack]; omega) hjump
+      (by simp [coreStack]; omega) htailjump
     by_cases hp : (FermatProgram.primeValue m).toNat = 0
     · rw [if_pos hp] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail 45)
-          (WindowTwentyOneGasRoute.entryState template input tail) :=
-        paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
-      exact ⟨oldFinal, ⟨(joinSteps.trans primeSteps).trans oldTrace⟩, oldDone, oldResult⟩
-    · rw [if_neg hp] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail 45) (withModulus template input tail 95) :=
+      have primeSteps : GasSteps (withModulus template input tail 45) (withModulus template input tail 94) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       have hjraw := FermatNext.run_jumpTail (context template input) (m :: coreStack input tail)
-        (by simp [coreStack]; omega) htailjump
-      have jumpSteps : GasSteps (withModulus template input tail 95) (withModulus template input tail 9800) :=
+        (by simp [coreStack]; omega) hjump
+      have jumpSteps : GasSteps (withModulus template input tail 94)
+          (WindowTwentyOneGasRoute.entryState template input tail) :=
         paths.jumpTail.steps (ec.transfer rfl rfl) rfl hjraw
-      have commonSteps := (joinSteps.trans primeSteps).trans jumpSteps
+      exact ⟨oldFinal, ⟨((joinSteps.trans primeSteps).trans jumpSteps).trans oldTrace⟩, oldDone, oldResult⟩
+    · rw [if_neg hp] at hpraw
+      have primeSteps : GasSteps (withModulus template input tail 45) (withModulus template input tail 9800) :=
+        paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
+      have commonSteps := joinSteps.trans primeSteps
       have htraw := FermatNext.run_tail (context template input) m e (shiftWord input :: tail)
         (by simp; omega) hinvjump
       by_cases he : (FermatNext.fermatDiff m e).toNat = 0

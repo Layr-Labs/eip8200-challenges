@@ -113,8 +113,8 @@ private def fermat_join :
 
 private def fermat_prime :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 45 FermatNext.primeProgram :=
-  WindowTwentyOneSlice.block allWellFormed 32 11 45 FermatNext.primeProgram
-    (by exact Nat.le_trans (by decide : 32 + 11 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 32 10 45 FermatNext.primeProgram
+    (by exact Nat.le_trans (by decide : 32 + 10 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_result :
@@ -131,14 +131,14 @@ private def fermat_genCheck :
 
 private def fermat_genLoad :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 112 FermatNext.genLoadProgram :=
-  WindowTwentyOneSlice.block allWellFormed 56 19 112 FermatNext.genLoadProgram
-    (by exact Nat.le_trans (by decide : 56 + 19 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 56 18 112 FermatNext.genLoadProgram
+    (by exact Nat.le_trans (by decide : 56 + 18 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_jumpTail :
-    WindowTwentyOneBinding.Block submissionArtifact .Osaka 95 FermatNext.jumpTailProgram :=
-  WindowTwentyOneSlice.block allWellFormed 43 2 95 FermatNext.jumpTailProgram
-    (by exact Nat.le_trans (by decide : 43 + 2 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    WindowTwentyOneBinding.Block submissionArtifact .Osaka 94 FermatNext.jumpTailProgram :=
+  WindowTwentyOneSlice.block allWellFormed 42 2 94 FermatNext.jumpTailProgram
+    (by exact Nat.le_trans (by decide : 42 + 2 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_tail :
