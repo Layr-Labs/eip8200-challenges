@@ -86,7 +86,7 @@ end specialSite
 theorem valid_special (s : State) (e : Env s) : Decode.isValidJumpDest s.executionEnv.code 5573 = true := by
   rw [e.code]
   have h := Artifact.submissionArtifact.isValidJumpDest_index 3737 (by rfl)
-  have hp : Artifact.submissionArtifact.instructionPC 3737 = 5573 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3737 = 5172 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   simpa only [hp] using h
 

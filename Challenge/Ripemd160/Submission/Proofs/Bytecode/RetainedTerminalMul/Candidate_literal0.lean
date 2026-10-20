@@ -172,6 +172,7 @@ def literal0 : List Instr := [
   op 0x35,
   op 0x18,
   op 0x17,
+
 ]
 
 theorem literal0_count : literal0.length = 161 := by decide

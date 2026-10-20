@@ -56,7 +56,7 @@ def tailB : List Instr := [
   op 0x5b
 ]
 private theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3430).take tail.length = tail := by rfl
-private theorem pc_base : Artifact.submissionArtifact.instructionPC 3430 = 4584 := by
+private theorem pc_base : Artifact.submissionArtifact.instructionPC 3430 = 4681 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 theorem get (index : Nat) (h : index < tail.length := by decide) :
@@ -74,7 +74,7 @@ theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
     exact ht0
   rw [InstructionWindow.pc_drop, pc_base, ht]
 private theorem tailB_eq : (Artifact.submissionArtifact.instructions.drop 3515).take tailB.length = tailB := by rfl
-private theorem pc_baseB : Artifact.submissionArtifact.instructionPC 3515 = 4782 := by
+private theorem pc_baseB : Artifact.submissionArtifact.instructionPC 3515 = 4894 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 theorem getB (index : Nat) (h : index < tailB.length := by decide) :
