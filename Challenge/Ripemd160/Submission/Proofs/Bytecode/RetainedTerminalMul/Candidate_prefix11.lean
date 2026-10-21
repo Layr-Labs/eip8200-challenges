@@ -9,37 +9,8 @@ private def op (byte : UInt8) : Instr :=
   | some decoded => .op decoded
   | none => .op .INVALID
 
--- PC 3882, index 2816; 256 instructions.
+-- PC 0, index 2816; 256 instructions.
 def prefix11 : List Instr := [
-  op 0x81,
-  op 0x96,
-  op 0x8d,
-  op 0x8c,
-  op 0x16,
-  op 0x83,
-  op 0x17,
-  op 0x89,
-  op 0x18,
-  op 0x8c,
-  op 0x18,
-  op 0x8e,
-  op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 396),
-  op 0x51,
-  op 0x01,
-  op 0x01,
-  op 0x8a,
-  op 0x01,
-  op 0x85,
-  op 0x16,
-  op 0x8c,
-  op 0x02,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 24),
-  op 0x1c,
-  op 0x83,
-  op 0x01,
-  op 0x85,
-  op 0x16,
   op 0x9a,
   op 0x8c,
   op 0x02,
@@ -267,13 +238,39 @@ def prefix11 : List Instr := [
   op 0x89,
   op 0x18,
   op 0x8c,
-
+  op 0x18,
+  op 0x8e,
+  op 0x18,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+  op 0x51,
+  op 0x8c,
+  op 0x01,
+  op 0x01,
+  op 0x01,
+  op 0x85,
+  op 0x16,
+  .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+  op 0x09,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+  op 0x1c,
+  op 0x86,
+  op 0x01,
+  op 0x84,
+  op 0x16,
+  op 0x96,
+  op 0x8b,
+  op 0x02,
+  op 0x88,
+  op 0x1c,
+  op 0x84,
+  op 0x16,
+  op 0x95,
+  op 0x8c,
+  op 0x8b,
 ]
 
 theorem prefix11_count : prefix11.length = 256 := by decide
 def prefix11Bytes : List UInt8 := [
-  129, 150, 141, 140, 22, 131, 23, 137, 24, 140, 24, 142, 24, 97, 1, 140,
-  81, 1, 1, 138, 1, 133, 22, 140, 2, 96, 24, 28, 131, 1, 133, 22,
   154, 140, 2, 137, 28, 133, 22, 146, 141, 137, 24, 137, 143, 22, 133, 23,
   141, 24, 24, 97, 2, 10, 81, 1, 1, 138, 1, 133, 22, 108, 14, 0,
   0, 0, 14, 0, 0, 0, 8, 0, 0, 0, 8, 9, 96, 20, 28, 1,
@@ -289,8 +286,11 @@ def prefix11Bytes : List UInt8 := [
   22, 138, 2, 96, 25, 28, 133, 1, 131, 22, 149, 138, 2, 135, 28, 131,
   22, 148, 139, 135, 24, 138, 141, 22, 135, 23, 24, 138, 24, 131, 138, 1,
   1, 1, 131, 22, 138, 2, 96, 20, 28, 129, 1, 131, 22, 152, 138, 2,
-  135, 28, 131, 22, 141, 129, 146, 136, 142, 22, 132, 23, 137, 24, 140,
+  135, 28, 131, 22, 141, 129, 146, 136, 142, 22, 132, 23, 137, 24, 140, 24,
+  142, 24, 96, 216, 81, 140, 1, 1, 1, 133, 22, 108, 126, 0, 0, 0,
+  126, 0, 0, 0, 64, 0, 0, 0, 64, 9, 96, 26, 28, 134, 1, 132,
+  22, 150, 139, 2, 136, 28, 132, 22, 149, 140, 139
 ]
 theorem prefix11_assembly : Challenge.EvmProof.PcEncoding.assembleBytes prefix11 = prefix11Bytes := by decide
-theorem prefix11_bytes_count : prefix11Bytes.length = 287 := by rfl
+theorem prefix11_bytes_count : prefix11Bytes.length = 299 := by rfl
 end RetainedBridge111.Candidate

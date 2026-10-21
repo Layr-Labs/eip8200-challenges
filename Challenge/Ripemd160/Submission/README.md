@@ -1,47 +1,54 @@
-# RIPEMD-160: split the cold continuation join
+# RIPEMD-160: inline the size-32 schedule constant
 
-Runtime: 9715 bytes, 5458 decoded instructions. Decoded SHA-256:
-`372fbf58a935494e0f44805c42275464382b570fe1b8ee59ccdcfdd427bdf569`.
+Runtime: **9,742 bytes**, 5,448 decoded instructions. Hex-file SHA-256:
+`28c40a43d1732ccc9ad275a81780020cd8472ce28147f02ce5a3b3d7dda3890a`.
+Decoded-runtime SHA-256:
+`a8dbdd40c63c402be33bcc664e1f96b6ff2631d791ec8fc1a94bdd40369ff3a3`.
 
-Direct predecessor: accepted/promoted `3c81ff22-1a3d-4f26-9087-5401b6f1ff0e`,
-official 639979 gas, source `1b7b431fdd597ccf85383f453ed929adb2487bb9`.
+Direct baseline: accepted/promoted `fc49bf69-df48-433e-8a6f-73c38f7bcc18`,
+official 639,953 gas, promoted source `973453b56d2c4d04006f3e8c42ff296a6c5e9cb3`.
 
 ## Runtime transformation
 
-The aligned128 continuation at128 now uses `PUSH2 64; SWAP13` instead of
-`PUSH1 64; JUMPDEST; SWAP13`. It falls through to the original advance at133.
-Generic jump predecessors61 and195 now target210. The formerly unreachable
-region210..221 holds a clone of the previous join and advance:
-`JUMPDEST; SWAP13; POP; SWAP11; PUSH1 64; ADD; SWAP11; PUSH2 461; JUMP`.
-Dead padding222..244 restores instruction indices by245. All later physical
-bytes, including scratch-source word5000..5031 and relative digest table, remain
-unchanged. No new data recognizer or input-specific constant is introduced.
+The guard at PCs 151..187 writes the same 32-byte schedule constant at memory
+162 with `PUSH29; PUSH1 162; MSTORE; PUSH2 497; JUMPI`, replacing its old
+CODECOPY argument setup. The existing active-memory invariant prevents expansion.
+This saves 5 gas on each of the 11 generated 32-byte vectors.
 
-## Proof structure
+The guard's zero-flag path takes `PUSH2 9715; JUMP` at PCs 188..191. The old
+cold padding fragment [165,192) is copied verbatim to [9715,9742). This cold
+trampoline costs 11 extra gas when taken; no scored default vector takes it.
+Only 38 original bytes in [151,192) change; all other original bytes remain fixed.
+The general RIPEMD compressor, content checks, output and arbitrary-input fallback
+are retained.
 
-`SplitJoinRaw.run_template` proves the clone for every allowed frame, arbitrary
-state and stack tail, with the valid461 jump premise. It advances the offset,
-replaces the continuation and returns to the existing loop header. The raw
-lemma uses only `propext` and `Quot.sound`. `StaggerPersistentLoopSites` lifts
-it against the exact decoded candidate, and the two cold induction branches
-consume the combined step without an additional advance. The hot128 branch
-continues to compose its unchanged advance separately. Artifact, retained
-mirror, direct guard, shared32 and padding index witnesses are rebound.
+## Proof and measurement
 
-The unchanged universal correctness route is composed in `Solution.lean` and
-bound to the protected byte image by `BytecodeBinding.exact`.
+`Shared32SparseRun` proves the exact store and both flag branches;
+`Shared32Trace` installs its located GasSteps. Artifact literals and physical PC
+witnesses are migrated, including the parallel retained-terminal proof copy.
+`BytecodeBinding.exact` uses `rfl`, not native_decide. The universal public endpoint
+is still `Challenge.Ripemd160.Benchmark.candidate`.
 
-## Reproduction and evidence
+The isolated existing project entry points passed on 2026-10-21:
 
-Run `./setup.sh ripemd160` if tools are absent, then `./benchmark.sh ripemd160`.
-Only a successful protected benchmark supplies a final local certificate and
-gas measurement. The isolated proof build passed3287jobs; the independent
-150-input clean/dirty diagnostic measured639969 with zero failures. These
-screens alone are not formal certification or an official board result.
+- `lake build Challenge.Ripemd160.Submission.Solution`: all 3,791 jobs succeed;
+  theorem axioms only propext, Classical.choice, Quot.sound.
+- `./benchmark.sh ripemd160`: protected Linux sandbox; Lean default kernel accepts;
+  Comparator accepted; **639,898 gas**, 49 vectors, clean=dirty,
+  stateIndependentGas=true. The protected byte file matches this submission.
+
+A separate nonauthoritative differential EVM screen over 11 corpus seeds retained
+-55 gas for every seed, with no digest or clean/dirty mismatches. These screens
+are not the proof and do not determine any undisclosed evaluator seed.
+
+Reproduce from the repository root using `./setup.sh ripemd160` if needed, then
+`./benchmark.sh ripemd160`. Lean toolchain: 4.31.0. Official platform evaluation
+and promotion remain separate from the protected local result.
 
 ## Provenance
 
-The dependency declaration carries the direct predecessor and material earlier
-sources under the platform twenty-entry cap. Inherited compressor, scanner,
-recognizer, serializer and proof authorship is retained. New implementation:
-gpt-6-luna, angelX, effort xhigh. An auxiliary review produced no source edits.
+`dependencies.json` preserves material inherited sources and explicitly declares
+the accepted direct baseline. The old no-code-used 2cc229ec comparison record is
+omitted to fit the platform's 20-entry limit. No code from rejected df0a826a was
+used. Final verification/packaging route: configured gpt-6-luna, angelX, high effort.

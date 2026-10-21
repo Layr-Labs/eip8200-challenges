@@ -16,7 +16,7 @@ set_option linter.unusedSimpArgs false
 Every length the alignment guard at 449 does not send to the block loop jumps to 143, the
 32-byte block. That block sets the continuation slot to the output entry 9667 and writes two
 scratch bytes (165 and 188) before its length test at 158. Any other length falls through to the
-sentinel store at 166 with both scratch bytes still written: no store undoes them. They are not
+sentinel store at 9716 with both scratch bytes still written: no store undoes them. They are not
 part of the padded message (which starts at 1056) nor of the zero band the block loop needs, and
 the staging store at 0xa2 of the first block overwrites both before any read.
 -/
@@ -92,7 +92,7 @@ theorem run_head (s : State) (pc a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UIn
     List.getElem?_cons_zero, List.exchange]
   rfl
 
-/-- A guard miss at 449 that is not 32 bytes long reaches the sentinel store at 166 with the two
+/-- A guard miss at 449 that is not 32 bytes long reaches the sentinel store at 9716 with the two
 scratch bytes written and the output entry 9667 in the continuation slot. -/
 def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 860) (hrun : s.halt = .Running)
@@ -107,7 +107,7 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     (hlim : limit = UInt256.ofNat s.executionEnv.calldata.size) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho}
       { s with
-        pc := UInt256.ofNat 166
+        pc := UInt256.ofNat 9716
         stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 9667) rho
         memory := wMemory s.memory dirtyB dirtyC } := by
   have heq : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0 := by
@@ -146,8 +146,8 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     have hh := run_head s (UInt256.ofNat 144) a0 a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 off limit rho
       (by omega) hrun
     simpa only [head.template, head.end_pc, atState, F, F0, heq] using hh
-  have g3 : GasSteps (atState s 151 (UInt256.ofNat 0 :: F0)) (atState sW 165 F0) := by
-    apply combined.lift s (atState sW 165 F0) e (UInt256.ofNat 0 :: F0)
+  have g3 : GasSteps (atState s 151 (UInt256.ofNat 0 :: F0)) (atState sW 188 F0) := by
+    apply combined.lift s (atState sW 188 F0) e (UInt256.ofNat 0 :: F0)
     have hh := Shared32SparseRun.run_combined_miss s F0 hF0len hrun hactive
     have hm : Shared32SparseRun.copied s.memory s.executionEnv.code = wMemory s.memory b c := by
       rw [hcode, Shared32Codecopy.copied_sparse s.memory hmemsize hzero]
@@ -155,13 +155,23 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
       have hc : c = 1 := by decide
       simp only [Shared32Scratch.sparseMemory, wMemory, hb, hc]
     simpa only [combined.template, atState, sW, hm] using hh
-  have g6 : GasSteps (atState sW 165 F0) (atState sW 166 F0) := by
-    apply missTail.lift sW (atState sW 166 F0) eW F0
+  have hvW : Decode.isValidJumpDest sW.executionEnv.code 9715 = true := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 5429 (by rfl)
+    have hp : Artifact.submissionArtifact.instructionPC 5429 = 9715 := by
+      rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+    rw [hp] at h
+    rw [eW.code]
+    exact h
+  have g4 : GasSteps (atState sW 188 F0) (atState sW 9715 F0) := by
+    apply missJump.lift sW (atState sW 9715 F0) eW F0
+    exact Shared32SparseRun.run_missJump sW F0 (by simp only [F0, cstk, List.length_cons]; omega) hrun hvW
+  have g6 : GasSteps (atState sW 9715 F0) (atState sW 9716 F0) := by
+    apply missTail.lift sW (atState sW 9716 F0) eW F0
     have hc : F0.length < 1024 := by omega
     simp [missTail.template, runInstrSeq, DataStepper.runInstr, atState, eW.run, hc]
     rfl
   rw [hF, hF0]
-  exact g0.trans (g1.trans (g3.trans g6))
+  exact g0.trans (g1.trans (g3.trans (g4.trans g6)))
 
 #print axioms restore
 #print axioms gasSteps_partial

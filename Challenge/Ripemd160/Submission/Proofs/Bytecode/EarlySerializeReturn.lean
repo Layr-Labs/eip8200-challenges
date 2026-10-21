@@ -122,16 +122,16 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 namespace prefixSite
 abbrev template : List Instr := RecognitionAbsoluteSelectorRaw.prefixTemplate
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3523).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3505).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3523 actual_slice
-    (by change 3523 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3505 actual_slice
+    (by change 3505 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 4786 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3523) = UInt256.ofNat 4786
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3505) = UInt256.ofNat 4786
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem end_pc : pcAfter (UInt256.ofNat 4786) template = UInt256.ofNat 4803 := by decide
@@ -143,16 +143,16 @@ end prefixSite
 namespace finishSite
 abbrev template : List Instr := RecognitionSelectorRaw.finish
 theorem actual_slice :
-    (Artifact.submissionArtifact.instructions.drop 3730).take template.length = template := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3712).take template.length = template := by rfl
 
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3730 actual_slice
-    (by change 3730 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3712 actual_slice
+    (by change 3712 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 6106 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3730) = UInt256.ofNat 6106
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3712) = UInt256.ofNat 6106
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem end_pc : pcAfter (UInt256.ofNat 6106) template = UInt256.ofNat 6108 := by decide
@@ -163,11 +163,11 @@ end finishSite
 
 private theorem copy_decoded (input : ByteArray) (rho : List UInt256) :
     (beforeCopy input rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3530 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3512 .CODECOPY
     (by rfl) (by decide) trivial
-  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3530
+  apply Artifact.submissionArtifact.state_decodedOp_of (beforeCopy input rho) 3512
     rfl _ .CODECOPY none hd (by rfl)
-  change (UInt256.ofNat 4803).toNat = Artifact.submissionArtifact.instructionPC 3530
+  change (UInt256.ofNat 4803).toNat = Artifact.submissionArtifact.instructionPC 3512
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- Only prefix + CODECOPY: the next instruction is the scanner initializer. -/
@@ -198,11 +198,11 @@ def gasSteps_prepare (input : ByteArray) (rho : List UInt256) (hcap : rho.length
 
 private theorem size_decoded (input : ByteArray) (saved rho : List UInt256) :
     (atState (prepared input saved) 6105 rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3729 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3711 .MSIZE
     (by rfl) (by decide) trivial
   apply Artifact.submissionArtifact.state_decodedOp_of
-    (atState (prepared input saved) 6105 rho) 3729 rfl _ .MSIZE none hd (by rfl)
-  change (UInt256.ofNat 6105).toNat = Artifact.submissionArtifact.instructionPC 3729
+    (atState (prepared input saved) 6087 rho) 3729 rfl _ .MSIZE none hd (by rfl)
+  change (UInt256.ofNat 6105).toNat = Artifact.submissionArtifact.instructionPC 3711
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- The recognizer may replace the entire stack; only the prepared memory matters. -/

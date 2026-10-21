@@ -28,218 +28,386 @@ private def submissionInstructionsChunk0 : List Instr :=
 [
 
   .push ⟨5, by decide⟩ (UInt256.ofNat 71077102108),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
+
   op 0x57,
+
   op 0x36,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1000),
+
   op 0x03,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4565),
+
   op 0x57,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x80,
+
   .push ⟨15, by decide⟩ (UInt256.ofNat 7016996765293437281),
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+
   op 0x1b,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 8157),
+
   op 0x57,
+
   op 0x58,
+
   op 0x35,
+
   op 0x81,
+
   op 0x14,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 9429),
+
   op 0x56,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
+
   op 0x36,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x37,
+
   op 0x36,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+
   op 0x1b,
+
   op 0x80,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x52,
+
   op 0x80,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+
   op 0x52,
+
   .push ⟨19, by decide⟩ (UInt256.ofNat 2854495385411919762116571938898990272765493376),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
+
   op 0x9c,
+
   op 0x50,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 824),
+
   op 0x56,
+
   op 0x04,
+
   op 0x04,
+
   op 0x5b,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 64),
+
   op 0x9c,
+
   op 0x50,
+
   op 0x9a,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x01,
+
   op 0x9a,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 461),
+
   op 0x56,
+
   op 0x5b,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 9667),
+
   op 0x9c,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+
   op 0x14,
-  .push ⟨5, by decide⟩ (UInt256.ofNat 497),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 5000),
-  op 0x58,
-  op 0x39,
+
+  .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424),
+
+  .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
+  op 0x52,
+
+  .push ⟨2, by decide⟩ (UInt256.ofNat 497),
+
   op 0x57,
-  op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  op 0x8c,
-  op 0x36,
-  op 0x01,
-  op 0x53,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
-  op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-  op 0x1b,
-  op 0x36,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
-  op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 63),
-  op 0x17,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 89),
-  op 0x01,
-  op 0x82,
+
+  .push ⟨2, by decide⟩ (UInt256.ofNat 9715),
+
   op 0x56,
+
   op 0x5b,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 210),
+
   op 0x56,
+
   op 0x5b,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 222),
+
   op 0x9f,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 461),
+
   op 0x56,
+
   op 0x5b,
+
   op 0x9c,
+
   op 0x50,
+
   op 0x9a,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x01,
+
   op 0x9a,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 461),
+
   op 0x56,
+
   op 0x5b,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   op 0x8c,
+
   op 0x01,
+
   op 0x59,
+
   op 0x10,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4733),
+
   op 0x57,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 222),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 210),
+
   op 0x56,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
 
 ]
 
-@[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 144 := by rfl
+@[simp] private theorem submissionInstructionsChunk0_length : submissionInstructionsChunk0.length = 126 := by rfl
 
 private def submissionInstructionsChunk1 : List Instr :=
 [
 
   .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255),
+
   .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455),
+
   op 0x36,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1056),
+
   op 0x37,
+
   op 0x36,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1056),
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 1732584193),
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 4023233417),
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 2562383102),
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 271733878),
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520),
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009),
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625),
+
   .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+
   .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498),
+
   .push ⟨8, by decide⟩ (UInt256.ofNat 18446744073709551423),
+
   op 0x36,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 143),
+
   op 0x57,
+
   op 0x5b,
+
   op 0x8b,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+
   op 0x01,
+
   op 0x51,
+
   op 0x80,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x18,
+
   op 0x8f,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 257),
+
   op 0x02,
+
   op 0x18,
+
   op 0x8f,
+
   op 0x81,
+
   op 0x80,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x1c,
+
   op 0x18,
+
   op 0x16,
+
   .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+
   op 0x02,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x52,
+
   op 0x5b,
+
   op 0x8b,
+
   op 0x51,
+
   op 0x80,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x18,
+
   op 0x8f,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 257),
 
 ]
@@ -250,153 +418,301 @@ private def submissionInstructionsChunk2 : List Instr :=
 [
 
   op 0x02,
+
   op 0x18,
+
   op 0x8f,
+
   op 0x81,
+
   op 0x80,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x1c,
+
   op 0x18,
+
   op 0x16,
+
   .push ⟨3, by decide⟩ (UInt256.ofNat 65537),
+
   op 0x02,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 146),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 178),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 196),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 236),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 218),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 268),
+
   op 0x51,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 286),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 168),
+
   op 0x51,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 266),
+
   op 0x51,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 142),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 172),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 232),
+
   op 0x51,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 258),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 228),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 180),
+
   op 0x51,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 262),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 146),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 134),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 236),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 138),
+
   op 0x51,
+
   op 0x80,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 900),
+
   op 0x52,
+
   op 0x8b,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+
   op 0x52,
+
   op 0x82,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 882),
+
   op 0x52,
+
   op 0x84,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+
   op 0x52,
+
   op 0x84,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+
   op 0x52,
+
   op 0x82,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 846),
+
   op 0x52,
+
   op 0x80,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 558),
+
   op 0x52,
+
   op 0x87,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 540),
+
   op 0x52,
+
   op 0x85,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 108),
+
   op 0x52,
+
   op 0x8d,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 684),
+
   op 0x52,
+
   op 0x8f,
+
   op 0x58,
+
   op 0x52,
+
   op 0x8d,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 414),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 756),
+
   op 0x52,
+
   op 0x80,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+
   op 0x52,
+
   op 0x8d,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 90),
+
   op 0x52,
+
   op 0x87,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+
   op 0x52,
+
   op 0x85,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 504),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+
   op 0x52,
+
   op 0x88,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 972),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+
   op 0x52,
+
   op 0x88,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+
   op 0x52,
+
   op 0x83,
+
   .push ⟨3, by decide⟩ (UInt256.ofNat 612),
+
   op 0x52,
+
   op 0x58,
+
   op 0x52,
+
   op 0x88,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+
   op 0x52,
+
   .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
 
 ]
@@ -407,154 +723,303 @@ private def submissionInstructionsChunk3 : List Instr :=
 [
 
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+
   op 0x52,
+
   op 0x88,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 270),
+
   op 0x52,
+
   op 0x81,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+
   op 0x52,
+
   op 0x80,
+
   op 0x58,
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 468),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 360),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+
   op 0x52,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x52,
+
   op 0x5b,
+
   op 0x88,
+
   op 0x81,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x88,
+
   op 0x8d,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8d,
+
   op 0x8d,
+
   op 0x8d,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x84,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x84,
+
   op 0x84,
+
   op 0x86,
+
   op 0x8f,
+
   op 0x86,
+
   op 0x19,
+
   op 0x17,
+
   op 0x84,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x51,
+
   op 0x8e,
+
   op 0x01,
+
   op 0x01,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
+
   op 0x01,
+
   op 0x16,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x16,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
+
   op 0x8e,
+
   op 0x86,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+
   op 0x1c,
+
   op 0x93,
+
   op 0x83,
+
   op 0x85,
+
   op 0x19,
+
   op 0x17,
+
   op 0x83,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x85,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x84,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1b,
+
   op 0x8e,
+
   op 0x17,
+
   op 0x90,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1b,
+
   op 0x8d,
+
   op 0x17,
+
   op 0x93,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1b,
+
   op 0x8f,
+
   op 0x17,
+
   op 0x91,
+
   op 0x85,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+
   op 0x1c,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1b,
+
   op 0x8c,
+
   op 0x17,
+
   op 0x92,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1b,
+
   op 0x8b,
+
   op 0x17,
+
   .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
+
   .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 360),
+
   op 0x51,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+
   op 0x8c,
+
   op 0x8a,
 
 ]
@@ -565,227 +1030,449 @@ private def submissionInstructionsChunk4 : List Instr :=
 [
 
   .push ⟨22, by decide⟩ (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
+
   op 0x98,
+
   op 0x86,
+
   op 0x8c,
+
   op 0x88,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x18,
+
   op 0x89,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x83,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x96,
+
   op 0x87,
+
   op 0x89,
+
   op 0x88,
+
   op 0x16,
+
   op 0x17,
+
   op 0x87,
+
   op 0x18,
+
   op 0x89,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 774),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x81,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x82,
+
   op 0x9a,
+
   op 0x89,
+
   op 0x8d,
+
   op 0x85,
+
   op 0x8a,
+
   op 0x82,
+
   op 0x16,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   op 0x85,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9b,
+
   op 0x8d,
+
   op 0x02,
+
   op 0x84,
+
   op 0x1c,
+
   op 0x86,
+
   op 0x16,
+
   op 0x97,
+
   op 0x89,
+
   op 0x88,
+
   op 0x8a,
+
   op 0x81,
+
   op 0x83,
+
   op 0x16,
+
   op 0x17,
+
   op 0x18,
+
   op 0x18,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 882),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x81,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x8b,
+
   op 0x82,
+
   op 0x9a,
+
   op 0x89,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x17,
+
   op 0x89,
+
   op 0x18,
+
   op 0x18,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9b,
+
   op 0x8d,
+
   op 0x02,
+
   op 0x84,
+
   op 0x1c,
+
   op 0x86,
+
   op 0x16,
+
   op 0x97,
+
   op 0x89,
+
   op 0x88,
+
   op 0x8a,
+
   op 0x81,
+
   op 0x83,
+
   op 0x16,
+
   op 0x17,
+
   op 0x18,
+
   op 0x18,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1080),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x81,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x8b,
+
   op 0x82,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x88,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x8c,
 
 ]
@@ -796,218 +1483,431 @@ private def submissionInstructionsChunk5 : List Instr :=
 [
 
   op 0x18,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1044),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x81,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9b,
+
   op 0x81,
+
   op 0x02,
+
   op 0x84,
+
   op 0x1c,
+
   op 0x86,
+
   op 0x16,
+
   op 0x97,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x8a,
+
   op 0x81,
+
   op 0x8b,
+
   op 0x16,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x81,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x99,
+
   op 0x8b,
+
   op 0x8b,
+
   op 0x81,
+
   op 0x89,
+
   op 0x16,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x18,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x83,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x96,
+
   op 0x87,
+
   op 0x87,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x87,
+
   op 0x18,
+
   op 0x89,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 810),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163338801971201),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x81,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x99,
+
   op 0x88,
+
   op 0x8c,
+
   op 0x88,
+
   op 0x18,
+
   op 0x18,
+
   op 0x83,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x16,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x83,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x96,
+
   op 0x88,
+
   op 0x87,
+
   op 0x89,
+
   op 0x81,
+
   op 0x8c,
+
   op 0x16,
+
   op 0x17,
+
   op 0x18,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x81,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x97,
+
   op 0x89,
+
   op 0x85,
+
   op 0x16,
+
   op 0x89,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x88,
+
   op 0x18,
+
   op 0x18,
+
   op 0x85,
+
   op 0x18,
+
   op 0x01,
 
 ]
@@ -1018,199 +1918,393 @@ private def submissionInstructionsChunk6 : List Instr :=
 [
 
   .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+
   op 0x51,
+
   op 0x01,
+
   op 0x90,
+
   op 0x96,
+
   op 0x01,
+
   op 0x82,
+
   op 0x16,
+
   op 0x89,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x84,
+
   op 0x01,
+
   op 0x82,
+
   op 0x16,
+
   op 0x97,
+
   op 0x89,
+
   op 0x02,
+
   op 0x86,
+
   op 0x1c,
+
   op 0x82,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x8f,
+
   .push ⟨22, by decide⟩ (UInt256.ofNat 34535016170389834383797866734609369064725060249452544),
+
   op 0x96,
+
   op 0x8b,
+
   op 0x89,
+
   op 0x88,
+
   op 0x82,
+
   op 0x16,
+
   op 0x18,
+
   op 0x88,
+
   op 0x86,
+
   op 0x16,
+
   op 0x17,
+
   op 0x18,
+
   op 0x84,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1062),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x97,
+
   op 0x86,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x85,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x87,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x51,
+
   op 0x01,
+
   op 0x85,
+
   op 0x01,
+
   op 0x8c,
+
   op 0x8d,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450021900025857),
+
   op 0x86,
+
   op 0x83,
+
   op 0x94,
+
   op 0x16,
+
   op 0x09,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x8c,
+
   op 0x85,
+
   op 0x89,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x8a,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x17,
+
   op 0x18,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 990),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 20123953283308614743486684463105),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x89,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x96,
+
   op 0x8b,
+
   op 0x02,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x84,
+
   op 0x16,
+
   op 0x95,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 1518500249),
+
   op 0x01,
+
   op 0x98,
+
   op 0x86,
+
   op 0x8b,
+
   op 0x17,
+
   op 0x88,
+
   op 0x87,
+
   op 0x18,
+
   op 0x16,
+
   op 0x87,
+
   op 0x18,
+
   op 0x8b,
+
   op 0x89,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x82,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8b,
+
   op 0x02,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x84,
+
   op 0x16,
+
   op 0x91,
+
   op 0x82,
+
   op 0x8b,
+
   op 0x87,
+
   op 0x18,
+
   op 0x89,
+
   op 0x82,
+
   op 0x17,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8b,
+
   op 0x89,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
 
 ]
@@ -1221,210 +2315,415 @@ private def submissionInstructionsChunk7 : List Instr :=
 [
 
   .push ⟨1, by decide⟩ (UInt256.ofNat 72),
+
   op 0x51,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290078236213249),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x85,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x87,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x89,
+
   op 0x85,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 504),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450086324535312),
+
   op 0x09,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x87,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 324),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x89,
+
   op 0x85,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 684),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x87,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
 
 ]
@@ -1435,212 +2734,419 @@ private def submissionInstructionsChunk8 : List Instr :=
 [
 
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x89,
+
   op 0x85,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 954),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x87,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x89,
+
   op 0x85,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 36),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   op 0x86,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x87,
+
   op 0x17,
+
   op 0x88,
+
   op 0x87,
+
   op 0x18,
+
   op 0x16,
+
   op 0x87,
+
   op 0x18,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x90,
+
   op 0x86,
+
   op 0x82,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x86,
+
   op 0x18,
+
   op 0x16,
+
   op 0x82,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x88,
+
   op 0x16,
+
   op 0x17,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 486),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x8f,
+
   op 0x8d,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450021900025857),
+
   op 0x8f,
+
   op 0x93,
+
   op 0x87,
+
   op 0x16,
+
   op 0x09,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x97,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x96,
+
   op 0x87,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x17,
 
 ]
@@ -1651,189 +3157,373 @@ private def submissionInstructionsChunk9 : List Instr :=
 [
 
   op 0x01,
+
   op 0x84,
+
   op 0x01,
+
   .push ⟨22, by decide⟩ (UInt256.ofNat 40945789247971450477386360121479348807026276516919705),
+
   op 0x9a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x87,
+
   op 0x8a,
+
   op 0x8e,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8e,
+
   op 0x82,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 666),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x85,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   op 0x85,
+
   op 0x85,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x88,
+
   op 0x88,
+
   op 0x16,
+
   op 0x18,
+
   op 0x88,
+
   op 0x87,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 126),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+
   op 0x8e,
+
   op 0x91,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x97,
+
   op 0x86,
+
   op 0x8a,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x86,
+
   op 0x18,
+
   op 0x16,
+
   op 0x89,
+
   op 0x86,
+
   op 0x18,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 558),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8d,
+
   op 0x8c,
+
   op 0x91,
+
   op 0x84,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x84,
+
   op 0x01,
+
   op 0x82,
+
   op 0x16,
+
   op 0x94,
+
   op 0x89,
+
   op 0x02,
+
   op 0x86,
+
   op 0x1c,
+
   op 0x82,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x81,
+
   .push ⟨23, by decide⟩ (UInt256.ofNat 136726760529788758926252426176837954510549114783656865),
+
   op 0x97,
+
   op 0x84,
+
   op 0x8d,
+
   op 0x19,
+
   op 0x8b,
+
   op 0x17,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 972),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x8b,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9b,
+
   op 0x8d,
+
   op 0x02,
+
   op 0x8a,
+
   op 0x1c,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8b,
+
   op 0x8d,
+
   op 0x8b,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 306),
+
   op 0x51,
+
   op 0x89,
+
   op 0x01,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
 
 ]
@@ -1844,220 +3534,435 @@ private def submissionInstructionsChunk10 : List Instr :=
 [
 
   .push ⟨13, by decide⟩ (UInt256.ofNat 4912146077028087063507156074528),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x97,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x8c,
+
   op 0x19,
+
   op 0x8a,
+
   op 0x17,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x51,
+
   op 0x01,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 18),
+
   op 0x51,
+
   op 0x01,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x82,
+
   op 0x93,
+
   op 0x83,
+
   op 0x8d,
+
   op 0x19,
+
   op 0x8b,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 828),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
+
   op 0x8b,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9b,
+
   op 0x8d,
+
   op 0x02,
+
   op 0x8a,
+
   op 0x1c,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x19,
+
   op 0x17,
+
   op 0x8c,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+
   op 0x51,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x09,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x92,
+
   op 0x83,
+
   op 0x8c,
+
   op 0x19,
+
   op 0x8a,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 936),
+
   op 0x51,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 468),
+
   op 0x51,
+
   op 0x89,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨14, by decide⟩ (UInt256.ofNat 162100820541926873095598711505920),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x92,
+
   op 0x83,
+
   op 0x8c,
+
   op 0x19,
+
   op 0x8a,
+
   op 0x17,
+
   op 0x18,
+
   op 0x85,
+
   op 0x01,
+
   op 0x01,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
 
 ]
@@ -2068,197 +3973,389 @@ private def submissionInstructionsChunk11 : List Instr :=
 [
 
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 234),
+
   op 0x51,
+
   op 0x89,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 4912146077028087063374012088321),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x90,
+
   op 0x81,
+
   op 0x8a,
+
   op 0x19,
+
   op 0x88,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+
   op 0x51,
+
   op 0x87,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x97,
+
   op 0x88,
+
   op 0x8a,
+
   op 0x88,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 414),
+
   op 0x51,
+
   op 0x87,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8e,
+
   op 0x8d,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163338801971201),
+
   op 0x8f,
+
   op 0x93,
+
   op 0x87,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x97,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x83,
+
   op 0x8c,
+
   op 0x19,
+
   op 0x8a,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   .push ⟨22, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
+
   op 0x97,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x8e,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8e,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x90,
+
   op 0x81,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x89,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x89,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 702),
+
   op 0x51,
+
   op 0x87,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8e,
+
   op 0x8e,
 
 ]
@@ -2269,218 +4366,431 @@ private def submissionInstructionsChunk12 : List Instr :=
 [
 
   .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
+
   op 0x8f,
+
   op 0x93,
+
   op 0x87,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x8e,
+
   op 0x8e,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 90),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x87,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 541184315),
+
   op 0x01,
+
   op 0x90,
+
   op 0x86,
+
   op 0x8a,
+
   op 0x86,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x86,
+
   op 0x16,
+
   op 0x87,
+
   op 0x18,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 792),
+
   op 0x51,
+
   op 0x83,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x88,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x97,
+
   op 0x86,
+
   op 0x85,
+
   op 0x16,
+
   op 0x89,
+
   op 0x18,
+
   op 0x87,
+
   op 0x86,
+
   op 0x17,
+
   op 0x8b,
+
   op 0x18,
+
   op 0x16,
+
   op 0x87,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 900),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8f,
+
   op 0x8d,
+
   op 0x91,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x85,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x87,
+
   op 0x87,
+
   op 0x8d,
+
   op 0x16,
+
   op 0x18,
+
   op 0x87,
+
   op 0x8d,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+
   op 0x51,
+
   op 0x85,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x87,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x17,
+
   op 0x18,
+
   op 0x16,
+
   op 0x89,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 630),
+
   op 0x51,
+
   op 0x85,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨14, by decide⟩ (UInt256.ofNat 80971182108430725466132102251008),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x88,
+
   op 0x8c,
 
 ]
@@ -2491,210 +4801,415 @@ private def submissionInstructionsChunk13 : List Instr :=
 [
 
   op 0x88,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x88,
+
   op 0x16,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 54),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x88,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x89,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 738),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨14, by decide⟩ (UInt256.ofNat 80971182108430725466132102251008),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x96,
+
   op 0x8b,
+
   op 0x87,
+
   op 0x81,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x89,
+
   op 0x89,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 450),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x8a,
+
   op 0x87,
+
   op 0x8a,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x17,
+
   op 0x18,
+
   op 0x16,
+
   op 0x89,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 378),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 2376844875981332450021900025857),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x88,
+
   op 0x8c,
+
   op 0x88,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x88,
+
   op 0x16,
+
   op 0x89,
+
   op 0x18,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x88,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x89,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 846),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
 
 ]
@@ -2705,220 +5220,435 @@ private def submissionInstructionsChunk14 : List Instr :=
 [
 
   .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490020700880900),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x81,
+
   op 0x96,
+
   op 0x8b,
+
   op 0x87,
+
   op 0x81,
+
   op 0x17,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x89,
+
   op 0x89,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x99,
+
   op 0x88,
+
   op 0x8c,
+
   op 0x8a,
+
   op 0x89,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x89,
+
   op 0x83,
+
   op 0x16,
+
   op 0x18,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 648),
+
   op 0x51,
+
   op 0x01,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨14, by decide⟩ (UInt256.ofNat 80971182108430725463937373962241),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   op 0x86,
+
   op 0x8a,
+
   op 0x86,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x86,
+
   op 0x16,
+
   op 0x87,
+
   op 0x18,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x82,
+
   op 0x16,
+
   op 0x89,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x87,
+
   op 0x01,
+
   op 0x82,
+
   op 0x16,
+
   op 0x97,
+
   op 0x89,
+
   op 0x02,
+
   op 0x86,
+
   op 0x1c,
+
   op 0x82,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x8f,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 2400959708),
+
   op 0x99,
+
   op 0x86,
+
   op 0x89,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x17,
+
   op 0x84,
+
   op 0x16,
+
   op 0x89,
+
   op 0x18,
+
   op 0x87,
+
   op 0x8d,
+
   op 0x16,
+
   op 0x18,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 108),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x85,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   op 0x85,
+
   op 0x87,
+
   op 0x8b,
+
   op 0x18,
+
   op 0x86,
+
   op 0x17,
+
   op 0x16,
+
   op 0x87,
+
   op 0x86,
+
   op 0x16,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 1026),
+
   op 0x51,
+
   op 0x01,
+
   op 0x89,
+
   op 0x01,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x90,
+
   op 0x89,
+
   op 0x85,
+
   op 0x16,
+
   op 0x82,
+
   op 0x88,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x87,
+
   op 0x17,
+
   op 0x16,
+
   op 0x18,
+
   op 0x87,
+
   op 0x18,
+
   op 0x01,
 
 ]
@@ -2929,227 +5659,449 @@ private def submissionInstructionsChunk15 : List Instr :=
 [
 
   .push ⟨2, by decide⟩ (UInt256.ofNat 342),
+
   op 0x51,
+
   op 0x01,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 2840853838),
+
   op 0x98,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 21),
+
   op 0x1c,
+
   op 0x85,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x96,
+
   op 0x8d,
+
   op 0x8c,
+
   op 0x16,
+
   op 0x83,
+
   op 0x17,
+
   op 0x89,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x8e,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 396),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 24),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x89,
+
   op 0x1c,
+
   op 0x85,
+
   op 0x16,
+
   op 0x92,
+
   op 0x8d,
+
   op 0x89,
+
   op 0x18,
+
   op 0x89,
+
   op 0x8f,
+
   op 0x16,
+
   op 0x85,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 522),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x82,
+
   op 0x97,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x16,
+
   op 0x89,
+
   op 0x17,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+
   op 0x51,
+
   op 0x8d,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x84,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9b,
+
   op 0x8d,
+
   op 0x02,
+
   op 0x8a,
+
   op 0x1c,
+
   op 0x86,
+
   op 0x16,
+
   op 0x93,
+
   op 0x89,
+
   op 0x8f,
+
   op 0x16,
+
   op 0x85,
+
   op 0x17,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 756),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8c,
+
   op 0x01,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 21),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   op 0x89,
+
   op 0x8c,
+
   op 0x16,
+
   op 0x86,
+
   op 0x17,
+
   op 0x87,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 252),
+
   op 0x51,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x90,
+
   op 0x86,
+
   op 0x8c,
+
   op 0x16,
+
   op 0x82,
+
   op 0x17,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x87,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 432),
+
   op 0x51,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
 
 ]
@@ -3160,222 +6112,439 @@ private def submissionInstructionsChunk16 : List Instr :=
 [
 
   op 0x1c,
+
   op 0x85,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x94,
+
   op 0x8b,
+
   op 0x87,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x8d,
+
   op 0x16,
+
   op 0x87,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x83,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8a,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x81,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x92,
+
   op 0x88,
+
   op 0x8e,
+
   op 0x16,
+
   op 0x84,
+
   op 0x17,
+
   op 0x89,
+
   op 0x18,
+
   op 0x8c,
+
   op 0x18,
+
   op 0x8e,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 216),
+
   op 0x51,
+
   op 0x8c,
+
   op 0x01,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 9982748479121596290348819152960),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 26),
+
   op 0x1c,
+
   op 0x86,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x96,
+
   op 0x8b,
+
   op 0x02,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x84,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8c,
+
   op 0x8b,
+
   op 0x18,
+
   op 0x8b,
+
   op 0x8e,
+
   op 0x16,
+
   op 0x88,
+
   op 0x17,
+
   op 0x89,
+
   op 0x18,
+
   op 0x18,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x82,
+
   op 0x93,
+
   op 0x8c,
+
   op 0x8f,
+
   op 0x18,
+
   op 0x8f,
+
   op 0x8b,
+
   op 0x16,
+
   op 0x86,
+
   op 0x17,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 540),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8b,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x86,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x96,
+
   op 0x8b,
+
   op 0x02,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x84,
+
   op 0x16,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x8d,
+
   op 0x16,
+
   op 0x87,
+
   op 0x17,
+
   op 0x88,
+
   op 0x18,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x8b,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 972),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x83,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x81,
+
   op 0x92,
+
   op 0x88,
+
   op 0x8e,
+
   op 0x16,
+
   op 0x84,
+
   op 0x17,
+
   op 0x8e,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x8a,
+
   op 0x18,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 918),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8b,
+
   op 0x01,
+
   op 0x01,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143375908765704),
+
   op 0x09,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 21),
+
   op 0x1c,
+
   op 0x86,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
 
 ]
@@ -3386,201 +6555,397 @@ private def submissionInstructionsChunk17 : List Instr :=
 [
 
   op 0x96,
+
   op 0x8b,
+
   op 0x02,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x95,
+
   op 0x8a,
+
   op 0x8d,
+
   op 0x16,
+
   op 0x87,
+
   op 0x17,
+
   op 0x88,
+
   op 0x18,
+
   op 0x8d,
+
   op 0x18,
+
   op 0x8b,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 594),
+
   op 0x51,
+
   op 0x01,
+
   op 0x8a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x8b,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x83,
+
   op 0x16,
+
   op 0x98,
+
   op 0x8a,
+
   op 0x02,
+
   op 0x87,
+
   op 0x1c,
+
   op 0x8a,
+
   op 0x87,
+
   op 0x02,
+
   op 0x88,
+
   op 0x1c,
+
   op 0x8c,
+
   op 0x8b,
+
   op 0x83,
+
   op 0x19,
+
   op 0x8a,
+
   op 0x17,
+
   op 0x18,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x51,
+
   op 0x85,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8b,
+
   op 0x01,
+
   op 0x16,
+
   op 0x8c,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
+
   op 0x1c,
+
   op 0x87,
+
   op 0x01,
+
   op 0x8d,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 612),
+
   op 0x51,
+
   op 0x8b,
+
   op 0x82,
+
   op 0x8e,
+
   op 0x85,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   op 0x01,
+
   op 0x01,
+
   op 0x88,
+
   op 0x01,
+
   op 0x8e,
+
   op 0x16,
+
   op 0x8d,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x8c,
+
   op 0x8e,
+
   op 0x02,
+
   op 0x8b,
+
   op 0x1c,
+
   op 0x9b,
+
   op 0x81,
+
   op 0x83,
+
   op 0x8e,
+
   op 0x19,
+
   op 0x17,
+
   op 0x18,
+
   op 0x85,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+
   op 0x51,
+
   op 0x01,
+
   op 0x01,
+
   op 0x8f,
+
   op 0x16,
+
   op 0x8e,
+
   op 0x02,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
+
   op 0x1c,
+
   op 0x83,
+
   op 0x01,
+
   op 0x93,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x96,
+
   op 0x50,
+
   op 0x8c,
+
   op 0x02,
+
   op 0x93,
+
   op 0x50,
+
   op 0x96,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1c,
+
   op 0x01,
+
   op 0x94,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1c,
+
   op 0x92,
+
   op 0x50,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1c,
+
   op 0x97,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x1c,
+
   op 0x95,
+
   op 0x1c,
+
   op 0x01,
+
   op 0x8f,
+
   op 0x01,
+
   op 0x88,
+
   op 0x16,
+
   op 0x9f,
+
   op 0x01,
+
   op 0x87,
+
   op 0x16,
+
   op 0x9f,
+
   op 0x01,
+
   op 0x86,
+
   op 0x16,
+
   op 0x9a,
+
   op 0x01,
+
   op 0x01,
+
   op 0x84,
+
   op 0x16,
+
   op 0x99,
+
   op 0x01,
+
   op 0x01,
+
   op 0x82,
+
   op 0x16,
+
   op 0x98,
+
   op 0x9c,
+
   op 0x56,
+
   op 0x5b,
+
   op 0x81,
+
   op 0x81,
+
   op 0x53,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 1),
+
   op 0x01,
+
   op 0x90,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+
   op 0x1c,
+
   op 0x90,
+
   op 0x81,
+
   op 0x83,
+
   op 0x57,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
+
   op 0x56,
+
   op 0x5b,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 28948022349768971278010700369584604374341282260324016856826403983149888438272),
+
   op 0x36,
+
   op 0x1b,
+
   op 0x12,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 8191),
+
   op 0x36,
+
   .push ⟨7, by decide⟩ (UInt256.ofNat 34711266746334640),
+
   op 0x04,
+
   op 0x16,
+
   op 0x57,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 232),
+
   op 0x1d,
+
   op 0x36,
+
   .push ⟨3, by decide⟩ (UInt256.ofNat 2127393),
 
 ]
@@ -3591,91 +6956,177 @@ private def submissionInstructionsChunk18 : List Instr :=
 [
 
   op 0x02,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4684),
+
   op 0x57,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169),
+
   op 0x36,
+
   op 0x1c,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992),
+
   op 0x18,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x5b,
+
   op 0x36,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+
   op 0x14,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 7805),
+
   op 0x57,
+
   op 0x36,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 376),
+
   op 0x14,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 6883),
+
   op 0x57,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
+
   op 0x56,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 972889429405991776604892044862621566948497025487),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x5b,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 12),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 4),
+
   op 0x52,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x51,
+
   op 0x80,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+
   op 0x02,
+
   op 0x01,
+
   op 0x80,
+
   op 0x84,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
+
   op 0x02,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x5b,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
+
   op 0x5b,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
+
   op 0x56,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
 
 ]
@@ -3686,1950 +7137,3928 @@ private def submissionInstructionsChunk19 : List Instr :=
 [
 
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 317028691540587235129640223973284367834059040749),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975872),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x80,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x01,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 153055736697849525067355378316411867211147587005),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 444633252455795925629383436637892360005217141692),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785155743950553550422016),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 248818459742486850486840648156276084652376766343),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683784085832794278396428288),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 407177000021581765662970131450951124156487664282),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32114212249411913574506015373503286943680347309611250182818314314694657048576),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 51536278723262616553055226583496568135069946185),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755545344850576737753366528),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 1251998741523656777300485297472400595618864439423),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131397888),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 1238202210714422317976759695583289414507727951107),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549956536595165141270528),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 788302141291229731098395206502327271368262842391),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 1409020389675646681432984939370312113762541159597),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096660961636444662661120),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 352),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 320),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 233347948783734465632298330963582576039387513209),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 524717510892769952200770787354467678713137771213),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3166189940082864718613269121331309980362851143201109172953918312716374638592),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 1134778670259348587079032227229296800638025290378),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+
   op 0x35,
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x00,
+
   op 0x5b,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 766350606435067737561421097975693824639675460820),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+
   op 0x18,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 61821667978346190508367113296461235097149102864125981106379559752976323051520),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 992),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104959897329117896043773191804629606132065345282427999722572264347735143562851),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 960),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32760124039862072446094763521134710112179262718149015609381827110154465287875),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 928),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 76352433059321876089018728610455086547540280237460071487368427221285114347043),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 896),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 3698580074523731380143658694904392794145479585395492137291995262626888769155),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 47290896022584104812974259679087702470236667366246267071662529221096334016227),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 832),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 90881438194979130071544121542253481765007846674601962450395067397859706478147),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 800),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 18229352057245352370883824551341137419136426248559895144041927247454700928675),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 768),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 56826715109285491886588288863932919461481122179471317155708434242603572649475),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 736),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 99964944460057197417658365000333265008983110649792524411066250919942812480344),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 704),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 27765171170906686111648493904997788654111601456318529829644316518694605722552),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 71357480190261177462903901806158745424458045604824596175862413793492783264536),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 114495716442779228177599816899295959524333229618400580865243565842747687326584),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 42295943153523406186859432874791361347154437925907650294984216381394370081752),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 85886485325918431445429294737957140641925612041966487138889053970067375395640),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 13234399188185065120908328048561044029120654793074898660380120195173737984920),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 51831762240224793260473462059636578338398830207588964899999620789799687738360),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 95422304439579765186193964091613791876900787249725120615565623626678088706125),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 22770218301845987485533667100701447531029366823683054518138303090902274640045),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 416),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 66362527321200478836789075001862404301375810972189120864356400365700452182029),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 384),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096668640191182717274221),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 352),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 320),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+
   op 0x59,
+
   op 0x35,
+
   op 0x18,
+
   op 0x17,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+
   op 0x57,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x5b,
+
   op 0x90,
+
   op 0x5b,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 968),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 944),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 912),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 880),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 848),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 816),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 784),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 752),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 432),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 400),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 368),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 336),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 304),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 272),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 112),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+
   op 0x35,
+
   op 0x82,
+
   op 0x14,
+
   op 0x16,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x35,
+
   op 0x02,
+
   op 0x18,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 9662),
+
   op 0x57,
+
   .push ⟨20, by decide⟩ (UInt256.ofNat 972889429405991776604892044862621566948497025487),
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   op 0x59,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
   op 0x5b,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
+
   op 0x56,
+
   op 0x5b,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   op 0x50,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 12),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 4),
+
   op 0x52,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0x52,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+
   op 0x51,
+
   op 0x80,
+
   op 0x85,
+
   op 0x16,
+
   .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+
   op 0x02,
+
   op 0x01,
+
   op 0x80,
+
   op 0x84,
+
   op 0x16,
+
   .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
+
   op 0x02,
+
   op 0x01,
+
   .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+
   op 0x52,
+
   op 0x36,
+
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+
   op 0xf3,
+
+  op 0x5b,
+
+  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+
+  op 0x8c,
+
+  op 0x36,
+
+  op 0x01,
+
+  op 0x53,
+
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
+
+  op 0x36,
+
+  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+
+  op 0x1b,
+
+  op 0x36,
+
+  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
+
+  op 0x01,
+
+  .push ⟨1, by decide⟩ (UInt256.ofNat 63),
+
+  op 0x17,
+
+  .push ⟨1, by decide⟩ (UInt256.ofNat 89),
+
+  op 0x01,
+
+  op 0x82,
+
+  op 0x56,
 
 ]
 
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 1941 := by rfl
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 1960 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -5653,7 +11082,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
 
-theorem referenceInstructions_count : submissionInstructions.length = 5447 := by
+theorem referenceInstructions_count : submissionInstructions.length = 5448 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
@@ -5666,9 +11095,9 @@ private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEnc
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 128, 96, 54, 82, 97, 18, 125, 156, 80, 97, 3, 56, 86, 4, 4,
   91, 97, 0, 64, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91,
-  97, 37, 195, 156, 96, 32, 20, 100, 0, 0, 0, 1, 241, 96, 32, 97,
-  19, 136, 88, 57, 87, 91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54,
-  96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86,
+  97, 37, 195, 156, 96, 32, 20, 124, 128, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+  0, 0, 0, 0, 0, 96, 162, 82, 97, 1, 241, 87, 97, 37, 243, 86,
   91, 96, 128, 96, 210, 86, 91, 96, 222, 159, 80, 80, 80, 80, 97, 1,
   205, 86, 91, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91, 96,
   128, 140, 1, 89, 16, 97, 18, 125, 87, 96, 222, 96, 210, 86, 0, 0,
@@ -6334,7 +11763,8 @@ private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEn
   245, 86, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96,
   8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255, 255,
   255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3, 82, 54,
-  95, 243,
+  95, 243, 91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54, 96, 3, 27,
+  54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86,
 ] := by decide
 
 private theorem assemble_chunk0 :
@@ -6550,17 +11980,17 @@ private def tailPrefix : List Instr :=
   submissionInstructionsChunk17 ++
   submissionInstructionsChunk18
 
-private theorem tailPrefix_length : tailPrefix.length = 3506 := by
+private theorem tailPrefix_length : tailPrefix.length = 3488 := by
   simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length]
 
 private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4801 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1941) :
-    submissionArtifact.instructionPC (3506 + i) =
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1960) :
+    submissionArtifact.instructionPC (3488 + i) =
       4801 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk19.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
-    tailPrefix submissionInstructionsChunk19 [] 3506 4801
+    tailPrefix submissionInstructionsChunk19 [] 3488 4801
   · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil]
   · exact tailPrefix_length
   · exact tailPrefix_bytes_length
@@ -6615,846 +12045,846 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem referenceArtifact_pc_405 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc405 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc405 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_406 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc406 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc406 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_407 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc407 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc407 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_408 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc408 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc408 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_409 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc409 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc409 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_410 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc410 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc410 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_412 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc412 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc412 :
-    instructionPC 147 = 310 := by
-  change submissionArtifact.instructionPC 147 = 310
+    instructionPC 129 = 310 := by
+  change submissionArtifact.instructionPC 129 = 310
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_417 :
-    submissionArtifact.instructionPC 149 = 314 := by
+    submissionArtifact.instructionPC 131 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc417 :
-    submissionArtifact.instructionPC 149 = 314 := by
+    submissionArtifact.instructionPC 131 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc417 :
-    instructionPC 149 = 314 := by
-  change submissionArtifact.instructionPC 149 = 314
+    instructionPC 131 = 314 := by
+  change submissionArtifact.instructionPC 131 = 314
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_420 :
-    submissionArtifact.instructionPC 143 = 245 := by
+    submissionArtifact.instructionPC 125 = 245 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc420 :
-    submissionArtifact.instructionPC 143 = 245 := by
+    submissionArtifact.instructionPC 125 = 245 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc420 :
-    instructionPC 143 = 245 := by
-  change submissionArtifact.instructionPC 143 = 245
+    instructionPC 125 = 245 := by
+  change submissionArtifact.instructionPC 125 = 245
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_421 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc421 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc421 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_422 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc422 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc422 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_423 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc423 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc423 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_424 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc424 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc424 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_426 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc426 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc426 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_427 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc427 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc427 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_428 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc428 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc428 :
-    instructionPC 147 = 310 := by
-  change submissionArtifact.instructionPC 147 = 310
+    instructionPC 129 = 310 := by
+  change submissionArtifact.instructionPC 129 = 310
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_430 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc430 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc430 :
-    instructionPC 147 = 310 := by
-  change submissionArtifact.instructionPC 147 = 310
+    instructionPC 129 = 310 := by
+  change submissionArtifact.instructionPC 129 = 310
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_431 :
-    submissionArtifact.instructionPC 149 = 314 := by
+    submissionArtifact.instructionPC 131 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc431 :
-    submissionArtifact.instructionPC 149 = 314 := by
+    submissionArtifact.instructionPC 131 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc431 :
-    instructionPC 149 = 314 := by
-  change submissionArtifact.instructionPC 149 = 314
+    instructionPC 131 = 314 := by
+  change submissionArtifact.instructionPC 131 = 314
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_439 :
-    submissionArtifact.instructionPC 152 = 319 := by
+    submissionArtifact.instructionPC 134 = 319 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc439 :
-    submissionArtifact.instructionPC 152 = 319 := by
+    submissionArtifact.instructionPC 134 = 319 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc439 :
-    instructionPC 152 = 319 := by
-  change submissionArtifact.instructionPC 152 = 319
+    instructionPC 134 = 319 := by
+  change submissionArtifact.instructionPC 134 = 319
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_440 :
-    submissionArtifact.instructionPC 153 = 324 := by
+    submissionArtifact.instructionPC 135 = 324 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc440 :
-    submissionArtifact.instructionPC 153 = 324 := by
+    submissionArtifact.instructionPC 135 = 324 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc440 :
-    instructionPC 153 = 324 := by
-  change submissionArtifact.instructionPC 153 = 324
+    instructionPC 135 = 324 := by
+  change submissionArtifact.instructionPC 135 = 324
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_441 :
-    submissionArtifact.instructionPC 154 = 329 := by
+    submissionArtifact.instructionPC 136 = 329 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc441 :
-    submissionArtifact.instructionPC 154 = 329 := by
+    submissionArtifact.instructionPC 136 = 329 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc441 :
-    instructionPC 154 = 329 := by
-  change submissionArtifact.instructionPC 154 = 329
+    instructionPC 136 = 329 := by
+  change submissionArtifact.instructionPC 136 = 329
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_442 :
-    submissionArtifact.instructionPC 155 = 334 := by
+    submissionArtifact.instructionPC 137 = 334 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc442 :
-    submissionArtifact.instructionPC 155 = 334 := by
+    submissionArtifact.instructionPC 137 = 334 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc442 :
-    instructionPC 155 = 334 := by
-  change submissionArtifact.instructionPC 155 = 334
+    instructionPC 137 = 334 := by
+  change submissionArtifact.instructionPC 137 = 334
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_443 :
-    submissionArtifact.instructionPC 156 = 339 := by
+    submissionArtifact.instructionPC 138 = 339 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc443 :
-    submissionArtifact.instructionPC 156 = 339 := by
+    submissionArtifact.instructionPC 138 = 339 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc443 :
-    instructionPC 156 = 339 := by
-  change submissionArtifact.instructionPC 156 = 339
+    instructionPC 138 = 339 := by
+  change submissionArtifact.instructionPC 138 = 339
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_444 :
-    submissionArtifact.instructionPC 157 = 344 := by
+    submissionArtifact.instructionPC 139 = 344 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc444 :
-    submissionArtifact.instructionPC 157 = 344 := by
+    submissionArtifact.instructionPC 139 = 344 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc444 :
-    instructionPC 157 = 344 := by
-  change submissionArtifact.instructionPC 157 = 344
+    instructionPC 139 = 344 := by
+  change submissionArtifact.instructionPC 139 = 344
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_445 :
-    submissionArtifact.instructionPC 158 = 358 := by
+    submissionArtifact.instructionPC 140 = 358 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc445 :
-    submissionArtifact.instructionPC 158 = 358 := by
+    submissionArtifact.instructionPC 140 = 358 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc445 :
-    instructionPC 158 = 358 := by
-  change submissionArtifact.instructionPC 158 = 358
+    instructionPC 140 = 358 := by
+  change submissionArtifact.instructionPC 140 = 358
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_446 :
-    submissionArtifact.instructionPC 159 = 372 := by
+    submissionArtifact.instructionPC 141 = 372 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc446 :
-    submissionArtifact.instructionPC 159 = 372 := by
+    submissionArtifact.instructionPC 141 = 372 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc446 :
-    instructionPC 159 = 372 := by
-  change submissionArtifact.instructionPC 159 = 372
+    instructionPC 141 = 372 := by
+  change submissionArtifact.instructionPC 141 = 372
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_448 :
-    submissionArtifact.instructionPC 161 = 428 := by
+    submissionArtifact.instructionPC 143 = 428 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc448 :
-    submissionArtifact.instructionPC 161 = 428 := by
+    submissionArtifact.instructionPC 143 = 428 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc448 :
-    instructionPC 161 = 428 := by
-  change submissionArtifact.instructionPC 161 = 428
+    instructionPC 143 = 428 := by
+  change submissionArtifact.instructionPC 143 = 428
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_449 :
-    submissionArtifact.instructionPC 162 = 433 := by
+    submissionArtifact.instructionPC 144 = 433 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc449 :
-    submissionArtifact.instructionPC 162 = 433 := by
+    submissionArtifact.instructionPC 144 = 433 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc449 :
-    instructionPC 162 = 433 := by
-  change submissionArtifact.instructionPC 162 = 433
+    instructionPC 144 = 433 := by
+  change submissionArtifact.instructionPC 144 = 433
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_450 :
-    submissionArtifact.instructionPC 163 = 447 := by
+    submissionArtifact.instructionPC 145 = 447 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc450 :
-    submissionArtifact.instructionPC 163 = 447 := by
+    submissionArtifact.instructionPC 145 = 447 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc450 :
-    instructionPC 163 = 447 := by
-  change submissionArtifact.instructionPC 163 = 447
+    instructionPC 145 = 447 := by
+  change submissionArtifact.instructionPC 145 = 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_451 :
-    submissionArtifact.instructionPC 166 = 458 := by
+    submissionArtifact.instructionPC 148 = 458 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc451 :
-    submissionArtifact.instructionPC 166 = 458 := by
+    submissionArtifact.instructionPC 148 = 458 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc451 :
-    instructionPC 166 = 458 := by
-  change submissionArtifact.instructionPC 166 = 458
+    instructionPC 148 = 458 := by
+  change submissionArtifact.instructionPC 148 = 458
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_452 :
-    submissionArtifact.instructionPC 164 = 456 := by
+    submissionArtifact.instructionPC 146 = 456 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc452 :
-    submissionArtifact.instructionPC 164 = 456 := by
+    submissionArtifact.instructionPC 146 = 456 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc452 :
-    instructionPC 164 = 456 := by
-  change submissionArtifact.instructionPC 164 = 456
+    instructionPC 146 = 456 := by
+  change submissionArtifact.instructionPC 146 = 456
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_843 :
-    submissionArtifact.instructionPC 143 = 245 := by
+    submissionArtifact.instructionPC 125 = 245 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc843 :
-    submissionArtifact.instructionPC 143 = 245 := by
+    submissionArtifact.instructionPC 125 = 245 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc843 :
-    instructionPC 143 = 245 := by
-  change submissionArtifact.instructionPC 143 = 245
+    instructionPC 125 = 245 := by
+  change submissionArtifact.instructionPC 125 = 245
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_844 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc844 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc844 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_859 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc859 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc859 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_860 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc860 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc860 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_861 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc861 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc861 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem referenceArtifact_pc_862 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem refPc862 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pc862 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_265 :
-    submissionArtifact.instructionPC 165 = 457 := by
+    submissionArtifact.instructionPC 147 = 457 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_265 :
-    instructionPC 165 = 457 := by
-  change submissionArtifact.instructionPC 165 = 457
+    instructionPC 147 = 457 := by
+  change submissionArtifact.instructionPC 147 = 457
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_266 :
-    submissionArtifact.instructionPC 165 = 457 := by
+    submissionArtifact.instructionPC 147 = 457 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_266 :
-    instructionPC 165 = 457 := by
-  change submissionArtifact.instructionPC 165 = 457
+    instructionPC 147 = 457 := by
+  change submissionArtifact.instructionPC 147 = 457
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_268 :
-    submissionArtifact.instructionPC 85 = 166 := by
+    submissionArtifact.instructionPC 5430 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_268 :
-    instructionPC 85 = 166 := by
-  change submissionArtifact.instructionPC 85 = 166
+    instructionPC 5430 = 9716 := by
+  change submissionArtifact.instructionPC 5430 = 9716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_270 :
-    submissionArtifact.instructionPC 87 = 169 := by
+    submissionArtifact.instructionPC 5432 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_270 :
-    instructionPC 87 = 169 := by
-  change submissionArtifact.instructionPC 87 = 169
+    instructionPC 5432 = 9719 := by
+  change submissionArtifact.instructionPC 5432 = 9719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_271 :
-    submissionArtifact.instructionPC 88 = 170 := by
+    submissionArtifact.instructionPC 5433 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_271 :
-    instructionPC 88 = 170 := by
-  change submissionArtifact.instructionPC 88 = 170
+    instructionPC 5433 = 9720 := by
+  change submissionArtifact.instructionPC 5433 = 9720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_272 :
-    submissionArtifact.instructionPC 89 = 171 := by
+    submissionArtifact.instructionPC 5434 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_272 :
-    instructionPC 89 = 171 := by
-  change submissionArtifact.instructionPC 89 = 171
+    instructionPC 5434 = 9721 := by
+  change submissionArtifact.instructionPC 5434 = 9721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_273 :
-    submissionArtifact.instructionPC 91 = 175 := by
+    submissionArtifact.instructionPC 5436 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_273 :
-    instructionPC 91 = 175 := by
-  change submissionArtifact.instructionPC 91 = 175
+    instructionPC 5436 = 9725 := by
+  change submissionArtifact.instructionPC 5436 = 9725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_274 :
-    submissionArtifact.instructionPC 92 = 176 := by
+    submissionArtifact.instructionPC 5437 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_274 :
-    instructionPC 92 = 176 := by
-  change submissionArtifact.instructionPC 92 = 176
+    instructionPC 5437 = 9726 := by
+  change submissionArtifact.instructionPC 5437 = 9726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_275 :
-    submissionArtifact.instructionPC 93 = 178 := by
+    submissionArtifact.instructionPC 5438 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_275 :
-    instructionPC 93 = 178 := by
-  change submissionArtifact.instructionPC 93 = 178
+    instructionPC 5438 = 9728 := by
+  change submissionArtifact.instructionPC 5438 = 9728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_279 :
-    submissionArtifact.instructionPC 3386 = 4547 := by
+    submissionArtifact.instructionPC 3368 = 4547 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_279 :
-    instructionPC 3386 = 4547 := by
-  change submissionArtifact.instructionPC 3386 = 4547
+    instructionPC 3368 = 4547 := by
+  change submissionArtifact.instructionPC 3368 = 4547
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_280 :
-    submissionArtifact.instructionPC 3387 = 4548 := by
+    submissionArtifact.instructionPC 3369 = 4548 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_280 :
-    instructionPC 3387 = 4548 := by
-  change submissionArtifact.instructionPC 3387 = 4548
+    instructionPC 3369 = 4548 := by
+  change submissionArtifact.instructionPC 3369 = 4548
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_281 :
-    submissionArtifact.instructionPC 3388 = 4549 := by
+    submissionArtifact.instructionPC 3370 = 4549 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_281 :
-    instructionPC 3388 = 4549 := by
-  change submissionArtifact.instructionPC 3388 = 4549
+    instructionPC 3370 = 4549 := by
+  change submissionArtifact.instructionPC 3370 = 4549
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_282 :
-    submissionArtifact.instructionPC 3389 = 4550 := by
+    submissionArtifact.instructionPC 3371 = 4550 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_282 :
-    instructionPC 3389 = 4550 := by
-  change submissionArtifact.instructionPC 3389 = 4550
+    instructionPC 3371 = 4550 := by
+  change submissionArtifact.instructionPC 3371 = 4550
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_283 :
-    submissionArtifact.instructionPC 3390 = 4551 := by
+    submissionArtifact.instructionPC 3372 = 4551 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_283 :
-    instructionPC 3390 = 4551 := by
-  change submissionArtifact.instructionPC 3390 = 4551
+    instructionPC 3372 = 4551 := by
+  change submissionArtifact.instructionPC 3372 = 4551
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_284 :
-    submissionArtifact.instructionPC 3391 = 4553 := by
+    submissionArtifact.instructionPC 3373 = 4553 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_284 :
-    instructionPC 3391 = 4553 := by
-  change submissionArtifact.instructionPC 3391 = 4553
+    instructionPC 3373 = 4553 := by
+  change submissionArtifact.instructionPC 3373 = 4553
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_285 :
-    submissionArtifact.instructionPC 3392 = 4554 := by
+    submissionArtifact.instructionPC 3374 = 4554 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_285 :
-    instructionPC 3392 = 4554 := by
-  change submissionArtifact.instructionPC 3392 = 4554
+    instructionPC 3374 = 4554 := by
+  change submissionArtifact.instructionPC 3374 = 4554
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2_286 :
-    submissionArtifact.instructionPC 3393 = 4555 := by
+    submissionArtifact.instructionPC 3375 = 4555 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem pcU2i_286 :
-    instructionPC 3393 = 4555 := by
-  change submissionArtifact.instructionPC 3393 = 4555
+    instructionPC 3375 = 4555 := by
+  change submissionArtifact.instructionPC 3375 = 4555
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_132 :
     Decode.isValidJumpDest submissionBytecode 210 = true := by
-  have hp : submissionArtifact.instructionPC 116 = 210 := by
+  have hp : submissionArtifact.instructionPC 98 = 210 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 116 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 98 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_210 :
     Decode.isValidJumpDest submissionBytecode 4547 = true := by
-  have hp : submissionArtifact.instructionPC 3386 = 4547 := by
+  have hp : submissionArtifact.instructionPC 3368 = 4547 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 3386 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3368 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem pcU2_345 :
-    submissionArtifact.instructionPC 167 = 460 := by
+    submissionArtifact.instructionPC 149 = 460 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_345 :
-    instructionPC 167 = 460 := by
-  change submissionArtifact.instructionPC 167 = 460
+    instructionPC 149 = 460 := by
+  change submissionArtifact.instructionPC 149 = 460
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem validJumpDest_loop :
     Decode.isValidJumpDest submissionBytecode 461 = true := by
-  have hp : submissionArtifact.instructionPC 168 = 461 := by
+  have hp : submissionArtifact.instructionPC 150 = 461 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 168 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 150 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem validJumpDest_3ee :
     Decode.isValidJumpDest submissionBytecode 245 = true := by
-  have hp : submissionArtifact.instructionPC 143 = 245 := by
+  have hp : submissionArtifact.instructionPC 125 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 143 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 125 (by rfl)
   rw [hp] at h
   exact h
 
@@ -7733,390 +13163,390 @@ private def wfOp {op : Operation}
   rfl
 
 @[simp] theorem cjPc26 :
-    submissionArtifact.instructionPC 116 = 210 := by
+    submissionArtifact.instructionPC 98 = 210 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci26 :
-    instructionPC 116 = 210 := by
-  change submissionArtifact.instructionPC 116 = 210
+    instructionPC 98 = 210 := by
+  change submissionArtifact.instructionPC 98 = 210
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc27 :
-    submissionArtifact.instructionPC 117 = 211 := by
+    submissionArtifact.instructionPC 99 = 211 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci27 :
-    instructionPC 117 = 211 := by
-  change submissionArtifact.instructionPC 117 = 211
+    instructionPC 99 = 211 := by
+  change submissionArtifact.instructionPC 99 = 211
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc28 :
-    submissionArtifact.instructionPC 120 = 214 := by
+    submissionArtifact.instructionPC 102 = 214 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci28 :
-    instructionPC 120 = 214 := by
-  change submissionArtifact.instructionPC 120 = 214
+    instructionPC 102 = 214 := by
+  change submissionArtifact.instructionPC 102 = 214
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc29 :
-    submissionArtifact.instructionPC 121 = 216 := by
+    submissionArtifact.instructionPC 103 = 216 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci29 :
-    instructionPC 121 = 216 := by
-  change submissionArtifact.instructionPC 121 = 216
+    instructionPC 103 = 216 := by
+  change submissionArtifact.instructionPC 103 = 216
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc30 :
-    submissionArtifact.instructionPC 121 = 216 := by
+    submissionArtifact.instructionPC 103 = 216 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci30 :
-    instructionPC 121 = 216 := by
-  change submissionArtifact.instructionPC 121 = 216
+    instructionPC 103 = 216 := by
+  change submissionArtifact.instructionPC 103 = 216
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc31 :
-    submissionArtifact.instructionPC 122 = 217 := by
+    submissionArtifact.instructionPC 104 = 217 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci31 :
-    instructionPC 122 = 217 := by
-  change submissionArtifact.instructionPC 122 = 217
+    instructionPC 104 = 217 := by
+  change submissionArtifact.instructionPC 104 = 217
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc32 :
-    submissionArtifact.instructionPC 123 = 218 := by
+    submissionArtifact.instructionPC 105 = 218 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci32 :
-    instructionPC 123 = 218 := by
-  change submissionArtifact.instructionPC 123 = 218
+    instructionPC 105 = 218 := by
+  change submissionArtifact.instructionPC 105 = 218
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc33 :
-    submissionArtifact.instructionPC 124 = 221 := by
+    submissionArtifact.instructionPC 106 = 221 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci33 :
-    instructionPC 124 = 221 := by
-  change submissionArtifact.instructionPC 124 = 221
+    instructionPC 106 = 221 := by
+  change submissionArtifact.instructionPC 106 = 221
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc34 :
-    submissionArtifact.instructionPC 124 = 221 := by
+    submissionArtifact.instructionPC 106 = 221 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci34 :
-    instructionPC 124 = 221 := by
-  change submissionArtifact.instructionPC 124 = 221
+    instructionPC 106 = 221 := by
+  change submissionArtifact.instructionPC 106 = 221
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc35 :
-    submissionArtifact.instructionPC 124 = 221 := by
+    submissionArtifact.instructionPC 106 = 221 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci35 :
-    instructionPC 124 = 221 := by
-  change submissionArtifact.instructionPC 124 = 221
+    instructionPC 106 = 221 := by
+  change submissionArtifact.instructionPC 106 = 221
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc36 :
-    submissionArtifact.instructionPC 125 = 222 := by
+    submissionArtifact.instructionPC 107 = 222 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci36 :
-    instructionPC 125 = 222 := by
-  change submissionArtifact.instructionPC 125 = 222
+    instructionPC 107 = 222 := by
+  change submissionArtifact.instructionPC 107 = 222
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc37 :
-    submissionArtifact.instructionPC 128 = 226 := by
+    submissionArtifact.instructionPC 110 = 226 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci37 :
-    instructionPC 128 = 226 := by
-  change submissionArtifact.instructionPC 128 = 226
+    instructionPC 110 = 226 := by
+  change submissionArtifact.instructionPC 110 = 226
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc38 :
-    submissionArtifact.instructionPC 128 = 226 := by
+    submissionArtifact.instructionPC 110 = 226 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci38 :
-    instructionPC 128 = 226 := by
-  change submissionArtifact.instructionPC 128 = 226
+    instructionPC 110 = 226 := by
+  change submissionArtifact.instructionPC 110 = 226
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc39 :
-    submissionArtifact.instructionPC 127 = 225 := by
+    submissionArtifact.instructionPC 109 = 225 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci39 :
-    instructionPC 127 = 225 := by
-  change submissionArtifact.instructionPC 127 = 225
+    instructionPC 109 = 225 := by
+  change submissionArtifact.instructionPC 109 = 225
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc40 :
-    submissionArtifact.instructionPC 128 = 226 := by
+    submissionArtifact.instructionPC 110 = 226 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci40 :
-    instructionPC 128 = 226 := by
-  change submissionArtifact.instructionPC 128 = 226
+    instructionPC 110 = 226 := by
+  change submissionArtifact.instructionPC 110 = 226
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc41 :
-    submissionArtifact.instructionPC 129 = 227 := by
+    submissionArtifact.instructionPC 111 = 227 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci41 :
-    instructionPC 129 = 227 := by
-  change submissionArtifact.instructionPC 129 = 227
+    instructionPC 111 = 227 := by
+  change submissionArtifact.instructionPC 111 = 227
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc42 :
-    submissionArtifact.instructionPC 131 = 229 := by
+    submissionArtifact.instructionPC 113 = 229 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci42 :
-    instructionPC 131 = 229 := by
-  change submissionArtifact.instructionPC 131 = 229
+    instructionPC 113 = 229 := by
+  change submissionArtifact.instructionPC 113 = 229
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc43 :
-    submissionArtifact.instructionPC 134 = 235 := by
+    submissionArtifact.instructionPC 116 = 235 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci43 :
-    instructionPC 134 = 235 := by
-  change submissionArtifact.instructionPC 134 = 235
+    instructionPC 116 = 235 := by
+  change submissionArtifact.instructionPC 116 = 235
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc44 :
-    submissionArtifact.instructionPC 135 = 237 := by
+    submissionArtifact.instructionPC 117 = 237 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci44 :
-    instructionPC 135 = 237 := by
-  change submissionArtifact.instructionPC 135 = 237
+    instructionPC 117 = 237 := by
+  change submissionArtifact.instructionPC 117 = 237
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc45 :
-    submissionArtifact.instructionPC 132 = 232 := by
+    submissionArtifact.instructionPC 114 = 232 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci45 :
-    instructionPC 132 = 232 := by
-  change submissionArtifact.instructionPC 132 = 232
+    instructionPC 114 = 232 := by
+  change submissionArtifact.instructionPC 114 = 232
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc46 :
-    submissionArtifact.instructionPC 133 = 233 := by
+    submissionArtifact.instructionPC 115 = 233 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci46 :
-    instructionPC 133 = 233 := by
-  change submissionArtifact.instructionPC 133 = 233
+    instructionPC 115 = 233 := by
+  change submissionArtifact.instructionPC 115 = 233
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc47 :
-    submissionArtifact.instructionPC 138 = 240 := by
+    submissionArtifact.instructionPC 120 = 240 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci47 :
-    instructionPC 138 = 240 := by
-  change submissionArtifact.instructionPC 138 = 240
+    instructionPC 120 = 240 := by
+  change submissionArtifact.instructionPC 120 = 240
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc48 :
-    submissionArtifact.instructionPC 134 = 235 := by
+    submissionArtifact.instructionPC 116 = 235 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci48 :
-    instructionPC 134 = 235 := by
-  change submissionArtifact.instructionPC 134 = 235
+    instructionPC 116 = 235 := by
+  change submissionArtifact.instructionPC 116 = 235
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc49 :
-    submissionArtifact.instructionPC 140 = 242 := by
+    submissionArtifact.instructionPC 122 = 242 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci49 :
-    instructionPC 140 = 242 := by
-  change submissionArtifact.instructionPC 140 = 242
+    instructionPC 122 = 242 := by
+  change submissionArtifact.instructionPC 122 = 242
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc50 :
-    submissionArtifact.instructionPC 135 = 237 := by
+    submissionArtifact.instructionPC 117 = 237 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci50 :
-    instructionPC 135 = 237 := by
-  change submissionArtifact.instructionPC 135 = 237
+    instructionPC 117 = 237 := by
+  change submissionArtifact.instructionPC 117 = 237
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc51 :
-    submissionArtifact.instructionPC 137 = 239 := by
+    submissionArtifact.instructionPC 119 = 239 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci51 :
-    instructionPC 137 = 239 := by
-  change submissionArtifact.instructionPC 137 = 239
+    instructionPC 119 = 239 := by
+  change submissionArtifact.instructionPC 119 = 239
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc53 :
-    submissionArtifact.instructionPC 142 = 244 := by
+    submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci53 :
-    instructionPC 142 = 244 := by
-  change submissionArtifact.instructionPC 142 = 244
+    instructionPC 124 = 244 := by
+  change submissionArtifact.instructionPC 124 = 244
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc54 :
-    submissionArtifact.instructionPC 3447 = 4707 := by
+    submissionArtifact.instructionPC 3429 = 4707 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci54 :
-    instructionPC 3447 = 4707 := by
-  change submissionArtifact.instructionPC 3447 = 4707
+    instructionPC 3429 = 4707 := by
+  change submissionArtifact.instructionPC 3429 = 4707
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc55 :
-    submissionArtifact.instructionPC 3447 = 4707 := by
+    submissionArtifact.instructionPC 3429 = 4707 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci55 :
-    instructionPC 3447 = 4707 := by
-  change submissionArtifact.instructionPC 3447 = 4707
+    instructionPC 3429 = 4707 := by
+  change submissionArtifact.instructionPC 3429 = 4707
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc56 :
-    submissionArtifact.instructionPC 3448 = 4728 := by
+    submissionArtifact.instructionPC 3430 = 4728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci56 :
-    instructionPC 3448 = 4728 := by
-  change submissionArtifact.instructionPC 3448 = 4728
+    instructionPC 3430 = 4728 := by
+  change submissionArtifact.instructionPC 3430 = 4728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc57 :
-    submissionArtifact.instructionPC 3449 = 4729 := by
+    submissionArtifact.instructionPC 3431 = 4729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci57 :
-    instructionPC 3449 = 4729 := by
-  change submissionArtifact.instructionPC 3449 = 4729
+    instructionPC 3431 = 4729 := by
+  change submissionArtifact.instructionPC 3431 = 4729
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc58 :
-    submissionArtifact.instructionPC 3450 = 4730 := by
+    submissionArtifact.instructionPC 3432 = 4730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci58 :
-    instructionPC 3450 = 4730 := by
-  change submissionArtifact.instructionPC 3450 = 4730
+    instructionPC 3432 = 4730 := by
+  change submissionArtifact.instructionPC 3432 = 4730
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc59 :
-    submissionArtifact.instructionPC 3451 = 4731 := by
+    submissionArtifact.instructionPC 3433 = 4731 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci59 :
-    instructionPC 3451 = 4731 := by
-  change submissionArtifact.instructionPC 3451 = 4731
+    instructionPC 3433 = 4731 := by
+  change submissionArtifact.instructionPC 3433 = 4731
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc60 :
-    submissionArtifact.instructionPC 3452 = 4732 := by
+    submissionArtifact.instructionPC 3434 = 4732 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci60 :
-    instructionPC 3452 = 4732 := by
-  change submissionArtifact.instructionPC 3452 = 4732
+    instructionPC 3434 = 4732 := by
+  change submissionArtifact.instructionPC 3434 = 4732
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -8132,92 +13562,92 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc67 :
-    submissionArtifact.instructionPC 79 = 157 := by
+    submissionArtifact.instructionPC 79 = 181 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci67 :
-    instructionPC 79 = 157 := by
-  change submissionArtifact.instructionPC 79 = 157
+    instructionPC 79 = 181 := by
+  change submissionArtifact.instructionPC 79 = 181
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc68 :
-    submissionArtifact.instructionPC 80 = 159 := by
+    submissionArtifact.instructionPC 80 = 183 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci68 :
-    instructionPC 80 = 159 := by
-  change submissionArtifact.instructionPC 80 = 159
+    instructionPC 80 = 183 := by
+  change submissionArtifact.instructionPC 80 = 183
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc69 :
-    submissionArtifact.instructionPC 81 = 162 := by
+    submissionArtifact.instructionPC 81 = 184 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci69 :
-    instructionPC 81 = 162 := by
-  change submissionArtifact.instructionPC 81 = 162
+    instructionPC 81 = 184 := by
+  change submissionArtifact.instructionPC 81 = 184
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc70 :
-    submissionArtifact.instructionPC 82 = 163 := by
+    submissionArtifact.instructionPC 82 = 187 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci70 :
-    instructionPC 82 = 163 := by
-  change submissionArtifact.instructionPC 82 = 163
+    instructionPC 82 = 187 := by
+  change submissionArtifact.instructionPC 82 = 187
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc71 :
-    submissionArtifact.instructionPC 82 = 163 := by
+    submissionArtifact.instructionPC 82 = 187 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci71 :
-    instructionPC 82 = 163 := by
-  change submissionArtifact.instructionPC 82 = 163
+    instructionPC 82 = 187 := by
+  change submissionArtifact.instructionPC 82 = 187
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 
 
 @[simp] theorem cjPc73 :
-    submissionArtifact.instructionPC 83 = 164 := by
+    submissionArtifact.instructionPC 83 = 188 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci73 :
-    instructionPC 83 = 164 := by
-  change submissionArtifact.instructionPC 83 = 164
+    instructionPC 83 = 188 := by
+  change submissionArtifact.instructionPC 83 = 188
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc74 :
-    submissionArtifact.instructionPC 84 = 165 := by
+    submissionArtifact.instructionPC 5429 = 9715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci74 :
-    instructionPC 84 = 165 := by
-  change submissionArtifact.instructionPC 84 = 165
+    instructionPC 5429 = 9715 := by
+  change submissionArtifact.instructionPC 5429 = 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc75 :
-    submissionArtifact.instructionPC 84 = 165 := by
+    submissionArtifact.instructionPC 5429 = 9715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci75 :
-    instructionPC 84 = 165 := by
-  change submissionArtifact.instructionPC 84 = 165
+    instructionPC 5429 = 9715 := by
+  change submissionArtifact.instructionPC 5429 = 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -8343,491 +13773,491 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc109 :
-    submissionArtifact.instructionPC 94 = 179 := by
+    submissionArtifact.instructionPC 5439 = 9729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci109 :
-    instructionPC 94 = 179 := by
-  change submissionArtifact.instructionPC 94 = 179
+    instructionPC 5439 = 9729 := by
+  change submissionArtifact.instructionPC 5439 = 9729
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc110 :
-    submissionArtifact.instructionPC 95 = 180 := by
+    submissionArtifact.instructionPC 5440 = 9730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci110 :
-    instructionPC 95 = 180 := by
-  change submissionArtifact.instructionPC 95 = 180
+    instructionPC 5440 = 9730 := by
+  change submissionArtifact.instructionPC 5440 = 9730
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc111 :
-    submissionArtifact.instructionPC 96 = 183 := by
+    submissionArtifact.instructionPC 5441 = 9733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci111 :
-    instructionPC 96 = 183 := by
-  change submissionArtifact.instructionPC 96 = 183
+    instructionPC 5441 = 9733 := by
+  change submissionArtifact.instructionPC 5441 = 9733
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc112 :
-    submissionArtifact.instructionPC 97 = 184 := by
+    submissionArtifact.instructionPC 5442 = 9734 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci112 :
-    instructionPC 97 = 184 := by
-  change submissionArtifact.instructionPC 97 = 184
+    instructionPC 5442 = 9734 := by
+  change submissionArtifact.instructionPC 5442 = 9734
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc113 :
-    submissionArtifact.instructionPC 98 = 186 := by
+    submissionArtifact.instructionPC 5443 = 9736 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci113 :
-    instructionPC 98 = 186 := by
-  change submissionArtifact.instructionPC 98 = 186
+    instructionPC 5443 = 9736 := by
+  change submissionArtifact.instructionPC 5443 = 9736
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc116 :
-    submissionArtifact.instructionPC 85 = 166 := by
+    submissionArtifact.instructionPC 5430 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci116 :
-    instructionPC 85 = 166 := by
-  change submissionArtifact.instructionPC 85 = 166
+    instructionPC 5430 = 9716 := by
+  change submissionArtifact.instructionPC 5430 = 9716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc117 :
-    submissionArtifact.instructionPC 86 = 168 := by
+    submissionArtifact.instructionPC 5431 = 9718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci117 :
-    instructionPC 86 = 168 := by
-  change submissionArtifact.instructionPC 86 = 168
+    instructionPC 5431 = 9718 := by
+  change submissionArtifact.instructionPC 5431 = 9718
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc118 :
-    submissionArtifact.instructionPC 87 = 169 := by
+    submissionArtifact.instructionPC 5432 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci118 :
-    instructionPC 87 = 169 := by
-  change submissionArtifact.instructionPC 87 = 169
+    instructionPC 5432 = 9719 := by
+  change submissionArtifact.instructionPC 5432 = 9719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc119 :
-    submissionArtifact.instructionPC 88 = 170 := by
+    submissionArtifact.instructionPC 5433 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci119 :
-    instructionPC 88 = 170 := by
-  change submissionArtifact.instructionPC 88 = 170
+    instructionPC 5433 = 9720 := by
+  change submissionArtifact.instructionPC 5433 = 9720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc120 :
-    submissionArtifact.instructionPC 89 = 171 := by
+    submissionArtifact.instructionPC 5434 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci120 :
-    instructionPC 89 = 171 := by
-  change submissionArtifact.instructionPC 89 = 171
+    instructionPC 5434 = 9721 := by
+  change submissionArtifact.instructionPC 5434 = 9721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc121 :
-    submissionArtifact.instructionPC 91 = 175 := by
+    submissionArtifact.instructionPC 5436 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci121 :
-    instructionPC 91 = 175 := by
-  change submissionArtifact.instructionPC 91 = 175
+    instructionPC 5436 = 9725 := by
+  change submissionArtifact.instructionPC 5436 = 9725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc122 :
-    submissionArtifact.instructionPC 92 = 176 := by
+    submissionArtifact.instructionPC 5437 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci122 :
-    instructionPC 92 = 176 := by
-  change submissionArtifact.instructionPC 92 = 176
+    instructionPC 5437 = 9726 := by
+  change submissionArtifact.instructionPC 5437 = 9726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc123 :
-    submissionArtifact.instructionPC 93 = 178 := by
+    submissionArtifact.instructionPC 5438 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci123 :
-    instructionPC 93 = 178 := by
-  change submissionArtifact.instructionPC 93 = 178
+    instructionPC 5438 = 9728 := by
+  change submissionArtifact.instructionPC 5438 = 9728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc127 :
-    submissionArtifact.instructionPC 3386 = 4547 := by
+    submissionArtifact.instructionPC 3368 = 4547 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci127 :
-    instructionPC 3386 = 4547 := by
-  change submissionArtifact.instructionPC 3386 = 4547
+    instructionPC 3368 = 4547 := by
+  change submissionArtifact.instructionPC 3368 = 4547
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc128 :
-    submissionArtifact.instructionPC 3387 = 4548 := by
+    submissionArtifact.instructionPC 3369 = 4548 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci128 :
-    instructionPC 3387 = 4548 := by
-  change submissionArtifact.instructionPC 3387 = 4548
+    instructionPC 3369 = 4548 := by
+  change submissionArtifact.instructionPC 3369 = 4548
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc129 :
-    submissionArtifact.instructionPC 3388 = 4549 := by
+    submissionArtifact.instructionPC 3370 = 4549 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci129 :
-    instructionPC 3388 = 4549 := by
-  change submissionArtifact.instructionPC 3388 = 4549
+    instructionPC 3370 = 4549 := by
+  change submissionArtifact.instructionPC 3370 = 4549
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc130 :
-    submissionArtifact.instructionPC 3389 = 4550 := by
+    submissionArtifact.instructionPC 3371 = 4550 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci130 :
-    instructionPC 3389 = 4550 := by
-  change submissionArtifact.instructionPC 3389 = 4550
+    instructionPC 3371 = 4550 := by
+  change submissionArtifact.instructionPC 3371 = 4550
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc131 :
-    submissionArtifact.instructionPC 3390 = 4551 := by
+    submissionArtifact.instructionPC 3372 = 4551 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci131 :
-    instructionPC 3390 = 4551 := by
-  change submissionArtifact.instructionPC 3390 = 4551
+    instructionPC 3372 = 4551 := by
+  change submissionArtifact.instructionPC 3372 = 4551
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc132 :
-    submissionArtifact.instructionPC 3391 = 4553 := by
+    submissionArtifact.instructionPC 3373 = 4553 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci132 :
-    instructionPC 3391 = 4553 := by
-  change submissionArtifact.instructionPC 3391 = 4553
+    instructionPC 3373 = 4553 := by
+  change submissionArtifact.instructionPC 3373 = 4553
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc133 :
-    submissionArtifact.instructionPC 3392 = 4554 := by
+    submissionArtifact.instructionPC 3374 = 4554 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci133 :
-    instructionPC 3392 = 4554 := by
-  change submissionArtifact.instructionPC 3392 = 4554
+    instructionPC 3374 = 4554 := by
+  change submissionArtifact.instructionPC 3374 = 4554
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc134 :
-    submissionArtifact.instructionPC 3393 = 4555 := by
+    submissionArtifact.instructionPC 3375 = 4555 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci134 :
-    instructionPC 3393 = 4555 := by
-  change submissionArtifact.instructionPC 3393 = 4555
+    instructionPC 3375 = 4555 := by
+  change submissionArtifact.instructionPC 3375 = 4555
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc147 :
-    submissionArtifact.instructionPC 143 = 245 := by
+    submissionArtifact.instructionPC 125 = 245 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci147 :
-    instructionPC 143 = 245 := by
-  change submissionArtifact.instructionPC 143 = 245
+    instructionPC 125 = 245 := by
+  change submissionArtifact.instructionPC 125 = 245
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc148 :
-    submissionArtifact.instructionPC 144 = 246 := by
+    submissionArtifact.instructionPC 126 = 246 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci148 :
-    instructionPC 144 = 246 := by
-  change submissionArtifact.instructionPC 144 = 246
+    instructionPC 126 = 246 := by
+  change submissionArtifact.instructionPC 126 = 246
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc149 :
-    submissionArtifact.instructionPC 145 = 277 := by
+    submissionArtifact.instructionPC 127 = 277 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci149 :
-    instructionPC 145 = 277 := by
-  change submissionArtifact.instructionPC 145 = 277
+    instructionPC 127 = 277 := by
+  change submissionArtifact.instructionPC 127 = 277
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc152 :
-    submissionArtifact.instructionPC 146 = 309 := by
+    submissionArtifact.instructionPC 128 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci152 :
-    instructionPC 146 = 309 := by
-  change submissionArtifact.instructionPC 146 = 309
+    instructionPC 128 = 309 := by
+  change submissionArtifact.instructionPC 128 = 309
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc153 :
-    submissionArtifact.instructionPC 147 = 310 := by
+    submissionArtifact.instructionPC 129 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci153 :
-    instructionPC 147 = 310 := by
-  change submissionArtifact.instructionPC 147 = 310
+    instructionPC 129 = 310 := by
+  change submissionArtifact.instructionPC 129 = 310
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc155 :
-    submissionArtifact.instructionPC 149 = 314 := by
+    submissionArtifact.instructionPC 131 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci155 :
-    instructionPC 149 = 314 := by
-  change submissionArtifact.instructionPC 149 = 314
+    instructionPC 131 = 314 := by
+  change submissionArtifact.instructionPC 131 = 314
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc156 :
-    submissionArtifact.instructionPC 152 = 319 := by
+    submissionArtifact.instructionPC 134 = 319 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci156 :
-    instructionPC 152 = 319 := by
-  change submissionArtifact.instructionPC 152 = 319
+    instructionPC 134 = 319 := by
+  change submissionArtifact.instructionPC 134 = 319
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc157 :
-    submissionArtifact.instructionPC 153 = 324 := by
+    submissionArtifact.instructionPC 135 = 324 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci157 :
-    instructionPC 153 = 324 := by
-  change submissionArtifact.instructionPC 153 = 324
+    instructionPC 135 = 324 := by
+  change submissionArtifact.instructionPC 135 = 324
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc158 :
-    submissionArtifact.instructionPC 154 = 329 := by
+    submissionArtifact.instructionPC 136 = 329 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci158 :
-    instructionPC 154 = 329 := by
-  change submissionArtifact.instructionPC 154 = 329
+    instructionPC 136 = 329 := by
+  change submissionArtifact.instructionPC 136 = 329
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc159 :
-    submissionArtifact.instructionPC 155 = 334 := by
+    submissionArtifact.instructionPC 137 = 334 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci159 :
-    instructionPC 155 = 334 := by
-  change submissionArtifact.instructionPC 155 = 334
+    instructionPC 137 = 334 := by
+  change submissionArtifact.instructionPC 137 = 334
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc160 :
-    submissionArtifact.instructionPC 156 = 339 := by
+    submissionArtifact.instructionPC 138 = 339 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci160 :
-    instructionPC 156 = 339 := by
-  change submissionArtifact.instructionPC 156 = 339
+    instructionPC 138 = 339 := by
+  change submissionArtifact.instructionPC 138 = 339
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc161 :
-    submissionArtifact.instructionPC 157 = 344 := by
+    submissionArtifact.instructionPC 139 = 344 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci161 :
-    instructionPC 157 = 344 := by
-  change submissionArtifact.instructionPC 157 = 344
+    instructionPC 139 = 344 := by
+  change submissionArtifact.instructionPC 139 = 344
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc162 :
-    submissionArtifact.instructionPC 158 = 358 := by
+    submissionArtifact.instructionPC 140 = 358 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci162 :
-    instructionPC 158 = 358 := by
-  change submissionArtifact.instructionPC 158 = 358
+    instructionPC 140 = 358 := by
+  change submissionArtifact.instructionPC 140 = 358
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc163 :
-    submissionArtifact.instructionPC 159 = 372 := by
+    submissionArtifact.instructionPC 141 = 372 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci163 :
-    instructionPC 159 = 372 := by
-  change submissionArtifact.instructionPC 159 = 372
+    instructionPC 141 = 372 := by
+  change submissionArtifact.instructionPC 141 = 372
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc164 :
-    submissionArtifact.instructionPC 160 = 400 := by
+    submissionArtifact.instructionPC 142 = 400 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci164 :
-    instructionPC 160 = 400 := by
-  change submissionArtifact.instructionPC 160 = 400
+    instructionPC 142 = 400 := by
+  change submissionArtifact.instructionPC 142 = 400
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc165 :
-    submissionArtifact.instructionPC 161 = 428 := by
+    submissionArtifact.instructionPC 143 = 428 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci165 :
-    instructionPC 161 = 428 := by
-  change submissionArtifact.instructionPC 161 = 428
+    instructionPC 143 = 428 := by
+  change submissionArtifact.instructionPC 143 = 428
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc166 :
-    submissionArtifact.instructionPC 162 = 433 := by
+    submissionArtifact.instructionPC 144 = 433 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci166 :
-    instructionPC 162 = 433 := by
-  change submissionArtifact.instructionPC 162 = 433
+    instructionPC 144 = 433 := by
+  change submissionArtifact.instructionPC 144 = 433
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc167 :
-    submissionArtifact.instructionPC 163 = 447 := by
+    submissionArtifact.instructionPC 145 = 447 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci167 :
-    instructionPC 163 = 447 := by
-  change submissionArtifact.instructionPC 163 = 447
+    instructionPC 145 = 447 := by
+  change submissionArtifact.instructionPC 145 = 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc168 :
-    submissionArtifact.instructionPC 166 = 458 := by
+    submissionArtifact.instructionPC 148 = 458 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci168 :
-    instructionPC 166 = 458 := by
-  change submissionArtifact.instructionPC 166 = 458
+    instructionPC 148 = 458 := by
+  change submissionArtifact.instructionPC 148 = 458
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc169 :
-    submissionArtifact.instructionPC 164 = 456 := by
+    submissionArtifact.instructionPC 146 = 456 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci169 :
-    instructionPC 164 = 456 := by
-  change submissionArtifact.instructionPC 164 = 456
+    instructionPC 146 = 456 := by
+  change submissionArtifact.instructionPC 146 = 456
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc170 :
-    submissionArtifact.instructionPC 165 = 457 := by
+    submissionArtifact.instructionPC 147 = 457 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci170 :
-    instructionPC 165 = 457 := by
-  change submissionArtifact.instructionPC 165 = 457
+    instructionPC 147 = 457 := by
+  change submissionArtifact.instructionPC 147 = 457
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc172 :
-    submissionArtifact.instructionPC 167 = 460 := by
+    submissionArtifact.instructionPC 149 = 460 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci172 :
-    instructionPC 167 = 460 := by
-  change submissionArtifact.instructionPC 167 = 460
+    instructionPC 149 = 460 := by
+  change submissionArtifact.instructionPC 149 = 460
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -8878,101 +14308,101 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cgPc28 :
-    submissionArtifact.instructionPC 125 = 222 := by
+    submissionArtifact.instructionPC 107 = 222 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci28 :
-    instructionPC 125 = 222 := by
-  change submissionArtifact.instructionPC 125 = 222
+    instructionPC 107 = 222 := by
+  change submissionArtifact.instructionPC 107 = 222
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc29 :
-    submissionArtifact.instructionPC 126 = 223 := by
+    submissionArtifact.instructionPC 108 = 223 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci29 :
-    instructionPC 126 = 223 := by
-  change submissionArtifact.instructionPC 126 = 223
+    instructionPC 108 = 223 := by
+  change submissionArtifact.instructionPC 108 = 223
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc30 :
-    submissionArtifact.instructionPC 127 = 225 := by
+    submissionArtifact.instructionPC 109 = 225 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci30 :
-    instructionPC 127 = 225 := by
-  change submissionArtifact.instructionPC 127 = 225
+    instructionPC 109 = 225 := by
+  change submissionArtifact.instructionPC 109 = 225
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc31 :
-    submissionArtifact.instructionPC 128 = 226 := by
+    submissionArtifact.instructionPC 110 = 226 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci31 :
-    instructionPC 128 = 226 := by
-  change submissionArtifact.instructionPC 128 = 226
+    instructionPC 110 = 226 := by
+  change submissionArtifact.instructionPC 110 = 226
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc32 :
-    submissionArtifact.instructionPC 129 = 227 := by
+    submissionArtifact.instructionPC 111 = 227 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci32 :
-    instructionPC 129 = 227 := by
-  change submissionArtifact.instructionPC 129 = 227
+    instructionPC 111 = 227 := by
+  change submissionArtifact.instructionPC 111 = 227
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc33 :
-    submissionArtifact.instructionPC 130 = 228 := by
+    submissionArtifact.instructionPC 112 = 228 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci33 :
-    instructionPC 130 = 228 := by
-  change submissionArtifact.instructionPC 130 = 228
+    instructionPC 112 = 228 := by
+  change submissionArtifact.instructionPC 112 = 228
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc34 :
-    submissionArtifact.instructionPC 131 = 229 := by
+    submissionArtifact.instructionPC 113 = 229 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci34 :
-    instructionPC 131 = 229 := by
-  change submissionArtifact.instructionPC 131 = 229
+    instructionPC 113 = 229 := by
+  change submissionArtifact.instructionPC 113 = 229
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc35 :
-    submissionArtifact.instructionPC 132 = 232 := by
+    submissionArtifact.instructionPC 114 = 232 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci35 :
-    instructionPC 132 = 232 := by
-  change submissionArtifact.instructionPC 132 = 232
+    instructionPC 114 = 232 := by
+  change submissionArtifact.instructionPC 114 = 232
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc37 :
-    submissionArtifact.instructionPC 135 = 237 := by
+    submissionArtifact.instructionPC 117 = 237 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci37 :
-    instructionPC 135 = 237 := by
-  change submissionArtifact.instructionPC 135 = 237
+    instructionPC 117 = 237 := by
+  change submissionArtifact.instructionPC 117 = 237
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -9285,656 +14715,656 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cgPc127 :
-    submissionArtifact.instructionPC 102 = 191 := by
+    submissionArtifact.instructionPC 5447 = 9741 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci127 :
-    instructionPC 102 = 191 := by
-  change submissionArtifact.instructionPC 102 = 191
+    instructionPC 5447 = 9741 := by
+  change submissionArtifact.instructionPC 5447 = 9741
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc129 :
-    submissionArtifact.instructionPC 103 = 192 := by
+    submissionArtifact.instructionPC 85 = 192 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci129 :
-    instructionPC 103 = 192 := by
-  change submissionArtifact.instructionPC 103 = 192
+    instructionPC 85 = 192 := by
+  change submissionArtifact.instructionPC 85 = 192
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc130 :
-    submissionArtifact.instructionPC 104 = 193 := by
+    submissionArtifact.instructionPC 86 = 193 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci130 :
-    instructionPC 104 = 193 := by
-  change submissionArtifact.instructionPC 104 = 193
+    instructionPC 86 = 193 := by
+  change submissionArtifact.instructionPC 86 = 193
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc131 :
-    submissionArtifact.instructionPC 106 = 197 := by
+    submissionArtifact.instructionPC 88 = 197 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci131 :
-    instructionPC 106 = 197 := by
-  change submissionArtifact.instructionPC 106 = 197
+    instructionPC 88 = 197 := by
+  change submissionArtifact.instructionPC 88 = 197
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc134 :
-    submissionArtifact.instructionPC 115 = 209 := by
+    submissionArtifact.instructionPC 97 = 209 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci134 :
-    instructionPC 115 = 209 := by
-  change submissionArtifact.instructionPC 115 = 209
+    instructionPC 97 = 209 := by
+  change submissionArtifact.instructionPC 97 = 209
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc177 :
-    submissionArtifact.instructionPC 148 = 311 := by
+    submissionArtifact.instructionPC 130 = 311 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci177 :
-    instructionPC 148 = 311 := by
-  change submissionArtifact.instructionPC 148 = 311
+    instructionPC 130 = 311 := by
+  change submissionArtifact.instructionPC 130 = 311
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc179 :
-    submissionArtifact.instructionPC 150 = 315 := by
+    submissionArtifact.instructionPC 132 = 315 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci179 :
-    instructionPC 150 = 315 := by
-  change submissionArtifact.instructionPC 150 = 315
+    instructionPC 132 = 315 := by
+  change submissionArtifact.instructionPC 132 = 315
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc180 :
-    submissionArtifact.instructionPC 151 = 316 := by
+    submissionArtifact.instructionPC 133 = 316 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci180 :
-    instructionPC 151 = 316 := by
-  change submissionArtifact.instructionPC 151 = 316
+    instructionPC 133 = 316 := by
+  change submissionArtifact.instructionPC 133 = 316
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc196 :
-    submissionArtifact.instructionPC 166 = 458 := by
+    submissionArtifact.instructionPC 148 = 458 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci196 :
-    instructionPC 166 = 458 := by
-  change submissionArtifact.instructionPC 166 = 458
+    instructionPC 148 = 458 := by
+  change submissionArtifact.instructionPC 148 = 458
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc198 :
-    submissionArtifact.instructionPC 168 = 461 := by
+    submissionArtifact.instructionPC 150 = 461 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci198 :
-    instructionPC 168 = 461 := by
-  change submissionArtifact.instructionPC 168 = 461
+    instructionPC 150 = 461 := by
+  change submissionArtifact.instructionPC 150 = 461
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPc199 :
-    submissionArtifact.instructionPC 169 = 462 := by
+    submissionArtifact.instructionPC 151 = 462 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci199 :
-    instructionPC 169 = 462 := by
-  change submissionArtifact.instructionPC 169 = 462
+    instructionPC 151 = 462 := by
+  change submissionArtifact.instructionPC 151 = 462
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3455 :
-    submissionArtifact.instructionPC 3407 = 4603 := by
+    submissionArtifact.instructionPC 3389 = 4603 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3455 :
-    instructionPC 3407 = 4603 := by
-  change submissionArtifact.instructionPC 3407 = 4603
+    instructionPC 3389 = 4603 := by
+  change submissionArtifact.instructionPC 3389 = 4603
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3456 :
-    submissionArtifact.instructionPC 3408 = 4606 := by
+    submissionArtifact.instructionPC 3390 = 4606 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3456 :
-    instructionPC 3408 = 4606 := by
-  change submissionArtifact.instructionPC 3408 = 4606
+    instructionPC 3390 = 4606 := by
+  change submissionArtifact.instructionPC 3390 = 4606
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3457 :
-    submissionArtifact.instructionPC 3409 = 4607 := by
+    submissionArtifact.instructionPC 3391 = 4607 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3457 :
-    instructionPC 3409 = 4607 := by
-  change submissionArtifact.instructionPC 3409 = 4607
+    instructionPC 3391 = 4607 := by
+  change submissionArtifact.instructionPC 3391 = 4607
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3458 :
-    submissionArtifact.instructionPC 3410 = 4615 := by
+    submissionArtifact.instructionPC 3392 = 4615 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3458 :
-    instructionPC 3410 = 4615 := by
-  change submissionArtifact.instructionPC 3410 = 4615
+    instructionPC 3392 = 4615 := by
+  change submissionArtifact.instructionPC 3392 = 4615
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3459 :
-    submissionArtifact.instructionPC 3411 = 4616 := by
+    submissionArtifact.instructionPC 3393 = 4616 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3459 :
-    instructionPC 3411 = 4616 := by
-  change submissionArtifact.instructionPC 3411 = 4616
+    instructionPC 3393 = 4616 := by
+  change submissionArtifact.instructionPC 3393 = 4616
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3460 :
-    submissionArtifact.instructionPC 3412 = 4617 := by
+    submissionArtifact.instructionPC 3394 = 4617 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3460 :
-    instructionPC 3412 = 4617 := by
-  change submissionArtifact.instructionPC 3412 = 4617
+    instructionPC 3394 = 4617 := by
+  change submissionArtifact.instructionPC 3394 = 4617
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3461 :
-    submissionArtifact.instructionPC 3434 = 4685 := by
+    submissionArtifact.instructionPC 3416 = 4685 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3461 :
-    instructionPC 3434 = 4685 := by
-  change submissionArtifact.instructionPC 3434 = 4685
+    instructionPC 3416 = 4685 := by
+  change submissionArtifact.instructionPC 3416 = 4685
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3462 :
-    submissionArtifact.instructionPC 3435 = 4686 := by
+    submissionArtifact.instructionPC 3417 = 4686 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3462 :
-    instructionPC 3435 = 4686 := by
-  change submissionArtifact.instructionPC 3435 = 4686
+    instructionPC 3417 = 4686 := by
+  change submissionArtifact.instructionPC 3417 = 4686
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3463 :
-    submissionArtifact.instructionPC 3410 = 4615 := by
+    submissionArtifact.instructionPC 3392 = 4615 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3463 :
-    instructionPC 3410 = 4615 := by
-  change submissionArtifact.instructionPC 3410 = 4615
+    instructionPC 3392 = 4615 := by
+  change submissionArtifact.instructionPC 3392 = 4615
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3464 :
-    submissionArtifact.instructionPC 3411 = 4616 := by
+    submissionArtifact.instructionPC 3393 = 4616 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3464 :
-    instructionPC 3411 = 4616 := by
-  change submissionArtifact.instructionPC 3411 = 4616
+    instructionPC 3393 = 4616 := by
+  change submissionArtifact.instructionPC 3393 = 4616
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3465 :
-    submissionArtifact.instructionPC 3412 = 4617 := by
+    submissionArtifact.instructionPC 3394 = 4617 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3465 :
-    instructionPC 3412 = 4617 := by
-  change submissionArtifact.instructionPC 3412 = 4617
+    instructionPC 3394 = 4617 := by
+  change submissionArtifact.instructionPC 3394 = 4617
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3466 :
-    submissionArtifact.instructionPC 3439 = 4694 := by
+    submissionArtifact.instructionPC 3421 = 4694 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3466 :
-    instructionPC 3439 = 4694 := by
-  change submissionArtifact.instructionPC 3439 = 4694
+    instructionPC 3421 = 4694 := by
+  change submissionArtifact.instructionPC 3421 = 4694
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3467 :
-    submissionArtifact.instructionPC 3440 = 4695 := by
+    submissionArtifact.instructionPC 3422 = 4695 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3467 :
-    instructionPC 3440 = 4695 := by
-  change submissionArtifact.instructionPC 3440 = 4695
+    instructionPC 3422 = 4695 := by
+  change submissionArtifact.instructionPC 3422 = 4695
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3468 :
-    submissionArtifact.instructionPC 3436 = 4689 := by
+    submissionArtifact.instructionPC 3418 = 4689 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3468 :
-    instructionPC 3436 = 4689 := by
-  change submissionArtifact.instructionPC 3436 = 4689
+    instructionPC 3418 = 4689 := by
+  change submissionArtifact.instructionPC 3418 = 4689
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3469 :
-    submissionArtifact.instructionPC 3442 = 4699 := by
+    submissionArtifact.instructionPC 3424 = 4699 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3469 :
-    instructionPC 3442 = 4699 := by
-  change submissionArtifact.instructionPC 3442 = 4699
+    instructionPC 3424 = 4699 := by
+  change submissionArtifact.instructionPC 3424 = 4699
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3470 :
-    submissionArtifact.instructionPC 3438 = 4693 := by
+    submissionArtifact.instructionPC 3420 = 4693 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3470 :
-    instructionPC 3438 = 4693 := by
-  change submissionArtifact.instructionPC 3438 = 4693
+    instructionPC 3420 = 4693 := by
+  change submissionArtifact.instructionPC 3420 = 4693
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3471 :
-    submissionArtifact.instructionPC 3413 = 4618 := by
+    submissionArtifact.instructionPC 3395 = 4618 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3471 :
-    instructionPC 3413 = 4618 := by
-  change submissionArtifact.instructionPC 3413 = 4618
+    instructionPC 3395 = 4618 := by
+  change submissionArtifact.instructionPC 3395 = 4618
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3472 :
-    submissionArtifact.instructionPC 3414 = 4619 := by
+    submissionArtifact.instructionPC 3396 = 4619 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3472 :
-    instructionPC 3414 = 4619 := by
-  change submissionArtifact.instructionPC 3414 = 4619
+    instructionPC 3396 = 4619 := by
+  change submissionArtifact.instructionPC 3396 = 4619
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3473 :
-    submissionArtifact.instructionPC 3441 = 4698 := by
+    submissionArtifact.instructionPC 3423 = 4698 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3473 :
-    instructionPC 3441 = 4698 := by
-  change submissionArtifact.instructionPC 3441 = 4698
+    instructionPC 3423 = 4698 := by
+  change submissionArtifact.instructionPC 3423 = 4698
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3474 :
-    submissionArtifact.instructionPC 3442 = 4699 := by
+    submissionArtifact.instructionPC 3424 = 4699 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3474 :
-    instructionPC 3442 = 4699 := by
-  change submissionArtifact.instructionPC 3442 = 4699
+    instructionPC 3424 = 4699 := by
+  change submissionArtifact.instructionPC 3424 = 4699
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3475 :
-    submissionArtifact.instructionPC 3443 = 4702 := by
+    submissionArtifact.instructionPC 3425 = 4702 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3475 :
-    instructionPC 3443 = 4702 := by
-  change submissionArtifact.instructionPC 3443 = 4702
+    instructionPC 3425 = 4702 := by
+  change submissionArtifact.instructionPC 3425 = 4702
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3476 :
-    submissionArtifact.instructionPC 3413 = 4618 := by
+    submissionArtifact.instructionPC 3395 = 4618 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3476 :
-    instructionPC 3413 = 4618 := by
-  change submissionArtifact.instructionPC 3413 = 4618
+    instructionPC 3395 = 4618 := by
+  change submissionArtifact.instructionPC 3395 = 4618
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3477 :
-    submissionArtifact.instructionPC 3414 = 4619 := by
+    submissionArtifact.instructionPC 3396 = 4619 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3477 :
-    instructionPC 3414 = 4619 := by
-  change submissionArtifact.instructionPC 3414 = 4619
+    instructionPC 3396 = 4619 := by
+  change submissionArtifact.instructionPC 3396 = 4619
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3478 :
-    submissionArtifact.instructionPC 3415 = 4620 := by
+    submissionArtifact.instructionPC 3397 = 4620 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3478 :
-    instructionPC 3415 = 4620 := by
-  change submissionArtifact.instructionPC 3415 = 4620
+    instructionPC 3397 = 4620 := by
+  change submissionArtifact.instructionPC 3397 = 4620
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3479 :
-    submissionArtifact.instructionPC 3416 = 4622 := by
+    submissionArtifact.instructionPC 3398 = 4622 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3479 :
-    instructionPC 3416 = 4622 := by
-  change submissionArtifact.instructionPC 3416 = 4622
+    instructionPC 3398 = 4622 := by
+  change submissionArtifact.instructionPC 3398 = 4622
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3480 :
-    submissionArtifact.instructionPC 3417 = 4623 := by
+    submissionArtifact.instructionPC 3399 = 4623 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3480 :
-    instructionPC 3417 = 4623 := by
-  change submissionArtifact.instructionPC 3417 = 4623
+    instructionPC 3399 = 4623 := by
+  change submissionArtifact.instructionPC 3399 = 4623
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3481 :
-    submissionArtifact.instructionPC 3418 = 4624 := by
+    submissionArtifact.instructionPC 3400 = 4624 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3481 :
-    instructionPC 3418 = 4624 := by
-  change submissionArtifact.instructionPC 3418 = 4624
+    instructionPC 3400 = 4624 := by
+  change submissionArtifact.instructionPC 3400 = 4624
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3482 :
-    submissionArtifact.instructionPC 3419 = 4628 := by
+    submissionArtifact.instructionPC 3401 = 4628 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3482 :
-    instructionPC 3419 = 4628 := by
-  change submissionArtifact.instructionPC 3419 = 4628
+    instructionPC 3401 = 4628 := by
+  change submissionArtifact.instructionPC 3401 = 4628
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3483 :
-    submissionArtifact.instructionPC 3420 = 4629 := by
+    submissionArtifact.instructionPC 3402 = 4629 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3483 :
-    instructionPC 3420 = 4629 := by
-  change submissionArtifact.instructionPC 3420 = 4629
+    instructionPC 3402 = 4629 := by
+  change submissionArtifact.instructionPC 3402 = 4629
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3484 :
-    submissionArtifact.instructionPC 3421 = 4630 := by
+    submissionArtifact.instructionPC 3403 = 4630 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3484 :
-    instructionPC 3421 = 4630 := by
-  change submissionArtifact.instructionPC 3421 = 4630
+    instructionPC 3403 = 4630 := by
+  change submissionArtifact.instructionPC 3403 = 4630
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3485 :
-    submissionArtifact.instructionPC 3422 = 4633 := by
+    submissionArtifact.instructionPC 3404 = 4633 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3485 :
-    instructionPC 3422 = 4633 := by
-  change submissionArtifact.instructionPC 3422 = 4633
+    instructionPC 3404 = 4633 := by
+  change submissionArtifact.instructionPC 3404 = 4633
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3486 :
-    submissionArtifact.instructionPC 3423 = 4634 := by
+    submissionArtifact.instructionPC 3405 = 4634 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3486 :
-    instructionPC 3423 = 4634 := by
-  change submissionArtifact.instructionPC 3423 = 4634
+    instructionPC 3405 = 4634 := by
+  change submissionArtifact.instructionPC 3405 = 4634
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3487 :
-    submissionArtifact.instructionPC 3424 = 4655 := by
+    submissionArtifact.instructionPC 3406 = 4655 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3487 :
-    instructionPC 3424 = 4655 := by
-  change submissionArtifact.instructionPC 3424 = 4655
+    instructionPC 3406 = 4655 := by
+  change submissionArtifact.instructionPC 3406 = 4655
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3488 :
-    submissionArtifact.instructionPC 3425 = 4656 := by
+    submissionArtifact.instructionPC 3407 = 4656 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3488 :
-    instructionPC 3425 = 4656 := by
-  change submissionArtifact.instructionPC 3425 = 4656
+    instructionPC 3407 = 4656 := by
+  change submissionArtifact.instructionPC 3407 = 4656
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3489 :
-    submissionArtifact.instructionPC 3426 = 4657 := by
+    submissionArtifact.instructionPC 3408 = 4657 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3489 :
-    instructionPC 3426 = 4657 := by
-  change submissionArtifact.instructionPC 3426 = 4657
+    instructionPC 3408 = 4657 := by
+  change submissionArtifact.instructionPC 3408 = 4657
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3490 :
-    submissionArtifact.instructionPC 3427 = 4678 := by
+    submissionArtifact.instructionPC 3409 = 4678 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3490 :
-    instructionPC 3427 = 4678 := by
-  change submissionArtifact.instructionPC 3427 = 4678
+    instructionPC 3409 = 4678 := by
+  change submissionArtifact.instructionPC 3409 = 4678
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3491 :
-    submissionArtifact.instructionPC 3428 = 4679 := by
+    submissionArtifact.instructionPC 3410 = 4679 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3491 :
-    instructionPC 3428 = 4679 := by
-  change submissionArtifact.instructionPC 3428 = 4679
+    instructionPC 3410 = 4679 := by
+  change submissionArtifact.instructionPC 3410 = 4679
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3492 :
-    submissionArtifact.instructionPC 3429 = 4680 := by
+    submissionArtifact.instructionPC 3411 = 4680 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3492 :
-    instructionPC 3429 = 4680 := by
-  change submissionArtifact.instructionPC 3429 = 4680
+    instructionPC 3411 = 4680 := by
+  change submissionArtifact.instructionPC 3411 = 4680
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3502 :
-    submissionArtifact.instructionPC 3446 = 4706 := by
+    submissionArtifact.instructionPC 3428 = 4706 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3502 :
-    instructionPC 3446 = 4706 := by
-  change submissionArtifact.instructionPC 3446 = 4706
+    instructionPC 3428 = 4706 := by
+  change submissionArtifact.instructionPC 3428 = 4706
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3510 :
-    submissionArtifact.instructionPC 3453 = 4733 := by
+    submissionArtifact.instructionPC 3435 = 4733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3510 :
-    instructionPC 3453 = 4733 := by
-  change submissionArtifact.instructionPC 3453 = 4733
+    instructionPC 3435 = 4733 := by
+  change submissionArtifact.instructionPC 3435 = 4733
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3511 :
-    submissionArtifact.instructionPC 3454 = 4734 := by
+    submissionArtifact.instructionPC 3436 = 4734 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3511 :
-    instructionPC 3454 = 4734 := by
-  change submissionArtifact.instructionPC 3454 = 4734
+    instructionPC 3436 = 4734 := by
+  change submissionArtifact.instructionPC 3436 = 4734
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -9943,118 +15373,118 @@ set_option maxRecDepth 100000
 /-- The padding code is entered by fall-through; no return address is pushed. -/
 def padEnterPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨144, .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255), by rfl, by decide⟩,
-   ⟨145, .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), by rfl, by decide⟩]
+  [⟨126, .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255), by rfl, by decide⟩,
+   ⟨127, .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), by rfl, by decide⟩]
 
 /-- Cached located path for the calldata copy and the zero offset; CALLDATASIZE stays in slot 12 as the fast-entry continuation. -/
 def padCopyPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨146, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨147, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨148, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩,
-   ⟨149, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨150, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨151, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩]
+  [⟨128, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨129, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨130, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩,
+   ⟨131, .op .CALLDATACOPY, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨132, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨133, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), by rfl, by decide⟩]
 
 /-- Cached located path for the fast-entry test: only the lengths 64, 128 and 192 (the
 calldata size has no bit outside `0xc0`) go straight to the block loop. -/
 def padGuardPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨163, .push ⟨8, by decide⟩ (UInt256.ofNat 18446744073709551423), by rfl, by decide⟩,
-   ⟨164, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨165, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨166, .push ⟨1, by decide⟩ (UInt256.ofNat 143), by rfl, by decide⟩,
-   ⟨167, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨145, .push ⟨8, by decide⟩ (UInt256.ofNat 18446744073709551423), by rfl, by decide⟩,
+   ⟨146, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨147, .op .AND, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨148, .push ⟨1, by decide⟩ (UInt256.ofNat 143), by rfl, by decide⟩,
+   ⟨149, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the sentinel byte. -/
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨85, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨86, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨87, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨88, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨89, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨5430, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨5431, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5432, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5433, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5434, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop setup: the loop head 4945 stays under the two loop
 registers (it is the back-edge target of the loop's `DUP4 JUMPI`), then the bit length, the rounded
 length offset plus 89, and `DUP3 JUMP` to the loop head. -/
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨90, .push ⟨2, by decide⟩ (UInt256.ofNat 4547), by rfl, by decide⟩,
-   ⟨91, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨92, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨93, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨94, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨95, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
-   ⟨96, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨97, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨98, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨99, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
-   ⟨100, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨101, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨102, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨5435, .push ⟨2, by decide⟩ (UInt256.ofNat 4547), by rfl, by decide⟩,
+   ⟨5436, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5437, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨5438, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5439, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5440, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
+   ⟨5441, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5442, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨5443, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5444, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
+   ⟨5445, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5446, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5447, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop exit: `PUSH1 198 JUMP` at 4562 (the fall-through of the
 loop's `JUMPI`), then at 200 the generic continuation 48 replaces the output entry and the three
 loop words are dropped. -/
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨3399, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
-   ⟨3400, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨107, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨108, .push ⟨1, by decide⟩ (UInt256.ofNat 222), by rfl, by decide⟩,
-   ⟨109, .op (.Swap ⟨15, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨110, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨111, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨112, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨113, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨114, .push ⟨2, by decide⟩ (UInt256.ofNat 461), by rfl, by decide⟩,
-   ⟨115, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨3381, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
+   ⟨3382, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨89, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨90, .push ⟨1, by decide⟩ (UInt256.ofNat 222), by rfl, by decide⟩,
+   ⟨91, .op (.Swap ⟨15, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨92, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨93, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨94, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨95, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨96, .push ⟨2, by decide⟩ (UInt256.ofNat 461), by rfl, by decide⟩,
+   ⟨97, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 @[simp] theorem validJumpDest_200 :
     Decode.isValidJumpDest submissionBytecode 198 = true := by
-  have hp : submissionArtifact.instructionPC 107 = 198 := by
+  have hp : submissionArtifact.instructionPC 89 = 198 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 107 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 89 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem validJumpDest_212 :
     Decode.isValidJumpDest submissionBytecode 210 = true := by
-  have hp : submissionArtifact.instructionPC 116 = 210 := by
+  have hp : submissionArtifact.instructionPC 98 = 210 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 116 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 98 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_9429 :
     Decode.isValidJumpDest submissionBytecode 9429 = true := by
-  have hp : submissionArtifact.instructionPC 5249 = 9429 := by
+  have hp : submissionArtifact.instructionPC 5231 = 9429 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 5249 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 5231 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4708 :
     Decode.isValidJumpDest submissionBytecode 4706 = true := by
-  have hp : submissionArtifact.instructionPC 3446 = 4706 := by
+  have hp : submissionArtifact.instructionPC 3428 = 4706 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3446 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3428 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem validJumpDest_47 :
     Decode.isValidJumpDest submissionBytecode 222 = true := by
-  have hp : submissionArtifact.instructionPC 125 = 222 := by
+  have hp : submissionArtifact.instructionPC 107 = 222 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 125 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 107 (by rfl)
   rw [hp] at h
   exact h
 
@@ -10087,69 +15517,69 @@ set_option maxRecDepth 100000 in
 
 @[simp] theorem validJumpDest_192 :
     Decode.isValidJumpDest submissionBytecode 192 = true := by
-  have hp : submissionArtifact.instructionPC 103 = 192 := by
+  have hp : submissionArtifact.instructionPC 85 = 192 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 103 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 85 (by rfl)
   rw [hp] at h
   exact h
 
 @[simp] theorem validJumpDest_494 :
     Decode.isValidJumpDest submissionBytecode 497 = true := by
-  have hp : submissionArtifact.instructionPC 195 = 497 := by
+  have hp : submissionArtifact.instructionPC 177 = 497 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 195 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 177 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_824 :
     Decode.isValidJumpDest submissionBytecode 824 = true := by
-  have hp : submissionArtifact.instructionPC 389 = 824 := by
+  have hp : submissionArtifact.instructionPC 371 = 824 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 389 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 371 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4748 :
     Decode.isValidJumpDest submissionBytecode 4733 = true := by
-  have hp : submissionArtifact.instructionPC 3453 = 4733 := by
+  have hp : submissionArtifact.instructionPC 3435 = 4733 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3453 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3435 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4601 :
     Decode.isValidJumpDest submissionBytecode 4565 = true := by
-  have hp : submissionArtifact.instructionPC 3401 = 4565 := by
+  have hp : submissionArtifact.instructionPC 3383 = 4565 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3401 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3383 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4805 :
     Decode.isValidJumpDest submissionBytecode 4782 = true := by
-  have hp : submissionArtifact.instructionPC 3489 = 4782 := by
+  have hp : submissionArtifact.instructionPC 3471 = 4782 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3489 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3471 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4808 :
     Decode.isValidJumpDest submissionBytecode 4785 = true := by
-  have hp : submissionArtifact.instructionPC 3491 = 4785 := by
+  have hp : submissionArtifact.instructionPC 3473 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3491 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3473 (by rfl)
   rw [hp] at h
   exact h
 

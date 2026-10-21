@@ -13,22 +13,17 @@ in the external binding report.
 namespace Challenge.Ripemd160
 
 abbrev submissionByteChunk0 : ByteArray := ByteArray.mk #[
-  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232,
-  3, 97, 17, 213, 87, 95, 53, 128, 110, 0, 0, 0, 0, 0, 0, 0,
-  97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87,
-  88, 53, 129, 20, 97, 36, 213, 86, 0, 0, 0, 0, 0, 0, 0, 0,
-  91, 97, 4, 60, 54, 96, 28, 55, 54, 96, 3, 27, 128, 96, 162, 82,
-  128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 128, 96, 54, 82, 97, 18, 125, 156, 80, 97, 3, 56, 86, 4, 4,
-  91, 97, 0, 64, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91,
-  97, 37, 195, 156, 96, 32, 20, 100, 0, 0, 0, 1, 241, 96, 32, 97,
-  19, 136, 88, 57, 87, 91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54,
-  96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86,
-  91, 96, 128, 96, 210, 86, 91, 96, 222, 159, 80, 80, 80, 80, 97, 1,
-  205, 86, 91, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91, 96,
-  128, 140, 1, 89, 16, 97, 18, 125, 87, 96, 222, 96, 210, 86, 0, 0,
-  0, 0, 0, 0, 0, 91,
+  100, 16, 140, 134, 130, 28, 95, 53, 22, 96, 245, 87, 54, 97, 3, 232, 3, 97, 17, 213, 87, 95, 53, 128,
+  110, 0, 0, 0, 0, 0, 0, 0, 97, 97, 97, 97, 97, 97, 97, 97, 24, 96, 192, 27, 97, 31, 221, 87,
+  88, 53, 129, 20, 97, 36, 213, 86, 0, 0, 0, 0, 0, 0, 0, 0, 91, 97, 4, 60, 54, 96, 28, 55,
+  54, 96, 3, 27, 128, 96, 162, 82, 128, 97, 2, 154, 82, 96, 144, 82, 96, 128, 97, 2, 10, 82, 114, 128,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 54, 82, 97, 18, 125,
+  156, 80, 97, 3, 56, 86, 4, 4, 91, 97, 0, 64, 156, 80, 154, 96, 64, 1, 154, 97, 1, 205, 86, 91,
+  97, 37, 195, 156, 96, 32, 20, 124, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 96, 162, 82, 97, 1, 241, 87, 97, 37, 243, 86,
+  91, 96, 128, 96, 210, 86, 91, 96, 222, 159, 80, 80, 80, 80, 97, 1, 205, 86, 91, 156, 80, 154, 96, 64,
+  1, 154, 97, 1, 205, 86, 91, 96, 128, 140, 1, 89, 16, 97, 18, 125, 87, 96, 222, 96, 210, 86, 0, 0,
+  0, 0, 0, 0, 0, 91
 ]
 
 @[simp] theorem submissionByteChunk0_size : submissionByteChunk0.size = 246 := by
@@ -734,14 +729,16 @@ abbrev submissionUnrolledTail : ByteArray := ByteArray.mk #[
   91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82,
   96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255, 255, 255, 255,
   2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3, 82, 54, 95, 243,
+  91, 96, 128, 140, 54, 1, 83, 97, 17, 195, 54, 96, 3, 27, 54, 97,
+  3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86,
 ]
 
-@[simp] theorem submissionUnrolledTail_size : submissionUnrolledTail.size = 288 := by rfl
+@[simp] theorem submissionUnrolledTail_size : submissionUnrolledTail.size = 315 := by rfl
 
 abbrev submissionByteChunk19 : ByteArray :=
   submissionTailPart0 ++ (submissionTailPart1 ++ (submissionTailPart2 ++ (submissionTailPart3 ++ (submissionTailPart4 ++ (submissionTailPart5 ++ (submissionTailPart6 ++ (submissionTailPart7 ++ (submissionTailPart8 ++ (submissionTailPart9 ++ (submissionTailPart10 ++ (submissionTailPart11 ++ (submissionTailPart12 ++ (submissionTailPart13 ++ (submissionTailPart14 ++ (submissionTailPart15 ++ (submissionTailPart16 ++ (submissionTailPart17 ++ (submissionTailPart18 ++ (submissionTailPart19 ++ (submissionTailPart20 ++ (submissionTailPart21 ++ (submissionTailPart22 ++ (submissionTailPart23 ++ (submissionTailPart24 ++ (submissionTailPart25 ++ (submissionTailPart26 ++ (submissionTailPart27 ++ (submissionTailPart28 ++ (submissionTailPart29 ++ (submissionTailPart30 ++ (submissionTailPart31 ++ (submissionTailPart32 ++ (submissionTailPart33 ++ (submissionTailPart34 ++ (submissionTailPart35 ++ (submissionTailPart36)))))))))))))))))))))))))))))))))))) ++ submissionUnrolledTail
 
-@[simp] theorem submissionByteChunk19_size : submissionByteChunk19.size = 4914 := by
+@[simp] theorem submissionByteChunk19_size : submissionByteChunk19.size = 4941 := by
   rfl
 
 abbrev submissionBytes : ByteArray :=
@@ -767,7 +764,7 @@ abbrev submissionBytes : ByteArray :=
  ++ submissionByteChunk19
 
 set_option maxRecDepth 50000 in
-@[simp] theorem referenceBytes_size : submissionBytes.size = 9715 := by
+@[simp] theorem referenceBytes_size : submissionBytes.size = 9742 := by
   simp [submissionBytes]
 
 set_option maxRecDepth 100000 in

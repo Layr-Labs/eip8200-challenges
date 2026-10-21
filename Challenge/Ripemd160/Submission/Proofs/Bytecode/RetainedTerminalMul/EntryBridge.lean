@@ -25,8 +25,8 @@ private theorem take_plus (xs : List Instr) (m n : Nat) :
 
 /-- The three success chunks are exactly one contiguous candidate-vector slice. -/
 theorem actual_data_success_slice :
-    (RetainedBridge111.Candidate.instructions.drop 5077).take 166 =
-      dataAndResult ++ ((RetainedBridge111.Candidate.instructions.drop 5240).take 3) := by
+    (RetainedBridge111.Candidate.instructions.drop 5059).take 166 =
+      dataAndResult ++ ((RetainedBridge111.Candidate.instructions.drop 5222).take 3) := by
   rw [show 166 = 163 + 3 by decide, take_plus]
   rw [show 163 = 161 + 2 by decide, take_plus]
   simp only [List.drop_drop, dataAndResult]
@@ -41,7 +41,7 @@ theorem actual_repeat_seed_slice :
 
 def entrySuccessPath : List Instr :=
   ((RetainedBridge111.Candidate.instructions.drop 11).take 9) ++
-  ((RetainedBridge111.Candidate.instructions.drop 5077).take 166)
+  ((RetainedBridge111.Candidate.instructions.drop 5059).take 166)
 
 /-- Dynamic path from the size1000 anchor all the way through actual RETURN.
     Exact typed-vector slices only: a located-instruction/GasSteps lift is still required. -/

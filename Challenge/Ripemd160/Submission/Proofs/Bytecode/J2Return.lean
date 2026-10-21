@@ -22,10 +22,10 @@ def afterCopy (s : State) (rho : List UInt256) : State :=
 def output (s : State) (rho : List UInt256) : State :=
   RecognitionSelectorRaw.returned (afterCopy s rho) (UInt256.ofNat 4939) rho
 
-private theorem pc_3606 : Artifact.submissionArtifact.instructionPC 3539 = 4920 := by
+private theorem pc_3606 : Artifact.submissionArtifact.instructionPC 3521 = 4920 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3596 = 4977 := by
+private theorem pc_3607 : Artifact.submissionArtifact.instructionPC 3578 = 4977 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 private theorem beforeCopy_pc (s : State) (rho : List UInt256) :
@@ -38,15 +38,15 @@ private theorem copied_pc (s : State) (rho : List UInt256) :
 
 private theorem copy_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (beforeCopy s rho).decodedOp = some .CODECOPY := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3539 .CODECOPY
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3521 .CODECOPY
     (by rfl) (by decide) trivial
-  exact Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 3539
+  exact Artifact.submissionArtifact.state_decodedOp_of (beforeCopy s rho) 3521
     e.code ((beforeCopy_pc s rho).trans pc_3606.symm) .CODECOPY none hd
     (by change Operation.CODECOPY.availableInFork s.fork = true; rw [e.fork]; rfl)
 
 private theorem size_decoded (s : State) (e : Env s) (rho : List UInt256) :
     (copied (beforeCopy s rho) (source s) rho).decodedOp = some .MSIZE := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3596 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3578 .MSIZE
     (by rfl) (by decide) trivial
   exact Artifact.submissionArtifact.state_decodedOp_of
     (copied (beforeCopy s rho) (source s) rho) 3596 e.code

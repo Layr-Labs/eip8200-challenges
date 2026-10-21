@@ -33,7 +33,7 @@ private def scannerSite : GenericRoundSite RetainedBridge111.Candidate.artifact 
     (StackRoundData.templateWellFormed_mem scanner_wf) (by decide)
 
 private theorem scannerSite_pc : scannerSite.startPC = UInt256.ofNat 9429 := by
-  change UInt256.ofNat (RetainedBridge111.Candidate.artifact.instructionPC 5260) = _
+  change UInt256.ofNat (RetainedBridge111.Candidate.artifact.instructionPC 5242) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 

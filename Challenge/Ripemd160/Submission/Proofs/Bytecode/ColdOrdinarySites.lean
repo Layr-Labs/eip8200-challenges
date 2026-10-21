@@ -15,17 +15,17 @@ open StackRoundTrace StackRoundTemplate PairedHelperBooleanTrace Table80Setup
 def actualNormalTemplate : List Instr := PersistentMaskEndian.normalTemplate
 
 theorem normal_slice :
-    (Artifact.submissionArtifact.instructions.drop 169).take actualNormalTemplate.length = actualNormalTemplate := by rfl
+    (Artifact.submissionArtifact.instructions.drop 151).take actualNormalTemplate.length = actualNormalTemplate := by rfl
 
 def normalSite : GenericRoundSite Artifact.submissionArtifact .Osaka actualNormalTemplate :=
-  StackSiteBuilder.ofSlice actualNormalTemplate 169 normal_slice
-    (by change 169 + actualNormalTemplate.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice actualNormalTemplate 151 normal_slice
+    (by change 151 + actualNormalTemplate.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := actualNormalTemplate) (by decide))
     (by decide)
 theorem normal_pc : normalSite.startPC = UInt256.ofNat 462 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 169) = UInt256.ofNat 462
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 151) = UInt256.ofNat 462
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- `MCOPY` is a straight-line instruction, but it is outside `PadLift.advancesCheck`'s
@@ -143,9 +143,9 @@ theorem branch_advances : ∀ instruction ∈ branchTemplate.dropLast, PadLift.A
 
 theorem valid_rounds (s : State) (hcode : s.executionEnv.code = Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 824).toNat = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 389 = 824 := by
+  have hpc : Artifact.submissionArtifact.instructionPC 371 = 824 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 389 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 371 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 824 = true
   rw [hcode]
