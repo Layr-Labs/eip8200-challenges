@@ -9,7 +9,7 @@ private def op (byte : UInt8) : Instr :=
   | some decoded => .op decoded
   | none => .op .INVALID
 
--- PC 0, index 5059; 161 instructions.
+-- PC 8157, index 5088; 161 instructions.
 def literal0 : List Instr := [
   op 0x5b,
   .push ⟨20, by decide⟩ (UInt256.ofNat 766350606435067737561421097975693824639675460820),
@@ -172,6 +172,7 @@ def literal0 : List Instr := [
   op 0x35,
   op 0x18,
   op 0x17,
+
 ]
 
 theorem literal0_count : literal0.length = 161 := by decide
@@ -254,7 +255,7 @@ def literal0Bytes : List UInt8 := [
   114, 151, 188, 225, 6, 43, 80, 117, 154, 191, 228, 9, 46, 83, 120, 157,
   194, 96, 64, 53, 24, 23, 127, 167, 204, 241, 22, 59, 96, 133, 170, 207,
   244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 31,
-  68, 105, 142, 179, 216, 253, 34, 89, 53, 24, 23
+  68, 105, 142, 179, 216, 253, 34, 89, 53, 24, 23,
 ]
 theorem literal0_assembly : Challenge.EvmProof.PcEncoding.assembleBytes literal0 = literal0Bytes := by decide
 theorem literal0_bytes_count : literal0Bytes.length = 1259 := by rfl

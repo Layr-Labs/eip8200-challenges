@@ -34,8 +34,8 @@ def template : Piece → List Instr
   | .genericDest => [.op .JUMPDEST]
 
 def index : Piece → Nat
-  | .data => 5059 | .result => 5220 | .success => 5222 | .cleanup => 3473
-  | .anchor => 11 | .repeat => 20 | .genericDest => 125
+  | .data => 5068 | .result => 5229 | .success => 5231 | .cleanup => 3491
+  | .anchor => 11 | .repeat => 20 | .genericDest => 143
 
 def pc : Piece → Nat
   | .data => 8157 | .result => 9416 | .success => 9420 | .cleanup => 4785
@@ -93,9 +93,9 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw (site p) _ _ e.code e.fork e.run e.np (site_pc p).symm (form p) h
 
 theorem valid_miss : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 4785 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 3473 = 4785 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 3491 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 3473 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 3491 (by rfl)
   rw [hp] at h
   exact h
 
@@ -133,23 +133,23 @@ def gasSteps_return (s : State) (rho : List UInt256) (e : Env s)
   exact hd.trans (hr.trans ht)
 
 theorem valid_generic : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 245 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 125 = 245 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 143 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 125 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 143 (by rfl)
   rw [hp] at h
   exact h
 
 theorem valid_anchor : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 8157 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5059 = 8157 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5068 = 8157 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5059 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5068 (by rfl)
   rw [hp] at h
   exact h
 
 theorem valid_repeat : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 9429 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5231 = 9429 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 5240 = 9429 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5231 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 5240 (by rfl)
   rw [hp] at h
   exact h
 

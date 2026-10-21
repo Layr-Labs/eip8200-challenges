@@ -9,7 +9,7 @@ private def op (byte : UInt8) : Instr :=
   | some decoded => .op decoded
   | none => .op .INVALID
 
--- PC 0, index 5220; 228 instructions.
+-- PC 9416, index 5249; 173 instructions.
 def suffix0 : List Instr := [
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
   op 0x57,
@@ -220,28 +220,10 @@ def suffix0 : List Instr := [
   op 0x36,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
-  op 0x5b,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  op 0x8c,
-  op 0x36,
-  op 0x01,
-  op 0x53,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
-  op 0x36,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-  op 0x1b,
-  op 0x36,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
-  op 0x01,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 63),
-  op 0x17,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 89),
-  op 0x01,
-  op 0x82,
-  op 0x56,
+
 ]
 
-theorem suffix0_count : suffix0.length = 228 := by decide
+theorem suffix0_count : suffix0.length = 209 := by decide
 def suffix0Bytes : List UInt8 := [
   97, 18, 177, 87, 89, 95, 243, 95, 95, 95, 95, 91, 144, 91, 97, 3,
   200, 53, 130, 20, 22, 97, 3, 176, 53, 130, 20, 22, 97, 3, 144, 53,
@@ -261,10 +243,8 @@ def suffix0Bytes : List UInt8 := [
   207, 95, 82, 89, 95, 243, 91, 95, 96, 245, 86, 91, 80, 80, 80, 80,
   80, 80, 96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82,
   96, 16, 81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22,
-  97, 255, 255, 2, 1, 96, 3, 82, 54, 95, 243, 91, 96, 128, 140, 54,
-  1, 83, 97, 17, 195, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63,
-  23, 96, 89, 1, 130, 86
+  97, 255, 255, 2, 1, 96, 3, 82, 54, 95, 243,
 ]
 theorem suffix0_assembly : Challenge.EvmProof.PcEncoding.assembleBytes suffix0 = suffix0Bytes := by decide
-theorem suffix0_bytes_count : suffix0Bytes.length = 326 := by rfl
+theorem suffix0_bytes_count : suffix0Bytes.length = 299 := by rfl
 end RetainedBridge111.Candidate

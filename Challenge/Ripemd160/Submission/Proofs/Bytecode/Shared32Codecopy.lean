@@ -21,6 +21,7 @@ theorem source_word : MachineState.readPadded Artifact.submissionArtifact.code 5
 
 theorem copied_eq (m : ByteArray) :
     Shared32SparseRun.copied m Artifact.submissionArtifact.code = writeWord m 162 highWord := by
+  rw [Shared32SparseRun.copied, source_word]
   rfl
 
 theorem copied_sparse (m : ByteArray) (hsize : 194 ≤ m.size)

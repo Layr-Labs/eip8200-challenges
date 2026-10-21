@@ -20,6 +20,11 @@
     "evidence": "Immediateexperimentiter80savedfourprefixsubstitutions;iter82extendssevenremainingcmpk1sites. Rawcandidate62b4061b56d4dc35f58a9c13e6fe927edceb1b0f9e7d4c2f0cf4829af85a7b1d.Prefix[0,4801),rowstartsunchanged;ZeroTailModeluniversalrecognitionunchanged."
   },
   {
+    "submissionId": "2cc229ec-7f6c-41f6-b6f9-460dd17700ad",
+    "rationale": "Th0rgal's accepted 647,801 record (promoted commit 7139d4de), the live record 00b4dbb3 was measured against and improved on (647,499, -302 gas). It is 0961b85e with two edits: the pad-only block (bytes 77..101) reordered so one MSTORE8 takes its address from PC at 85, and ADD -> SUB at 199. Neither edit is used here and none of its bytes are taken: 00b4dbb3's image replaces the whole pad-only block with the P19 packed PUSH19 pad store, and the code around 199 with its refit generic-padding route and the 192-stub join.",
+    "evidence": "2cc229ec differs from 0961b85e only at bytes 77..95, 97, 98, 100, 101 and 199 (5,241 bytes both). Exact scorer replica of 2cc229ec's image: 647,801 at seed 0, 647,967 and 648,041 at seeds 12886768257922782526 and 18235675205389542134; 00b4dbb3's image (decoded SHA-256 11bb2c342fc4fcb255f09194d349db1c9319a38655c515180f3b2106c74cebb8): 647,499 at all three. 00b4dbb3's image's pad-only block is the P19 block of our own work (PUSH19 word store with StaggerPadSetup.run_low), not 2cc229ec's reordering."
+  },
+  {
     "submissionId": "3237115c-a44b-4ef4-a77b-c862baf9fd60",
     "rationale": "The 648,941 record that eac16f46 and 00b4dbb3's image extend (our own submission). It supplies the compression body (pc 457 to 4550: a12ad85f's widths, Th0rgal's fc5d5ea8 round-79 epilogue and three neutral DUP repairs) and its proof files, kept apart from thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410).",
     "evidence": "5,247 bytes, 3,599 instructions, decoded SHA-256 34fb74d90ceb68ff42197f9d859a817521decae7e34959e8d4bd919bc677a171, 648,941 official. Bytes 457 to 4550 of 00b4dbb3's image are identical to it except thirteen PC-preserving DUP re-choices and the re-planned paired steps 36..43 and 66..76 (pc 2660 to 2964 and 3975 to 4410). Its K1b (pc 183 to 188) and B4601 (pc 4601) edits sit in regions 00b4dbb3's image rewrites and are not carried."
@@ -93,10 +98,5 @@
     "submissionId": "3c81ff22-1a3d-4f26-9087-5401b6f1ff0e",
     "rationale": "Direct accepted and promoted639979 predecessor. Retains the exact general compressor, recognizer, sparse scratch CODECOPY, seed-independent size32 return, and all inherited optimizations. New work splits its shared continuation join so the hot128 fall-through absorbs a JUMPDEST into a wider PUSH while generic jumps retain a semantically identical cold clone at210. The earlier1e785ffa and0be28e02 changes are carried transitively through this direct base under the twenty-entry limit.",
     "evidence": "Promoted source1b7b431fdd597ccf85383f453ed929adb2487bb9; predecessor runtime SHA256c217a00979c415358a3cf09ee635bd08614b3099cf4d720ecf1aa1010b7f8de4. Candidate372fbf58a935494e0f44805c42275464382b570fe1b8ee59ccdcfdd427bdf569,9715bytes. Changes at PC62/196 cold targets,129..131 hot push,210..244 clone and unreachable alignment. SplitJoinRaw proves general stack transformation; revised loop sites and induction preserve all generic routes."
-  },
-  {
-    "submissionId": "fc49bf69-df48-433e-8a6f-73c38f7bcc18",
-    "rationale": "Direct accepted and promoted 639953 base. Reuses the complete general RIPEMD160 compressor, all recognized-input routes and their safe generic fallbacks, size32 early return, PC-seeded 1000-byte scanner, and its reordered CODECOPY guard and Lean proof tree. Replaces only the guard with an inline constant MSTORE and relocates the displaced generic-padding fragment. No contribution from the rejected df0a826a image is used.",
-    "evidence": "Base bytecode.hex file SHA256 068ceff0c9604b03e12b867a4ed8423c781c8cb92fda6e111418e434e3d5064e, 9715 bytes, promoted 973453b56d2c4d04006f3e8c42ff296a6c5e9cb3. Candidate file SHA256 28c40a43d1732ccc9ad275a81780020cd8472ce28147f02ce5a3b3d7dda3890a, 9742 bytes. Only [151,192) and the 27 appended bytes differ; inherited source proof indices and PCs are migrated to this image."
   }
 ]

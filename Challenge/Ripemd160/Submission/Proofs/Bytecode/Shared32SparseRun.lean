@@ -1,7 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32Lower
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadJump
 
 set_option warningAsError true
 set_option maxRecDepth 20000
@@ -49,23 +48,45 @@ theorem run_fold (s : State) (pc : UInt256) (F : List UInt256)
   simp [foldTemplate, runInstrSeq, DataStepper.runInstr, pcAfter, hrun, hcap, Instr.size,
     UInt256.succ, Word.literal_eq_ofNat]
 
-/-- The fast path plants `highWord` at memory 162. `code` is unused: the retired
-`CODECOPY`'s source offset 5000 is never read again. -/
-def copied (memory _code : ByteArray) : ByteArray :=
-  PairedScheduleMemory.writeWord memory 162 highWord
+/-- The two sparse padding bytes: `0x80` at 165 and the low byte `1` of the resident coefficient
+word (below the retained flag) at188. -/
+def template : List Instr :=
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 5000),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 162), .op .CODECOPY]
 
-/-- The reordered `151..188` fast path: the 32-byte constant is pushed inline as a 29-byte
-immediate (its top three bytes are zero) and stored with `MSTORE`; the branch target `497`
-follows. The retired `CODECOPY` read code offset 5000, which nothing reads now. -/
+def copied (memory code : ByteArray) : ByteArray :=
+  MachineState.writeBytes memory (MachineState.readPadded code 5000 32) 162
+
+theorem run_sparse (s : State) (pc flag : UInt256) (F : List UInt256)
+    (hstack : F.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 34 ≤ s.activeWords.toNat) :
+    runInstrSeq template {s with pc := pc, stack := UInt256.ofNat 32 :: flag :: F} =
+      some {s with
+        pc := pcAfter pc template
+        stack := flag :: F
+        memory := copied s.memory s.executionEnv.code} := by
+  have hcap (n : Nat) (hn : n ≤ 27) : F.length + n < 1024 := by omega
+  have hword : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 162 32) = s.activeWords := by
+    have h : MachineState.activeWordsAfter s.activeWords.toNat 162 32 = s.activeWords.toNat := by
+      simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0)]
+      apply Nat.max_eq_left
+      omega
+    rw [h]
+    exact (Word.word_eq_ofNat_toNat _).symm
+  simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr, pcAfter,
+    hrun, hcap, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
+    List.getElem?_cons_zero, State.activeWordsAfterUInt256, hword, copied, add_eq_hAdd]
+
+/-- The reordered `151..165` slice: the `CODECOPY` arguments keep their order, the branch target
+`497` is pushed before them, and `PC` supplies the displaced destination constant `162`. -/
 def combinedTemplate : List Instr :=
-  [.push ⟨29, by decide⟩ highWord,
-   .push ⟨1, by decide⟩ (UInt256.ofNat 162),
-   .op .MSTORE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 497),
-   .op .JUMPI]
+  [.push ⟨5, by decide⟩ (UInt256.ofNat 497),
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
+   .push ⟨2, by decide⟩ (UInt256.ofNat 5000),
+   .op .PC, .op .CODECOPY, .op .JUMPI]
 
 theorem combined_bytes : Challenge.EvmProof.PcEncoding.assembleBytes combinedTemplate =
-    [124,128,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,96,162,82,97,1,241,87] := by decide
+    [100,0,0,0,1,241,96,32,97,19,136,88,57,87] := by decide
 
 private theorem combined_hcap (F : List UInt256) (hstack : F.length ≤ 900) :
     ∀ n : Nat, n ≤ 27 → F.length + n < 1024 := by
@@ -93,21 +114,22 @@ theorem run_combined_hit (s : State) (F : List UInt256)
         memory := copied s.memory s.executionEnv.code} := by
   have hcap := combined_hcap F hstack
   have hword := combined_hword s hactive
-  have e1 : UInt256.ofNat 151 + UInt256.ofNat 30 = UInt256.ofNat 181 := by
-    rw [Word.ofNat_add_ofNat (by decide : 151 + 30 < 2 ^ 256)]
-  have e2 : UInt256.ofNat 181 + UInt256.ofNat 2 = UInt256.ofNat 183 := by
-    rw [Word.ofNat_add_ofNat (by decide : 181 + 2 < 2 ^ 256)]
-  have e3 : UInt256.ofNat 183 + UInt256.ofNat 1 = UInt256.ofNat 184 := by
-    rw [Word.ofNat_add_ofNat (by decide : 183 + 1 < 2 ^ 256)]
-  have e4 : UInt256.ofNat 184 + UInt256.ofNat 3 = UInt256.ofNat 187 := by
-    rw [Word.ofNat_add_ofNat (by decide : 184 + 3 < 2 ^ 256)]
-  have e5 : UInt256.ofNat 187 + UInt256.ofNat 1 = UInt256.ofNat 188 := by
-    rw [Word.ofNat_add_ofNat (by decide : 187 + 1 < 2 ^ 256)]
+  have e1 : UInt256.ofNat 151 + UInt256.ofNat 6 = UInt256.ofNat 157 := by
+    rw [Word.ofNat_add_ofNat (by decide : 151 + 6 < 2 ^ 256)]
+  have e2 : UInt256.ofNat 157 + UInt256.ofNat 2 = UInt256.ofNat 159 := by
+    rw [Word.ofNat_add_ofNat (by decide : 157 + 2 < 2 ^ 256)]
+  have e3 : UInt256.ofNat 159 + UInt256.ofNat 3 = UInt256.ofNat 162 := by
+    rw [Word.ofNat_add_ofNat (by decide : 159 + 3 < 2 ^ 256)]
+  have e4 : UInt256.ofNat 162 + UInt256.ofNat 1 = UInt256.ofNat 163 := by
+    rw [Word.ofNat_add_ofNat (by decide : 162 + 1 < 2 ^ 256)]
+  have e5 : UInt256.ofNat 163 + UInt256.ofNat 1 = UInt256.ofNat 164 := by
+    rw [Word.ofNat_add_ofNat (by decide : 163 + 1 < 2 ^ 256)]
+  have e6 : UInt256.ofNat 164 + UInt256.ofNat 1 = UInt256.ofNat 165 := by
+    rw [Word.ofNat_add_ofNat (by decide : 164 + 1 < 2 ^ 256)]
   simp (discharger := omega) [combinedTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
     List.getElem?_cons_zero, State.activeWordsAfterUInt256, hword, copied, add_eq_hAdd,
-    UInt256.isTrue, hv, PairedScheduleMemory.writeWord, Word.literal_eq_ofNat,
-    e1, e2, e3, e4, e5]
+    UInt256.isTrue, hv, e1, e2, e3, e4, e5, e6]
 
 theorem run_combined_miss (s : State) (F : List UInt256)
     (hstack : F.length ≤ 900) (hrun : s.halt = .Running)
@@ -115,41 +137,29 @@ theorem run_combined_miss (s : State) (F : List UInt256)
     runInstrSeq combinedTemplate
       {s with pc := UInt256.ofNat 151, stack := UInt256.ofNat 0 :: F} =
       some {s with
-        pc := UInt256.ofNat 188
+        pc := UInt256.ofNat 165
         stack := F
         memory := copied s.memory s.executionEnv.code} := by
   have hcap := combined_hcap F hstack
   have hword := combined_hword s hactive
-  have e1 : UInt256.ofNat 151 + UInt256.ofNat 30 = UInt256.ofNat 181 := by
-    rw [Word.ofNat_add_ofNat (by decide : 151 + 30 < 2 ^ 256)]
-  have e2 : UInt256.ofNat 181 + UInt256.ofNat 2 = UInt256.ofNat 183 := by
-    rw [Word.ofNat_add_ofNat (by decide : 181 + 2 < 2 ^ 256)]
-  have e3 : UInt256.ofNat 183 + UInt256.ofNat 1 = UInt256.ofNat 184 := by
-    rw [Word.ofNat_add_ofNat (by decide : 183 + 1 < 2 ^ 256)]
-  have e4 : UInt256.ofNat 184 + UInt256.ofNat 3 = UInt256.ofNat 187 := by
-    rw [Word.ofNat_add_ofNat (by decide : 184 + 3 < 2 ^ 256)]
-  have e5 : UInt256.ofNat 187 + UInt256.ofNat 1 = UInt256.ofNat 188 := by
-    rw [Word.ofNat_add_ofNat (by decide : 187 + 1 < 2 ^ 256)]
+  have e1 : UInt256.ofNat 151 + UInt256.ofNat 6 = UInt256.ofNat 157 := by
+    rw [Word.ofNat_add_ofNat (by decide : 151 + 6 < 2 ^ 256)]
+  have e2 : UInt256.ofNat 157 + UInt256.ofNat 2 = UInt256.ofNat 159 := by
+    rw [Word.ofNat_add_ofNat (by decide : 157 + 2 < 2 ^ 256)]
+  have e3 : UInt256.ofNat 159 + UInt256.ofNat 3 = UInt256.ofNat 162 := by
+    rw [Word.ofNat_add_ofNat (by decide : 159 + 3 < 2 ^ 256)]
+  have e4 : UInt256.ofNat 162 + UInt256.ofNat 1 = UInt256.ofNat 163 := by
+    rw [Word.ofNat_add_ofNat (by decide : 162 + 1 < 2 ^ 256)]
+  have e5 : UInt256.ofNat 163 + UInt256.ofNat 1 = UInt256.ofNat 164 := by
+    rw [Word.ofNat_add_ofNat (by decide : 163 + 1 < 2 ^ 256)]
+  have e6 : UInt256.ofNat 164 + UInt256.ofNat 1 = UInt256.ofNat 165 := by
+    rw [Word.ofNat_add_ofNat (by decide : 164 + 1 < 2 ^ 256)]
   simp (discharger := omega) [combinedTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, Instr.size, UInt256.succ, Nat.add_assoc, Word.word_toNat_ofNat,
     List.getElem?_cons_zero, State.activeWordsAfterUInt256, hword, copied, add_eq_hAdd,
-    UInt256.isTrue, PairedScheduleMemory.writeWord, Word.literal_eq_ofNat,
-    e1, e2, e3, e4, e5]
+    UInt256.isTrue, e1, e2, e3, e4, e5, e6]
 
-/-- The miss fall-through: `PUSH2 9715 JUMP` into the relocated cold path. -/
-def missJumpTemplate : List Instr := PadJump.template 9715
-
-theorem run_missJump (s : State) (F : List UInt256)
-    (hstack : F.length ≤ 900) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 9715 = true) :
-    runInstrSeq missJumpTemplate
-      {s with pc := UInt256.ofNat 188, stack := F} =
-      some {s with pc := UInt256.ofNat 9715, stack := F} := by
-  have hmod : (9715 : Nat) % 2 ^ 256 = 9715 := by norm_num
-  have hv' : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 9715).toNat = true := by
-    simpa only [Word.word_toNat_ofNat, hmod] using hv
-  simpa only [missJumpTemplate, Word.word_toNat_ofNat, hmod] using
-    PadJump.run_template s (UInt256.ofNat 188) F 9715 (by omega) hrun hv'
+theorem bytes_exact : Challenge.EvmProof.PcEncoding.assembleBytes template = [97,19,136,97,0,162,57] := by decide
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =
@@ -158,7 +168,9 @@ theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
   exact read_writeWord_disjoint _ _ _ _ (Or.inr (by decide))
 
 #print axioms run_head
+#print axioms run_fold
+#print axioms run_sparse
 #print axioms run_combined_hit
 #print axioms run_combined_miss
-#print axioms run_missJump
+#print axioms bytes_exact
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Shared32SparseRun

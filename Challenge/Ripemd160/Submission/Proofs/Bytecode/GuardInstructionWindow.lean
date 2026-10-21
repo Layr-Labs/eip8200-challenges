@@ -8,15 +8,15 @@ open EvmSemantics YulEvmCompiler Challenge.EvmProof ArtifactByteLength
 open Artifact (op)
 def tail : List Instr :=
 [
+  .push 32 109629802895867119430885776324251105184819939959857484870201727791975914012671,
+  op 0x80,
   .push 0 0,
   op 0x35,
-  .push 1 232,
-  op 0x1d,
-  op 0x36,
-  .push 3 2127393,
-  op 0x02,
   op 0x18,
-  .push 2 4684,
+  op 0x36,
+  op 0x1d,
+  op 0x18,
+  .push 2 4905,
   op 0x57,
   .push 20 95383801997447390147238369573240532004699299169,
   op 0x36,
@@ -29,23 +29,23 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3395).take tail.length = tail := by rfl
+theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3413).take tail.length = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3395 = 4618 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3413 = 4618 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) (h : index < tail.length := by decide) :
-    Artifact.submissionArtifact.instructions[3395 + index]? = tail[index]? := by
+    Artifact.submissionArtifact.instructions[3413 + index]? = tail[index]? := by
   have ht := congrArg (fun l : List Instr => l[index]?) tail_eq
   simp only [List.getElem?_take_of_lt h] at ht
   rw [← InstructionWindow.get_drop]
   exact ht
 
 theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
-    Artifact.submissionArtifact.instructionPC (3395 + index) =
+    Artifact.submissionArtifact.instructionPC (3413 + index) =
       4618 + byteLength (tail.take index) := by
-  have ht : (Artifact.submissionArtifact.instructions.drop 3395).take index = tail.take index := by
+  have ht : (Artifact.submissionArtifact.instructions.drop 3413).take index = tail.take index := by
     have ht0 := congrArg (List.take index) tail_eq
     rw [List.take_take, Nat.min_eq_left h] at ht0
     exact ht0

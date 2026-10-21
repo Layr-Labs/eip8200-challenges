@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PaddingTraceCore
 set_option warningAsError true
-set_option maxRecDepth 1000000
+set_option maxRecDepth 20000
 set_option maxHeartbeats 2000000
 set_option linter.unusedSimpArgs false
 /-!
@@ -353,7 +353,7 @@ theorem lengthFooterSetupPath_split : lengthFooterSetupPath = footerA ++ footerB
 
 def footerRounded (input : ByteArray) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 9737
+    pc := UInt256.ofNat 187
     stack := PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) :: bitLengthWord input ::
       UInt256.ofNat 4547 :: padFrame input }
 
@@ -390,7 +390,7 @@ located step (as in the earlier layout's `run_footJump`): one `simp` over the wh
 finish inside the memory budget. -/
 def footerPreJump (input : ByteArray) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 9741
+    pc := UInt256.ofNat 191
     stack := UInt256.ofNat 4547 ::
       (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
       bitLengthWord input :: UInt256.ofNat 4547 :: padFrame input }
@@ -411,12 +411,12 @@ private theorem run_footJump (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock (footerB.drop 3) (footerPreJump input) =
       some (footerEntered input) := by
   obtain ⟨loc, hloc, hidx, hins⟩ :
-      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 5447 ∧ loc.instruction = .op .JUMP :=
+      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 102 ∧ loc.instruction = .op .JUMP :=
     ⟨_, rfl, rfl, rfl⟩
   have hpc : (footerPreJump input).pc.toNat =
       Artifact.submissionArtifact.instructionPC loc.index := by
     rw [hidx]
-    change 9741 = Artifact.submissionArtifact.instructionPC 5447
+    change 191 = Artifact.submissionArtifact.instructionPC 102
     rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (footerPreJump input) =
       some (footerEntered input) := by

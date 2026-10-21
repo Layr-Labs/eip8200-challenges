@@ -82,15 +82,15 @@ theorem stages_advances : ∀ instruction ∈ stagesCode, DenseScheduleLift.Adva
 /-! ## The artifact sites -/
 
 theorem stages_slice :
-    (Artifact.submissionArtifact.instructions.drop 3454).take stagesCode.length = stagesCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3472).take stagesCode.length = stagesCode := by rfl
 def stagesSite : GenericRoundSite Artifact.submissionArtifact .Osaka stagesCode :=
-  StackSiteBuilder.ofSlice stagesCode 3454 stages_slice
-    (by change 3454 + stagesCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice stagesCode 3472 stages_slice
+    (by change 3472 + stagesCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := stagesCode) (by decide)) (by decide)
 theorem stages_pc : stagesSite.startPC = UInt256.ofNat 4757 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3454) = UInt256.ofNat 4757
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3472) = UInt256.ofNat 4757
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem stages_end : stagesSite.endPC = UInt256.ofNat 4775 := by
   have h := endPC_eq_pcAfter_sites stagesSite.sites stagesSite.startPC stagesSite.endPC
@@ -99,15 +99,15 @@ theorem stages_end : stagesSite.endPC = UInt256.ofNat 4775 := by
   exact h.trans (by decide)
 
 theorem terminal_slice :
-    (Artifact.submissionArtifact.instructions.drop 3466).take terminalCode.length = terminalCode := by rfl
+    (Artifact.submissionArtifact.instructions.drop 3484).take terminalCode.length = terminalCode := by rfl
 def terminalSite : GenericRoundSite Artifact.submissionArtifact .Osaka terminalCode :=
-  StackSiteBuilder.ofSlice terminalCode 3466 terminal_slice
-    (by change 3466 + terminalCode.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice terminalCode 3484 terminal_slice
+    (by change 3484 + terminalCode.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem (instructions := terminalCode) (by decide)) (by decide)
 theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4775 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3466) = UInt256.ofNat 4775
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3484) = UInt256.ofNat 4775
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_stages (s : State) (value a b m8 m16 : UInt256) (rest : List UInt256)

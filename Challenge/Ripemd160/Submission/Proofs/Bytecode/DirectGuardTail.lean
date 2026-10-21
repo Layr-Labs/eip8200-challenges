@@ -72,14 +72,14 @@ theorem condWord_zero (r : UInt256) :
 `PUSH3 4706 JUMPI` exit at 9632 reaches the answer block. Stated for any input
 with a zero accumulator; the `JUMPI` runs as its own step (`PatternedScan.stepS_jumpi_taken`), since one `simp` over the
 whole path does not finish inside the memory budget. -/
-private theorem tail_push_pc : Artifact.submissionArtifact.instructionPC 5381 = 9632 := by
+private theorem tail_push_pc : Artifact.submissionArtifact.instructionPC 5390 = 9632 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-private theorem tail_jump_pc : Artifact.submissionArtifact.instructionPC 5382 = 9635 := by
+private theorem tail_jump_pc : Artifact.submissionArtifact.instructionPC 5391 = 9635 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem valid_terminal_miss : Decode.isValidJumpDest submissionBytecode 9662 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 5389 = 9662 := by
+  have hp : Artifact.submissionArtifact.instructionPC 5398 = 9662 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 5389 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 5398 (by rfl)
   rw [hp] at h
   exact h
 
@@ -99,13 +99,13 @@ theorem run_return_hop (input : ByteArray) :
 
 theorem run_fallback_clear (input : ByteArray) :
     run fallbackPath (tailDivertState input) = some (fallbackState input) := by
-  have hdestpc : Artifact.submissionArtifact.instructionPC 5389 = 9662 := by
+  have hdestpc : Artifact.submissionArtifact.instructionPC 5398 = 9662 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hzeropc : Artifact.submissionArtifact.instructionPC 5390 = 9663 := by
+  have hzeropc : Artifact.submissionArtifact.instructionPC 5399 = 9663 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hpushpc : Artifact.submissionArtifact.instructionPC 5391 = 9664 := by
+  have hpushpc : Artifact.submissionArtifact.instructionPC 5400 = 9664 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hjumppc : Artifact.submissionArtifact.instructionPC 5392 = 9666 := by
+  have hjumppc : Artifact.submissionArtifact.instructionPC 5401 = 9666 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   simp (config := { maxSteps := 1000000 })
     [fallbackPath, entryDest, opAt, pushAt, wfOp, tailDivertState, fallbackState,
@@ -130,17 +130,17 @@ theorem run_tail_divert_low (input : ByteArray) (hsize : input.size = 1000)
       Challenge.EvmProof.DataStepper.runInstr,
       Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
-@[simp] private theorem terminal_pc_5412 : Artifact.submissionArtifact.instructionPC 5383 = 9636 := by
+@[simp] private theorem terminal_pc_5412 : Artifact.submissionArtifact.instructionPC 5392 = 9636 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5413 : Artifact.submissionArtifact.instructionPC 5384 = 9657 := by
+@[simp] private theorem terminal_pc_5413 : Artifact.submissionArtifact.instructionPC 5393 = 9657 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5414 : Artifact.submissionArtifact.instructionPC 5385 = 9658 := by
+@[simp] private theorem terminal_pc_5414 : Artifact.submissionArtifact.instructionPC 5394 = 9658 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5415 : Artifact.submissionArtifact.instructionPC 5386 = 9659 := by
+@[simp] private theorem terminal_pc_5415 : Artifact.submissionArtifact.instructionPC 5395 = 9659 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5416 : Artifact.submissionArtifact.instructionPC 5387 = 9660 := by
+@[simp] private theorem terminal_pc_5416 : Artifact.submissionArtifact.instructionPC 5396 = 9660 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] private theorem terminal_pc_5417 : Artifact.submissionArtifact.instructionPC 5388 = 9661 := by
+@[simp] private theorem terminal_pc_5417 : Artifact.submissionArtifact.instructionPC 5397 = 9661 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 theorem run_return_store (input : ByteArray) :
@@ -173,13 +173,13 @@ def gasSteps_direct_return (input : ByteArray) :
   have gs := DataStepper.runLocatedBlock_sound Artifact.submissionArtifact .Osaka
     returnPath (by rfl) (by rfl) (run_return_store input) (by rfl)
     deployAddress_not_precompile
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 5386 .MSIZE
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 5395 .MSIZE
     (by rfl) (by decide) trivial
   have hp : (storedReturnState input).pc.toNat =
-      Artifact.submissionArtifact.instructionPC 5386 := by
+      Artifact.submissionArtifact.instructionPC 5395 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hop : (storedReturnState input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 5386
+    Artifact.submissionArtifact.state_decodedOp_of (storedReturnState input) 5395
       (by rfl) hp .MSIZE none hd (by rfl)
   have gmraw := Msize.step hop
     (by simp [storedReturnState, returnCells]) (by rfl)

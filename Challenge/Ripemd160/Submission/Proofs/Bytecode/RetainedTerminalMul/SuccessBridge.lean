@@ -16,10 +16,10 @@ def successTemplate : List Instr :=
   [.op .MSIZE, .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .RETURN]
 
 theorem actual_success_slice :
-    (RetainedBridge111.Candidate.instructions.drop 5222).take 3 = successTemplate := by
-  have hd : RetainedBridge111.Candidate.instructions.drop 5222 =
+    (RetainedBridge111.Candidate.instructions.drop 5231).take 3 = successTemplate := by
+  have hd : RetainedBridge111.Candidate.instructions.drop 5231 =
       RetainedBridge111.Candidate.suffixInstructions.drop 2 := by
-    rw [show 5222 = 5220 + 2 by decide, ← List.drop_drop, Candidate.after_data]
+    rw [show 5231 = 5229 + 2 by decide, ← List.drop_drop, Candidate.after_data]
   rw [hd]
   rfl
 
@@ -45,7 +45,7 @@ theorem run_actual_return (s : State) (rho : List UInt256)
     (ha : s.activeWords = UInt256.ofNat 0)
     (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true)
     (hz : retainedResult s.executionEnv.calldata = 0) :
-    runInstrSeq (dataAndResult ++ ((RetainedBridge111.Candidate.instructions.drop 5222).take 3))
+    runInstrSeq (dataAndResult ++ ((RetainedBridge111.Candidate.instructions.drop 5231).take 3))
       {s with pc := UInt256.ofNat 8157, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
       some (returned (stored s ExactBindings.digest) rho) := by
   apply runInstrSeq_append_running (run_actual_zero s rho hs hrun ha hv hz)

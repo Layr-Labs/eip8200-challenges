@@ -40,53 +40,53 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 
 namespace branchSite
 abbrev template : List Instr := branchTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3530).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3548).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3530 actual_slice
-    (by change 3530 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3548 actual_slice
+    (by change 3548 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 4853 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3530) = UInt256.ofNat 4853
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3548) = UInt256.ofNat 4853
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end branchSite
 
 namespace predicateSite
 abbrev template : List Instr := predicateTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3536).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3554).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3536 actual_slice
-    (by change 3536 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3554 actual_slice
+    (by change 3554 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 4861 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3536) = UInt256.ofNat 4861
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3554) = UInt256.ofNat 4861
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end predicateSite
 
 namespace projectionSite
 abbrev template : List Instr := projectionTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3544).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3562).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3544 actual_slice
-    (by change 3544 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3562 actual_slice
+    (by change 3562 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 4876 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3544) = UInt256.ofNat 4876
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3562) = UInt256.ofNat 4876
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end projectionSite
 
 namespace finishSite
 abbrev template : List Instr := fullReturnTemplate
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3541).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 3559).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3541 actual_slice
-    (by change 3541 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3559 actual_slice
+    (by change 3559 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     code_bound (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 4873 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3541) = UInt256.ofNat 4873
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3559) = UInt256.ofNat 4873
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 end finishSite
 
@@ -96,8 +96,8 @@ def certificates : Certificates where
   projection := ⟨projectionSite.site, projectionSite.site_pc⟩
   finish := ⟨finishSite.site, finishSite.site_pc⟩
   non256_valid := by
-    have h := Artifact.submissionArtifact.isValidJumpDest_index 3544 (by rfl)
-    have hp : Artifact.submissionArtifact.instructionPC 3544 = 4943 := by
+    have h := Artifact.submissionArtifact.isValidJumpDest_index 3562 (by rfl)
+    have hp : Artifact.submissionArtifact.instructionPC 3562 = 4943 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
     simpa only [J2Moves.non256PC, hp] using h
   projection_end := by decide

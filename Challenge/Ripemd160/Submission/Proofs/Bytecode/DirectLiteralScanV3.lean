@@ -179,16 +179,16 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw (site p) _ _ e.code e.fork e.run e.np (site_pc p).symm (form p) h
 
 theorem valid_tail : Decode.isValidJumpDest Artifact.submissionArtifact.code 6093 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3707 = 5158 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3725 = 5158 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3707 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3725 (by rfl)
   rw [hp] at h
   exact h
 
 theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code 4565 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3394 = 4617 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3412 = 4617 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3394 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3412 (by rfl)
   rw [hp] at h
   exact h
 

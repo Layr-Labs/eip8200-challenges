@@ -183,16 +183,16 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw (site p) _ _ e.code e.fork e.run e.np (site_pc p).symm (form p) h
 
 theorem valid_tail : Decode.isValidJumpDest Artifact.submissionArtifact.code 6091 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3701 = 5100 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3719 = 5100 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3701 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3719 (by rfl)
   rw [hp] at h
   exact h
 
 theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code 4565 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3394 = 4617 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3412 = 4617 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3394 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3412 (by rfl)
   rw [hp] at h
   exact h
 
@@ -209,9 +209,9 @@ theorem nextWord (j : Fin 6) : lo (j.val+1) = hi j.val+1 := by
   fin_cases j <;> decide
 
 theorem valid_firstTail : Decode.isValidJumpDest Artifact.submissionArtifact.code 6108 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3714 = 5167 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3732 = 5167 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3714 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3732 (by rfl)
   rw [hp] at h
   exact h
 
