@@ -81,7 +81,7 @@ We eliminate all three bottlenecks simultaneously while keeping `PCs 0..4568`, `
   - `256` matches `long256` immediately after `shortTemplate` without executing `AbcArm.wordPath` or the `JUMPDEST` at `PC 4905`, saving **`-38` gas** on `256`.
   - `376` executes `long256` and matches `long376` without executing `AbcArm.wordPath` or the `JUMPDEST` at `PC 4905`, saving **`-38` gas** on `376`.
   - `"abc"` (the only remaining benchmark vector that enters `AbcArm`) executes `long256` (`19` gas) and `long376` (`19` gas) before `AbcArm`, but `AbcArm` no longer needs a `JUMPDEST` at its entry (`-1` gas) and saves `-11` gas in `storePath` (counted above), for $+38 - 8 = +30$ gas on `"abc"` from the hoisting (+ `7` gas wait: $+38$ from `long256 + long376` minus `8` gas? Wait: in `fbbbc78`, `256` and `376` also paid `1` gas for `JUMPDEST` at `PC 4905` and `37` gas for `AbcArm.wordPath`, so $-38 \times 2 + 38 + (-8) = -30$ net gas!).
-- Meanwhile, any rare tiny miss in `AbcArm` (`size != 0` and `input != "abc"`) jumps to `PC 4905` (`index 3540`), which now executes `JUMPDEST; PUSH1 245; JUMP` directly to the generic compressor at `PC 245`.
+- Meanwhile, any rare tiny miss in `AbcArm` (`size != 0` and `input != "abc"`) retargets its `JUMPI` immediate (`PUSH2` at `PC 4687`, `index 3413`) from the `PC 4905` trampoline directly to `PC 245`, the generic compressor entry `JUMPDEST`; the three-instruction trampoline remains valid dead code and the miss path drops `JUMPDEST + PUSH1 + JUMP` (`12` gas) per miss.
 
 #### Summary of Per-Vector Gas Changes (`639,860` $\to$ `639,774` Gas)
 | Benchmark Vector | Gas in `fbbbc78` (`639,860`) | Gas in Candidate (`639,774`) | Delta | Reason |

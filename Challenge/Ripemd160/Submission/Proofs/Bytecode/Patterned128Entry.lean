@@ -235,7 +235,7 @@ private def gasSteps_fallback (input : ByteArray) :
 def gasSteps_after_arm_miss (input : ByteArray) (_hfit : CalldataFits input)
  (_hn : ¬ RecognitionAccumulator.Allowed input.size) :
  GasSteps (AbcArm.fallbackState input) (Execution.atPC input 246) :=
- gasSteps_fallback input
+ GasSteps.refl _
 
 
 #print axioms gasSteps_allowed

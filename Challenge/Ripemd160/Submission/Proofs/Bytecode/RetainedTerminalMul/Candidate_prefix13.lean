@@ -96,7 +96,7 @@ def prefix13 : List Instr := [
   op 0x36,
   op 0x1d,
   op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4905),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 245),
   op 0x57,
   .push ⟨20, by decide⟩ (UInt256.ofNat 814647003348588794217809277549781461204094028796),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
