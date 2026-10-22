@@ -45,7 +45,7 @@ theorem contract (A N : Nat)
     exact montgomeryRange (2^2048) N A A _ hR hN hAR hAR hQ
   have hc := arithmeticContract (2^2048) N A A _ (output s minv n rest)
     hR hN hNR hAR hAR hQ (oddModulusCoprime N hodd) hex
-  exact ⟨output_digits s minv n rest ha hn ha8 hn8, hr, hc⟩
+  exact ⟨output_digits s minv n rest ha hn N hn0 hinv ha8 hn8, hr, hc⟩
 
 #print axioms cancellation_bound
 #print axioms contract

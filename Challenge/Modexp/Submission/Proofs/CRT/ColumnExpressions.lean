@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CRT.RoundedWordBridge
 import Challenge.Modexp.Submission.Proofs.CRT.ProductAccumulate
 set_option warningAsError true
 set_option maxHeartbeats 2000000
@@ -121,7 +122,7 @@ theorem reconstructExpressions (hi lo : Expr) (C : Nat)
     (hvalue : hi.value = lo.value)
     (hC : C ≤ 18*((2^244 : Nat)-1))
     (hS : hi.value ≤ 18*((2^244 : Nat)-1)^2+C) :
-    (HistoricalSearch.CRTExecution.carryWord (hi.high (UInt256.ofNat residueModulus))
+    (HistoricalSearch.RoundedWordBridge.carryWord (hi.high (UInt256.ofNat residueModulus))
       lo.low (UInt256.ofNat residueModulus) (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat =
       hi.value / 2^244 := by
   have hpv : (UInt256.ofNat residueModulus).toNat = residueModulus := by
@@ -137,8 +138,11 @@ theorem reconstructExpressions (hi lo : Expr) (C : Nat)
     exact Nat.mod_mod _ _
   have hhigh : UInt256.ofNat (hi.high (UInt256.ofNat residueModulus)).toNat =
       hi.high (UInt256.ofNat residueModulus) := (word_eq_ofNat_toNat _).symm
-  have hc := HistoricalSearch.CRTWordBridge.carryWord_toNat 244 hi.value C
-    (hi.high (UInt256.ofNat residueModulus)).toNat (by decide) (by decide) hC hS hb hh.2
+  have hHR : (hi.high (UInt256.ofNat residueModulus)).toNat < wordRadix := by
+    have hroom : 19*(residueModulus-1) < wordRadix := by norm_num [wordRadix,residueModulus]
+    exact hb.trans_lt hroom
+  have hc := HistoricalSearch.RoundedWordBridge.carryWord_toNat 244 hi.value C
+    (hi.high (UInt256.ofNat residueModulus)).toNat (by decide) (by decide) hC hS hHR hh.2
   simpa only [hhigh, hlow] using hc
 
 theorem column15CarryBound (B F C S : Nat) (hB : 0 < B)

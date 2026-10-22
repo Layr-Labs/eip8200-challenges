@@ -27,7 +27,7 @@ private def instructionsPart0 : List Instr :=
 private theorem instructionsPart0_wellFormed :
     instructionsPart0.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart0, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart1 : List Instr :=
@@ -36,7 +36,7 @@ private def instructionsPart1 : List Instr :=
 private theorem instructionsPart1_wellFormed :
     instructionsPart1.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart1, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart2 : List Instr :=
@@ -45,7 +45,7 @@ private def instructionsPart2 : List Instr :=
 private theorem instructionsPart2_wellFormed :
     instructionsPart2.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart2, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart3 : List Instr :=
@@ -54,7 +54,7 @@ private def instructionsPart3 : List Instr :=
 private theorem instructionsPart3_wellFormed :
     instructionsPart3.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart3, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart4 : List Instr :=
@@ -63,7 +63,7 @@ private def instructionsPart4 : List Instr :=
 private theorem instructionsPart4_wellFormed :
     instructionsPart4.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart4, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart5 : List Instr :=
@@ -72,7 +72,7 @@ private def instructionsPart5 : List Instr :=
 private theorem instructionsPart5_wellFormed :
     instructionsPart5.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart5, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart6 : List Instr :=
@@ -81,7 +81,7 @@ private def instructionsPart6 : List Instr :=
 private theorem instructionsPart6_wellFormed :
     instructionsPart6.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart6, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart7 : List Instr :=
@@ -90,7 +90,7 @@ private def instructionsPart7 : List Instr :=
 private theorem instructionsPart7_wellFormed :
     instructionsPart7.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart7, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart8 : List Instr :=
@@ -99,7 +99,7 @@ private def instructionsPart8 : List Instr :=
 private theorem instructionsPart8_wellFormed :
     instructionsPart8.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart8, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart9 : List Instr :=
@@ -108,7 +108,7 @@ private def instructionsPart9 : List Instr :=
 private theorem instructionsPart9_wellFormed :
     instructionsPart9.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart9, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart10 : List Instr :=
@@ -117,7 +117,7 @@ private def instructionsPart10 : List Instr :=
 private theorem instructionsPart10_wellFormed :
     instructionsPart10.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart10, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart11 : List Instr :=
@@ -126,7 +126,7 @@ private def instructionsPart11 : List Instr :=
 private theorem instructionsPart11_wellFormed :
     instructionsPart11.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart11, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart12 : List Instr :=
@@ -135,7 +135,7 @@ private def instructionsPart12 : List Instr :=
 private theorem instructionsPart12_wellFormed :
     instructionsPart12.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart12, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart13 : List Instr :=
@@ -144,7 +144,7 @@ private def instructionsPart13 : List Instr :=
 private theorem instructionsPart13_wellFormed :
     instructionsPart13.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart13, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart14 : List Instr :=
@@ -153,7 +153,7 @@ private def instructionsPart14 : List Instr :=
 private theorem instructionsPart14_wellFormed :
     instructionsPart14.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart14, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart15 : List Instr :=
@@ -162,7 +162,7 @@ private def instructionsPart15 : List Instr :=
 private theorem instructionsPart15_wellFormed :
     instructionsPart15.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart15, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart16 : List Instr :=
@@ -171,7 +171,7 @@ private def instructionsPart16 : List Instr :=
 private theorem instructionsPart16_wellFormed :
     instructionsPart16.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart16, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart17 : List Instr :=
@@ -180,7 +180,7 @@ private def instructionsPart17 : List Instr :=
 private theorem instructionsPart17_wellFormed :
     instructionsPart17.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart17, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart18 : List Instr :=
@@ -189,7 +189,7 @@ private def instructionsPart18 : List Instr :=
 private theorem instructionsPart18_wellFormed :
     instructionsPart18.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart18, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart19 : List Instr :=
@@ -198,7 +198,7 @@ private def instructionsPart19 : List Instr :=
 private theorem instructionsPart19_wellFormed :
     instructionsPart19.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart19, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart20 : List Instr :=
@@ -207,7 +207,7 @@ private def instructionsPart20 : List Instr :=
 private theorem instructionsPart20_wellFormed :
     instructionsPart20.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart20, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart21 : List Instr :=
@@ -216,7 +216,7 @@ private def instructionsPart21 : List Instr :=
 private theorem instructionsPart21_wellFormed :
     instructionsPart21.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart21, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart22 : List Instr :=
@@ -225,7 +225,7 @@ private def instructionsPart22 : List Instr :=
 private theorem instructionsPart22_wellFormed :
     instructionsPart22.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart22, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart23 : List Instr :=
@@ -234,7 +234,7 @@ private def instructionsPart23 : List Instr :=
 private theorem instructionsPart23_wellFormed :
     instructionsPart23.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart23, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart24 : List Instr :=
@@ -243,7 +243,7 @@ private def instructionsPart24 : List Instr :=
 private theorem instructionsPart24_wellFormed :
     instructionsPart24.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart24, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart25 : List Instr :=
@@ -252,7 +252,7 @@ private def instructionsPart25 : List Instr :=
 private theorem instructionsPart25_wellFormed :
     instructionsPart25.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart25, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart26 : List Instr :=
@@ -261,7 +261,7 @@ private def instructionsPart26 : List Instr :=
 private theorem instructionsPart26_wellFormed :
     instructionsPart26.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart26, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart27 : List Instr :=
@@ -270,7 +270,7 @@ private def instructionsPart27 : List Instr :=
 private theorem instructionsPart27_wellFormed :
     instructionsPart27.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart27, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart28 : List Instr :=
@@ -279,7 +279,7 @@ private def instructionsPart28 : List Instr :=
 private theorem instructionsPart28_wellFormed :
     instructionsPart28.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart28, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart29 : List Instr :=
@@ -288,7 +288,7 @@ private def instructionsPart29 : List Instr :=
 private theorem instructionsPart29_wellFormed :
     instructionsPart29.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart29, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart30 : List Instr :=
@@ -297,7 +297,7 @@ private def instructionsPart30 : List Instr :=
 private theorem instructionsPart30_wellFormed :
     instructionsPart30.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart30, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart31 : List Instr :=
@@ -306,7 +306,7 @@ private def instructionsPart31 : List Instr :=
 private theorem instructionsPart31_wellFormed :
     instructionsPart31.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart31, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart32 : List Instr :=
@@ -315,7 +315,7 @@ private def instructionsPart32 : List Instr :=
 private theorem instructionsPart32_wellFormed :
     instructionsPart32.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart32, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart33 : List Instr :=
@@ -324,7 +324,7 @@ private def instructionsPart33 : List Instr :=
 private theorem instructionsPart33_wellFormed :
     instructionsPart33.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart33, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart34 : List Instr :=
@@ -333,7 +333,7 @@ private def instructionsPart34 : List Instr :=
 private theorem instructionsPart34_wellFormed :
     instructionsPart34.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart34, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart35 : List Instr :=
@@ -342,168 +342,167 @@ private def instructionsPart35 : List Instr :=
 private theorem instructionsPart35_wellFormed :
     instructionsPart35.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart35, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart36 : List Instr :=
-  [.op .JUMPDEST, .push 2 768, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MUL, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1056, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 800, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1088, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 832, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD]
+  [.op .JUMPDEST, .push 2 768, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MUL, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1056, .op .MSTORE, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .op .POP, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 800, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1088, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 832, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 800, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 800, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩)]
 
 private theorem instructionsPart36_wellFormed :
     instructionsPart36.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart36, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart37 : List Instr :=
-  [.push 2 800, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 800, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1120, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 864, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 832, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 832, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD]
+  [.op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1120, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 864, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 832, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 832, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1152, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 896, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 864, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 864, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 832, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD]
 
 private theorem instructionsPart37_wellFormed :
     instructionsPart37.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart37, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart38 : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1152, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 896, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 864, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 864, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 832, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 832, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD]
+  [.op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 832, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1184, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 928, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 896, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 864, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 896, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 864, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
 
 private theorem instructionsPart38_wellFormed :
     instructionsPart38.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart38, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart39 : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1184, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 928, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 896, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 864, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 896, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 864, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD]
+  [.op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1216, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 960, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 928, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 896, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 896, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 864, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 864, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD]
 
 private theorem instructionsPart39_wellFormed :
     instructionsPart39.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart39, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart40 : List Instr :=
-  [.op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1216, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 960, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 928, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 896, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 896, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 864, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 864, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD]
+  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1248, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 992, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 960, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 928, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .push 2 896, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 896, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD]
 
 private theorem instructionsPart40_wellFormed :
     instructionsPart40.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart40, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart41 : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1248, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 992, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 960, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 928, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .push 2 896, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 896, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD]
+  [.op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨4, by decide⟩), .op .MUL, .op (.Dup ⟨15, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1280, .op .MSTORE, .op .MULMOD, .op .ADD, .push 1 128, .op .MULMOD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .push 2 928, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 896]
 
 private theorem instructionsPart41_wellFormed :
     instructionsPart41.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart41, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart42 : List Instr :=
-  [.push 2 1056, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1280, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 768, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960]
+  [.op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 0 0, .op .MLOAD, .push 1 160, .op .SHR, .op (.Swap ⟨11, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 896, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MUL, .push 12 79228162514264337593543950335, .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1312, .op .MSTORE, .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op (.Swap ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨1, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5]
 
 private theorem instructionsPart42_wellFormed :
     instructionsPart42.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart42, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart43 : List Instr :=
-  [.op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .push 2 928, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 800, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 896, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1056, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 896, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1056, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
+  [.op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1344, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 800, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .push 2 928, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩)]
 
 private theorem instructionsPart43_wellFormed :
     instructionsPart43.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart43, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart44 : List Instr :=
-  [.op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .AND, .op (.Dup ⟨15, by decide⟩), .op .MUL, .push 12 79228162514264337593543950335, .op .AND, .op (.Dup ⟨0, by decide⟩), .push 2 1312, .op .MSTORE, .op (.Dup ⟨5, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1344, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 800, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .push 2 928, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 832, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 928, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1088, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD]
+  [.push 2 1184, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1376, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 832, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 928, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MUL]
 
 private theorem instructionsPart44_wellFormed :
     instructionsPart44.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart44, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart45 : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨5, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1088, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1376, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 832, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 864, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 896, .op .MLOAD]
+  [.op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 928, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1408, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 864, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD]
 
 private theorem instructionsPart45_wellFormed :
     instructionsPart45.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart45, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart46 : List Instr :=
-  [.op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 928, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1120, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 928, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1120, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1408, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 864, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 896]
+  [.op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1440, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 896, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 960, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
 
 private theorem instructionsPart46_wellFormed :
     instructionsPart46.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart46, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart47 : List Instr :=
-  [.op .MLOAD, .op .MUL, .op .ADD, .push 2 960, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 896, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨3, by decide⟩), .push 2 960, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1152, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨7, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1152, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1440, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 896, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL]
+  [.push 2 960, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1472, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 928, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 960, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 960, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT]
 
 private theorem instructionsPart47_wellFormed :
     instructionsPart47.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart47, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart48 : List Instr :=
-  [.push 2 992, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 928, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 960, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1184, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨8, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 960, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1184, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1472, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 928, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .push 2 992, .op .MLOAD, .push 2 960, .op .MLOAD, .op .MUL, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD]
+  [.op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1504, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 960, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 992, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 992, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1536, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 992, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD]
 
 private theorem instructionsPart48_wellFormed :
     instructionsPart48.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart48, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart49 : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .push 2 992, .op .MLOAD, .push 2 960, .op .MLOAD, .op .MULMOD, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1216, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨9, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1216, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1504, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 960, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 992, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1248, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨10, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 992, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1248, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD]
+  [.op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨3, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD, .push 1 5, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1568, .op .MSTORE, .push 1 12, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 1 224, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .AND, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1600, .op .MSTORE, .push 2 1600, .op .MLOAD, .push 1 192, .op .SHR, .op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE, .push 2 8800, .op .JUMPI, .push 2 1728, .op .MLOAD, .op .ISZERO, .push 2 8800, .op .JUMPI, .push 1 1, .push 2 1728, .op .MLOAD, .op .SUB, .push 2 1728, .op .MSTORE, .push 2 1600, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .push 2 1568, .op .MLOAD, .push 2 1536, .op .MLOAD, .push 2 1504, .op .MLOAD, .push 2 1472, .op .MLOAD, .push 2 1440, .op .MLOAD, .push 2 1408, .op .MLOAD, .push 2 1376, .op .MLOAD, .push 2 1344, .op .MLOAD, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨8, by decide⟩), .op .AND, .push 2 768, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨7, by decide⟩), .op .AND, .push 2 800, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨6, by decide⟩), .op .AND, .push 2 832, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨5, by decide⟩), .op .AND, .push 2 864, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨4, by decide⟩), .op .AND, .push 2 896, .op .MSTORE]
 
 private theorem instructionsPart49_wellFormed :
     instructionsPart49.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart49, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart50 : List Instr :=
-  [.op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1536, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨2, by decide⟩), .push 2 992, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .MUL, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op .ADD, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .ADD, .push 2 1280, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .push 2 1280, .op .MLOAD, .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .push 2 1312, .op .MLOAD, .op (.Dup ⟨12, by decide⟩), .op .MULMOD, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD, .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD, .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .AND, .push 2 1568, .op .MSTORE, .push 1 7, .op .SHL, .op (.Swap ⟨0, by decide⟩), .push 1 244, .op .SHR, .op .ADD, .push 2 1024, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op .MUL, .op .ADD, .push 2 1312, .op .MLOAD, .op (.Dup ⟨11, by decide⟩), .op .MUL, .op .ADD, .push 2 1600, .op .MSTORE, .push 2 1600, .op .MLOAD, .push 1 192, .op .SHR, .op (.Dup ⟨0, by decide⟩), .push 2 1760, .op .MSTORE, .push 2 8800, .op .JUMPI, .push 2 1728, .op .MLOAD, .op .ISZERO, .push 2 8800, .op .JUMPI, .push 1 1, .push 2 1728, .op .MLOAD, .op .SUB, .push 2 1728, .op .MSTORE, .push 2 1600, .op .MLOAD]
+  [.push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨3, by decide⟩), .op .AND, .push 2 928, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨2, by decide⟩), .op .AND, .push 2 960, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨2, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op .AND, .push 2 992, .op .MSTORE, .push 1 96, .op .SHR, .push 2 1024, .op .MSTORE, .push 2 5858, .op .JUMP, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0]
 
 private theorem instructionsPart50_wellFormed :
     instructionsPart50.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart50, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart51 : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩), .push 2 1568, .op .MLOAD, .push 2 1536, .op .MLOAD, .push 2 1504, .op .MLOAD, .push 2 1472, .op .MLOAD, .push 2 1440, .op .MLOAD, .push 2 1408, .op .MLOAD, .push 2 1376, .op .MLOAD, .push 2 1344, .op .MLOAD, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨8, by decide⟩), .op .AND, .push 2 768, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨7, by decide⟩), .op .AND, .push 2 800, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨6, by decide⟩), .op .AND, .push 2 832, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨5, by decide⟩), .op .AND, .push 2 864, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨4, by decide⟩), .op .AND, .push 2 896, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨3, by decide⟩), .op .AND, .push 2 928, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op (.Dup ⟨2, by decide⟩), .op .AND, .push 2 960, .op .MSTORE, .push 1 96, .op .SHR, .op (.Dup ⟨2, by decide⟩), .push 1 148, .op .SHL, .op .OR, .op .AND, .push 2 992, .op .MSTORE, .push 1 96, .op .SHR, .push 2 1024, .op .MSTORE, .push 2 5858, .op .JUMP, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 2 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0]
+  [.push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0]
 
 private theorem instructionsPart51_wellFormed :
     instructionsPart51.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart51, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
   all_goals decide
 
 private def instructionsPart52 : List Instr :=
-  [.push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0]
+  [.push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0]
 
 private theorem instructionsPart52_wellFormed :
     instructionsPart52.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart52, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  decide
+  all_goals decide
 
 private def instructionsPart53 : List Instr :=
-  [.push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .op .JUMPDEST, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .push 2 1568, .op .MLOAD, .push 2 1536, .op .MLOAD, .push 2 1504, .op .MLOAD, .push 2 1472, .op .MLOAD, .push 2 1440, .op .MLOAD, .push 2 1408, .op .MLOAD, .push 2 1376, .op .MLOAD, .push 2 1344, .op .MLOAD, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .push 2 2336, .op .MSTORE, .push 1 108, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 136, .op .SHL, .op .OR, .push 2 2304, .op .MSTORE, .push 1 120, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 124, .op .SHL, .op .OR, .push 2 2272, .op .MSTORE, .push 1 132, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 112, .op .SHL, .op .OR, .push 2 2240, .op .MSTORE, .push 1 144, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 100, .op .SHL, .op .OR, .push 2 2208, .op .MSTORE, .push 1 156, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 88, .op .SHL, .op .OR, .push 2 2176, .op .MSTORE, .push 1 168, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 76, .op .SHL, .op .OR, .push 2 2144, .op .MSTORE, .push 1 180, .op .SHR, .push 2 1600, .op .MLOAD, .push 1 64, .op .SHL, .op .OR, .push 2 2112]
+  [.push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .push 1 0, .op .JUMPDEST, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .push 2 1568, .op .MLOAD, .push 2 1536, .op .MLOAD, .push 2 1504, .op .MLOAD, .push 2 1472, .op .MLOAD, .push 2 1440, .op .MLOAD, .push 2 1408, .op .MLOAD, .push 2 1376, .op .MLOAD, .push 2 1344, .op .MLOAD, .push 1 96, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 148, .op .SHL, .op .OR, .push 2 2336, .op .MSTORE, .push 1 108, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 136, .op .SHL, .op .OR, .push 2 2304, .op .MSTORE, .push 1 120, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 124, .op .SHL, .op .OR, .push 2 2272, .op .MSTORE, .push 1 132, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 112, .op .SHL, .op .OR, .push 2 2240, .op .MSTORE, .push 1 144, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 100, .op .SHL, .op .OR, .push 2 2208, .op .MSTORE, .push 1 156, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 88, .op .SHL, .op .OR, .push 2 2176, .op .MSTORE, .push 1 168, .op .SHR, .op (.Dup ⟨1, by decide⟩), .push 1 76, .op .SHL, .op .OR, .push 2 2144, .op .MSTORE, .push 1 180, .op .SHR, .push 2 1600, .op .MLOAD, .push 1 64, .op .SHL, .op .OR, .push 2 2112]
 
 private theorem instructionsPart53_wellFormed :
     instructionsPart53.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart53, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart54 : List Instr :=
@@ -512,7 +511,7 @@ private def instructionsPart54 : List Instr :=
 private theorem instructionsPart54_wellFormed :
     instructionsPart54.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart54, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart55 : List Instr :=
@@ -521,7 +520,7 @@ private def instructionsPart55 : List Instr :=
 private theorem instructionsPart55_wellFormed :
     instructionsPart55.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart55, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart56 : List Instr :=
@@ -530,7 +529,7 @@ private def instructionsPart56 : List Instr :=
 private theorem instructionsPart56_wellFormed :
     instructionsPart56.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart56, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart57 : List Instr :=
@@ -539,7 +538,7 @@ private def instructionsPart57 : List Instr :=
 private theorem instructionsPart57_wellFormed :
     instructionsPart57.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart57, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart58 : List Instr :=
@@ -548,7 +547,7 @@ private def instructionsPart58 : List Instr :=
 private theorem instructionsPart58_wellFormed :
     instructionsPart58.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart58, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart59 : List Instr :=
@@ -557,7 +556,7 @@ private def instructionsPart59 : List Instr :=
 private theorem instructionsPart59_wellFormed :
     instructionsPart59.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart59, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart60 : List Instr :=
@@ -566,7 +565,7 @@ private def instructionsPart60 : List Instr :=
 private theorem instructionsPart60_wellFormed :
     instructionsPart60.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart60, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart61 : List Instr :=
@@ -575,7 +574,7 @@ private def instructionsPart61 : List Instr :=
 private theorem instructionsPart61_wellFormed :
     instructionsPart61.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart61, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart62 : List Instr :=
@@ -584,7 +583,7 @@ private def instructionsPart62 : List Instr :=
 private theorem instructionsPart62_wellFormed :
     instructionsPart62.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart62, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart63 : List Instr :=
@@ -593,7 +592,7 @@ private def instructionsPart63 : List Instr :=
 private theorem instructionsPart63_wellFormed :
     instructionsPart63.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart63, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart64 : List Instr :=
@@ -602,7 +601,7 @@ private def instructionsPart64 : List Instr :=
 private theorem instructionsPart64_wellFormed :
     instructionsPart64.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart64, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart65 : List Instr :=
@@ -611,7 +610,7 @@ private def instructionsPart65 : List Instr :=
 private theorem instructionsPart65_wellFormed :
     instructionsPart65.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart65, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart66 : List Instr :=
@@ -620,7 +619,7 @@ private def instructionsPart66 : List Instr :=
 private theorem instructionsPart66_wellFormed :
     instructionsPart66.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart66, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart67 : List Instr :=
@@ -629,7 +628,7 @@ private def instructionsPart67 : List Instr :=
 private theorem instructionsPart67_wellFormed :
     instructionsPart67.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart67, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 private def instructionsPart68 : List Instr :=
@@ -638,7 +637,7 @@ private def instructionsPart68 : List Instr :=
 private theorem instructionsPart68_wellFormed :
     instructionsPart68.all (fun instruction => decide (Challenge.EvmProof.Stepper.WellFormed .Osaka instruction)) = true := by
   simp (config := { maxSteps := 200000 }) [instructionsPart68, Challenge.EvmProof.Stepper.WellFormed, YulEvmCompiler.plainOp]
-  repeat' apply And.intro
+  all_goals (repeat' apply And.intro)
   all_goals decide
 
 def submissionInstructions : List Instr :=

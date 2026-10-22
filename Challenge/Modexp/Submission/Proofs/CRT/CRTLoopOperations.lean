@@ -51,8 +51,14 @@ def checkedRound (mem : ByteArray) (f : CRTLoopFrames.Frame) (N k A : Nat)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (h : Invariant mem n minv f N k A) :
     GasSteps (atCache s mem 5859 n minv f)
-      (atCache s (checked s minv n mem) (if Q s minv n mem < R then 8398 else 8800) n minv f) := by
-  have g1 := CRTGasStepsNormalized.kernel s mem n minv f env hcap hact
+      (atCache s (checked s minv n mem) (if Q s minv n mem < R then 8145 else 8800) n minv f) := by
+  have h0 : UInt256.land ConcreteArithmetic.maskWord (MachineState.readWord mem 224) = n 0 := by
+    simpa [inputWord, CRTInputMemory.inputDigitWord, CRTInputMemory.loadOffset,
+      CRTInputMemory.loadShift, shift_zero, land_comm, ConcreteArithmetic.maskWord]
+      using (h.cachedDigits 0 (by decide)).symm
+  have h8 : UInt256.shiftRight (MachineState.readWord mem 0) (UInt256.ofNat 160) = n 8 := by
+    simpa [inputWord] using (h.cachedDigits 8 (by decide)).symm
+  have g1 := CRTGasStepsNormalized.kernel s mem n minv f env hcap hact h0 h8
   have g2 := CRTGasStepsNormalized.overflow s (raw s minv n mem) n minv f env hcap hact
   have he := flag_value s minv n mem f N k A h
   rw [he] at g2

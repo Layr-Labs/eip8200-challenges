@@ -51,9 +51,10 @@ theorem col0_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 0, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col0Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col0_actualCarry carry minv a n q ha hn hq hc]
+  rw [col0_actualCarry carry minv a n q ha hn hq hc (col0_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col0_sumBound carry a n (col0Qs carry minv a n q) ha hn (col0_qsBound carry minv a n q hq))
 
@@ -98,9 +99,10 @@ theorem col1_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 1, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col1Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col1_actualCarry carry minv a n q ha hn hq hc]
+  rw [col1_actualCarry carry minv a n q ha hn hq hc (col1_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col1_sumBound carry a n (col1Qs carry minv a n q) ha hn (col1_qsBound carry minv a n q hq))
 
@@ -145,9 +147,10 @@ theorem col2_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 2, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col2Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col2_actualCarry carry minv a n q ha hn hq hc]
+  rw [col2_actualCarry carry minv a n q ha hn hq hc (col2_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col2_sumBound carry a n (col2Qs carry minv a n q) ha hn (col2_qsBound carry minv a n q hq))
 
@@ -192,9 +195,10 @@ theorem col3_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 3, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col3Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col3_actualCarry carry minv a n q ha hn hq hc]
+  rw [col3_actualCarry carry minv a n q ha hn hq hc (col3_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col3_sumBound carry a n (col3Qs carry minv a n q) ha hn (col3_qsBound carry minv a n q hq))
 
@@ -239,9 +243,10 @@ theorem col4_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 4, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col4Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col4_actualCarry carry minv a n q ha hn hq hc]
+  rw [col4_actualCarry carry minv a n q ha hn hq hc (col4_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col4_sumBound carry a n (col4Qs carry minv a n q) ha hn (col4_qsBound carry minv a n q hq))
 
@@ -286,9 +291,10 @@ theorem col5_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 5, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col5Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col5_actualCarry carry minv a n q ha hn hq hc]
+  rw [col5_actualCarry carry minv a n q ha hn hq hc (col5_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col5_sumBound carry a n (col5Qs carry minv a n q) ha hn (col5_qsBound carry minv a n q hq))
 
@@ -333,9 +339,10 @@ theorem col6_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 6, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col6Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col6_actualCarry carry minv a n q ha hn hq hc]
+  rw [col6_actualCarry carry minv a n q ha hn hq hc (col6_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col6_sumBound carry a n (col6Qs carry minv a n q) ha hn (col6_qsBound carry minv a n q hq))
 
@@ -380,9 +387,10 @@ theorem col7_carryBound (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 7, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
     (GeneratedColumns.col7Carry carry modulusWord maskWord minv a n q).toNat ≤ 18*(radix-1) := by
-  rw [col7_actualCarry carry minv a n q ha hn hq hc]
+  rw [col7_actualCarry carry minv a n q ha hn hq hc (col7_cancels carry minv a n q N hn0 hinv)]
   exact columnCarryBound radix 18 _ carry.toNat (Nat.two_pow_pos 244) hc
     (col7_sumBound carry a n (col7Qs carry minv a n q) ha hn (col7_qsBound carry minv a n q hq))
 

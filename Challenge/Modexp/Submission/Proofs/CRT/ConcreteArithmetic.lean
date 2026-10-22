@@ -10,7 +10,7 @@ namespace HistoricalSearch.ConcreteArithmetic
 open EvmSemantics
 open HistoricalSearch.CRTColumn HistoricalSearch.ColumnExpressions
 open HistoricalSearch.GeneratedArithmetic HistoricalSearch.WordCancellation
-open HistoricalSearch.CRTExecution
+open HistoricalSearch.RoundedWordBridge
 
 def maskWord : UInt256 := UInt256.ofNat ((2^244 : Nat)-1)
 
@@ -49,20 +49,19 @@ theorem col0_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col0_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col0Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col0High carry a n (col0Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col0Low carry a n (col0Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col0High carry a n (col0Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col0_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 0, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col0High carry a n (col0Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col0Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col0High carry a n (col0Qs carry minv a n q)).value / radix := by
   rw [col0_link]
   exact GeneratedArithmetic.col0_carry carry a n (col0Qs carry minv a n q) ha hn
-    (col0_qsBound carry minv a n q hq) hc
+    (col0_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col0_actualCarry
 
@@ -103,20 +102,19 @@ theorem col1_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col1_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col1Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col1High carry a n (col1Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col1Low carry a n (col1Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col1High carry a n (col1Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col1_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 1, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col1High carry a n (col1Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col1Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col1High carry a n (col1Qs carry minv a n q)).value / radix := by
   rw [col1_link]
   exact GeneratedArithmetic.col1_carry carry a n (col1Qs carry minv a n q) ha hn
-    (col1_qsBound carry minv a n q hq) hc
+    (col1_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col1_actualCarry
 
@@ -157,20 +155,19 @@ theorem col2_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col2_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col2Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col2High carry a n (col2Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col2Low carry a n (col2Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col2High carry a n (col2Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col2_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 2, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col2High carry a n (col2Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col2Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col2High carry a n (col2Qs carry minv a n q)).value / radix := by
   rw [col2_link]
   exact GeneratedArithmetic.col2_carry carry a n (col2Qs carry minv a n q) ha hn
-    (col2_qsBound carry minv a n q hq) hc
+    (col2_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col2_actualCarry
 
@@ -211,20 +208,19 @@ theorem col3_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col3_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col3Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col3High carry a n (col3Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col3Low carry a n (col3Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col3High carry a n (col3Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col3_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 3, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col3High carry a n (col3Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col3Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col3High carry a n (col3Qs carry minv a n q)).value / radix := by
   rw [col3_link]
   exact GeneratedArithmetic.col3_carry carry a n (col3Qs carry minv a n q) ha hn
-    (col3_qsBound carry minv a n q hq) hc
+    (col3_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col3_actualCarry
 
@@ -265,20 +261,19 @@ theorem col4_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col4_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col4Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col4High carry a n (col4Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col4Low carry a n (col4Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col4High carry a n (col4Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col4_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 4, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col4High carry a n (col4Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col4Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col4High carry a n (col4Qs carry minv a n q)).value / radix := by
   rw [col4_link]
   exact GeneratedArithmetic.col4_carry carry a n (col4Qs carry minv a n q) ha hn
-    (col4_qsBound carry minv a n q hq) hc
+    (col4_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col4_actualCarry
 
@@ -319,20 +314,19 @@ theorem col5_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col5_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col5Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col5High carry a n (col5Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col5Low carry a n (col5Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col5High carry a n (col5Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col5_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 5, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col5High carry a n (col5Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col5Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col5High carry a n (col5Qs carry minv a n q)).value / radix := by
   rw [col5_link]
   exact GeneratedArithmetic.col5_carry carry a n (col5Qs carry minv a n q) ha hn
-    (col5_qsBound carry minv a n q hq) hc
+    (col5_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col5_actualCarry
 
@@ -373,20 +367,19 @@ theorem col6_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col6_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col6Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col6High carry a n (col6Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col6Low carry a n (col6Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col6High carry a n (col6Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col6_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 6, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col6High carry a n (col6Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col6Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col6High carry a n (col6Qs carry minv a n q)).value / radix := by
   rw [col6_link]
   exact GeneratedArithmetic.col6_carry carry a n (col6Qs carry minv a n q) ha hn
-    (col6_qsBound carry minv a n q hq) hc
+    (col6_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col6_actualCarry
 
@@ -427,20 +420,19 @@ theorem col7_qsBound (carry minv : UInt256) (a n q : Nat → UInt256)
 
 theorem col7_link (carry minv : UInt256) (a n q : Nat → UInt256) :
     GeneratedColumns.col7Carry carry modulusWord maskWord minv a n q =
-      carryWord ((GeneratedArithmetic.col7High carry a n (col7Qs carry minv a n q)).high modulusWord)
-        (GeneratedArithmetic.col7Low carry a n (col7Qs carry minv a n q)).low modulusWord
-        (UInt256.ofNat 244) (UInt256.ofNat 12) := by rfl
+      HistoricalSearch.CancelledCRT.carryWord ((GeneratedArithmetic.col7High carry a n (col7Qs carry minv a n q)).high modulusWord) modulusWord := by rfl
 
 theorem col7_actualCarry (carry minv : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ j < 9, (a j).toNat < radix)
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < 7, (q j).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (GeneratedArithmetic.col7High carry a n (col7Qs carry minv a n q)).value % radix = 0) :
     (GeneratedColumns.col7Carry carry modulusWord maskWord minv a n q).toNat =
       (GeneratedArithmetic.col7High carry a n (col7Qs carry minv a n q)).value / radix := by
   rw [col7_link]
   exact GeneratedArithmetic.col7_carry carry a n (col7Qs carry minv a n q) ha hn
-    (col7_qsBound carry minv a n q hq) hc
+    (col7_qsBound carry minv a n q hq) hc hcancel
 
 #print axioms col7_actualCarry
 

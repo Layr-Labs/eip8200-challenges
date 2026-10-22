@@ -16,7 +16,7 @@ def residueProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD]
 
 def highProgram (high : UInt256) : List Instr :=
-  [.push 1 (high - UInt256.ofNat 5), .op .SHL]
+  [.push 1 5, .op .SHR, .push 1 high, .op .SHL]
 
 def carryProgram (low : UInt256) : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .push 1 low, .op .SHR, .op .ADD,
@@ -28,8 +28,8 @@ def program (low high : UInt256) : List Instr :=
 def carryWord (H lo P low high : UInt256) : UInt256 :=
   UInt256.shiftRight lo low +
     UInt256.shiftLeft
-      (((P - lo % P) + H) % P)
-      (high - UInt256.ofNat 5)
+      (UInt256.shiftRight (((P - lo % P) + H) % P) (UInt256.ofNat 5))
+      high
 
 theorem run_residue (s : State) (pc H lo P : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1018) :
@@ -44,7 +44,7 @@ theorem run_residue (s : State) (pc H lo P : UInt256)
 theorem run_high (s : State) (pc x high : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1021) :
     runInstructions (highProgram high) {s with pc := pc, stack := x :: rest} =
-      some {s with pc := advancePC 3 pc, stack := UInt256.shiftLeft x (high - UInt256.ofNat 5) :: rest} := by
+      some {s with pc := advancePC 6 pc, stack := UInt256.shiftLeft (UInt256.shiftRight x (UInt256.ofNat 5)) high :: rest} := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
   have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
@@ -69,12 +69,12 @@ This theorem makes no whole-kernel or whole-program acceptance claim. -/
 theorem run (s : State) (pc H lo P low high : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1018) :
     runInstructions (program low high) {s with pc := pc, stack := H :: lo :: P :: rest} =
-      some {s with pc := advancePC 19 pc, stack := carryWord H lo P low high :: P :: rest} := by
+      some {s with pc := advancePC 22 pc, stack := carryWord H lo P low high :: P :: rest} := by
   have h0 := run_residue s pc H lo P rest hcap
   have h1 := run_high s (advancePC 9 pc) ((P - lo % P + H) % P) high
     (lo :: P :: rest) (by simp only [List.length_cons]; omega)
-  have h2 := run_carry s (advancePC 3 (advancePC 9 pc))
-    (UInt256.shiftLeft ((P - lo % P + H) % P) (high - UInt256.ofNat 5))
+  have h2 := run_carry s (advancePC 6 (advancePC 9 pc))
+    (UInt256.shiftLeft (UInt256.shiftRight ((P - lo % P + H) % P) (UInt256.ofNat 5)) high)
     lo low (P :: rest) (by simp only [List.length_cons]; omega)
   have both := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ h0 h1) h2

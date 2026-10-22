@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CRT.CancelledCRT
 import Challenge.Modexp.Submission.Proofs.CRT.ColumnExpressions
 import Challenge.Modexp.Submission.Proofs.CRT.MixedMontgomery
 set_option warningAsError true
@@ -9,7 +10,7 @@ namespace HistoricalSearch.GeneratedArithmetic
 open EvmSemantics
 open HistoricalSearch.CRTColumn HistoricalSearch.GenericColumn
 open HistoricalSearch.ColumnExpressions HistoricalSearch.MixedMontgomery
-open HistoricalSearch.CRTExecution
+open HistoricalSearch.RoundedWordBridge
 
 def radix : Nat := 2^244
 def modulusWord : UInt256 := UInt256.ofNat residueModulus
@@ -24,9 +25,9 @@ theorem col0_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col0High carry a n q).high modulusWord) (col0Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col0High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col0High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col0High carry a n q).high modulusWord) modulusWord).toNat = (col0High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -43,8 +44,7 @@ theorem col0_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col0High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col0High carry a n q) (col0Low carry a n q) carry.toNat hcount hlit
-    (col0_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col0High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col0_carry
 
@@ -58,9 +58,9 @@ theorem col1_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col1High carry a n q).high modulusWord) (col1Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col1High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col1High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col1High carry a n q).high modulusWord) modulusWord).toNat = (col1High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -77,8 +77,7 @@ theorem col1_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col1High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col1High carry a n q) (col1Low carry a n q) carry.toNat hcount hlit
-    (col1_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col1High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col1_carry
 
@@ -92,9 +91,9 @@ theorem col2_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col2High carry a n q).high modulusWord) (col2Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col2High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col2High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col2High carry a n q).high modulusWord) modulusWord).toNat = (col2High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -111,8 +110,7 @@ theorem col2_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col2High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col2High carry a n q) (col2Low carry a n q) carry.toNat hcount hlit
-    (col2_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col2High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col2_carry
 
@@ -126,9 +124,9 @@ theorem col3_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col3High carry a n q).high modulusWord) (col3Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col3High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col3High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col3High carry a n q).high modulusWord) modulusWord).toNat = (col3High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -145,8 +143,7 @@ theorem col3_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col3High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col3High carry a n q) (col3Low carry a n q) carry.toNat hcount hlit
-    (col3_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col3High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col3_carry
 
@@ -160,9 +157,9 @@ theorem col4_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col4High carry a n q).high modulusWord) (col4Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col4High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col4High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col4High carry a n q).high modulusWord) modulusWord).toNat = (col4High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -179,8 +176,7 @@ theorem col4_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col4High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col4High carry a n q) (col4Low carry a n q) carry.toNat hcount hlit
-    (col4_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col4High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col4_carry
 
@@ -194,9 +190,9 @@ theorem col5_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col5High carry a n q).high modulusWord) (col5Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col5High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col5High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col5High carry a n q).high modulusWord) modulusWord).toNat = (col5High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -213,8 +209,7 @@ theorem col5_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col5High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col5High carry a n q) (col5Low carry a n q) carry.toNat hcount hlit
-    (col5_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col5High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col5_carry
 
@@ -228,9 +223,9 @@ theorem col6_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col6High carry a n q).high modulusWord) (col6Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col6High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col6High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col6High carry a n q).high modulusWord) modulusWord).toNat = (col6High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -247,8 +242,7 @@ theorem col6_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col6High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col6High carry a n q) (col6Low carry a n q) carry.toNat hcount hlit
-    (col6_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col6High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col6_carry
 
@@ -262,9 +256,9 @@ theorem col7_carry (carry : UInt256) (a n q : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (hq : ∀ i < 9, (q i).toNat < radix)
-    (hc : carry.toNat ≤ 18*(radix-1)) :
-    (carryWord ((col7High carry a n q).high modulusWord) (col7Low carry a n q).low modulusWord
-      (UInt256.ofNat 244) (UInt256.ofNat 12)).toNat = (col7High carry a n q).value / radix := by
+    (hc : carry.toNat ≤ 18*(radix-1))
+    (hcancel : (col7High carry a n q).value % radix = 0) :
+    (HistoricalSearch.CancelledCRT.carryWord ((col7High carry a n q).high modulusWord) modulusWord).toNat = (col7High carry a n q).value / radix := by
   have hcP : carry.toNat ≤ residueModulus-1 := by
     have hh := carryReductionRedundant 244 carry.toNat (by decide) hc
     omega
@@ -281,8 +275,7 @@ theorem col7_carry (carry : UInt256) (a n q : Nat → UInt256)
   have hpbound := Nat.mul_le_mul_right ((radix-1)^2) hp
   have hlbound := Nat.mul_le_mul_right carry.toNat hl
   have hsum : (col7High carry a n q).value ≤ 18*(radix-1)^2+carry.toNat := by nlinarith
-  exact reconstructExpressions (col7High carry a n q) (col7Low carry a n q) carry.toNat hcount hlit
-    (col7_sameValue carry a n q) hc hsum
+  exact HistoricalSearch.CancelledCRT.reconstructExpressions (col7High carry a n q) carry.toNat hcount hlit hc hsum hcancel
 
 #print axioms col7_carry
 

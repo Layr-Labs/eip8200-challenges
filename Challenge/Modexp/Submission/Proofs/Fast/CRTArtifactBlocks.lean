@@ -26,29 +26,29 @@ def block_entry : Block Artifact.submissionArtifact .Osaka 5615 entryProgram :=
     (by decide)
 
 def block_kernel : Block Artifact.submissionArtifact .Osaka 5859 kernelProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4609 1897 5859 kernelProgram
-    (by change 4609 + 1897 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 4609 + 1897 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4609 1702 5859 kernelProgram
+    (by change 4609 + 1702 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 4609 + 1702 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def block_overflow : Block Artifact.submissionArtifact .Osaka 8382 overflowProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 6506 8 8382 overflowProgram
-    (by change 6506 + 8 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6506 + 8 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+def block_overflow : Block Artifact.submissionArtifact .Osaka 8129 overflowProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6311 8 8129 overflowProgram
+    (by change 6311 + 8 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6311 + 8 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def block_count : Block Artifact.submissionArtifact .Osaka 8398 countProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 6515 4 8398 countProgram
-    (by change 6515 + 4 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6515 + 4 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+def block_count : Block Artifact.submissionArtifact .Osaka 8145 countProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6320 4 8145 countProgram
+    (by change 6320 + 4 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6320 + 4 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def block_retain : Block Artifact.submissionArtifact .Osaka 8407 retainProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 6520 109 8407 retainProgram
-    (by change 6520 + 109 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6520 + 109 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+def block_retain : Block Artifact.submissionArtifact .Osaka 8154 retainProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6325 109 8154 retainProgram
+    (by change 6325 + 109 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6325 + 109 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -60,23 +60,23 @@ def block_exit : Block Artifact.submissionArtifact .Osaka 8800 exitProgram :=
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def block_overflowBranch : Block Artifact.submissionArtifact .Osaka 8397 HistoricalSearch.CRTControl.jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 6514 1 8397 HistoricalSearch.CRTControl.jumpiProgram
-    (by change 6514 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6514 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+def block_overflowBranch : Block Artifact.submissionArtifact .Osaka 8144 HistoricalSearch.CRTControl.jumpiProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6319 1 8144 HistoricalSearch.CRTControl.jumpiProgram
+    (by change 6319 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6319 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def block_countBranch : Block Artifact.submissionArtifact .Osaka 8406 HistoricalSearch.CRTControl.jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 6519 1 8406 HistoricalSearch.CRTControl.jumpiProgram
-    (by change 6519 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6519 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+def block_countBranch : Block Artifact.submissionArtifact .Osaka 8153 HistoricalSearch.CRTControl.jumpiProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6324 1 8153 HistoricalSearch.CRTControl.jumpiProgram
+    (by change 6324 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6324 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def block_retainBranch : Block Artifact.submissionArtifact .Osaka 8576 HistoricalSearch.CRTControl.jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 6629 1 8576 HistoricalSearch.CRTControl.jumpProgram
-    (by change 6629 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6629 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+def block_retainBranch : Block Artifact.submissionArtifact .Osaka 8323 HistoricalSearch.CRTControl.jumpProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6434 1 8323 HistoricalSearch.CRTControl.jumpProgram
+    (by change 6434 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6434 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)

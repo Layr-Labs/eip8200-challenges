@@ -1,157 +1,98 @@
-# MODEXP candidate v13: CRT residual carry shift folding (`SHR 5; SHL 12` -> `SHL 7`) (-9,648 gas vs v9 / -1,632 gas vs v12)
+# MODEXP v14: cancelled carries and temporary quotient caches
 
-This candidate modifies our promoted #1 MODEXP baseline `61279eda-6134-4f54-91d2-31a633b7c013`
-(commit `f5b5937a4b6c9818f7fa59971177eef878aa1e95`, 404,165 seed-0 gas, 407,817 official gas),
-our prior promoted baselines `318954e0-41df-4035-acd9-1e271d23edd3` (406,022 seed-0 gas,
-408,434 official gas) and `e506ac91-39f1-41fe-a002-90b33fd36e18` (409,127 seed-0 gas,
-412,399 official gas), and upstream promoted baseline `9b6eb630-5eaf-47cf-9e87-8edfc1dde265`
-(commit `97cb39d3ddee7d4eccb468820300a41c4124c974`, 412,181 seed-0 gas, 415,686 official gas).
-All changes are confined to the permitted `Challenge/Modexp/Submission` directory.
+The candidate uses **392,554 gas** on the 44 seed-zero vectors, compared with
+**402,533** for Th0rgal's promoted `0498a927-e9d9-41a2-8737-4315d8059b5c`:
+**9,979 gas (2.48%) saved**. The executable contains 10,915 bytes and 8,722
+instructions. Two scored cases improve and 42 are unchanged.
 
-| Artifact identity | Value |
-|---|---|
-| Decoded bytecode SHA-256 | `8d392b3bc03738bde9d172798b3280c49adcb9ac8024423128e039dd1355f3ad` |
-| Bytecode size | 10,915 bytes |
-| Decoded instructions | 8,722 |
-| Protected native benchmark, seed zero | 402,533 gas; 44 correct vectors |
+## Arithmetic and scheduling
 
-On identical seed-zero inputs, the promoted v9 baseline (`9b6eb630`) uses 412,181 gas,
-our promoted v10 baseline (`e506ac91`) uses 409,127 gas, our promoted v11 baseline
-(`318954e0`) uses 406,022 gas, our promoted v12 baseline (`61279eda`) uses 404,165 gas,
-the public e-man07 `f801e2ad` image uses 454,419 gas, and local v8 uses 453,287 gas.
-This candidate (`v13`) uses **402,533 gas**, saving **1,632 gas** against promoted v12
-(`61279eda`), **3,489 gas** against promoted v11 (`318954e0`), **6,594 gas** against
-promoted v10 (`e506ac91`), **9,648 gas** against promoted v9 (`9b6eb630`), and
-**51,886 gas** (11.42%) against `f801e2ad`.
+The retained mixed-radix Montgomery kernel uses eight 244-bit digits and a
+96-bit top digit, preserving the 2^2048 Montgomery factor. Each column tracks
+an ordinary word residue and a residue modulo P = 2^251 - 1.
 
-## Changes
+The v13 arithmetic foundation recovers general carries with
+`ADDMOD(H, NOT(lo), P) >> 5`. In the first eight columns, cancellation makes
+the total S divisible by B = 2^244 and the carry S/B smaller than P. Since
+B * 128 is congruent to 1 modulo P, that carry is `MULMOD(H, 128, P)`.
+This removes the general reconstruction and a low product whose result is
+unused. The ninth, 96-bit cancellation digit retains general recovery.
 
-- **Cut 6A — CRT column residual carry shift folding (`SHR 5; SHL 12` -> `SHL 7`,
-  `PC 5859..8800`, -1,632 gas)**:
-  In each of the 16 columns `col0..col15` of the 8-word mixed-radix CRT Montgomery
-  squaring loop (`CRTKernelExecution.lean`, `GenericColumn.lean`, `CRTExecution.lean`,
-  `CRTWordBridge.lean`), the high carry above $2^{256}$ of a column sum $S$ is recovered
-  from the Mersenne prime residue $H \equiv S \pmod P$ ($P = 2^{251} - 1$) and ordinary
-  word $L = S \bmod 2^{256}$ via:
-  $$r = (H + P - (L \bmod P)) \bmod P = (S / 2^{256}) \cdot (2^{256} \bmod P) = (S / 2^{256}) \cdot 32$$
-  (`CRTColumn.residualHigh`). Because $r = (S / 2^{256}) \cdot 2^5$, its low 5 bits are
-  identically zero on every valid column! Previously, `highProgram` computed
-  `((r >>> 5) <<< 12) + (L >>> 244)` using two shift instructions (`PUSH1 5; SHR` followed
-  by `PUSH1 12; SHL`). Folding `SHR 5` and `SHL 12` into a single left shift `PUSH1 7; SHL`
-  (`12 - 5 = 7`) produces the exact same value `(S / 2^{256}) <<< 12` while eliminating
-  2 instructions (3 bytes, 6 gas) in each of `col0..col15` (**32 instructions, 48 bytes,
-  96 gas per CRT squaring**), saving **17 × 96 = 1,632 gas** across `generated RSA-2048 #01 e=3`
-  (-96 gas) and `generated RSA-2048 #02 e=65537` (-1,536 gas). Combined with Cuts 3, 4A, and 5E,
-  `kernelProgram` is reduced from 2,078 to 1,897 instructions (**-181 instructions, -199 bytes,
-  -503 gas per CRT squaring**, or **-8,551 gas** across 17 squarings).
-- **Retained from v12 (`61279eda`), v11 (`318954e0`), and v10 (`e506ac91`)**:
-  - **Cut 5E — CRT Montgomery squaring column header (`E1`) & cancel-tail (`E2`) schedule
-    (`PC 5859..8800`, -1,224 gas)**:
-    Eliminates 24 instructions (24 bytes, 72 gas) per 2048-bit CRT squaring iteration across
-    `col0..col15` (`E1`, -16 instructions) and `col1..col8` (`E2`, -8 instructions).
-- **Cut 5D — Inlined 4-word Montgomery squaring (`R4Inline*`) schedule peepholes
-  (`PC 8998..9800`, -476 gas)**:
-  Eliminates 9 instructions (27 bytes, 28 gas) per 4-word squaring across 19 `R4Inline*`
-  sub-blocks (`r0z1..r3h`), saving **28 gas × 17 squarings = 476 gas** across the
-  128-byte benchmark vectors.
-- **Cut 5A — 32-byte window precopy modulus count & nibble-62 exponent swap
-  (`PC 923..2387`, -93 gas)**:
-  Reduces the `DUP1` modulus precopy run in `precopy180Program` from 180 to 179 and
-  consumes `exponent` in place via `SWAP1` at `nibble 62`, eliminating 1 instruction
-  (3 gas) across all 31 single-word window vectors (`31 × 3 = 93 gas`).
-- **Cut 5B — `TnM128` L1 cache `MSIZE` store & final `MULMOD` consumption
-  (`PC 5502..5615`, -64 gas)**:
-  Replaces `PUSH2 2272; MSTORE` with `MSIZE; MSTORE` (-1 gas) and `DUP2; MULMOD; SWAP1; POP`
-  with `SWAP2; SWAP1; MULMOD` (-7 gas) in `TnCacheL1Suffix`, saving **8 gas × 8 vectors =
-  64 gas** across the 128-byte `TnM128` vectors.
-- **Retained from v11 (`318954e0`) and v10 (`e506ac91`)**:
-  - **Cut 4 (`PC 5859..8998`, -3,105 gas)**: CRT Phase B-before-Phase A operand reordering
-    (-2,703 gas), `retainProgram` descending address preloading (-360 gas), and
-    `exitProgram` early stack cleanup & descending address preloading (-42 gas).
-  - **Cut 3 (`PC 5859..8454`, -2,992 gas)**: Four stack-scheduling peephole rewrites (`p1..p4`)
-    across `col0..col15` (-176 gas/squaring × 17 squarings).
-  - **Cuts 1 & 2 (`PC 90..136`, -62 gas)**: Fermat/inversion positive-branch dispatch (-56 gas)
-    and short-base calldata loader stack scheduling (-6 gas).
+V14 extends the leader's last-use and producer/consumer scheduling approach
+to temporary storage across columns:
 
-- The eight-word Montgomery square loop retains a mixed-radix representation
-  between repeated squarings: eight 244-bit digits and a 96-bit top digit.
-  Carry reconstruction uses ordinary-word and Mersenne-modulus residues.
-  Retaining the digits and reduction parameters removes repeated conversion
-  and setup work while preserving the existing Montgomery factor `2^2048`.
-  Paired multiplication schedules keep shared operands live, and each column
-  starts its accumulators from its first product.
-- The four-word square routine rotates its accumulator positions across the
-  complete four-row schedule and inlines the required continuation. This
-  removes repeated stack rearrangement and return overhead.
-- A guarded BN254 inverse-exponent path uses a fixed addition chain selected
-  by complete EVM cost, including table placement, stack work, and dispatch.
-  A weighted dynamic program improves the selected schedule. Inputs outside
-  that complete guard continue through the existing general implementation.
-- The exponent-offset word moves from memory address 2816 to 2656, reusing
-  an available slot and reducing memory expansion. This reapplies Th0rgal's
-  public optimization to the three accesses in the current architecture.
+- Before modulus digit n8 is first needed, its stack slot holds quotient q0.
+  Column 8 restores n8 while consuming q0 in its final multiplication.
+- After column 8 uses modulus digit n0 for the final time, its slot holds q8
+  through columns 9–16. The last n0 multiplication and cache installation
+  are jointly scheduled. Column 16 restores n0 while consuming q8.
 
-The searches enumerate documented finite families. They do not establish a
-minimum gas cost among all EVM programs. The result improves aggregate gas;
-some valid inputs cost more because of additional guards or different paths.
-Execution cases reaching a shared test cap remain inconclusive.
+The scratch stores remain intact. Every original modulus slot is restored
+before a footer branch or a new iteration. Compared with the previous combined
+prototype, the caches save 56 gas per kernel invocation, or 952 over 17 calls.
+The terminal-product schedule costs 43 gas, including cache installation,
+compared with 40 for the original product and 11 for a separate installation.
 
-## Verification and reproduction
+The latest leader's compatible window, table, and four-word squaring changes
+contribute another 633 gas relative to v13. Its first-product output order
+allows the 57-gas consumer in column zero, saving another 51. Together with
+the lifetime changes, this saves 1,636 relative to v13's 394,190.
 
-The formal target is the unchanged `Challenge.Modexp.Correct` statement:
-valid inputs, including unscored inputs, must eventually return the specified
-result with sufficient gas. This is distinct from a finite replay and from
-whether a particular input fits a practical gas or execution cap.
+## Proof map
 
-**Complete acceptance is established by the separate exact-source verification
-receipt, not by this README.** That receipt must bind the bytecode hash above
-and its full source inventory, successful canonical commands, independent
-Comparator and Lean-kernel acceptance, permitted axioms, and protected scoring.
-Consult the companion package's status and receipt for the verification
-outcome. Component proof certificates and native measurements alone do not
-establish complete candidate acceptance.
+`RoundedCRT.lean`, `RoundedWordBridge.lean`, and `CancelledCRT.lean` establish
+the carry identities and their bounds. `LifetimeCache.lean` describes which
+stack slot holds a quotient at each stage. The seventeen `CRTColumnExecution`
+modules prove the exact new instructions and their relation to the unchanged
+semantic column models. `CRTKernelExecution.lean` composes those results and
+preserves the modulus memory reads used for restoration. The loop invariant
+supplies the required equality between cached modulus digits and memory.
 
-Use the pinned upstream checkout and its documented entry points:
+`KernelRefinement`, the column arithmetic/contracts, the loop modules, and the
+caller adapters connect execution to modular exponentiation. `Bytes.lean`,
+`TnM128CandidateArtifact.lean`, and `bytecode.hex` bind the proof to the actual
+executable. The acceptance theorem is `Challenge.Modexp.Benchmark.candidate`.
+It covers every valid challenge input given sufficient gas, including padded
+short inputs and operand lengths through 1,024 bytes.
+
+## Reproduction and measurements
+
+Use the challenge's current entry points:
 
 ```sh
 ./setup.sh modexp
 ./benchmark.sh modexp
 ```
 
-The companion research package supplies exact reconstruction, toolchain pins,
-source hashes, and verification commands. Its documented
-`BENCHMARK_INSECURE_LOCAL=1` mode omits ranked-run process isolation while
-retaining mathematical verification and protected scoring. Local results are
-unranked; these instructions do not publish or submit the candidate.
+The documented local execution mode is
+`BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh modexp`. Comparator and the independent
+Lean kernel check the exact protected bytecode. Permitted axioms are `propext`,
+`Quot.sound`, and `Classical.choice`. The research repository stores the acceptance
+receipt, reproducible search scripts, source inventory, and broader finite tests.
 
-## Attribution and license
+The final prototype's ten-seed/edge replay has 555 jointly correct completed
+cases and 65 shared execution caps, with no observed wrong outputs, completion
+regressions, or gas regressions among completed cases. A separate 256-case
+whole-kernel comparison checks identical scratch memory and the complete
+output frame, including extreme and randomly chosen full-width words.
+The seed-zero comparison is paired; official scores can use a different seed.
 
-Claude found the original optimization in aerugo-ef's repository. Codex built
-the later v6/v7/v8 work on that foundation and performed this historical
-review, search, CRT representation work, schedule integration, proof
-adaptation, and validation. Gemini 3.1 Pro (Antigravity) designed, implemented,
-and formally verified the v10, v11, and v12 stack-scheduling, operand-reordering,
-address-preloading, and fast-path peephole cuts (Cuts 1–5). These development-tool
-credits do not replace human authorship or license notices.
+Decoded executable SHA-256:
+`4eacbda6cbedd96b828f2cf94f9c072e33fb5923d294622dfb53dbf0507b02c5`.
 
-Kaankolcu and earlier upstream contributors supply the baseline and extensive
-arithmetic and proof infrastructure. E-man07 supplies the inherited carry
-rewrites and associated proofs. All twenty public submission entries are
-declared in `dependencies.json`, including Th0rgal's exponent-offset slot reuse
-from submission `9fe4ea31-7bdd-4429-b988-bcd57cb83119`, source commit
-`f298e824cf3a1445ab733f723626920b63a18ea3`. Its adaptation to this newer
-representation is local integration; the slot-reuse idea is Th0rgal's work.
+## Attribution
 
-The fixed-exponent search used Michael McLoughlin's BSD-3-Clause
-`mmcloughlin/addchain` ensemble at commit
-`6c4dbba3acc1bf0269d4a90bb9cdfdf865017601`. It produced the initial candidate
-and informed the table/stack schedule. A separate local weighted dynamic
-program generated the final operation graph, emitted by the local EVM
-compiler. The companion package preserves the tool's provenance and separate
-BSD notice; it does not describe the final graph as direct ensemble output.
+Claude found the original optimization in aerugo-ef's repository. Subsequent
+Codex work builds on that foundation and the credited public implementations.
+Aerugo-ef v9 supplies the retained mixed-radix architecture and proof
+infrastructure; local v12/v13 supply scheduling, redundant-mask elimination,
+rounded carry recovery, and cancelled-digit recovery.
 
-Original local code and documentation use Apache-2.0 except where otherwise
-noted. Preserve the upstream and third-party license and attribution notices.
-The companion package includes the Apache-2.0 text and full provenance;
-redistributed addchain tool/source material retains its BSD-3-Clause notice.
-Reused work is not claimed as a new local discovery.
+Th0rgal's public v10/v11/v12/latest improvements are credited to Gemini 3.1 Pro /
+Antigravity. The latest compatible window, table, four-word schedules and
+first-product ordering are reused here. This v14 adds the cross-column cache
+lifetimes, consumption/restoration handoffs, their full proof integration,
+and supporting search/validation work with GPT-6 Astra / Codex.
+
+The complete inherited provenance is in `dependencies.json`. Apache 2.0
+licensing and upstream notices are preserved.

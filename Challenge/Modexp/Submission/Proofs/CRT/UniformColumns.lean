@@ -49,16 +49,17 @@ theorem carry (t : Nat) (ht : t < 16) (carry minv : UInt256) (a n q : Nat → UI
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < min t 9, (q j).toNat < radix)
     (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     : (words t carry minv a n q).carry.toNat = sum t carry minv a n q / radix := by
   interval_cases t
-  · exact col0_actualCarry carry minv a n q ha hn hq hc
-  · exact col1_actualCarry carry minv a n q ha hn hq hc
-  · exact col2_actualCarry carry minv a n q ha hn hq hc
-  · exact col3_actualCarry carry minv a n q ha hn hq hc
-  · exact col4_actualCarry carry minv a n q ha hn hq hc
-  · exact col5_actualCarry carry minv a n q ha hn hq hc
-  · exact col6_actualCarry carry minv a n q ha hn hq hc
-  · exact col7_actualCarry carry minv a n q ha hn hq hc
+  · exact col0_actualCarry carry minv a n q ha hn hq hc (col0_cancels carry minv a n q N hn0 hinv)
+  · exact col1_actualCarry carry minv a n q ha hn hq hc (col1_cancels carry minv a n q N hn0 hinv)
+  · exact col2_actualCarry carry minv a n q ha hn hq hc (col2_cancels carry minv a n q N hn0 hinv)
+  · exact col3_actualCarry carry minv a n q ha hn hq hc (col3_cancels carry minv a n q N hn0 hinv)
+  · exact col4_actualCarry carry minv a n q ha hn hq hc (col4_cancels carry minv a n q N hn0 hinv)
+  · exact col5_actualCarry carry minv a n q ha hn hq hc (col5_cancels carry minv a n q N hn0 hinv)
+  · exact col6_actualCarry carry minv a n q ha hn hq hc (col6_cancels carry minv a n q N hn0 hinv)
+  · exact col7_actualCarry carry minv a n q ha hn hq hc (col7_cancels carry minv a n q N hn0 hinv)
   · exact col8_actualCarry carry minv a n q ha hn hq hc
   · exact col9_actualCarry carry minv a n q ha hn hq hc
   · exact col10_actualCarry carry minv a n q ha hn hq hc
@@ -75,16 +76,17 @@ theorem carryBound (t : Nat) (ht : t < 16) (carry minv : UInt256) (a n q : Nat �
     (hn : ∀ j < 9, (n j).toNat < radix)
     (hq : ∀ j < min t 9, (q j).toNat < radix)
     (hc : carry.toNat ≤ 18*(radix-1))
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     : (words t carry minv a n q).carry.toNat ≤ 18*(radix-1) := by
   interval_cases t
-  · exact col0_carryBound carry minv a n q ha hn hq hc
-  · exact col1_carryBound carry minv a n q ha hn hq hc
-  · exact col2_carryBound carry minv a n q ha hn hq hc
-  · exact col3_carryBound carry minv a n q ha hn hq hc
-  · exact col4_carryBound carry minv a n q ha hn hq hc
-  · exact col5_carryBound carry minv a n q ha hn hq hc
-  · exact col6_carryBound carry minv a n q ha hn hq hc
-  · exact col7_carryBound carry minv a n q ha hn hq hc
+  · exact col0_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col1_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col2_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col3_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col4_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col5_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col6_carryBound carry minv a n q ha hn hq hc N hn0 hinv
+  · exact col7_carryBound carry minv a n q ha hn hq hc N hn0 hinv
   · exact col8_carryBound carry minv a n q ha hn hq hc
   · exact col9_carryBound carry minv a n q ha hn hq hc
   · exact col10_carryBound carry minv a n q ha hn hq hc

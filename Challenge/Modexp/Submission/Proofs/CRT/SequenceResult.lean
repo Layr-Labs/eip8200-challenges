@@ -33,13 +33,14 @@ variable (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : List UInt256
       convolution 9 (fun i => (aRead s.memory i).toNat) (fun i => (aRead s.memory i).toNat) t +
       convolution 9 (fun i => (finalQ s minv n rest i).toNat) (fun i => (n i).toNat) t +
       (incoming s minv n rest t).toNat := by
-  rw [digit_value s minv n rest N hn0 hinv t ht, carry_value s minv n rest ha hn t ht,
+  rw [digit_value s minv n rest N hn0 hinv t ht, carry_value s minv n rest ha hn N hn0 hinv t ht,
     Nat.mod_add_div]
   exact sum_convolution s minv n rest t ht
 
  theorem top_value
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     (ha8 : (aRead s.memory 8).toNat < 2^96) (hn8 : (n 8).toNat < 2^96) :
     finalD s minv n rest 16 = (aRead s.memory 8).toNat*(aRead s.memory 8).toNat +
       (finalQ s minv n rest 8).toNat*(n 8).toNat+(incoming s minv n rest 16).toNat ∧
@@ -50,7 +51,7 @@ variable (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : List UInt256
     rw [prior_q s minv n rest 16 8 (by decide) (by decide) (by decide)]; exact q_top s minv n rest
   have hv := ColumnContracts.col16_digit (incoming s minv n rest 16) minv
     (aRead (states s minv n rest 16).memory) n (qRead (states s minv n rest 16).memory)
-    haa hn8 hqq (carry_top s minv n rest ha hn ha8 hn8)
+    haa hn8 hqq (carry_top s minv n rest ha hn N hn0 hinv ha8 hn8)
   change (outWords s minv n rest 16).digit.toNat = _ ∧
     (outWords s minv n rest 16).digit.toNat < radix at hv
   rw [a_preserved s minv n rest 16 (by decide) 8 (by decide),
@@ -61,17 +62,19 @@ variable (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : List UInt256
  theorem tail
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     (ha8 : (aRead s.memory 8).toNat < 2^96) (hn8 : (n 8).toNat < 2^96) :
     finalD s minv n rest 16 =
       convolution 9 (fun i => (aRead s.memory i).toNat) (fun i => (aRead s.memory i).toNat) 16 +
       convolution 9 (fun i => (finalQ s minv n rest i).toNat) (fun i => (n i).toNat) 16 +
       (incoming s minv n rest 16).toNat := by
-  rw [(top_value s minv n rest ha hn ha8 hn8).1]
+  rw [(top_value s minv n rest ha hn N hn0 hinv ha8 hn8).1]
   simp [convolution, Finset.sum_filter, Finset.sum_product, Finset.sum_range_succ]
 
  theorem output_digits
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     (ha8 : (aRead s.memory 8).toNat < 2^96) (hn8 : (n 8).toNat < 2^96)
     (i : Nat) (hi : i < 9) :
     (dRead (states s minv n rest 17).memory i).toNat < radix := by
@@ -87,7 +90,7 @@ variable (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : List UInt256
     exact Nat.mod_lt _ (Nat.two_pow_pos 244)
   · have he : i = 8 := by omega
     subst i
-    exact (top_value s minv n rest ha hn ha8 hn8).2
+    exact (top_value s minv n rest ha hn N hn0 hinv ha8 hn8).2
 
  theorem high_cancelled (N : Nat)
     (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) :
@@ -119,7 +122,7 @@ def output : Nat := weighted radix 9 (fun i => (dRead (states s minv n rest 17).
   · intro i hi; simp [finalD, hi]
   · exact high_cancelled s minv n rest N hn0 hinv
   · exact recurrence s minv n rest N ha hn hn0 hinv
-  · exact tail s minv n rest ha hn ha8 hn8
+  · exact tail s minv n rest ha hn N hn0 hinv ha8 hn8
 
 #print axioms recurrence
 #print axioms tail

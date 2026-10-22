@@ -32,13 +32,14 @@ theorem prior_q (t i : Nat) (ht : t ≤ 17) (hi : i < 9) (hit : i < t) :
 
 theorem carry_bound
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
-    (hn : ∀ i < 9, (n i).toNat < radix) (t : Nat) (ht : t ≤ 16) :
+    (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) (t : Nat) (ht : t ≤ 16) :
     (incoming s minv n rest t).toNat ≤ 18*(radix-1) := by
   induction t with
   | zero => simp [incoming, UInt256.ofNat, UInt256.toNat]
   | succ t ih =>
     rw [next_carry s minv n rest t (by omega)]
-    apply UniformColumns.carryBound t (by omega)
+    apply UniformColumns.carryBound t (by omega) (N := N)
     · intro j hj
       rw [a_preserved s minv n rest t (by omega) j hj]
       exact ha j hj
@@ -47,13 +48,16 @@ theorem carry_bound
       rw [prior_q s minv n rest t j (by omega) (by omega) (by omega)]
       exact q_bounds s minv n rest j (by omega)
     · exact ih (by omega)
+    · exact hn0
+    · exact hinv
 
 theorem carry_value
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
-    (hn : ∀ i < 9, (n i).toNat < radix) (t : Nat) (ht : t < 16) :
+    (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0) (t : Nat) (ht : t < 16) :
     (incoming s minv n rest (t+1)).toNat = localSum s minv n rest t / radix := by
   rw [next_carry s minv n rest t ht]
-  apply UniformColumns.carry t ht
+  apply UniformColumns.carry t ht (N := N)
   · intro j hj
     rw [a_preserved s minv n rest t (by omega) j hj]
     exact ha j hj
@@ -61,14 +65,17 @@ theorem carry_value
   · intro j hj
     rw [prior_q s minv n rest t j (by omega) (by omega) (by omega)]
     exact q_bounds s minv n rest j (by omega)
-  · exact carry_bound s minv n rest ha hn t (by omega)
+  · exact carry_bound s minv n rest ha hn N hn0 hinv t (by omega)
+  · exact hn0
+  · exact hinv
 
 theorem carry_top
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     (ha8 : (aRead s.memory 8).toNat < 2^96) (hn8 : (n 8).toNat < 2^96) :
     (incoming s minv n rest 16).toNat ≤ 4*((2^96 : Nat)-1)+18 := by
-  have he := carry_value s minv n rest ha hn 15 (by decide)
+  have he := carry_value s minv n rest ha hn N hn0 hinv 15 (by decide)
   rw [he]
   apply TailArithmetic.col15_sharp
   · rw [a_preserved s minv n rest 15 (by decide) 7 (by decide)]; exact ha 7 (by decide)
@@ -79,7 +86,7 @@ theorem carry_top
     rw [prior_q s minv n rest 15 7 (by decide) (by decide) (by decide)]; exact q_bounds s minv n rest 7 (by decide)
   · simp only [ConcreteArithmetic.col15Qs]
     rw [prior_q s minv n rest 15 8 (by decide) (by decide) (by decide)]; exact q_top s minv n rest
-  · exact carry_bound s minv n rest ha hn 15 (by decide)
+  · exact carry_bound s minv n rest ha hn N hn0 hinv 15 (by decide)
 
 theorem qs_final (t : Nat) (ht : t < 16) (i : Nat) (hi : i < 9) (hit : i ≤ t) :
     UniformColumns.qs t (incoming s minv n rest t) minv
