@@ -45,10 +45,10 @@ def cellProgram : List Instr :=
    .op (.Dup ⟨2, by decide⟩),
    .op .ADD,
    .op .MLOAD,
-   .push 0 0,
+   .op .NOT,
+   .push 1 0,
    .op .BYTE,
-   .push 1 255,
-   .op .SUB,
+   .op .JUMPDEST,
    .op .ADD,
    .op (.Dup ⟨2, by decide⟩),
    .op .ADD,
@@ -99,6 +99,21 @@ macro_rules
        Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
        Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt, $ts,*])
 
+theorem byteAt_zero_lnot (w : UInt256) :
+    UInt256.byteAt (UInt256.ofNat 0) (UInt256.lnot w) =
+      UInt256.ofNat 255 - UInt256.byteAt (UInt256.ofNat 0) w := by
+  apply Challenge.EvmProof.Word.word_ext
+  unfold UInt256.byteAt UInt256.lnot
+  rw [show (UInt256.ofNat 0).toNat = 0 by rfl, if_neg (by omega),
+    show 8 * (31 - 0) = 248 by norm_num]
+  have hw : w.toNat < UInt256.size := w.val.isLt
+  simp only [Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.word_toNat_sub, UInt256.size,
+    Nat.shiftRight_eq_div_pow,
+    show (0xff : Nat) = 2 ^ 8 - 1 by norm_num, Nat.and_two_pow_sub_one_eq_mod] at hw ⊢
+  rw [Nat.mod_eq_of_lt (by omega)]
+  omega
+
 theorem run_entry (s : State) (ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) :
     runInstructions entryProgram (st s 464 (ret :: src :: rest) mem AW) =
@@ -120,8 +135,8 @@ theorem run_init (s : State) (ml : Nat) (z ret src : UInt256) (rest : List UInt2
 
 def loadYProgram : List Instr := cellProgram.take 10
 def loadXProgram : List Instr := (cellProgram.drop 10).take 5
-def loadZProgram : List Instr := (cellProgram.drop 15).take 6
-def mathProgram : List Instr := (cellProgram.drop 21).take 5
+def loadZProgram : List Instr := (cellProgram.drop 15).take 7
+def mathProgram : List Instr := (cellProgram.drop 22).take 4
 def cellTailProgram : List Instr := cellProgram.drop 26
 
 theorem run_loadY (s : State) (i src : Nat) (c z ret : UInt256) (rest : List UInt256)
@@ -158,20 +173,20 @@ theorem run_loadZ (s : State) (i z : Nat) (xy c ret src : UInt256) (rest : List 
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) (hz : z ≤ 8192) :
     runInstructions loadZProgram
       (st s 489 (xy :: UInt256.ofNat i :: c :: UInt256.ofNat z :: ret :: src :: rest) mem AW) =
-      some (st s 495 (byteW mem (z + i) :: xy :: UInt256.ofNat i :: c :: UInt256.ofNat z :: ret :: src :: rest) mem AW) := by
+      some (st s 497 (UInt256.ofNat 255 - byteW mem (z + i) :: xy :: UInt256.ofNat i :: c :: UInt256.ofNat z :: ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat i + UInt256.ofNat z = UInt256.ofNat (z + i) := by
     rw [Challenge.EvmProof.Word.ofNat_add_ofNat (by omega), Nat.add_comm]
   have h1 : z + i < LIM := by simp only [LIM]; omega
   have haw : MachineState.activeWordsAfter 289 (z + i) 32 = 289 := aw_keep _ _ (by omega)
-  unsigned_run [loadZProgram, cellProgram, hc, zero_lit, hadd, h1, haw]
+  unsigned_run [loadZProgram, cellProgram, hc, zero_lit, hadd, h1, haw, byteAt_zero_lnot]
 
 #check run_loadZ
 
-theorem run_math (s : State) (zb xy i c z ret src : UInt256) (rest : List UInt256)
+theorem run_math (s : State) (zc xy i c z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) :
-    runInstructions mathProgram (st s 495 (zb :: xy :: i :: c :: z :: ret :: src :: rest) mem AW) =
-      some (st s 501 ((c + ((UInt256.ofNat 255 - zb) + xy)) :: i :: c :: z :: ret :: src :: rest) mem AW) := by
+    runInstructions mathProgram (st s 497 (zc :: xy :: i :: c :: z :: ret :: src :: rest) mem AW) =
+      some (st s 501 ((c + (zc + xy)) :: i :: c :: z :: ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [mathProgram, cellProgram, hc]
 
@@ -203,7 +218,7 @@ theorem run_cell (s : State) (i src z : Nat) (c ret : UInt256) (rest : List UInt
     (UInt256.ofNat src) rest mem hcap (by omega)
   have hZ := run_loadZ s (i - 1) z (byteW mem (i - 1) + byteW mem (src + (i - 1))) c ret
     (UInt256.ofNat src) rest mem hcap (by omega) hz
-  have hM := run_math s (byteW mem (z + (i - 1))) (byteW mem (i - 1) + byteW mem (src + (i - 1)))
+  have hM := run_math s (UInt256.ofNat 255 - byteW mem (z + (i - 1))) (byteW mem (i - 1) + byteW mem (src + (i - 1)))
     (UInt256.ofNat (i - 1)) c (UInt256.ofNat z) ret (UInt256.ofNat src) rest mem hcap
   have hT := run_cell_tail s (i - 1) (sumWord mem src z (i - 1) c) c (UInt256.ofNat z) ret
     (UInt256.ofNat src) rest mem hcap (by omega)
