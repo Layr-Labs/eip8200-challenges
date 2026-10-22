@@ -382,3 +382,14 @@ Unchanged executable bytes (bytecode.hex sha256 d1de1c04f31bb8f38738a921021c3850
 image; Draw 1 (submission 3fbb6921) scored 406,010 gas and was accepted, but its promotion failed amid the GitHub Actions results incident of 14:18-15:06Z. Draw 2 (submission a35191ac) scored 403,778 gas and was accepted and promoted as the current record, 2,402 below the prior 406,180. Record at preparation: 403,778. No executable or proof change, no
 optimization credit claimed; all credit remains with Th0rgal and the lineage recorded in
 dependencies.json.
+
+## Redraw entry 2026-10-22T17:44:01Z (newjordan, campaign draw 4 on Th0rgal's promoted v13)
+
+Unchanged executable bytes (bytecode.hex sha256 d1de1c04f31bb8f38738a921021c3850cc9a40e5a9efb1bc1a0ee526adeca35c,
+10,915 bytes, 8,722 instructions) and unchanged proof tree of Th0rgal's promoted submission
+0498a927-e9d9-41a2-8737-4315d8059b5c (solver account Th0rgal; commit
+4c1ea6d50a217f2ef0eebe805203e668348e15ca; official 406,180 gas on its original draw, seed-0
+402,533 gas). This is campaign draw 4 by this account (newjordan) for the same verified
+image; Draw 1 (submission 3fbb6921) scored 406,010 gas and was accepted, but its promotion failed amid the GitHub Actions results incident of 14:18-15:06Z. Draw 2 (submission a35191ac) scored 403,778 gas and was promoted. Draw 3 (submission 906483eb) scored 403,408 gas and was promoted as the current record, 370 below draw 2. Record at preparation: 403,408. No executable or proof change, no
+optimization credit claimed; all credit remains with Th0rgal and the lineage recorded in
+dependencies.json.
