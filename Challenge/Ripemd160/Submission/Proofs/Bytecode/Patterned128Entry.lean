@@ -22,8 +22,8 @@ private def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
  .push 2 (UInt256.ofNat target), .op .JUMPI]
 private theorem short_slice : (Artifact.submissionArtifact.instructions.drop 3383).take shortTemplate.length = shortTemplate := by rfl
-private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3416).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
-private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3421).take (longTemplate 376 6883).length = longTemplate 376 6883 := by rfl
+private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3507).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
+private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3512).take (longTemplate 376 6883).length = longTemplate 376 6883 := by rfl
 private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
  change submissionBytecode.size < 2^256
  rw [referenceBytecode_size]
@@ -33,21 +33,21 @@ private def shortSite : GenericRoundSite Artifact.submissionArtifact .Osaka shor
   (by change 3383 + shortTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
 private def long256Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 256 7805) :=
- StackSiteBuilder.ofSlice (longTemplate 256 7805) 3416 long256_slice
-  (by change 3416 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 256 7805) 3507 long256_slice
+  (by change 3507 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 7805) (by decide)) (by decide)
 private def long376Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 376 6883) :=
- StackSiteBuilder.ofSlice (longTemplate 376 6883) 3421 long376_slice
-  (by change 3421 + (longTemplate 376 6883).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 376 6883) 3512 long376_slice
+  (by change 3512 + (longTemplate 376 6883).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 6883) (by decide)) (by decide)
 private theorem short_pc : shortSite.startPC = UInt256.ofNat 4565 := by
  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3383) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4685 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3416) = _
+private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4906 := by
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3507) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4694 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3421) = _
+private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4915 := by
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3512) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
@@ -84,12 +84,12 @@ private def soundShort (input : ByteArray) (t : State) (hr : runInstrSeq shortTe
  GasSteps (PatternedScan.stS input 4565 []) t :=
  RecognitionLift.gasSteps_of_raw shortSite _ _ rfl rfl rfl deployAddress_not_precompile short_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-private def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 7805) (PatternedScan.stS input 4685 []) = some t) :
- GasSteps (PatternedScan.stS input 4685 []) t :=
+private def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 7805) (PatternedScan.stS input 4906 []) = some t) :
+ GasSteps (PatternedScan.stS input 4906 []) t :=
  RecognitionLift.gasSteps_of_raw long256Site _ _ rfl rfl rfl deployAddress_not_precompile long256_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 6883) (PatternedScan.stS input 4694 []) = some t) :
- GasSteps (PatternedScan.stS input 4694 []) t :=
+private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 6883) (PatternedScan.stS input 4915 []) = some t) :
+ GasSteps (PatternedScan.stS input 4915 []) t :=
  RecognitionLift.gasSteps_of_raw long376Site _ _ rfl rfl rfl deployAddress_not_precompile long376_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
 private theorem selected_valid (input : ByteArray) (hn : RecognitionAccumulator.Allowed input.size)
@@ -162,25 +162,25 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ Rec
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (Artifact.submissionArtifact.instructions.drop 3426).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (Artifact.submissionArtifact.instructions.drop 3517).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (Artifact.submissionArtifact.instructions.drop 125).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3426 fallback_slice
-  (by change 3426 + fallbackTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 3517 fallback_slice
+  (by change 3517 + fallbackTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite Artifact.submissionArtifact .Osaka genericTemplate :=
  StackSiteBuilder.ofSlice genericTemplate 125 generic_slice
   (by change 125 + genericTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
-private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4703 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3426) = _
+private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4924 := by
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3517) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 125) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def gasSteps_fallback (input : ByteArray) :
- GasSteps (PatternedScan.stS input 4703 []) (PatternedScan.stS input 246 []) := by
- have hj : runInstrSeq fallbackTemplate (PatternedScan.stS input 4703 []) = some (PatternedScan.stS input 245 []) := by
+ GasSteps (PatternedScan.stS input 4924 []) (PatternedScan.stS input 246 []) := by
+ have hj : runInstrSeq fallbackTemplate (PatternedScan.stS input 4924 []) = some (PatternedScan.stS input 245 []) := by
   simp [fallbackTemplate,runInstrSeq,DataStepper.runInstr,PatternedScan.stS,initialState,
    Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,DirectGuard.generic_dest]
  have hg : runInstrSeq genericTemplate (PatternedScan.stS input 245 []) = some (PatternedScan.stS input 246 []) := by

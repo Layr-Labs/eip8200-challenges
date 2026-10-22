@@ -131,12 +131,8 @@ theorem correct_of_recognition
     · have hs4 := AbcArm.size_lt_four_of_wordCond input hfit hw
       by_cases hempty : input.size = 0
       · exact AbcArm.correct_empty input hfit (TinyGuardLogic.input_eq_empty input hempty) harm
-      · have hwU : EntryGateLogic.wordCond input = 0 := by
-          have h := AbcArm.wordCond_eq_U input (AbcArm.small_of_wordCond input hfit hw)
-          rw [h] at hw
-          exact hw
-        exact AbcArm.correct_abc input hfit
-          (EntryGateLogic.wordCond_zero_size_pos input hfit (by omega) hs4 hwU) harm
+      · exact AbcArm.correct_abc input hfit
+          (AbcArm.wordCond_zero_size_pos input hfit (by omega) hs4 hw) harm
     · have hpositive : 0 < input.size := by
         by_contra hn
         have he := TinyGuardLogic.input_eq_empty input (by omega)

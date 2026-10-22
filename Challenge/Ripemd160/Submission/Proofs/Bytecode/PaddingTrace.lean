@@ -411,12 +411,12 @@ private theorem run_footJump (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock (footerB.drop 3) (footerPreJump input) =
       some (footerEntered input) := by
   obtain ⟨loc, hloc, hidx, hins⟩ :
-      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 5447 ∧ loc.instruction = .op .JUMP :=
+      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 5438 ∧ loc.instruction = .op .JUMP :=
     ⟨_, rfl, rfl, rfl⟩
   have hpc : (footerPreJump input).pc.toNat =
       Artifact.submissionArtifact.instructionPC loc.index := by
     rw [hidx]
-    change 9741 = Artifact.submissionArtifact.instructionPC 5447
+    change 9741 = Artifact.submissionArtifact.instructionPC 5438
     rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (footerPreJump input) =
       some (footerEntered input) := by

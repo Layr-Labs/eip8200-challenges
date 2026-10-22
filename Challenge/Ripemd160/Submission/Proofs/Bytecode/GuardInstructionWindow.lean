@@ -8,15 +8,15 @@ open EvmSemantics YulEvmCompiler Challenge.EvmProof ArtifactByteLength
 open Artifact (op)
 def tail : List Instr :=
 [
+  .push 32 109629802895867119430885776324251105184819939959857484870201727791975914012671,
+  op 0x80,
   .push 0 0,
   op 0x35,
-  .push 1 232,
-  op 0x1d,
-  op 0x36,
-  .push 3 2127393,
-  op 0x02,
   op 0x18,
-  .push 2 4684,
+  op 0x36,
+  op 0x1d,
+  op 0x18,
+  .push 2 4905,
   op 0x57,
   .push 20 95383801997447390147238369573240532004699299169,
   op 0x36,

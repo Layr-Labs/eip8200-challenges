@@ -190,15 +190,15 @@ end missJump
 
 namespace missTail
 abbrev template : List Instr := [ .op .JUMPDEST ]
-theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 5429).take template.length = template := by rfl
+theorem actual_slice : (Artifact.submissionArtifact.instructions.drop 5420).take template.length = template := by rfl
 def site : GenericRoundSite Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 5429 actual_slice
-    (by change 5429 + template.length ≤ Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 5420 actual_slice
+    (by change 5420 + template.length ≤ Artifact.submissionInstructions.length
         rw [Artifact.referenceInstructions_count]; decide)
     StackRoundData.artifact_code_bound
     (StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 9715 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5429) = UInt256.ofNat 9715
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5420) = UInt256.ofNat 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 def lift (s t : State) (e : Env s) (stack : List UInt256)
     (h : runInstrSeq template (atState s 9715 stack) = some t) :

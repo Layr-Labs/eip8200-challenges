@@ -6555,4510 +6555,2260 @@ private def submissionInstructionsChunk17 : List Instr :=
 [
 
   op 0x96,
-
   op 0x8b,
-
   op 0x02,
-
   op 0x88,
-
   op 0x1c,
-
   op 0x95,
-
   op 0x8a,
-
   op 0x8d,
-
   op 0x16,
-
   op 0x87,
-
   op 0x17,
-
   op 0x88,
-
   op 0x18,
-
   op 0x8d,
-
   op 0x18,
-
   op 0x8b,
-
   op 0x18,
-
   .push ⟨2, by decide⟩ (UInt256.ofNat 594),
-
   op 0x51,
-
   op 0x01,
-
   op 0x8a,
-
   op 0x01,
-
   op 0x01,
-
   op 0x84,
-
   op 0x16,
-
   op 0x8b,
-
   op 0x02,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 22),
-
   op 0x1c,
-
   op 0x01,
-
   op 0x83,
-
   op 0x16,
-
   op 0x98,
-
   op 0x8a,
-
   op 0x02,
-
   op 0x87,
-
   op 0x1c,
-
   op 0x8a,
-
   op 0x87,
-
   op 0x02,
-
   op 0x88,
-
   op 0x1c,
-
   op 0x8c,
-
   op 0x8b,
-
   op 0x83,
-
   op 0x19,
-
   op 0x8a,
-
   op 0x17,
-
   op 0x18,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x51,
-
   op 0x85,
-
   op 0x01,
-
   op 0x01,
-
   op 0x8b,
-
   op 0x01,
-
   op 0x16,
-
   op 0x8c,
-
   op 0x02,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 25),
-
   op 0x1c,
-
   op 0x87,
-
   op 0x01,
-
   op 0x8d,
-
   op 0x16,
-
   .push ⟨2, by decide⟩ (UInt256.ofNat 612),
-
   op 0x51,
-
   op 0x8b,
-
   op 0x82,
-
   op 0x8e,
-
   op 0x85,
-
   op 0x19,
-
   op 0x17,
-
   op 0x18,
-
   op 0x01,
-
   op 0x01,
-
   op 0x88,
-
   op 0x01,
-
   op 0x8e,
-
   op 0x16,
-
   op 0x8d,
-
   op 0x02,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 28),
-
   op 0x1c,
-
   op 0x83,
-
   op 0x01,
-
   op 0x8c,
-
   op 0x8e,
-
   op 0x02,
-
   op 0x8b,
-
   op 0x1c,
-
   op 0x9b,
-
   op 0x81,
-
   op 0x83,
-
   op 0x8e,
-
   op 0x19,
-
   op 0x17,
-
   op 0x18,
-
   op 0x85,
-
   op 0x01,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
-
   op 0x51,
-
   op 0x01,
-
   op 0x01,
-
   op 0x8f,
-
   op 0x16,
-
   op 0x8e,
-
   op 0x02,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 27),
-
   op 0x1c,
-
   op 0x83,
-
   op 0x01,
-
   op 0x93,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-
   op 0x1c,
-
   op 0x01,
-
   op 0x96,
-
   op 0x50,
-
   op 0x8c,
-
   op 0x02,
-
   op 0x93,
-
   op 0x50,
-
   op 0x96,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-
   op 0x1c,
-
   op 0x01,
-
   op 0x94,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-
   op 0x1c,
-
   op 0x92,
-
   op 0x50,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-
   op 0x1c,
-
   op 0x97,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-
   op 0x1c,
-
   op 0x95,
-
   op 0x1c,
-
   op 0x01,
-
   op 0x8f,
-
   op 0x01,
-
   op 0x88,
-
   op 0x16,
-
   op 0x9f,
-
   op 0x01,
-
   op 0x87,
-
   op 0x16,
-
   op 0x9f,
-
   op 0x01,
-
   op 0x86,
-
   op 0x16,
-
   op 0x9a,
-
   op 0x01,
-
   op 0x01,
-
   op 0x84,
-
   op 0x16,
-
   op 0x99,
-
   op 0x01,
-
   op 0x01,
-
   op 0x82,
-
   op 0x16,
-
   op 0x98,
-
   op 0x9c,
-
   op 0x56,
-
   op 0x5b,
-
   op 0x81,
-
   op 0x81,
-
   op 0x53,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 1),
-
   op 0x01,
-
   op 0x90,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
-
   op 0x1c,
-
   op 0x90,
-
   op 0x81,
-
   op 0x83,
-
   op 0x57,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 198),
-
   op 0x56,
-
   op 0x5b,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   .push ⟨32, by decide⟩ (UInt256.ofNat 28948022349768971278010700369584604374341282260324016856826403983149888438272),
-
   op 0x36,
-
   op 0x1b,
-
   op 0x12,
-
   .push ⟨2, by decide⟩ (UInt256.ofNat 8191),
-
   op 0x36,
-
   .push ⟨7, by decide⟩ (UInt256.ofNat 34711266746334640),
-
   op 0x04,
-
   op 0x16,
-
   op 0x57,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 232),
-
-  op 0x1d,
-
-  op 0x36,
-
-  .push ⟨3, by decide⟩ (UInt256.ofNat 2127393),
 
 ]
 
-@[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 197 := by rfl
+@[simp] private theorem submissionInstructionsChunk17_length : submissionInstructionsChunk17.length = 191 := by rfl
 
 private def submissionInstructionsChunk18 : List Instr :=
 [
 
-  op 0x02,
-
+  .push ⟨32, by decide⟩ (UInt256.ofNat 109629802895867119430885776324251105184819939959857484870201727791975914012671),
+  op 0x80,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
   op 0x18,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4684),
-
+  op 0x36,
+  op 0x1d,
+  op 0x18,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4905),
   op 0x57,
-
   .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169),
-
   op 0x36,
-
   op 0x1c,
-
   .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992),
-
   op 0x18,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x52,
-
   op 0x59,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0xf3,
-
+  .push ⟨1, by decide⟩ (UInt256.ofNat 0),
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x5b,
-
-  op 0x36,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
-
-  op 0x14,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 7805),
-
-  op 0x57,
-
-  op 0x36,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 376),
-
-  op 0x14,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 6883),
-
-  op 0x57,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 245),
-
-  op 0x56,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 972889429405991776604892044862621566948497025487),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x5b,
-
   op 0x50,
-
   op 0x50,
-
   op 0x50,
-
   op 0x50,
-
   op 0x50,
-
   op 0x50,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-
   op 0x52,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 12),
-
   op 0x52,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 8),
-
   op 0x52,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 4),
-
   op 0x52,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x52,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-
   op 0x51,
-
   op 0x80,
-
   op 0x85,
-
   op 0x16,
-
   .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
-
   op 0x02,
-
   op 0x01,
-
   op 0x80,
-
   op 0x84,
-
   op 0x16,
-
   .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
-
   op 0x02,
-
   op 0x01,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-
   op 0x52,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 32),
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0xf3,
-
   op 0x5b,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 251),
-
   op 0x5b,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x52,
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
-
   op 0x56,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
-
   op 0x00,
 
 ]
 
-@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 87 := by rfl
+@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 93 := by rfl
 
 private def submissionInstructionsChunk19 : List Instr :=
 [
 
   op 0x5b,
-
   .push ⟨20, by decide⟩ (UInt256.ofNat 317028691540587235129640223973284367834059040749),
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x52,
-
   .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975872),
-
   op 0x59,
-
   op 0x35,
-
   op 0x18,
-
   .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x35,
-
   op 0x18,
-
   op 0x17,
-
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
   op 0x57,
-
   op 0x59,
-
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x80,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x01,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
   op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 153055736697849525067355378316411867211147587005),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 444633252455795925629383436637892360005217141692),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785155743950553550422016),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 248818459742486850486840648156276084652376766343),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683784085832794278396428288),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 407177000021581765662970131450951124156487664282),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32114212249411913574506015373503286943680347309611250182818314314694657048576),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 51536278723262616553055226583496568135069946185),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755545344850576737753366528),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1251998741523656777300485297472400595618864439423),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131397888),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1238202210714422317976759695583289414507727951107),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549956536595165141270528),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 788302141291229731098395206502327271368262842391),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1409020389675646681432984939370312113762541159597),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096660961636444662661120),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 352),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 320),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
-
+  op 0x36,
   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
+  op 0x14,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 7805),
   op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 233347948783734465632298330963582576039387513209),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
+  op 0x36,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 376),
+  op 0x14,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 6883),
   op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 524717510892769952200770787354467678713137771213),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3166189940082864718613269121331309980362851143201109172953918312716374638592),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1134778670259348587079032227229296800638025290378),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
-
-  op 0x35,
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x00,
-
-  op 0x5b,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 766350606435067737561421097975693824639675460820),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-
-  op 0x18,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 61821667978346190508367113296461235097149102864125981106379559752976323051520),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 992),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104959897329117896043773191804629606132065345282427999722572264347735143562851),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 960),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32760124039862072446094763521134710112179262718149015609381827110154465287875),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 928),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 76352433059321876089018728610455086547540280237460071487368427221285114347043),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 896),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3698580074523731380143658694904392794145479585395492137291995262626888769155),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 864),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 47290896022584104812974259679087702470236667366246267071662529221096334016227),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 832),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 90881438194979130071544121542253481765007846674601962450395067397859706478147),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 800),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 18229352057245352370883824551341137419136426248559895144041927247454700928675),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 768),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 56826715109285491886588288863932919461481122179471317155708434242603572649475),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 736),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 99964944460057197417658365000333265008983110649792524411066250919942812480344),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 704),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 27765171170906686111648493904997788654111601456318529829644316518694605722552),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 672),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 71357480190261177462903901806158745424458045604824596175862413793492783264536),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 640),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 114495716442779228177599816899295959524333229618400580865243565842747687326584),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 608),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 42295943153523406186859432874791361347154437925907650294984216381394370081752),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 576),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 85886485325918431445429294737957140641925612041966487138889053970067375395640),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 544),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 13234399188185065120908328048561044029120654793074898660380120195173737984920),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 512),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 51831762240224793260473462059636578338398830207588964899999620789799687738360),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 480),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 95422304439579765186193964091613791876900787249725120615565623626678088706125),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 448),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 22770218301845987485533667100701447531029366823683054518138303090902274640045),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 416),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 66362527321200478836789075001862404301375810972189120864356400365700452182029),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 384),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096668640191182717274221),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 352),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 320),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-
-  op 0x59,
-
-  op 0x35,
-
-  op 0x18,
-
-  op 0x17,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-
-  op 0x57,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x5b,
-
-  op 0x90,
-
-  op 0x5b,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 944),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 912),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 880),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 848),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 816),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 784),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 752),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 720),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 688),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 656),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 624),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 592),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 560),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 528),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 496),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 464),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 432),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 400),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 368),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 336),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 304),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 272),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 240),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 208),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 176),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 112),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 80),
-
-  op 0x35,
-
-  op 0x82,
-
-  op 0x14,
-
-  op 0x16,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-
-  op 0x35,
-
-  op 0x02,
-
-  op 0x18,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 9662),
-
-  op 0x57,
-
-  .push ⟨20, by decide⟩ (UInt256.ofNat 972889429405991776604892044862621566948497025487),
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0x52,
-
-  op 0x59,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
-  op 0xf3,
-
-  op 0x5b,
-
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
-
   op 0x56,
-
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x80,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x01,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x5b,
-
-  op 0x50,
-
-  op 0x50,
-
-  op 0x50,
-
-  op 0x50,
-
-  op 0x50,
-
-  op 0x50,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-
-  op 0x52,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 12),
-
-  op 0x52,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 8),
-
-  op 0x52,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 4),
-
-  op 0x52,
-
+  .push ⟨20, by decide⟩ (UInt256.ofNat 153055736697849525067355378316411867211147587005),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
   op 0x52,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
-
-  op 0x51,
-
-  op 0x80,
-
-  op 0x85,
-
-  op 0x16,
-
-  .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
-
-  op 0x02,
-
-  op 0x01,
-
-  op 0x80,
-
-  op 0x84,
-
-  op 0x16,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
-
-  op 0x02,
-
-  op 0x01,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-
-  op 0x52,
-
-  op 0x36,
-
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-
+  op 0x35,
+  op 0x18,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
-
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x5b,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-
-  op 0x8c,
-
-  op 0x36,
-
-  op 0x01,
-
-  op 0x53,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
-
-  op 0x36,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
-
-  op 0x1b,
-
-  op 0x36,
-
-  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
-
-  op 0x01,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 63),
-
+  .push ⟨20, by decide⟩ (UInt256.ofNat 444633252455795925629383436637892360005217141692),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785155743950553550422016),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
   op 0x17,
-
-  .push ⟨1, by decide⟩ (UInt256.ofNat 89),
-
-  op 0x01,
-
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 248818459742486850486840648156276084652376766343),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683784085832794278396428288),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 407177000021581765662970131450951124156487664282),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32114212249411913574506015373503286943680347309611250182818314314694657048576),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 51536278723262616553055226583496568135069946185),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755545344850576737753366528),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1251998741523656777300485297472400595618864439423),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131397888),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1238202210714422317976759695583289414507727951107),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549956536595165141270528),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 788302141291229731098395206502327271368262842391),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1409020389675646681432984939370312113762541159597),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096660961636444662661120),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 352),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 320),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 233347948783734465632298330963582576039387513209),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 524717510892769952200770787354467678713137771213),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3166189940082864718613269121331309980362851143201109172953918312716374638592),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1134778670259348587079032227229296800638025290378),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 766350606435067737561421097975693824639675460820),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 61821667978346190508367113296461235097149102864125981106379559752976323051520),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 992),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104959897329117896043773191804629606132065345282427999722572264347735143562851),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 960),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32760124039862072446094763521134710112179262718149015609381827110154465287875),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 928),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 76352433059321876089018728610455086547540280237460071487368427221285114347043),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 896),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3698580074523731380143658694904392794145479585395492137291995262626888769155),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 864),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 47290896022584104812974259679087702470236667366246267071662529221096334016227),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 832),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 90881438194979130071544121542253481765007846674601962450395067397859706478147),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 800),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 18229352057245352370883824551341137419136426248559895144041927247454700928675),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 768),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 56826715109285491886588288863932919461481122179471317155708434242603572649475),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 736),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 99964944460057197417658365000333265008983110649792524411066250919942812480344),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 704),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 27765171170906686111648493904997788654111601456318529829644316518694605722552),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 672),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 71357480190261177462903901806158745424458045604824596175862413793492783264536),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 640),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 114495716442779228177599816899295959524333229618400580865243565842747687326584),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 608),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 42295943153523406186859432874791361347154437925907650294984216381394370081752),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 576),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 85886485325918431445429294737957140641925612041966487138889053970067375395640),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 544),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 13234399188185065120908328048561044029120654793074898660380120195173737984920),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 512),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 51831762240224793260473462059636578338398830207588964899999620789799687738360),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 480),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 95422304439579765186193964091613791876900787249725120615565623626678088706125),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 448),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 22770218301845987485533667100701447531029366823683054518138303090902274640045),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 416),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 66362527321200478836789075001862404301375810972189120864356400365700452182029),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 384),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096668640191182717274221),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 352),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 320),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x5b,
+  op 0x90,
+  op 0x5b,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
+  op 0x35,
   op 0x82,
-
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 944),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 912),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 880),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 848),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 816),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 784),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 752),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 720),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 688),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 656),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 624),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 592),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 560),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 528),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 496),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 464),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 432),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 400),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 368),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 336),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 304),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 272),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 240),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 208),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 176),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 144),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 112),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 80),
+  op 0x35,
+  op 0x82,
+  op 0x14,
+  op 0x16,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+  op 0x35,
+  op 0x02,
+  op 0x18,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 9662),
+  op 0x57,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 972889429405991776604892044862621566948497025487),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x5b,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 245),
+  op 0x56,
+  op 0x5b,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  op 0x50,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+  op 0x52,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 12),
+  op 0x52,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 8),
+  op 0x52,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 4),
+  op 0x52,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 16),
+  op 0x51,
+  op 0x80,
+  op 0x85,
+  op 0x16,
+  .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295),
+  op 0x02,
+  op 0x01,
+  op 0x80,
+  op 0x84,
+  op 0x16,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 65535),
+  op 0x02,
+  op 0x01,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+  op 0x52,
+  op 0x36,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x5b,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  op 0x8c,
+  op 0x36,
+  op 0x01,
+  op 0x53,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
+  op 0x36,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+  op 0x1b,
+  op 0x36,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 968),
+  op 0x01,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 63),
+  op 0x17,
+  .push ⟨1, by decide⟩ (UInt256.ofNat 89),
+  op 0x01,
+  op 0x82,
   op 0x56,
 
 ]
 
-@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 1960 := by rfl
+@[simp] private theorem submissionInstructionsChunk19_length : submissionInstructionsChunk19.length = 1951 := by rfl
 
 def submissionInstructions : List Instr :=
 submissionInstructionsChunk0
@@ -11082,7 +8832,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
 
-theorem referenceInstructions_count : submissionInstructions.length = 5448 := by
+theorem referenceInstructions_count : submissionInstructions.length = 5439 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
@@ -11437,22 +9187,22 @@ private theorem submissionInstructionsChunk17_assemble : Challenge.EvmProof.PcEn
   87, 96, 198, 86, 91, 95, 127, 64, 0, 0, 1, 128, 0, 1, 129, 192,
   0, 0, 0, 0, 0, 1, 128, 128, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 54, 27, 18, 97, 31, 255, 54, 102, 123,
-  81, 182, 148, 30, 125, 176, 4, 22, 87, 95, 53, 96, 232, 29, 54, 98,
-  32, 118, 33,
+  81, 182, 148, 30, 125, 176, 4, 22, 87,
 ] := by decide
 
 private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18 = [
-  2, 24, 97, 18, 76, 87, 115, 16, 181, 40, 89, 5, 22, 178, 98, 175,
-  214, 144, 26, 176, 43, 33, 241, 110, 170, 221, 97, 54, 28, 115, 140, 164,
-  173, 252, 192, 255, 78, 54, 206, 254, 152, 141, 206, 195, 212, 185, 220, 143,
-  80, 80, 24, 95, 82, 89, 95, 243, 91, 54, 97, 1, 0, 20, 97, 30,
-  125, 87, 54, 97, 1, 120, 20, 97, 26, 227, 87, 96, 245, 86, 91, 115,
-  170, 105, 222, 238, 154, 137, 34, 233, 47, 129, 5, 224, 7, 247, 97, 16,
-  243, 129, 233, 207, 95, 82, 89, 95, 243, 91, 80, 80, 80, 80, 80, 80,
-  96, 16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82, 96, 16,
-  81, 128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97, 255,
-  255, 2, 1, 96, 3, 82, 96, 32, 95, 243, 91, 96, 251, 91, 95, 95,
-  82, 96, 245, 86, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  127, 242, 96, 68, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+  255, 128, 95, 53, 24, 54, 29, 24, 97, 19, 41, 87, 115, 16, 181, 40,
+  89, 5, 22, 178, 98, 175, 214, 144, 26, 176, 43, 33, 241, 110, 170, 221,
+  97, 54, 28, 115, 140, 164, 173, 252, 192, 255, 78, 54, 206, 254, 152, 141,
+  206, 195, 212, 185, 220, 143, 80, 80, 24, 95, 82, 89, 95, 243, 96, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82,
+  96, 8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255,
+  255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3, 82,
+  96, 32, 95, 243, 91, 96, 251, 91, 95, 95, 82, 96, 245, 86, 0, 0,
+  0, 0, 0, 0, 0, 0, 0,
 ] := by decide
 
 private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
@@ -11462,8 +9212,8 @@ private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEn
   250, 31, 68, 105, 142, 179, 216, 253, 0, 89, 53, 24, 127, 7, 44, 81,
   118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161,
   198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24,
-  23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  23, 97, 18, 177, 87, 89, 95, 243, 91, 54, 97, 1, 0, 20, 97, 30,
+  125, 87, 54, 97, 1, 120, 20, 97, 26, 227, 87, 96, 245, 86, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -11950,12 +9700,12 @@ private theorem chunk16_byteLength :
   rfl
 
 private theorem chunk17_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 259 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 249 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk18_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 173 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 183 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
@@ -11986,7 +9736,7 @@ private theorem tailPrefix_length : tailPrefix.length = 3488 := by
 private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4801 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
 
-private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1960) :
+private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1951) :
     submissionArtifact.instructionPC (3488 + i) =
       4801 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk19.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
@@ -12659,79 +10409,79 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem pcU2_268 :
-    submissionArtifact.instructionPC 5430 = 9716 := by
+    submissionArtifact.instructionPC 5421 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_268 :
-    instructionPC 5430 = 9716 := by
-  change submissionArtifact.instructionPC 5430 = 9716
+    instructionPC 5421 = 9716 := by
+  change submissionArtifact.instructionPC 5421 = 9716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_270 :
-    submissionArtifact.instructionPC 5432 = 9719 := by
+    submissionArtifact.instructionPC 5423 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_270 :
-    instructionPC 5432 = 9719 := by
-  change submissionArtifact.instructionPC 5432 = 9719
+    instructionPC 5423 = 9719 := by
+  change submissionArtifact.instructionPC 5423 = 9719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_271 :
-    submissionArtifact.instructionPC 5433 = 9720 := by
+    submissionArtifact.instructionPC 5424 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_271 :
-    instructionPC 5433 = 9720 := by
-  change submissionArtifact.instructionPC 5433 = 9720
+    instructionPC 5424 = 9720 := by
+  change submissionArtifact.instructionPC 5424 = 9720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_272 :
-    submissionArtifact.instructionPC 5434 = 9721 := by
+    submissionArtifact.instructionPC 5425 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_272 :
-    instructionPC 5434 = 9721 := by
-  change submissionArtifact.instructionPC 5434 = 9721
+    instructionPC 5425 = 9721 := by
+  change submissionArtifact.instructionPC 5425 = 9721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_273 :
-    submissionArtifact.instructionPC 5436 = 9725 := by
+    submissionArtifact.instructionPC 5427 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_273 :
-    instructionPC 5436 = 9725 := by
-  change submissionArtifact.instructionPC 5436 = 9725
+    instructionPC 5427 = 9725 := by
+  change submissionArtifact.instructionPC 5427 = 9725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_274 :
-    submissionArtifact.instructionPC 5437 = 9726 := by
+    submissionArtifact.instructionPC 5428 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_274 :
-    instructionPC 5437 = 9726 := by
-  change submissionArtifact.instructionPC 5437 = 9726
+    instructionPC 5428 = 9726 := by
+  change submissionArtifact.instructionPC 5428 = 9726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_275 :
-    submissionArtifact.instructionPC 5438 = 9728 := by
+    submissionArtifact.instructionPC 5429 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_275 :
-    instructionPC 5438 = 9728 := by
-  change submissionArtifact.instructionPC 5438 = 9728
+    instructionPC 5429 = 9728 := by
+  change submissionArtifact.instructionPC 5429 = 9728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -13461,27 +11211,27 @@ private def wfOp {op : Operation}
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc54 :
-    submissionArtifact.instructionPC 3429 = 4707 := by
+    submissionArtifact.instructionPC 3429 = 4727 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci54 :
-    instructionPC 3429 = 4707 := by
-  change submissionArtifact.instructionPC 3429 = 4707
+    instructionPC 3429 = 4727 := by
+  change submissionArtifact.instructionPC 3429 = 4727
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc55 :
-    submissionArtifact.instructionPC 3429 = 4707 := by
+    submissionArtifact.instructionPC 3429 = 4727 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci55 :
-    instructionPC 3429 = 4707 := by
-  change submissionArtifact.instructionPC 3429 = 4707
+    instructionPC 3429 = 4727 := by
+  change submissionArtifact.instructionPC 3429 = 4727
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -13630,24 +11380,24 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc74 :
-    submissionArtifact.instructionPC 5429 = 9715 := by
+    submissionArtifact.instructionPC 5420 = 9715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci74 :
-    instructionPC 5429 = 9715 := by
-  change submissionArtifact.instructionPC 5429 = 9715
+    instructionPC 5420 = 9715 := by
+  change submissionArtifact.instructionPC 5420 = 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc75 :
-    submissionArtifact.instructionPC 5429 = 9715 := by
+    submissionArtifact.instructionPC 5420 = 9715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci75 :
-    instructionPC 5429 = 9715 := by
-  change submissionArtifact.instructionPC 5429 = 9715
+    instructionPC 5420 = 9715 := by
+  change submissionArtifact.instructionPC 5420 = 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -13773,145 +11523,145 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc109 :
-    submissionArtifact.instructionPC 5439 = 9729 := by
+    submissionArtifact.instructionPC 5430 = 9729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci109 :
-    instructionPC 5439 = 9729 := by
-  change submissionArtifact.instructionPC 5439 = 9729
+    instructionPC 5430 = 9729 := by
+  change submissionArtifact.instructionPC 5430 = 9729
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc110 :
-    submissionArtifact.instructionPC 5440 = 9730 := by
+    submissionArtifact.instructionPC 5431 = 9730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci110 :
-    instructionPC 5440 = 9730 := by
-  change submissionArtifact.instructionPC 5440 = 9730
+    instructionPC 5431 = 9730 := by
+  change submissionArtifact.instructionPC 5431 = 9730
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc111 :
-    submissionArtifact.instructionPC 5441 = 9733 := by
+    submissionArtifact.instructionPC 5432 = 9733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci111 :
-    instructionPC 5441 = 9733 := by
-  change submissionArtifact.instructionPC 5441 = 9733
+    instructionPC 5432 = 9733 := by
+  change submissionArtifact.instructionPC 5432 = 9733
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc112 :
-    submissionArtifact.instructionPC 5442 = 9734 := by
+    submissionArtifact.instructionPC 5433 = 9734 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci112 :
-    instructionPC 5442 = 9734 := by
-  change submissionArtifact.instructionPC 5442 = 9734
+    instructionPC 5433 = 9734 := by
+  change submissionArtifact.instructionPC 5433 = 9734
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc113 :
-    submissionArtifact.instructionPC 5443 = 9736 := by
+    submissionArtifact.instructionPC 5434 = 9736 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci113 :
-    instructionPC 5443 = 9736 := by
-  change submissionArtifact.instructionPC 5443 = 9736
+    instructionPC 5434 = 9736 := by
+  change submissionArtifact.instructionPC 5434 = 9736
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc116 :
-    submissionArtifact.instructionPC 5430 = 9716 := by
+    submissionArtifact.instructionPC 5421 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci116 :
-    instructionPC 5430 = 9716 := by
-  change submissionArtifact.instructionPC 5430 = 9716
+    instructionPC 5421 = 9716 := by
+  change submissionArtifact.instructionPC 5421 = 9716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc117 :
-    submissionArtifact.instructionPC 5431 = 9718 := by
+    submissionArtifact.instructionPC 5422 = 9718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci117 :
-    instructionPC 5431 = 9718 := by
-  change submissionArtifact.instructionPC 5431 = 9718
+    instructionPC 5422 = 9718 := by
+  change submissionArtifact.instructionPC 5422 = 9718
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc118 :
-    submissionArtifact.instructionPC 5432 = 9719 := by
+    submissionArtifact.instructionPC 5423 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci118 :
-    instructionPC 5432 = 9719 := by
-  change submissionArtifact.instructionPC 5432 = 9719
+    instructionPC 5423 = 9719 := by
+  change submissionArtifact.instructionPC 5423 = 9719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc119 :
-    submissionArtifact.instructionPC 5433 = 9720 := by
+    submissionArtifact.instructionPC 5424 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci119 :
-    instructionPC 5433 = 9720 := by
-  change submissionArtifact.instructionPC 5433 = 9720
+    instructionPC 5424 = 9720 := by
+  change submissionArtifact.instructionPC 5424 = 9720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc120 :
-    submissionArtifact.instructionPC 5434 = 9721 := by
+    submissionArtifact.instructionPC 5425 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci120 :
-    instructionPC 5434 = 9721 := by
-  change submissionArtifact.instructionPC 5434 = 9721
+    instructionPC 5425 = 9721 := by
+  change submissionArtifact.instructionPC 5425 = 9721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc121 :
-    submissionArtifact.instructionPC 5436 = 9725 := by
+    submissionArtifact.instructionPC 5427 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci121 :
-    instructionPC 5436 = 9725 := by
-  change submissionArtifact.instructionPC 5436 = 9725
+    instructionPC 5427 = 9725 := by
+  change submissionArtifact.instructionPC 5427 = 9725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc122 :
-    submissionArtifact.instructionPC 5437 = 9726 := by
+    submissionArtifact.instructionPC 5428 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci122 :
-    instructionPC 5437 = 9726 := by
-  change submissionArtifact.instructionPC 5437 = 9726
+    instructionPC 5428 = 9726 := by
+  change submissionArtifact.instructionPC 5428 = 9726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc123 :
-    submissionArtifact.instructionPC 5438 = 9728 := by
+    submissionArtifact.instructionPC 5429 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci123 :
-    instructionPC 5438 = 9728 := by
-  change submissionArtifact.instructionPC 5438 = 9728
+    instructionPC 5429 = 9728 := by
+  change submissionArtifact.instructionPC 5429 = 9728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -14715,13 +12465,13 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cgPc127 :
-    submissionArtifact.instructionPC 5447 = 9741 := by
+    submissionArtifact.instructionPC 5438 = 9741 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci127 :
-    instructionPC 5447 = 9741 := by
-  change submissionArtifact.instructionPC 5447 = 9741
+    instructionPC 5438 = 9741 := by
+  change submissionArtifact.instructionPC 5438 = 9741
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -14915,27 +12665,27 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3461 :
-    submissionArtifact.instructionPC 3416 = 4685 := by
+    submissionArtifact.instructionPC 3416 = 4714 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3461 :
-    instructionPC 3416 = 4685 := by
-  change submissionArtifact.instructionPC 3416 = 4685
+    instructionPC 3416 = 4714 := by
+  change submissionArtifact.instructionPC 3416 = 4714
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3462 :
-    submissionArtifact.instructionPC 3417 = 4686 := by
+    submissionArtifact.instructionPC 3417 = 4715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3462 :
-    instructionPC 3417 = 4686 := by
-  change submissionArtifact.instructionPC 3417 = 4686
+    instructionPC 3417 = 4715 := by
+  change submissionArtifact.instructionPC 3417 = 4715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -14980,66 +12730,66 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3466 :
-    submissionArtifact.instructionPC 3421 = 4694 := by
+    submissionArtifact.instructionPC 3421 = 4719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3466 :
-    instructionPC 3421 = 4694 := by
-  change submissionArtifact.instructionPC 3421 = 4694
+    instructionPC 3421 = 4719 := by
+  change submissionArtifact.instructionPC 3421 = 4719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3467 :
-    submissionArtifact.instructionPC 3422 = 4695 := by
+    submissionArtifact.instructionPC 3422 = 4720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3467 :
-    instructionPC 3422 = 4695 := by
-  change submissionArtifact.instructionPC 3422 = 4695
+    instructionPC 3422 = 4720 := by
+  change submissionArtifact.instructionPC 3422 = 4720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3468 :
-    submissionArtifact.instructionPC 3418 = 4689 := by
+    submissionArtifact.instructionPC 3418 = 4716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3468 :
-    instructionPC 3418 = 4689 := by
-  change submissionArtifact.instructionPC 3418 = 4689
+    instructionPC 3418 = 4716 := by
+  change submissionArtifact.instructionPC 3418 = 4716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3469 :
-    submissionArtifact.instructionPC 3424 = 4699 := by
+    submissionArtifact.instructionPC 3424 = 4722 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3469 :
-    instructionPC 3424 = 4699 := by
-  change submissionArtifact.instructionPC 3424 = 4699
+    instructionPC 3424 = 4722 := by
+  change submissionArtifact.instructionPC 3424 = 4722
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3470 :
-    submissionArtifact.instructionPC 3420 = 4693 := by
+    submissionArtifact.instructionPC 3420 = 4718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3470 :
-    instructionPC 3420 = 4693 := by
-  change submissionArtifact.instructionPC 3420 = 4693
+    instructionPC 3420 = 4718 := by
+  change submissionArtifact.instructionPC 3420 = 4718
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -15058,53 +12808,53 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3472 :
-    submissionArtifact.instructionPC 3396 = 4619 := by
+    submissionArtifact.instructionPC 3396 = 4651 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3472 :
-    instructionPC 3396 = 4619 := by
-  change submissionArtifact.instructionPC 3396 = 4619
+    instructionPC 3396 = 4651 := by
+  change submissionArtifact.instructionPC 3396 = 4651
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3473 :
-    submissionArtifact.instructionPC 3423 = 4698 := by
+    submissionArtifact.instructionPC 3423 = 4721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3473 :
-    instructionPC 3423 = 4698 := by
-  change submissionArtifact.instructionPC 3423 = 4698
+    instructionPC 3423 = 4721 := by
+  change submissionArtifact.instructionPC 3423 = 4721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3474 :
-    submissionArtifact.instructionPC 3424 = 4699 := by
+    submissionArtifact.instructionPC 3424 = 4722 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3474 :
-    instructionPC 3424 = 4699 := by
-  change submissionArtifact.instructionPC 3424 = 4699
+    instructionPC 3424 = 4722 := by
+  change submissionArtifact.instructionPC 3424 = 4722
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3475 :
-    submissionArtifact.instructionPC 3425 = 4702 := by
+    submissionArtifact.instructionPC 3425 = 4723 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3475 :
-    instructionPC 3425 = 4702 := by
-  change submissionArtifact.instructionPC 3425 = 4702
+    instructionPC 3425 = 4723 := by
+  change submissionArtifact.instructionPC 3425 = 4723
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -15123,222 +12873,222 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3477 :
-    submissionArtifact.instructionPC 3396 = 4619 := by
+    submissionArtifact.instructionPC 3396 = 4651 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3477 :
-    instructionPC 3396 = 4619 := by
-  change submissionArtifact.instructionPC 3396 = 4619
+    instructionPC 3396 = 4651 := by
+  change submissionArtifact.instructionPC 3396 = 4651
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3478 :
-    submissionArtifact.instructionPC 3397 = 4620 := by
+    submissionArtifact.instructionPC 3397 = 4652 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3478 :
-    instructionPC 3397 = 4620 := by
-  change submissionArtifact.instructionPC 3397 = 4620
+    instructionPC 3397 = 4652 := by
+  change submissionArtifact.instructionPC 3397 = 4652
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3479 :
-    submissionArtifact.instructionPC 3398 = 4622 := by
+    submissionArtifact.instructionPC 3398 = 4653 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3479 :
-    instructionPC 3398 = 4622 := by
-  change submissionArtifact.instructionPC 3398 = 4622
+    instructionPC 3398 = 4653 := by
+  change submissionArtifact.instructionPC 3398 = 4653
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3480 :
-    submissionArtifact.instructionPC 3399 = 4623 := by
+    submissionArtifact.instructionPC 3399 = 4654 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3480 :
-    instructionPC 3399 = 4623 := by
-  change submissionArtifact.instructionPC 3399 = 4623
+    instructionPC 3399 = 4654 := by
+  change submissionArtifact.instructionPC 3399 = 4654
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3481 :
-    submissionArtifact.instructionPC 3400 = 4624 := by
+    submissionArtifact.instructionPC 3400 = 4655 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3481 :
-    instructionPC 3400 = 4624 := by
-  change submissionArtifact.instructionPC 3400 = 4624
+    instructionPC 3400 = 4655 := by
+  change submissionArtifact.instructionPC 3400 = 4655
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3482 :
-    submissionArtifact.instructionPC 3401 = 4628 := by
+    submissionArtifact.instructionPC 3401 = 4656 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3482 :
-    instructionPC 3401 = 4628 := by
-  change submissionArtifact.instructionPC 3401 = 4628
+    instructionPC 3401 = 4656 := by
+  change submissionArtifact.instructionPC 3401 = 4656
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3483 :
-    submissionArtifact.instructionPC 3402 = 4629 := by
+    submissionArtifact.instructionPC 3402 = 4657 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3483 :
-    instructionPC 3402 = 4629 := by
-  change submissionArtifact.instructionPC 3402 = 4629
+    instructionPC 3402 = 4657 := by
+  change submissionArtifact.instructionPC 3402 = 4657
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3484 :
-    submissionArtifact.instructionPC 3403 = 4630 := by
+    submissionArtifact.instructionPC 3403 = 4658 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3484 :
-    instructionPC 3403 = 4630 := by
-  change submissionArtifact.instructionPC 3403 = 4630
+    instructionPC 3403 = 4658 := by
+  change submissionArtifact.instructionPC 3403 = 4658
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3485 :
-    submissionArtifact.instructionPC 3404 = 4633 := by
+    submissionArtifact.instructionPC 3404 = 4661 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3485 :
-    instructionPC 3404 = 4633 := by
-  change submissionArtifact.instructionPC 3404 = 4633
+    instructionPC 3404 = 4661 := by
+  change submissionArtifact.instructionPC 3404 = 4661
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3486 :
-    submissionArtifact.instructionPC 3405 = 4634 := by
+    submissionArtifact.instructionPC 3405 = 4662 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3486 :
-    instructionPC 3405 = 4634 := by
-  change submissionArtifact.instructionPC 3405 = 4634
+    instructionPC 3405 = 4662 := by
+  change submissionArtifact.instructionPC 3405 = 4662
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3487 :
-    submissionArtifact.instructionPC 3406 = 4655 := by
+    submissionArtifact.instructionPC 3406 = 4683 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3487 :
-    instructionPC 3406 = 4655 := by
-  change submissionArtifact.instructionPC 3406 = 4655
+    instructionPC 3406 = 4683 := by
+  change submissionArtifact.instructionPC 3406 = 4683
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3488 :
-    submissionArtifact.instructionPC 3407 = 4656 := by
+    submissionArtifact.instructionPC 3407 = 4684 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3488 :
-    instructionPC 3407 = 4656 := by
-  change submissionArtifact.instructionPC 3407 = 4656
+    instructionPC 3407 = 4684 := by
+  change submissionArtifact.instructionPC 3407 = 4684
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3489 :
-    submissionArtifact.instructionPC 3408 = 4657 := by
+    submissionArtifact.instructionPC 3408 = 4685 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3489 :
-    instructionPC 3408 = 4657 := by
-  change submissionArtifact.instructionPC 3408 = 4657
+    instructionPC 3408 = 4685 := by
+  change submissionArtifact.instructionPC 3408 = 4685
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3490 :
-    submissionArtifact.instructionPC 3409 = 4678 := by
+    submissionArtifact.instructionPC 3409 = 4706 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3490 :
-    instructionPC 3409 = 4678 := by
-  change submissionArtifact.instructionPC 3409 = 4678
+    instructionPC 3409 = 4706 := by
+  change submissionArtifact.instructionPC 3409 = 4706
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3491 :
-    submissionArtifact.instructionPC 3410 = 4679 := by
+    submissionArtifact.instructionPC 3410 = 4707 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3491 :
-    instructionPC 3410 = 4679 := by
-  change submissionArtifact.instructionPC 3410 = 4679
+    instructionPC 3410 = 4707 := by
+  change submissionArtifact.instructionPC 3410 = 4707
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3492 :
-    submissionArtifact.instructionPC 3411 = 4680 := by
+    submissionArtifact.instructionPC 3411 = 4708 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3492 :
-    instructionPC 3411 = 4680 := by
-  change submissionArtifact.instructionPC 3411 = 4680
+    instructionPC 3411 = 4708 := by
+  change submissionArtifact.instructionPC 3411 = 4708
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3502 :
-    submissionArtifact.instructionPC 3428 = 4706 := by
+    submissionArtifact.instructionPC 3428 = 4726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3502 :
-    instructionPC 3428 = 4706 := by
-  change submissionArtifact.instructionPC 3428 = 4706
+    instructionPC 3428 = 4726 := by
+  change submissionArtifact.instructionPC 3428 = 4726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -15399,30 +13149,30 @@ def padGuardPath : List
 /-- Cached located path for the sentinel byte. -/
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨5430, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨5431, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5432, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5433, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5434, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨5421, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨5422, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5423, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5424, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5425, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop setup: the loop head 4945 stays under the two loop
 registers (it is the back-edge target of the loop's `DUP4 JUMPI`), then the bit length, the rounded
 length offset plus 89, and `DUP3 JUMP` to the loop head. -/
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨5435, .push ⟨2, by decide⟩ (UInt256.ofNat 4547), by rfl, by decide⟩,
-   ⟨5436, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5437, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨5438, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5439, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5440, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
-   ⟨5441, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5442, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨5443, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5444, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
-   ⟨5445, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5446, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5447, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨5426, .push ⟨2, by decide⟩ (UInt256.ofNat 4547), by rfl, by decide⟩,
+   ⟨5427, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5428, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨5429, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5430, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5431, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
+   ⟨5432, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5433, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨5434, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5435, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
+   ⟨5436, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5437, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5438, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop exit: `PUSH1 198 JUMP` at 4562 (the fall-through of the
 loop's `JUMPI`), then at 200 the generic continuation 48 replaces the output entry and the three
@@ -15462,20 +13212,20 @@ def padExitPath : List
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_9429 :
     Decode.isValidJumpDest submissionBytecode 9429 = true := by
-  have hp : submissionArtifact.instructionPC 5231 = 9429 := by
+  have hp : submissionArtifact.instructionPC 5222 = 9429 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 5231 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 5222 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4708 :
-    Decode.isValidJumpDest submissionBytecode 4706 = true := by
-  have hp : submissionArtifact.instructionPC 3428 = 4706 := by
+    Decode.isValidJumpDest submissionBytecode 4905 = true := by
+  have hp : submissionArtifact.instructionPC 3506 = 4905 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3428 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3506 (by rfl)
   rw [hp] at h
   exact h
 
