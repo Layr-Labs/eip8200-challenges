@@ -15,8 +15,8 @@ open CiosReadonly CiosCachedMidMemory
 def middle : List Instr := TnCacheStoreAt.middle ++ TnCacheProductTrace.cachedProduct
 /-- P1: the eight-limb head keeps the carry cache in the fifteenth word below the carry. -/
 def middle8 : List Instr := TnCacheStoreAt.middle15 ++ TnCacheProductTrace.cachedProduct8
-/-- The four-limb multiply head copy at 5420 (P1a: the inverse is the thirteenth cache word). -/
-def middle4 : List Instr := TnCacheStoreAt.middle15 ++ TnCacheProductTrace.cachedProduct4
+/-- The four-limb multiply head copy at 5494 (P1a: the inverse is the thirteenth cache word). -/
+def middle4 : List Instr := TnCacheStoreAt.middle14 ++ TnCacheProductTrace.cachedProduct4
 def tailShort : List Instr := TnCacheStoreAt.tail ++ TnCacheFrameOps.advanceShort
 
 /-- P1: the row tail reads and writes the carry cache in the thirteenth frame word. -/
@@ -45,7 +45,7 @@ theorem run_middle8 (pc0 : Nat) (s : State)
     Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
 
 theorem run_middle4 (pc0 : Nat) (s : State)
-    (c bi pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
+    (c pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n = 4)
     (hact : 88 ≤ s.activeWords.toNat)
     (hc : ReadonlyCache s.memory n tl inv m0)
@@ -53,14 +53,14 @@ theorem run_middle4 (pc0 : Nat) (s : State)
     (hminv : inverseInvariant s.memory n) :
     runInstructions middle4
       (framed s (UInt256.ofNat pc0)
-        ([c,bi,pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest)) =
-    some (framed s (UInt256.ofNat (pc0+23))
+        ([c,pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn,aEnd,dst,ret] ++ rest)) =
+    some (framed s (UInt256.ofNat (pc0+21))
       ([rowC0 s.memory n,rowMu s.memory n,UInt256.lt (tn+c) c,
         pbi,hd,pb,ent,m32,allOnes,target,m64,m0,tl,m96,inv,tn+c,aEnd,dst,ret] ++ rest)) := by
-  have hs := TnCacheStoreAt.run_middle15 pc0 s c bi pbi hd pb ent m32 target m64 m0 tl m96 inv tn
+  have hs := TnCacheStoreAt.run_middle14 pc0 s c pbi hd pb ent m32 target m64 m0 tl m96 inv tn
     (aEnd :: dst :: ret :: rest)
     (by simp only [List.length_cons]; omega)
-  have hp := TnCacheProductTrace.run_cachedProduct4_model (pc0+7) s
+  have hp := TnCacheProductTrace.run_cachedProduct4_model (pc0+5) s
     (UInt256.lt (tn+c) c) pbi hd pb ent m32 target tl inv m0 aEnd m96 m64 (tn+c) dst ret
     n rest hcap hn hact hc hm0 hminv
   have both := runInstructions_append_some _ _ _ _ _ hs hp

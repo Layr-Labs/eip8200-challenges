@@ -28,8 +28,8 @@ def middle8 : Block submissionArtifact .Osaka 3607 (TnCacheRowTrace.middle8) :=
   WindowTwentyOneSlice.block allWellFormed 2817 19 3607 (TnCacheRowTrace.middle8)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def middleCopy : Block submissionArtifact .Osaka 5495 (TnCacheRowTrace.middle4 ++ [.push 2 3758, .op .JUMP]) :=
-  WindowTwentyOneSlice.block allWellFormed 4390 21 5495 (TnCacheRowTrace.middle4 ++ [.push 2 3758, .op .JUMP])
+def middleCopy : Block submissionArtifact .Osaka 5494 (TnCacheRowTrace.middle4 ++ [.push 2 3758, .op .JUMP]) :=
+  WindowTwentyOneSlice.block allWellFormed 4389 19 5494 (TnCacheRowTrace.middle4 ++ [.push 2 3758, .op .JUMP])
     (by decide) (by rfl) (by rfl) (by decide)
 
 def tail : Block submissionArtifact .Osaka 3856 (TnCacheRowTrace.tail) :=

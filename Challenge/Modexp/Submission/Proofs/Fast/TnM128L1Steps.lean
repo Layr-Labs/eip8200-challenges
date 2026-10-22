@@ -54,8 +54,8 @@ noncomputable def private_steps (s : State)
     GasSteps
       (TnCacheL1Trace.qState s (UInt256.ofNat 5387) q bi
         pbi hd pbEnd flag tn destination returnPC rest)
-      (TnCacheL1Trace.qState s (UInt256.ofNat 5495) (l1Run q bi pa 4 1 3)
-        bi pbi hd pbEnd flag tn destination returnPC rest) := by
+      (TnCacheL1Suffix.qStateLast s (UInt256.ofNat 5494) (l1Run q bi pa 4 1 3)
+        pbi hd pbEnd flag tn destination returnPC rest) := by
   have hr := TnCacheL1Suffix.run_private3 s 5387 q bi pa
     pbi hd pbEnd flag tn destination returnPC rest hcap hactive hpa hsnapshot
   exact private3.steps

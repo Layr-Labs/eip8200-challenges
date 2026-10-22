@@ -45,7 +45,7 @@ def common7 : Block submissionArtifact .Osaka 3347 (TnCacheL1Suffix.program 7) :
     (by decide) (by rfl) (by rfl) (by decide)
 
 def private3 : Block submissionArtifact .Osaka 5387 TnCacheL1Suffix.privateProgram3 :=
-  WindowTwentyOneSlice.block allWellFormed 4300 90 5387 TnCacheL1Suffix.privateProgram3
+  WindowTwentyOneSlice.block allWellFormed 4300 89 5387 TnCacheL1Suffix.privateProgram3
     (by decide) (by rfl) (by rfl) (by decide)
 
 def head : Block submissionArtifact .Osaka 3313 (TnCacheHeadTrace.programC 2336) :=

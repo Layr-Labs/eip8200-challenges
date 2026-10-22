@@ -83,34 +83,44 @@ noncomputable def row_steps (s : State)
   have hs1 : Snapshot q1.memory pa n := by
     exact Snapshot.l1StepOn_pres_stage
       (q := l1Step s.memory bi pa n 0) hs bi 0 hn'.2 hpa (by omega)
-  have g1 : GasSteps
-      (TnCacheL1Trace.qState s (UInt256.ofNat (l1PC n)) q1 bi
-        q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail)
-      (TnCacheL1Trace.qState s (UInt256.ofNat (middlePC n)) (l1Run q1 bi pa n 1 (n-1)) bi
-        q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail) := by
-    by_cases h4 : n = 4
-    · subst n
-      exact TnM128L1Steps.private_steps s env q1 bi pa
-        q (UInt256.ofNat (headPC 4)) pb ent m32 m128 m64 tail
-        (by simp only [tail, List.length_cons]; omega) hact hpa hs1
-    · have h8 : n = 8 := hn.resolve_left h4
-      subst n
-      exact TnM128L1Steps.suffix_steps s env q1 bi pa 8 1 7 (by decide)
-        q (UInt256.ofNat (headPC 8)) pb ent m32 m128 m64 tail
-        (by simp only [tail, List.length_cons]; omega) hact (by decide) (by decide) hpa hs1
   have hqn : l1Run q1 bi pa n 1 (n-1) = qn := by
     simp only [q1, qn, StagedOperand.l1Run_l1Step, show 1+(n-1) = n from by omega]
-  rw [hqn] at g1
   have hm128 : m128 = MachineState.readWord qn.memory 128 := by
     rw [show MachineState.readWord qn.memory 128 = MachineState.readWord s.memory 128 from
       Monpro.readWord_l1Step_low _ _ pa n 128 n (by decide)]
     exact hcache
-  have g2 := reduction_steps s env qn bi tn n hn q (UInt256.ofNat (headPC n)) pb
-    ent m128 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact
-    (hc.l1 hn'.2 bi pa n) (he.l1 bi pa n n hn'.2)
-    (inverse_l1Step s.memory bi pa n n hn'.2 hi) hm128
-    (fun h => (hpb h).trans (Monpro.readWord_l1Step_low _ _ pa n 192 n (by decide)).symm) hhd
-  have both := (g0.trans g1).trans g2
+  have g12 : GasSteps
+      (TnCacheL1Trace.qState s (UInt256.ofNat (l1PC n)) q1 bi
+        q (UInt256.ofNat (headPC n)) pb ent m32 m128 m64 tail)
+      (framed {s with memory := (TnCacheSquareModel.fromL1 qn tn n).memory}
+        (if UInt256.isTrue (UInt256.ofNat 32+q) then UInt256.ofNat (headPC n) else UInt256.ofNat 3874)
+        (TnCacheFrameOps.frame (UInt256.ofNat 32+q) (UInt256.ofNat (headPC n)) pb ent
+          m32 m128 m64
+          (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 qn tn n).tn :: aEnd :: dst :: ret :: rest))) := by
+    by_cases h4 : n = 4
+    · subst n
+      have g1 := TnM128L1Steps.private_steps s env q1 bi pa
+        q (UInt256.ofNat (headPC 4)) pb ent m32 m128 m64 tail
+        (by simp only [tail, List.length_cons]; omega) hact hpa hs1
+      rw [hqn] at g1
+      have g2 := TnM128R4Reduction.reduction_steps s env qn tn q (UInt256.ofNat (headPC 4)) pb
+        ent m128 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact
+        (hc.l1 hn'.2 bi pa 4) (he.l1 bi pa 4 4 hn'.2)
+        (inverse_l1Step s.memory bi pa 4 4 hn'.2 hi) hm128 hhd
+      exact g1.trans g2
+    · have h8 : n = 8 := hn.resolve_left h4
+      subst n
+      have g1 := TnM128L1Steps.suffix_steps s env q1 bi pa 8 1 7 (by decide)
+        q (UInt256.ofNat (headPC 8)) pb ent m32 m128 m64 tail
+        (by simp only [tail, List.length_cons]; omega) hact (by decide) (by decide) hpa hs1
+      rw [hqn] at g1
+      have g2 := TnM128R8Reduction.reduction_steps s env qn bi tn q (UInt256.ofNat (headPC 8)) pb
+        ent m128 tl inv m0 aEnd m96 m64 m32 dst ret rest hcap hact
+        (hc.l1 hn'.2 bi pa 8) (he.l1 bi pa 8 8 hn'.2)
+        (inverse_l1Step s.memory bi pa 8 8 hn'.2 hi) hm128
+        ((hpb rfl).trans (Monpro.readWord_l1Step_low _ _ pa 8 192 8 (by decide)).symm) hhd
+      exact g1.trans g2
+  have both := g0.trans g12
   simpa only [qn, q1, bi, tail, result] using both
 
 #print axioms row_steps

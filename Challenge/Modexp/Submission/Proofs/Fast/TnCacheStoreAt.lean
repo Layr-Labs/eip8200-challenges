@@ -114,6 +114,32 @@ theorem run_middle15 (pc0 : Nat) (s : State)
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod]
 
+/-- `middle` when `bi` was already consumed by the last L1 cell (`DUP14`, `SWAP14`, no `SWAP1; POP`). -/
+def middle14 : List Instr :=
+  [.op (.Dup ⟨13, by decide⟩), .op .ADD,
+   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨13, by decide⟩), .op .GT]
+
+theorem run_middle14 (pc0 : Nat) (s : State)
+    (c pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1001) :
+    runInstructions middle14
+      (framed s (UInt256.ofNat (pc0 + 0))
+        ([c,pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,tn] ++ rest)) =
+    some (framed s (UInt256.ofNat (pc0 + 5))
+      ([UInt256.lt (tn+c) c,pbi,hd,pb,ent,w7,allOnes,target,w10,r0,r1,r2,r3,tn+c] ++ rest)) := by
+  have h13 : rest.length + 13 < 1024 := by omega
+  have h14 : rest.length + 14 < 1024 := by omega
+  have h15 : rest.length + 15 < 1024 := by omega
+  have h16 : rest.length + 16 < 1024 := by omega
+  have h17 : rest.length + 17 < 1024 := by omega
+  simp (config := {maxSteps := 100000})
+    [middle14, carry_gt, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
+     h13,h14,h15,h16,h17, List.exchange, Nat.add_assoc,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.word_toNat_ofNat,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.ofNat_add_mod]
+
 theorem run_tail16 (pc0 : Nat) (s : State)
     (c f pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 88 ≤ s.activeWords.toNat) :

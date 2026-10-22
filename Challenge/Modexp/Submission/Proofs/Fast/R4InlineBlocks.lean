@@ -66,136 +66,136 @@ def block_r0z3_0 : Block Artifact.submissionArtifact .Osaka 9067 r0z3_0New :=
     (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7004 + 21 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 63 9067 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 63 21 r0z3_0New rfl) (by decide)
 
 def block_r0e_0 : Block Artifact.submissionArtifact .Osaka 9090 r0e_0New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7025 4 9090 r0e_0New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7025 + 4 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 84 9090 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 84 4 r0e_0New rfl) (by decide)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7025 3 9090 r0e_0New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7025 + 3 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 84 9090 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 84 3 r0e_0New rfl) (by decide)
 
-def block_redm_0 : Block Artifact.submissionArtifact .Osaka 9096 redm_0New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7029 10 9096 redm_0New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7029 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 88 9096 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 88 10 redm_0New rfl) (by decide)
+def block_redm_0 : Block Artifact.submissionArtifact .Osaka 9093 redm_0New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7028 10 9093 redm_0New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7028 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 87 9093 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 87 10 redm_0New rfl) (by decide)
 
-def block_redm_1 : Block Artifact.submissionArtifact .Osaka 9299 redm_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7222 10 9299 redm_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7222 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 281 9299 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 281 10 redm_1New rfl) (by decide)
+def block_redm_1 : Block Artifact.submissionArtifact .Osaka 9290 redm_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7217 10 9290 redm_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7217 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 276 9290 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 276 10 redm_1New rfl) (by decide)
 
-def block_redm_2 : Block Artifact.submissionArtifact .Osaka 9473 redm_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7388 10 9473 redm_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7388 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 447 9473 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 447 10 redm_2New rfl) (by decide)
+def block_redm_2 : Block Artifact.submissionArtifact .Osaka 9458 redm_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7379 10 9458 redm_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7379 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 438 9458 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 438 10 redm_2New rfl) (by decide)
 
-def block_redm_3 : Block Artifact.submissionArtifact .Osaka 9613 redm_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7522 10 9613 redm_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7522 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 581 9613 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 581 10 redm_3New rfl) (by decide)
+def block_redm_3 : Block Artifact.submissionArtifact .Osaka 9593 redm_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7510 10 9593 redm_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7510 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 569 9593 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 569 10 redm_3New rfl) (by decide)
 
-def block_reds1_0 : Block Artifact.submissionArtifact .Osaka 9106 reds1_0New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7039 25 9106 reds1_0New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7039 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 98 9106 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 98 25 reds1_0New rfl) (by decide)
+def block_reds1_0 : Block Artifact.submissionArtifact .Osaka 9103 reds1_0New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7038 25 9103 reds1_0New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7038 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 97 9103 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 97 25 reds1_0New rfl) (by decide)
 
-def block_reds1_1 : Block Artifact.submissionArtifact .Osaka 9309 reds1_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7232 25 9309 reds1_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7232 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 291 9309 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 291 25 reds1_1New rfl) (by decide)
+def block_reds1_1 : Block Artifact.submissionArtifact .Osaka 9300 reds1_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7227 25 9300 reds1_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7227 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 286 9300 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 286 25 reds1_1New rfl) (by decide)
 
-def block_reds1_2 : Block Artifact.submissionArtifact .Osaka 9483 reds1_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7398 25 9483 reds1_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7398 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 457 9483 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 457 25 reds1_2New rfl) (by decide)
+def block_reds1_2 : Block Artifact.submissionArtifact .Osaka 9468 reds1_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7389 25 9468 reds1_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7389 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 448 9468 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 448 25 reds1_2New rfl) (by decide)
 
-def block_reds1_3 : Block Artifact.submissionArtifact .Osaka 9623 reds1_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7532 25 9623 reds1_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7532 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 591 9623 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 591 25 reds1_3New rfl) (by decide)
+def block_reds1_3 : Block Artifact.submissionArtifact .Osaka 9603 reds1_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7520 25 9603 reds1_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7520 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 579 9603 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 579 25 reds1_3New rfl) (by decide)
 
-def block_reds2_0 : Block Artifact.submissionArtifact .Osaka 9131 reds2_0New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7064 25 9131 reds2_0New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7064 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 123 9131 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 123 25 reds2_0New rfl) (by decide)
+def block_reds2_0 : Block Artifact.submissionArtifact .Osaka 9128 reds2_0New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7063 25 9128 reds2_0New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7063 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 122 9128 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 122 25 reds2_0New rfl) (by decide)
 
-def block_reds2_1 : Block Artifact.submissionArtifact .Osaka 9334 reds2_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7257 25 9334 reds2_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7257 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 316 9334 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 316 25 reds2_1New rfl) (by decide)
+def block_reds2_1 : Block Artifact.submissionArtifact .Osaka 9325 reds2_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7252 25 9325 reds2_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7252 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 311 9325 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 311 25 reds2_1New rfl) (by decide)
 
-def block_reds2_2 : Block Artifact.submissionArtifact .Osaka 9508 reds2_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7423 25 9508 reds2_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7423 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 482 9508 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 482 25 reds2_2New rfl) (by decide)
+def block_reds2_2 : Block Artifact.submissionArtifact .Osaka 9493 reds2_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7414 25 9493 reds2_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7414 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 473 9493 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 473 25 reds2_2New rfl) (by decide)
 
-def block_reds2_3 : Block Artifact.submissionArtifact .Osaka 9648 reds2_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7557 25 9648 reds2_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7557 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 616 9648 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 616 25 reds2_3New rfl) (by decide)
+def block_reds2_3 : Block Artifact.submissionArtifact .Osaka 9628 reds2_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7545 25 9628 reds2_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7545 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 604 9628 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 604 25 reds2_3New rfl) (by decide)
 
-def block_reds3_0 : Block Artifact.submissionArtifact .Osaka 9156 reds3_0New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7089 25 9156 reds3_0New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7089 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 148 9156 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 148 25 reds3_0New rfl) (by decide)
+def block_reds3_0 : Block Artifact.submissionArtifact .Osaka 9153 reds3_0New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7088 25 9153 reds3_0New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7088 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 147 9153 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 147 25 reds3_0New rfl) (by decide)
 
-def block_reds3_1 : Block Artifact.submissionArtifact .Osaka 9359 reds3_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7282 25 9359 reds3_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7282 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 341 9359 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 341 25 reds3_1New rfl) (by decide)
+def block_reds3_1 : Block Artifact.submissionArtifact .Osaka 9350 reds3_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7277 25 9350 reds3_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7277 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 336 9350 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 336 25 reds3_1New rfl) (by decide)
 
-def block_reds3_2 : Block Artifact.submissionArtifact .Osaka 9533 reds3_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7448 25 9533 reds3_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7448 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 507 9533 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 507 25 reds3_2New rfl) (by decide)
+def block_reds3_2 : Block Artifact.submissionArtifact .Osaka 9518 reds3_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7439 25 9518 reds3_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7439 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 498 9518 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 498 25 reds3_2New rfl) (by decide)
 
-def block_reds3_3 : Block Artifact.submissionArtifact .Osaka 9673 reds3_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7582 25 9673 reds3_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7582 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 641 9673 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 641 25 reds3_3New rfl) (by decide)
+def block_reds3_3 : Block Artifact.submissionArtifact .Osaka 9653 reds3_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7570 25 9653 reds3_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7570 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 629 9653 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 629 25 reds3_3New rfl) (by decide)
 
-def block_redt_0 : Block Artifact.submissionArtifact .Osaka 9181 redt_0New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7114 11 9181 redt_0New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7114 + 11 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 173 9181 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 173 11 redt_0New rfl) (by decide)
+def block_redt_0 : Block Artifact.submissionArtifact .Osaka 9178 redt_0New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7113 10 9178 redt_0New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7113 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 172 9178 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 172 10 redt_0New rfl) (by decide)
 
-def block_redt_1 : Block Artifact.submissionArtifact .Osaka 9384 redt_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7307 11 9384 redt_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7307 + 11 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 366 9384 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 366 11 redt_1New rfl) (by decide)
+def block_redt_1 : Block Artifact.submissionArtifact .Osaka 9375 redt_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7302 10 9375 redt_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7302 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 361 9375 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 361 10 redt_1New rfl) (by decide)
 
-def block_redt_2 : Block Artifact.submissionArtifact .Osaka 9558 redt_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7473 11 9558 redt_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7473 + 11 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 532 9558 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 532 11 redt_2New rfl) (by decide)
+def block_redt_2 : Block Artifact.submissionArtifact .Osaka 9543 redt_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7464 10 9543 redt_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7464 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 523 9543 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 523 10 redt_2New rfl) (by decide)
 
-def block_redt_3 : Block Artifact.submissionArtifact .Osaka 9698 redt_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7607 11 9698 redt_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7607 + 11 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 666 9698 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 666 11 redt_3New rfl) (by decide)
+def block_redt_3 : Block Artifact.submissionArtifact .Osaka 9678 redt_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7595 10 9678 redt_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7595 + 10 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 654 9678 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 654 10 redt_3New rfl) (by decide)
 
-def block_r1h_1 : Block Artifact.submissionArtifact .Osaka 9192 r1h_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7125 6 9192 r1h_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7125 + 6 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 184 9192 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 184 6 r1h_1New rfl) (by decide)
+def block_r1h_1 : Block Artifact.submissionArtifact .Osaka 9188 r1h_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7123 5 9188 r1h_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7123 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 182 9188 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 182 5 r1h_1New rfl) (by decide)
 
-def block_r1d_1 : Block Artifact.submissionArtifact .Osaka 9203 r1d_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7132 28 9203 r1d_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7132 + 28 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 191 9203 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 191 28 r1d_1New rfl) (by decide)
+def block_r1d_1 : Block Artifact.submissionArtifact .Osaka 9198 r1d_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7129 28 9198 r1d_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7129 + 28 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 188 9198 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 188 28 r1d_1New rfl) (by decide)
 
-def block_r1c2_1 : Block Artifact.submissionArtifact .Osaka 9231 r1c2_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7160 27 9231 r1c2_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7160 + 27 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 219 9231 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 219 27 r1c2_1New rfl) (by decide)
+def block_r1c2_1 : Block Artifact.submissionArtifact .Osaka 9226 r1c2_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7157 27 9226 r1c2_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7157 + 27 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 216 9226 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 216 27 r1c2_1New rfl) (by decide)
 
-def block_r1c3_1 : Block Artifact.submissionArtifact .Osaka 9260 r1c3_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7187 27 9260 r1c3_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7187 + 27 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 246 9260 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 246 27 r1c3_1New rfl) (by decide)
+def block_r1c3_1 : Block Artifact.submissionArtifact .Osaka 9255 r1c3_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7184 28 9255 r1c3_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7184 + 28 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 243 9255 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 243 28 r1c3_1New rfl) (by decide)
 
-def block_r1e_1 : Block Artifact.submissionArtifact .Osaka 9289 r1e_1New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7214 8 9289 r1e_1New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7214 + 8 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 273 9289 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 273 8 r1e_1New rfl) (by decide)
+def block_r1e_1 : Block Artifact.submissionArtifact .Osaka 9285 r1e_1New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7212 5 9285 r1e_1New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7212 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 271 9285 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 271 5 r1e_1New rfl) (by decide)
 
-def block_r2h_2 : Block Artifact.submissionArtifact .Osaka 9395 r2h_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7318 6 9395 r2h_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7318 + 6 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 377 9395 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 377 6 r2h_2New rfl) (by decide)
+def block_r2h_2 : Block Artifact.submissionArtifact .Osaka 9385 r2h_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7312 5 9385 r2h_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7312 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 371 9385 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 371 5 r2h_2New rfl) (by decide)
 
-def block_r2d_2 : Block Artifact.submissionArtifact .Osaka 9406 r2d_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7325 28 9406 r2d_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7325 + 28 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 384 9406 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 384 28 r2d_2New rfl) (by decide)
+def block_r2d_2 : Block Artifact.submissionArtifact .Osaka 9395 r2d_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7318 28 9395 r2d_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7318 + 28 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 377 9395 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 377 28 r2d_2New rfl) (by decide)
 
-def block_r2c3_2 : Block Artifact.submissionArtifact .Osaka 9434 r2c3_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7353 27 9434 r2c3_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7353 + 27 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 412 9434 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 412 27 r2c3_2New rfl) (by decide)
+def block_r2c3_2 : Block Artifact.submissionArtifact .Osaka 9423 r2c3_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7346 28 9423 r2c3_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7346 + 28 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 405 9423 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 405 28 r2c3_2New rfl) (by decide)
 
-def block_r2e_2 : Block Artifact.submissionArtifact .Osaka 9463 r2e_2New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7380 8 9463 r2e_2New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7380 + 8 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 439 9463 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 439 8 r2e_2New rfl) (by decide)
+def block_r2e_2 : Block Artifact.submissionArtifact .Osaka 9453 r2e_2New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7374 5 9453 r2e_2New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7374 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 433 9453 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 433 5 r2e_2New rfl) (by decide)
 
-def block_r3h_3 : Block Artifact.submissionArtifact .Osaka 9569 r3h_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7484 6 9569 r3h_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7484 + 6 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 543 9569 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 543 6 r3h_3New rfl) (by decide)
+def block_r3h_3 : Block Artifact.submissionArtifact .Osaka 9553 r3h_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7474 5 9553 r3h_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7474 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 533 9553 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 533 5 r3h_3New rfl) (by decide)
 
-def block_r3d_3 : Block Artifact.submissionArtifact .Osaka 9580 r3d_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7491 25 9580 r3d_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7491 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 550 9580 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 550 25 r3d_3New rfl) (by decide)
+def block_r3d_3 : Block Artifact.submissionArtifact .Osaka 9563 r3d_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7480 25 9563 r3d_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7480 + 25 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 539 9563 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 539 25 r3d_3New rfl) (by decide)
 
-def block_r3e_3 : Block Artifact.submissionArtifact .Osaka 9605 r3e_3New :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 7516 6 9605 r3e_3New
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7516 + 6 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 575 9605 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 575 6 r3e_3New rfl) (by decide)
+def block_r3e_3 : Block Artifact.submissionArtifact .Osaka 9588 r3e_3New :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 7505 5 9588 r3e_3New
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7505 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 564 9588 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 564 5 r3e_3New rfl) (by decide)
 
 def entryProgram : List Instr := [.op .JUMPDEST, .push 2 8998, .op .JUMP]
 def block_entry : Block Artifact.submissionArtifact .Osaka 4280 entryProgram :=

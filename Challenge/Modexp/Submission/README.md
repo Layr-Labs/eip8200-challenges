@@ -1,56 +1,63 @@
-# MODEXP candidate v11: CRT Montgomery squaring Phase B/A reordering + retain/exit address preloading (-6,159 gas)
+# MODEXP candidate v12: CRT header/cancel-tail schedule + R4 inline peepholes + window/TnM128 peepholes (-8,016 gas)
 
-This candidate modifies our promoted MODEXP baseline `e506ac91-39f1-41fe-a002-90b33fd36e18`
-(409,127 seed-0 gas, 412,399 official gas) and upstream promoted baseline
-`9b6eb630-5eaf-47cf-9e87-8edfc1dde265` (commit `97cb39d3ddee7d4eccb468820300a41c4124c974`,
-412,181 seed-0 gas, 415,686 official gas). All changes are confined to the permitted
-`Challenge/Modexp/Submission` directory.
+This candidate modifies our promoted #1 MODEXP baseline `318954e0-41df-4035-acd9-1e271d23edd3`
+(406,022 seed-0 gas, 408,434 official gas), our prior promoted baseline
+`e506ac91-39f1-41fe-a002-90b33fd36e18` (409,127 seed-0 gas, 412,399 official gas), and
+upstream promoted baseline `9b6eb630-5eaf-47cf-9e87-8edfc1dde265` (commit
+`97cb39d3ddee7d4eccb468820300a41c4124c974`, 412,181 seed-0 gas, 415,686 official gas).
+All changes are confined to the permitted `Challenge/Modexp/Submission` directory.
 
 | Artifact identity | Value |
 |---|---|
-| Decoded bytecode SHA-256 | `d48e64f9207a8efe5f33f2d2f67aa18cea44320c11e015208bebcb83fae80974` |
+| Decoded bytecode SHA-256 | `6929f806aa6ea9cf8e93dd61abe77bf247eb17b2d864f6e4856e8d222f39dd87` |
 | Bytecode size | 10,915 bytes |
 | Decoded instructions | 8,722 |
-| Protected native benchmark, seed zero | 406,022 gas; 44 correct vectors |
+| Protected native benchmark, seed zero | 404,165 gas; 44 correct vectors |
 
 On identical seed-zero inputs, the promoted v9 baseline (`9b6eb630`) uses 412,181 gas,
-our promoted v10 baseline (`e506ac91`) uses 409,127 gas, the public e-man07 `f801e2ad`
-image uses 454,419 gas, and local v8 uses 453,287 gas. This candidate (`v11`) uses
-**406,022 gas**, saving **3,105 gas** against promoted v10 (`e506ac91`), **6,159 gas**
-against promoted v9 (`9b6eb630`), and **48,397 gas** (10.65%) against `f801e2ad`.
+our promoted v10 baseline (`e506ac91`) uses 409,127 gas, our promoted v11 baseline
+(`318954e0`) uses 406,022 gas, the public e-man07 `f801e2ad` image uses 454,419 gas,
+and local v8 uses 453,287 gas. This candidate (`v12`) uses **404,165 gas**, saving
+**1,857 gas** against promoted v11 (`318954e0`), **4,962 gas** against promoted v10
+(`e506ac91`), **8,016 gas** against promoted v9 (`9b6eb630`), and **50,254 gas**
+(11.06%) against `f801e2ad`.
 
 ## Changes
 
-- **Cut 4A — CRT Montgomery squaring kernel Phase B-before-Phase A operand reordering +
-  11-instruction `cancel` tail (`PC 5859..8454`, -2,703 gas)**:
-  Eliminates 53 additional instructions (53 bytes, 159 gas) per 2048-bit CRT squaring
-  iteration on top of Cut 3 (-72 instructions, -74 bytes, -176 gas/squaring), for a
-  combined reduction of **125 instructions (127 bytes, 335 gas) per CRT squaring**
-  (`17 × 335 = 5,695 gas` total across `generated RSA-2048 #01 e=3` and
+- **Cut 5E — CRT Montgomery squaring column header (`E1`) & cancel-tail (`E2`) schedule
+  (`PC 5859..8800`, -1,224 gas)**:
+  Eliminates 24 additional instructions (24 bytes, 72 gas) per 2048-bit CRT squaring
+  iteration on top of Cuts 3 and 4A (-125 instructions, -127 bytes, -335 gas/squaring),
+  for a combined reduction of **149 instructions (151 bytes, 407 gas) per CRT squaring**
+  (`17 × 407 = 6,919 gas` total across `generated RSA-2048 #01 e=3` and
   `generated RSA-2048 #02 e=65537`). Specifically:
-  - In `col3..col13`, off-diagonal pair multiplication reorders Phase B (`MUL`, `ADD`, `MUL`)
-    before Phase A (`MULMOD`, `ADD`, `MULMOD`), consuming shared operand copies directly
-    and saving 2 instructions (6 gas) per column (`-22 instructions, -66 gas/squaring`).
-  - In `col1..col15`, omitting the trailing `SWAP1` of `p1` leaves `acc_w` above `acc_m`
-    entering the Montgomery phase; reordering Montgomery Phase B before Phase A saves
-    2 instructions (6 gas) per column in `col9..col15` (`-14 instructions, -42 gas/squaring`)
-    and, combined with an 11-instruction `cancel` tail, saves 2 instructions (6 gas) per
-    column in `col1..col8` (`-16 instructions, -48 gas/squaring`).
-  - In `col0`, applying the 11-instruction `cancel` tail saves 1 instruction (3 gas)
-    (`-1 instruction, -3 gas/squaring`).
-- **Cut 4B — `retainProgram` descending address preloading & `mask` reuse (`PC 8479..8648`, -360 gas)**:
-  Preloads `1600`, copies `mask` once via `DUP12`, and preloads `1568..1344` in descending
-  order at the start of `retainProgram`, replacing all 8 duplicate `PUSH2 addr; MLOAD`
-  pairs with `DUP2`/`DUP3` and consuming the copied `mask` directly on the 8th `AND`.
-  Shrinks `retainProgram` from 117 instructions (193 bytes) to 109 instructions (169 bytes),
-  saving **24 gas per retain × 15 retains = 360 gas** on `generated RSA-2048 #02 e=65537`.
-- **Cut 4C — `exitProgram` early stack cleanup & descending address preloading (`PC 8800..8976`, -42 gas)**:
-  Moves the 12 `POP` instructions right after `JUMPDEST 8800` and preloads `1568..1344`
-  in descending order, replacing 7 duplicate `PUSH2 addr; MLOAD` pairs with `DUP2`.
-  Shrinks `exitProgram` from 121 instructions (197 bytes) to 114 instructions (176 bytes),
-  saving **21 gas per exit × 2 exits = 42 gas** across `generated RSA-2048 #01 e=3` (-21 gas)
-  and `generated RSA-2048 #02 e=65537` (-21 gas).
-- **Retained from v10 (`e506ac91`)**:
+  - **E1 (`col0..col15`, -16 instructions, -48 gas/squaring)**: Computes the ordinary word
+    product (`MUL`) before the Mersenne residue product (`MULMOD`) in the initial product
+    header of `col0` (-1 instruction) and `col1..col15` (-15 instructions), eliminating
+    redundant `POP`/`SWAP` instructions while preserving `col0Model..col15Model`
+    definitionally.
+  - **E2 (`col1..col8`, -8 instructions, -24 gas/squaring)**: Streamlines the Montgomery
+    quotient cancel-tail stack schedule in `col0..col8`, saving 1 instruction (3 gas) per
+    column across `col1..col8` while preserving `col0Model..col8Model` definitionally.
+- **Cut 5D — Inlined 4-word Montgomery squaring (`R4Inline*`) schedule peepholes
+  (`PC 8998..9800`, -476 gas)**:
+  Eliminates 9 instructions (27 bytes, 28 gas) per 4-word squaring across 19 `R4Inline*`
+  sub-blocks (`r0z1..r3h`), saving **28 gas × 17 squarings = 476 gas** across the
+  128-byte benchmark vectors.
+- **Cut 5A — 32-byte window precopy modulus count & nibble-62 exponent swap
+  (`PC 923..2387`, -93 gas)**:
+  Reduces the `DUP1` modulus precopy run in `precopy180Program` from 180 to 179 and
+  consumes `exponent` in place via `SWAP1` at `nibble 62`, eliminating 1 instruction
+  (3 gas) across all 31 single-word window vectors (`31 × 3 = 93 gas`).
+- **Cut 5B — `TnM128` L1 cache `MSIZE` store & final `MULMOD` consumption
+  (`PC 5502..5615`, -64 gas)**:
+  Replaces `PUSH2 2272; MSTORE` with `MSIZE; MSTORE` (-1 gas) and `DUP2; MULMOD; SWAP1; POP`
+  with `SWAP2; SWAP1; MULMOD` (-7 gas) in `TnCacheL1Suffix`, saving **8 gas × 8 vectors =
+  64 gas** across the 128-byte `TnM128` vectors.
+- **Retained from v11 (`318954e0`) and v10 (`e506ac91`)**:
+  - **Cut 4 (`PC 5859..8998`, -3,105 gas)**: CRT Phase B-before-Phase A operand reordering
+    (-2,703 gas), `retainProgram` descending address preloading (-360 gas), and
+    `exitProgram` early stack cleanup & descending address preloading (-42 gas).
   - **Cut 3 (`PC 5859..8454`, -2,992 gas)**: Four stack-scheduling peephole rewrites (`p1..p4`)
     across `col0..col15` (-176 gas/squaring × 17 squarings).
   - **Cuts 1 & 2 (`PC 90..136`, -62 gas)**: Fermat/inversion positive-branch dispatch (-56 gas)
@@ -113,9 +120,9 @@ Claude found the original optimization in aerugo-ef's repository. Codex built
 the later v6/v7/v8 work on that foundation and performed this historical
 review, search, CRT representation work, schedule integration, proof
 adaptation, and validation. Gemini 3.1 Pro (Antigravity) designed, implemented,
-and formally verified the v10 and v11 stack-scheduling, operand-reordering, and
-address-preloading cuts (Cuts 1–4). These development-tool credits do not replace
-human authorship or license notices.
+and formally verified the v10, v11, and v12 stack-scheduling, operand-reordering,
+address-preloading, and fast-path peephole cuts (Cuts 1–5). These development-tool
+credits do not replace human authorship or license notices.
 
 Kaankolcu and earlier upstream contributors supply the baseline and extensive
 arithmetic and proof infrastructure. E-man07 supplies the inherited carry
