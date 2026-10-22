@@ -79,8 +79,7 @@ theorem wrappedShiftsAtWidth (W S C H : Nat) (hW : W ≤ 248)
     (hH : H % residueModulus = S % residueModulus) :
     let lo := S % wordRadix
     let x := (H+(residueModulus-lo % residueModulus)) % wordRadix
-    let q := (x % residueModulus) >>> 5
-    ((lo >>> W)+((q <<< (256-W)) % wordRadix)) % wordRadix = S/2^W := by
+    ((lo >>> W)+(((x % residueModulus) <<< (256-W-5)) % wordRadix)) % wordRadix = S/2^W := by
   dsimp
   have hb := widthBounds W S C H hW hC hS hHbound
   have hl := Nat.mod_lt (S % wordRadix) (show 0 < residueModulus by norm_num [residueModulus])
@@ -92,9 +91,14 @@ theorem wrappedShiftsAtWidth (W S C H : Nat) (hW : W ≤ 248)
   dsimp at hr
   have hsplit : (S % wordRadix)/2^W + S/wordRadix*2^(256-W) = S/2^W := by
     simpa only [hr.1] using hr.2
+  have hres : (H+residueModulus-(S % wordRadix) % residueModulus) % residueModulus =
+      (S / wordRadix) * 32 := by
+    rw [residualHigh wordRadix residueModulus S H (by norm_num [residueModulus]) hH,
+      show wordRadix % residueModulus = 32 by norm_num [wordRadix, residueModulus],
+      Nat.mod_eq_of_lt hb.2.1]
   simp only [Nat.shiftRight_eq_div_pow, Nat.shiftLeft_eq]
-  norm_num only [show 2^5 = (32 : Nat) by norm_num]
-  rw [hr.1]
+  rw [hres, Nat.mul_assoc, show 32 * 2^(256-W-5) = 2^(256-W) by
+    rw [show (32 : Nat) = 2^5 by norm_num, ← Nat.pow_add, show 5 + (256-W-5) = 256-W by omega]]
   have hpow : 2^W ≤ (2^248 : Nat) := Nat.pow_le_pow_right (by decide) hW
   have hcarrylt : S/2^W < wordRadix := by
     have := hb.2.2.2

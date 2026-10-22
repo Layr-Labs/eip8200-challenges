@@ -63,8 +63,13 @@ theorem carryWord_toNat (W S C H : Nat) (hWpos : 0 < W) (hW : W ≤ 248)
     rw [word_toNat_add, hsub, hHv, Nat.add_comm]
     rfl
   unfold carryWord
-  rw [word_toNat_add, shiftRight_toNat _ (by omega : W < 256), hlov,
-    shiftLeft_toNat _ (256-W) (by omega), shiftRight_toNat _ (by decide : 5 < 256),
+  have hsubW : UInt256.ofNat (256 - W) - UInt256.ofNat 5 = UInt256.ofNat (256 - W - 5) := by
+    apply word_ext
+    rw [word_toNat_sub_cond, word_toNat_ofNat, word_toNat_ofNat, word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by omega), Nat.mod_eq_of_lt (by decide),
+      Nat.mod_eq_of_lt (by omega), if_neg (by omega)]
+  rw [hsubW, word_toNat_add, shiftRight_toNat _ (by omega : W < 256), hlov,
+    shiftLeft_toNat _ (256-W-5) (by omega),
     mod_toNat _ _ hPn, hadd, hPv]
   exact wrappedShiftsAtWidth W S C H hW hC hS hHbound hH
 
@@ -85,7 +90,7 @@ theorem carryWord_eq (W S C H : Nat) (hWpos : 0 < W) (hW : W ≤ 248)
     omega
   exact (Nat.mod_eq_of_lt hcarry).symm
 
-/-- Arithmetic correctness of the exact 22-byte reconstruction macro, for any
+/-- Arithmetic correctness of the exact 19-byte reconstruction macro, for any
 starting state/address and any bounded stack frame satisfying the column bounds. -/
 theorem runCorrect (s : State) (pc : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1018)
@@ -96,7 +101,7 @@ theorem runCorrect (s : State) (pc : UInt256) (rest : List UInt256)
     runInstructions (program (UInt256.ofNat W) (UInt256.ofNat (256-W)))
       {s with pc := pc, stack := (UInt256.ofNat H :: UInt256.ofNat (S % wordRadix) ::
         UInt256.ofNat residueModulus :: rest)} =
-      some {s with pc := advancePC 22 pc, stack := (UInt256.ofNat (S/2^W) :: UInt256.ofNat residueModulus :: rest)} := by
+      some {s with pc := advancePC 19 pc, stack := (UInt256.ofNat (S/2^W) :: UInt256.ofNat residueModulus :: rest)} := by
   rw [HistoricalSearch.CRTExecution.run s pc _ _ _ _ _ rest hcap,
     carryWord_eq W S C H hWpos hW hC hS hHbound hH]
 
