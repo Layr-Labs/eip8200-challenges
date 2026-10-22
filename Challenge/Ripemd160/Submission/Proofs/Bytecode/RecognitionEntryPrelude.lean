@@ -24,6 +24,10 @@ def entryRho (_n : Nat) : List UInt256 := []
 
 /-- The private recognizer entry with its actual dispatch-defined saved tail. -/
 def patternedEntry (input : ByteArray) : State :=
-  { initialState submissionBytecode input 0 with pc := UInt256.land (UInt256.div (UInt256.ofNat 34711266746334640) (UInt256.ofNat input.size)) (UInt256.ofNat 8191), stack := entryRho input.size }
+  { initialState submissionBytecode input 0 with
+    pc := if input.size = 256 then UInt256.ofNat 7805
+      else if input.size = 376 then UInt256.ofNat 5666
+      else UInt256.land (UInt256.shiftRight (UInt256.ofNat 1805781487605728127014015497632372731422648) (UInt256.ofNat input.size)) (UInt256.ofNat 8191),
+    stack := entryRho input.size }
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedScan

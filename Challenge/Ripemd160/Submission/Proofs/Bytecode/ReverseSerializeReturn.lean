@@ -48,7 +48,6 @@ theorem prepared_atState (input : ByteArray) (rho : List UInt256) (i : Fin 13)
     prepared input rho = atState (prepared input rho) (ReverseLiteralScan.tailPC i) rho := by
   have ht : UInt256.add (UInt256.ofNat 24) (source input) = UInt256.ofNat (ReverseLiteralScan.tailPC i) := by
     unfold source
-    simp only [DirectDigestRaw.selected]
     rw [hn]
     exact ReverseLiteralScan.source_target i
   simp only [prepared,atState]
@@ -126,19 +125,19 @@ private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 
 def storeIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4831
- | ⟨1, _⟩ => 4352
- | ⟨2, _⟩ => 3693
- | ⟨3, _⟩ => 4211
- | ⟨4, _⟩ => 4401
- | ⟨5, _⟩ => 3488
- | ⟨6, _⟩ => 4535
- | ⟨7, _⟩ => 4022
- | ⟨8, _⟩ => 3819
- | ⟨9, _⟩ => 3721
- | ⟨10, _⟩ => 4802
- | ⟨11, _⟩ => 4982
- | ⟨12, _⟩ => 4686
+ | ⟨0, _⟩ => 3612
+ | ⟨1, _⟩ => 3478
+ | ⟨2, _⟩ => 4160
+ | ⟨3, _⟩ => 3662
+ | ⟨4, _⟩ => 4214
+ | ⟨5, _⟩ => 3594
+ | ⟨6, _⟩ => 4196
+ | ⟨7, _⟩ => 4675
+ | ⟨8, _⟩ => 3722
+ | ⟨9, _⟩ => 4277
+ | ⟨10, _⟩ => 3694
+ | ⟨11, _⟩ => 4972
+ | ⟨12, _⟩ => 3750
 
 namespace storeSite
 abbrev template (i : Fin 13) : List Instr :=
@@ -195,19 +194,19 @@ def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho
   exact gj
 
 def returnIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4841
- | ⟨1, _⟩ => 4362
- | ⟨2, _⟩ => 3703
- | ⟨3, _⟩ => 4226
- | ⟨4, _⟩ => 4416
- | ⟨5, _⟩ => 3503
- | ⟨6, _⟩ => 4550
- | ⟨7, _⟩ => 4042
- | ⟨8, _⟩ => 3844
- | ⟨9, _⟩ => 3746
- | ⟨10, _⟩ => 4827
- | ⟨11, _⟩ => 5027
- | ⟨12, _⟩ => 4751
+ | ⟨0, _⟩ => 3622
+ | ⟨1, _⟩ => 3488
+ | ⟨2, _⟩ => 4170
+ | ⟨3, _⟩ => 3677
+ | ⟨4, _⟩ => 4229
+ | ⟨5, _⟩ => 3609
+ | ⟨6, _⟩ => 4211
+ | ⟨7, _⟩ => 4695
+ | ⟨8, _⟩ => 3747
+ | ⟨9, _⟩ => 4302
+ | ⟨10, _⟩ => 3719
+ | ⟨11, _⟩ => 5017
+ | ⟨12, _⟩ => 3815
 
 def finishIndex (i : Fin 13) : Nat := returnIndex i + 1
 

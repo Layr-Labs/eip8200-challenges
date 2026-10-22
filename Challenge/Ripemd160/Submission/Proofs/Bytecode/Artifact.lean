@@ -6740,9 +6740,9 @@ private def submissionInstructionsChunk17 : List Instr :=
   op 0x1b,
   op 0x12,
   .push ⟨2, by decide⟩ (UInt256.ofNat 8191),
+  .push ⟨18, by decide⟩ (UInt256.ofNat 1805781487605728127014015497632372731422648),
   op 0x36,
-  .push ⟨7, by decide⟩ (UInt256.ofNat 34711266746334640),
-  op 0x04,
+  op 0x1c,
   op 0x16,
   op 0x57,
 
@@ -6773,16 +6773,6 @@ private def submissionInstructionsChunk18 : List Instr :=
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
-  .push ⟨1, by decide⟩ (UInt256.ofNat 0),
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -6849,29 +6839,61 @@ private def submissionInstructionsChunk18 : List Instr :=
 
 ]
 
-@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 93 := by rfl
+@[simp] private theorem submissionInstructionsChunk18_length : submissionInstructionsChunk18.length = 83 := by rfl
 
 private def submissionInstructionsChunk19 : List Instr :=
 [
 
   op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 317028691540587235129640223973284367834059040749),
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1251998741523656777300485297472400595618864439423),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975872),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131397888),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0x35,
   op 0x18,
-  op 0x17,
   .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
   op 0x57,
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x5b,
   op 0x36,
   .push ⟨2, by decide⟩ (UInt256.ofNat 256),
@@ -6881,7 +6903,7 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x36,
   .push ⟨2, by decide⟩ (UInt256.ofNat 376),
   op 0x14,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 6883),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 5666),
   op 0x57,
   .push ⟨1, by decide⟩ (UInt256.ofNat 245),
   op 0x56,
@@ -6938,6 +6960,37 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 317028691540587235129640223973284367834059040749),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975872),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 524717510892769952200770787354467678713137771213),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3166189940082864718613269121331309980362851143201109172953918312716374638592),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -6961,7 +7014,176 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x80,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 51536278723262616553055226583496568135069946185),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755545344850576737753366528),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 233347948783734465632298330963582576039387513209),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 248818459742486850486840648156276084652376766343),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683784085832794278396428288),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1409020389675646681432984939370312113762541159597),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096660961636444662661120),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 352),
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 320),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
+  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -6984,7 +7206,252 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x01,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -7072,6 +7539,95 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
   op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 788302141291229731098395206502327271368262842391),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x5b,
+  .push ⟨20, by decide⟩ (UInt256.ofNat 1238202210714422317976759695583289414507727951107),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x52,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549956536595165141270528),
+  op 0x59,
+  op 0x35,
+  op 0x18,
+  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0x35,
+  op 0x18,
+  op 0x17,
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  op 0x57,
+  op 0x59,
+  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -7185,34 +7741,131 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 248818459742486850486840648156276084652376766343),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683784085832794278396428288),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
+  op 0x00,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -7547,669 +8200,6 @@ private def submissionInstructionsChunk19 : List Instr :=
   op 0x00,
   op 0x00,
   op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 51536278723262616553055226583496568135069946185),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755545344850576737753366528),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1251998741523656777300485297472400595618864439423),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131397888),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1238202210714422317976759695583289414507727951107),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549956536595165141270528),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 788302141291229731098395206502327271368262842391),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 1409020389675646681432984939370312113762541159597),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 109500763573718531158423034353989916243958285857551159096660961636444662661120),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 352),
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 37300990284462707560744606070495020224072203293272174983478202953602038999245),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 320),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 80893299303922511203668571159815396659092938445662292393279061974431274567725),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 288),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 8239446319124366494793501244264702906038420160518651511388371106074462480525),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 256),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 46836809398124041301509275424151671459047373308733951134252891636799006558445),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 224),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 90427351570519066560079137287317450753818552617089646512985429813514949107010),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 192),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 17775265432785288859418840296405106407947132191047579206632289663109943557538),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 160),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 61367581353886127001238131413293229573374005415347599533452268822761471270146),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 128),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 233347948783734465632298330963582576039387513209),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 104505810704657832532308207549693575120876051224915683785162626763390386191714),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 96),
-  op 0x35,
-  op 0x18,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 32306037415402008934629779266198679100989968660636699671972189525809707916738),
-  .push ⟨1, by decide⟩ (UInt256.ofNat 64),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 75898346434861812577553744355519055536350986179947755549958789636940356975906),
-  op 0x59,
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3244493450063667868678674439968361782956185527883176199882357678282131398018),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  op 0x17,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
-  op 0x00,
-  op 0x5b,
-  .push ⟨20, by decide⟩ (UInt256.ofNat 524717510892769952200770787354467678713137771213),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x52,
-  .push ⟨32, by decide⟩ (UInt256.ofNat 3166189940082864718613269121331309980362851143201109172953918312716374638592),
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0x35,
-  op 0x18,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
-  op 0x57,
-  op 0x59,
-  .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  op 0xf3,
   op 0x00,
   op 0x00,
   op 0x00,
@@ -8832,7 +8822,7 @@ submissionInstructionsChunk0
  ++ submissionInstructionsChunk18
  ++ submissionInstructionsChunk19
 
-theorem referenceInstructions_count : submissionInstructions.length = 5439 := by
+theorem referenceInstructions_count : submissionInstructions.length = 5429 := by
   simp only [submissionInstructions, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length, submissionInstructionsChunk19_length]
 
 private theorem submissionInstructionsChunk0_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk0 = [
@@ -9186,8 +9176,9 @@ private theorem submissionInstructionsChunk17_assemble : Challenge.EvmProof.PcEn
   156, 86, 91, 129, 129, 83, 96, 1, 1, 144, 96, 8, 28, 144, 129, 131,
   87, 96, 198, 86, 91, 95, 127, 64, 0, 0, 1, 128, 0, 1, 129, 192,
   0, 0, 0, 0, 0, 1, 128, 128, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 54, 27, 18, 97, 31, 255, 54, 102, 123,
-  81, 182, 148, 30, 125, 176, 4, 22, 87,
+  0, 0, 0, 0, 0, 0, 0, 54, 27, 18, 97, 31, 255, 113, 20, 186,
+  183, 0, 0, 0, 0, 0, 57, 186, 34, 0, 25, 96, 128, 0, 39, 184,
+  54, 28, 22, 87,
 ] := by decide
 
 private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18 = [
@@ -9196,82 +9187,95 @@ private theorem submissionInstructionsChunk18_assemble : Challenge.EvmProof.PcEn
   255, 128, 95, 53, 24, 54, 29, 24, 97, 19, 41, 87, 115, 16, 181, 40,
   89, 5, 22, 178, 98, 175, 214, 144, 26, 176, 43, 33, 241, 110, 170, 221,
   97, 54, 28, 115, 140, 164, 173, 252, 192, 255, 78, 54, 206, 254, 152, 141,
-  206, 195, 212, 185, 220, 143, 80, 80, 24, 95, 82, 89, 95, 243, 96, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 91, 80, 80, 80, 80, 80, 80, 96, 16, 82, 96, 12, 82,
-  96, 8, 82, 96, 4, 82, 95, 82, 96, 16, 81, 128, 133, 22, 99, 255,
-  255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255, 2, 1, 96, 3, 82,
-  96, 32, 95, 243, 91, 96, 251, 91, 95, 95, 82, 96, 245, 86, 0, 0,
-  0, 0, 0, 0, 0, 0, 0,
+  206, 195, 212, 185, 220, 143, 80, 80, 24, 95, 82, 89, 95, 243, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 91, 80, 80, 80, 80, 80, 80, 96,
+  16, 82, 96, 12, 82, 96, 8, 82, 96, 4, 82, 95, 82, 96, 16, 81,
+  128, 133, 22, 99, 255, 255, 255, 255, 2, 1, 128, 132, 22, 97, 255, 255,
+  2, 1, 96, 3, 82, 96, 32, 95, 243, 91, 96, 251, 91, 95, 95, 82,
+  96, 245, 86, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ] := by decide
 
 private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk19 = [
-  91, 115, 55, 136, 14, 229, 226, 232, 33, 224, 84, 11, 177, 70, 227, 59,
-  55, 52, 35, 22, 231, 237, 95, 82, 127, 167, 204, 241, 22, 59, 96, 133,
-  170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213,
-  250, 31, 68, 105, 142, 179, 216, 253, 0, 89, 53, 24, 127, 7, 44, 81,
-  118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161,
-  198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24,
-  23, 97, 18, 177, 87, 89, 95, 243, 91, 54, 97, 1, 0, 20, 97, 30,
-  125, 87, 54, 97, 1, 120, 20, 97, 26, 227, 87, 96, 245, 86, 0, 0,
+  91, 115, 219, 77, 144, 179, 190, 130, 142, 167, 206, 216, 216, 121, 219, 206,
+  162, 193, 213, 254, 32, 127, 95, 82, 127, 7, 44, 81, 118, 155, 192, 229,
+  10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53,
+  90, 127, 164, 201, 238, 19, 56, 93, 0, 95, 53, 24, 97, 18, 177, 87,
+  89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 91, 54, 97, 1, 0, 20, 97, 30,
+  125, 87, 54, 97, 1, 120, 20, 97, 22, 34, 87, 96, 245, 86, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 26, 207,
-  65, 176, 159, 135, 172, 201, 131, 194, 160, 67, 245, 4, 76, 143, 113, 197,
-  45, 189, 95, 82, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121,
-  158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201,
-  238, 19, 56, 93, 130, 95, 53, 24, 97, 18, 177, 87, 89, 95, 243, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115,
-  77, 226, 11, 107, 31, 178, 175, 68, 35, 112, 196, 14, 83, 165, 10, 202,
-  54, 15, 195, 188, 95, 82, 127, 231, 12, 49, 86, 123, 160, 197, 234, 15,
-  52, 89, 126, 163, 200, 237, 18, 55, 92, 129, 166, 203, 240, 21, 58, 0,
-  0, 0, 0, 0, 0, 0, 0, 96, 96, 53, 24, 127, 71, 108, 145, 182,
-  219, 0, 37, 74, 111, 148, 185, 222, 3, 40, 77, 114, 151, 188, 225, 6,
-  43, 80, 117, 154, 191, 228, 9, 46, 83, 120, 157, 194, 96, 64, 53, 24,
-  23, 127, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136,
-  173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216,
-  253, 34, 89, 53, 24, 23, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47,
-  84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127,
-  164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 18, 177, 87, 89,
-  95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 43, 149, 103, 214, 132, 220,
-  137, 205, 84, 98, 14, 70, 2, 159, 91, 218, 14, 202, 183, 135, 95, 82,
-  127, 231, 12, 49, 86, 123, 160, 197, 234, 15, 52, 89, 126, 163, 200, 237,
-  18, 55, 92, 129, 166, 203, 240, 21, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 96, 96, 53, 24, 127, 71, 108, 145, 182, 219, 0, 37, 74, 111, 148,
-  185, 222, 3, 40, 77, 114, 151, 188, 225, 6, 43, 80, 117, 154, 191, 228,
-  9, 46, 83, 120, 157, 194, 96, 64, 53, 24, 23, 127, 167, 204, 241, 22,
+  0, 0, 0, 91, 115, 55, 136, 14, 229, 226, 232, 33, 224, 84, 11, 177,
+  70, 227, 59, 55, 52, 35, 22, 231, 237, 95, 82, 127, 167, 204, 241, 22,
   59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102,
-  139, 176, 213, 250, 31, 68, 105, 142, 179, 216, 253, 34, 89, 53, 24, 23,
-  127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13,
-  50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93,
-  130, 95, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0,
+  139, 176, 213, 250, 31, 68, 105, 142, 179, 216, 253, 0, 89, 53, 24, 127,
+  7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50,
+  87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130,
+  95, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 91, 115, 91, 233, 37,
+  158, 148, 120, 32, 45, 208, 193, 244, 235, 12, 78, 208, 68, 45, 190, 178,
+  205, 95, 82, 127, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 95, 53, 24, 97, 18, 177, 87, 89, 95, 243, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 71, 82, 114,
-  186, 70, 124, 166, 113, 109, 187, 28, 25, 168, 77, 227, 85, 240, 101, 130,
-  154, 95, 82, 127, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 96, 64, 53, 24, 127, 167, 204, 241, 22, 59, 96, 133,
+  0, 0, 0, 91, 115, 9, 6, 247, 119, 65, 5, 211, 100, 6, 80, 84,
+  28, 46, 123, 193, 155, 254, 155, 81, 73, 95, 82, 127, 167, 204, 241, 22,
+  59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102,
+  139, 176, 213, 0, 0, 0, 0, 0, 0, 0, 0, 0, 89, 53, 24, 127,
+  7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50,
+  87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130,
+  95, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 40, 223, 175, 20, 237,
+  153, 83, 244, 156, 122, 187, 86, 19, 8, 208, 198, 75, 196, 193, 121, 95,
+  82, 127, 231, 12, 49, 86, 123, 160, 197, 234, 15, 52, 89, 126, 163, 200,
+  237, 18, 55, 92, 129, 166, 203, 240, 21, 58, 95, 132, 169, 206, 243, 24,
+  61, 98, 96, 96, 53, 24, 127, 71, 108, 145, 182, 219, 0, 37, 74, 111,
+  148, 185, 222, 3, 40, 77, 114, 151, 188, 225, 6, 43, 80, 117, 154, 191,
+  228, 9, 46, 83, 120, 157, 194, 96, 64, 53, 24, 23, 127, 167, 204, 241,
+  22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65,
+  102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216, 253, 34, 89, 53, 24,
+  23, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232,
+  13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56,
+  93, 130, 95, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 91, 115, 43,
+  149, 103, 214, 132, 220, 137, 205, 84, 98, 14, 70, 2, 159, 91, 218, 14,
+  202, 183, 135, 95, 82, 127, 231, 12, 49, 86, 123, 160, 197, 234, 15, 52,
+  89, 126, 163, 200, 237, 18, 55, 92, 129, 166, 203, 240, 21, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 96, 96, 53, 24, 127, 71, 108, 145, 182, 219,
+  0, 37, 74, 111, 148, 185, 222, 3, 40, 77, 114, 151, 188, 225, 6, 43,
+  80, 117, 154, 191, 228, 9, 46, 83, 120, 157, 194, 96, 64, 53, 24, 23,
+  127, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173,
+  210, 247, 28, 65, 102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216, 253,
+  34, 89, 53, 24, 23, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84,
+  121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164,
+  201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 18, 177, 87, 89, 95,
+  243, 91, 115, 246, 206, 168, 210, 164, 145, 245, 220, 39, 106, 161, 247, 97,
+  139, 77, 122, 85, 46, 196, 173, 95, 82, 127, 242, 23, 60, 97, 134, 171,
+  208, 245, 26, 63, 100, 137, 174, 211, 248, 29, 66, 103, 140, 177, 214, 251,
+  32, 69, 0, 0, 0, 0, 0, 0, 0, 0, 97, 1, 96, 53, 24, 127,
+  82, 119, 156, 193, 230, 11, 48, 85, 122, 159, 196, 233, 14, 51, 88, 125,
+  162, 199, 236, 17, 54, 91, 128, 165, 202, 239, 20, 57, 94, 131, 168, 205,
+  97, 1, 64, 53, 24, 23, 127, 178, 215, 252, 33, 70, 107, 144, 181, 218,
+  255, 36, 73, 110, 147, 184, 221, 2, 39, 76, 113, 150, 187, 224, 5, 42,
+  79, 116, 153, 190, 227, 8, 45, 97, 1, 32, 53, 24, 23, 127, 18, 55,
+  92, 129, 166, 203, 240, 21, 58, 95, 132, 169, 206, 243, 24, 61, 98, 135,
+  172, 209, 246, 27, 64, 101, 138, 175, 212, 249, 30, 67, 104, 141, 97, 1,
+  0, 53, 24, 23, 127, 103, 140, 177, 214, 251, 32, 69, 106, 143, 180, 217,
+  254, 35, 72, 109, 146, 183, 220, 1, 38, 75, 112, 149, 186, 223, 4, 41,
+  89, 126, 163, 200, 237, 96, 224, 53, 24, 23, 127, 199, 236, 17, 54, 91,
+  128, 165, 202, 239, 20, 57, 94, 131, 168, 205, 242, 23, 60, 97, 134, 171,
+  208, 245, 26, 63, 100, 137, 174, 211, 248, 29, 66, 96, 192, 53, 24, 23,
+  127, 39, 76, 113, 150, 187, 224, 5, 42, 79, 116, 153, 190, 227, 8, 45,
+  82, 119, 156, 193, 230, 11, 48, 85, 122, 159, 196, 233, 14, 51, 88, 125,
+  162, 96, 160, 53, 24, 23, 127, 135, 172, 209, 246, 27, 64, 101, 138, 175,
+  212, 249, 30, 67, 104, 141, 178, 215, 252, 33, 70, 107, 144, 181, 218, 255,
+  36, 73, 110, 147, 184, 221, 2, 96, 128, 53, 24, 23, 127, 231, 12, 49,
+  86, 123, 160, 197, 234, 15, 52, 89, 126, 163, 200, 237, 18, 55, 92, 129,
+  166, 203, 240, 21, 58, 95, 132, 169, 206, 243, 24, 61, 98, 96, 96, 53,
+  24, 23, 127, 71, 108, 145, 182, 219, 0, 37, 74, 111, 148, 185, 222, 3,
+  40, 77, 114, 151, 188, 225, 6, 43, 80, 117, 154, 191, 228, 9, 46, 83,
+  120, 157, 194, 96, 64, 53, 24, 23, 127, 167, 204, 241, 22, 59, 96, 133,
   170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213,
   250, 31, 68, 105, 142, 179, 216, 253, 34, 89, 53, 24, 23, 127, 7, 44,
   81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124,
@@ -9286,80 +9290,44 @@ private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEn
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91,
-  115, 9, 6, 247, 119, 65, 5, 211, 100, 6, 80, 84, 28, 46, 123, 193,
-  155, 254, 155, 81, 73, 95, 82, 127, 167, 204, 241, 22, 59, 96, 133, 170,
-  207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176, 213, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 89, 53, 24, 127, 7, 44, 81, 118,
-  155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198,
-  235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 23,
-  97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 91, 115, 219, 77, 144, 179, 190, 130, 142, 167, 206, 216, 216, 121,
-  219, 206, 162, 193, 213, 254, 32, 127, 95, 82, 127, 7, 44, 81, 118, 155,
-  192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235,
-  16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 0, 95, 53, 24, 97, 18,
-  177, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 216, 226, 232, 75, 173,
-  25, 252, 133, 219, 173, 181, 95, 165, 70, 118, 49, 206, 20, 21, 3, 95,
+  115, 26, 207, 65, 176, 159, 135, 172, 201, 131, 194, 160, 67, 245, 4, 76,
+  143, 113, 197, 45, 189, 95, 82, 127, 7, 44, 81, 118, 155, 192, 229, 10,
+  47, 84, 121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90,
+  127, 164, 201, 238, 19, 56, 93, 130, 95, 53, 24, 97, 18, 177, 87, 89,
+  95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 138, 20, 176, 200, 146,
+  135, 179, 155, 26, 47, 115, 170, 121, 161, 206, 149, 176, 78, 120, 23, 95,
   82, 127, 167, 204, 241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136,
-  173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 0, 0, 0, 0, 0, 0,
-  0, 0, 89, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84,
+  173, 210, 247, 28, 65, 102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216,
+  253, 34, 89, 53, 24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84,
   121, 158, 195, 232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164,
   201, 238, 19, 56, 93, 130, 95, 53, 24, 23, 97, 18, 177, 87, 89, 95,
-  243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  243, 91, 115, 216, 226, 232, 75, 173, 25, 252, 133, 219, 173, 181, 95, 165,
+  70, 118, 49, 206, 20, 21, 3, 95, 82, 127, 167, 204, 241, 22, 59, 96,
+  133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176,
+  213, 250, 0, 0, 0, 0, 0, 0, 0, 0, 89, 53, 24, 127, 7, 44,
+  81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87, 124,
+  161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95, 53,
+  24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 91, 115, 138, 20, 176, 200, 146, 135, 179, 155, 26,
-  47, 115, 170, 121, 161, 206, 149, 176, 78, 120, 23, 95, 82, 127, 167, 204,
-  241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28,
-  65, 102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216, 253, 34, 89, 53,
-  24, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232,
-  13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56,
-  93, 130, 95, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 91, 115, 246, 206, 168, 210, 164, 145, 245, 220, 39, 106, 161, 247,
-  97, 139, 77, 122, 85, 46, 196, 173, 95, 82, 127, 242, 23, 60, 97, 134,
-  171, 208, 245, 26, 63, 100, 137, 174, 211, 248, 29, 66, 103, 140, 177, 214,
-  251, 32, 69, 0, 0, 0, 0, 0, 0, 0, 0, 97, 1, 96, 53, 24,
-  127, 82, 119, 156, 193, 230, 11, 48, 85, 122, 159, 196, 233, 14, 51, 88,
-  125, 162, 199, 236, 17, 54, 91, 128, 165, 202, 239, 20, 57, 94, 131, 168,
-  205, 97, 1, 64, 53, 24, 23, 127, 178, 215, 252, 33, 70, 107, 144, 181,
-  218, 255, 36, 73, 110, 147, 184, 221, 2, 39, 76, 113, 150, 187, 224, 5,
-  42, 79, 116, 153, 190, 227, 8, 45, 97, 1, 32, 53, 24, 23, 127, 18,
-  55, 92, 129, 166, 203, 240, 21, 58, 95, 132, 169, 206, 243, 24, 61, 98,
-  135, 172, 209, 246, 27, 64, 101, 138, 175, 212, 249, 30, 67, 104, 141, 97,
-  1, 0, 53, 24, 23, 127, 103, 140, 177, 214, 251, 32, 69, 106, 143, 180,
-  217, 254, 35, 72, 109, 146, 183, 220, 1, 38, 75, 112, 149, 186, 223, 4,
-  41, 89, 126, 163, 200, 237, 96, 224, 53, 24, 23, 127, 199, 236, 17, 54,
-  91, 128, 165, 202, 239, 20, 57, 94, 131, 168, 205, 242, 23, 60, 97, 134,
-  171, 208, 245, 26, 63, 100, 137, 174, 211, 248, 29, 66, 96, 192, 53, 24,
-  23, 127, 39, 76, 113, 150, 187, 224, 5, 42, 79, 116, 153, 190, 227, 8,
-  45, 82, 119, 156, 193, 230, 11, 48, 85, 122, 159, 196, 233, 14, 51, 88,
-  125, 162, 96, 160, 53, 24, 23, 127, 135, 172, 209, 246, 27, 64, 101, 138,
-  175, 212, 249, 30, 67, 104, 141, 178, 215, 252, 33, 70, 107, 144, 181, 218,
-  255, 36, 73, 110, 147, 184, 221, 2, 96, 128, 53, 24, 23, 127, 231, 12,
-  49, 86, 123, 160, 197, 234, 15, 52, 89, 126, 163, 200, 237, 18, 55, 92,
-  129, 166, 203, 240, 21, 58, 95, 132, 169, 206, 243, 24, 61, 98, 96, 96,
-  53, 24, 23, 127, 71, 108, 145, 182, 219, 0, 37, 74, 111, 148, 185, 222,
+  0, 0, 0, 0, 0, 0, 91, 115, 77, 226, 11, 107, 31, 178, 175, 68,
+  35, 112, 196, 14, 83, 165, 10, 202, 54, 15, 195, 188, 95, 82, 127, 231,
+  12, 49, 86, 123, 160, 197, 234, 15, 52, 89, 126, 163, 200, 237, 18, 55,
+  92, 129, 166, 203, 240, 21, 58, 0, 0, 0, 0, 0, 0, 0, 0, 96,
+  96, 53, 24, 127, 71, 108, 145, 182, 219, 0, 37, 74, 111, 148, 185, 222,
   3, 40, 77, 114, 151, 188, 225, 6, 43, 80, 117, 154, 191, 228, 9, 46,
   83, 120, 157, 194, 96, 64, 53, 24, 23, 127, 167, 204, 241, 22, 59, 96,
   133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176,
@@ -9369,23 +9337,45 @@ private theorem submissionInstructionsChunk19_assemble : Challenge.EvmProof.PcEn
   53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 40, 223, 175, 20,
-  237, 153, 83, 244, 156, 122, 187, 86, 19, 8, 208, 198, 75, 196, 193, 121,
-  95, 82, 127, 231, 12, 49, 86, 123, 160, 197, 234, 15, 52, 89, 126, 163,
-  200, 237, 18, 55, 92, 129, 166, 203, 240, 21, 58, 95, 132, 169, 206, 243,
-  24, 61, 98, 96, 96, 53, 24, 127, 71, 108, 145, 182, 219, 0, 37, 74,
-  111, 148, 185, 222, 3, 40, 77, 114, 151, 188, 225, 6, 43, 80, 117, 154,
-  191, 228, 9, 46, 83, 120, 157, 194, 96, 64, 53, 24, 23, 127, 167, 204,
-  241, 22, 59, 96, 133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28,
-  65, 102, 139, 176, 213, 250, 31, 68, 105, 142, 179, 216, 253, 34, 89, 53,
-  24, 23, 127, 7, 44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195,
-  232, 13, 50, 87, 124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19,
-  56, 93, 130, 95, 53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 91,
-  115, 91, 233, 37, 158, 148, 120, 32, 45, 208, 193, 244, 235, 12, 78, 208,
-  68, 45, 190, 178, 205, 95, 82, 127, 7, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 95, 53, 24, 97, 18, 177, 87, 89,
-  95, 243, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 115, 71, 82,
+  114, 186, 70, 124, 166, 113, 109, 187, 28, 25, 168, 77, 227, 85, 240, 101,
+  130, 154, 95, 82, 127, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 96, 64, 53, 24, 127, 167, 204, 241, 22, 59, 96,
+  133, 170, 207, 244, 25, 62, 99, 136, 173, 210, 247, 28, 65, 102, 139, 176,
+  213, 250, 31, 68, 105, 142, 179, 216, 253, 34, 89, 53, 24, 23, 127, 7,
+  44, 81, 118, 155, 192, 229, 10, 47, 84, 121, 158, 195, 232, 13, 50, 87,
+  124, 161, 198, 235, 16, 53, 90, 127, 164, 201, 238, 19, 56, 93, 130, 95,
+  53, 24, 23, 97, 18, 177, 87, 89, 95, 243, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -9700,12 +9690,12 @@ private theorem chunk16_byteLength :
   rfl
 
 private theorem chunk17_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 249 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk17).length = 260 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
 private theorem chunk18_byteLength :
-    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 183 := by
+    (Challenge.EvmProof.PcEncoding.assembleBytes submissionInstructionsChunk18).length = 172 := by
   rw [← ArtifactByteLength.byteLength_eq_assemble]
   rfl
 
@@ -9730,17 +9720,17 @@ private def tailPrefix : List Instr :=
   submissionInstructionsChunk17 ++
   submissionInstructionsChunk18
 
-private theorem tailPrefix_length : tailPrefix.length = 3488 := by
+private theorem tailPrefix_length : tailPrefix.length = 3478 := by
   simp only [tailPrefix, List.length_append, submissionInstructionsChunk0_length, submissionInstructionsChunk1_length, submissionInstructionsChunk2_length, submissionInstructionsChunk3_length, submissionInstructionsChunk4_length, submissionInstructionsChunk5_length, submissionInstructionsChunk6_length, submissionInstructionsChunk7_length, submissionInstructionsChunk8_length, submissionInstructionsChunk9_length, submissionInstructionsChunk10_length, submissionInstructionsChunk11_length, submissionInstructionsChunk12_length, submissionInstructionsChunk13_length, submissionInstructionsChunk14_length, submissionInstructionsChunk15_length, submissionInstructionsChunk16_length, submissionInstructionsChunk17_length, submissionInstructionsChunk18_length]
 
 private theorem tailPrefix_bytes_length : (Challenge.EvmProof.PcEncoding.assembleBytes tailPrefix).length = 4801 := by
   simp only [tailPrefix, Challenge.EvmProof.PcEncoding.assembleBytes_append, List.length_append, chunk0_byteLength, chunk1_byteLength, chunk2_byteLength, chunk3_byteLength, chunk4_byteLength, chunk5_byteLength, chunk6_byteLength, chunk7_byteLength, chunk8_byteLength, chunk9_byteLength, chunk10_byteLength, chunk11_byteLength, chunk12_byteLength, chunk13_byteLength, chunk14_byteLength, chunk15_byteLength, chunk16_byteLength, chunk17_byteLength, chunk18_byteLength]
 
 private theorem instructionPC_tail (i : Nat) (hi : i ≤ 1951) :
-    submissionArtifact.instructionPC (3488 + i) =
+    submissionArtifact.instructionPC (3478 + i) =
       4801 + (Challenge.EvmProof.PcEncoding.assembleBytes (submissionInstructionsChunk19.take i)).length := by
   apply ArtifactSegment.instructionPC_segment_of_bounds submissionArtifact
-    tailPrefix submissionInstructionsChunk19 [] 3488 4801
+    tailPrefix submissionInstructionsChunk19 [] 3478 4801
   · simp only [submissionArtifact, submissionInstructions, tailPrefix, List.append_nil]
   · exact tailPrefix_length
   · exact tailPrefix_bytes_length
@@ -10409,79 +10399,79 @@ def initStores : List InitStore := []
   rfl
 
 @[simp] theorem pcU2_268 :
-    submissionArtifact.instructionPC 5421 = 9716 := by
+    submissionArtifact.instructionPC 5411 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_268 :
-    instructionPC 5421 = 9716 := by
-  change submissionArtifact.instructionPC 5421 = 9716
+    instructionPC 5411 = 9716 := by
+  change submissionArtifact.instructionPC 5411 = 9716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_270 :
-    submissionArtifact.instructionPC 5423 = 9719 := by
+    submissionArtifact.instructionPC 5413 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_270 :
-    instructionPC 5423 = 9719 := by
-  change submissionArtifact.instructionPC 5423 = 9719
+    instructionPC 5413 = 9719 := by
+  change submissionArtifact.instructionPC 5413 = 9719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_271 :
-    submissionArtifact.instructionPC 5424 = 9720 := by
+    submissionArtifact.instructionPC 5414 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_271 :
-    instructionPC 5424 = 9720 := by
-  change submissionArtifact.instructionPC 5424 = 9720
+    instructionPC 5414 = 9720 := by
+  change submissionArtifact.instructionPC 5414 = 9720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_272 :
-    submissionArtifact.instructionPC 5425 = 9721 := by
+    submissionArtifact.instructionPC 5415 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_272 :
-    instructionPC 5425 = 9721 := by
-  change submissionArtifact.instructionPC 5425 = 9721
+    instructionPC 5415 = 9721 := by
+  change submissionArtifact.instructionPC 5415 = 9721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_273 :
-    submissionArtifact.instructionPC 5427 = 9725 := by
+    submissionArtifact.instructionPC 5417 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_273 :
-    instructionPC 5427 = 9725 := by
-  change submissionArtifact.instructionPC 5427 = 9725
+    instructionPC 5417 = 9725 := by
+  change submissionArtifact.instructionPC 5417 = 9725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_274 :
-    submissionArtifact.instructionPC 5428 = 9726 := by
+    submissionArtifact.instructionPC 5418 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_274 :
-    instructionPC 5428 = 9726 := by
-  change submissionArtifact.instructionPC 5428 = 9726
+    instructionPC 5418 = 9726 := by
+  change submissionArtifact.instructionPC 5418 = 9726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2_275 :
-    submissionArtifact.instructionPC 5429 = 9728 := by
+    submissionArtifact.instructionPC 5419 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem pcU2i_275 :
-    instructionPC 5429 = 9728 := by
-  change submissionArtifact.instructionPC 5429 = 9728
+    instructionPC 5419 = 9728 := by
+  change submissionArtifact.instructionPC 5419 = 9728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -11211,92 +11201,92 @@ private def wfOp {op : Operation}
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc54 :
-    submissionArtifact.instructionPC 3429 = 4727 := by
+    submissionArtifact.instructionPC 3429 = 4737 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci54 :
-    instructionPC 3429 = 4727 := by
-  change submissionArtifact.instructionPC 3429 = 4727
+    instructionPC 3429 = 4737 := by
+  change submissionArtifact.instructionPC 3429 = 4737
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc55 :
-    submissionArtifact.instructionPC 3429 = 4727 := by
+    submissionArtifact.instructionPC 3429 = 4737 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci55 :
-    instructionPC 3429 = 4727 := by
-  change submissionArtifact.instructionPC 3429 = 4727
+    instructionPC 3429 = 4737 := by
+  change submissionArtifact.instructionPC 3429 = 4737
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc56 :
-    submissionArtifact.instructionPC 3430 = 4728 := by
+    submissionArtifact.instructionPC 3430 = 4738 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci56 :
-    instructionPC 3430 = 4728 := by
-  change submissionArtifact.instructionPC 3430 = 4728
+    instructionPC 3430 = 4738 := by
+  change submissionArtifact.instructionPC 3430 = 4738
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc57 :
-    submissionArtifact.instructionPC 3431 = 4729 := by
+    submissionArtifact.instructionPC 3431 = 4739 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci57 :
-    instructionPC 3431 = 4729 := by
-  change submissionArtifact.instructionPC 3431 = 4729
+    instructionPC 3431 = 4739 := by
+  change submissionArtifact.instructionPC 3431 = 4739
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc58 :
-    submissionArtifact.instructionPC 3432 = 4730 := by
+    submissionArtifact.instructionPC 3432 = 4740 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci58 :
-    instructionPC 3432 = 4730 := by
-  change submissionArtifact.instructionPC 3432 = 4730
+    instructionPC 3432 = 4740 := by
+  change submissionArtifact.instructionPC 3432 = 4740
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc59 :
-    submissionArtifact.instructionPC 3433 = 4731 := by
+    submissionArtifact.instructionPC 3433 = 4742 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci59 :
-    instructionPC 3433 = 4731 := by
-  change submissionArtifact.instructionPC 3433 = 4731
+    instructionPC 3433 = 4742 := by
+  change submissionArtifact.instructionPC 3433 = 4742
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPc60 :
-    submissionArtifact.instructionPC 3434 = 4732 := by
+    submissionArtifact.instructionPC 3434 = 4743 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cjPci60 :
-    instructionPC 3434 = 4732 := by
-  change submissionArtifact.instructionPC 3434 = 4732
+    instructionPC 3434 = 4743 := by
+  change submissionArtifact.instructionPC 3434 = 4743
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -11380,24 +11370,24 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc74 :
-    submissionArtifact.instructionPC 5420 = 9715 := by
+    submissionArtifact.instructionPC 5410 = 9715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci74 :
-    instructionPC 5420 = 9715 := by
-  change submissionArtifact.instructionPC 5420 = 9715
+    instructionPC 5410 = 9715 := by
+  change submissionArtifact.instructionPC 5410 = 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc75 :
-    submissionArtifact.instructionPC 5420 = 9715 := by
+    submissionArtifact.instructionPC 5410 = 9715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci75 :
-    instructionPC 5420 = 9715 := by
-  change submissionArtifact.instructionPC 5420 = 9715
+    instructionPC 5410 = 9715 := by
+  change submissionArtifact.instructionPC 5410 = 9715
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -11523,145 +11513,145 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cjPc109 :
-    submissionArtifact.instructionPC 5430 = 9729 := by
+    submissionArtifact.instructionPC 5420 = 9729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci109 :
-    instructionPC 5430 = 9729 := by
-  change submissionArtifact.instructionPC 5430 = 9729
+    instructionPC 5420 = 9729 := by
+  change submissionArtifact.instructionPC 5420 = 9729
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc110 :
-    submissionArtifact.instructionPC 5431 = 9730 := by
+    submissionArtifact.instructionPC 5421 = 9730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci110 :
-    instructionPC 5431 = 9730 := by
-  change submissionArtifact.instructionPC 5431 = 9730
+    instructionPC 5421 = 9730 := by
+  change submissionArtifact.instructionPC 5421 = 9730
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc111 :
-    submissionArtifact.instructionPC 5432 = 9733 := by
+    submissionArtifact.instructionPC 5422 = 9733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci111 :
-    instructionPC 5432 = 9733 := by
-  change submissionArtifact.instructionPC 5432 = 9733
+    instructionPC 5422 = 9733 := by
+  change submissionArtifact.instructionPC 5422 = 9733
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc112 :
-    submissionArtifact.instructionPC 5433 = 9734 := by
+    submissionArtifact.instructionPC 5423 = 9734 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci112 :
-    instructionPC 5433 = 9734 := by
-  change submissionArtifact.instructionPC 5433 = 9734
+    instructionPC 5423 = 9734 := by
+  change submissionArtifact.instructionPC 5423 = 9734
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc113 :
-    submissionArtifact.instructionPC 5434 = 9736 := by
+    submissionArtifact.instructionPC 5424 = 9736 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci113 :
-    instructionPC 5434 = 9736 := by
-  change submissionArtifact.instructionPC 5434 = 9736
+    instructionPC 5424 = 9736 := by
+  change submissionArtifact.instructionPC 5424 = 9736
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc116 :
-    submissionArtifact.instructionPC 5421 = 9716 := by
+    submissionArtifact.instructionPC 5411 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci116 :
-    instructionPC 5421 = 9716 := by
-  change submissionArtifact.instructionPC 5421 = 9716
+    instructionPC 5411 = 9716 := by
+  change submissionArtifact.instructionPC 5411 = 9716
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc117 :
-    submissionArtifact.instructionPC 5422 = 9718 := by
+    submissionArtifact.instructionPC 5412 = 9718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci117 :
-    instructionPC 5422 = 9718 := by
-  change submissionArtifact.instructionPC 5422 = 9718
+    instructionPC 5412 = 9718 := by
+  change submissionArtifact.instructionPC 5412 = 9718
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc118 :
-    submissionArtifact.instructionPC 5423 = 9719 := by
+    submissionArtifact.instructionPC 5413 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci118 :
-    instructionPC 5423 = 9719 := by
-  change submissionArtifact.instructionPC 5423 = 9719
+    instructionPC 5413 = 9719 := by
+  change submissionArtifact.instructionPC 5413 = 9719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc119 :
-    submissionArtifact.instructionPC 5424 = 9720 := by
+    submissionArtifact.instructionPC 5414 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci119 :
-    instructionPC 5424 = 9720 := by
-  change submissionArtifact.instructionPC 5424 = 9720
+    instructionPC 5414 = 9720 := by
+  change submissionArtifact.instructionPC 5414 = 9720
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc120 :
-    submissionArtifact.instructionPC 5425 = 9721 := by
+    submissionArtifact.instructionPC 5415 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci120 :
-    instructionPC 5425 = 9721 := by
-  change submissionArtifact.instructionPC 5425 = 9721
+    instructionPC 5415 = 9721 := by
+  change submissionArtifact.instructionPC 5415 = 9721
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc121 :
-    submissionArtifact.instructionPC 5427 = 9725 := by
+    submissionArtifact.instructionPC 5417 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci121 :
-    instructionPC 5427 = 9725 := by
-  change submissionArtifact.instructionPC 5427 = 9725
+    instructionPC 5417 = 9725 := by
+  change submissionArtifact.instructionPC 5417 = 9725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc122 :
-    submissionArtifact.instructionPC 5428 = 9726 := by
+    submissionArtifact.instructionPC 5418 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci122 :
-    instructionPC 5428 = 9726 := by
-  change submissionArtifact.instructionPC 5428 = 9726
+    instructionPC 5418 = 9726 := by
+  change submissionArtifact.instructionPC 5418 = 9726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPc123 :
-    submissionArtifact.instructionPC 5429 = 9728 := by
+    submissionArtifact.instructionPC 5419 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cjPci123 :
-    instructionPC 5429 = 9728 := by
-  change submissionArtifact.instructionPC 5429 = 9728
+    instructionPC 5419 = 9728 := by
+  change submissionArtifact.instructionPC 5419 = 9728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -12465,13 +12455,13 @@ set_option maxRecDepth 100000 in
   rfl
 
 @[simp] theorem cgPc127 :
-    submissionArtifact.instructionPC 5438 = 9741 := by
+    submissionArtifact.instructionPC 5428 = 9741 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
 @[simp] theorem cgPci127 :
-    instructionPC 5438 = 9741 := by
-  change submissionArtifact.instructionPC 5438 = 9741
+    instructionPC 5428 = 9741 := by
+  change submissionArtifact.instructionPC 5428 = 9741
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   rfl
 
@@ -12613,508 +12603,508 @@ set_option maxRecDepth 100000 in
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3457 :
-    submissionArtifact.instructionPC 3391 = 4607 := by
+    submissionArtifact.instructionPC 3391 = 4625 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3457 :
-    instructionPC 3391 = 4607 := by
-  change submissionArtifact.instructionPC 3391 = 4607
+    instructionPC 3391 = 4625 := by
+  change submissionArtifact.instructionPC 3391 = 4625
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3458 :
-    submissionArtifact.instructionPC 3392 = 4615 := by
+    submissionArtifact.instructionPC 3392 = 4626 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3458 :
-    instructionPC 3392 = 4615 := by
-  change submissionArtifact.instructionPC 3392 = 4615
+    instructionPC 3392 = 4626 := by
+  change submissionArtifact.instructionPC 3392 = 4626
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3459 :
-    submissionArtifact.instructionPC 3393 = 4616 := by
+    submissionArtifact.instructionPC 3393 = 4627 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3459 :
-    instructionPC 3393 = 4616 := by
-  change submissionArtifact.instructionPC 3393 = 4616
+    instructionPC 3393 = 4627 := by
+  change submissionArtifact.instructionPC 3393 = 4627
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3460 :
-    submissionArtifact.instructionPC 3394 = 4617 := by
+    submissionArtifact.instructionPC 3394 = 4628 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3460 :
-    instructionPC 3394 = 4617 := by
-  change submissionArtifact.instructionPC 3394 = 4617
+    instructionPC 3394 = 4628 := by
+  change submissionArtifact.instructionPC 3394 = 4628
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3461 :
-    submissionArtifact.instructionPC 3416 = 4714 := by
+    submissionArtifact.instructionPC 3416 = 4724 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3461 :
-    instructionPC 3416 = 4714 := by
-  change submissionArtifact.instructionPC 3416 = 4714
+    instructionPC 3416 = 4724 := by
+  change submissionArtifact.instructionPC 3416 = 4724
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3462 :
-    submissionArtifact.instructionPC 3417 = 4715 := by
+    submissionArtifact.instructionPC 3417 = 4725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3462 :
-    instructionPC 3417 = 4715 := by
-  change submissionArtifact.instructionPC 3417 = 4715
+    instructionPC 3417 = 4725 := by
+  change submissionArtifact.instructionPC 3417 = 4725
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3463 :
-    submissionArtifact.instructionPC 3392 = 4615 := by
+    submissionArtifact.instructionPC 3392 = 4626 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3463 :
-    instructionPC 3392 = 4615 := by
-  change submissionArtifact.instructionPC 3392 = 4615
+    instructionPC 3392 = 4626 := by
+  change submissionArtifact.instructionPC 3392 = 4626
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3464 :
-    submissionArtifact.instructionPC 3393 = 4616 := by
+    submissionArtifact.instructionPC 3393 = 4627 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3464 :
-    instructionPC 3393 = 4616 := by
-  change submissionArtifact.instructionPC 3393 = 4616
+    instructionPC 3393 = 4627 := by
+  change submissionArtifact.instructionPC 3393 = 4627
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3465 :
-    submissionArtifact.instructionPC 3394 = 4617 := by
+    submissionArtifact.instructionPC 3394 = 4628 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3465 :
-    instructionPC 3394 = 4617 := by
-  change submissionArtifact.instructionPC 3394 = 4617
+    instructionPC 3394 = 4628 := by
+  change submissionArtifact.instructionPC 3394 = 4628
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3466 :
-    submissionArtifact.instructionPC 3421 = 4719 := by
+    submissionArtifact.instructionPC 3421 = 4729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3466 :
-    instructionPC 3421 = 4719 := by
-  change submissionArtifact.instructionPC 3421 = 4719
+    instructionPC 3421 = 4729 := by
+  change submissionArtifact.instructionPC 3421 = 4729
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3467 :
-    submissionArtifact.instructionPC 3422 = 4720 := by
+    submissionArtifact.instructionPC 3422 = 4730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3467 :
-    instructionPC 3422 = 4720 := by
-  change submissionArtifact.instructionPC 3422 = 4720
+    instructionPC 3422 = 4730 := by
+  change submissionArtifact.instructionPC 3422 = 4730
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3468 :
-    submissionArtifact.instructionPC 3418 = 4716 := by
+    submissionArtifact.instructionPC 3418 = 4726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3468 :
-    instructionPC 3418 = 4716 := by
-  change submissionArtifact.instructionPC 3418 = 4716
+    instructionPC 3418 = 4726 := by
+  change submissionArtifact.instructionPC 3418 = 4726
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3469 :
-    submissionArtifact.instructionPC 3424 = 4722 := by
+    submissionArtifact.instructionPC 3424 = 4732 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3469 :
-    instructionPC 3424 = 4722 := by
-  change submissionArtifact.instructionPC 3424 = 4722
+    instructionPC 3424 = 4732 := by
+  change submissionArtifact.instructionPC 3424 = 4732
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3470 :
-    submissionArtifact.instructionPC 3420 = 4718 := by
+    submissionArtifact.instructionPC 3420 = 4728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3470 :
-    instructionPC 3420 = 4718 := by
-  change submissionArtifact.instructionPC 3420 = 4718
+    instructionPC 3420 = 4728 := by
+  change submissionArtifact.instructionPC 3420 = 4728
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3471 :
-    submissionArtifact.instructionPC 3395 = 4618 := by
+    submissionArtifact.instructionPC 3395 = 4629 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3471 :
-    instructionPC 3395 = 4618 := by
-  change submissionArtifact.instructionPC 3395 = 4618
+    instructionPC 3395 = 4629 := by
+  change submissionArtifact.instructionPC 3395 = 4629
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3472 :
-    submissionArtifact.instructionPC 3396 = 4651 := by
+    submissionArtifact.instructionPC 3396 = 4662 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3472 :
-    instructionPC 3396 = 4651 := by
-  change submissionArtifact.instructionPC 3396 = 4651
+    instructionPC 3396 = 4662 := by
+  change submissionArtifact.instructionPC 3396 = 4662
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3473 :
-    submissionArtifact.instructionPC 3423 = 4721 := by
+    submissionArtifact.instructionPC 3423 = 4731 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3473 :
-    instructionPC 3423 = 4721 := by
-  change submissionArtifact.instructionPC 3423 = 4721
+    instructionPC 3423 = 4731 := by
+  change submissionArtifact.instructionPC 3423 = 4731
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3474 :
-    submissionArtifact.instructionPC 3424 = 4722 := by
+    submissionArtifact.instructionPC 3424 = 4732 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3474 :
-    instructionPC 3424 = 4722 := by
-  change submissionArtifact.instructionPC 3424 = 4722
+    instructionPC 3424 = 4732 := by
+  change submissionArtifact.instructionPC 3424 = 4732
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3475 :
-    submissionArtifact.instructionPC 3425 = 4723 := by
+    submissionArtifact.instructionPC 3425 = 4733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3475 :
-    instructionPC 3425 = 4723 := by
-  change submissionArtifact.instructionPC 3425 = 4723
+    instructionPC 3425 = 4733 := by
+  change submissionArtifact.instructionPC 3425 = 4733
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3476 :
-    submissionArtifact.instructionPC 3395 = 4618 := by
+    submissionArtifact.instructionPC 3395 = 4629 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3476 :
-    instructionPC 3395 = 4618 := by
-  change submissionArtifact.instructionPC 3395 = 4618
+    instructionPC 3395 = 4629 := by
+  change submissionArtifact.instructionPC 3395 = 4629
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3477 :
-    submissionArtifact.instructionPC 3396 = 4651 := by
+    submissionArtifact.instructionPC 3396 = 4662 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3477 :
-    instructionPC 3396 = 4651 := by
-  change submissionArtifact.instructionPC 3396 = 4651
+    instructionPC 3396 = 4662 := by
+  change submissionArtifact.instructionPC 3396 = 4662
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3478 :
-    submissionArtifact.instructionPC 3397 = 4652 := by
+    submissionArtifact.instructionPC 3397 = 4663 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3478 :
-    instructionPC 3397 = 4652 := by
-  change submissionArtifact.instructionPC 3397 = 4652
+    instructionPC 3397 = 4663 := by
+  change submissionArtifact.instructionPC 3397 = 4663
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3479 :
-    submissionArtifact.instructionPC 3398 = 4653 := by
+    submissionArtifact.instructionPC 3398 = 4664 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3479 :
-    instructionPC 3398 = 4653 := by
-  change submissionArtifact.instructionPC 3398 = 4653
+    instructionPC 3398 = 4664 := by
+  change submissionArtifact.instructionPC 3398 = 4664
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3480 :
-    submissionArtifact.instructionPC 3399 = 4654 := by
+    submissionArtifact.instructionPC 3399 = 4665 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3480 :
-    instructionPC 3399 = 4654 := by
-  change submissionArtifact.instructionPC 3399 = 4654
+    instructionPC 3399 = 4665 := by
+  change submissionArtifact.instructionPC 3399 = 4665
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3481 :
-    submissionArtifact.instructionPC 3400 = 4655 := by
+    submissionArtifact.instructionPC 3400 = 4666 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3481 :
-    instructionPC 3400 = 4655 := by
-  change submissionArtifact.instructionPC 3400 = 4655
+    instructionPC 3400 = 4666 := by
+  change submissionArtifact.instructionPC 3400 = 4666
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3482 :
-    submissionArtifact.instructionPC 3401 = 4656 := by
+    submissionArtifact.instructionPC 3401 = 4667 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3482 :
-    instructionPC 3401 = 4656 := by
-  change submissionArtifact.instructionPC 3401 = 4656
+    instructionPC 3401 = 4667 := by
+  change submissionArtifact.instructionPC 3401 = 4667
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3483 :
-    submissionArtifact.instructionPC 3402 = 4657 := by
+    submissionArtifact.instructionPC 3402 = 4668 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3483 :
-    instructionPC 3402 = 4657 := by
-  change submissionArtifact.instructionPC 3402 = 4657
+    instructionPC 3402 = 4668 := by
+  change submissionArtifact.instructionPC 3402 = 4668
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3484 :
-    submissionArtifact.instructionPC 3403 = 4658 := by
+    submissionArtifact.instructionPC 3403 = 4669 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3484 :
-    instructionPC 3403 = 4658 := by
-  change submissionArtifact.instructionPC 3403 = 4658
+    instructionPC 3403 = 4669 := by
+  change submissionArtifact.instructionPC 3403 = 4669
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3485 :
-    submissionArtifact.instructionPC 3404 = 4661 := by
+    submissionArtifact.instructionPC 3404 = 4672 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3485 :
-    instructionPC 3404 = 4661 := by
-  change submissionArtifact.instructionPC 3404 = 4661
+    instructionPC 3404 = 4672 := by
+  change submissionArtifact.instructionPC 3404 = 4672
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3486 :
-    submissionArtifact.instructionPC 3405 = 4662 := by
+    submissionArtifact.instructionPC 3405 = 4673 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3486 :
-    instructionPC 3405 = 4662 := by
-  change submissionArtifact.instructionPC 3405 = 4662
+    instructionPC 3405 = 4673 := by
+  change submissionArtifact.instructionPC 3405 = 4673
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3487 :
-    submissionArtifact.instructionPC 3406 = 4683 := by
+    submissionArtifact.instructionPC 3406 = 4694 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3487 :
-    instructionPC 3406 = 4683 := by
-  change submissionArtifact.instructionPC 3406 = 4683
+    instructionPC 3406 = 4694 := by
+  change submissionArtifact.instructionPC 3406 = 4694
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3488 :
-    submissionArtifact.instructionPC 3407 = 4684 := by
+    submissionArtifact.instructionPC 3407 = 4695 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3488 :
-    instructionPC 3407 = 4684 := by
-  change submissionArtifact.instructionPC 3407 = 4684
+    instructionPC 3407 = 4695 := by
+  change submissionArtifact.instructionPC 3407 = 4695
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3489 :
-    submissionArtifact.instructionPC 3408 = 4685 := by
+    submissionArtifact.instructionPC 3408 = 4696 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3489 :
-    instructionPC 3408 = 4685 := by
-  change submissionArtifact.instructionPC 3408 = 4685
+    instructionPC 3408 = 4696 := by
+  change submissionArtifact.instructionPC 3408 = 4696
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3490 :
-    submissionArtifact.instructionPC 3409 = 4706 := by
+    submissionArtifact.instructionPC 3409 = 4717 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3490 :
-    instructionPC 3409 = 4706 := by
-  change submissionArtifact.instructionPC 3409 = 4706
+    instructionPC 3409 = 4717 := by
+  change submissionArtifact.instructionPC 3409 = 4717
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3491 :
-    submissionArtifact.instructionPC 3410 = 4707 := by
+    submissionArtifact.instructionPC 3410 = 4718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3491 :
-    instructionPC 3410 = 4707 := by
-  change submissionArtifact.instructionPC 3410 = 4707
+    instructionPC 3410 = 4718 := by
+  change submissionArtifact.instructionPC 3410 = 4718
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3492 :
-    submissionArtifact.instructionPC 3411 = 4708 := by
+    submissionArtifact.instructionPC 3411 = 4719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3492 :
-    instructionPC 3411 = 4708 := by
-  change submissionArtifact.instructionPC 3411 = 4708
+    instructionPC 3411 = 4719 := by
+  change submissionArtifact.instructionPC 3411 = 4719
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3502 :
-    submissionArtifact.instructionPC 3428 = 4726 := by
+    submissionArtifact.instructionPC 3428 = 4736 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3502 :
-    instructionPC 3428 = 4726 := by
-  change submissionArtifact.instructionPC 3428 = 4726
+    instructionPC 3428 = 4736 := by
+  change submissionArtifact.instructionPC 3428 = 4736
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3510 :
-    submissionArtifact.instructionPC 3435 = 4733 := by
+    submissionArtifact.instructionPC 3435 = 4745 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3510 :
-    instructionPC 3435 = 4733 := by
-  change submissionArtifact.instructionPC 3435 = 4733
+    instructionPC 3435 = 4745 := by
+  change submissionArtifact.instructionPC 3435 = 4745
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPc3511 :
-    submissionArtifact.instructionPC 3436 = 4734 := by
+    submissionArtifact.instructionPC 3436 = 4746 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
 set_option maxRecDepth 100000 in
 @[simp] theorem cgPci3511 :
-    instructionPC 3436 = 4734 := by
-  change submissionArtifact.instructionPC 3436 = 4734
+    instructionPC 3436 = 4746 := by
+  change submissionArtifact.instructionPC 3436 = 4746
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 
@@ -13149,30 +13139,30 @@ def padGuardPath : List
 /-- Cached located path for the sentinel byte. -/
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨5421, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨5422, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5423, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5424, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5425, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨5411, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨5412, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5413, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5414, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5415, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop setup: the loop head 4945 stays under the two loop
 registers (it is the back-edge target of the loop's `DUP4 JUMPI`), then the bit length, the rounded
 length offset plus 89, and `DUP3 JUMP` to the loop head. -/
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨5426, .push ⟨2, by decide⟩ (UInt256.ofNat 4547), by rfl, by decide⟩,
-   ⟨5427, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5428, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨5429, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5430, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5431, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
-   ⟨5432, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5433, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨5434, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5435, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
-   ⟨5436, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5437, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5438, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨5416, .push ⟨2, by decide⟩ (UInt256.ofNat 4547), by rfl, by decide⟩,
+   ⟨5417, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5418, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨5419, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5420, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5421, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
+   ⟨5422, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5423, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨5424, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5425, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
+   ⟨5426, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5427, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨5428, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 /-- Cached located path for the footer-loop exit: `PUSH1 198 JUMP` at 4562 (the fall-through of the
 loop's `JUMPI`), then at 200 the generic continuation 48 replaces the output entry and the three
@@ -13212,20 +13202,20 @@ def padExitPath : List
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_9429 :
     Decode.isValidJumpDest submissionBytecode 9429 = true := by
-  have hp : submissionArtifact.instructionPC 5222 = 9429 := by
+  have hp : submissionArtifact.instructionPC 5212 = 9429 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     rfl
-  have h := submissionArtifact.isValidJumpDest_index 5222 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 5212 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4708 :
     Decode.isValidJumpDest submissionBytecode 4905 = true := by
-  have hp : submissionArtifact.instructionPC 3506 = 4905 := by
+  have hp : submissionArtifact.instructionPC 3528 = 4905 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3506 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3528 (by rfl)
   rw [hp] at h
   exact h
 
@@ -13296,10 +13286,10 @@ set_option maxRecDepth 100000 in
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4748 :
     Decode.isValidJumpDest submissionBytecode 4733 = true := by
-  have hp : submissionArtifact.instructionPC 3435 = 4733 := by
+  have hp : submissionArtifact.instructionPC 3425 = 4733 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3435 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3425 (by rfl)
   rw [hp] at h
   exact h
 
@@ -13316,20 +13306,20 @@ set_option maxRecDepth 100000 in
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4805 :
     Decode.isValidJumpDest submissionBytecode 4782 = true := by
-  have hp : submissionArtifact.instructionPC 3471 = 4782 := by
+  have hp : submissionArtifact.instructionPC 3461 = 4782 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3471 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3461 (by rfl)
   rw [hp] at h
   exact h
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4808 :
     Decode.isValidJumpDest submissionBytecode 4785 = true := by
-  have hp : submissionArtifact.instructionPC 3473 = 4785 := by
+  have hp : submissionArtifact.instructionPC 3463 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3473 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3463 (by rfl)
   rw [hp] at h
   exact h
 

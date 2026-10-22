@@ -30,47 +30,47 @@ def nval : Fin 13 → Nat
  | ⟨11, _⟩ => 256
  | ⟨12, _⟩ => 376
 def tailPC : Fin 13 → Nat
- | ⟨0, _⟩ => 7624
- | ⟨1, _⟩ => 6347
- | ⟨2, _⟩ => 5125
- | ⟨3, _⟩ => 6120
- | ⟨4, _⟩ => 6450
- | ⟨5, _⟩ => 4825
- | ⟨6, _⟩ => 6670
- | ⟨7, _⟩ => 5812
- | ⟨8, _⟩ => 5457
- | ⟨9, _⟩ => 5207
- | ⟨10, _⟩ => 7443
+ | ⟨0, _⟩ => 5108
+ | ⟨1, _⟩ => 4825
+ | ⟨2, _⟩ => 6520
+ | ⟨3, _⟩ => 5212
+ | ⟨4, _⟩ => 6714
+ | ⟨5, _⟩ => 5004
+ | ⟨6, _⟩ => 6610
+ | ⟨7, _⟩ => 7413
+ | ⟨8, _⟩ => 5510
+ | ⟨9, _⟩ => 6863
+ | ⟨10, _⟩ => 5330
  | ⟨11, _⟩ => 7829
- | ⟨12, _⟩ => 6907
+ | ⟨12, _⟩ => 5690
 def tailIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4835
- | ⟨1, _⟩ => 4356
- | ⟨2, _⟩ => 3697
- | ⟨3, _⟩ => 4215
- | ⟨4, _⟩ => 4405
- | ⟨5, _⟩ => 3492
- | ⟨6, _⟩ => 4539
- | ⟨7, _⟩ => 4026
- | ⟨8, _⟩ => 3823
- | ⟨9, _⟩ => 3725
- | ⟨10, _⟩ => 4806
- | ⟨11, _⟩ => 4986
- | ⟨12, _⟩ => 4690
+ | ⟨0, _⟩ => 3616
+ | ⟨1, _⟩ => 3482
+ | ⟨2, _⟩ => 4164
+ | ⟨3, _⟩ => 3666
+ | ⟨4, _⟩ => 4218
+ | ⟨5, _⟩ => 3598
+ | ⟨6, _⟩ => 4200
+ | ⟨7, _⟩ => 4679
+ | ⟨8, _⟩ => 3726
+ | ⟨9, _⟩ => 4281
+ | ⟨10, _⟩ => 3698
+ | ⟨11, _⟩ => 4976
+ | ⟨12, _⟩ => 3754
 def returnPC : Fin 13 → Nat
- | ⟨0, _⟩ => 7664
- | ⟨1, _⟩ => 6387
- | ⟨2, _⟩ => 5165
- | ⟨3, _⟩ => 6197
- | ⟨4, _⟩ => 6527
- | ⟨5, _⟩ => 4902
- | ⟨6, _⟩ => 6747
- | ⟨7, _⟩ => 5927
- | ⟨8, _⟩ => 5610
- | ⟨9, _⟩ => 5360
- | ⟨10, _⟩ => 7596
+ | ⟨0, _⟩ => 5148
+ | ⟨1, _⟩ => 4865
+ | ⟨2, _⟩ => 6560
+ | ⟨3, _⟩ => 5289
+ | ⟨4, _⟩ => 6791
+ | ⟨5, _⟩ => 5081
+ | ⟨6, _⟩ => 6687
+ | ⟨7, _⟩ => 7528
+ | ⟨8, _⟩ => 5663
+ | ⟨9, _⟩ => 7016
+ | ⟨10, _⟩ => 5483
  | ⟨11, _⟩ => 8134
- | ⟨12, _⟩ => 7368
+ | ⟨12, _⟩ => 6151
 
 
 def cmpTemplate (k : Nat) : List Instr :=
@@ -245,9 +245,9 @@ theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
   simpa only [tailTemplate,atState,DenseScheduleTrace.pcAfter_append,he,apply_ite] using hall
 
 theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code 4785 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3473 = 4785 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3463 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3473 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3463 (by rfl)
   rw [hp] at h
   exact h
 

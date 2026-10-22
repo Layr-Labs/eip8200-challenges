@@ -17,18 +17,18 @@ open DenseScheduleTrace (runInstrSeq_append_running)
 namespace Candidate
 open RetainedBridge111.Candidate
 
-theorem after_data : instructions.drop 5211 = suffixInstructions := by
-  have hc : (prefixInstructions ++ literalInstructions).length = 5211 := by
+theorem after_data : instructions.drop 5201 = suffixInstructions := by
+  have hc : (prefixInstructions ++ literalInstructions).length = 5201 := by
     simp only [List.length_append, prefix_count, literal_count]
   rw [instructions, ← hc, List.drop_left]
 
 theorem actual_result_slice :
-    (instructions.drop 5211).take 2 = DirectLiteralRawV4.resultTemplate := by
+    (instructions.drop 5201).take 2 = DirectLiteralRawV4.resultTemplate := by
   rw [after_data]
   rfl
 
 theorem actual_result_bytes :
-    assembleBytes ((instructions.drop 5211).take 2) = [0x61, 0x12, 0xb1, 0x57] := by
+    assembleBytes ((instructions.drop 5201).take 2) = [0x61, 0x12, 0xb1, 0x57] := by
   rw [actual_result_slice]
   exact ExactBindings.result_binding
 
@@ -44,8 +44,8 @@ theorem result_end_pc :
 
 /-- Two adjacent actual vector slices, composed without a whole-image decode claim. -/
 def dataAndResult : List Instr :=
-  ((RetainedBridge111.Candidate.instructions.drop 5050).take 161) ++
-  ((RetainedBridge111.Candidate.instructions.drop 5211).take 2)
+  ((RetainedBridge111.Candidate.instructions.drop 5040).take 161) ++
+  ((RetainedBridge111.Candidate.instructions.drop 5201).take 2)
 
 def resultState (s : State) (rho : List UInt256) : State :=
   {(stored s ExactBindings.digest) with

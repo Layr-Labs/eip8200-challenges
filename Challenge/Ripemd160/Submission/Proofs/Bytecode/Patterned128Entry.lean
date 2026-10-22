@@ -16,14 +16,14 @@ open StackRoundTrace StackRoundTemplate
 private def shortTemplate : List Instr := [
  .op .JUMPDEST, .push 0 0, .push 32 28948022349768971278010700369584604374341282260324016856826403983149888438272,
  .op .CALLDATASIZE, .op .SHL, .op .SLT,
- .push 2 8191, .op .CALLDATASIZE, .push 7 34711266746334640,
- .op .DIV, .op .AND, .op .JUMPI]
+ .push 2 8191, .push 18 1805781487605728127014015497632372731422648, .op .CALLDATASIZE,
+ .op .SHR, .op .AND, .op .JUMPI]
 private def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
  .push 2 (UInt256.ofNat target), .op .JUMPI]
 private theorem short_slice : (Artifact.submissionArtifact.instructions.drop 3383).take shortTemplate.length = shortTemplate := by rfl
-private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3507).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
-private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3512).take (longTemplate 376 6883).length = longTemplate 376 6883 := by rfl
+private theorem long256_slice : (Artifact.submissionArtifact.instructions.drop 3529).take (longTemplate 256 7805).length = longTemplate 256 7805 := by rfl
+private theorem long376_slice : (Artifact.submissionArtifact.instructions.drop 3534).take (longTemplate 376 5666).length = longTemplate 376 5666 := by rfl
 private theorem code_bound : Artifact.submissionArtifact.code.size < 2^256 := by
  change submissionBytecode.size < 2^256
  rw [referenceBytecode_size]
@@ -33,24 +33,25 @@ private def shortSite : GenericRoundSite Artifact.submissionArtifact .Osaka shor
   (by change 3383 + shortTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
 private def long256Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 256 7805) :=
- StackSiteBuilder.ofSlice (longTemplate 256 7805) 3507 long256_slice
-  (by change 3507 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 256 7805) 3529 long256_slice
+  (by change 3529 + (longTemplate 256 7805).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 7805) (by decide)) (by decide)
-private def long376Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 376 6883) :=
- StackSiteBuilder.ofSlice (longTemplate 376 6883) 3512 long376_slice
-  (by change 3512 + (longTemplate 376 6883).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
-  code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 6883) (by decide)) (by decide)
+private def long376Site : GenericRoundSite Artifact.submissionArtifact .Osaka (longTemplate 376 5666) :=
+ StackSiteBuilder.ofSlice (longTemplate 376 5666) 3534 long376_slice
+  (by change 3534 + (longTemplate 376 5666).length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+  code_bound (StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 5666) (by decide)) (by decide)
 private theorem short_pc : shortSite.startPC = UInt256.ofNat 4565 := by
  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3383) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4906 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3507) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3529) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4915 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3512) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3534) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
+private def shortSource (input : ByteArray) : UInt256 := DirectDigestRaw.shortSelected input.size
 private def source (input : ByteArray) : UInt256 := DirectDigestRaw.selected 8191 input.size
 private theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input) = sizeFlag input := by
  unfold sizeBit
@@ -58,16 +59,15 @@ private theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input
  have h := SizeLookupFlag.flag (UInt256.ofNat input.size)
  rw [SizeLookupFlag.mask_literal] at h
  simpa only [sizeFlag,Word.literal_eq_ofNat] using h
-private theorem hdiv (a b : UInt256) : a / b = UInt256.div a b := rfl
 private theorem short_raw (input : ByteArray) :
  runInstrSeq shortTemplate (PatternedScan.stS input 4565 []) =
   if UInt256.isTrue (sizeBit input) then
-   if Decode.isValidJumpDest submissionBytecode (source input).toNat then
-    some (PatternedScan.patternedEntry input) else none
-  else some (PatternedScan.stS input 4618 []) := by
+   if Decode.isValidJumpDest submissionBytecode (shortSource input).toNat then
+    some { initialState submissionBytecode input 0 with pc := shortSource input, stack := PatternedScan.entryRho input.size } else none
+  else some (PatternedScan.stS input 4629 []) := by
  simp (config := {maxSteps := 400000}) [shortTemplate,runInstrSeq,DataStepper.runInstr,
-  sizeBit,source,DirectDigestRaw.selected,PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,
-  initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,hdiv,
+  sizeBit,shortSource,DirectDigestRaw.shortSelected,DirectDigestRaw.selectorConst,PatternedScan.stS,PatternedScan.entryRho,
+  initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,
   RawExpressionAC.land_comm]
  split_ifs <;> simp_all
 private theorem long_raw (input : ByteArray) (n target pc : Nat) :
@@ -88,7 +88,7 @@ private def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemp
  GasSteps (PatternedScan.stS input 4906 []) t :=
  RecognitionLift.gasSteps_of_raw long256Site _ _ rfl rfl rfl deployAddress_not_precompile long256_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 6883) (PatternedScan.stS input 4915 []) = some t) :
+private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 5666) (PatternedScan.stS input 4915 []) = some t) :
  GasSteps (PatternedScan.stS input 4915 []) t :=
  RecognitionLift.gasSteps_of_raw long376Site _ _ rfl rfl rfl deployAddress_not_precompile long376_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
@@ -121,7 +121,17 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
     intro hz
     rw [UInt256.isZero,if_pos hz] at h
     exact (by decide : UInt256.ofNat 1 ≠ UInt256.ofNat 0) h
-   exact soundShort input _ (by rw [short_raw,if_pos hc,if_pos (selected_valid input hn _h1000)])
+   have hsrc : shortSource input = source input := by
+    unfold shortSource source DirectDigestRaw.selected
+    rcases hs with h|h|h|h|h|h|h|h|h|h|h <;> rw [h] <;> rfl
+   have hv : Decode.isValidJumpDest submissionBytecode (shortSource input).toNat = true := by
+    rw [hsrc]
+    exact selected_valid input hn _h1000
+   have hent : ({ initialState submissionBytecode input 0 with pc := shortSource input, stack := PatternedScan.entryRho input.size } : State) = PatternedScan.patternedEntry input := by
+    change ({ initialState submissionBytecode input 0 with pc := shortSource input, stack := PatternedScan.entryRho input.size } : State) =
+     { initialState submissionBytecode input 0 with pc := source input, stack := PatternedScan.entryRho input.size }
+    rw [hsrc]
+   exact GasSteps.cast (soundShort input _ (by rw [short_raw,if_pos hc,if_pos hv])) rfl hent
  · have hns : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 := by tauto
    have gs := soundShort input _ (by rw [short_raw,if_neg (short_false input hfit hns)])
    have hl : input.size = 256 ∨ input.size = 376 := by unfold RecognitionAccumulator.Allowed at hn; omega
@@ -139,20 +149,20 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
       simpa only [hp] using selected_valid input hn _h1000
      have gj := sound256 input (PatternedScan.stS input 7805 []) (by rw [long_raw,DirectGuard.size_eq_one input 256 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
      have he : PatternedScan.stS input 7805 [] = PatternedScan.patternedEntry input := by
-      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]; decide
+      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]
      exact g0.trans (GasSteps.cast gj rfl he)
    · have h256 : input.size ≠ 256 := h
      have h : input.size = 376 := by omega
      have g1 := sound256 input _ (by rw [long_raw,if_neg (long_false input hfit 256 (by decide) h256)])
-     have hv : Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 6883).toNat = true := by
-      have hp : source input = UInt256.ofNat 6883 := by
+     have hv : Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 5666).toNat = true := by
+      have hp : source input = UInt256.ofNat 5666 := by
        unfold source
        rw [h]
        decide
       simpa only [hp] using selected_valid input hn _h1000
-     have gj := sound376 input (PatternedScan.stS input 6883 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
-     have he : PatternedScan.stS input 6883 [] = PatternedScan.patternedEntry input := by
-      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]; decide
+     have gj := sound376 input (PatternedScan.stS input 5666 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
+     have he : PatternedScan.stS input 5666 [] = PatternedScan.patternedEntry input := by
+      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]
      exact g0.trans (g1.trans (GasSteps.cast gj rfl he))
 
 def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ RecognitionAccumulator.Allowed input.size) (_h1000 : input.size ≠ 1000) :
@@ -162,18 +172,18 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ Rec
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (Artifact.submissionArtifact.instructions.drop 3517).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (Artifact.submissionArtifact.instructions.drop 3539).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (Artifact.submissionArtifact.instructions.drop 125).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3517 fallback_slice
-  (by change 3517 + fallbackTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 3539 fallback_slice
+  (by change 3539 + fallbackTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite Artifact.submissionArtifact .Osaka genericTemplate :=
  StackSiteBuilder.ofSlice genericTemplate 125 generic_slice
   (by change 125 + genericTemplate.length ≤ Artifact.submissionInstructions.length; rw [Artifact.referenceInstructions_count]; decide)
   code_bound (StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
 private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4924 := by
- change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3517) = _
+ change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 3539) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 125) = _

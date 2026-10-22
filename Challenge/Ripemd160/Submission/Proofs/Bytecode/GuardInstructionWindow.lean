@@ -31,7 +31,7 @@ def tail : List Instr :=
 ]
 theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3395).take tail.length = tail := by rfl
 
-theorem pc_base : Artifact.submissionArtifact.instructionPC 3395 = 4618 := by
+theorem pc_base : Artifact.submissionArtifact.instructionPC 3395 = 4629 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
@@ -44,7 +44,7 @@ theorem get (index : Nat) (h : index < tail.length := by decide) :
 
 theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
     Artifact.submissionArtifact.instructionPC (3395 + index) =
-      4618 + byteLength (tail.take index) := by
+      4629 + byteLength (tail.take index) := by
   have ht : (Artifact.submissionArtifact.instructions.drop 3395).take index = tail.take index := by
     have ht0 := congrArg (List.take index) tail_eq
     rw [List.take_take, Nat.min_eq_left h] at ht0

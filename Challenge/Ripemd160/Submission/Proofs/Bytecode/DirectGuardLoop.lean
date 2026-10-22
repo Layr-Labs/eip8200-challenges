@@ -14,13 +14,13 @@ open KnownInputCompactState StackRoundTrace StackRoundTemplate
 
 private def scanner := PcSeedRaw.template
 private theorem scanner_slice :
-    (Artifact.submissionArtifact.instructions.drop 5222).take scanner.length = scanner := by
+    (Artifact.submissionArtifact.instructions.drop 5212).take scanner.length = scanner := by
   rfl
-private theorem scanner_pc : Artifact.submissionArtifact.instructionPC 5222 = 9429 := by
+private theorem scanner_pc : Artifact.submissionArtifact.instructionPC 5212 = 9429 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 private theorem scanner_bounds :
-    5222 + scanner.length ≤ Artifact.submissionArtifact.instructions.length := by
-  change 5222 + scanner.length ≤ Artifact.submissionInstructions.length
+    5212 + scanner.length ≤ Artifact.submissionArtifact.instructions.length := by
+  change 5212 + scanner.length ≤ Artifact.submissionInstructions.length
   rw [Artifact.referenceInstructions_count]
   decide
 private theorem scanner_wf : StackRoundData.TemplateWellFormed scanner := by decide
@@ -28,11 +28,11 @@ private theorem scanner_advances : ∀ i ∈ scanner.dropLast, RecognitionLift.A
   apply RecognitionLift.advancesAll_sound
   decide
 private def scanner_site : GenericRoundSite Artifact.submissionArtifact .Osaka scanner :=
-  StackSiteBuilder.ofSlice scanner 5222 scanner_slice scanner_bounds
+  StackSiteBuilder.ofSlice scanner 5212 scanner_slice scanner_bounds
     (by change submissionBytecode.size < 2 ^ 256; rw [referenceBytecode_size]; decide)
     (StackRoundData.templateWellFormed_mem scanner_wf) (by decide)
 private theorem scanner_site_pc : scanner_site.startPC = UInt256.ofNat 9429 := by
-  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5222) = _
+  change UInt256.ofNat (Artifact.submissionArtifact.instructionPC 5212) = _
   rw [scanner_pc]
 
 private def scannerEntry (input : ByteArray) : State :=
