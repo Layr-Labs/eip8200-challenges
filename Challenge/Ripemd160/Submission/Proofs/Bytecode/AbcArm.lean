@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcSizeGuard
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PatternedStep
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.GuardInstructionWindow
@@ -67,7 +68,7 @@ abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def wordMaskNat : Nat :=
-  109629802895867119430885776324251105184819939959857484870201727791975914012671
+  5506022574726681700290820341793915503137370776112178186780075461015395893248
 
 def wordMask : UInt256 := UInt256.ofNat wordMaskNat
 
@@ -76,7 +77,7 @@ def entryDest : Located :=
 
 def wordPath : List Located :=
   [⟨3405, .push ⟨32, by decide⟩ wordMask, by exact GuardInstructionWindow.get 0, by decide⟩,
-   ⟨3406, .op (.Dup ⟨0, by decide⟩), by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3406, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3407, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 2, by decide⟩,
    ⟨3408, .op .CALLDATALOAD, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
    ⟨3409, .op .XOR, by exact GuardInstructionWindow.get 4, ⟨by decide, trivial, rfl⟩⟩,
@@ -108,7 +109,7 @@ def emptyFinishPath : List Located :=
    ⟨4385, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def maskedWord (input : ByteArray) : UInt256 :=
-  UInt256.xor (MachineState.readWord input 0) wordMask
+  UInt256.xor (MachineState.readWord input 0) (UInt256.ofNat input.size)
 
 def shiftedWord (input : ByteArray) : UInt256 :=
   UInt256.sar (maskedWord input) (UInt256.ofNat input.size)
@@ -170,242 +171,25 @@ private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 4905 =
   rw [pc_176] at h
   exact h
 
-/-! ### Sign-extending shift and mask arithmetic -/
-
-private theorem xor_toNat (a b : UInt256) : (UInt256.xor a b).toNat = a.toNat ^^^ b.toNat := by
-  have ha := a.val.isLt
-  have hb := b.val.isLt
-  change ((a.toNat ^^^ b.toNat) % UInt256.size) = a.toNat ^^^ b.toNat
-  apply Nat.mod_eq_of_lt
-  exact Nat.xor_lt_two_pow ha hb
-
-private theorem wordMask_toNat : wordMask.toNat = wordMaskNat := by
-  unfold wordMask wordMaskNat
-  rw [Word.word_toNat_ofNat]
-  decide
-
+/-! ### The size-fed sign-extending guard accepts exactly `abc`. -/
 private theorem shiftedWord_eq_of_wordCond (input : ByteArray) (hz : wordCond input = 0) :
-    (shiftedWord input).toNat = wordMaskNat := by
+    (shiftedWord input).toNat = AbcSizeGuard.target := by
   have h := congrArg UInt256.toNat ((KnownInputLogic.wordXor_eq_zero_iff _ _).mp hz)
-  rw [wordMask_toNat] at h
   exact h
 
-private theorem sar_ge_of_size_ge_four (v s : UInt256)
-    (hs4 : 4 ≤ s.toNat) (hs256 : s.toNat < 256) (hv : 2 ^ 255 ≤ v.toNat) :
-    2 ^ 256 - 2 ^ 251 ≤ (UInt256.sar v s).toNat := by
-  unfold UInt256.sar UInt256.toSignedNat UInt256.ofSignedInt
-  have hsize : UInt256.size = 2 ^ 256 := rfl
-  have hvlt : v.toNat < 2 ^ 256 := v.val.isLt
-  rw [if_neg (by omega)]
-  simp only [hsize]
-  rw [if_neg (by rw [show (2:Nat) ^ 256 / 2 = 2 ^ 255 by norm_num]; omega)]
-  rw [Word.word_toNat_ofNat]
-  have hd_ge : 16 ≤ 2 ^ s.toNat := by
-    simpa using Nat.pow_le_pow_right (by decide : 0 < 2) hs4
-  have hd_lt : 2 ^ s.toNat < 2 ^ 256 :=
-    Nat.pow_lt_pow_right (by decide : 1 < 2) hs256
-  generalize hx : v.toNat = x at hv hvlt
-  generalize hd : (2 : Nat) ^ s.toNat = d at hd_ge hd_lt ⊢
-  have hcast : ((2 : Int) ^ s.toNat) = (d : Int) := by
-    rw [← hd]
-    push_cast
-    rfl
-  rw [hcast]
-  set a : Int := (x : Int) - ((2 ^ 256 : Nat) : Int)
-  set q : Int := a / (d : Int)
-  set r : Int := a % (d : Int)
-  have hdiv : (d : Int) * q + r = a := Int.mul_ediv_add_emod a (d : Int)
-  have hr0 : 0 ≤ r := Int.emod_nonneg a (by omega)
-  have hrd : r < (d : Int) := Int.emod_lt_of_pos a (by omega)
-  have hq_ge : -(2 ^ 251 : Int) ≤ q := by
-    by_contra hlt
-    have hq_le : q + (2 ^ 251 : Int) + 1 ≤ 0 := by omega
-    have hmul : (d : Int) * (q + (2 ^ 251 : Int) + 1) ≤ 0 :=
-      Int.mul_nonpos_of_nonneg_of_nonpos (by omega) hq_le
-    rw [Int.mul_add, Int.mul_add, Int.mul_one] at hmul
-    omega
-  have hq_lt : q < 0 := by
-    by_contra hge
-    have hq0 : 0 ≤ q := by omega
-    have hmul : 0 ≤ (d : Int) * q := Int.mul_nonneg (by omega) hq0
-    omega
-  have hmod_lt : (q % ((2 ^ 256 : Nat) : Int)).toNat < 2 ^ 256 := by omega
-  have hmod_ge : 2 ^ 256 - 2 ^ 251 ≤ (q % ((2 ^ 256 : Nat) : Int)).toNat := by omega
-  rw [Nat.mod_eq_of_lt hmod_lt]
-  exact hmod_ge
-
-private theorem sar_lt_of_small (v s : UInt256)
-    (hs256 : s.toNat < 256) (hv : v.toNat < 2 ^ 255) :
-    (UInt256.sar v s).toNat < 2 ^ 255 := by
-  unfold UInt256.sar UInt256.toSignedNat UInt256.ofSignedInt
-  have hsize : UInt256.size = 2 ^ 256 := rfl
-  rw [if_neg (by omega)]
-  simp only [hsize]
-  rw [if_pos (by rw [show (2:Nat) ^ 256 / 2 = 2 ^ 255 by norm_num]; exact hv)]
-  rw [Word.word_toNat_ofNat]
-  have hd_pos : 1 ≤ 2 ^ s.toNat := Nat.one_le_pow s.toNat 2 (by decide)
-  generalize hx : v.toNat = x at hv
-  generalize hd : (2 : Nat) ^ s.toNat = d at hd_pos ⊢
-  have hcast : ((2 : Int) ^ s.toNat) = (d : Int) := by
-    rw [← hd]
-    push_cast
-    rfl
-  rw [hcast]
-  set q : Int := (x : Int) / (d : Int)
-  set r : Int := (x : Int) % (d : Int)
-  have hdiv : (d : Int) * q + r = (x : Int) := Int.mul_ediv_add_emod (x : Int) (d : Int)
-  have hr0 : 0 ≤ r := Int.emod_nonneg (x : Int) (by omega)
-  have hrd : r < (d : Int) := Int.emod_lt_of_pos (x : Int) (by omega)
-  have hq0 : 0 ≤ q := Int.ediv_nonneg (by omega) (by omega)
-  have hq_le : q ≤ (x : Int) := by
-    by_contra hgt
-    have hq1 : (x : Int) + 1 ≤ q := by omega
-    have hmul : 1 * ((x : Int) + 1) ≤ (d : Int) * q :=
-      Int.mul_le_mul (by omega) hq1 (by omega) (by omega)
-    omega
-  have hmod_lt : (q % ((2 ^ 256 : Nat) : Int)).toNat < 2 ^ 256 := by omega
-  rw [Nat.mod_eq_of_lt hmod_lt]
-  omega
-
-/-- The sign-extended arm test can only match inputs shorter than four bytes. -/
 theorem size_lt_four_of_wordCond (input : ByteArray) (hfit : CalldataFits input)
     (hz : wordCond input = 0) : input.size < 4 := by
-  have heq := shiftedWord_eq_of_wordCond input hz
-  unfold shiftedWord at heq
-  have hs_toNat : (UInt256.ofNat input.size).toNat = input.size := by
+  have h := AbcSizeGuard.shift_hit_small _ _ (shiftedWord_eq_of_wordCond input hz)
+  have hs : (UInt256.ofNat input.size).toNat = input.size := by
     rw [Word.word_toNat_ofNat]
     exact Nat.mod_eq_of_lt (Nat.lt_trans hfit (by norm_num))
-  by_contra hge4
-  have h4 : 4 ≤ (UInt256.ofNat input.size).toNat := by omega
-  by_cases hs256 : (UInt256.ofNat input.size).toNat < 256
-  · by_cases hv : (maskedWord input).toNat < 2 ^ 255
-    · have hlt := sar_lt_of_small (maskedWord input) (UInt256.ofNat input.size) hs256 hv
-      unfold wordMaskNat at heq
-      omega
-    · have hge := sar_ge_of_size_ge_four (maskedWord input) (UInt256.ofNat input.size)
-        h4 hs256 (by omega)
-      unfold wordMaskNat at heq
-      omega
-  · unfold UInt256.sar at heq
-    rw [if_pos (by omega)] at heq
-    split_ifs at heq <;> {
-      unfold wordMaskNat at heq
-      revert heq
-      decide
-    }
+  rw [hs] at h
+  exact h
 
-private theorem maskedWord_div_eq (input : ByteArray) :
-    (maskedWord input).toNat / 2 ^ 232 = (leadWord input).toNat ^^^ 0xf26044 := by
-  have hxor : (maskedWord input).toNat = (MachineState.readWord input 0).toNat ^^^ wordMaskNat := by
-    unfold maskedWord
-    rw [xor_toNat, wordMask_toNat]
-  have hlead : (leadWord input).toNat = (MachineState.readWord input 0).toNat >>> 232 := by
-    unfold leadWord
-    rw [Word.shiftRight_toNat _ (by decide)]
-  have hmask : wordMaskNat >>> 232 = 0xf26044 := by decide
-  rw [← Nat.shiftRight_eq_div_pow, hxor, Nat.shiftRight_xor_distrib, hlead, hmask]
-
-private theorem xor_cancel_right (a b : Nat) : (a ^^^ b) ^^^ b = a := by
-  rw [Nat.xor_assoc, Nat.xor_self, Nat.xor_zero]
-
-private theorem sar_const_big (v : UInt256) (k : Nat) (hk : k = 1 ∨ k = 2 ∨ k = 3)
-    (h : (UInt256.sar v (UInt256.ofNat k)).toNat = wordMaskNat) :
-    ((v.toNat : Int) - ((2 ^ 256 : Nat) : Int)) / ((2 : Int) ^ k) + ((2 ^ 256 : Nat) : Int) =
-      (wordMaskNat : Int) := by
-  have hk256 : (UInt256.ofNat k).toNat < 256 := by
-    rcases hk with rfl | rfl | rfl <;> decide
-  have hv_ge : 2 ^ 255 ≤ v.toNat := by
-    by_contra hlt
-    have hs := sar_lt_of_small v (UInt256.ofNat k) hk256 (by omega)
-    unfold wordMaskNat at h
-    omega
-  have hvlt : v.toNat < 2 ^ 256 := v.val.isLt
-  unfold UInt256.sar UInt256.toSignedNat UInt256.ofSignedInt at h
-  have hsize : UInt256.size = 2 ^ 256 := rfl
-  rw [if_neg (by omega)] at h
-  simp only [hsize] at h
-  rw [if_neg (by rw [show (2:Nat) ^ 256 / 2 = 2 ^ 255 by norm_num]; omega)] at h
-  rw [Word.word_toNat_ofNat] at h
-  rcases hk with rfl | rfl | rfl
-  · change ((((v.toNat : Int) - ((2 ^ 256 : Nat) : Int)) / 2 % ((2 ^ 256 : Nat) : Int)).toNat) % 2 ^ 256 = wordMaskNat at h
-    unfold wordMaskNat at h ⊢
-    omega
-  · change ((((v.toNat : Int) - ((2 ^ 256 : Nat) : Int)) / 4 % ((2 ^ 256 : Nat) : Int)).toNat) % 2 ^ 256 = wordMaskNat at h
-    unfold wordMaskNat at h ⊢
-    omega
-  · change ((((v.toNat : Int) - ((2 ^ 256 : Nat) : Int)) / 8 % ((2 ^ 256 : Nat) : Int)).toNat) % 2 ^ 256 = wordMaskNat at h
-    unfold wordMaskNat at h ⊢
-    omega
-
-theorem wordCond_zero_size_pos (input : ByteArray) (_hfit : CalldataFits input)
-    (hpos : 0 < input.size) (hsmall : input.size < 4) (hz : wordCond input = 0) :
-    input = AbcInputData.abcInput := by
-  have heq := shiftedWord_eq_of_wordCond input hz
-  unfold shiftedWord at heq
-  have hdiv := maskedWord_div_eq input
-  have hvlt : (maskedWord input).toNat < 2 ^ 256 := (maskedWord input).val.isLt
-  have b0 := (byte input 0).toNat_lt
-  have b1 := (byte input 1).toNat_lt
-  have b2 := (byte input 2).toNat_lt
-  have hs : input.size = 1 ∨ input.size = 2 ∨ input.size = 3 := by omega
-  rcases hs with hs | hs | hs
-  · rw [hs] at heq
-    have hsar := sar_const_big (maskedWord input) 1 (Or.inl rfl) heq
-    have htop : (maskedWord input).toNat / 2 ^ 232 = 0xe4c089 := by
-      unfold wordMaskNat at hsar
-      omega
-    rw [hdiv] at htop
-    have hlead : (leadWord input).toNat = 0x16a0cd := by
-      have hx := congrArg (· ^^^ 0xf26044) htop
-      rw [xor_cancel_right] at hx
-      exact hx
-    rw [prefix_toNat] at hlead
-    have hz2 : byte input 2 = 0 := by
-      rw [byte_getD]
-      exact Memory.getElem?_getD_eq_zero_of_size_le input 2 (by omega)
-    rw [hz2] at hlead
-    change (byte input 0).toNat * 65536 + (byte input 1).toNat * 256 + 0 = 0x16a0cd at hlead
-    omega
-  · rw [hs] at heq
-    have hsar := sar_const_big (maskedWord input) 2 (Or.inr (Or.inl rfl)) heq
-    have htop : (maskedWord input).toNat / 2 ^ 232 = 0xc98113 := by
-      unfold wordMaskNat at hsar
-      omega
-    rw [hdiv] at htop
-    have hlead : (leadWord input).toNat = 0x3be157 := by
-      have hx := congrArg (· ^^^ 0xf26044) htop
-      rw [xor_cancel_right] at hx
-      exact hx
-    rw [prefix_toNat] at hlead
-    have hz2 : byte input 2 = 0 := by
-      rw [byte_getD]
-      exact Memory.getElem?_getD_eq_zero_of_size_le input 2 (by omega)
-    rw [hz2] at hlead
-    change (byte input 0).toNat * 65536 + (byte input 1).toNat * 256 + 0 = 0x3be157 at hlead
-    omega
-  · rw [hs] at heq
-    have hsar := sar_const_big (maskedWord input) 3 (Or.inr (Or.inr rfl)) heq
-    have htop : (maskedWord input).toNat / 2 ^ 232 = 0x930227 := by
-      unfold wordMaskNat at hsar
-      omega
-    rw [hdiv] at htop
-    have hlead : (leadWord input).toNat = 0x616263 := by
-      have hx := congrArg (· ^^^ 0xf26044) htop
-      rw [xor_cancel_right] at hx
-      exact hx
-    rw [prefix_toNat] at hlead
-    have h0 : (byte input 0).toNat = 97 := by omega
-    have h1 : (byte input 1).toNat = 98 := by omega
-    have h2 : (byte input 2).toNat = 99 := by omega
-    apply ByteArray.ext_getElem hs
-    intro i hi hir
-    have hi3 : i < 3 := by omega
-    rw [← TailProjection.byteFrom_getElem input i hi]
-    change byte input i = _
-    interval_cases i <;> apply UInt8.ext
-    · exact h0
-    · exact h1
-    · exact h2
+theorem wordCond_zero_size_pos (input : ByteArray) (hfit : CalldataFits input)
+    (_hpos : 0 < input.size) (_hsmall : input.size < 4) (hz : wordCond input = 0) :
+    input = AbcInputData.abcInput :=
+  AbcSizeGuard.guard_sound input hfit (shiftedWord_eq_of_wordCond input hz)
 
 private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .SAR)
@@ -610,7 +394,7 @@ private theorem readWord_abc :
     YulEvmCompiler.ByteArray.toList_eq_data]
   decide
 
-theorem wordCond_empty : wordCond ByteArray.empty = 0 := by
+theorem wordCond_empty : wordCond ByteArray.empty ≠ 0 := by
   unfold wordCond shiftedWord maskedWord
   rw [readWord_empty]
   decide

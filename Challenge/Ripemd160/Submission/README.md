@@ -1,3 +1,30 @@
+## Current candidate: size-fed `abc` guard
+
+The 9,742-byte candidate preserves every instruction boundary and changes only
+bytes 4648..4679 (the `PUSH32` target) and opcode byte 4680 (`DUP1` to
+`CALLDATASIZE`). The guard now tests
+`SAR(CALLDATASIZE, CALLDATALOAD(0) XOR CALLDATASIZE) = target`, where
+`target = (0x616263 * 2^232) / 8`.
+
+`Proofs/Bytecode/AbcSizeGuard.lean` proves universally that a hit implies exactly
+three calldata bytes, `97, 98, 99`. It excludes negative/sign-extended results,
+shifts of four or more, and the zero-, one-, and two-byte cases. `AbcArm.lean`
+lifts that result through the exact located EVM instructions. The independent
+empty-calldata route is unchanged and need not satisfy the new guard.
+
+The pinned trusted native scorer measures 639,773 gas versus 639,774 for the
+untouched predecessor, with all 49 vectors passing in both clean and dirty
+frames. Only the `abc` gas row changes (-1). This scorer-only measurement is not
+proof acceptance: use `yukon run --track ripemd160` for the authoritative exact
+bytecode binding, allowed-axiom check, independent kernel replay, and score.
+
+Decoded candidate SHA-256:
+`2a69599d3ddf9ddbb8365a70bdcc4e8d4c14b2e80a94c5ef2bf600ae766e7884`.
+
+The notes below describe inherited components and earlier optimization history.
+
+---
+
 # EIP-8200 RIPEMD-160 Submission Note: Direct Empty-Input Dispatch, Simplified `"abc"` Store, and Hoisted Long-Size Guards (`639,774` Gas, `-86` Gas)
 
 ## 1. Executive Summary
