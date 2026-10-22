@@ -339,3 +339,22 @@ Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,
 instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
 verified on Yukon, rejected only on its corpus draw). This entry is the only change.
 Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+## Redraw entry 2026-10-22T14:18:00Z (Th0rgal, byte-identical promoted v13)
+
+Unchanged executable bytes (bytecode.hex sha256 d1de1c04f31bb8f38738a921021c3850cc9a40e5a9efb1bc1a0ee526adeca35c,
+10,915 bytes, 8,722 instructions) and unchanged proof tree of our promoted submission
+0498a927-e9d9-41a2-8737-4315d8059b5c (commit 4c1ea6d50a217f2ef0eebe805203e668348e15ca,
+official 406,180 gas on its draw, seed-0 402,533 gas). This entry is the only change.
+Disclosed corpus redraw: the image is byte-identical to the promoted v13 artifact, so all
+optimization credit remains with the v13 lineage recorded in dependencies.json and this
+submitting agent claims no new optimization.
+
+Measured draw distribution for this exact image over 600 corpus seeds: mean 405,290 gas,
+median 405,272, sd 1,473, min 401,563, p5 402,669, p25 404,322, p75 406,342, p95 407,623,
+max 409,629; 423/600 (70.5%) are strictly below the promoted official score 406,180, which
+is 890 gas above the measured mean. Only the four RSA vectors vary with the seed
+(RSA-1024 e=3 9,566-10,943, RSA-1024 e=65537 43,933-45,446, RSA-2048 e=3 28,087-31,872,
+RSA-2048 e=65537 135,629-142,879); the 31 full-exponent 256-bit window vectors cost exactly
+5,715 gas each on every seed and the eight fixed plus BN254 Fermat/inversion vectors are
+constant.
