@@ -17,47 +17,53 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 3528 = 4905 := by
+@[simp] theorem pc_176 : Artifact.submissionArtifact.instructionPC 3540 = 4905 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3395 = 4629 := by
+@[simp] theorem pc_4095 : Artifact.submissionArtifact.instructionPC 3405 = 4647 := by
   exact GuardInstructionWindow.pc 0
-@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 3396 = 4662 := by
+@[simp] theorem pc_4096 : Artifact.submissionArtifact.instructionPC 3406 = 4680 := by
   exact GuardInstructionWindow.pc 1
-@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 3397 = 4663 := by
+@[simp] theorem pc_4097 : Artifact.submissionArtifact.instructionPC 3407 = 4681 := by
   exact GuardInstructionWindow.pc 2
-@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 3398 = 4664 := by
+@[simp] theorem pc_4098 : Artifact.submissionArtifact.instructionPC 3408 = 4682 := by
   exact GuardInstructionWindow.pc 3
-@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 3399 = 4665 := by
+@[simp] theorem pc_4099 : Artifact.submissionArtifact.instructionPC 3409 = 4683 := by
   exact GuardInstructionWindow.pc 4
-@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 3400 = 4666 := by
+@[simp] theorem pc_4100 : Artifact.submissionArtifact.instructionPC 3410 = 4684 := by
   exact GuardInstructionWindow.pc 5
-@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 3401 = 4667 := by
+@[simp] theorem pc_4101 : Artifact.submissionArtifact.instructionPC 3411 = 4685 := by
   exact GuardInstructionWindow.pc 6
-@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 3402 = 4668 := by
+@[simp] theorem pc_4102 : Artifact.submissionArtifact.instructionPC 3412 = 4686 := by
   exact GuardInstructionWindow.pc 7
-@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 3403 = 4669 := by
+@[simp] theorem pc_4103 : Artifact.submissionArtifact.instructionPC 3413 = 4687 := by
   exact GuardInstructionWindow.pc 8
-@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 3404 = 4672 := by
+@[simp] theorem pc_4104 : Artifact.submissionArtifact.instructionPC 3414 = 4690 := by
   exact GuardInstructionWindow.pc 9
-@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3405 = 4673 := by
+@[simp] theorem pc_4105 : Artifact.submissionArtifact.instructionPC 3415 = 4691 := by
   exact GuardInstructionWindow.pc 10
-@[simp] theorem pc_4106 : Artifact.submissionArtifact.instructionPC 3406 = 4694 := by
+@[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3416 = 4712 := by
   exact GuardInstructionWindow.pc 11
-@[simp] theorem pc_4107 : Artifact.submissionArtifact.instructionPC 3407 = 4695 := by
-  exact GuardInstructionWindow.pc 12
-@[simp] theorem pc_4108 : Artifact.submissionArtifact.instructionPC 3408 = 4696 := by
-  exact GuardInstructionWindow.pc 13
-@[simp] theorem pc_4109 : Artifact.submissionArtifact.instructionPC 3409 = 4717 := by
-  exact GuardInstructionWindow.pc 14
-@[simp] theorem pc_241 : Artifact.submissionArtifact.instructionPC 3410 = 4718 := by
-  exact GuardInstructionWindow.pc 15
-@[simp] theorem pc_inlineStore : Artifact.submissionArtifact.instructionPC 3411 = 4719 := by
+@[simp] theorem pc_inlineStore : Artifact.submissionArtifact.instructionPC 3417 = 4713 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_inlineMsize : Artifact.submissionArtifact.instructionPC 3412 = 4720 := by
+@[simp] theorem pc_inlineMsize : Artifact.submissionArtifact.instructionPC 3418 = 4714 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_inlineZero : Artifact.submissionArtifact.instructionPC 3413 = 4721 := by
+@[simp] theorem pc_inlineZero : Artifact.submissionArtifact.instructionPC 3419 = 4715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_inlineReturn : Artifact.submissionArtifact.instructionPC 3414 = 4722 := by
+@[simp] theorem pc_inlineReturn : Artifact.submissionArtifact.instructionPC 3420 = 4716 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyDest : Artifact.submissionArtifact.instructionPC 4379 = 7019 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyPush : Artifact.submissionArtifact.instructionPC 4380 = 7020 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyZero0 : Artifact.submissionArtifact.instructionPC 4381 = 7041 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyStore : Artifact.submissionArtifact.instructionPC 4382 = 7042 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyMsize : Artifact.submissionArtifact.instructionPC 4383 = 7043 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyZero1 : Artifact.submissionArtifact.instructionPC 4384 = 7044 := by
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+@[simp] theorem pc_emptyReturn : Artifact.submissionArtifact.instructionPC 4385 = 7045 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def wordMaskNat : Nat :=
@@ -66,34 +72,40 @@ def wordMaskNat : Nat :=
 def wordMask : UInt256 := UInt256.ofNat wordMaskNat
 
 def entryDest : Located :=
-  ⟨3528, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
+  ⟨3540, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
 
 def wordPath : List Located :=
-  [⟨3395, .push ⟨32, by decide⟩ wordMask, by exact GuardInstructionWindow.get 0, by decide⟩,
-   ⟨3396, .op (.Dup ⟨0, by decide⟩), by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3397, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 2, by decide⟩,
-   ⟨3398, .op .CALLDATALOAD, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3399, .op .XOR, by exact GuardInstructionWindow.get 4, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3400, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 5, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3401, .op .SAR, by exact GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3402, .op .XOR, by exact GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3403, .push ⟨2, by decide⟩ (UInt256.ofNat 4905), by exact GuardInstructionWindow.get 8, by decide⟩,
-   ⟨3404, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3405, .push ⟨32, by decide⟩ wordMask, by exact GuardInstructionWindow.get 0, by decide⟩,
+   ⟨3406, .op (.Dup ⟨0, by decide⟩), by exact GuardInstructionWindow.get 1, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3407, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by exact GuardInstructionWindow.get 2, by decide⟩,
+   ⟨3408, .op .CALLDATALOAD, by exact GuardInstructionWindow.get 3, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3409, .op .XOR, by exact GuardInstructionWindow.get 4, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3410, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 5, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3411, .op .SAR, by exact GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3412, .op .XOR, by exact GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3413, .push ⟨2, by decide⟩ (UInt256.ofNat 4905), by exact GuardInstructionWindow.get 8, by decide⟩,
+   ⟨3414, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩]
 
 def wordMissPath : List Located := wordPath ++ [entryDest]
 
 def storePath : List Located :=
-  [⟨3405, .push ⟨20, by decide⟩ (UInt256.ofNat 95383801997447390147238369573240532004699299169), by exact GuardInstructionWindow.get 10, by decide⟩,
-   ⟨3406, .op .CALLDATASIZE, by exact GuardInstructionWindow.get 11, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3407, .op .SHR, by exact GuardInstructionWindow.get 12, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3408, .push ⟨20, by decide⟩ (UInt256.ofNat 802931186561056611446976448233794645126013734992), by exact GuardInstructionWindow.get 13, by decide⟩,
-   ⟨3409, .op .XOR, by exact GuardInstructionWindow.get 14, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3410, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3411, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3415, .push ⟨20, by decide⟩ (UInt256.ofNat 814647003348588794217809277549781461204094028796), by exact GuardInstructionWindow.get 10, by decide⟩,
+   ⟨3416, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3417, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def finishPath : List Located :=
-  [⟨3413, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3414, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3419, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3420, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+
+def emptyStorePath : List Located :=
+  [⟨4379, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4380, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
+   ⟨4381, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4382, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+
+def emptyFinishPath : List Located :=
+  [⟨4384, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4385, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def maskedWord (input : ByteArray) : UInt256 :=
   UInt256.xor (MachineState.readWord input 0) wordMask
@@ -104,26 +116,38 @@ def shiftedWord (input : ByteArray) : UInt256 :=
 def wordCond (input : ByteArray) : UInt256 :=
   UInt256.xor (shiftedWord input) wordMask
 
-def armEntry (input : ByteArray) : State := Execution.atPC input 4629
+def armEntry (input : ByteArray) : State := Execution.atPC input 4647
+def emptyEntry (input : ByteArray) : State := Execution.atPC input 7019
 def fallbackState (input : ByteArray) : State := Execution.atPC input 4906
 def answerWord (input : ByteArray) : UInt256 :=
-  UInt256.xor (UInt256.ofNat 802931186561056611446976448233794645126013734992)
-    (UInt256.shiftRight (UInt256.ofNat 95383801997447390147238369573240532004699299169)
-      (UInt256.ofNat input.size))
+  if input.size = 0 then UInt256.ofNat 890993315260586290631548281360202943075753233713
+  else UInt256.ofNat 814647003348588794217809277549781461204094028796
 def answerBytes (input : ByteArray) : ByteArray :=
   Data.Bytes.natToBytesPadded (answerWord input).toNat 32
 def answerMemory (input : ByteArray) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (answerBytes input) 0
 def stored (input : ByteArray) : State :=
   {initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4720
+    pc := UInt256.ofNat 4714
     memory := answerMemory input
     activeWords := UInt256.ofNat 1}
 def sized (input : ByteArray) : State :=
-  {stored input with pc := UInt256.ofNat 4721, stack := [UInt256.ofNat 32]}
+  {stored input with pc := UInt256.ofNat 4715, stack := [UInt256.ofNat 32]}
 def returned (input : ByteArray) : State :=
   {stored input with
-    pc := UInt256.ofNat 4722
+    pc := UInt256.ofNat 4716
+    halt := .Returned
+    hReturn := MachineState.readPadded (answerMemory input) 0 32}
+def emptyStored (input : ByteArray) : State :=
+  {initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 7043
+    memory := answerMemory input
+    activeWords := UInt256.ofNat 1}
+def emptySized (input : ByteArray) : State :=
+  {emptyStored input with pc := UInt256.ofNat 7044, stack := [UInt256.ofNat 32]}
+def emptyReturned (input : ByteArray) : State :=
+  {emptyStored input with
+    pc := UInt256.ofNat 7045
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory input) 0 32}
 
@@ -142,7 +166,7 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
   simpa using ht
 
 private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 4905 = true := by
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3528 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3540 (by rfl)
   rw [pc_176] at h
   exact h
 
@@ -402,18 +426,18 @@ private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
 def wordHead : List Located := wordPath.take 6
 def wordCalc : List Located := (wordPath.drop 7).take 2
 def wordBranch : Located :=
-  ⟨3404, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩
+  ⟨3414, .op .JUMPI, by exact GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩
 def wordLoaded (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4667
+    pc := UInt256.ofNat 4685
     stack := [UInt256.ofNat input.size, maskedWord input, wordMask] }
 def wordShifted (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4668
+    pc := UInt256.ofNat 4686
     stack := [shiftedWord input, wordMask] }
 def wordTested (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4672
+    pc := UInt256.ofNat 4690
     stack := [UInt256.ofNat 4905, wordCond input] }
 
 private theorem run_word_head (input : ByteArray) :
@@ -428,12 +452,12 @@ private theorem run_word_calc (input : ByteArray) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 private def gasSteps_sar (input : ByteArray) : GasSteps (wordLoaded input) (wordShifted input) := by
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3401 .SAR
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3411 .SAR
     (by exact GuardInstructionWindow.get 6) (by decide) trivial
-  have hp : (wordLoaded input).pc.toNat = Artifact.submissionArtifact.instructionPC 3401 := by
+  have hp : (wordLoaded input).pc.toNat = Artifact.submissionArtifact.instructionPC 3411 := by
     rw [pc_4101]; rfl
   have hop : (wordLoaded input).decodedOp = some .SAR :=
-    Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 3401 rfl hp .SAR none hd rfl
+    Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 3411 rfl hp .SAR none hd rfl
   have g := sarStep (s := wordLoaded input) (shift := UInt256.ofNat input.size)
     (value := maskedWord input) (rest := [wordMask]) hop rfl
     (by show 3 + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR; decide) rfl
@@ -465,57 +489,57 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
       some (PatternedScan.stS input 4905 []) :=
     PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 3404 4672 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
-      (PatternedScan.stepS_jumpi_taken input 4672 4905 (UInt256.ofNat 4905) (wordCond input) []
+      (PatternedScan.pcFactS input 3414 4690 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.stepS_jumpi_taken input 4690 4905 (UInt256.ofNat 4905) (wordCond input) []
         (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
   have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 4905 []) =
       some (fallbackState input) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 3528 4905 [] (by norm_num) pc_176)
+      (PatternedScan.pcFactS input 3540 4905 [] (by norm_num) pc_176)
       (PatternedScan.stepS_jumpdest input 4905 [] (by simp) (by norm_num))
   exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd
 
 theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
-    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Execution.atPC input 4673) := by
+    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Execution.atPC input 4691) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   exact PatternedScan.blockOfS wordBranch
-    (PatternedScan.pcFactS input 3404 4672 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
-    (PatternedScan.stepS_jumpi_fall input 4672 (UInt256.ofNat 4905) (wordCond input) []
+    (PatternedScan.pcFactS input 3414 4690 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 4690 (UInt256.ofNat 4905) (wordCond input) []
       (by simp) (by norm_num) ht)
 
-def storeHead : List Located := storePath.take 5
-def storeTail : List Located := storePath.drop 5
-
-theorem run_store_head (input : ByteArray) :
-    DataStepper.runLocatedBlock storeHead (Execution.atPC input 4673) =
-      some (PatternedScan.stS input 4718 [answerWord input]) := by
+theorem run_store (input : ByteArray) (hne : input.size ≠ 0) :
+    DataStepper.runLocatedBlock storePath (Execution.atPC input 4691) = some (stored input) := by
   simp (config := { maxSteps := 1000000 })
-    [storeHead, storePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
-     DataStepper.runInstr, PatternedScan.stS, Execution.atPC, initialState,
-     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, answerWord,
-     UInt256.succ, List.exchange, List.getElem?_cons_zero]
-
-theorem run_store_tail (input : ByteArray) :
-    DataStepper.runLocatedBlock storeTail (PatternedScan.stS input 4718 [answerWord input]) =
-      some (stored input) := by
-  simp (config := { maxSteps := 1000000 })
-    [storeTail, storePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
-     DataStepper.runInstr, PatternedScan.stS, stored, answerMemory, answerBytes,
-     MachineState.mstore, State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+    [storePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, PatternedScan.stS, Execution.atPC, stored, answerMemory, answerBytes,
+     answerWord, hne, MachineState.mstore, State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
      initialState, Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
      Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
-
-theorem run_store (input : ByteArray) :
-    DataStepper.runLocatedBlock storePath (Execution.atPC input 4673) = some (stored input) := by
-  rw [← List.take_append_drop 5 storePath]
-  exact DataStepper.runLocatedBlock_append _ _ _ _ _ (run_store_head input) rfl (run_store_tail input)
 
 theorem run_finish (input : ByteArray) :
     DataStepper.runLocatedBlock finishPath (sized input) = some (returned input) := by
   simp (config := { maxSteps := 1000000 })
     [finishPath, DataStepper.runLocatedBlock, DataStepper.runLocated,
      DataStepper.runInstr, sized, stored, returned, initialState,
+     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
+     State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+     Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
+
+theorem run_empty_store (input : ByteArray) (hz : input.size = 0) :
+    DataStepper.runLocatedBlock emptyStorePath (emptyEntry input) = some (emptyStored input) := by
+  simp (config := { maxSteps := 1000000 })
+    [emptyStorePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, PatternedScan.stS, emptyEntry, Execution.atPC, emptyStored, answerMemory, answerBytes,
+     answerWord, hz, MachineState.mstore, State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+     initialState, Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
+     Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
+
+theorem run_empty_finish (input : ByteArray) :
+    DataStepper.runLocatedBlock emptyFinishPath (emptySized input) = some (emptyReturned input) := by
+  simp (config := { maxSteps := 1000000 })
+    [emptyFinishPath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, emptySized, emptyStored, emptyReturned, initialState,
      Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
      State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
      Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
@@ -533,22 +557,38 @@ def gasSteps_miss (input : ByteArray) (hw : wordCond input ≠ 0) :
     GasSteps (armEntry input) (fallbackState input) :=
   (gasSteps_word_prefix input).trans (sound [wordBranch, entryDest] (run_word_miss input hw))
 
-def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) :
+def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size ≠ 0) :
     GasSteps (armEntry input) (returned input) := by
   have gw := (gasSteps_word_prefix input).trans (sound [wordBranch] (run_word_hit input hw))
-  have gs := sound storePath (run_store input)
-  have hd := Artifact.submissionArtifact.decodeAt_op_index 3412 .MSIZE
+  have gs := sound storePath (run_store input hne)
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 3418 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (stored input).pc.toNat = Artifact.submissionArtifact.instructionPC 3412 := by
+  have hp : (stored input).pc.toNat = Artifact.submissionArtifact.instructionPC 3418 := by
     rw [pc_inlineMsize]; rfl
   have hop : (stored input).decodedOp = some .MSIZE :=
-    Artifact.submissionArtifact.state_decodedOp_of (stored input) 3412 rfl hp .MSIZE none hd rfl
+    Artifact.submissionArtifact.state_decodedOp_of (stored input) 3418 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (stored input) (sized input) := by
     simpa [stored, sized, initialState, Word.succ_ofNat_mod, Word.word_toNat_ofNat] using gmraw
   have gf := sound finishPath (run_finish input)
   exact gw.trans (gs.trans (gm.trans gf))
+
+def gasSteps_empty_hit (input : ByteArray) (hz : input.size = 0) :
+    GasSteps (emptyEntry input) (emptyReturned input) := by
+  have gs := sound emptyStorePath (run_empty_store input hz)
+  have hd := Artifact.submissionArtifact.decodeAt_op_index 4383 .MSIZE
+    (by rfl) (by decide) trivial
+  have hp : (emptyStored input).pc.toNat = Artifact.submissionArtifact.instructionPC 4383 := by
+    rw [pc_emptyMsize]; rfl
+  have hop : (emptyStored input).decodedOp = some .MSIZE :=
+    Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 4383 rfl hp .MSIZE none hd rfl
+  have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
+    rfl deployAddress_not_precompile
+  have gm : GasSteps (emptyStored input) (emptySized input) := by
+    simpa [emptyStored, emptySized, initialState, Word.succ_ofNat_mod, Word.word_toNat_ofNat] using gmraw
+  have gf := sound emptyFinishPath (run_empty_finish input)
+  exact gs.trans (gm.trans gf)
 
 theorem answer_empty : answerBytes ByteArray.empty = EmptySpec.emptyOutput := by
   rw [answerBytes, Memory.natToBytesPadded_eq_natToBE]
@@ -581,11 +621,11 @@ theorem wordCond_abc : wordCond AbcInputData.abcInput = 0 := by
   decide
 
 private theorem correct_known (input : ByteArray)
-    (hw : wordCond input = 0) (hspec : spec input = answerBytes input)
+    (hw : wordCond input = 0) (hne : input.size ≠ 0) (hspec : spec input = answerBytes input)
     (entryPrefix : GasSteps (initialState submissionBytecode input 0) (armEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
-  let trace := entryPrefix.trans (gasSteps_hit input hw)
+  let trace := entryPrefix.trans (gasSteps_hit input hw hne)
   have hsize : (answerBytes input).size = 32 :=
     YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _
   have hread : MachineState.readPadded (answerMemory input) 0 32 = answerBytes input := by
@@ -607,15 +647,31 @@ theorem correct_abc (input : ByteArray) (_hfit : CalldataFits input)
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   subst input
-  exact correct_known _ wordCond_abc (by rw [AbcDigest.spec_abc, answer_abc]) entryPrefix
+  exact correct_known _ wordCond_abc (by decide) (by rw [AbcDigest.spec_abc, answer_abc]) entryPrefix
 
 theorem correct_empty (input : ByteArray) (_hfit : CalldataFits input)
     (heq : input = ByteArray.empty)
-    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (armEntry input)) :
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (emptyEntry input)) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
   subst input
-  exact correct_known _ wordCond_empty (by rw [EmptySpec.spec_empty, answer_empty]) entryPrefix
+  let trace := entryPrefix.trans (gasSteps_empty_hit ByteArray.empty rfl)
+  have hsize : (answerBytes ByteArray.empty).size = 32 :=
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _
+  have hread : MachineState.readPadded (answerMemory ByteArray.empty) 0 32 = answerBytes ByteArray.empty := by
+    rw [← hsize]
+    exact Memory.readPadded_writeBytes_same ByteArray.empty (answerBytes ByteArray.empty) 0
+  have hspec : spec ByteArray.empty = answerBytes ByteArray.empty := by
+    rw [EmptySpec.spec_empty, answer_empty]
+  refine ⟨trace.cost, fun gas hgas => ?_⟩
+  have heval := eval_of_steps (trace.trace gas hgas) (by
+    simp [withGas, emptyReturned, emptyStored, State.isDone, State.isHalted, State.isRunning]
+    rfl)
+  rw [State.toResult_returned _ (by rfl)] at heval
+  change Eval (withGas (initialState submissionBytecode ByteArray.empty 0) gas)
+    (.returned (MachineState.readPadded (answerMemory ByteArray.empty) 0 32)) at heval
+  rw [hread, ← hspec] at heval
+  exact heval
 
 #print axioms correct_abc
 #print axioms correct_empty

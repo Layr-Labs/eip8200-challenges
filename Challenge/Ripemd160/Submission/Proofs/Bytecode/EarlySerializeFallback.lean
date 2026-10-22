@@ -108,12 +108,12 @@ private def wfOp {op : Operation}
 
 /-- Include the destination JUMPDEST, so the result is precisely PC 246. -/
 private def cleanupPath : List (DataStepper.Located Artifact.submissionArtifact .Osaka) :=
-  [⟨3463, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3464, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3465, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3466, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3467, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
-   ⟨3468, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3475, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3476, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3477, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3478, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3479, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
+   ⟨3480, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨125, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def cleared (input : ByteArray) : State :=
@@ -128,12 +128,12 @@ def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
     pc := UInt256.ofNat 4785, stack := rho }
 
 private theorem cleanup_pcs :
-    Artifact.submissionArtifact.instructionPC 3463 = 4785 ∧
-    Artifact.submissionArtifact.instructionPC 3464 = 4786 ∧
-    Artifact.submissionArtifact.instructionPC 3465 = 4787 ∧
-    Artifact.submissionArtifact.instructionPC 3466 = 4788 ∧
-    Artifact.submissionArtifact.instructionPC 3467 = 4789 ∧
-    Artifact.submissionArtifact.instructionPC 3468 = 4791 ∧
+    Artifact.submissionArtifact.instructionPC 3475 = 4785 ∧
+    Artifact.submissionArtifact.instructionPC 3476 = 4786 ∧
+    Artifact.submissionArtifact.instructionPC 3477 = 4787 ∧
+    Artifact.submissionArtifact.instructionPC 3478 = 4788 ∧
+    Artifact.submissionArtifact.instructionPC 3479 = 4789 ∧
+    Artifact.submissionArtifact.instructionPC 3480 = 4791 ∧
     Artifact.submissionArtifact.instructionPC 125 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

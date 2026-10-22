@@ -34,7 +34,7 @@ def template : Piece → List Instr
   | .genericDest => [.op .JUMPDEST]
 
 def index : Piece → Nat
-  | .data => 5040 | .result => 5201 | .success => 5203 | .cleanup => 3463
+  | .data => 5040 | .result => 5201 | .success => 5203 | .cleanup => 3475
   | .anchor => 11 | .repeat => 20 | .genericDest => 125
 
 def pc : Piece → Nat
@@ -93,9 +93,9 @@ def lift (p : Piece) (s t : State) (e : Env s) (stack : List UInt256)
   RecognitionLift.gasSteps_of_raw (site p) _ _ e.code e.fork e.run e.np (site_pc p).symm (form p) h
 
 theorem valid_miss : Decode.isValidJumpDest RetainedBridge111.Candidate.candidateCode 4785 = true := by
-  have hp : RetainedBridge111.Candidate.artifact.instructionPC 3463 = 4785 := by
+  have hp : RetainedBridge111.Candidate.artifact.instructionPC 3475 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 3463 (by rfl)
+  have h := RetainedBridge111.Candidate.artifact.isValidJumpDest_index 3475 (by rfl)
   rw [hp] at h
   exact h
 

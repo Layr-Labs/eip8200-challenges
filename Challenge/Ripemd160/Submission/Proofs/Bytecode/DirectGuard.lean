@@ -125,20 +125,16 @@ theorem correct_of_recognition
     by_cases hallowed : RecognitionAccumulator.Allowed input.size
     · exact scannerCorrect input hfit hallowed h1000
         (hguard.trans (Patterned128Entry.gasSteps_allowed input hfit hallowed h1000))
+    by_cases hempty : input.size = 0
+    · exact AbcArm.correct_empty input hfit (TinyGuardLogic.input_eq_empty input hempty)
+        (hguard.trans (Patterned128Entry.gasSteps_to_empty input hempty))
     have harm : GasSteps (initialState submissionBytecode input 0) (AbcArm.armEntry input) :=
-      hguard.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed h1000)
+      hguard.trans (Patterned128Entry.gasSteps_to_arm input hfit hallowed h1000 hempty)
     by_cases hw : AbcArm.wordCond input = 0
     · have hs4 := AbcArm.size_lt_four_of_wordCond input hfit hw
-      by_cases hempty : input.size = 0
-      · exact AbcArm.correct_empty input hfit (TinyGuardLogic.input_eq_empty input hempty) harm
-      · exact AbcArm.correct_abc input hfit
-          (AbcArm.wordCond_zero_size_pos input hfit (by omega) hs4 hw) harm
-    · have hpositive : 0 < input.size := by
-        by_contra hn
-        have he := TinyGuardLogic.input_eq_empty input (by omega)
-        apply hw
-        rw [he]
-        exact AbcArm.wordCond_empty
+      exact AbcArm.correct_abc input hfit
+        (AbcArm.wordCond_zero_size_pos input hfit (by omega) hs4 hw) harm
+    · have hpositive : 0 < input.size := by omega
       exact StackCorrect.correct input hfit hpositive
         (harm.trans ((AbcArm.gasSteps_miss input hw).trans
           (Patterned128Entry.gasSteps_after_arm_miss input hfit hallowed)))

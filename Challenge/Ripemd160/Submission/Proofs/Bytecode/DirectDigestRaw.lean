@@ -5,7 +5,7 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 4000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectDigestRaw
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof StackRoundTrace
-def selectorConst : Nat := 1805781487605728127014015497632372731422648
+def selectorConst : Nat := 1805781487605728127014015497632372731427691
 
 def shortSelected (size : Nat) : UInt256 :=
   UInt256.land (UInt256.shiftRight (UInt256.ofNat selectorConst) (UInt256.ofNat size)) (UInt256.ofNat 8191)

@@ -4,8 +4,8 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 4000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.SignedSizeFlag
 open EvmSemantics Challenge.EvmProof
-abbrev reversedMask : UInt256 := UInt256.ofNat 28948022349768971278010700369584604374341282260324016856826403983149888438272
-abbrev lowMask : UInt256 := UInt256.ofNat 342276208914615837337402008677671501826
+abbrev reversedMask : UInt256 := UInt256.ofNat 86844066968427068989796192873928558300976274593144298876555195987106453258240
+abbrev lowMask : UInt256 := UInt256.ofNat 342276208914615837337402008677671501827
 private theorem small : ∀ i : Fin 256,
     UInt256.slt (UInt256.shiftLeft reversedMask (UInt256.ofNat i.val)) (UInt256.ofNat 0) =
       UInt256.land (UInt256.ofNat 1) (UInt256.shiftRight lowMask (UInt256.ofNat i.val)) := by decide

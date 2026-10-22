@@ -30,7 +30,7 @@ def nval : Fin 13 → Nat
  | ⟨11, _⟩ => 256
  | ⟨12, _⟩ => 376
 def tailPC : Fin 13 → Nat
- | ⟨0, _⟩ => 5108
+ | ⟨0, _⟩ => 7629
  | ⟨1, _⟩ => 4825
  | ⟨2, _⟩ => 6520
  | ⟨3, _⟩ => 5212
@@ -44,21 +44,21 @@ def tailPC : Fin 13 → Nat
  | ⟨11, _⟩ => 7829
  | ⟨12, _⟩ => 5690
 def tailIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 3616
- | ⟨1, _⟩ => 3482
- | ⟨2, _⟩ => 4164
- | ⟨3, _⟩ => 3666
- | ⟨4, _⟩ => 4218
- | ⟨5, _⟩ => 3598
- | ⟨6, _⟩ => 4200
- | ⟨7, _⟩ => 4679
- | ⟨8, _⟩ => 3726
- | ⟨9, _⟩ => 4281
- | ⟨10, _⟩ => 3698
+ | ⟨0, _⟩ => 4830
+ | ⟨1, _⟩ => 3494
+ | ⟨2, _⟩ => 4238
+ | ⟨3, _⟩ => 3740
+ | ⟨4, _⟩ => 4292
+ | ⟨5, _⟩ => 3618
+ | ⟨6, _⟩ => 4274
+ | ⟨7, _⟩ => 4733
+ | ⟨8, _⟩ => 3800
+ | ⟨9, _⟩ => 4355
+ | ⟨10, _⟩ => 3772
  | ⟨11, _⟩ => 4976
- | ⟨12, _⟩ => 3754
+ | ⟨12, _⟩ => 3828
 def returnPC : Fin 13 → Nat
- | ⟨0, _⟩ => 5148
+ | ⟨0, _⟩ => 7669
  | ⟨1, _⟩ => 4865
  | ⟨2, _⟩ => 6560
  | ⟨3, _⟩ => 5289
@@ -245,9 +245,9 @@ theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
   simpa only [tailTemplate,atState,DenseScheduleTrace.pcAfter_append,he,apply_ite] using hall
 
 theorem valid_fallback : Decode.isValidJumpDest Artifact.submissionArtifact.code 4785 = true := by
-  have hp : Artifact.submissionArtifact.instructionPC 3463 = 4785 := by
+  have hp : Artifact.submissionArtifact.instructionPC 3475 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Artifact.submissionArtifact.isValidJumpDest_index 3463 (by rfl)
+  have h := Artifact.submissionArtifact.isValidJumpDest_index 3475 (by rfl)
   rw [hp] at h
   exact h
 
