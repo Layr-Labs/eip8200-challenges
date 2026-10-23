@@ -197,10 +197,10 @@ def block_r3e_3 : Block Artifact.submissionArtifact .Osaka 9588 r3e_3New :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 7505 5 9588 r3e_3New
     (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 7505 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (R4InlineArtifactSuffix.pc 564 9588 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 564 5 r3e_3New rfl) (by decide)
 
-def entryProgram : List Instr := [.op .JUMPDEST, .push 2 8998, .op .JUMP]
+def entryProgram : List Instr := [.push 2 8998, .op .JUMP]
 def block_entry : Block Artifact.submissionArtifact .Osaka 4280 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3328 3 4280 entryProgram
-    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 3328 + 3 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rw [R4SliceFast.locations_map]; rfl) (by decide)
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3328 2 4280 entryProgram
+    (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 3328 + 2 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rw [R4SliceFast.locations_map]; rfl) (by decide)
 
 
 theorem validJump5615 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 8998 = true :=

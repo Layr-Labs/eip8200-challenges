@@ -178,8 +178,8 @@ theorem run_entry (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
 
 def resumeProgram : List Instr := [.op .JUMPDEST]
 theorem run_resume (s : State) (rest : List UInt256) (hcap : rest.length < 1024) :
-    runInstructions resumeProgram { s with pc := UInt256.ofNat 4280, stack := rest } =
-    some { s with pc := UInt256.ofNat 4281, stack := rest } := by
+    runInstructions resumeProgram { s with pc := UInt256.ofNat 4284, stack := rest } =
+    some { s with pc := UInt256.ofNat 4285, stack := rest } := by
   simp [resumeProgram, runInstructions, Stepper.runInstr, Word.succ_ofNat_mod, hcap]
 
 
@@ -187,8 +187,8 @@ def entryBlock : Block Artifact.submissionArtifact .Osaka 4268 entryProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3318 10 4268 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
-def resumeBlock : Block Artifact.submissionArtifact .Osaka 4280 resumeProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3328 1 4280 resumeProgram
+def resumeBlock : Block Artifact.submissionArtifact .Osaka 4284 resumeProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3330 1 4284 resumeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Initialize the carry word once and retain the six reduction constants on the stack. -/
@@ -219,8 +219,8 @@ def gasSteps_resume (s : State) (rest : List UInt256) (hcap : rest.length < 1024
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps { s with pc := UInt256.ofNat 4280, stack := rest }
-      { s with pc := UInt256.ofNat 4281, stack := rest } := by
+    GasSteps { s with pc := UInt256.ofNat 4284, stack := rest }
+      { s with pc := UInt256.ofNat 4285, stack := rest } := by
   exact SquareRow.stepsOf resumeBlock (run_resume s rest hcap) rfl hcode hfork hrun hnp
 
 end Challenge.Modexp.Submission.Proofs.Fast.R4Hooks
