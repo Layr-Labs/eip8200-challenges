@@ -423,7 +423,7 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
   have hjump : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
       (UInt256.ofNat 3256).toNat = true := by
     change Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3256 = true
-    exact Artifact.isValidJumpDest_index 2533 (by rfl)
+    exact Artifact.isValidJumpDest_index 2532 (by rfl)
   have g4 := gasSteps_lazyCsubAt s (R4Bridge.rows4r M) 4 2368 (UInt256.ofNat 3256)
     (frameStack (R4Bridge.rows4r M) 4 pbi ent tl inv m0 m96 m64 m32 aprev allOnes ret rest)
     (by simp only [frameStack, List.length_append, List.length_cons, List.length_nil]; omega)

@@ -93,14 +93,14 @@ theorem noLiteralPush_window :
 /-- The exit `PUSH2 2080` is at instruction 2376,
 and the fixup's `SWAP3 POP` is at instructions 2387 and 2388. -/
 theorem m9Exit_is_jumpdest :
-    Artifact.submissionInstructions[2374]? = some (.push 2 2080) ∧
-      Artifact.submissionInstructions[2385]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
-      Artifact.submissionInstructions[2386]? = some (.op .POP) :=
+    Artifact.submissionInstructions[2373]? = some (.push 2 2080) ∧
+      Artifact.submissionInstructions[2384]? = some (.op (.Swap ⟨2, by decide⟩)) ∧
+      Artifact.submissionInstructions[2385]? = some (.op .POP) :=
   ⟨by rfl, by rfl, by rfl⟩
 
 /-- The program counter the exit `PUSH2 2080` sits at: 3034. -/
 theorem m9Exit_pcs :
-    Artifact.instructionPC 2374 = 3034 := by decide
+    Artifact.instructionPC 2373 = 3034 := by decide
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.ShiftJumpTargets
 

@@ -90,6 +90,6 @@ def expAt : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osak
 /-- The legacy entry, where both miss exits land. -/
 theorem jumpDestLegacy :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 533 = true :=
-  Artifact.isValidJumpDest_index 370 (by rfl)
+  Artifact.isValidJumpDest_index 369 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Memo

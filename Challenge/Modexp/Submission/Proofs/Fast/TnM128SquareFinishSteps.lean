@@ -37,7 +37,7 @@ noncomputable def finish_steps (s : State)
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
   have hj : Decode.isValidJumpDest st.executionEnv.code 3942 = true := by
     rw [show st.executionEnv.code = TnM128CandidateArtifact.submissionArtifact.code from env.code]
-    exact TnM128CandidateArtifact.isValidJumpDest_index 3096 (by rfl)
+    exact TnM128CandidateArtifact.isValidJumpDest_index 3095 (by rfl)
   have hg := TnCacheExitTrace.run_square_guard st 3874 (qptr n n)
     w3 (UInt256.ofNat (sqEnt n n)) m32 (MachineState.readWord z.memory 128) m64
     tail htail hj

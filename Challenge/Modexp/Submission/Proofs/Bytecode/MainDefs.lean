@@ -145,7 +145,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 
 @[simp] theorem jump1196 :
     Decode.isValidJumpDest submissionBytecode 533 = true :=
-  Artifact.isValidJumpDest_index 370 (by rfl)
+  Artifact.isValidJumpDest_index 369 (by rfl)
 
 
 

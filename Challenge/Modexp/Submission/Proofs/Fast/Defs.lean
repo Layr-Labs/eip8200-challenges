@@ -60,42 +60,42 @@ private theorem instructionPC_succ
     assembleBytes_cons, assembleBytes_nil, List.append_nil, List.length_append]
 
 private theorem fastPCAnchor0 :
-    Artifact.submissionArtifact.instructionPC 404 = 578 := by
+    Artifact.submissionArtifact.instructionPC 403 = 578 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor1 :
-    Artifact.submissionArtifact.instructionPC 432 = 616 := by
+    Artifact.submissionArtifact.instructionPC 431 = 616 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor2 :
-    Artifact.submissionArtifact.instructionPC 473 = 671 := by
+    Artifact.submissionArtifact.instructionPC 472 = 671 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor8 :
-    Artifact.submissionArtifact.instructionPC 486 = 690 := by
+    Artifact.submissionArtifact.instructionPC 485 = 690 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor9 :
-    Artifact.submissionArtifact.instructionPC 491 = 697 := by
+    Artifact.submissionArtifact.instructionPC 490 = 697 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor9b :
-    Artifact.submissionArtifact.instructionPC 493 = 699 := by
+    Artifact.submissionArtifact.instructionPC 492 = 699 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor10 :
-    Artifact.submissionArtifact.instructionPC 507 = 724 := by
+    Artifact.submissionArtifact.instructionPC 506 = 724 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor15 :
-    Artifact.submissionArtifact.instructionPC 509 = 727 := by
+    Artifact.submissionArtifact.instructionPC 508 = 727 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -165,23 +165,23 @@ private theorem fastPCAnchor15 :
 
 theorem jumpDest1196 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 533 = true :=
-  Artifact.isValidJumpDest_index 370 (by rfl)
+  Artifact.isValidJumpDest_index 369 (by rfl)
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2317 = true :=
-  Artifact.isValidJumpDest_index 1835 (by rfl)
+  Artifact.isValidJumpDest_index 1834 (by rfl)
 
 theorem jumpDest1812 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 697 = true :=
-  Artifact.isValidJumpDest_index 491 (by rfl)
+  Artifact.isValidJumpDest_index 490 (by rfl)
 
 theorem jumpDestSub : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4025 = true :=
-  Artifact.isValidJumpDest_index 3145 (by rfl)
+  Artifact.isValidJumpDest_index 3144 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4234 = true :=
-  Artifact.isValidJumpDest_index 3296 (by rfl)
+  Artifact.isValidJumpDest_index 3295 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 4223 = true :=
-  Artifact.isValidJumpDest_index 3289 (by rfl)
+  Artifact.isValidJumpDest_index 3288 (by rfl)
 
 end Challenge.Modexp.Submission.Proofs.Fast

@@ -498,7 +498,7 @@ def blk3253x :
 
 theorem jumpDest4608 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2390 = true :=
-  Artifact.isValidJumpDest_index 1878 (by rfl)
+  Artifact.isValidJumpDest_index 1877 (by rfl)
 
 /-- `modexpBig`, where the trampoline lands. -/
 theorem jumpDestBigC :
@@ -507,50 +507,50 @@ theorem jumpDestBigC :
 
 theorem jumpDest4657 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2412 = true :=
-  Artifact.isValidJumpDest_index 1892 (by rfl)
+  Artifact.isValidJumpDest_index 1891 (by rfl)
 
 
 theorem jumpDestNeg4 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2336 = true :=
-  Artifact.isValidJumpDest_index 1847 (by rfl)
+  Artifact.isValidJumpDest_index 1846 (by rfl)
 
 theorem jumpDestNegT :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2470 = true :=
-  Artifact.isValidJumpDest_index 1928 (by rfl)
+  Artifact.isValidJumpDest_index 1927 (by rfl)
 
 theorem jumpDest4839 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2704 = true :=
-  Artifact.isValidJumpDest_index 2093 (by rfl)
+  Artifact.isValidJumpDest_index 2092 (by rfl)
 
 theorem jumpDest5115 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3075 = true :=
-  Artifact.isValidJumpDest_index 2405 (by rfl)
+  Artifact.isValidJumpDest_index 2404 (by rfl)
 
 theorem jumpDest5121 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3081 = true :=
-  Artifact.isValidJumpDest_index 2409 (by rfl)
+  Artifact.isValidJumpDest_index 2408 (by rfl)
 
 theorem jumpDestUnc :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3073 = true :=
-  Artifact.isValidJumpDest_index 2403 (by rfl)
+  Artifact.isValidJumpDest_index 2402 (by rfl)
 
 theorem jumpDest5311 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3061 = true :=
-  Artifact.isValidJumpDest_index 2395 (by rfl)
+  Artifact.isValidJumpDest_index 2394 (by rfl)
 
 theorem jumpDest5366 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3146 = true :=
-  Artifact.isValidJumpDest_index 2457 (by rfl)
+  Artifact.isValidJumpDest_index 2456 (by rfl)
 
 theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5522 = true :=
-  Artifact.isValidJumpDest_index 4411 (by rfl)
+  Artifact.isValidJumpDest_index 4410 (by rfl)
 
 /-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
 E3 phase switch has set the last riding slot to `30`. -/
 theorem jumpDest2471 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2329 = true :=
-  Artifact.isValidJumpDest_index 1843 (by rfl)
+  Artifact.isValidJumpDest_index 1842 (by rfl)
 
 /-- The cache-setup block (`E5`, pcs 2764-2810): computes the unrolled-conversion
 entry `2946 + 116·[n = 4]`, stores it at `0x6a2` (1698) and the squaring flag at

@@ -31,14 +31,14 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 4816, .op .JUMPI]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4260 h1Program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3313 5 4260 h1Program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3312 5 4260 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 8998 = true :=
   R4InlineBlocks.validJump5615
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5297 = true :=
-  Artifact.isValidJumpDest_index 4220 (by rfl)
+  Artifact.isValidJumpDest_index 4219 (by rfl)
 
 theorem cond_four : ¬ UInt256.isTrue (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) := by decide
 
@@ -84,7 +84,7 @@ theorem run_h1Eight (s : State) (mem : ByteArray)
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4816 = true := by
-    rw [hcode]; exact Artifact.isValidJumpDest_index 3808 (by rfl)
+    rw [hcode]; exact Artifact.isValidJumpDest_index 3807 (by rfl)
   have hcond := cond_eight
   have hcondL := cond_eight_lit
   simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -184,11 +184,11 @@ theorem run_resume (s : State) (rest : List UInt256) (hcap : rest.length < 1024)
 
 
 def entryBlock : Block Artifact.submissionArtifact .Osaka 4268 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3318 10 4268 entryProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3317 10 4268 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def resumeBlock : Block Artifact.submissionArtifact .Osaka 4280 resumeProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3328 1 4280 resumeProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3327 1 4280 resumeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Initialize the carry word once and retain the six reduction constants on the stack. -/

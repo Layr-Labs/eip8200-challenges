@@ -20,12 +20,12 @@ def program : List Instr :=
    .push 2 480, .op .SUB]
 
 def block : Block Artifact.submissionArtifact .Osaka 4245 program :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 3303 10 4245 program
+  WindowTwentyOneSlice.block Artifact.allWellFormed 3302 10 4245 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
     (UInt256.ofNat 4245).toNat = true :=
-  Artifact.isValidJumpDest_index 3303 (by rfl)
+  Artifact.isValidJumpDest_index 3302 (by rfl)
 
 /-- The entry's row pointer word. -/
 def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512 + 32 * n - 32)

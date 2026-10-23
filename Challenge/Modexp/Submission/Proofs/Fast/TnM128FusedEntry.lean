@@ -46,10 +46,10 @@ def clearProgram : List Instr :=
    .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
 def prefixBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3256 prefixProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2533 29 3256 prefixProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2532 29 3256 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3301 clearProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2562 8 3301 clearProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 2561 8 3301 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The first multiply row, the operand block at 2368 and the product scratch cleared. -/

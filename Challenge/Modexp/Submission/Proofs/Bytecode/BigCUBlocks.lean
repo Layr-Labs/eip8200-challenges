@@ -21,19 +21,19 @@ def unsignedBlocks : BigC.Unsigned.Blocks Artifact.submissionArtifact where
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   init := WindowTwentyOneSlice.block Artifact.allWellFormed 317 4 468 BigC.Unsigned.initProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  cell := WindowTwentyOneSlice.block Artifact.allWellFormed 321 33 474 BigC.Unsigned.cellProgram
+  cell := WindowTwentyOneSlice.block Artifact.allWellFormed 321 32 474 BigC.Unsigned.cellProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 354 3 509 BigC.Unsigned.guardProgram
+  guard := WindowTwentyOneSlice.block Artifact.allWellFormed 353 3 509 BigC.Unsigned.guardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  decide := WindowTwentyOneSlice.block Artifact.allWellFormed 357 3 514 BigC.Unsigned.decideProgram
+  decide := WindowTwentyOneSlice.block Artifact.allWellFormed 356 3 514 BigC.Unsigned.decideProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  retry := WindowTwentyOneSlice.block Artifact.allWellFormed 360 5 519 BigC.Unsigned.retryProgram
+  retry := WindowTwentyOneSlice.block Artifact.allWellFormed 359 5 519 BigC.Unsigned.retryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  finish := WindowTwentyOneSlice.block Artifact.allWellFormed 365 5 528 BigC.Unsigned.finishProgram
+  finish := WindowTwentyOneSlice.block Artifact.allWellFormed 364 5 528 BigC.Unsigned.finishProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumpInit := Artifact.isValidJumpDest_index 317 (by rfl)
   jumpLoop := Artifact.isValidJumpDest_index 321 (by rfl)
-  jumpDone := Artifact.isValidJumpDest_index 365 (by rfl)
+  jumpDone := Artifact.isValidJumpDest_index 364 (by rfl)
 
 def mulBlocks : BigC.U.MulBlocks Artifact.submissionArtifact where
   mEntry := WindowTwentyOneSlice.block Artifact.allWellFormed 264 7 393 BigC.U.mEntryProgram

@@ -47,116 +47,116 @@ private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base
 
 private def nine_base :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 745 WindowTwentyOneEntry.baseProgram :=
-  WindowTwentyOneSlice.block allWellFormed 521 1 745 WindowTwentyOneEntry.baseProgram
-    (by exact Nat.le_trans (by decide : 521 + 1 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 520 1 745 WindowTwentyOneEntry.baseProgram
+    (by exact Nat.le_trans (by decide : 520 + 1 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_modulus :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 746 WindowTwentyOneEntry.modulusProgram :=
-  WindowTwentyOneSlice.block allWellFormed 522 2 746 WindowTwentyOneEntry.modulusProgram
-    (by exact Nat.le_trans (by decide : 522 + 2 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 521 2 746 WindowTwentyOneEntry.modulusProgram
+    (by exact Nat.le_trans (by decide : 521 + 2 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_table :
   WindowTwentyOneBinding.Block submissionArtifact .Osaka 748 WindowTwentyOneTableBuild.program :=
-  WindowTwentyOneSlice.block allWellFormed 524 88 748 WindowTwentyOneTableBuild.program
-    (by exact Nat.le_trans (by decide : 524 + 88 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 523 88 748 WindowTwentyOneTableBuild.program
+    (by exact Nat.le_trans (by decide : 523 + 88 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_setup :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 837 WindowPrecopyRoute.setupProgram :=
-  WindowTwentyOneSlice.block allWellFormed 612 3 837 WindowPrecopyRoute.setupProgram
-    (by exact Nat.le_trans (by decide : 612 + 3 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 611 3 837 WindowPrecopyRoute.setupProgram
+    (by exact Nat.le_trans (by decide : 611 + 3 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_copy :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 841 WindowPrecopyRoute.copyProgram :=
-  WindowTwentyOneSlice.block allWellFormed 615 7 841 WindowPrecopyRoute.copyProgram
-    (by exact Nat.le_trans (by decide : 615 + 7 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 614 7 841 WindowPrecopyRoute.copyProgram
+    (by exact Nat.le_trans (by decide : 614 + 7 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_pool :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 849 WindowPrecopyRoute.poolProgram :=
-  WindowTwentyOneSlice.block allWellFormed 622 314 849 WindowPrecopyRoute.poolProgram
-    (by exact Nat.le_trans (by decide : 622 + 314 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 621 314 849 WindowPrecopyRoute.poolProgram
+    (by exact Nat.le_trans (by decide : 621 + 314 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_first :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1163 WindowPrecopyRoute.firstProgram :=
-  WindowTwentyOneSlice.block allWellFormed 936 5 1163 WindowPrecopyRoute.firstProgram
-    (by exact Nat.le_trans (by decide : 936 + 5 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 935 5 1163 WindowPrecopyRoute.firstProgram
+    (by exact Nat.le_trans (by decide : 935 + 5 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_head :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 1172 (WindowPrecopyRoute.routeWindows 0 60) :=
-  WindowTwentyOneSlice.block allWellFormed 941 840 1172 (WindowPrecopyRoute.routeWindows 0 60)
-    (by exact Nat.le_trans (by decide : 941 + 840 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 940 840 1172 (WindowPrecopyRoute.routeWindows 0 60)
+    (by exact Nat.le_trans (by decide : 940 + 840 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_tail :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 2252 WindowPrecopyRoute.tailProgram :=
-  WindowTwentyOneSlice.block allWellFormed 1781 49 2252 WindowPrecopyRoute.tailProgram
-    (by exact Nat.le_trans (by decide : 1781 + 49 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 1780 49 2252 WindowPrecopyRoute.tailProgram
+    (by exact Nat.le_trans (by decide : 1780 + 49 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_fast :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 24 FermatNext.fastProgram :=
   WindowTwentyOneSlice.block allWellFormed 17 6 24 FermatNext.fastProgram
-    (by exact Nat.le_trans (by decide : 17 + 6 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    (by exact Nat.le_trans (by decide : 17 + 6 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_join :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 33 FermatNext.joinProgram :=
   WindowTwentyOneSlice.block allWellFormed 23 9 33 FermatNext.joinProgram
-    (by exact Nat.le_trans (by decide : 23 + 9 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    (by exact Nat.le_trans (by decide : 23 + 9 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_prime :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 45 FermatNext.primeProgram :=
   WindowTwentyOneSlice.block allWellFormed 32 10 45 FermatNext.primeProgram
-    (by exact Nat.le_trans (by decide : 32 + 10 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    (by exact Nat.le_trans (by decide : 32 + 10 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_result :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 9809 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block allWellFormed 7700 9 9809 FermatProgram.returnProgram
-    (by exact Nat.le_trans (by decide : 7700 + 9 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 7699 9 9809 FermatProgram.returnProgram
+    (by exact Nat.le_trans (by decide : 7699 + 9 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_genCheck :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 101 FermatNext.genCheckProgram :=
   WindowTwentyOneSlice.block allWellFormed 47 9 101 FermatNext.genCheckProgram
-    (by exact Nat.le_trans (by decide : 47 + 9 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    (by exact Nat.le_trans (by decide : 47 + 9 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_genLoad :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 112 FermatNext.genLoadProgram :=
   WindowTwentyOneSlice.block allWellFormed 56 18 112 FermatNext.genLoadProgram
-    (by exact Nat.le_trans (by decide : 56 + 18 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    (by exact Nat.le_trans (by decide : 56 + 18 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_jumpTail :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 94 FermatNext.jumpTailProgram :=
   WindowTwentyOneSlice.block allWellFormed 42 2 94 FermatNext.jumpTailProgram
-    (by exact Nat.le_trans (by decide : 42 + 2 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+    (by exact Nat.le_trans (by decide : 42 + 2 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_tail :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 9800 FermatNext.tailProgram :=
-  WindowTwentyOneSlice.block allWellFormed 7693 7 9800 FermatNext.tailProgram
-    (by exact Nat.le_trans (by decide : 7693 + 7 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 7692 7 9800 FermatNext.tailProgram
+    (by exact Nat.le_trans (by decide : 7692 + 7 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_inverseGuard :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 9818 FermatNext.inverseGuardProgram :=
-  WindowTwentyOneSlice.block allWellFormed 7709 6 9818 FermatNext.inverseGuardProgram
-    (by exact Nat.le_trans (by decide : 7709 + 6 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 7708 6 9818 FermatNext.inverseGuardProgram
+    (by exact Nat.le_trans (by decide : 7708 + 6 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_inverse :
     WindowTwentyOneBinding.Block submissionArtifact .Osaka 9858 HistoricalSearch.FixedExponentProgram.program :=
-  WindowTwentyOneSlice.block allWellFormed 7715 1007 9858 HistoricalSearch.FixedExponentProgram.program
-    (by exact Nat.le_trans (by decide : 7715 + 1007 ≤ 8722) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
+  WindowTwentyOneSlice.block allWellFormed 7714 1007 9858 HistoricalSearch.FixedExponentProgram.program
+    (by exact Nat.le_trans (by decide : 7714 + 1007 ≤ 8721) (Nat.le_of_eq submissionInstructions_count.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 def fermatPaths : FermatNext.Paths submissionArtifact .Osaka where
@@ -170,10 +170,10 @@ def fermatPaths : FermatNext.Paths submissionArtifact .Osaka where
   result := fermat_result
   genCheck := fermat_genCheck
   genLoad := fermat_genLoad
-  routeJump := by exact isValidJumpDest_index 521 (by rfl)
+  routeJump := by exact isValidJumpDest_index 520 (by rfl)
   joinJump := by exact isValidJumpDest_index 23 (by rfl)
-  tailJump := by exact isValidJumpDest_index 7693 (by rfl)
-  inverseJump := by exact isValidJumpDest_index 7709 (by rfl)
+  tailJump := by exact isValidJumpDest_index 7692 (by rfl)
+  inverseJump := by exact isValidJumpDest_index 7708 (by rfl)
   bigJump := by exact isValidJumpDest_index 146 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths submissionArtifact .Osaka where

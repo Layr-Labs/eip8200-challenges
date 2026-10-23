@@ -98,7 +98,7 @@ def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem jump1237 :
     Decode.isValidJumpDest submissionBytecode 550 = true :=
-  Artifact.isValidJumpDest_index 383 (by rfl)
+  Artifact.isValidJumpDest_index 382 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest submissionBytecode 136 = true :=

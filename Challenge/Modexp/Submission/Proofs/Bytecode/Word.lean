@@ -346,7 +346,7 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
 theorem jump3695 : Decode.isValidJumpDest submissionBytecode 5570 = true :=
-  Artifact.isValidJumpDest_index 4453 (by rfl)
+  Artifact.isValidJumpDest_index 4452 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -501,11 +501,11 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 
 @[simp] theorem jump669 :
     Decode.isValidJumpDest submissionBytecode 5554 = true :=
-  Artifact.isValidJumpDest_index 4439 (by rfl)
+  Artifact.isValidJumpDest_index 4438 (by rfl)
 
 @[simp] theorem jump655 :
     Decode.isValidJumpDest submissionBytecode 5544 = true :=
-  Artifact.isValidJumpDest_index 4431 (by rfl)
+  Artifact.isValidJumpDest_index 4430 (by rfl)
 
 @[simp] theorem jump589 :
     Decode.isValidJumpDest submissionBytecode 194 = true :=

@@ -95,15 +95,15 @@ def squareCall : List Located :=
 
 theorem jumpDest3892 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2317 = true :=
-  Artifact.isValidJumpDest_index 1835 (by rfl)
+  Artifact.isValidJumpDest_index 1834 (by rfl)
 
 theorem jumpDest3895 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2350 = true :=
-  Artifact.isValidJumpDest_index 1856 (by rfl)
+  Artifact.isValidJumpDest_index 1855 (by rfl)
 
 theorem jumpDest3953 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2369 = true :=
-  Artifact.isValidJumpDest_index 1867 (by rfl)
+  Artifact.isValidJumpDest_index 1866 (by rfl)
 
 /-- `modexpBig` (pc 219), the target of every recogniser miss. -/
 theorem jumpDestBail :
@@ -118,7 +118,7 @@ theorem jumpDestBigC :
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3181 = true :=
-  Artifact.isValidJumpDest_index 2478 (by rfl)
+  Artifact.isValidJumpDest_index 2477 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

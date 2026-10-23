@@ -75,34 +75,34 @@ def lastProgram : List Instr :=
   [.op .POP, .op .POP] ++ m4jProgram
 
 def n8aBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3942 n8aProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3096 4 3942 n8aProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3095 4 3942 n8aProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def n8bBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3948 n8bProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3100 12 3948 n8bProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3099 12 3948 n8bProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def n8cBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3969 n8cProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3112 2 3969 n8cProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3111 2 3969 n8cProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def rareBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3973 rareProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3114 15 3973 rareProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3113 15 3973 rareProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3997 lastProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3129 7 3997 lastProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3128 7 3997 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def m4jBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3999 m4jProgram :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3131 5 3999 m4jProgram
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3130 5 3999 m4jProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestM4j : Decode.isValidJumpDest TnM128Candidate.bytecode 3999 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3131 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3130 (by rfl)
 
 theorem jumpDestLazy : Decode.isValidJumpDest TnM128Candidate.bytecode 4214 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3284 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3283 (by rfl)
 
 abbrev environment := TnM128SquareSteps.environment
 
@@ -151,16 +151,16 @@ theorem run_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem jumpDestRare : Decode.isValidJumpDest TnM128Candidate.bytecode 3973 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3114 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3113 (by rfl)
 
 theorem jumpDestH2 : Decode.isValidJumpDest TnM128Candidate.bytecode 4816 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3808 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3807 (by rfl)
 
 theorem jumpDestSetup : Decode.isValidJumpDest TnM128Candidate.bytecode 3256 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 2533 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 2532 (by rfl)
 
 theorem jumpDestS8 : Decode.isValidJumpDest TnM128Candidate.bytecode 4037 = true :=
-  TnM128CandidateArtifact.isValidJumpDest_index 3152 (by rfl)
+  TnM128CandidateArtifact.isValidJumpDest_index 3151 (by rfl)
 
 /-- The frame without its row pointer, as `n8`'s tn test leaves it. -/
 def dropAt (tn m128 : UInt256) (pc : Nat) (s : State) (mem : ByteArray) (_n : Nat)

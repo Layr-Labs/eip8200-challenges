@@ -70,6 +70,17 @@ theorem dec_ofNat (i : Nat) (hi : 1 ≤ i) (hi' : i < 2 ^ 256) :
   rw [h1, Nat.mod_eq_of_lt hi', Nat.mod_eq_of_lt (by omega : i - 1 < 2 ^ 256)]
   omega
 
+theorem sub1_ofNat (i : Nat) (hi : 1 ≤ i) (hi' : i < 2 ^ 256) :
+    UInt256.ofNat i - UInt256.ofNat 1 = UInt256.ofNat (i - 1) := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_sub]
+  simp only [Challenge.EvmProof.Word.word_toNat_ofNat]
+  have hi1 : i - 1 < 2 ^ 256 := by omega
+  rw [Nat.mod_eq_of_lt hi', Nat.mod_eq_of_lt (by decide : (1 : Nat) < 2 ^ 256),
+    Nat.mod_eq_of_lt hi1]
+  have hsum : 2 ^ 256 + i - 1 = (i - 1) + 2 ^ 256 * 1 := by omega
+  rw [hsum, Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hi1]
+
 theorem shl3_ofNat (n : Nat) (h : n < 2 ^ 240) :
     UInt256.shiftLeft (UInt256.ofNat n) (UInt256.ofNat 3) = UInt256.ofNat (n * 8) := by
   have := Challenge.EvmProof.Word.shiftLeft_ofNat (value := n) (shift := 3)

@@ -32,7 +32,7 @@ def expFinishTailProgram : List Instr :=
    .op (.Dup ⟨5, by decide⟩), .push 0 0, .op .RETURN]
 
 def expFinishTailBlock : Block Artifact.submissionArtifact .Osaka 5554 expFinishTailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4439 14 5554 expFinishTailProgram
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4438 14 5554 expFinishTailProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=

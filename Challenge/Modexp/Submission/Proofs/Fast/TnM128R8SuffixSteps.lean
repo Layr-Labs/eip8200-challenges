@@ -152,12 +152,12 @@ theorem run_tailFall (pc0 : Nat) (s : State)
 
 /-- `R_0`'s reduction cells: 197 instructions from index 4035 (pc 5080). -/
 def bodyBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5057 body :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4011 197 5057 body
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4010 197 5057 body
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- `R_0`'s tail: 12 instructions from index 4232 (pc 5305), falling into the diagonal at 5320. -/
 def tailBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 5282 tailFall :=
-  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4208 12 5282 tailFall
+  WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 4207 12 5282 tailFall
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Row 0's reduction: the shared row's carry-cache model, ending at the row-1 diagonal 5320. -/

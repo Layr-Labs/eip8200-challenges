@@ -43,11 +43,11 @@ def gasStep_clz {s : State} {a : UInt256} {rest : List UInt256}
     StepRunning.clz (withGas s gas) a rest hop hgas hstack hcap
 
 /-- The candidate's only `CLZ` is instruction 2091. -/
-theorem clz_index : Artifact.submissionInstructions[1952]? = some (.op .CLZ) := by
+theorem clz_index : Artifact.submissionInstructions[1951]? = some (.op .CLZ) := by
   rfl
 
 /-- ... at program counter 2672 (0x0a70). -/
-theorem clz_pc : Artifact.submissionArtifact.instructionPC 1952 = 2502 := by
+theorem clz_pc : Artifact.submissionArtifact.instructionPC 1951 = 2502 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -55,7 +55,7 @@ theorem decodedOp_clz (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 2502) :
     s.decodedOp = some .CLZ := by
-  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 1952 := by
+  have hpcNat : s.pc.toNat = Artifact.submissionArtifact.instructionPC 1951 := by
     rw [hpc, clz_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .CLZ) := by
     rw [hfork]

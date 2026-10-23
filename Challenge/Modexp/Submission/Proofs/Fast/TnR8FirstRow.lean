@@ -118,7 +118,7 @@ theorem result_materialized (s : State)
 
 def block : Block TnCandidateArtifact.submissionArtifact .Osaka 4917
     (program (UInt256.ofNat 3420)) :=
-  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3730 213 4917
+  WindowTwentyOneSlice.block TnCandidateArtifact.allWellFormed 3729 213 4917
     (program (UInt256.ofNat 3420))
     (by decide) (by rfl) (by rfl) (by decide)
 

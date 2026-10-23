@@ -27,9 +27,8 @@ def initProgram : List Instr :=
 /-- Exact U bytes [492,527). -/
 def cellProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 0 0,
-   .op .NOT,
-   .op .ADD,
+   .push 1 1,
+   .op .SUB,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .ADD,
@@ -118,11 +117,11 @@ theorem run_init (s : State) (ml : Nat) (z ret src : UInt256) (rest : List UInt2
 
 #check run_init
 
-def loadYProgram : List Instr := cellProgram.take 10
-def loadXProgram : List Instr := (cellProgram.drop 10).take 5
-def loadZProgram : List Instr := (cellProgram.drop 15).take 7
-def mathProgram : List Instr := (cellProgram.drop 22).take 4
-def cellTailProgram : List Instr := cellProgram.drop 26
+def loadYProgram : List Instr := cellProgram.take 9
+def loadXProgram : List Instr := (cellProgram.drop 9).take 5
+def loadZProgram : List Instr := (cellProgram.drop 14).take 7
+def mathProgram : List Instr := (cellProgram.drop 21).take 4
+def cellTailProgram : List Instr := cellProgram.drop 25
 
 theorem run_loadY (s : State) (i src : Nat) (c z ret : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : 1 ≤ i) (hi' : i ≤ 1024)
@@ -132,13 +131,13 @@ theorem run_loadY (s : State) (i src : Nat) (c z ret : UInt256) (rest : List UIn
       some (st s 484 (byteW mem (src + (i - 1)) :: UInt256.ofNat (i - 1) :: c :: z :: ret ::
         UInt256.ofNat src :: rest) mem AW) := by
   have hc := caps _ hcap
-  have hdec := dec_ofNat i hi (by omega)
+  have hsub := sub1_ofNat i hi (by omega)
   have hadd : UInt256.ofNat src + UInt256.ofNat (i - 1) = UInt256.ofNat (src + (i - 1)) :=
     Challenge.EvmProof.Word.ofNat_add_ofNat (by omega)
   have h1 : src + (i - 1) < LIM := by simp only [LIM]; omega
   have h2 : i - 1 < LIM := by simp only [LIM]; omega
   have haw1 : MachineState.activeWordsAfter 289 (src + (i - 1)) 32 = 289 := aw_keep _ _ (by omega)
-  unsigned_run [loadYProgram, cellProgram, hc, zero_lit, hdec, hadd, h1, h2, haw1]
+  unsigned_run [loadYProgram, cellProgram, hc, zero_lit, hsub, hadd, h1, h2, haw1]
 
 #check run_loadY
 
