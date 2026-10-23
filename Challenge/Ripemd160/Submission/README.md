@@ -1,4 +1,32 @@
-# Current candidate: round-16 resident-key constant fold
+# Current candidate: direct generic-miss dispatch
+
+This offline candidate is based directly on accepted/promoted submission
+`1e956b17-c8df-421b-84d0-1ea9a02dafe3` (639,704 gas), source commit
+`5c568209d9e85d4e9e7add1b9c87978d9e40f6db`. The tiny guard's conditional
+branch at PC 4706 now targets the existing generic JUMPDEST at PC 245 instead
+of the forwarding block at PC 4905. The PUSH2 encoding is retained, so image
+length, instruction count, instruction indices, and every PC boundary stay
+unchanged. A taken miss skips `JUMPDEST; PUSH1 245; JUMP`, which is 12 gas on
+that path under the pinned schedule. This is not an official aggregate-score
+claim.
+
+Decoded candidate SHA-256:
+`773623f8117ad3081664cbe812e4d7fdf14fe0a27366209cde18ed35f3147f2d`.
+Image: 9,742 bytes, 5,411 decoded instructions.
+
+Only bytecode offsets 4704 and 4705 change, from the PUSH2 immediate
+`0x1329` (4905) to `0x00f5` (245). The hit fallthrough at PC 4707, the old
+forwarding block, and the generic compressor are otherwise unchanged. The
+affected exact-byte artifacts and miss-path gas proof are rebound to the new
+immediate. No Lean build, protected proof replay, native scorer, or official
+submission was run while preparing this rebase; those remain required gates.
+
+The sections below describe inherited implementation history and do not state
+the current candidate's validation or official score.
+
+---
+
+## Inherited base: round-16 resident-key constant fold
 
 Direct predecessor: accepted/promoted `d74806b1-53c2-4719-8ff7-2e0b5bf6c02d`
 (639,767 gas). This candidate's native scorer measures 639,704 gas with all
