@@ -1,18 +1,10 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.MemoRun
 import Challenge.Modexp.Submission.Proofs.Bytecode.MemoCert
-import Challenge.Modexp.Submission.Proofs.Bytecode.Exp
 
 set_option warningAsError true
 set_option maxRecDepth 400000
-set_option maxHeartbeats 4000000
+set_option maxHeartbeats 8000000
 
-/-!
-# The answer block of the fixed-vector memo
-
-Three pieces: the two operand pushes, the single `EXP`, and the store-and-return
-tail.  `EXP` is the only instruction the shared straight-line evaluator does not
-step, so it is taken separately through `Exp.step` and the three are composed.
--/
 
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.Memo
 
@@ -20,65 +12,54 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode.Dispatch
 
-/-- State after the two operand pushes, at the `EXP`. -/
-def expArgState (input : ByteArray) : State :=
-  { Main.trampolineState input 738 with
-    stack := [UInt256.ofNat 3, UInt256.ofNat 65535] }
+def landedState (input : ByteArray) : State :=
+  { Main.trampolineState input 8616 with
+    stack := [] }
 
 set_option linter.unusedSimpArgs false in
 theorem run_hitPre (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock hitPrePath (hitEntryState input) =
-      some (expArgState input) := by
-  simp only [hitEntryState, expArgState, Main.trampolineState]
+      some (landedState input) := by
+  simp only [hitEntryState, landedState, Main.trampolineState]
   generalize htemplate : initialState submissionBytecode input 0 = template
   have hcode : template.executionEnv.code = submissionBytecode := by rw [← htemplate]; rfl
   have hrun : template.halt = .Running := by rw [← htemplate]; rfl
   have hstack : template.stack = [] := by rw [← htemplate]; rfl
-  simp [hitPrePath, opAt, pushAt, hcode, hrun, hstack,
+  have hpc : Artifact.instructionPC 6727 = 8616 := by rfl
+  have hjd : Decode.isValidJumpDest template.executionEnv.code 8616 = true := by
+    rw [hcode, ← hpc]
+    exact Artifact.isValidJumpDest_index 6727 (by rfl)
+  simp [hitPrePath, opAt, pushAt, hcode, hrun, hstack, hjd,
     Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod]
-  exact ⟨by decide, by decide⟩
-
-/-- The `EXP` at index 517 decodes from the artifact like any other instruction. -/
-theorem exp_decodes (s : State)
-    (hcode : s.executionEnv.code = Artifact.submissionArtifact.code)
-    (hpc : s.pc.toNat = 738) :
-    s.decodedOp = some .EXP := by
-  have hdec := Challenge.EvmProof.Stepper.decodes_of_artifact
-    Artifact.submissionArtifact s 515 (.op .EXP) hcode
-    (by rw [hpc]; rfl) (by rfl) expAt.wellFormed
-  change s.decodedOp = some .EXP at hdec
-  exact hdec
-
-/-- State after the `EXP`. -/
-def expDoneState (input : ByteArray) : State :=
-  { expArgState input with
-    pc := (expArgState input).pc.succ
-    stack := [UInt256.exp (UInt256.ofNat 3) (UInt256.ofNat 65535)] }
+  all_goals decide
 
 def gasSteps_hitPre (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (hitEntryState input) (expArgState input) :=
+    Challenge.EvmProof.GasSteps (hitEntryState input) (landedState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka hitPrePath rfl rfl
       (run_hitPre input) rfl deployAddress_not_precompile
 
-def gasSteps_exp (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (expArgState input) (expDoneState input) :=
-  Exp.step (s := expArgState input)
-    (exp_decodes (expArgState input) rfl (by rfl))
-    (by rfl) (by simp [expArgState]; decide) rfl deployAddress_not_precompile
+def answerWord : UInt256 :=
+  UInt256.ofNat 0x3b01b01ac41f2d6e917c6d6a221ce793802469026d9ab7578fa2e79e4da6aaab
 
-/-- The answer word the block returns. -/
-def answerWord : UInt256 := UInt256.exp (UInt256.ofNat 3) (UInt256.ofNat 65535)
+def hitDestState (input : ByteArray) : State :=
+  { landedState input with
+    pc := (landedState input).pc.succ }
+
+def hitWordState (input : ByteArray) : State :=
+  { hitDestState input with
+    pc := (hitDestState input).pc + UInt256.ofNat 33
+    stack := [answerWord] }
 
 /-- After `PUSH0`, before the `MSTORE`. -/
 def hitPushState (input : ByteArray) : State :=
-  { expDoneState input with
-    pc := (expDoneState input).pc.succ
-    stack := (⟨0⟩ : UInt256) :: (expDoneState input).stack }
+  { hitWordState input with
+    pc := (hitWordState input).pc.succ
+    stack := (⟨0⟩ : UInt256) :: (hitWordState input).stack }
 
 /-- After the `MSTORE`. -/
 def hitStoreState (input : ByteArray) : State :=
@@ -111,10 +92,10 @@ def hitFinalState (input : ByteArray) : State :=
 
 set_option linter.unusedSimpArgs false in
 theorem run_hitPost (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock hitPostPath (expDoneState input) =
+    Challenge.EvmProof.Stepper.runLocatedBlock hitPostPath (landedState input) =
       some (hitFinalState input) := by
   simp only [hitFinalState, hitReturnArgState, hitSizeState, hitStoreState, hitPushState,
-    answerWord, expDoneState, expArgState, Main.trampolineState]
+    hitWordState, hitDestState, answerWord, landedState, Main.trampolineState]
   generalize htemplate : initialState submissionBytecode input 0 = template
   have hcode : template.executionEnv.code = submissionBytecode := by rw [← htemplate]; rfl
   have hrun : template.halt = .Running := by rw [← htemplate]; rfl
@@ -127,16 +108,16 @@ theorem run_hitPost (input : ByteArray) :
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod]
+  all_goals decide
 
 def gasSteps_hitPost (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (expDoneState input) (hitFinalState input) :=
+    Challenge.EvmProof.GasSteps (landedState input) (hitFinalState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     Artifact.submissionArtifact .Osaka hitPostPath rfl rfl
       (run_hitPost input) rfl deployAddress_not_precompile
 
 theorem answerWord_toNat : answerWord.toNat = MemoCert.answer := by
-  simp only [answerWord, Exp.exp_three_ffff, Challenge.EvmProof.Word.word_toNat_ofNat,
-    MemoCert.answer]
+  simp only [answerWord, MemoCert.answer, Challenge.EvmProof.Word.word_toNat_ofNat]
   norm_num
 
 theorem hitFinalState_isDone (input : ByteArray) :
@@ -165,8 +146,7 @@ theorem hitHandled (input : ByteArray) (hvalid : ValidInput input)
         final.isDone = true ∧ final.toResult = .returned (Challenge.Modexp.spec input) :=
   ⟨hitFinalState input,
     ⟨(gasSteps_hit input hmatch).trans
-      ((gasSteps_hitPre input).trans
-        ((gasSteps_exp input).trans (gasSteps_hitPost input)))⟩,
+      ((gasSteps_hitPre input).trans (gasSteps_hitPost input))⟩,
     hitFinalState_isDone input, hitFinalState_result input hvalid hmatch⟩
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.Memo

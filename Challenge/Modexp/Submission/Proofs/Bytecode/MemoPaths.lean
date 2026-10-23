@@ -53,21 +53,18 @@ def tailPath :
 
 def hitPrePath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 513 2 65535,
-   pushAt 514 1 3]
+  [pushAt 513 2 8616,
+   opAt 514 .JUMP]
 
 def hitPostPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [pushAt 516 0 0,
-   opAt 517 .MSTORE,
-   pushAt 518 1 32,
-   pushAt 519 0 0,
-   opAt 520 .RETURN]
-
-/-- The `EXP`, kept as a located witness so its opcode and fork availability are
-discharged from the artifact like every other one. -/
-def expAt : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka :=
-  opAt 515 .EXP
+  [opAt 6727 .JUMPDEST,
+   pushAt 6728 32 26689440342447178617115869845918039756797228267049433585260346420242739014315,
+   pushAt 6729 0 0,
+   opAt 6730 .MSTORE,
+   pushAt 6731 1 32,
+   pushAt 6732 0 0,
+   opAt 6733 .RETURN]
 
 @[simp] theorem widthPCs (i : Nat) (hi : 493 ≤ i) (hii : i ≤ 498) :
     Artifact.submissionArtifact.instructionPC i =
@@ -83,7 +80,7 @@ def expAt : Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osak
 
 @[simp] theorem answerPCs (i : Nat) (hi : 513 ≤ i) (hii : i ≤ 520) :
     Artifact.submissionArtifact.instructionPC i =
-      ([733, 736, 738, 739, 740, 741, 743, 744] : List Nat)[i - 513]! := by
+      ([733, 736, 737, 739, 740, 741, 743, 744] : List Nat)[i - 513]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
