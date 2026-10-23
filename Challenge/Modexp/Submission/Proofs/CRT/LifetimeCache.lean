@@ -12,13 +12,18 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.EvmProof.Memory
 
 /-- Semantic column states retain the original modulus frame. Executed states
-borrow n8 before its first use, then n0 after its last use. The final state
-restores the original frame before any branch or loop edge. -/
+borrow n8 before its first use, then n0 after its last use.  Once `minv` has
+had its final arithmetic use in column 8, its slot caches q7 through column
+16.  The final state restores the original frame before any branch or loop
+edge. -/
 def cachedState (stage : Nat) (s : State) : State :=
   if stage = 0 ∨ 17 ≤ stage then s
   else if stage ≤ 8 then
     {s with stack := s.stack.set 10 (MachineState.readWord s.memory 1056)}
-  else {s with stack := s.stack.set 2 (MachineState.readWord s.memory 1312)}
+  else
+    {s with stack := (List.set
+      (s.stack.set 2 (MachineState.readWord s.memory 1312)) 12
+      (MachineState.readWord s.memory 1280))}
 
 theorem read_store_disjoint (mem : ByteArray) (word : UInt256) (dst src : Nat)
     (hd : src+32 ≤ dst ∨ dst+32 ≤ src) :

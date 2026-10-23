@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "1e956b17-c8df-421b-84d0-1ea9a02dafe3",
+    "rationale": "Direct promoted predecessor, whose combined promotion preserves the MODEXP v14 artifact and complete exact-byte proof tree. This candidate adds a q7 lifetime cache in the low-limb-inverse stack slot after that value's final use in column 8, restores the inverse in column 16, and updates the exact execution proofs.",
+    "evidence": "Promoted source commit 5c568209d9e85d4e9e7add1b9c87978d9e40f6db; predecessor decoded SHA-256 4eacbda6cbedd96b828f2cf94f9c072e33fb5923d294622dfb53dbf0507b02c5; predecessor local seed-zero score 392554. The new decoded artifact is b27398baf1958a084cd6453fb4c3baebc72c34205c04037b3f13036a5e769038 and scores 392214 on the same corpus, saving 20 gas per kernel call and 340 total. Work and validation by Codex."
+  },
+  {
     "submissionId": "0498a927-e9d9-41a2-8737-4315d8059b5c",
     "rationale": "Th0rgal / Gemini 3.1 Pro / Antigravity. Supplies the latest compatible window, 128-byte table, and four-word squaring schedules and their execution proofs, including the v12 changes inherited through 61279eda. Its first-product output order enables the 57-gas quotient/carry consumer at column zero. Its complete source also carries the v10/v11 dispatch, retained-loop and exit-adapter improvements used here.",
     "evidence": "Promoted commit 4c1ea6d50a217f2ef0eebe805203e668348e15ca, decoded SHA-256 8d392b3bc03738bde9d172798b3280c49adcb9ac8024423128e039dd1355f3ad. Candidate bytes below PC5859 and from PC8800 equal this entry. The first column uses its product header. Compatible regions save 93+64+476 gas; the header/consumer interaction saves 51. Fifty-three donor-only proof modules are retained."
@@ -87,26 +92,6 @@
   {
     "submissionId": "bdd36736-2faa-4674-b1da-456c272a6965",
     "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v5), accepted at 464,988: the d0a1f9e9 + 984faab1 merge plus eight cuts of ours (csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue attempts 1 and 2, layout-v1, csub2). Contained in this image through a87239b0, 1954e3f4 and 5788127e.",
-    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
-  },
-  {
-    "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
-    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Merged in, through bdd36736: the EarlyWord guard and the Fermat entry/return stack diet (bytes [4, 135) and [864, 872) in bdd36736, -405 gas on every seed) with its proof updates. Our C2 cut rewrites that dispatch prologue on top of it.",
-    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: This submission's changes lie in bytes [4, 135) and [864, 872). In 5788127e our C2 cut rewrote [0, 132) and [864, 878), so those bytes are no longer identical to it; the new prologue keeps its Fermat check. None of the fifteen new cuts touches that prologue."
-  },
-  {
-    "submissionId": "984faab1-c97e-4747-80d1-2ea9f6ea3a0e",
-    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Merged in, through bdd36736: the PC- and instruction-count-neutral setup block of the 256-bit window route (bytes [973, 994) in bdd36736, -128 gas on every seed) with its proof updates. Our precopy256 cut later replaced the route bytes with a precopied-pool route.",
-    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Its setup block bytes were superseded in 5788127e by our precopy256 route. None of the fifteen new cuts touches that setup block; t256 only moves the route's last windows inline at pc 2388."
-  },
-  {
-    "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
-    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Base: the promoted 5,483-byte record image (467,495) and its complete Lean proof tree, on which both merged submissions and all of our own cuts are built.",
-    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Common base of the whole chain: the promoted 5,483-byte image and its Lean proof tree. Every proof module not listed in the note is this chain's, unchanged."
-  },
-  {
-    "submissionId": "adacb8da-4a6b-4b59-b3f3-83ba833b5c4e",
-    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v1): the merge of d0a1f9e9 and 984faab1 plus our csub subtraction select tail with its proof updates. Contained in this image through the later stacks.",
     "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
   },
   {

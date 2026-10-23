@@ -28,7 +28,8 @@ theorem candidateFromWindow
     Challenge.Modexp.Submission.Proofs.Fast.BigCUGlue.bigBailHandled
 
 /-- Universal correctness of the exact submitted bytecode, including the
-concrete fixed-width window route and the complete legacy fallback. -/
+concrete fixed-width window route, the v15 q7 lifetime cache integrated by
+Codex, and the complete legacy fallback. -/
 theorem candidate : Challenge.Modexp.Correct bytecode :=
   candidateFromWindow
     Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCorrect.route

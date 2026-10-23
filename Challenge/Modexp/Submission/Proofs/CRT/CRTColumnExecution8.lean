@@ -45,6 +45,7 @@ theorem col8part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : U
   have hc12 : rest.length + 12 < 1024 := by omega
   have hc13 : rest.length + 13 < 1024 := by omega
   have hc14 : rest.length + 14 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
   have hc15 : rest.length + 15 < 1024 := by omega
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
@@ -1156,7 +1157,7 @@ theorem col8part24_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 
 #print axioms col8part24_run
 
-def col8Program : List Instr :=
+def col8PrefixProgram : List Instr :=
   [.push 2 1024,
    .op .MLOAD,
    .op (.Dup ⟨2, by decide⟩),
@@ -1461,9 +1462,9 @@ def col8RawModel (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UIn
   let v101 : UInt256 := v100 + v99
   {s with pc := UInt256.ofNat 7070, memory := v98, stack := v101 :: P :: v88 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: v36 :: mask :: minv :: rest}
 
-theorem col8_raw_run (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256)
+theorem col8_prefix_raw_run (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions col8Program {s with pc := UInt256.ofNat 6790, stack := carry :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    runInstructions col8PrefixProgram {s with pc := UInt256.ofNat 6790, stack := carry :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       some (col8RawModel s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 1024
   let v1 : UInt256 := MachineState.readWord s.memory 768
@@ -1619,6 +1620,54 @@ theorem col8_raw_run (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv :
     simpa only [col8part24Model, v101] using col8part24_run ({s with memory := v98}) (v100) (v99) (P) (v88) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (v36) (mask) (minv) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 (runInstructions_append_some _ _ _ _ _ h17 (runInstructions_append_some _ _ _ _ _ h18 (runInstructions_append_some _ _ _ _ _ h19 (runInstructions_append_some _ _ _ _ _ h20 (runInstructions_append_some _ _ _ _ _ h21 (runInstructions_append_some _ _ _ _ _ h22 (runInstructions_append_some _ _ _ _ _ h23 h24))))))))))))))))))))))))
 
+#print axioms col8_prefix_raw_run
+
+def col8CacheProgram : List Instr :=
+  [.push 2 1280,
+   .op .MLOAD,
+   .op (.Swap ⟨12, by decide⟩),
+   .op .POP]
+
+def col8Program : List Instr := col8PrefixProgram ++ col8CacheProgram
+
+def col8CachedRawModel (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256)
+    (rest : List UInt256) : State :=
+  let t := col8RawModel s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  let u := {t with stack := t.stack.set 12 (MachineState.readWord t.memory 1280)}
+  {u with pc := UInt256.ofNat 7076}
+
+theorem col8_raw_run (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions col8Program {s with pc := UInt256.ofNat 6790, stack := carry :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+      some (col8CachedRawModel s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest) := by
+  rw [col8Program, runInstructions_append,
+    col8_prefix_raw_run s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hact]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have ha1280 : (1280 : UInt256).toNat = 1280 := rfl
+  have hf1280 := HistoricalSearch.CRTMemoryBounds.activeWords_fix
+    s 1280 32 (by decide) (by norm_num) hact
+  simp [col8CacheProgram, col8CachedRawModel, col8RawModel, runInstructions,
+    Challenge.EvmProof.Stepper.runInstr, List.exchange,
+    read_store_disjoint,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    Nat.add_assoc, State.activeWordsAfterUInt256,
+    Challenge.EvmProof.Word.literal_eq_ofNat, hc0, hc1, hc2, hc3, hc4, hc5,
+    hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, ha1280, hf1280]
+
 #print axioms col8_raw_run
 
 def col8Model (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) : State :=
@@ -1723,7 +1772,7 @@ def col8Model (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt25
   let v101 : UInt256 := UInt256.shiftLeft v98 (UInt256.ofNat 12)
   let v102 : UInt256 := UInt256.shiftRight v91 (UInt256.ofNat 244)
   let v103 : UInt256 := v102 + v101
-  {s with pc := UInt256.ofNat 7070, memory := v100, stack := v103 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest}
+  {s with pc := UInt256.ofNat 7076, memory := v100, stack := v103 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest}
 
 theorem col8_run (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
@@ -1737,7 +1786,7 @@ theorem col8_run (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UIn
   rw [col8_raw_run s carry P n0 n1 n2 n3 n4 n5 n6 n7 (MachineState.readWord s.memory 1056) mask minv rest hcap hact]
   apply congrArg some
   subst mask
-  simp only [col8RawModel, col8Model,
+  simp only [col8CachedRawModel, col8RawModel, col8Model,
     HistoricalSearch.CRTMaskElision.mask244_mul_mask244,
     HistoricalSearch.CRTMaskElision.mask96_mul_mask244,
     mulMod_comm, HistoricalSearch.WordCancellation.mul_comm, h8]
@@ -1754,6 +1803,11 @@ theorem col8_read0 (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : U
 theorem col8_read224 (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     MachineState.readWord (col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).memory 224 =
       MachineState.readWord s.memory 224 := by
+  simp (disch := omega) [col8Model, read_store_disjoint]
+
+theorem col8_read2720 (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
+    MachineState.readWord (col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).memory 2720 =
+      MachineState.readWord s.memory 2720 := by
   simp (disch := omega) [col8Model, read_store_disjoint]
 
 end HistoricalSearch.GeneratedColumns

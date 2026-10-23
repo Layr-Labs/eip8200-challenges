@@ -37,12 +37,14 @@ theorem model_eq_states (s : State) (minv : UInt256) (n : Nat → UInt256) (rest
 theorem run_states (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hrestore0 : UInt256.land maskWord (MachineState.readWord s.memory 224) = n 0)
-    (hrestore8 : UInt256.shiftRight (MachineState.readWord s.memory 0) (UInt256.ofNat 160) = n 8) :
+    (hrestore8 : UInt256.shiftRight (MachineState.readWord s.memory 0) (UInt256.ofNat 160) = n 8)
+    (hrestoreInv : MachineState.readWord s.memory 2720 = minv) :
     runInstructions GeneratedColumns.kernelProgram
       {s with pc := UInt256.ofNat 5859, stack := modulusWord :: n 0 :: n 1 :: n 2 :: n 3 :: n 4 :: n 5 :: n 6 :: n 7 :: n 8 :: maskWord :: minv :: rest} =
       some (states s minv n rest 17) := by
   rw [GeneratedColumns.kernel_run s modulusWord (n 0) (n 1) (n 2) (n 3) (n 4)
-    (n 5) (n 6) (n 7) (n 8) maskWord minv rest hcap hact rfl hrestore0 hrestore8, model_eq_states]
+    (n 5) (n 6) (n 7) (n 8) maskWord minv rest hcap hact rfl hrestore0 hrestore8 hrestoreInv,
+    model_eq_states]
 
 #print axioms model_eq_states
 #print axioms run_states
@@ -51,6 +53,7 @@ theorem run_contract (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : 
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hrestore0 : UInt256.land maskWord (MachineState.readWord s.memory 224) = n 0)
     (hrestore8 : UInt256.shiftRight (MachineState.readWord s.memory 0) (UInt256.ofNat 160) = n 8)
+    (hrestoreInv : MachineState.readWord s.memory 2720 = minv)
     (ha : ∀ i < 9, (aRead s.memory i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (ha8 : (aRead s.memory 8).toNat < 2^96) (hn8 : (n 8).toNat < 2^96)
@@ -66,7 +69,7 @@ theorem run_contract (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : 
     normalize (2^2048) N (output s minv n rest) < 2^2048 ∧
     normalize (2^2048) N (output s minv n rest) % N =
       Challenge.Modexp.Submission.Proofs.Fast.Model.montMul N (2^2048) A A := by
-  exact ⟨run_states s minv n rest hcap hact hrestore0 hrestore8,
+  exact ⟨run_states s minv n rest hcap hact hrestore0 hrestore8 hrestoreInv,
     KernelArithmetic.contract s minv n rest A N ha hn ha8 hn8 hAvalue hNvalue hn0 hinv hAR hN hNR hodd⟩
 
 #print axioms run_contract

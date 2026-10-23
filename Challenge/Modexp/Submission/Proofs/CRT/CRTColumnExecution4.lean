@@ -890,4 +890,9 @@ theorem col4_read224 (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv :
       MachineState.readWord s.memory 224 := by
   simp (disch := omega) [col4Model, read_store_disjoint]
 
+theorem col4_read2720 (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
+    MachineState.readWord (col4Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).memory 2720 =
+      MachineState.readWord s.memory 2720 := by
+  simp (disch := omega) [col4Model, read_store_disjoint]
+
 end HistoricalSearch.GeneratedColumns
