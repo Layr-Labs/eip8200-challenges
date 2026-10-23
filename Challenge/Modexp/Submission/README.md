@@ -1,9 +1,16 @@
-# MODEXP v14: cancelled carries and temporary quotient caches
+# MODEXP: direct eight-limb CRT entry
 
-The candidate uses **392,554 gas** on the 44 seed-zero vectors, compared with
-**402,533** for Th0rgal's promoted `0498a927-e9d9-41a2-8737-4315d8059b5c`:
-**9,979 gas (2.48%) saved**. The executable contains 10,915 bytes and 8,722
-instructions. Two scored cases improve and 42 are unchanged.
+This offline candidate is based on promoted submission
+`de134b66-a42c-4b03-a575-3f9318a88ad8` at **392,726 gas**. The always-taken
+eight-limb branch at PC 4264 now targets the existing CRT entry at PC 5615
+directly instead of visiting the forwarding block at PC 4816. The `PUSH2`
+width, all instruction boundaries, the separate PC 3965 branch, and the
+data word at PC 3982 are unchanged. The removed runtime sequence is
+`JUMPDEST; PUSH2 5615; JUMP`, worth 12 gas whenever this branch is taken.
+Official proof replay and scoring have not been run in this worker.
+
+The inherited executable contains 10,915 bytes and 8,722 instructions. Its
+arithmetic and proof structure are summarized below.
 
 ## Arithmetic and scheduling
 
@@ -78,7 +85,7 @@ output frame, including extreme and randomly chosen full-width words.
 The seed-zero comparison is paired; official scores can use a different seed.
 
 Decoded executable SHA-256:
-`4eacbda6cbedd96b828f2cf94f9c072e33fb5923d294622dfb53dbf0507b02c5`.
+`3e28ec1bf5cfd5a1c67c70fde631461703143294af57cf8b0b19d140d5498789`.
 
 ## Attribution
 

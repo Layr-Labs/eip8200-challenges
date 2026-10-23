@@ -5,7 +5,9 @@ Original submitter: @ercumentyildirim
 Yukon source: 1c21ab97-04ca-470f-ae2d-57e5fa08dc78
 Executable SHA-256: ad60d3dac181092e39562b72c2003578a87e3734cffecc962593cd33f56332f7
 
-Executable bytes and Lean proof terms are reused unchanged. One source-attribution line comment is appended to Solution.lean. Local comparison is described in the public submission note.
+The listed executable and Lean proof terms are the credited base. This offline
+candidate additionally retargets the PC 4264 eight-limb branch to the already
+proved PC 5615 CRT entry and updates the affected exact-byte/path proofs.
 
 
 ---

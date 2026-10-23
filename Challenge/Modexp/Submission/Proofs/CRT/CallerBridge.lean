@@ -37,7 +37,7 @@ theorem prefix_live (mem : ByteArray) : Live (CRTLoopEntry.memory mem) mem := by
   exact CRTLoopEntry.readWord mem addr (by omega)
 
 theorem head_eq (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) :
-    CRTLoopEntry.head s mem k ret tail = atOld s (CRTLoopEntry.memory mem) 4816
+    CRTLoopEntry.head s mem k ret tail = atOld s (CRTLoopEntry.memory mem) 5615
       (UInt256.ofNat 0) (SquareStagedEntry.qWord 8) (UInt256.ofNat 3347) (frame mem k ret tail) := by
   unfold CRTLoopEntry.head SquareLoopBlocks.frameAt SquareLoopBlocks.frameStack atOld
     TnM128SquareExit.frameAt TnM128SquareExit.frameStack frame
@@ -114,7 +114,7 @@ def trace (s : State) (bsize N mi : Nat)
     norm_num at h
   have g1 := CRTLoopEntry.gasSteps_prefix s mem k ret tail hcap env.running env.code env.forkEq
     env.noPrecompile hact hcds hf.s32 hf.ml hw hn hs.inverseGuard hinv
-  have g2 := CRTGasStepsNormalized.entry s (CRTLoopEntry.memory mem) f (SquareStagedEntry.qWord 8)
+  have g2 := CRTGasStepsNormalized.entryDirect s (CRTLoopEntry.memory mem) f (SquareStagedEntry.qWord 8)
     (UInt256.ofNat 3347) env hcap hact
   have hdigits : inputWord (CRTLoopEntry.memory mem) 0 = inputWord mem 0 :=
     funext fun i => inputWord_live (prefix_live mem) i

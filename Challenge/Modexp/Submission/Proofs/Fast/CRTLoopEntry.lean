@@ -38,7 +38,7 @@ theorem keep (mem : ByteArray) (ptr n v : Nat)
 /-- The new kernel's initial entry; the previous-operand slot still contains
 its original pointer and is deliberately not asserted to be an operand word. -/
 def head (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (rest : List UInt256) : State :=
-  SquareLoopBlocks.frameAt 4816 s (memory mem) 8 (SquareStagedEntry.qWord 8)
+  SquareLoopBlocks.frameAt 5615 s (memory mem) 8 (SquareStagedEntry.qWord 8)
     (UInt256.ofNat 3347) (MachineState.readWord mem 224) (MachineState.readWord mem 2720)
     (MachineState.readWord mem 160) (MachineState.readWord mem 96)
     (MachineState.readWord mem 64) (MachineState.readWord mem 32)

@@ -38,3 +38,4 @@ end Challenge.Modexp.Benchmark
 #print axioms Challenge.Modexp.Benchmark.candidate
 
 -- Yukon reuse by @anamdongparkjinhyeong: source @ercumentyildirim, submission 1c21ab97-04ca-470f-ae2d-57e5fa08dc78, commit e638a7a3e1d0afea4389d8748055a867a31cb3d9.
+-- Offline candidate: PC 4264 bypasses the PC 4816 forwarding hook and enters PC 5615 directly.
