@@ -54,7 +54,7 @@ def rowZeroState (s : State) (a0 : UInt256) (M0 : ByteArray) (n : Nat)
     (tl inv m0 m96 m64 m32 pdst ret : UInt256) (rest : List UInt256)
     (ent : UInt256 := UInt256.ofNat (sqEnt n 0)) : State :=
   { CiosCached.outState s M0 2368 n 0 (UInt256.ofNat 5297) ent m32 m64 m0
-      (tl :: m96 :: inv :: UInt256.ofNat 0 :: a0 :: pdst :: ret :: rest) with pc := UInt256.ofNat 4816 }
+      (tl :: m96 :: inv :: UInt256.ofNat 0 :: a0 :: pdst :: ret :: rest) with pc := UInt256.ofNat 5615 }
 
 theorem rowZero_eq_input (s : State) (mem : ByteArray) (n : Nat) (hn : n = 4 ∨ n = 8)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1) :

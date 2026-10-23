@@ -24,14 +24,11 @@ def environment (s : State) (hcode : s.executionEnv.code = Challenge.Modexp.subm
 def gasSteps_entry (s : State) (pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 4816, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+    GasSteps {s with pc := UInt256.ofNat 5615, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
       (entryModel s pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) := by
   have hc : (pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest).length ≤ 1022 := by simp only [List.length_cons]; omega
-  have hv : Decode.isValidJumpDest s.executionEnv.code 5615 = true := by
-    rw [env.code]; exact validJump5615
-  have g0 := block_hook.steps (s := {s with pc := UInt256.ofNat 4816, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}) (env.transfer rfl rfl) rfl (hook_run s (pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest) hc hv)
   have g1 := block_entry.steps (s := {s with pc := UInt256.ofNat 5615, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}) (env.transfer rfl rfl) rfl (entry_run s pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact)
-  exact g0.trans g1
+  exact g1
 #print axioms gasSteps_entry
 
 def gasSteps_kernel (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256)

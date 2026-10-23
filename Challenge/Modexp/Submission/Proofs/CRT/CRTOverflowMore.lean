@@ -52,11 +52,11 @@ def gasSteps (s : State) (minv : UInt256) (n : Nat → UInt256)
     simp only [atOld, exitFrame, hcount, show MachineState.readWord em 128 = f.m128 from he.m128]
   have hend :
       TnM128SquareExit.frameAt (UInt256.ofNat 0)
-        (MachineState.readWord (CRTExitTail.memory em tn) 128) 4816 s
+        (MachineState.readWord (CRTExitTail.memory em tn) 128) 5615 s
         (CRTExitTail.memory em tn) 8 (UInt256.ofNat (2^256-256)) f.w3
         (UInt256.ofNat 3643) f.tl f.inv f.m0 f.m96 f.m64 f.m32 (cachedTop cm)
         (UInt256.ofNat (k-1)) f.ret f.rest =
-      atOld s (finish s minv n mem) 4816 (UInt256.ofNat 0)
+      atOld s (finish s minv n mem) 5615 (UInt256.ofNat 0)
         (UInt256.ofNat (2^256-256)) (UInt256.ofNat 3643) fn := by
     rw [hmem, hf.m128]
     rfl
