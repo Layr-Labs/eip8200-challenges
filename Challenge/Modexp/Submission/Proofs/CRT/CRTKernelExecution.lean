@@ -1251,11 +1251,11 @@ def entrypart0Program : List Instr :=
    .push 2 3643,
    .op (.Swap ⟨3, by decide⟩),
    .op .POP,
-   .push 0 0]
+   .op .POP]
 
 def entrypart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded x14.toNat 32) 1728
-  {s with pc := UInt256.ofNat 5627, memory := v0, stack := (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: (UInt256.ofNat 3643) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := UInt256.ofNat 5627, memory := v0, stack := x1 :: x2 :: (UInt256.ofNat 3643) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem entrypart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
@@ -1289,8 +1289,8 @@ theorem entrypart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 #print axioms entrypart0_run
 
 def entrypart1Program : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩),
-   .op .POP,
+  [.op .JUMPDEST,
+   .push 0 0,
    .push 2 2720,
    .op .MLOAD,
    .push 31 28269553036454149273332760011886696253239742350009903329945699220681916415,
@@ -1298,15 +1298,15 @@ def entrypart1Program : List Instr :=
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩)]
 
-def entrypart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
+def entrypart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 2720
   let v1 : UInt256 := MachineState.readWord s.memory 2592
-  {s with pc := UInt256.ofNat 5670, memory := s.memory, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v0 :: x0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := UInt256.ofNat 5670, memory := s.memory, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v0 :: (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
 
-theorem entrypart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
+theorem entrypart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
-      some (entrypart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
+    runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+      some (entrypart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have hc0 : rest.length + 0 < 1024 := by omega
@@ -2048,9 +2048,9 @@ def entryProgram : List Instr :=
    .push 2 3643,
    .op (.Swap ⟨3, by decide⟩),
    .op .POP,
-   .push 0 0,
-   .op (.Swap ⟨0, by decide⟩),
    .op .POP,
+   .op .JUMPDEST,
+   .push 0 0,
    .push 2 2720,
    .op .MLOAD,
    .push 31 28269553036454149273332760011886696253239742350009903329945699220681916415,
@@ -2280,10 +2280,10 @@ theorem entry_run (s : State) (pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv 
   let v52 : UInt256 := UInt256.land (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) v51
   let v53 : UInt256 := MachineState.readWord v32 224
   let v54 : UInt256 := UInt256.land (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) v53
-  have h0 : runInstructions entrypart0Program {s with pc := UInt256.ofNat 5615, memory := s.memory, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5627, memory := v0, stack := (UInt256.ofNat 0) :: pbi :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h0 : runInstructions entrypart0Program {s with pc := UInt256.ofNat 5615, memory := s.memory, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5627, memory := v0, stack := hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [entrypart0Model, v0] using entrypart0_run (s) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h1 : runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, memory := v0, stack := (UInt256.ofNat 0) :: pbi :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5670, memory := v0, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v2 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
-    simpa only [entrypart1Model, v1, v2] using entrypart1_run ({s with memory := v0}) ((UInt256.ofNat 0)) (pbi) (hd) (w3) ((UInt256.ofNat 3643)) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
+  have h1 : runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, memory := v0, stack := hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5670, memory := v0, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v2 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+    simpa only [entrypart1Model, v1, v2] using entrypart1_run ({s with memory := v0}) (hd) (w3) ((UInt256.ofNat 3643)) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   have h2 : runInstructions entrypart2Program {s with pc := UInt256.ofNat 5670, memory := v0, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v2 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5683, memory := v4, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v6 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [entrypart2Model, v3, v4, v5, v6] using entrypart2_run ({s with memory := v0}) ((UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415)) (v2) ((UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415)) (v1) ((UInt256.ofNat 0)) (hd) (w3) ((UInt256.ofNat 3643)) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   have h3 : runInstructions entrypart3Program {s with pc := UInt256.ofNat 5683, memory := v4, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v6 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5698, memory := v11, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
