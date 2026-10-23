@@ -219,7 +219,7 @@ def block_st4 : Block Artifact.submissionArtifact .Osaka 4731 prog_st4 :=
     (by change _ ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 3737 + 9 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm)) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rw [R4SliceFast.locations_map]; rfl) (by decide)
 
 def prog_branch : List Instr :=
-  [.op .POP, .op .POP, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .push 2 4280, .op .JUMPI]
+  [.op .POP, .op .POP, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .push 2 8998, .op .JUMPI]
 
 def block_branch : Block Artifact.submissionArtifact .Osaka 4748 prog_branch :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3746 8 4748 prog_branch
