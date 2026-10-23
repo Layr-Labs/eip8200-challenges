@@ -126,7 +126,7 @@ def gasSteps_h1Fall (n : Nat) (hn : n = 8) (hq : pbi = UInt256.ofNat (2^256 - 25
 end
 
 def entryProgram : List Instr :=
-  [.op (.Swap ⟨13, by decide⟩), .op (.Dup ⟨11, by decide⟩), .push 0 0, .op (.Dup ⟨0, by decide⟩), .push 2 2080, .op .MSTORE, .op .MLOAD,
+  [.op (.Swap ⟨13, by decide⟩), .op (.Dup ⟨11, by decide⟩), .push 2 2080, .push 0 0, .op .MSTORE, .push 0 0, .op .MLOAD,
    .op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op (.Dup ⟨12, by decide⟩)]
 
 theorem run_entry (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 n3 : UInt256) (rest : List UInt256)
