@@ -17,7 +17,7 @@ open HistoricalSearch.CRTLoopArithmetic HistoricalSearch.CRTLoopFrames
 def entry (s : State) (mem : ByteArray) (f : CRTLoopFrames.Frame) (pbi ent : UInt256)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps (atOld s mem 4816 (UInt256.ofNat 0) pbi ent f)
+    GasSteps (atOld s mem 5615 (UInt256.ofNat 0) pbi ent f)
       (atCache s (entryMemory mem f.counter) 5859 (inputWord mem 0)
         (MachineState.readWord mem 2720) f) := by
   have g := CRTGasSteps.gasSteps_entry {s with memory := mem} pbi (UInt256.ofNat 5297)
