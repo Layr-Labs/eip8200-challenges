@@ -46,7 +46,7 @@ def cellProgram : List Instr :=
    .op .ADD,
    .op .MLOAD,
    .op .NOT,
-   .push 1 0,
+   .push 0 0,
    .op .BYTE,
    .op .JUMPDEST,
    .op .ADD,
@@ -55,7 +55,7 @@ def cellProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .MSTORE8,
-   .push 1 8,
+   .push 2 8,
    .op .SHR,
    .op (.Swap ⟨1, by decide⟩),
    .op .POP]
@@ -174,7 +174,7 @@ theorem run_loadZ (s : State) (i z : Nat) (xy c ret src : UInt256) (rest : List 
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) (hz : z ≤ 8192) :
     runInstructions loadZProgram
       (st s 489 (xy :: UInt256.ofNat i :: c :: UInt256.ofNat z :: ret :: src :: rest) mem AW) =
-      some (st s 497 ((UInt256.ofNat 255 - byteW mem (z + i)) :: xy ::
+      some (st s 496 ((UInt256.ofNat 255 - byteW mem (z + i)) :: xy ::
         UInt256.ofNat i :: c :: UInt256.ofNat z :: ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat i + UInt256.ofNat z = UInt256.ofNat (z + i) := by
@@ -187,8 +187,8 @@ theorem run_loadZ (s : State) (i z : Nat) (xy c ret src : UInt256) (rest : List 
 
 theorem run_math (s : State) (zb xy i c z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) :
-    runInstructions mathProgram (st s 497 (zb :: xy :: i :: c :: z :: ret :: src :: rest) mem AW) =
-      some (st s 501 ((c + (zb + xy)) :: i :: c :: z :: ret :: src :: rest) mem AW) := by
+    runInstructions mathProgram (st s 496 (zb :: xy :: i :: c :: z :: ret :: src :: rest) mem AW) =
+      some (st s 500 ((c + (zb + xy)) :: i :: c :: z :: ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [mathProgram, cellProgram, hc]
 
@@ -197,7 +197,7 @@ theorem run_math (s : State) (zb xy i c z ret src : UInt256) (rest : List UInt25
 theorem run_cell_tail (s : State) (i : Nat) (w c z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) :
     runInstructions cellTailProgram
-      (st s 501 (w :: UInt256.ofNat i :: c :: z :: ret :: src :: rest) mem AW) =
+      (st s 500 (w :: UInt256.ofNat i :: c :: z :: ret :: src :: rest) mem AW) =
       some (st s 509 (UInt256.ofNat i :: nextCarry w :: z :: ret :: src :: rest)
         (writeByte mem i w) AW) := by
   have hc := caps _ hcap
