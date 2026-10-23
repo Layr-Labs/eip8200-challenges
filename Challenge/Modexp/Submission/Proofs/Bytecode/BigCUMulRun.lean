@@ -77,10 +77,10 @@ def m3Program : List Instr :=
 def m9Program : List Instr :=
   [.op .JUMPDEST,
    .op .POP,
-   .op (.Swap ⟨2, by decide⟩),
    .op .POP,
    .op .POP,
    .op .POP,
+   .op .JUMPDEST,
    .op .JUMP]
 
 structure MulJumps (code : ByteArray) : Prop where
