@@ -13,14 +13,15 @@ private theorem bytecode_eq_submission :
     bytecode = Submission.Proofs.Bytecode.HoistedInherited.submissionBytecode := by
   rfl
 
-/-- Exact-byte universal RIPEMD-160 correctness, including both outcomes of
-both 1000-byte recognizers and every inherited compressor/serialization path. -/
+/-- Exact-byte universal RIPEMD-160 correctness, including the Codex-integrated
+round-48 resident-key fold, both outcomes of both 1000-byte recognizers, and
+every inherited compressor/serialization path. -/
 theorem candidate : Challenge.Ripemd160.Correct bytecode :=
   bytecode_eq_submission.symm ▸ Submission.Proofs.Bytecode.HoistedStoreCorrect.correct
 
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Decoded SHA-256: b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec.
--- 9742 bytes, 5411 instructions. Round-16 resident-key constant fold.
+-- Decoded SHA-256: 65deca6d363c1a6d5964c1679c394fdc9e557e8c3fd83e06d05d54f1c75d33a4.
+-- 9742 bytes, 5393 instructions. Round-48 resident-key constant fold.
 -- Only the protected benchmark is authoritative for correctness and gas.

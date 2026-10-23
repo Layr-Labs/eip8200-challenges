@@ -121,7 +121,10 @@ theorem low_advances : ∀ instruction ∈ StaggerPad.lowTemplate.dropLast, PadL
 
 theorem low_end : pcAfter (UInt256.ofNat 65) StaggerPad.lowTemplate = UInt256.ofNat 117 := by decide
 
-open StaggerPad (branchTemplate)
+def branchTemplate : List Instr :=
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4751),
+    .op (.Swap ⟨12, by decide⟩), .op .POP,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 824), .op .JUMP ]
 
 theorem branch_slice :
     (HoistedInherited.Artifact.submissionArtifact.instructions.drop 56).take branchTemplate.length = branchTemplate := by rfl
@@ -194,9 +197,16 @@ def gasSteps_branch_taken (s : State)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 117, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho}
-      {s with pc := UInt256.ofNat 824, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4733 :: rho} := by
+      {s with pc := UInt256.ofNat 824, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4751 :: rho} := by
   apply PadLift.gasSteps_of_raw branchSite {s with pc := UInt256.ofNat 117, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho} _ hcode hfork hrun hnp branch_pc.symm branch_advances
-  exact StaggerPad.run_branch_taken s (UInt256.ofNat 117) x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 off c rho hstack hrun (valid_rounds s hcode)
+  have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by omega
+  have hv := valid_rounds s hcode
+  simp only [Word.word_toNat_ofNat] at hv
+  norm_num only at hv
+  simp (discharger := omega) [branchTemplate, runInstrSeq, DataStepper.runInstr, hrun,
+    hcap, hv, List.length_cons, List.exchange, List.getElem?_cons_zero, pcAfter,
+    UInt256.succ, Instr.size, Nat.add_assoc, Word.word_toNat_ofNat,
+    Word.literal_eq_ofNat]
 
 #print axioms gasSteps_normal
 #print axioms gasSteps_low

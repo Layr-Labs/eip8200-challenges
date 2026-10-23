@@ -89,10 +89,10 @@ def stagesSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := stagesCode) (by decide)) (by decide)
-theorem stages_pc : stagesSite.startPC = UInt256.ofNat 4757 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3438) = UInt256.ofNat 4757
+theorem stages_pc : stagesSite.startPC = UInt256.ofNat 4775 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3438) = UInt256.ofNat 4775
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem stages_end : stagesSite.endPC = UInt256.ofNat 4775 := by
+theorem stages_end : stagesSite.endPC = UInt256.ofNat 4793 := by
   have h := endPC_eq_pcAfter_sites stagesSite.sites stagesSite.startPC stagesSite.endPC
     stagesSite.head_eq stagesSite.end_eq stagesSite.contiguous
   rw [stagesSite.instruction_eq, stages_pc] at h
@@ -106,8 +106,8 @@ def terminalSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := terminalCode) (by decide)) (by decide)
-theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4775 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3450) = UInt256.ofNat 4775
+theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4793 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3450) = UInt256.ofNat 4793
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_stages (s : State) (value a b m8 m16 : UInt256) (rest : List UInt256)
@@ -116,14 +116,14 @@ def gasSteps_stages (s : State) (value a b m8 m16 : UInt256) (rest : List UInt25
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4757, stack := value :: a :: b :: m8 :: m16 :: rest}
-      {s with pc := UInt256.ofNat 4775, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest} := by
-  have hend : pcAfter (UInt256.ofNat 4757) stagesCode = UInt256.ofNat 4775 := by decide
-  have hraw := run_stages s (UInt256.ofNat 4757) value a b m8 m16 rest hstack hrun
+    GasSteps {s with pc := UInt256.ofNat 4775, stack := value :: a :: b :: m8 :: m16 :: rest}
+      {s with pc := UInt256.ofNat 4793, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest} := by
+  have hend : pcAfter (UInt256.ofNat 4775) stagesCode = UInt256.ofNat 4793 := by decide
+  have hraw := run_stages s (UInt256.ofNat 4775) value a b m8 m16 rest hstack hrun
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw stagesSite
-    {s with pc := UInt256.ofNat 4757, stack := value :: a :: b :: m8 :: m16 :: rest}
-    {s with pc := UInt256.ofNat 4775, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest}
+    {s with pc := UInt256.ofNat 4775, stack := value :: a :: b :: m8 :: m16 :: rest}
+    {s with pc := UInt256.ofNat 4793, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest}
     hcode hfork hrun hnp stages_pc.symm stages_advances hraw
 
 def gasSteps_terminal (s : State) (value : UInt256) (rho : List UInt256)
@@ -131,10 +131,10 @@ def gasSteps_terminal (s : State) (value : UInt256) (rho : List UInt256)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4775, stack := value :: rho}
-      (terminalResult s (UInt256.ofNat 4775) value rho) :=
+    GasSteps {s with pc := UInt256.ofNat 4793, stack := value :: rho}
+      (terminalResult s (UInt256.ofNat 4793) value rho) :=
   gasSteps_terminal_of_raw terminalSite _ _ hcode hfork hrun hnp terminal_pc.symm
-    terminal_advances (run_terminal s (UInt256.ofNat 4775) value rho hstack hrun)
+    terminal_advances (run_terminal s (UInt256.ofNat 4793) value rho hstack hrun)
 
 /-! ## Semantics: the stages produce the byte-swapped word scaled by `2^24` -/
 

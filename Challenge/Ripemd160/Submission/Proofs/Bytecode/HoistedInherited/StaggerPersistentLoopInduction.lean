@@ -58,7 +58,7 @@ def loopState (input : ByteArray) (s : State) (previous h : Compression.HashStat
 def postState (input : ByteArray) (s : State) (oldh h : Compression.HashState)
     (i _count : Nat) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 4563
+    pc := UInt256.ofNat 4581
     stack := Word.ofUInt32 oldh.h2 :: StaggerPersistentFrame.frame h (blockOff input i)
       (blockCont input i (LoopCompletionControl.cont input i)) rho }
 
@@ -133,7 +133,7 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
       rw [blockCont_pad input i _ hp] at gd
       have hpost : postState input s' (hashes i) h' i count rho =
           { s' with
-            pc := UInt256.ofNat 4563
+            pc := UInt256.ofNat 4581
             stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame h' (blockOff input i) (UInt256.ofNat outPC) rho } := by
         simp only [postState, blockCont_pad input i _ hp]
       have hexit : exitState input s' (hashes i) h' count rho =

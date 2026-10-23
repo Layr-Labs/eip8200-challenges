@@ -24,7 +24,7 @@ open J2Moves RecognitionSelectorRaw RecognitionSelectorResult StackRoundTrace St
 def base (input : ByteArray) : State := initialState submissionBytecode input 0
 
 def source (input : ByteArray) : UInt256 :=
-  DirectDigestRaw.selected (UInt256.ofNat 8191) input.size
+  HoistedInherited.ReverseLiteralScan.selected (UInt256.ofNat 8191) input.size
 
 def loaded (input : ByteArray) (rho : List UInt256) : State :=
   {base input with pc := source input,stack := rho}
@@ -92,7 +92,8 @@ theorem prepared_np (input : ByteArray) (rho : List UInt256) :
   deployAddress_not_precompile
 
 theorem source_environment (input : ByteArray) (rho : List UInt256) :
-    source input = DirectDigestRaw.selected (UInt256.ofNat (prepared input rho).executionEnv.code.size)
+    source input = HoistedInherited.ReverseLiteralScan.selected
+      (UInt256.ofNat (prepared input rho).executionEnv.code.size)
       (prepared input rho).executionEnv.calldata.size := rfl
 
 @[simp] theorem atState_prepared_memory (input : ByteArray) (rho : List UInt256)
@@ -125,19 +126,19 @@ private theorem code_bound : HoistedInherited.Artifact.submissionArtifact.code.s
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 
 def storeIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4808
+ | ⟨0, _⟩ => 4790
  | ⟨1, _⟩ => 3472
- | ⟨2, _⟩ => 4216
- | ⟨3, _⟩ => 3718
- | ⟨4, _⟩ => 4270
- | ⟨5, _⟩ => 3596
- | ⟨6, _⟩ => 4252
- | ⟨7, _⟩ => 4711
- | ⟨8, _⟩ => 3778
- | ⟨9, _⟩ => 4333
- | ⟨10, _⟩ => 3750
- | ⟨11, _⟩ => 4954
- | ⟨12, _⟩ => 3806
+ | ⟨2, _⟩ => 4207
+ | ⟨3, _⟩ => 3700
+ | ⟨4, _⟩ => 4252
+ | ⟨5, _⟩ => 3578
+ | ⟨6, _⟩ => 4234
+ | ⟨7, _⟩ => 4693
+ | ⟨8, _⟩ => 3760
+ | ⟨9, _⟩ => 4315
+ | ⟨10, _⟩ => 3732
+ | ⟨11, _⟩ => 4936
+ | ⟨12, _⟩ => 3788
 
 namespace storeSite
 abbrev template (i : Fin 13) : List Instr :=
@@ -154,14 +155,17 @@ def site (i : Fin 13) : GenericRoundSite HoistedInherited.Artifact.submissionArt
     (by fin_cases i <;> decide)
 
 theorem site_pc (i : Fin 13) : (site i).startPC =
-    DirectDigestRaw.selected (UInt256.ofNat 8191) (HoistedInherited.ReverseLiteralScan.nval i) := by
+    HoistedInherited.ReverseLiteralScan.selected (UInt256.ofNat 8191)
+      (HoistedInherited.ReverseLiteralScan.nval i) := by
   change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC (storeIndex i)) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
 
 theorem valid (i : Fin 13) : Decode.isValidJumpDest HoistedInherited.Artifact.submissionArtifact.code
-    (DirectDigestRaw.selected (UInt256.ofNat 8191) (HoistedInherited.ReverseLiteralScan.nval i)).toNat = true := by
+    (HoistedInherited.ReverseLiteralScan.selected (UInt256.ofNat 8191)
+      (HoistedInherited.ReverseLiteralScan.nval i)).toNat = true := by
   have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC (storeIndex i) =
-      (DirectDigestRaw.selected (UInt256.ofNat 8191) (HoistedInherited.ReverseLiteralScan.nval i)).toNat := by
+      (HoistedInherited.ReverseLiteralScan.selected (UInt256.ofNat 8191)
+        (HoistedInherited.ReverseLiteralScan.nval i)).toNat := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; fin_cases i <;> decide
   have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index (storeIndex i) (by fin_cases i <;> rfl)
   rw [hp] at h
@@ -188,25 +192,26 @@ def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho
     simpa only [storeSite.template,hn,loaded] using hr
   have gj := RecognitionLift.gasSteps_of_raw (storeSite.site i)
     (loaded input rho) (prepared input rho) rfl rfl rfl deployAddress_not_precompile
-    (by change DirectDigestRaw.selected (UInt256.ofNat 8191) input.size = (storeSite.site i).startPC
+    (by change HoistedInherited.ReverseLiteralScan.selected (UInt256.ofNat 8191) input.size =
+        (storeSite.site i).startPC
         rw [hn]; exact (storeSite.site_pc i).symm)
     (storeSite.form i) hr'
   exact gj
 
 def returnIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4818
+ | ⟨0, _⟩ => 4800
  | ⟨1, _⟩ => 3482
- | ⟨2, _⟩ => 4226
- | ⟨3, _⟩ => 3733
- | ⟨4, _⟩ => 4285
- | ⟨5, _⟩ => 3611
- | ⟨6, _⟩ => 4267
- | ⟨7, _⟩ => 4731
- | ⟨8, _⟩ => 3803
- | ⟨9, _⟩ => 4358
- | ⟨10, _⟩ => 3775
- | ⟨11, _⟩ => 4999
- | ⟨12, _⟩ => 3871
+ | ⟨2, _⟩ => 4217
+ | ⟨3, _⟩ => 3715
+ | ⟨4, _⟩ => 4267
+ | ⟨5, _⟩ => 3593
+ | ⟨6, _⟩ => 4249
+ | ⟨7, _⟩ => 4713
+ | ⟨8, _⟩ => 3785
+ | ⟨9, _⟩ => 4340
+ | ⟨10, _⟩ => 3757
+ | ⟨11, _⟩ => 4981
+ | ⟨12, _⟩ => 3853
 
 def finishIndex (i : Fin 13) : Nat := returnIndex i + 1
 

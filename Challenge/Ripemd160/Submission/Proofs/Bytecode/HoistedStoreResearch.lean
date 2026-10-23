@@ -234,16 +234,16 @@ theorem run_terminalBranch (s : State) (c : UInt256) (rho : List UInt256)
     repeat first | apply And.intro | rfl
 
 /-- On failure reconstruct the old generic frame before reusing the old
-speculative-write cleanup at 4785. This is the extra failure-path gas cost. -/
+speculative-write cleanup at the relocated PC 4803. This is the extra failure-path gas cost. -/
 def missTemplate : List Instr :=
   [.op .JUMPDEST, .push ⟨0, by decide⟩ 0,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 4785), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 4803), .op .JUMP]
 
 theorem run_miss (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4803 = true) :
     runInstrSeq missTemplate {s with pc := UInt256.ofNat 9659, stack := rho} =
-      some {s with pc := UInt256.ofNat 4785, stack := 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 4803, stack := 0 :: rho} := by
   simp (discharger := omega) [missTemplate, runInstrSeq, DataStepper.runInstr,
     hrun, hv, UInt256.succ, Instr.size,
     show rho.length < 1024 by omega,
@@ -270,7 +270,7 @@ theorem run_success (s : State) (rho : List UInt256)
 
 /-- Kernel-checked assembly of the whole proposed replacement region, excluding
 only its two unreachable STOP padding bytes. This is not a whole-image binding. -/
-def patchRegionBytes : List UInt8 := [91,115,170,105,222,238,154,137,34,233,47,129,5,224,7,247,97,16,243,129,233,207,95,82,97,3,200,53,130,20,22,97,3,176,53,130,20,22,97,3,144,53,130,20,22,97,3,112,53,130,20,22,97,3,80,53,130,20,22,97,3,48,53,130,20,22,97,3,16,53,130,20,22,97,2,240,53,130,20,22,97,2,208,53,130,20,22,97,2,176,53,130,20,22,97,2,144,53,130,20,22,97,2,112,53,130,20,22,97,2,80,53,130,20,22,97,2,48,53,130,20,22,97,2,16,53,130,20,22,97,1,240,53,130,20,22,97,1,208,53,130,20,22,97,1,176,53,130,20,22,97,1,144,53,130,20,22,97,1,112,53,130,20,22,97,1,80,53,130,20,22,97,1,48,53,130,20,22,97,1,16,53,130,20,22,96,240,53,130,20,22,96,208,53,130,20,22,96,176,53,130,20,22,96,144,53,130,20,22,96,112,53,130,20,22,96,80,53,130,20,22,89,53,2,24,97,37,187,87,89,95,243,91,95,97,18,177,86]
+def patchRegionBytes : List UInt8 := [91,115,170,105,222,238,154,137,34,233,47,129,5,224,7,247,97,16,243,129,233,207,95,82,97,3,200,53,130,20,22,97,3,176,53,130,20,22,97,3,144,53,130,20,22,97,3,112,53,130,20,22,97,3,80,53,130,20,22,97,3,48,53,130,20,22,97,3,16,53,130,20,22,97,2,240,53,130,20,22,97,2,208,53,130,20,22,97,2,176,53,130,20,22,97,2,144,53,130,20,22,97,2,112,53,130,20,22,97,2,80,53,130,20,22,97,2,48,53,130,20,22,97,2,16,53,130,20,22,97,1,240,53,130,20,22,97,1,208,53,130,20,22,97,1,176,53,130,20,22,97,1,144,53,130,20,22,97,1,112,53,130,20,22,97,1,80,53,130,20,22,97,1,48,53,130,20,22,97,1,16,53,130,20,22,96,240,53,130,20,22,96,208,53,130,20,22,96,176,53,130,20,22,96,144,53,130,20,22,96,112,53,130,20,22,96,80,53,130,20,22,89,53,2,24,97,37,187,87,89,95,243,91,95,97,18,195,86]
 
 def patchRegionTemplate : List Instr :=
   ((scannerTemplate ++ terminalBranch) ++ successTemplate) ++ missTemplate
@@ -280,12 +280,27 @@ theorem patch_region_assembly : assembleBytes patchRegionTemplate = patchRegionB
 
 theorem patch_region_length : patchRegionBytes.length = 238 := by decide
 
+theorem run_cleanup_relocated (s : State) (rho : List UInt256)
+    (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
+    (ha : s.activeWords = UInt256.ofNat 1)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 245 = true) :
+    runInstrSeq RetainedResultEdge112.cleanupTemplate
+      {s with pc := UInt256.ofNat 4803, stack := rho} =
+      some (RetainedResultEdge112.cleared s rho) := by
+  have hcap (n : Nat) (hn : n ≤ 3) : rho.length + n < 1024 := by omega
+  simp (discharger := omega) [RetainedResultEdge112.cleanupTemplate,
+    RetainedResultEdge112.cleared, runInstrSeq, DataStepper.runInstr,
+    MachineState.mstore, State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+    ha, hrun, hv, show rho.length < 1024 by omega, hcap, UInt256.succ,
+    Instr.size, Nat.add_assoc, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
+    show ({val := 0} : UInt256).toNat = 0 by rfl]
+
 /-- The new failure trampoline joins the unchanged cleanup exactly, preserving
 its old generic stack frame and clearing the hoisted digest before fallback. -/
 theorem run_miss_cleanup (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 978) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1)
-    (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4785 = true)
+    (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4803 = true)
     (hvGeneric : Decode.isValidJumpDest s.executionEnv.code 245 = true) :
     runInstrSeq (missTemplate ++ RetainedResultEdge112.cleanupTemplate)
       {s with pc := UInt256.ofNat 9659, stack := rho} =
@@ -294,7 +309,7 @@ theorem run_miss_cleanup (s : State) (rho : List UInt256)
     simp only [List.length_cons]
     omega
   have hm := run_miss s rho (by omega) hrun hvCleanup
-  have hc := RetainedResultEdge112.run_cleanup s (0 :: rho)
+  have hc := run_cleanup_relocated s (0 :: rho)
     hlen hrun ha hvGeneric
   exact DenseScheduleTrace.runInstrSeq_append_running hm hrun hc
 
@@ -330,7 +345,7 @@ theorem run_scanner_miss (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0)
     (hv : Decode.isValidJumpDest s.executionEnv.code 9659 = true)
-    (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4785 = true)
+    (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4803 = true)
     (hvGeneric : Decode.isValidJumpDest s.executionEnv.code 245 = true)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata ≠ 0) :
     runInstrSeq ((scannerTemplate ++ terminalBranch) ++
@@ -412,7 +427,7 @@ theorem run_scanner_miss_copy (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0) (hm : s.memory.size = 0)
     (hv : Decode.isValidJumpDest s.executionEnv.code 9659 = true)
-    (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4785 = true)
+    (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4803 = true)
     (hvGeneric : Decode.isValidJumpDest s.executionEnv.code 245 = true)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata ≠ 0)
     (hfit : s.executionEnv.calldata.size < 2 ^ 256)

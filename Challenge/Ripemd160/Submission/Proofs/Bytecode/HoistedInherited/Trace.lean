@@ -41,7 +41,9 @@ theorem decodedOpAt (s : State) (index : Nat) (op : Operation)
     s.decodedOp = some op := by
   apply Challenge.EvmProof.DataProgramArtifact.state_decodedOp_of
     HoistedInherited.Artifact.submissionArtifact s index
-    (by simpa [HoistedInherited.Artifact.submissionArtifact] using hcode) (pcToNat hpc) op none
+    (by simpa [HoistedInherited.Artifact.submissionArtifact,
+      FoldedCandidateArtifact.artifact, submissionBytecode, submissionBytes] using hcode)
+      (pcToNat hpc) op none
   · exact HoistedInherited.Artifact.submissionArtifact.decodeAt_op_index index op hget hopcode hplain
   · exact havailable
 
@@ -55,7 +57,9 @@ theorem decodedPushAt (s : State) (index : Nat) (width : Fin 33)
     s.decoded = some (.Push ⟨width⟩, some (value, width.val)) := by
   apply Challenge.EvmProof.DataProgramArtifact.state_decoded_of
     HoistedInherited.Artifact.submissionArtifact s index
-    (by simpa [HoistedInherited.Artifact.submissionArtifact] using hcode) (pcToNat hpc)
+    (by simpa [HoistedInherited.Artifact.submissionArtifact,
+      FoldedCandidateArtifact.artifact, submissionBytecode, submissionBytes] using hcode)
+      (pcToNat hpc)
     (.Push ⟨width⟩) (some (value, width.val))
   · exact HoistedInherited.Artifact.submissionArtifact.decodeAt_push_index index width value hget hfit
   · exact havailable

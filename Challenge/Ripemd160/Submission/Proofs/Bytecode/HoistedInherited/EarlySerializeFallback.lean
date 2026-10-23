@@ -125,15 +125,15 @@ from the original initial state. -/
 def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
   { initialState submissionBytecode input 0 with
     memory := m, activeWords := UInt256.ofNat 1,
-    pc := UInt256.ofNat 4785, stack := rho }
+    pc := UInt256.ofNat 4803, stack := rho }
 
 private theorem cleanup_pcs :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3457 = 4785 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3458 = 4786 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3459 = 4787 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3460 = 4788 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3461 = 4789 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3462 = 4791 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3457 = 4803 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3458 = 4804 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3459 = 4805 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3460 = 4806 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3461 = 4807 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3462 = 4809 ∧
     HoistedInherited.Artifact.submissionArtifact.instructionPC 125 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -164,7 +164,7 @@ private theorem run_cleanup_state (s : State) (m : ByteArray) (hm : m.size = 32)
     DataStepper.runLocatedBlock cleanupPath
       {s with
         memory := m, activeWords := UInt256.ofNat 1,
-        pc := UInt256.ofNat 4785, stack := []} =
+        pc := UInt256.ofNat 4803, stack := []} =
       some {s with
         memory := zero32, activeWords := UInt256.ofNat 1,
         pc := UInt256.ofNat 246, stack := []} := by
@@ -281,7 +281,7 @@ def gasSteps_of_eq (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (hs : s = { initialState submissionBytecode input 0 with
       memory := m, activeWords := UInt256.ofNat 1,
-      pc := UInt256.ofNat 4785, stack := rho }) :
+      pc := UInt256.ofNat 4803, stack := rho }) :
     GasSteps s (StackTail.append (HoistedInherited.PaddingTrace.padFramed input) rho) := by
   subst s
   exact gasSteps input hfit hpos m hm rho hcap

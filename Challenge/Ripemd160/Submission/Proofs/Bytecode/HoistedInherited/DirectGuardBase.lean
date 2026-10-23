@@ -46,12 +46,12 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
       (.push width value) := by decide) : Located :=
   ⟨index, .push width value, hget, hwf⟩
 
-/-- Exact size gate: `1000 - size != 0` jumps to the patterned guard at 4583. -/
+/-- Exact size gate: `1000 - size != 0` jumps to the relocated patterned guard at 4601. -/
 def sizePrefix : List Located :=
   [opAt 6 .CALLDATASIZE,
    pushAt 7 2 1000,
    opAt 8 .SUB,
-   pushAt 9 2 4583]
+   pushAt 9 2 4601]
 
 /-- Anchor gate: low 64 bits of calldata[0] other than `0x61` jump straight to
 the recogniser's private 1000-byte row at 8157 (the size is already 1000). -/
@@ -275,19 +275,19 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_53 : HoistedInherited.Artifact.submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_54 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3423 = 4737 := by
+@[simp] theorem pc_direct_54 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3423 = 4755 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_55 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3423 = 4737 := by
+@[simp] theorem pc_direct_55 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3423 = 4755 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_56 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3424 = 4738 := by
+@[simp] theorem pc_direct_56 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3424 = 4756 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_57 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3425 = 4739 := by
+@[simp] theorem pc_direct_57 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3425 = 4757 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_58 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3426 = 4740 := by
+@[simp] theorem pc_direct_58 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3426 = 4758 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_59 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3427 = 4742 := by
+@[simp] theorem pc_direct_59 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3427 = 4760 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_60 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3428 = 4743 := by
+@[simp] theorem pc_direct_60 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3428 = 4761 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_61 : HoistedInherited.Artifact.submissionArtifact.instructionPC 52 = 93 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -311,9 +311,9 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_72 : HoistedInherited.Artifact.submissionArtifact.instructionPC 83 = 188 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_73 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3368 = 4565 := by
+@[simp] theorem pc_direct_73 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3368 = 4583 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_74 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3369 = 4566 := by
+@[simp] theorem pc_direct_74 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3369 = 4584 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem pc_direct_75 : HoistedInherited.Artifact.submissionArtifact.instructionPC 120 = 240 := by
@@ -322,7 +322,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_77 : HoistedInherited.Artifact.submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_78 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3422 = 4736 := by
+@[simp] theorem pc_direct_78 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3422 = 4754 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.DirectGuard

@@ -31,8 +31,8 @@ def nval : Fin 13 → Nat
  | ⟨12, _⟩ => 376
 def tailPC : Fin 13 → Nat
  | ⟨0, _⟩ => 7629
- | ⟨1, _⟩ => 4825
- | ⟨2, _⟩ => 6520
+ | ⟨1, _⟩ => 4843
+ | ⟨2, _⟩ => 6529
  | ⟨3, _⟩ => 5212
  | ⟨4, _⟩ => 6714
  | ⟨5, _⟩ => 5004
@@ -44,23 +44,23 @@ def tailPC : Fin 13 → Nat
  | ⟨11, _⟩ => 7829
  | ⟨12, _⟩ => 5690
 def tailIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4812
+ | ⟨0, _⟩ => 4794
  | ⟨1, _⟩ => 3476
- | ⟨2, _⟩ => 4220
- | ⟨3, _⟩ => 3722
- | ⟨4, _⟩ => 4274
- | ⟨5, _⟩ => 3600
- | ⟨6, _⟩ => 4256
- | ⟨7, _⟩ => 4715
- | ⟨8, _⟩ => 3782
- | ⟨9, _⟩ => 4337
- | ⟨10, _⟩ => 3754
- | ⟨11, _⟩ => 4958
- | ⟨12, _⟩ => 3810
+ | ⟨2, _⟩ => 4211
+ | ⟨3, _⟩ => 3704
+ | ⟨4, _⟩ => 4256
+ | ⟨5, _⟩ => 3582
+ | ⟨6, _⟩ => 4238
+ | ⟨7, _⟩ => 4697
+ | ⟨8, _⟩ => 3764
+ | ⟨9, _⟩ => 4319
+ | ⟨10, _⟩ => 3736
+ | ⟨11, _⟩ => 4940
+ | ⟨12, _⟩ => 3792
 def returnPC : Fin 13 → Nat
  | ⟨0, _⟩ => 7669
- | ⟨1, _⟩ => 4865
- | ⟨2, _⟩ => 6560
+ | ⟨1, _⟩ => 4883
+ | ⟨2, _⟩ => 6569
  | ⟨3, _⟩ => 5289
  | ⟨4, _⟩ => 6791
  | ⟨5, _⟩ => 5081
@@ -71,6 +71,13 @@ def returnPC : Fin 13 → Nat
  | ⟨10, _⟩ => 5483
  | ⟨11, _⟩ => 8134
  | ⟨12, _⟩ => 6151
+
+/-- Selector result after relocating the two literal rows that lie inside the
+    two reclaimed padding windows. All other direct rows keep their byte PCs. -/
+def selected (codesize : UInt256) (size : Nat) : UInt256 :=
+  if size = 31 then UInt256.add (DirectDigestRaw.selected codesize size) 18
+  else if size = 32 then UInt256.add (DirectDigestRaw.selected codesize size) 9
+  else DirectDigestRaw.selected codesize size
 
 
 def cmpTemplate (k : Nat) : List Instr :=
@@ -91,6 +98,10 @@ def lastOffset (i : Fin 13) : List Instr :=
 def prefixTemplate (i : Fin 13) : List Instr :=
  [.push ⟨32, by decide⟩ (ZeroTailModel.expectedLast (nval i))] ++
  lastOffset i ++ [.op .CALLDATALOAD, .op .XOR]
+
+/-- The round-48 byte growth moves the shared miss cleanup by 18 bytes. -/
+def resultTemplate : List Instr :=
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 4803), .op .JUMPI]
 
 def tailTemplate (i : Fin 13) : List Instr :=
   (prefixTemplate i ++ revTemplate false (last (nval i))) ++ resultTemplate
@@ -222,15 +233,29 @@ theorem run_prefix (s : State) (pc : UInt256) (i : Fin 13) (rho : List UInt256)
     Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
   all_goals repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
 
+theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4803 = true) :
+    runInstrSeq resultTemplate {s with pc := pc, stack := a :: rho} =
+      some {s with
+        pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4803
+        stack := rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  by_cases hz : a.toNat = 0
+  all_goals simp (discharger := omega) [resultTemplate, hz, runInstrSeq, DataStepper.runInstr,
+    pcAfter, hrun, show rho.length < 1024 by omega, hcap, UInt256.succ, Instr.size,
+    Nat.add_assoc, hv, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue]
+  all_goals rfl
+
 theorem tail_end (i : Fin 13) :
     pcAfter (UInt256.ofNat (tailPC i)) (tailTemplate i) = UInt256.ofNat (returnPC i) := by
   fin_cases i <;> decide
 
 theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 990)
     (i : Fin 13)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4803 = true) :
     runInstrSeq (tailTemplate i) (atState s (tailPC i) rho) =
-      some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4785) rho) := by
+      some (atState s (if (ZeroTailModel.result s.executionEnv.calldata (nval i)).toNat=0 then returnPC i else 4803) rho) := by
   have hp := run_prefix s (UInt256.ofNat (tailPC i)) i rho hs e.run e.active
   have hr := run_revTemplate s (pcAfter (UInt256.ofNat (tailPC i)) (prefixTemplate i))
     (ZeroTailModel.tailDiff s.executionEnv.calldata (nval i)) rho hs e.run e.active false (last (nval i)) (by fin_cases i <;> decide)
@@ -244,22 +269,22 @@ theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
   simp only [tailTemplate,DenseScheduleTrace.pcAfter_append] at he
   simpa only [tailTemplate,atState,DenseScheduleTrace.pcAfter_append,he,apply_ite] using hall
 
-theorem valid_fallback : Decode.isValidJumpDest HoistedInherited.Artifact.submissionArtifact.code 4785 = true := by
-  have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC 3457 = 4785 := by
+theorem valid_fallback : Decode.isValidJumpDest HoistedInherited.Artifact.submissionArtifact.code 4803 = true := by
+  have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC 3457 = 4803 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
   have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3457 (by rfl)
   rw [hp] at h
   exact h
 
 theorem source_target (i : Fin 13) :
-    UInt256.add (UInt256.ofNat 24) (DirectDigestRaw.selected (UInt256.ofNat 8191) (nval i)) = UInt256.ofNat (tailPC i) := by
+    UInt256.add (UInt256.ofNat 24) (selected (UInt256.ofNat 8191) (nval i)) = UInt256.ofNat (tailPC i) := by
   fin_cases i <;> decide
 
 def gasSteps_for (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 988)
     (i : Fin 13) (hn : s.executionEnv.calldata.size = nval i) :
     GasSteps (atState s (tailPC i) rho)
-      (atState s (if (ZeroTailModel.result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4785) rho) := by
-  have hvf : Decode.isValidJumpDest s.executionEnv.code 4785 = true := by rw [e.code]; exact valid_fallback
+      (atState s (if (ZeroTailModel.result s.executionEnv.calldata s.executionEnv.calldata.size).toNat=0 then returnPC i else 4803) rho) := by
+  have hvf : Decode.isValidJumpDest s.executionEnv.code 4803 = true := by rw [e.code]; exact valid_fallback
   have hr := run_small s e rho (by omega) i hvf
   have gt := lift (.tail i) s _ e rho hr
   simpa only [hn,pc] using gt

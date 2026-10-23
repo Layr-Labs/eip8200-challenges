@@ -11,12 +11,34 @@ open StackRoundTrace StackRoundTemplate RetainedIntegration105 RetainedResultEdg
 
 inductive Piece | data | result | success
 
+def resultTemplate : List Instr :=
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 4803), .op .JUMPI]
+
+theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4803 = true) :
+    runInstrSeq resultTemplate {s with pc := pc, stack := a :: rho} =
+      some {s with
+        pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4803
+        stack := rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  by_cases hz : a.toNat = 0
+  all_goals simp (discharger := omega) [resultTemplate, hz, runInstrSeq,
+    DataStepper.runInstr, pcAfter, hrun, show rho.length < 1024 by omega, hcap,
+    UInt256.succ, Instr.size, Nat.add_assoc, hv, Word.word_toNat_ofNat,
+    Word.literal_eq_ofNat, UInt256.isTrue]
+  all_goals rfl
+
+private theorem hoisted_result_end_pc :
+    pcAfter (UInt256.ofNat 9416) resultTemplate = UInt256.ofNat 9420 := by
+  decide
+
 def template : Piece → List Instr
   | .data => literalTemplate ExactBindings.digest
-  | .result => DirectLiteralRawV4.resultTemplate
+  | .result => resultTemplate
   | .success => successTemplate
 
-def index : Piece → Nat | .data => 5022 | .result => 5183 | .success => 5185
+def index : Piece → Nat | .data => 5004 | .result => 5165 | .success => 5167
 def pc : Piece → Nat | .data => 8157 | .result => 9416 | .success => 9420
 
 theorem actual_slice (p : Piece) :
@@ -66,13 +88,14 @@ def gasSteps_return (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env 
   have hd := gasSteps_data s rho e hs ha
   let w := stored s ExactBindings.digest
   have ew : HoistedStoreSites.Env w := ⟨e.code, e.fork, e.run, e.np⟩
-  have hv : Decode.isValidJumpDest w.executionEnv.code 4785 = true := by
+  have hv : Decode.isValidJumpDest w.executionEnv.code 4803 = true := by
     rw [ew.code]; exact HoistedStoreSites.valid_cleanup
   have hr : GasSteps {w with pc := UInt256.ofNat 9416, stack := retainedResult s.executionEnv.calldata :: rho}
       {w with pc := UInt256.ofNat 9420, stack := rho} := by
     apply lift .result w _ ew _
-    simpa only [template, pc, result_end_pc, hz, show (0 : UInt256).toNat = 0 by decide, if_true] using
-      DirectLiteralRawV4.run_result w (UInt256.ofNat 9416) (retainedResult s.executionEnv.calldata) rho
+    simpa only [template, pc, hoisted_result_end_pc, hz,
+      show (0 : UInt256).toNat = 0 by decide, if_true] using
+      run_result w (UInt256.ofNat 9416) (retainedResult s.executionEnv.calldata) rho
         (by omega) e.run hv
   have ha1 : w.activeWords = UInt256.ofNat 1 := by
     simp [w, stored, State.activeWordsAfterUInt256, MachineState.activeWordsAfter, ha, Word.word_toNat_ofNat]
@@ -89,15 +112,15 @@ def gasSteps_miss_copy (s : State) (rho : List UInt256) (e : HoistedStoreSites.E
   have hd := gasSteps_data s rho e hs ha
   let w := stored s ExactBindings.digest
   have ew : HoistedStoreSites.Env w := ⟨e.code, e.fork, e.run, e.np⟩
-  have hv : Decode.isValidJumpDest w.executionEnv.code 4785 = true := by
+  have hv : Decode.isValidJumpDest w.executionEnv.code 4803 = true := by
     rw [ew.code]; exact HoistedStoreSites.valid_cleanup
   have hn : (retainedResult s.executionEnv.calldata).toNat ≠ 0 := by
     intro h; exact hz (Word.word_ext h)
   have hr : GasSteps {w with pc := UInt256.ofNat 9416, stack := retainedResult s.executionEnv.calldata :: rho}
-      {w with pc := UInt256.ofNat 4785, stack := rho} := by
+      {w with pc := UInt256.ofNat 4803, stack := rho} := by
     apply lift .result w _ ew _
-    simpa only [template, pc, result_end_pc, if_neg hn] using
-      DirectLiteralRawV4.run_result w (UInt256.ofNat 9416) (retainedResult s.executionEnv.calldata) rho
+    simpa only [template, pc, hoisted_result_end_pc, if_neg hn] using
+      run_result w (UInt256.ofNat 9416) (retainedResult s.executionEnv.calldata) rho
         (by omega) e.run hv
   have ha1 : w.activeWords = UInt256.ofNat 1 := by
     simp [w, stored, State.activeWordsAfterUInt256, MachineState.activeWordsAfter, ha, Word.word_toNat_ofNat]

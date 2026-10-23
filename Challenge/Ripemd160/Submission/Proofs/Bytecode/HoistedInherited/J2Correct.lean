@@ -52,7 +52,7 @@ theorem from_prepared (input : ByteArray)
   have gs := HoistedInherited.ReverseLiteralScan.gasSteps_for s e saved (by omega) i hi.symm
   have gs' : GasSteps (J2Moves.atState s (HoistedInherited.ReverseLiteralScan.tailPC i) saved)
       (J2Moves.atState s
-        (if (ZeroTailModel.result input input.size).toNat = 0 then HoistedInherited.ReverseLiteralScan.returnPC i else 4785) saved) := gs
+        (if (ZeroTailModel.result input input.size).toNat = 0 then HoistedInherited.ReverseLiteralScan.returnPC i else 4803) saved) := gs
   by_cases hz : (ZeroTailModel.result input input.size).toNat = 0
   · rw [if_pos hz] at gs'
     have hzword : ZeroTailModel.result input input.size = 0 := by
@@ -69,7 +69,7 @@ theorem from_prepared (input : ByteArray)
     have hb := RecognitionAccumulator.allowed_bounds input.size hn
     have gf := HoistedInherited.EarlySerializeFallback.gasSteps input hfit hb.1
       s.memory (HoistedInherited.ReverseSerializeReturn.prepared_memory_size input saved) saved (by omega)
-    have gfm : GasSteps (J2Moves.atState s 4785 saved)
+    have gfm : GasSteps (J2Moves.atState s 4803 saved)
         (StackTail.append (HoistedInherited.PaddingTrace.padFramed input) saved) := by
       simpa only [J2Moves.atState, HoistedInherited.EarlySerializeFallback.incoming, s,
         HoistedInherited.ReverseSerializeReturn.prepared, HoistedInherited.ReverseSerializeReturn.base] using gf

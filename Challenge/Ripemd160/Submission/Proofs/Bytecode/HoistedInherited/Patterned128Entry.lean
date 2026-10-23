@@ -16,7 +16,7 @@ open StackRoundTrace StackRoundTemplate
 private def shortTemplate : List Instr := [
  .op .JUMPDEST, .push 0 0, .push 32 86844066968427068989796192873928558300976274593144298876555195987106453258240,
  .op .CALLDATASIZE, .op .SHL, .op .SLT,
- .push 2 8191, .push 18 1805781487605728127014015497632372731427691, .op .CALLDATASIZE,
+ .push 2 8191, .push 18 1805781487605728127014015497632411386133355, .op .CALLDATASIZE,
  .op .SHR, .op .AND, .op .JUMPI]
 private def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
@@ -40,19 +40,23 @@ private def long376Site : GenericRoundSite HoistedInherited.Artifact.submissionA
  StackSiteBuilder.ofSlice (longTemplate 376 5666) 3400 long376_slice
   (by change 3400 + (longTemplate 376 5666).length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 5666) (by decide)) (by decide)
-private theorem short_pc : shortSite.startPC = UInt256.ofNat 4583 := by
+private theorem short_pc : shortSite.startPC = UInt256.ofNat 4601 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3383) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4647 := by
+private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4665 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3395) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4656 := by
+private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4674 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3400) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
-private def shortSource (input : ByteArray) : UInt256 := DirectDigestRaw.shortSelected input.size
-private def source (input : ByteArray) : UInt256 := DirectDigestRaw.selected 8191 input.size
+private def shortSelectorConst : Nat := 1805781487605728127014015497632411386133355
+private def shortSource (input : ByteArray) : UInt256 :=
+ UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat input.size))
+   (UInt256.ofNat 8191)
+private def source (input : ByteArray) : UInt256 :=
+ HoistedInherited.ReverseLiteralScan.selected 8191 input.size
 private theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input) = sizeFlag input := by
  unfold sizeBit
  rw [show (0 : UInt256) = UInt256.ofNat 0 from rfl, SignedSizeFlag.flag]
@@ -60,13 +64,13 @@ private theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input
  rw [SizeLookupFlag.mask_literal] at h
  simpa only [sizeFlag,Word.literal_eq_ofNat] using h
 private theorem short_raw (input : ByteArray) :
- runInstrSeq shortTemplate (PatternedScan.stS input 4583 []) =
+ runInstrSeq shortTemplate (PatternedScan.stS input 4601 []) =
   if UInt256.isTrue (sizeBit input) then
    if Decode.isValidJumpDest submissionBytecode (shortSource input).toNat then
     some { initialState submissionBytecode input 0 with pc := shortSource input, stack := PatternedScan.entryRho input.size } else none
-  else some (PatternedScan.stS input 4647 []) := by
+  else some (PatternedScan.stS input 4665 []) := by
  simp (config := {maxSteps := 400000}) [shortTemplate,runInstrSeq,DataStepper.runInstr,
-  sizeBit,shortSource,DirectDigestRaw.shortSelected,DirectDigestRaw.selectorConst,PatternedScan.stS,PatternedScan.entryRho,
+  sizeBit,shortSource,shortSelectorConst,PatternedScan.stS,PatternedScan.entryRho,
   initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,
   RawExpressionAC.land_comm]
  split_ifs <;> simp_all
@@ -80,23 +84,24 @@ private theorem long_raw (input : ByteArray) (n target pc : Nat) :
   PatternedScan.stS,initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat, Nat.add_assoc]
  split_ifs <;> simp_all
 
-private def soundShort (input : ByteArray) (t : State) (hr : runInstrSeq shortTemplate (PatternedScan.stS input 4583 []) = some t) :
- GasSteps (PatternedScan.stS input 4583 []) t :=
+private def soundShort (input : ByteArray) (t : State) (hr : runInstrSeq shortTemplate (PatternedScan.stS input 4601 []) = some t) :
+ GasSteps (PatternedScan.stS input 4601 []) t :=
  RecognitionLift.gasSteps_of_raw shortSite _ _ rfl rfl rfl deployAddress_not_precompile short_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-private def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 7805) (PatternedScan.stS input 4647 []) = some t) :
- GasSteps (PatternedScan.stS input 4647 []) t :=
+private def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 7805) (PatternedScan.stS input 4665 []) = some t) :
+ GasSteps (PatternedScan.stS input 4665 []) t :=
  RecognitionLift.gasSteps_of_raw long256Site _ _ rfl rfl rfl deployAddress_not_precompile long256_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 5666) (PatternedScan.stS input 4656 []) = some t) :
- GasSteps (PatternedScan.stS input 4656 []) t :=
+private def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 5666) (PatternedScan.stS input 4674 []) = some t) :
+ GasSteps (PatternedScan.stS input 4674 []) t :=
  RecognitionLift.gasSteps_of_raw long376Site _ _ rfl rfl rfl deployAddress_not_precompile long376_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
 private theorem selected_valid (input : ByteArray) (hn : RecognitionAccumulator.Allowed input.size)
   (hne : input.size ≠ 1000) :
  Decode.isValidJumpDest submissionBytecode (source input).toNat = true := by
  obtain ⟨i,hi⟩ := HoistedInherited.ReverseLiteralScan.allowed_index input.size hn hne
- change Decode.isValidJumpDest submissionBytecode (DirectDigestRaw.selected 8191 input.size).toNat = true
+ change Decode.isValidJumpDest submissionBytecode
+   (HoistedInherited.ReverseLiteralScan.selected 8191 input.size).toNat = true
  rw [← hi]
  exact HoistedInherited.ReverseSerializeReturn.storeSite.valid i
 private theorem short_false (input : ByteArray) (hfit : CalldataFits input)
@@ -123,7 +128,8 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
     rw [UInt256.isZero,if_pos hz] at h
     exact (by decide : UInt256.ofNat 1 ≠ UInt256.ofNat 0) h
    have hsrc : shortSource input = source input := by
-    unfold shortSource source DirectDigestRaw.selected
+    unfold shortSource shortSelectorConst source HoistedInherited.ReverseLiteralScan.selected
+      DirectDigestRaw.selected DirectDigestRaw.shortSelected DirectDigestRaw.selectorConst
     rcases hs with h|h|h|h|h|h|h|h|h|h|h <;> rw [h] <;> rfl
    have hv : Decode.isValidJumpDest submissionBytecode (shortSource input).toNat = true := by
     rw [hsrc]
@@ -146,7 +152,8 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
       simpa only [hp] using selected_valid input hn _h1000
      have gj := sound256 input (PatternedScan.stS input 7805 []) (by rw [long_raw,DirectGuard.size_eq_one input 256 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
      have he : PatternedScan.stS input 7805 [] = PatternedScan.patternedEntry input := by
-      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]
+      simp [PatternedScan.stS, PatternedScan.patternedEntry, PatternedScan.entryRho,
+        HoistedInherited.ReverseLiteralScan.selected, DirectDigestRaw.selected, h]
      exact gs.trans (GasSteps.cast gj rfl he)
    · have h256 : input.size ≠ 256 := h
      have h : input.size = 376 := by omega
@@ -159,11 +166,12 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
       simpa only [hp] using selected_valid input hn _h1000
      have gj := sound376 input (PatternedScan.stS input 5666 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,hv])
      have he : PatternedScan.stS input 5666 [] = PatternedScan.patternedEntry input := by
-      simp [PatternedScan.stS,PatternedScan.patternedEntry,PatternedScan.entryRho,h]
+      simp [PatternedScan.stS, PatternedScan.patternedEntry, PatternedScan.entryRho,
+        HoistedInherited.ReverseLiteralScan.selected, DirectDigestRaw.selected, h]
      exact gs.trans (g1.trans (GasSteps.cast gj rfl he))
 
 private theorem valid_empty : Decode.isValidJumpDest submissionBytecode 7019 = true := by
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 4361 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 4343 (by rfl)
   rw [HoistedInherited.AbcArm.pc_emptyDest] at h
   exact h
 
@@ -177,7 +185,7 @@ def gasSteps_to_empty (input : ByteArray) (hz : input.size = 0) :
   rw [UInt256.isZero,if_pos hzero] at h
   exact (by decide : UInt256.ofNat 1 ≠ UInt256.ofNat 0) h
  have hsrc : shortSource input = UInt256.ofNat 7019 := by
-  unfold shortSource DirectDigestRaw.shortSelected
+  unfold shortSource shortSelectorConst
   rw [hz]
   decide
  have hv : Decode.isValidJumpDest submissionBytecode (shortSource input).toNat = true := by
@@ -201,18 +209,18 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ Rec
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3523).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3505).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 125).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3523 fallback_slice
-  (by change 3523 + fallbackTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 3505 fallback_slice
+  (by change 3505 + fallbackTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka genericTemplate :=
  StackSiteBuilder.ofSlice genericTemplate 125 generic_slice
   (by change 125 + genericTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
 private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4906 := by
- change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3523) = _
+ change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3505) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 125) = _

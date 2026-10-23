@@ -1,0 +1,136 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired48Raw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawCommon
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
+set_option warningAsError true
+set_option maxRecDepth 100000
+set_option maxHeartbeats 8000000
+set_option linter.unusedSimpArgs false
+set_option linter.unusedVariables false
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.FoldedRound48
+open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
+open StackRoundTrace StaggerRaw
+private theorem folded_key :
+    UInt256.add (UInt256.ofNat 541184315)
+      (UInt256.ofNat 45805601672572416830120737830960963807809187239029665) =
+      UInt256.ofNat 45805601672572416830120737830960963807809187780213980 := by decide
+private theorem hmul_eq_mul (x y : UInt256) : x * y = UInt256.mul x y := rfl
+private theorem hadd_eq_add (x y : UInt256) : x + y = UInt256.add x y := rfl
+def template : List Instr :=
+  [ .op (.Swap ⟨4, by decide⟩),
+    .op .POP,
+    .push ⟨22, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187780213980),
+    .op (.Swap ⟨0, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op .OR,
+    .op .XOR,
+    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨6, by decide⟩),
+    .op .AND,
+    .op (.Dup ⟨7, by decide⟩),
+    .op .XOR,
+    .op .AND,
+    .op (.Dup ⟨10, by decide⟩),
+    .op .XOR,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 792),
+    .op .MLOAD,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .ADD,
+    .op .ADD,
+    .op .ADD,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND,
+    .op (.Dup ⟨10, by decide⟩),
+    .op .MUL,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 22),
+    .op .SHR,
+    .op (.Dup ⟨8, by decide⟩),
+    .op .ADD,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND,
+    .op (.Swap ⟨8, by decide⟩),
+    .op (.Dup ⟨10, by decide⟩),
+    .op .MUL,
+    .op (.Dup ⟨7, by decide⟩),
+    .op .SHR,
+    .op (.Dup ⟨3, by decide⟩),
+    .op .AND ]
+def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
+  [ x.v0,
+    x.v7,
+    x.v2,
+    x.v3,
+    x.v4,
+    (UInt256.ofNat 45805601672572416830120737830960963807809187239029665),
+    x.v6,
+    (UInt256.ofNat 23),
+    x.v8,
+    x.v9,
+    x.v10,
+    x.v11,
+    x.v12,
+    x.v13,
+    x.v14,
+    x.v15,
+    x.v16 ] ++ rho
+def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
+  [ (UInt256.land x.v3 (UInt256.shiftRight (UInt256.mul x.v10 x.v9) (UInt256.ofNat 23))),
+    (UInt256.add (UInt256.ofNat 541184315) (UInt256.ofNat 45805601672572416830120737830960963807809187239029665)),
+    x.v2,
+    x.v3,
+    x.v4,
+    x.v0,
+    x.v6,
+    (UInt256.ofNat 23),
+    x.v8,
+    (UInt256.land x.v3 (UInt256.add x.v8 (UInt256.shiftRight (UInt256.mul x.v10 (UInt256.land x.v3 (UInt256.add (UInt256.add (UInt256.ofNat 541184315) (UInt256.ofNat 45805601672572416830120737830960963807809187239029665)) (UInt256.add (MachineState.readWord memory 792) (UInt256.add (UInt256.xor x.v9 (UInt256.land (UInt256.xor x.v0 (UInt256.land x.v4 x.v9)) (UInt256.xor (UInt256.lor x.v4 x.v9) x.v6))) x.v7))))) (UInt256.ofNat 22)))),
+    x.v10,
+    x.v11,
+    x.v12,
+    x.v13,
+    x.v14,
+    x.v15,
+    x.v16 ] ++ rho
+def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
+  outputStack memory x rho
+private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
+    actualOutput memory x rho = outputStack memory x rho := by rfl
+private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat) :
+    runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
+      some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
+  have hbase : rho.length < 1024 := by omega
+  have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
+  have hcap (n : Nat) (hn : n ≤ 22) : rho.length + n < 1024 := by omega
+  have hactiveAt (address : Nat) (haddress : address ≤ 1088) :
+      UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
+    Stagger144Active.word_active_preserved s.activeWords address hactive haddress
+  simp (discharger := omega) [template, inputStack, actualOutput, outputStack,
+    folded_key, runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
+    List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
+    State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+  all_goals simp only [hmul_eq_mul, hadd_eq_add, RawExpressionAC.add_comm,
+    RawExpressionAC.add_left_comm, RawExpressionAC.add_assoc]
+  all_goals repeat first | apply And.intro | exact True.intro | rfl
+theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat) :
+    runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
+      some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
+  simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
+#print axioms run_actual
+
+theorem run_original (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hactive : 35 ≤ s.activeWords.toNat)
+    (hx : x.v5 = UInt256.ofNat 45805601672572416830120737830960963807809187239029665) :
+    runInstrSeq template {s with pc := pc, stack := StaggerRawPaired48.inputStack x rho} =
+      some {s with pc := pcAfter pc template, stack := StaggerRawPaired48.outputStack s.memory x rho} := by
+  have h := run_actual s pc x rho hstack hrun hactive
+  simpa only [inputStack, outputStack, StaggerRawPaired48.inputStack,
+    StaggerRawPaired48.outputStack, hx] using h
+#print axioms run_original
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.FoldedRound48
