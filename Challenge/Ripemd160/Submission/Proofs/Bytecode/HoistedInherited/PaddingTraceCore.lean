@@ -909,10 +909,10 @@ def lengthIterationPath : List
    ⟨3371, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3372, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
    ⟨3373, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3374, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3375, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨3374, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨3375, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3376, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3377, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3377, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3378, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3379, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3380, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
