@@ -37,7 +37,7 @@ theorem prefix_live (mem : ByteArray) : Live (CRTLoopEntry.memory mem) mem := by
   exact CRTLoopEntry.readWord mem addr (by omega)
 
 theorem head_eq (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) :
-    CRTLoopEntry.head s mem k ret tail = atOld s (CRTLoopEntry.memory mem) 4816
+    CRTLoopEntry.head s mem k ret tail = atOld s (CRTLoopEntry.memory mem) 5615
       (UInt256.ofNat 0) (SquareStagedEntry.qWord 8) (UInt256.ofNat 3347) (frame mem k ret tail) := by
   unfold CRTLoopEntry.head SquareLoopBlocks.frameAt SquareLoopBlocks.frameStack atOld
     TnM128SquareExit.frameAt TnM128SquareExit.frameStack frame

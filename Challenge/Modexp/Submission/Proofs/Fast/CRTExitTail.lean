@@ -1,5 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacWords
 import Challenge.Modexp.Submission.Proofs.Fast.SquareRoundC
+import Challenge.Modexp.Submission.Proofs.Fast.SquareRow
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128GlobalBinding
+import Challenge.Modexp.Submission.Proofs.Fast.CRTArtifactBlocks
+import Challenge.Modexp.Submission.Proofs.CRT.CRTControlBase
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -58,7 +62,7 @@ def gasSteps_more (s : State) (mem : ByteArray) (tn : UInt256) (c : Nat)
     Challenge.EvmProof.GasSteps
       (frameAt tn (MachineState.readWord mem 128) 3942 s mem 8 (UInt256.ofNat 0)
         w3 ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat (c+1)) ret rest)
-      (frameAt (UInt256.ofNat 0) (MachineState.readWord (memory mem tn) 128) 4816 s
+      (frameAt (UInt256.ofNat 0) (MachineState.readWord (memory mem tn) 128) 5615 s
         (memory mem tn) 8 (UInt256.ofNat (2^256-256)) w3 ent tl inv m0 m96 m64 m32
         aprev (UInt256.ofNat c) ret rest) := by
   have hcode' := hcode.trans TnM128GlobalBinding.bytecode_eq
@@ -103,7 +107,28 @@ def gasSteps_more (s : State) (mem : ByteArray) (tn : UInt256) (c : Nat)
         SquareRoundC.sub8_readWord _ 128 (Or.inl (by decide)),
         TnCacheMemory.read_lift_outside _ _ 128 (Or.inl (by decide))]
       rfl
-    exact (g1.trans g2).trans (g3.cast hstart.symm hend)
+    have gRet := (g1.trans g2).trans (g3.cast hstart.symm hend)
+    let m128 := MachineState.readWord (memory mem tn) 128
+    let stackR := frameStack (UInt256.ofNat 0) m128 8 (UInt256.ofNat (2^256-256)) w3 ent tl inv
+      m0 m96 m64 m32 aprev (UInt256.ofNat c) ret rest
+    have hcapH : stackR.length ≤ 1022 := by
+      simp only [stackR, frameStack, List.length_append, List.length_cons, List.length_nil]
+      omega
+    have hv5615 : Decode.isValidJumpDest s.executionEnv.code 5615 = true := by
+      rw [hcode]; exact CRTArtifactBlocks.validJump5615
+    have hr := HistoricalSearch.CRTControl.hook_run {s with memory := memory mem tn} stackR hcapH hv5615
+    have gHook := SquareRow.stepsOf CRTArtifactBlocks.block_hook hr rfl hcode hfork hrun hnp
+    have hS : {s with memory := memory mem tn, pc := UInt256.ofNat 4816, stack := stackR} =
+        frameAt (UInt256.ofNat 0) m128 4816 s (memory mem tn) 8
+          (UInt256.ofNat (2^256-256)) w3 ent tl inv m0 m96 m64 m32 aprev
+          (UInt256.ofNat c) ret rest := by
+      simp [frameAt, CiosCachedMacCore.framed, stackR, m128]
+    have hT : {s with memory := memory mem tn, pc := UInt256.ofNat 5615, stack := stackR} =
+        frameAt (UInt256.ofNat 0) m128 5615 s (memory mem tn) 8
+          (UInt256.ofNat (2^256-256)) w3 ent tl inv m0 m96 m64 m32 aprev
+          (UInt256.ofNat c) ret rest := by
+      simp [frameAt, CiosCachedMacCore.framed, stackR, m128]
+    exact gRet.trans (gHook.cast hS hT)
 
 /-- The final exit reaches the unchanged fused product entry. -/
 def gasSteps_last (s : State) (mem : ByteArray) (tn : UInt256)
