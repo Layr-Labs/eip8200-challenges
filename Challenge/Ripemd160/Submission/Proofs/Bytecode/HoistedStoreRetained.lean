@@ -16,7 +16,7 @@ def template : Piece → List Instr
   | .result => DirectLiteralRawV4.resultTemplate
   | .success => successTemplate
 
-def index : Piece → Nat | .data => 5022 | .result => 5183 | .success => 5185
+def index : Piece → Nat | .data => 5004 | .result => 5165 | .success => 5167
 def pc : Piece → Nat | .data => 8157 | .result => 9416 | .success => 9420
 
 theorem actual_slice (p : Piece) :
@@ -94,7 +94,7 @@ def gasSteps_miss_copy (s : State) (rho : List UInt256) (e : HoistedStoreSites.E
   have hn : (retainedResult s.executionEnv.calldata).toNat ≠ 0 := by
     intro h; exact hz (Word.word_ext h)
   have hr : GasSteps {w with pc := UInt256.ofNat 9416, stack := retainedResult s.executionEnv.calldata :: rho}
-      {w with pc := UInt256.ofNat 4785, stack := rho} := by
+      {w with pc := UInt256.ofNat 4803, stack := rho} := by
     apply lift .result w _ ew _
     simpa only [template, pc, result_end_pc, if_neg hn] using
       DirectLiteralRawV4.run_result w (UInt256.ofNat 9416) (retainedResult s.executionEnv.calldata) rho

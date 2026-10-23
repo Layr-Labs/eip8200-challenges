@@ -19,8 +19,8 @@ def site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka 
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 4508 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3316) = UInt256.ofNat 4508
+theorem site_pc : site.startPC = UInt256.ofNat 4526 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3316) = UInt256.ofNat 4526
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
@@ -32,14 +32,14 @@ def gasSteps_prefix (s : State) (off limit : UInt256) (h : Compression.HashState
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4508, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
-      {s with pc := UInt256.ofNat 4563, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho} := by
+    GasSteps {s with pc := UInt256.ofNat 4526, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
+      {s with pc := UInt256.ofNat 4581, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4508, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
-    {s with pc := UInt256.ofNat 4563, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho}
+    {s with pc := UInt256.ofNat 4526, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
+    {s with pc := UInt256.ofNat 4581, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := HoistedInherited.ScheduledTailBridge.run_current s (UInt256.ofNat 4508) h {q with off := off, limit := limit} rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4508) template = UInt256.ofNat 4563 := by decide
+  have hraw := HoistedInherited.ScheduledTailBridge.run_current s (UInt256.ofNat 4526) h {q with off := off, limit := limit} rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 4526) template = UInt256.ofNat 4581 := by decide
   rw [hend] at hraw
   exact hraw
 

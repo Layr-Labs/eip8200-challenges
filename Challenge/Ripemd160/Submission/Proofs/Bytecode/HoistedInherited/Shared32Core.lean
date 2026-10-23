@@ -24,7 +24,7 @@ def gasSteps_body (s : State) (e : Env s) (h : Compression.HashState)
     GasSteps
       {s with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h off limit rho}
       {s with
-        pc := UInt256.ofNat 4563
+        pc := UInt256.ofNat 4581
         stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (Functional.result s.memory h) off limit rho} := by
   have gb := HoistedInherited.StaggerPersistentBootstrapBridge.gasSteps_body s h off limit rho
     hstack e.run hactive e.code e.fork e.np
@@ -67,9 +67,9 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray)
   have ge := HoistedInherited.StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
     (UInt256.ofNat 1056) (UInt256.ofNat 9667) resultCont maskRho (by decide) e.run
     (by
-        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 5356 = 9667 := by
+        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 5338 = 9667 := by
           rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 5356 (by rfl)
+        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 5338 (by rfl)
         rw [hpc] at h
         rw [e.code]; exact h)
     e.code e.fork e.np

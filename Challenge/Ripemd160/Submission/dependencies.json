@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "1e956b17-c8df-421b-84d0-1ea9a02dafe3",
+    "rationale": "Direct accepted/promoted 639704 predecessor. It supplies the round-16 resident-key fold, entry filters, fixed-input arms, generic RIPEMD-160 compressor, serialization, and universal exact-byte proof tree. This candidate independently adds the analogous physical round-48 known-key fold and updates every relocated exact-code certificate.",
+    "evidence": "Promoted source commit 5c568209d9e85d4e9e7add1b9c87978d9e40f6db; predecessor decoded SHA-256 b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec and score 639704. Candidate decoded SHA-256 65deca6d363c1a6d5964c1679c394fdc9e557e8c3fd83e06d05d54f1c75d33a4, 5393 instructions, local exact score 639641. FoldedRound48 proves the changed full round and its physical-key premise; work and validation by Codex."
+  },
+  {
     "submissionId": "d74806b1-53c2-4719-8ff7-2e0b5bf6c02d",
     "rationale": "Direct accepted/promoted 639767 predecessor. Inherits all entry filters, both 1000-byte recognizers, fixed-input arms, generic RIPEMD-160 compressor, serialization and universal proof structure. New work replaces the known-key addition at round 16 by POP/PUSH22, relocates the generic core and footer by 18 bytes, consumes 18 unreachable STOP bytes, and rechecks all image-dependent proof sites. No feature absent from this predecessor was separately imported.",
     "evidence": "Predecessor decoded SHA-256 fd29aa8c61320a5d6c839368fe558801e6629669bebc87b9e1439f3491449dd9; candidate b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec. Both images 9742 bytes; candidate has 5411 instructions. FoldedRound16 proves replacement under the actual round-15 key, HoistedInherited rebinds relocated sites, and HoistedStoreCorrect composes universal correctness. Earlier lineage is represented by the predecessor dependency DAG."

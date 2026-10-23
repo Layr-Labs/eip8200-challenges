@@ -237,13 +237,13 @@ theorem run_terminalBranch (s : State) (c : UInt256) (rho : List UInt256)
 speculative-write cleanup at 4785. This is the extra failure-path gas cost. -/
 def missTemplate : List Instr :=
   [.op .JUMPDEST, .push ⟨0, by decide⟩ 0,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 4785), .op .JUMP]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 4803), .op .JUMP]
 
 theorem run_miss (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hv : Decode.isValidJumpDest s.executionEnv.code 4785 = true) :
     runInstrSeq missTemplate {s with pc := UInt256.ofNat 9659, stack := rho} =
-      some {s with pc := UInt256.ofNat 4785, stack := 0 :: rho} := by
+      some {s with pc := UInt256.ofNat 4803, stack := 0 :: rho} := by
   simp (discharger := omega) [missTemplate, runInstrSeq, DataStepper.runInstr,
     hrun, hv, UInt256.succ, Instr.size,
     show rho.length < 1024 by omega,

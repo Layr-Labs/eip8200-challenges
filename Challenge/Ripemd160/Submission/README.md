@@ -1,38 +1,36 @@
-# Current candidate: round-16 resident-key constant fold
+# Current candidate: round-48 resident-key constant fold
 
-Direct predecessor: accepted/promoted `d74806b1-53c2-4719-8ff7-2e0b5bf6c02d`
-(639,767 gas). This candidate's native scorer measures 639,704 gas with all
-49 clean and 49 dirty vectors correct. This is a local measurement, not a new
-official score. Universal exact-byte proof replay and official submission are
-separate gates; only their saved receipts establish acceptance.
+Direct predecessor: accepted/promoted `1e956b17-c8df-421b-84d0-1ea9a02dafe3`
+(639,704 gas). This candidate's exact native scorer measures **639,641 gas**
+with all 49 clean and 49 dirty vectors correct, saving one gas on each of the
+63 compressed blocks in the scored corpus. This is a local measurement; the
+official submission receipt remains authoritative.
 
 Decoded candidate SHA-256:
-`b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec`.
-Image: 9,742 bytes, 5,411 decoded instructions.
+`65deca6d363c1a6d5964c1679c394fdc9e557e8c3fd83e06d05d54f1c75d33a4`.
+Image: 9,742 bytes, 5,393 decoded instructions.
 
-The generic compressor reaches round 16 with a fixed resident physical key.
-Instead of PUSH4 1518500249 followed by ADD, the candidate uses POP followed
-by PUSH22 of their precomputed sum. Both sequences have two instructions;
-the replacement costs five gas rather than six per compressed block. The
-known-key premise is essential: the replacement is not valid for arbitrary
-resident values. `FoldedRound16` proves the changed full round, and its caller
-in `HoistedInherited/StaggerCorePaired16` discharges that premise from the
-RIPEMD algorithm's physical round-15 key.
+The generic compressor reaches physical round 48 with the resident key
+`45805601672572416830120737830960963807809187239029665`. The predecessor's
+`SWAP5; PUSH4 541184315; ADD` becomes `SWAP5; POP; PUSH22` of the exact sum
+`45805601672572416830120737830960963807809187780213980`. The new sequence
+costs eight rather than nine gas per compressed block. The known-key premise
+is essential and is discharged at the round-48 call site; this is not an
+input-corpus assumption.
 
-The replacement adds 18 bytecode bytes. Generic code after that site, the
-footer and the abc arm move by 18 bytes; 18 unreachable STOP bytes are removed
-before the existing fixed-input arms so their PCs and computed dispatch stay
-unchanged. Direct target immediates at original PCs 17 and 9722 are relocated.
-All exact-code certificates are rebound to this image, including the footer,
-abc arm, scanner and fixed-input return instruction indices. `Solution.lean`
-binds the protected literal by kernel definitional equality; no digest-only
-binding is used. The protected harness, scorer and sibling track are unmodified.
+`FoldedRound48.lean` proves the complete changed round against the predecessor
+round model. `FoldedCandidateArtifact.lean` binds the decoded instructions,
+and all moved exact-code certificates are rebound to the same 9,742-byte
+image. `Solution.lean` still reaches the universal correctness theorem through
+kernel definitional equality, not a digest-only argument. The candidate passed
+621 additional calldata lengths (including random lengths through 2,000), with
+the expected exact one-gas-per-block delta and no output mismatch. Search,
+integration, proof work and validation for this round-48 fold were performed
+by Codex.
 
-A double-fold prototype was rejected after a computed-jump failure on a
-31-byte input. Only the single round-16 fold belongs to this candidate. The
-unchanged accepted image and editable source are preserved separately in the
-local research directory. The remaining text is historical provenance, not
-the current image, attribution, validation status or official score.
+The replacement adds 18 bytes at the fold site and consumes 18 unreachable
+STOP bytes before the fixed-input arms, retaining total image length. The
+remaining text is historical provenance, not the current image or score.
 
 ---
 

@@ -40,13 +40,13 @@ private def long376Site : GenericRoundSite HoistedInherited.Artifact.submissionA
  StackSiteBuilder.ofSlice (longTemplate 376 5666) 3400 long376_slice
   (by change 3400 + (longTemplate 376 5666).length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 5666) (by decide)) (by decide)
-private theorem short_pc : shortSite.startPC = UInt256.ofNat 4583 := by
+private theorem short_pc : shortSite.startPC = UInt256.ofNat 4601 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3383) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4647 := by
+private theorem long256_pc : long256Site.startPC = UInt256.ofNat 4683 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3395) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4656 := by
+private theorem long376_pc : long376Site.startPC = UInt256.ofNat 4674 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3400) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
@@ -163,7 +163,7 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
      exact gs.trans (g1.trans (GasSteps.cast gj rfl he))
 
 private theorem valid_empty : Decode.isValidJumpDest submissionBytecode 7019 = true := by
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 4361 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 4343 (by rfl)
   rw [HoistedInherited.AbcArm.pc_emptyDest] at h
   exact h
 
@@ -201,10 +201,10 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ Rec
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3523).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3505).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 125).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3523 fallback_slice
+ StackSiteBuilder.ofSlice fallbackTemplate 3505 fallback_slice
   (by change 3523 + fallbackTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka genericTemplate :=
@@ -212,7 +212,7 @@ private def genericSite : GenericRoundSite HoistedInherited.Artifact.submissionA
   (by change 125 + genericTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
 private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4906 := by
- change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3523) = _
+ change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3505) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 125) = _

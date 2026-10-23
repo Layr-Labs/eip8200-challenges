@@ -10,28 +10,28 @@ Continues `HoistedInherited.PaddingTraceCore` (split for memory: one module peak
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.PaddingTrace
-@[simp] private theorem inherited_tail_pc_5417 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5399 = 9725 := by
+@[simp] private theorem inherited_tail_pc_5417 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5381 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5418 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5400 = 9726 := by
+@[simp] private theorem inherited_tail_pc_5418 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5382 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5419 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5401 = 9728 := by
+@[simp] private theorem inherited_tail_pc_5419 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5383 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5420 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5402 = 9729 := by
+@[simp] private theorem inherited_tail_pc_5420 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5384 = 9729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5421 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5403 = 9730 := by
+@[simp] private theorem inherited_tail_pc_5421 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5385 = 9730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5422 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5404 = 9733 := by
+@[simp] private theorem inherited_tail_pc_5422 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5386 = 9733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5423 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5405 = 9734 := by
+@[simp] private theorem inherited_tail_pc_5423 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5387 = 9734 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5424 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5406 = 9736 := by
+@[simp] private theorem inherited_tail_pc_5424 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5388 = 9736 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 
@@ -379,7 +379,7 @@ def footerRounded (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 9737
     stack := PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) :: bitLengthWord input ::
-      UInt256.ofNat 4565 :: padFrame input }
+      UInt256.ofNat 4583 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerA (input : ByteArray) :
@@ -395,9 +395,9 @@ private theorem run_footerA (input : ByteArray) :
 (same shape as `footerRounded`), so the block run below never unfolds the loop's memory recursion. -/
 def footerEntered (input : ByteArray) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 4565
+    pc := UInt256.ofNat 4583
     stack := (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 4565 :: padFrame input }
+      bitLengthWord input :: UInt256.ofNat 4583 :: padFrame input }
 
 private theorem footerEntered_eq (input : ByteArray) :
     footerEntered input = lengthLoopState input 0 := by
@@ -415,9 +415,9 @@ finish inside the memory budget. -/
 def footerPreJump (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 9741
-    stack := UInt256.ofNat 4565 ::
+    stack := UInt256.ofNat 4583 ::
       (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 4565 :: padFrame input }
+      bitLengthWord input :: UInt256.ofNat 4583 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerB3 (input : ByteArray) :
@@ -440,7 +440,7 @@ private theorem run_footJump (input : ByteArray) :
   have hpc : (footerPreJump input).pc.toNat =
       HoistedInherited.Artifact.submissionArtifact.instructionPC loc.index := by
     rw [hidx]
-    change 9741 = HoistedInherited.Artifact.submissionArtifact.instructionPC 5410
+    change 9741 = HoistedInherited.Artifact.submissionArtifact.instructionPC 5392
     rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (footerPreJump input) =
       some (footerEntered input) := by

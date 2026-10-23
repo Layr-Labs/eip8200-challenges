@@ -10,7 +10,7 @@ private def op (byte : UInt8) : Instr :=
   | some decoded => .op decoded
   | none => .op .INVALID
 def suffix : List Instr := [
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4803),
   op 0x57,
   op 0x59,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
@@ -179,7 +179,7 @@ def suffix : List Instr := [
   op 0xf3,
   op 0x5b,
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4785),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4803),
   op 0x56,
   op 0x00,
   op 0x00,
@@ -225,7 +225,7 @@ def suffix : List Instr := [
   op 0x36,
   op 0x01,
   op 0x53,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4547),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 4565),
   op 0x36,
   .push ⟨1, by decide⟩ (UInt256.ofNat 3),
   op 0x1b,

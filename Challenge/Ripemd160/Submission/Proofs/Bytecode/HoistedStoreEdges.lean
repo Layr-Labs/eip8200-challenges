@@ -39,14 +39,14 @@ def gasSteps_return (s : State) (rho : List UInt256) (e : Env s)
 def gasSteps_miss_jump (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) :
     GasSteps {s with pc := UInt256.ofNat 9659, stack := rho}
-      {s with pc := UInt256.ofNat 4785, stack := (0 : UInt256) :: rho} :=
+      {s with pc := UInt256.ofNat 4803, stack := (0 : UInt256) :: rho} :=
   lift .miss s _ e _ (run_miss s rho (by omega) e.run (by rw [e.code]; exact valid_cleanup))
 
 #print axioms gasSteps_miss_jump
 
 def gasSteps_cleanup (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) (ha : s.activeWords = UInt256.ofNat 1) :
-    GasSteps {s with pc := UInt256.ofNat 4785, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 4803, stack := rho}
       (RetainedResultEdge112.cleared s rho) :=
   lift .cleanup s _ e _ (RetainedResultEdge112.run_cleanup s rho (by omega)
     e.run ha (by rw [e.code]; exact valid_generic))
