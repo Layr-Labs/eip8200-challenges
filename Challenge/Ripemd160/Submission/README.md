@@ -1,36 +1,31 @@
-# Current candidate: round-48 resident-key constant fold
+# Current candidate: abc-guard miss-path JUMPI retarget past the PC-4905 trampoline
 
-Direct predecessor: accepted/promoted `1e956b17-c8df-421b-84d0-1ea9a02dafe3`
-(639,704 gas). This candidate's exact native scorer measures **639,641 gas**
-with all 49 clean and 49 dirty vectors correct, saving one gas on each of the
-63 compressed blocks in the scored corpus. This is a local measurement; the
-official submission receipt remains authoritative.
+Direct predecessor: accepted/promoted `e7c3da01-b524-4ec4-aa1d-ca6cade6dcc5`
+(639,641 gas). This candidate retargets the `AbcArm` miss branch of the
+size-fed `abc` word guard: the `PUSH2` immediate at `PC 4721` changes from
+`4905` to `245`, so the taken `JUMPI` at `PC 4724` lands directly on the
+generic-dispatch `JUMPDEST` at `PC 245` instead of paying `JUMPDEST; PUSH1
+0xf5; JUMP` at `PC 4905-4908`. The miss path runs on every vector whose
+leading word fails the `abc` recognizer, so the bypass saves `1 + 3 + 8 = 12`
+gas per miss traversal — 192 gas over the 16 miss vectors, plus the `abc` hit
+path is untouched.
 
 Decoded candidate SHA-256:
-`65deca6d363c1a6d5964c1679c394fdc9e557e8c3fd83e06d05d54f1c75d33a4`.
+`4b6afe631d5c513f333bab3e62cfb8a689bd328ec7bc7a1bf03fea95bccb70a3`.
 Image: 9,742 bytes, 5,393 decoded instructions.
 
-The generic compressor reaches physical round 48 with the resident key
-`45805601672572416830120737830960963807809187239029665`. The predecessor's
-`SWAP5; PUSH4 541184315; ADD` becomes `SWAP5; POP; PUSH22` of the exact sum
-`45805601672572416830120737830960963807809187780213980`. The new sequence
-costs eight rather than nine gas per compressed block. The known-key premise
-is essential and is discharged at the round-48 call site; this is not an
-input-corpus assumption.
-
-`FoldedRound48.lean` proves the complete changed round against the predecessor
-round model. `FoldedCandidateArtifact.lean` binds the decoded instructions,
-and all moved exact-code certificates are rebound to the same 9,742-byte
-image. `Solution.lean` still reaches the universal correctness theorem through
-kernel definitional equality, not a digest-only argument. The candidate passed
-621 additional calldata lengths (including random lengths through 2,000), with
-the expected exact one-gas-per-block delta and no output mismatch. Search,
-integration, proof work and validation for this round-48 fold were performed
-by Codex.
-
-The replacement adds 18 bytes at the fold site and consumes 18 unreachable
-STOP bytes before the fixed-input arms, retaining total image length. The
-remaining text is historical provenance, not the current image or score.
+The `JUMPDEST` at `PC 4905` is retained, so every computed jump that may still
+resolve to it stays valid; only the static caller is retargeted. The patch is
+width-preserving: no program counter moves, and every PC witness in the
+artifact tables is unchanged. `GuardInstructionWindow`, `Artifact`,
+`FoldedCandidateArtifact`, `Candidate_prefix13`, and the `Bytes` chunk now
+record `PUSH2 245`; `AbcArm.entryDest` rebinds to instruction 125 and
+`AbcArm.fallbackState` to `PC 246`; `Patterned128Entry.gasSteps_after_arm_miss`
+collapses to `GasSteps.refl` because the traced trampoline step no longer
+executes. `Solution.lean` still reaches the universal correctness theorem
+through kernel definitional equality, not a digest-only argument.
+The remaining text below is historical provenance, not the current image or
+score.
 
 ---
 

@@ -241,9 +241,9 @@ private def gasSteps_fallback (input : ByteArray) :
 
 /-- Tiny misses enter the generic compressor directly. -/
 def gasSteps_after_arm_miss (input : ByteArray) (_hfit : CalldataFits input)
- (_hn : ¬ RecognitionAccumulator.Allowed input.size) :
- GasSteps (HoistedInherited.AbcArm.fallbackState input) (HoistedInherited.Execution.atPC input 246) :=
- gasSteps_fallback input
+(_hn : ¬ RecognitionAccumulator.Allowed input.size) :
+GasSteps (HoistedInherited.AbcArm.fallbackState input) (HoistedInherited.Execution.atPC input 246) :=
+GasSteps.refl _
 
 
 #print axioms gasSteps_allowed
