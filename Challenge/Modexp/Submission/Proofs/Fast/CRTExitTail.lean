@@ -58,7 +58,7 @@ def gasSteps_more (s : State) (mem : ByteArray) (tn : UInt256) (c : Nat)
     Challenge.EvmProof.GasSteps
       (frameAt tn (MachineState.readWord mem 128) 3942 s mem 8 (UInt256.ofNat 0)
         w3 ent tl inv m0 m96 m64 m32 aprev (UInt256.ofNat (c+1)) ret rest)
-      (frameAt (UInt256.ofNat 0) (MachineState.readWord (memory mem tn) 128) 4816 s
+      (frameAt (UInt256.ofNat 0) (MachineState.readWord (memory mem tn) 128) 5615 s
         (memory mem tn) 8 (UInt256.ofNat (2^256-256)) w3 ent tl inv m0 m96 m64 m32
         aprev (UInt256.ofNat c) ret rest) := by
   have hcode' := hcode.trans TnM128GlobalBinding.bytecode_eq
@@ -86,17 +86,17 @@ def gasSteps_more (s : State) (mem : ByteArray) (tn : UInt256) (c : Nat)
       rw [Csub.csStep_readWord_disjoint X 8 2080 (by decide) (Or.inr (by decide)) 8 le_rfl]
       exact flagWord mem
     have hj : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode
-        (UInt256.ofNat 4816).toNat = true := by
+        (UInt256.ofNat 5615).toNat = true := by
       exact Eq.mpr (congrArg
-        (fun code => Decode.isValidJumpDest code (UInt256.ofNat 4816).toNat = true)
+        (fun code => Decode.isValidJumpDest code (UInt256.ofNat 5615).toNat = true)
         TnM128GlobalBinding.bytecode_eq) jumpDestH2
-    have g3 := Csub.gasSteps_csFixedFrom8Flag s X (UInt256.ofNat 2368) (UInt256.ofNat 4816)
+    have g3 := Csub.gasSteps_csFixedFrom8Flag s X (UInt256.ofNat 2368) (UInt256.ofNat 5615)
       stack (by simp only [stack, frameStack, List.length_append, List.length_cons,
         List.length_nil]; omega) hrun hcode hact hfork hnp hj hs (by decide) hf
-    have hstart : s8At s X (UInt256.ofNat 4816) stack =
-        Csub.csFixedState s X 8 0 4037 (UInt256.ofNat 2368) (UInt256.ofNat 4816) stack := rfl
-    have hend : Csub.subFlagReturnedState s X 8 (UInt256.ofNat 2368) (UInt256.ofNat 4816) stack =
-        frameAt (UInt256.ofNat 0) (MachineState.readWord (memory mem tn) 128) 4816 s
+    have hstart : s8At s X (UInt256.ofNat 5615) stack =
+        Csub.csFixedState s X 8 0 4037 (UInt256.ofNat 2368) (UInt256.ofNat 5615) stack := rfl
+    have hend : Csub.subFlagReturnedState s X 8 (UInt256.ofNat 2368) (UInt256.ofNat 5615) stack =
+        frameAt (UInt256.ofNat 0) (MachineState.readWord (memory mem tn) 128) 5615 s
           (memory mem tn) 8 (UInt256.ofNat (2^256-256)) w3 ent tl inv m0 m96 m64 m32
           aprev (UInt256.ofNat c) ret rest := by
       simp only [memory, if_neg h0,

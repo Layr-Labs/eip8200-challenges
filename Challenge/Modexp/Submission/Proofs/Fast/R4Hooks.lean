@@ -28,7 +28,7 @@ def pcH1Fall : Nat := 4268
 def pcR4 : Nat := 8998
 
 def h1Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 4816, .op .JUMPI]
+  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 5615, .op .JUMPI]
 
 def h1Block : Block Artifact.submissionArtifact .Osaka 4260 h1Program :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3313 5 4260 h1Program
@@ -78,13 +78,13 @@ theorem run_h1Eight (s : State) (mem : ByteArray)
     (hq : pbi = UInt256.ofNat (2^256 - 256)) :
     runInstructions h1Program
       (frameAt pcH1 s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
-    some (frameAt 4816 s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
+    some (frameAt 5615 s mem 8 pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hc18 : rest.length + 18 < 1024 := by omega
   have hc19 : rest.length + 19 < 1024 := by omega
-  have hjd : Decode.isValidJumpDest s.executionEnv.code 4816 = true := by
-    rw [hcode]; exact Artifact.isValidJumpDest_index 3808 (by rfl)
+  have hjd : Decode.isValidJumpDest s.executionEnv.code 5615 = true := by
+    rw [hcode]; exact Artifact.isValidJumpDest_index 4488 (by rfl)
   have hcond := cond_eight
   have hcondL := cond_eight_lit
   simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -117,7 +117,7 @@ def gasSteps_h1Taken (n : Nat) (hn : n = 4) (hq : pbi = UInt256.ofNat (2^256 - 1
 def gasSteps_h1Fall (n : Nat) (hn : n = 8) (hq : pbi = UInt256.ofNat (2^256 - 256)) :
     Challenge.EvmProof.GasSteps
       (frameAt pcH1 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-      (frameAt 4816 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
+      (frameAt 5615 s mem n pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   subst hn
   exact SquareRow.stepsOf h1Block
     (run_h1Eight s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode hq) rfl
