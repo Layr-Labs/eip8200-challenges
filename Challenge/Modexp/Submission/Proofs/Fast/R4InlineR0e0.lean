@@ -40,10 +40,10 @@ theorem r0e_0Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 : UInt25
   have h := g0
   simpa only [r0e_0Old, List.append_assoc] using h
 
-def r0e_0NewP0 : List Instr := [.op (.Swap ⟨4, by decide⟩), .op .POP, .push 0 0]
+def r0e_0NewP0 : List Instr := [.op (.Swap ⟨4, by decide⟩), .op .POP, .op .JUMPDEST]
 theorem r0e_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1009) :
     runInstructions r0e_0NewP0 { s with pc := UInt256.ofNat 9090, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
-    some { s with pc := UInt256.ofNat 9093, stack := (0 : UInt256) :: x1 :: x2 :: x3 :: x4 :: x0 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
+    some { s with pc := UInt256.ofNat 9093, stack := x1 :: x2 :: x3 :: x4 :: x0 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -63,13 +63,13 @@ theorem r0e_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt
 def r0e_0New : List Instr := r0e_0NewP0
 theorem r0e_0New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1009) :
     runInstructions r0e_0New { s with pc := UInt256.ofNat 9090, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } =
-    some { s with pc := UInt256.ofNat 9093, stack := (0 : UInt256) :: z1 :: z2 :: z3 :: z4 :: z0 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } := by
+    some { s with pc := UInt256.ofNat 9093, stack := z1 :: z2 :: z3 :: z4 :: z0 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } := by
   have g0 := r0e_0NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) rest hcap
   have h := g0
   simpa only [r0e_0New, List.append_assoc] using h
 
 def r0e_0Perm : List UInt256 → List UInt256
-  | v0 :: v1 :: v2 :: v3 :: v4 :: v5 :: v6 :: v7 :: v8 :: v9 :: v10 :: v11 :: v12 :: rest => v1 :: v2 :: v3 :: v4 :: v5 :: v6 :: v7 :: v8 :: v9 :: v10 :: v11 :: v12 :: rest
+  | v0 :: v1 :: v2 :: v3 :: v4 :: v5 :: v6 :: v7 :: v8 :: v9 :: v10 :: v11 :: v12 :: rest => v2 :: v3 :: v4 :: v5 :: v6 :: v7 :: v8 :: v9 :: v10 :: v11 :: v12 :: rest
   | xs => xs
 
 theorem run_r0e_0 (s : State) (c t3 t2 t1 t0 d k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
@@ -77,7 +77,7 @@ theorem run_r0e_0 (s : State) (c t3 t2 t1 t0 d k n0 n1 n2 n3 np : UInt256) (rest
     (hjd : Decode.isValidJumpDest s.executionEnv.code 4621 = true) :
     runInstructions r0e_0New
       { s with pc := UInt256.ofNat 9090, stack := c :: t3 :: t2 :: t1 :: t0 :: d :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 9093, stack := (⟨0⟩ : UInt256) :: t3 :: t2 :: t1 :: t0 :: c :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+    some { s with pc := UInt256.ofNat 9093, stack := t3 :: t2 :: t1 :: t0 :: c :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
   have ho := r0e_0Old_run s (c) (t3) (t2) (t1) (t0) (d) (k) (n0) (n1) (n2) (n3) (np) rest hcap hjd
   have hc := R4Runs.run_r0e s c t3 t2 t1 t0 d k n0 n1 n2 n3 np rest hcap hjd
   change runInstructions r0e_0Old _ = _ at hc
