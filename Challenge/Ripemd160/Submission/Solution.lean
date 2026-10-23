@@ -21,6 +21,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode :=
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Decoded SHA-256: b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec.
--- 9742 bytes, 5411 instructions. Round-16 resident-key constant fold.
+-- Decoded SHA-256: 773623f8117ad3081664cbe812e4d7fdf14fe0a27366209cde18ed35f3147f2d.
+-- 9742 bytes, 5411 instructions. Tiny guard misses dispatch directly to PC 245.
 -- Only the protected benchmark is authoritative for correctness and gas.
