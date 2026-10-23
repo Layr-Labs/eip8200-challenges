@@ -50,15 +50,15 @@ def cellProgram : List Instr :=
    .op .BYTE,
    .op .JUMPDEST,
    .op .ADD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
    .op .ADD,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
    .op .MSTORE8,
    .push 1 8,
    .op .SHR,
-   .op (.Swap ⟨1, by decide⟩),
-   .op .POP]
+   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST]
 
 /-- Exact U bytes [527,532). -/
 def guardProgram : List Instr :=
@@ -188,16 +188,16 @@ theorem run_loadZ (s : State) (i z : Nat) (xy c ret src : UInt256) (rest : List 
 theorem run_math (s : State) (zb xy i c z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) :
     runInstructions mathProgram (st s 497 (zb :: xy :: i :: c :: z :: ret :: src :: rest) mem AW) =
-      some (st s 501 ((c + (zb + xy)) :: i :: c :: z :: ret :: src :: rest) mem AW) := by
+      some (st s 501 ((c + (zb + xy)) :: i :: z :: ret :: src :: rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [mathProgram, cellProgram, hc]
 
 #check run_math
 
-theorem run_cell_tail (s : State) (i : Nat) (w c z ret src : UInt256)
+theorem run_cell_tail (s : State) (i : Nat) (w z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) :
     runInstructions cellTailProgram
-      (st s 501 (w :: UInt256.ofNat i :: c :: z :: ret :: src :: rest) mem AW) =
+      (st s 501 (w :: UInt256.ofNat i :: z :: ret :: src :: rest) mem AW) =
       some (st s 509 (UInt256.ofNat i :: nextCarry w :: z :: ret :: src :: rest)
         (writeByte mem i w) AW) := by
   have hc := caps _ hcap
@@ -223,7 +223,7 @@ theorem run_cell (s : State) (i src z : Nat) (c ret : UInt256) (rest : List UInt
   have hM := run_math s (UInt256.ofNat 255 - byteW mem (z + (i - 1)))
     (byteW mem (i - 1) + byteW mem (src + (i - 1)))
     (UInt256.ofNat (i - 1)) c (UInt256.ofNat z) ret (UInt256.ofNat src) rest mem hcap
-  have hT := run_cell_tail s (i - 1) (sumWord mem src z (i - 1) c) c (UInt256.ofNat z) ret
+  have hT := run_cell_tail s (i - 1) (sumWord mem src z (i - 1) c) (UInt256.ofNat z) ret
     (UInt256.ofNat src) rest mem hcap (by omega)
   have hMT := runInstructions_append_some _ _ _ _ _ hM hT
   have hZMT := runInstructions_append_some _ _ _ _ _ hZ hMT
