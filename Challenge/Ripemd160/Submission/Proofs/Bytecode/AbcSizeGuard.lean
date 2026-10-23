@@ -81,9 +81,9 @@ theorem shift_hit_small (v s : UInt256)
     rw [if_pos (by omega)] at heq
     split_ifs at heq <;> { exfalso; revert heq; decide }
 theorem small_shift_prefix (v : UInt256) (n : Nat) (hn : n = 1 ∨ n = 2 ∨ n = 3)
-    (heq : (UInt256.sar (UInt256.xor v (UInt256.ofNat n)) (UInt256.ofNat n)).toNat = target) :
+    (heq : (UInt256.sar v (UInt256.ofNat n)).toNat = target) :
     v.toNat / 2 ^ 232 = if n = 1 then 0x185898 else if n = 2 then 0x30b131 else 0x616263 := by
-  let w := UInt256.xor v (UInt256.ofNat n)
+  let w := v
   have hn4 : n < 4 := by rcases hn with rfl | rfl | rfl <;> omega
   have hs : (UInt256.ofNat n).toNat = n := by rw [Word.word_toNat_ofNat]; omega
   have hw : w.toNat < 2 ^ 255 := by
@@ -94,14 +94,7 @@ theorem small_shift_prefix (v : UInt256) (n : Nat) (hn : n = 1 ∨ n = 2 ∨ n =
     norm_num [target] at hh
   have hdiv := sar_positive_div w (UInt256.ofNat n) (by omega) hw
   rw [heq, hs] at hdiv
-  have hxor : w.toNat = v.toNat ^^^ n := by
-    change ((v.toNat ^^^ (UInt256.ofNat n).toNat) % UInt256.size) = _
-    rw [hs]
-    exact Nat.mod_eq_of_lt (Nat.xor_lt_two_pow v.val.isLt (by omega : n < 2 ^ 256))
-  have htop : w.toNat / 2 ^ 232 = v.toNat / 2 ^ 232 := by
-    rw [← Nat.shiftRight_eq_div_pow, hxor, Nat.shiftRight_xor_distrib]
-    rw [Nat.shiftRight_eq_div_pow n, Nat.div_eq_of_lt (by omega : n < 2 ^ 232), Nat.xor_zero]
-    exact Nat.shiftRight_eq_div_pow _ _
+  dsimp [w] at hdiv
   rcases hn with rfl | rfl | rfl <;> norm_num [target] at hdiv ⊢ <;> omega
 def byte (input : ByteArray) (i : Nat) : UInt8 := YulSemantics.EVM.byteFrom input.toList i
 
@@ -123,7 +116,7 @@ theorem prefix_toNat (input : ByteArray) :
   norm_num [Bytes.bytesToNatPadded_succ, byte, Nat.mul_add, Nat.add_mul, Nat.mul_assoc]
 
 theorem guard_sound (input : ByteArray) (hfit : input.size < 2 ^ 64)
-    (heq : (UInt256.sar (UInt256.xor (MachineState.readWord input 0) (UInt256.ofNat input.size))
+    (heq : (UInt256.sar (MachineState.readWord input 0)
       (UInt256.ofNat input.size)).toNat = target) : input = ByteArray.mk #[97, 98, 99] := by
   have hsmall := shift_hit_small _ _ heq
   have hs : (UInt256.ofNat input.size).toNat = input.size := by rw [Word.word_toNat_ofNat]; omega

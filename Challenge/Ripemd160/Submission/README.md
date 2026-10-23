@@ -151,3 +151,30 @@ To certify the `9,742`-byte (`5,429`-instruction) candidate in Lean 4 without an
   - `lake build Challenge.Ripemd160.Submission.Solution` succeeds with `0` errors and `0` warnings.
   - `#print axioms Challenge.Ripemd160.Benchmark.candidate` reports only `[propext, Classical.choice, Quot.sound]`.
   - Comparator (`lean4export` + default Lean kernel) outputs: `Lean default kernel accepts the solution / Your solution is okay!`.
+
+
+## Direct-shift abc guard candidate (local research)
+
+This distinct candidate removes the `CALLDATASIZE; XOR` pair immediately before
+the signed shift. The guard now computes `(readWord(input, 0) SAR size) XOR target`,
+where `target` remains `readWord(abc, 0) >> 3`. The arithmetic proof in
+`AbcSizeGuard.lean` has been adapted and compiled successfully. Its small-shift
+argument no longer needs to strip a low-bit XOR. The guard still accepts exactly
+`abc` for all fitting calldata; zero size and sizes one/two are excluded by the
+padded word prefix, and shifts at least four cannot produce the target.
+
+The two removed bytes are replaced with STOP padding after the guard's RETURN.
+This keeps byte count, decoded instruction count, and all downstream PCs and
+instruction indices unchanged after PC 4717. Only the local guard/store instruction
+window and its located-step proof are reindexed.
+
+The exploratory EVM model reports 639,768 gas over the 49 public vectors, versus
+639,773 for promoted predecessor `938806bb-0b75-4986-ac9a-59301baf3d4e`. The only
+changed vector is `abc`, 174 to 169 gas. Another 95 randomized boundary inputs
+matched RIPEMD-160 digest outputs. These are exploratory checks, not a protected
+benchmark receipt and not an official leaderboard result. Exact-byte proof-chain
+rebuild and the protected comparator remain required.
+
+The pinned native scorer independently measured the same 639,768 gas total in
+each of clean and dirty frames, with all 98 CSV rows status `ok`. This direct
+scorer measurement does not replace the protected universal comparator.

@@ -9,10 +9,8 @@ open Artifact (op)
 def tail : List Instr :=
 [
   .push 32 5506022574726681700290820341793915503137370776112178186780075461015395893248,
-  op 0x36,
   .push 0 0,
   op 0x35,
-  op 0x18,
   op 0x36,
   op 0x1d,
   op 0x18,
@@ -23,7 +21,9 @@ def tail : List Instr :=
   op 0x52,
   op 0x59,
   .push 0 0,
-  op 0xf3
+  op 0xf3,
+  op 0x00,
+  op 0x00
 ]
 theorem tail_eq : (Artifact.submissionArtifact.instructions.drop 3405).take tail.length = tail := by rfl
 
