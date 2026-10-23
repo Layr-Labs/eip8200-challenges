@@ -1,34 +1,26 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.BytecodeBinding
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreCorrect
 import Challenge.Ripemd160.Benchmark.Artifact
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.RetainedTerminalMul.Correct
 
 set_option warningAsError true
-set_option maxRecDepth 50000
-set_option maxHeartbeats 5000000
+set_option maxRecDepth 1000000
+set_option maxHeartbeats 8000000
 
 namespace Challenge.Ripemd160.Benchmark
 
-/-- Compose semantic correctness before expanding either bytecode literal. -/
-private theorem submission_correct :
-    Challenge.Ripemd160.Correct Challenge.Ripemd160.submissionBytecode :=
-  Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectGuard.correct_of_recognition
-    Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionCorrect.from_entry
-      RetainedActual115.from_loaded1000
-
-/-- Bind the protected image once, outside the universal execution predicate. -/
+/-- The protected literal is the very image used in the universal execution proof.
+This is kernel definitional equality, not a digest or length comparison. -/
 private theorem bytecode_eq_submission :
-    bytecode = Challenge.Ripemd160.submissionBytecode :=
-  Challenge.Ripemd160.Submission.Proofs.Bytecode.BytecodeBinding.exact
+    bytecode = Submission.Proofs.Bytecode.HoistedInherited.submissionBytecode := by
+  rfl
 
-/-- Exact-bytecode correctness for the direct stack-resident compressor. -/
+/-- Exact-byte universal RIPEMD-160 correctness, including both outcomes of
+both 1000-byte recognizers and every inherited compressor/serialization path. -/
 theorem candidate : Challenge.Ripemd160.Correct bytecode :=
-  bytecode_eq_submission.symm ▸ submission_correct
+  bytecode_eq_submission.symm ▸ Submission.Proofs.Bytecode.HoistedStoreCorrect.correct
 
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Current decoded SHA-256: 8cd1e0bc824982ce5c93a50e7ff46b24c78d332b0029c0daa128146e194a6cac.
--- 9742 bytes; direct-shift abc guard and universally proved fullword scan coverage.
+-- Decoded SHA-256: fd29aa8c61320a5d6c839368fe558801e6629669bebc87b9e1439f3491449dd9.
+-- 9742 bytes, 5429 instructions. Hoisted digest store and memory-size return.
 -- Only the protected benchmark is authoritative for correctness and gas.

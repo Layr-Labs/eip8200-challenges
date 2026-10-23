@@ -1,3 +1,31 @@
+# Current candidate: hoisted 1,000-byte digest store
+
+This candidate is derived directly from accepted/promoted submission
+`00c1e4cd-9bf9-4089-9e04-4ba33c4949bf` (639,768 gas).
+The measured candidate is 639,767 gas, with 49/49 vectors passing in each of
+clean and dirty frames. Official scoring/promotion is a separate server result.
+
+Decoded SHA-256: `fd29aa8c61320a5d6c839368fe558801e6629669bebc87b9e1439f3491449dd9`.
+Image size: 9,742 bytes; decoded instructions: 5,429.
+
+The digest store moves before the repeated-a scanner. Its terminal size/return
+uses MSIZE=32 rather than PUSH1 16. The overlapping-window proof establishes
+that scanner acceptance is unchanged, including arbitrary calldata, and the
+miss path clears the speculative store before joining the generic copy state.
+This is a score improvement, not pointwise gas dominance on every input.
+
+`Proofs/Bytecode/HoistedStoreCorrect.lean` proves the whole candidate correct.
+`HoistedInherited/` rebinds inherited exact-code certificates to this image;
+`Solution.lean` binds the protected byte literal by kernel definitional equality.
+The theorem uses only propext, Classical.choice and Quot.sound. Run the
+protected `./benchmark.sh ripemd160` for authoritative local proof replay and
+scoring. No protected source, comparator, scorer or sibling track is edited.
+
+The remainder is historical provenance and should not be read as the current
+image, current attribution or a new official score claim.
+
+---
+
 ## Current candidate: size-fed `abc` guard
 
 The 9,742-byte candidate preserves every instruction boundary and changes only

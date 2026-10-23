@@ -1,6 +1,0 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreRight0
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreRight1
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreUnpack
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft77
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft78
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerCoreLeft79

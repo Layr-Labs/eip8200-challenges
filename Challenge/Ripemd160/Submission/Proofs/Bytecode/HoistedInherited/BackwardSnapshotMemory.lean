@@ -1,0 +1,241 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.SecondSnapshotCertificates
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Pc792Writer
+set_option warningAsError true
+set_option maxRecDepth 30000
+set_option maxHeartbeats 4000000
+set_option linter.unusedSimpArgs false
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.BackwardSnapshotMemory
+open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
+open HoistedInherited.PoolShape HoistedInherited.PoolShapeV2
+
+/-- Four snapshot stores. The first and third widen backward to avoid live upper lanes. -/
+def firstPrefix (m : ByteArray) : ByteArray :=
+  MachineState.writeBytes m (MachineState.readPadded m 146 32) 128
+
+def secondPrefix (m : ByteArray) : ByteArray :=
+  MachineState.writeBytes (firstPrefix m) (MachineState.readPadded (firstPrefix m) 178 32) 196
+
+def thirdPrefix (m : ByteArray) : ByteArray :=
+  MachineState.writeBytes (secondPrefix m) (MachineState.readPadded (secondPrefix m) 236 32) 218
+
+def copiedFour (m : ByteArray) : ByteArray :=
+  MachineState.writeBytes (thirdPrefix m) (MachineState.readPadded (thirdPrefix m) 268 32) 286
+
+def copiedAddress (a : Nat) : Nat :=
+  if 286 ≤ a ∧ a < 318 then a-18
+  else if 218 ≤ a ∧ a < 250 then a+18
+  else if 196 ≤ a ∧ a < 228 then a-18
+  else if 128 ≤ a ∧ a < 160 then a+18 else a
+
+theorem copiedFour_getD (m : ByteArray) (a : Nat) :
+    (copiedFour m)[a]?.getD 0 = m[copiedAddress a]?.getD 0 := by
+  simp only [copiedFour, thirdPrefix, secondPrefix, firstPrefix,
+    HoistedInherited.SecondSnapshotCertificates.copy_getD, copiedAddress]
+  split_ifs <;> first | rfl | (exfalso; omega) | (congr 2; omega)
+
+def fanSource (a : Nat) : Source := scratchSourceV2 (copiedAddress a)
+def poolSource (i j : Nat) : Source := fanSource (HoistedInherited.Pair13PoolRaw.poolAddrV2 i+j)
+def resultSource (a : Nat) : Source :=
+  HoistedInherited.FusedTerminalCertificates.fusedStoreSources poolSource fanSource writes a
+
+/-- Garbage bytes need not be equal; all live arithmetic lanes must be. -/
+theorem lane_sources : ∀ j : Fin 61, ∀ k : Fin 4,
+    resultSource (18*j.val+10+k.val) = HoistedInherited.FusedTerminalCertificates.resultSource (18*j.val+10+k.val) ∧
+    resultSource (18*j.val+28+k.val) = HoistedInherited.FusedTerminalCertificates.resultSource (18*j.val+28+k.val) := by decide
+
+theorem clear_sources : ∀ a ∈ zeroAddressesV2, resultSource a = .zero := by decide
+
+theorem terminal_gap_sources : ∀ k : Fin 3, resultSource (608+k.val) = .zero := by decide
+
+theorem slack_sources : ∀ j : Fin 61, ∃ k : Fin 13,
+    resultSource (18*j.val+14+k.val) = .zero := by decide
+
+def fanMemory (m : ByteArray) (lo hi : UInt256) : ByteArray :=
+  copiedFour (HoistedInherited.Pair13Endian.scratchV2 m lo hi)
+
+def resultMemory (m : ByteArray) (lo hi : UInt256) : ByteArray :=
+  HoistedInherited.FusedTerminalMemory.writerMemory (fanMemory m lo hi) (HoistedInherited.Pair13PoolRaw.poolWordV2 (fanMemory m lo hi))
+
+theorem result_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
+    (resultMemory m lo hi)[a]?.getD 0 = m[a]?.getD 0 := by
+  unfold resultMemory HoistedInherited.FusedTerminalMemory.writerMemory
+  have he : writes.map (fun x => (x.1, HoistedInherited.FusedTerminalMemory.storedWord (HoistedInherited.Pair13PoolRaw.poolWordV2 (fanMemory m lo hi)) x)) =
+      writes.map (fun x => (x.1, if x.1 = 594 then
+        UInt256.land HoistedInherited.Pair13PoolRaw.poolMask (HoistedInherited.Pair13PoolRaw.poolWordV2 (fanMemory m lo hi) x.2)
+        else HoistedInherited.Pair13PoolRaw.poolWordV2 (fanMemory m lo hi) x.2)) := rfl
+  rw [he]
+  have houtside {mem : ByteArray} {ws : List (Nat × Nat)}
+      (f : Nat × Nat → UInt256) (hb : ∀ x ∈ ws, x.1 + 32 ≤ a) :
+      (HoistedInherited.Pair13WriterRaw.writeChain mem (ws.map (fun x => (x.1, f x))))[a]?.getD 0 = mem[a]?.getD 0 := by
+    induction ws generalizing mem with
+    | nil => rfl
+    | cons x xs ih =>
+      simp only [List.map_cons, HoistedInherited.Pair13WriterRaw.writeChain_cons]
+      rw [ih (fun y hy => hb y (List.mem_cons_of_mem _ hy)), HoistedInherited.Shared32Scratch.writeWord_getD,
+        if_neg (by have := hb x (List.mem_cons_self ..); omega)]
+  rw [houtside _ (fun x hx => (HoistedInherited.PoolCertificates.writes_bound x hx).1.trans ha)]
+  rw [fanMemory, copiedFour_getD, copiedAddress,
+    if_neg (by omega), if_neg (by omega), if_neg (by omega), if_neg (by omega),
+    HoistedInherited.Pair13Endian.scratchV2, HoistedInherited.Shared32Scratch.writeWord_getD, if_neg (by omega),
+    HoistedInherited.Shared32Scratch.writeWord_getD, if_neg (by omega)]
+
+theorem read_result_outside (m : ByteArray) (lo hi : UInt256) (a : Nat) (ha : 1112 ≤ a) :
+    MachineState.readWord (resultMemory m lo hi) a = MachineState.readWord m a := by
+  apply Word.word_ext
+  rw [Bytes.readWord_toNat, Bytes.readWord_toNat]
+  exact StaggerTableMemory.bytesToNatPadded_congrOffset _ _ _ _ _
+    (fun i _ => result_outside m lo hi (a+i) (by omega))
+
+
+theorem fan_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
+    (fanMemory m lo hi)[a]?.getD 0 = (fanSource a).eval m lo hi := by
+  rw [fanMemory, copiedFour_getD, fanSource]
+  exact scratchV2_shape m lo hi hc _
+
+theorem pool_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
+    (i j : Nat) (hj : j < 32) :
+    PoolByte.byte (HoistedInherited.Pair13PoolRaw.poolWordV2 (fanMemory m lo hi) i) j =
+      (poolSource i j).eval m lo hi := by
+  rw [HoistedInherited.Pair13PoolRaw.poolWordV2, HoistedInherited.Pair13PoolRaw.rawLoadV2, PoolByte.read _ _ _ hj,
+    fan_shape m lo hi hc]
+  rfl
+
+theorem result_shape (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (a : Nat) :
+    (resultMemory m lo hi)[a]?.getD 0 = (resultSource a).eval m lo hi := by
+  unfold resultMemory HoistedInherited.FusedTerminalMemory.writerMemory resultSource
+  exact HoistedInherited.FusedTerminalMemory.writeChain_shape _ m lo hi _ _ _ writes (fan_shape m lo hi hc)
+    (fun x _ j hj => pool_shape m lo hi hc x.2 j hj) a
+
+theorem result_lanes (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
+    (j : Nat) (hj : j < 61) :
+    (MachineState.readWord (resultMemory m lo hi) (18*j)).toNat % 2^32 =
+      (MachineState.readWord (HoistedInherited.FusedTerminalMemory.resultMemory m lo hi) (18*j)).toNat % 2^32 ∧
+    (MachineState.readWord (resultMemory m lo hi) (18*j)).toNat / 2^144 % 2^32 =
+      (MachineState.readWord (HoistedInherited.FusedTerminalMemory.resultMemory m lo hi) (18*j)).toNat / 2^144 % 2^32 := by
+  constructor
+  · rw [HoistedInherited.PoolFacts.low_value, HoistedInherited.PoolFacts.low_value]
+    apply StaggerTableMemory.bytesToNatPadded_congrOffset
+    intro k hk
+    rw [result_shape m lo hi hc, HoistedInherited.FusedTerminalMemory.result_shape m lo hi hc,
+      (lane_sources ⟨j,hj⟩ ⟨k,hk⟩).2]
+  · rw [HoistedInherited.PoolFacts.high_value, HoistedInherited.PoolFacts.high_value]
+    apply StaggerTableMemory.bytesToNatPadded_congrOffset
+    intro k hk
+    rw [result_shape m lo hi hc, HoistedInherited.FusedTerminalMemory.result_shape m lo hi hc,
+      (lane_sources ⟨j,hj⟩ ⟨k,hk⟩).1]
+
+theorem result_clear (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) :
+    ClearV2 (resultMemory m lo hi) := by
+  intro a ha
+  rw [result_shape m lo hi hc, clear_sources a ha]
+  rfl
+
+theorem result_slack (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) (j : Nat) (hj : j < 61) :
+    (MachineState.readWord (resultMemory m lo hi) (18*j)).toNat % 2^144 + 2^40 ≤ 2^144 := by
+  obtain ⟨k,hk⟩ := slack_sources ⟨j,hj⟩
+  apply HoistedInherited.PoolFacts.zero_byte_slack _ (14+k.val) (by omega) (by omega)
+  rw [PoolByte.read _ _ _ (by omega), result_shape m lo hi hc]
+  rw [show 18*j+(14+k.val) = 18*j+14+k.val by omega, hk]
+  rfl
+
+theorem result_terminal_bound (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m) :
+    (MachineState.readWord (resultMemory m lo hi) 594).toNat % 2^144 < 2^120 := by
+  have h := StaggerTableMemory.readWord_mod_pow (resultMemory m lo hi) 594 18 (by decide)
+  change (MachineState.readWord (resultMemory m lo hi) 594).toNat % 2^144 =
+    Precompile.bytesToNatPadded (resultMemory m lo hi) 608 18 at h
+  rw [h, show (18:Nat)=3+15 from rfl, Bytes.bytesToNatPadded_add,
+    HoistedInherited.PoolFacts.window_zero (resultMemory m lo hi) 608 3 (fun k hk => by
+      rw [result_shape m lo hi hc, terminal_gap_sources ⟨k, hk⟩]
+      rfl)]
+  simpa using Bytes.bytesToNatPadded_lt_pow (resultMemory m lo hi) (608+3) 15
+
+theorem ready (m : ByteArray) (lo hi : UInt256) (hc : ClearV2 m)
+    (words : Nat → UInt32)
+    (h : StaggerMessage.Ready (HoistedInherited.FusedTerminalMemory.resultMemory m lo hi) words) :
+    StaggerMessage.Ready (resultMemory m lo hi) words := by
+  constructor
+  · intro i hi77
+    apply Or.inr
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · by_cases hi76 : i = 76
+      · subst i
+        apply Or.inr
+        have haddr : 18 * StaggerTableLayout.pairIndices[76]! = 594 := by decide
+        simp only [StaggerCoreModel.message, ite_self, haddr]
+        exact result_terminal_bound m lo hi hc
+      · exact Or.inl hi76
+    · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+      have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).1
+      simp only [StaggerCoreModel.message, ite_self] at hp ⊢
+      exact ((result_lanes m lo hi hc _ ht).1).trans hp
+    · have ht := (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+      have hp := (StaggerAlgorithm.message_lanes _ _ _ (h.paired i hi77)).2
+      simp only [StaggerCoreModel.message, ite_self] at hp ⊢
+      exact ((result_lanes m lo hi hc _ ht).2).trans hp
+    · simp only [StaggerCoreModel.message, ite_self]
+      exact result_slack m lo hi hc _ (StaggerTableLayout.layout_valid ⟨i,hi77⟩).2.1
+  · intro j hj
+    apply UInt32.toNat_inj.mp
+    have hp := congrArg UInt32.toNat (h.scalar j hj)
+    exact ((result_lanes m lo hi hc j hj).1).trans hp
+
+/-! The guard candidate exchanges two stores after the snapshot loads.  The
+canonical result below is still the old masked schedule memory, not a new
+byte-source model. -/
+
+def writerWrites0 (words : Nat → UInt256) : List (Nat × UInt256) :=
+  [(900, words 9), (216, words 10), (882, words 3), (126, words 11),
+   (864, words 11), (846, words 3)]
+
+def writerWrites3 (words : Nat → UInt256) : List (Nat × UInt256) :=
+  [(1062, words 13), (972, words 3), (1008, words 15), (648, words 15),
+   (630, words 10), (612, words 15), (738, words 8), (288, words 7)]
+
+def writerMemory0 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
+  HoistedInherited.Pair13WriterRaw.writeChain memory (writerWrites0 words)
+
+def writerMemory3 (memory : ByteArray) (words : Nat → UInt256) : ByteArray :=
+  HoistedInherited.Pair13WriterRaw.writeChain memory (writerWrites3 words)
+
+def writerWrites (words : Nat → UInt256) : List (Nat × UInt256) :=
+  writerWrites0 words ++ HoistedInherited.Pc792Writer.writes1 words ++ HoistedInherited.Pc792Writer.writes2 words ++
+    writerWrites3 words ++ HoistedInherited.Pc792Writer.writes4 words ++ HoistedInherited.Pc792Writer.writes5 words
+
+/-- Byte-array equality to the old writer order, without clean-word or memory
+assumptions. D11 is schedule word 10; D6 is schedule word 15. -/
+theorem writerWrites_eq_old (memory : ByteArray) (words : Nat → UInt256) :
+    HoistedInherited.Pair13WriterRaw.writeChain memory (writerWrites words) =
+      HoistedInherited.Pair13WriterRaw.writeChain memory (HoistedInherited.Pc792Writer.rawWrites words) := by
+  let tail := [(648, words 15), (630, words 10), (612, words 15),
+    (738, words 8), (288, words 7)] ++ HoistedInherited.Pc792Writer.writes4 words ++ HoistedInherited.Pc792Writer.writes5 words
+  change HoistedInherited.Pair13WriterRaw.writeChain (PairedScheduleMemory.writeWord memory 900 (words 9))
+      ((216, words 10) :: HoistedInherited.PoolRawWriter.paddingMiddle words ++ (1008, words 15) :: tail) =
+    HoistedInherited.Pair13WriterRaw.writeChain (PairedScheduleMemory.writeWord memory 900 (words 9))
+      ((1008, words 15) :: HoistedInherited.PoolRawWriter.paddingMiddle words ++ (216, words 10) :: tail)
+  exact HoistedInherited.PoolRawWriter.paddingStores_exchange _ words tail
+
+/-- After every writer store, the candidate has exactly the old canonical
+masked schedule image, including all bytes outside the schedule. -/
+theorem writer_memory_eq (memory : ByteArray) (words : Nat → UInt256) :
+    HoistedInherited.Pair13WriterRaw.writeChain memory (writerWrites words) =
+      HoistedInherited.FusedTerminalMemory.writerMemory memory words := by
+  rw [writerWrites_eq_old, HoistedInherited.Pc792Writer.memory_eq]
+
+theorem writer_chunks_eq (memory : ByteArray) (words : Nat → UInt256) :
+    HoistedInherited.Pc792Writer.memory5 (HoistedInherited.Pc792Writer.memory4
+      (writerMemory3 (HoistedInherited.Pc792Writer.memory2 (HoistedInherited.Pc792Writer.memory1
+        (writerMemory0 memory words) words) words) words) words) words =
+      HoistedInherited.FusedTerminalMemory.writerMemory memory words := by
+  rw [← writer_memory_eq]
+  simp only [writerMemory0, writerMemory3, HoistedInherited.Pc792Writer.memory1, HoistedInherited.Pc792Writer.memory2,
+    HoistedInherited.Pc792Writer.memory4, HoistedInherited.Pc792Writer.memory5, writerWrites, HoistedInherited.Pair13WriterRaw.writeChain_append]
+
+#print axioms writer_memory_eq
+#print axioms ready
+#print axioms result_shape
+#print axioms copiedFour_getD
+#print axioms lane_sources
+#print axioms clear_sources
+#print axioms terminal_gap_sources
+#print axioms slack_sources
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.BackwardSnapshotMemory
