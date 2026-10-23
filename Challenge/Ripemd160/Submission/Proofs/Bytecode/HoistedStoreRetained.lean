@@ -16,7 +16,7 @@ def template : Piece → List Instr
   | .result => DirectLiteralRawV4.resultTemplate
   | .success => successTemplate
 
-def index : Piece → Nat | .data => 5040 | .result => 5201 | .success => 5203
+def index : Piece → Nat | .data => 5022 | .result => 5183 | .success => 5185
 def pc : Piece → Nat | .data => 8157 | .result => 9416 | .success => 9420
 
 theorem actual_slice (p : Piece) :

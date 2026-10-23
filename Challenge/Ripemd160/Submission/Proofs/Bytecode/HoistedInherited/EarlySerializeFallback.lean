@@ -108,12 +108,12 @@ private def wfOp {op : Operation}
 
 /-- Include the destination JUMPDEST, so the result is precisely PC 246. -/
 private def cleanupPath : List (DataStepper.Located HoistedInherited.Artifact.submissionArtifact .Osaka) :=
-  [⟨3475, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3476, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3477, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3478, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3479, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
-   ⟨3480, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3457, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3458, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3459, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3460, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3461, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
+   ⟨3462, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨125, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def cleared (input : ByteArray) : State :=
@@ -128,12 +128,12 @@ def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
     pc := UInt256.ofNat 4785, stack := rho }
 
 private theorem cleanup_pcs :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3475 = 4785 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3476 = 4786 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3477 = 4787 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3478 = 4788 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3479 = 4789 ∧
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 3480 = 4791 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3457 = 4785 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3458 = 4786 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3459 = 4787 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3460 = 4788 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3461 = 4789 ∧
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 3462 = 4791 ∧
     HoistedInherited.Artifact.submissionArtifact.instructionPC 125 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

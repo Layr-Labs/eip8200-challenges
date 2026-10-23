@@ -21,8 +21,8 @@ def site : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submiss
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 2241 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 1478) = UInt256.ofNat 2241
+theorem site_pc : site.startPC = UInt256.ofNat 2259 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 1478) = UInt256.ofNat 2259
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, HoistedInherited.ModFoldLift.Advances instruction := by
   apply HoistedInherited.ModFoldLift.advancesAll_sound
@@ -35,10 +35,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 2241, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 2297, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired27.outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 2241) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 2241) template = UInt256.ofNat 2297 := by decide
+    GasSteps {s with pc := UInt256.ofNat 2259, stack := inputStack x rho}
+      {s with pc := UInt256.ofNat 2315, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired27.outputStack s.memory x rho} := by
+  have hraw := run_actual s (UInt256.ofNat 2259) x rho hstack hrun hactive
+  have hend : pcAfter (UInt256.ofNat 2259) template = UInt256.ofNat 2315 := by decide
   rw [hend] at hraw
   exact HoistedInherited.ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

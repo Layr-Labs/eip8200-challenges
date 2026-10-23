@@ -18,49 +18,49 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located HoistedInherited.Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3540 = 4905 := by
+@[simp] theorem pc_176 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3522 = 4905 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_4095 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3405 = 4647 := by
+@[simp] theorem pc_4095 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3405 = 4665 := by
   exact HoistedInherited.GuardInstructionWindow.pc 0
-@[simp] theorem pc_4096 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3406 = 4680 := by
+@[simp] theorem pc_4096 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3406 = 4698 := by
   exact HoistedInherited.GuardInstructionWindow.pc 1
-@[simp] theorem pc_4097 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3407 = 4681 := by
+@[simp] theorem pc_4097 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3407 = 4699 := by
   exact HoistedInherited.GuardInstructionWindow.pc 2
-@[simp] theorem pc_4098 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3408 = 4682 := by
+@[simp] theorem pc_4098 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3408 = 4700 := by
   exact HoistedInherited.GuardInstructionWindow.pc 3
-@[simp] theorem pc_4101 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3409 = 4683 := by
+@[simp] theorem pc_4101 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3409 = 4701 := by
   exact HoistedInherited.GuardInstructionWindow.pc 4
-@[simp] theorem pc_4102 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3410 = 4684 := by
+@[simp] theorem pc_4102 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3410 = 4702 := by
   exact HoistedInherited.GuardInstructionWindow.pc 5
-@[simp] theorem pc_4103 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3411 = 4685 := by
+@[simp] theorem pc_4103 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3411 = 4703 := by
   exact HoistedInherited.GuardInstructionWindow.pc 6
-@[simp] theorem pc_4104 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3412 = 4688 := by
+@[simp] theorem pc_4104 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3412 = 4706 := by
   exact HoistedInherited.GuardInstructionWindow.pc 7
-@[simp] theorem pc_4105 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3413 = 4689 := by
+@[simp] theorem pc_4105 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3413 = 4707 := by
   exact HoistedInherited.GuardInstructionWindow.pc 8
-@[simp] theorem pc_241 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3414 = 4710 := by
+@[simp] theorem pc_241 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3414 = 4728 := by
   exact HoistedInherited.GuardInstructionWindow.pc 9
-@[simp] theorem pc_inlineStore : HoistedInherited.Artifact.submissionArtifact.instructionPC 3415 = 4711 := by
+@[simp] theorem pc_inlineStore : HoistedInherited.Artifact.submissionArtifact.instructionPC 3415 = 4729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_inlineMsize : HoistedInherited.Artifact.submissionArtifact.instructionPC 3416 = 4712 := by
+@[simp] theorem pc_inlineMsize : HoistedInherited.Artifact.submissionArtifact.instructionPC 3416 = 4730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_inlineZero : HoistedInherited.Artifact.submissionArtifact.instructionPC 3417 = 4713 := by
+@[simp] theorem pc_inlineZero : HoistedInherited.Artifact.submissionArtifact.instructionPC 3417 = 4731 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_inlineReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 3418 = 4714 := by
+@[simp] theorem pc_inlineReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 3418 = 4732 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyDest : HoistedInherited.Artifact.submissionArtifact.instructionPC 4379 = 7019 := by
+@[simp] theorem pc_emptyDest : HoistedInherited.Artifact.submissionArtifact.instructionPC 4361 = 7019 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyPush : HoistedInherited.Artifact.submissionArtifact.instructionPC 4380 = 7020 := by
+@[simp] theorem pc_emptyPush : HoistedInherited.Artifact.submissionArtifact.instructionPC 4362 = 7020 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyZero0 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4381 = 7041 := by
+@[simp] theorem pc_emptyZero0 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4363 = 7041 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyStore : HoistedInherited.Artifact.submissionArtifact.instructionPC 4382 = 7042 := by
+@[simp] theorem pc_emptyStore : HoistedInherited.Artifact.submissionArtifact.instructionPC 4364 = 7042 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyMsize : HoistedInherited.Artifact.submissionArtifact.instructionPC 4383 = 7043 := by
+@[simp] theorem pc_emptyMsize : HoistedInherited.Artifact.submissionArtifact.instructionPC 4365 = 7043 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyZero1 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4384 = 7044 := by
+@[simp] theorem pc_emptyZero1 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4366 = 7044 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 4385 = 7045 := by
+@[simp] theorem pc_emptyReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 4367 = 7045 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def wordMaskNat : Nat :=
@@ -69,7 +69,7 @@ def wordMaskNat : Nat :=
 def wordMask : UInt256 := UInt256.ofNat wordMaskNat
 
 def entryDest : Located :=
-  ⟨3540, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
+  ⟨3522, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
 
 def wordPath : List Located :=
     [⟨3405, .push ⟨32, by decide⟩ wordMask, by exact HoistedInherited.GuardInstructionWindow.get 0, by decide⟩,
@@ -93,14 +93,14 @@ def finishPath : List Located :=
    ⟨3418, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def emptyStorePath : List Located :=
-  [⟨4379, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4380, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
-   ⟨4381, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨4382, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨4361, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4362, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
+   ⟨4363, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4364, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def emptyFinishPath : List Located :=
-  [⟨4384, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨4385, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨4366, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4367, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def maskedWord (input : ByteArray) : UInt256 :=
   MachineState.readWord input 0
@@ -111,7 +111,7 @@ def shiftedWord (input : ByteArray) : UInt256 :=
 def wordCond (input : ByteArray) : UInt256 :=
   UInt256.xor (shiftedWord input) wordMask
 
-def armEntry (input : ByteArray) : State := HoistedInherited.Execution.atPC input 4647
+def armEntry (input : ByteArray) : State := HoistedInherited.Execution.atPC input 4665
 def emptyEntry (input : ByteArray) : State := HoistedInherited.Execution.atPC input 7019
 def fallbackState (input : ByteArray) : State := HoistedInherited.Execution.atPC input 4906
 def answerWord (input : ByteArray) : UInt256 :=
@@ -123,14 +123,14 @@ def answerMemory (input : ByteArray) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (answerBytes input) 0
 def stored (input : ByteArray) : State :=
   {initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4712
+    pc := UInt256.ofNat 4730
     memory := answerMemory input
     activeWords := UInt256.ofNat 1}
 def sized (input : ByteArray) : State :=
-  {stored input with pc := UInt256.ofNat 4713, stack := [UInt256.ofNat 32]}
+  {stored input with pc := UInt256.ofNat 4731, stack := [UInt256.ofNat 32]}
 def returned (input : ByteArray) : State :=
   {stored input with
-    pc := UInt256.ofNat 4714
+    pc := UInt256.ofNat 4732
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory input) 0 32}
 def emptyStored (input : ByteArray) : State :=
@@ -161,7 +161,7 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
   simpa using ht
 
 private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 4905 = true := by
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3540 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3522 (by rfl)
   rw [pc_176] at h
   exact h
 
@@ -207,15 +207,15 @@ def wordBranch : Located :=
   ⟨3412, .op .JUMPI, by exact HoistedInherited.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩
 def wordLoaded (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4683
+    pc := UInt256.ofNat 4701
     stack := [UInt256.ofNat input.size, maskedWord input, wordMask] }
 def wordShifted (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4684
+    pc := UInt256.ofNat 4702
     stack := [shiftedWord input, wordMask] }
 def wordTested (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 4688
+    pc := UInt256.ofNat 4706
     stack := [UInt256.ofNat 4905, wordCond input] }
 
 private theorem run_word_head (input : ByteArray) :
@@ -267,27 +267,27 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
       some (PatternedScan.stS input 4905 []) :=
     PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 3412 4688 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
-      (PatternedScan.stepS_jumpi_taken input 4688 4905 (UInt256.ofNat 4905) (wordCond input) []
+      (PatternedScan.pcFactS input 3412 4706 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.stepS_jumpi_taken input 4706 4905 (UInt256.ofNat 4905) (wordCond input) []
         (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
   have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 4905 []) =
       some (fallbackState input) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 3540 4905 [] (by norm_num) pc_176)
+      (PatternedScan.pcFactS input 3522 4905 [] (by norm_num) pc_176)
       (PatternedScan.stepS_jumpdest input 4905 [] (by simp) (by norm_num))
   exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd
 
 theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
-    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (HoistedInherited.Execution.atPC input 4689) := by
+    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (HoistedInherited.Execution.atPC input 4707) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   exact PatternedScan.blockOfS wordBranch
-    (PatternedScan.pcFactS input 3412 4688 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
-    (PatternedScan.stepS_jumpi_fall input 4688 (UInt256.ofNat 4905) (wordCond input) []
+    (PatternedScan.pcFactS input 3412 4706 [UInt256.ofNat 4905, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 4706 (UInt256.ofNat 4905) (wordCond input) []
       (by simp) (by norm_num) ht)
 
 theorem run_store (input : ByteArray) (hne : input.size ≠ 0) :
-    DataStepper.runLocatedBlock storePath (HoistedInherited.Execution.atPC input 4689) = some (stored input) := by
+    DataStepper.runLocatedBlock storePath (HoistedInherited.Execution.atPC input 4707) = some (stored input) := by
   simp (config := { maxSteps := 1000000 })
     [storePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
      DataStepper.runInstr, PatternedScan.stS, HoistedInherited.Execution.atPC, stored, answerMemory, answerBytes,
@@ -355,12 +355,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size
 def gasSteps_empty_hit (input : ByteArray) (hz : input.size = 0) :
     GasSteps (emptyEntry input) (emptyReturned input) := by
   have gs := sound emptyStorePath (run_empty_store input hz)
-  have hd := HoistedInherited.Artifact.submissionArtifact.decodeAt_op_index 4383 .MSIZE
+  have hd := HoistedInherited.Artifact.submissionArtifact.decodeAt_op_index 4365 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (emptyStored input).pc.toNat = HoistedInherited.Artifact.submissionArtifact.instructionPC 4383 := by
+  have hp : (emptyStored input).pc.toNat = HoistedInherited.Artifact.submissionArtifact.instructionPC 4365 := by
     rw [pc_emptyMsize]; rfl
   have hop : (emptyStored input).decodedOp = some .MSIZE :=
-    HoistedInherited.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 4383 rfl hp .MSIZE none hd rfl
+    HoistedInherited.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 4365 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (emptyStored input) (emptySized input) := by

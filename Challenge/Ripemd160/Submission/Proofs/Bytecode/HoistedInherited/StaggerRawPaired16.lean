@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.FoldedRound16
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16Raw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Table80SiteCommon
 set_option warningAsError true
@@ -9,7 +10,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Stagge
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16
-abbrev template := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16.template
+abbrev template := FoldedRound16.template
 abbrev inputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16.inputStack
 abbrev outputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16.outputStack
 theorem actual_slice :
@@ -31,14 +32,15 @@ theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances inst
 def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 35 ≤ s.activeWords.toNat)
+    (hx : x.v5 = UInt256.ofNat 34535016170389834383797866734609369064725060249452544)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 1730, stack := inputStack x rho}
-      {s with pc := UInt256.ofNat 1776, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16.outputStack s.memory x rho} := by
-  have hraw := run_actual s (UInt256.ofNat 1730) x rho hstack hrun hactive
-  have hend : pcAfter (UInt256.ofNat 1730) template = UInt256.ofNat 1776 := by decide
+      {s with pc := UInt256.ofNat 1794, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired16.outputStack s.memory x rho} := by
+  have hraw := FoldedRound16.run_original s (UInt256.ofNat 1730) x rho hstack hrun hactive hx
+  have hend : pcAfter (UInt256.ofNat 1730) template = UInt256.ofNat 1794 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 #print axioms gasSteps

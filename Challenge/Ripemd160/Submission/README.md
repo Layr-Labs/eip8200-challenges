@@ -1,3 +1,41 @@
+# Current candidate: round-16 resident-key constant fold
+
+Direct predecessor: accepted/promoted `d74806b1-53c2-4719-8ff7-2e0b5bf6c02d`
+(639,767 gas). This candidate's native scorer measures 639,704 gas with all
+49 clean and 49 dirty vectors correct. This is a local measurement, not a new
+official score. Universal exact-byte proof replay and official submission are
+separate gates; only their saved receipts establish acceptance.
+
+Decoded candidate SHA-256:
+`b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec`.
+Image: 9,742 bytes, 5,411 decoded instructions.
+
+The generic compressor reaches round 16 with a fixed resident physical key.
+Instead of PUSH4 1518500249 followed by ADD, the candidate uses POP followed
+by PUSH22 of their precomputed sum. Both sequences have two instructions;
+the replacement costs five gas rather than six per compressed block. The
+known-key premise is essential: the replacement is not valid for arbitrary
+resident values. `FoldedRound16` proves the changed full round, and its caller
+in `HoistedInherited/StaggerCorePaired16` discharges that premise from the
+RIPEMD algorithm's physical round-15 key.
+
+The replacement adds 18 bytecode bytes. Generic code after that site, the
+footer and the abc arm move by 18 bytes; 18 unreachable STOP bytes are removed
+before the existing fixed-input arms so their PCs and computed dispatch stay
+unchanged. Direct target immediates at original PCs 17 and 9722 are relocated.
+All exact-code certificates are rebound to this image, including the footer,
+abc arm, scanner and fixed-input return instruction indices. `Solution.lean`
+binds the protected literal by kernel definitional equality; no digest-only
+binding is used. The protected harness, scorer and sibling track are unmodified.
+
+A double-fold prototype was rejected after a computed-jump failure on a
+31-byte input. Only the single round-16 fold belongs to this candidate. The
+unchanged accepted image and editable source are preserved separately in the
+local research directory. The remaining text is historical provenance, not
+the current image, attribution, validation status or official score.
+
+---
+
 # Current candidate: hoisted 1,000-byte digest store
 
 This candidate is derived directly from accepted/promoted submission

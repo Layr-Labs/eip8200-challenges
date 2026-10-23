@@ -44,19 +44,19 @@ def tailPC : Fin 13 → Nat
  | ⟨11, _⟩ => 7829
  | ⟨12, _⟩ => 5690
 def tailIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4830
- | ⟨1, _⟩ => 3494
- | ⟨2, _⟩ => 4238
- | ⟨3, _⟩ => 3740
- | ⟨4, _⟩ => 4292
- | ⟨5, _⟩ => 3618
- | ⟨6, _⟩ => 4274
- | ⟨7, _⟩ => 4733
- | ⟨8, _⟩ => 3800
- | ⟨9, _⟩ => 4355
- | ⟨10, _⟩ => 3772
- | ⟨11, _⟩ => 4976
- | ⟨12, _⟩ => 3828
+ | ⟨0, _⟩ => 4812
+ | ⟨1, _⟩ => 3476
+ | ⟨2, _⟩ => 4220
+ | ⟨3, _⟩ => 3722
+ | ⟨4, _⟩ => 4274
+ | ⟨5, _⟩ => 3600
+ | ⟨6, _⟩ => 4256
+ | ⟨7, _⟩ => 4715
+ | ⟨8, _⟩ => 3782
+ | ⟨9, _⟩ => 4337
+ | ⟨10, _⟩ => 3754
+ | ⟨11, _⟩ => 4958
+ | ⟨12, _⟩ => 3810
 def returnPC : Fin 13 → Nat
  | ⟨0, _⟩ => 7669
  | ⟨1, _⟩ => 4865
@@ -245,9 +245,9 @@ theorem run_small (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length 
   simpa only [tailTemplate,atState,DenseScheduleTrace.pcAfter_append,he,apply_ite] using hall
 
 theorem valid_fallback : Decode.isValidJumpDest HoistedInherited.Artifact.submissionArtifact.code 4785 = true := by
-  have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC 3475 = 4785 := by
+  have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC 3457 = 4785 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3475 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3457 (by rfl)
   rw [hp] at h
   exact h
 

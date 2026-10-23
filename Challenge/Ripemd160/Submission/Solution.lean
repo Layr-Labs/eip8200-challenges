@@ -21,6 +21,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode :=
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Decoded SHA-256: fd29aa8c61320a5d6c839368fe558801e6629669bebc87b9e1439f3491449dd9.
--- 9742 bytes, 5429 instructions. Hoisted digest store and memory-size return.
+-- Decoded SHA-256: b844e471494039d3daed485682178156e0602a84e6b213cc6463d85130bd8cec.
+-- 9742 bytes, 5411 instructions. Round-16 resident-key constant fold.
 -- Only the protected benchmark is authoritative for correctness and gas.

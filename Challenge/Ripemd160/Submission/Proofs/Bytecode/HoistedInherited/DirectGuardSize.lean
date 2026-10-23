@@ -7,7 +7,7 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 20000000
 set_option linter.unusedSimpArgs false
 
-/-! The size gate jumps to the patterned guard at 4565. The retained-word
+/-! The size gate jumps to the patterned guard at 4583. The retained-word
 anchor paths are lifted separately by `RetainedTerminalMul.ActualBridge`. -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.DirectGuard
@@ -15,7 +15,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Direct
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open HoistedInherited.KnownInputCompactState
 
-def guardEntry (input : ByteArray) : State := atPC input 4565
+def guardEntry (input : ByteArray) : State := atPC input 4583
 
 /-- `UInt256.eq` is `if a.toNat = b.toNat then 1 else 0`, and both operands are
 below `2 ^ 256`, so the test reduces to the underlying `Nat` comparison. -/
@@ -91,7 +91,7 @@ theorem sizeWord_false (input : ByteArray) (h : input.size = 1000) :
 
 theorem run_size_prefix (input : ByteArray) :
     run sizePrefix (PatternedScan.stS input 12 []) =
-      some (PatternedScan.stS input 20 [4565, sizeWord input]) := by
+      some (PatternedScan.stS input 20 [4583, sizeWord input]) := by
   let n := UInt256.ofNat input.size
   let l0 : Located := opAt 6 .CALLDATASIZE
   have h0 := PatternedScan.blockOfS l0
@@ -105,10 +105,10 @@ theorem run_size_prefix (input : ByteArray) :
   have h2 := PatternedScan.blockOfS l2
     (PatternedScan.pcFactS input 8 16 [1000, n] (by norm_num) pc_g8)
     (PatternedScan.stepS_sub input 16 1000 n [] (by simp) (by norm_num))
-  let l3 : Located := pushAt 9 2 4565
+  let l3 : Located := pushAt 9 2 4583
   have h3 := PatternedScan.blockOfS l3
     (PatternedScan.pcFactS input 9 17 [1000 - n] (by norm_num) pc_g9)
-    (PatternedScan.stepS_push input 17 2 4565 [1000 - n]
+    (PatternedScan.stepS_push input 17 2 4583 [1000 - n]
       (by simp) (by decide) (by decide) (by norm_num))
   have hseq1 := DataStepper.runLocatedBlock_append [l0] [l1] _ _ _ h0 rfl h1
   have hseq2 := DataStepper.runLocatedBlock_append [l0, l1] [l2] _ _ _ hseq1 rfl h2
@@ -117,13 +117,13 @@ theorem run_size_prefix (input : ByteArray) :
 
 theorem run_size_taken (input : ByteArray) (hfit : CalldataFits input)
     (hne : input.size ≠ 1000) :
-    run sizePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 4565 []) := by
+    run sizePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 4583 []) := by
   have hj : run [opAt 10 .JUMPI]
-      (PatternedScan.stS input 20 [4565, sizeWord input]) =
-      some (PatternedScan.stS input 4565 []) := by
+      (PatternedScan.stS input 20 [4583, sizeWord input]) =
+      some (PatternedScan.stS input 4583 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 10 20 _ (by norm_num) pc_g10)
-      (PatternedScan.stepS_jumpi_taken input 20 4565 4565 _ []
+      (PatternedScan.stepS_jumpi_taken input 20 4583 4583 _ []
         (by simp) (by norm_num) (by simpa using Word.literal_eq_ofNat _)
         (sizeWord_isTrue input hfit hne) HoistedInherited.Artifact.validJumpDest_4601)
   exact DataStepper.runLocatedBlock_append sizePrefix [opAt 10 .JUMPI] _ _ _
@@ -132,11 +132,11 @@ theorem run_size_taken (input : ByteArray) (hfit : CalldataFits input)
 theorem run_size_fall (input : ByteArray) (h : input.size = 1000) :
     run sizePath (PatternedScan.stS input 12 []) = some (PatternedScan.stS input 21 []) := by
   have hj : run [opAt 10 .JUMPI]
-      (PatternedScan.stS input 20 [4565, sizeWord input]) =
+      (PatternedScan.stS input 20 [4583, sizeWord input]) =
       some (PatternedScan.stS input 21 []) := by
     exact PatternedScan.blockOfS _
       (PatternedScan.pcFactS input 10 20 _ (by norm_num) pc_g10)
-      (PatternedScan.stepS_jumpi_fall input 20 4565 _ [] (by simp) (by norm_num)
+      (PatternedScan.stepS_jumpi_fall input 20 4583 _ [] (by simp) (by norm_num)
         (sizeWord_false input h))
   exact DataStepper.runLocatedBlock_append sizePrefix [opAt 10 .JUMPI] _ _ _
     (run_size_prefix input) rfl hj

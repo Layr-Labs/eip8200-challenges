@@ -8,9 +8,9 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open HoistedStoreSites
 
 theorem valid_data : Decode.isValidJumpDest HoistedStoreArtifact.code 8157 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 5040 = 8157 := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 5022 = 8157 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 5040 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 5022 (by rfl)
   rw [hp] at h
   exact h
 

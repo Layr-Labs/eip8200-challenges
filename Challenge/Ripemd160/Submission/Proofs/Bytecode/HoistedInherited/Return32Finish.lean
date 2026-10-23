@@ -83,15 +83,15 @@ theorem stages_advances : ∀ instruction ∈ stagesCode, DenseScheduleLift.Adva
 /-! ## The artifact sites -/
 
 theorem stages_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5393).take stagesCode.length = stagesCode := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5375).take stagesCode.length = stagesCode := by rfl
 def stagesSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka stagesCode :=
-  StackSiteBuilder.ofSlice stagesCode 5393 stages_slice
-    (by change 5393 + stagesCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice stagesCode 5375 stages_slice
+    (by change 5375 + stagesCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := stagesCode) (by decide)) (by decide)
 theorem stages_pc : stagesSite.startPC = UInt256.ofNat 9691 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5393) = UInt256.ofNat 9691
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5375) = UInt256.ofNat 9691
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem stages_end : stagesSite.endPC = UInt256.ofNat 9709 := by
   have h := endPC_eq_pcAfter_sites stagesSite.sites stagesSite.startPC stagesSite.endPC
@@ -100,15 +100,15 @@ theorem stages_end : stagesSite.endPC = UInt256.ofNat 9709 := by
   exact h.trans (by decide)
 
 theorem terminal_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5405).take terminalCode.length = terminalCode := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5387).take terminalCode.length = terminalCode := by rfl
 def terminalSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka terminalCode :=
-  StackSiteBuilder.ofSlice terminalCode 5405 terminal_slice
-    (by change 5405 + terminalCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice terminalCode 5387 terminal_slice
+    (by change 5387 + terminalCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := terminalCode) (by decide)) (by decide)
 theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 9709 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5405) = UInt256.ofNat 9709
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5387) = UInt256.ofNat 9709
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_stages (s : State) (value a b m8 m16 : UInt256) (rest : List UInt256)

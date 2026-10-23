@@ -51,30 +51,30 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
   all_goals repeat first | apply And.intro | rfl
 
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5375).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5357).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 5375 actual_slice
-    (by change 5375 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 5357 actual_slice
+    (by change 5357 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 9668 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5375) = UInt256.ofNat 9668
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5357) = UInt256.ofNat 9668
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   HoistedInherited.Table80SiteCommon.coreAdvancesAll_sound template (by decide)
 
 def entryTemplate : List Instr := [.op .JUMPDEST]
 theorem entry_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5374).take entryTemplate.length = entryTemplate := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5356).take entryTemplate.length = entryTemplate := by rfl
 def entrySite : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka entryTemplate :=
-  StackSiteBuilder.ofSlice entryTemplate 5374 entry_slice
-    (by change 5374 + entryTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice entryTemplate 5356 entry_slice
+    (by change 5356 + entryTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := entryTemplate) (by decide)) (by decide)
 theorem entry_pc : entrySite.startPC = UInt256.ofNat 9667 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5374) = UInt256.ofNat 9667
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5356) = UInt256.ofNat 9667
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_entry (s : State) (rho : List UInt256) (hstack : rho.length < 1024)

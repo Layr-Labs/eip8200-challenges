@@ -34,8 +34,8 @@ theorem stepS_lt (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UIn
   rw [if_pos (by simpa using hlen)]
   simp only [PatternedScan.stS, Challenge.EvmProof.Word.succ_ofNat hpc]
 
-theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4565 = true := by
-  have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 3383 = 4565 := by
+theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4583 = true := by
+  have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 3383 = 4583 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
   have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3383 (by rfl)
