@@ -1,3 +1,19 @@
+# MODEXP Direct Width-Dispatch Retarget Into CRT Entry (`PC 4260 -> PC 5615`, 392,702 Gas)
+
+Direct predecessor: accepted/promoted `de134b66-a42c-4b03-a575-3f9318a88ad8`
+(commit `3297ede58e412dbb58bf2f948a754abc91f56df7` by `fkiene`, official score
+**392,726 gas**). This candidate retargets the `n = 8` width-dispatch branch in
+`R4Hooks.h1Program` at PC 4260 from the trampoline at PC 4816 (`0x12d0`)
+directly to the CRT entry block at PC 5615 (`0x15ef`), saving 12 gas per `n = 8`
+CRT invocation (**24 gas total** across both `n = 8` vectors, reducing the
+score from **392,726 gas** to **392,702 gas**).
+
+Decoded executable SHA-256:
+`3e28ec1bf5cfd5a1c67c70fde631461703143294af57cf8b0b19d140d5498789`.
+Executable size: 10,915 bytes, 8,722 instructions.
+
+---
+
 # MODEXP v14: cancelled carries and temporary quotient caches
 
 The candidate uses **392,554 gas** on the 44 seed-zero vectors, compared with

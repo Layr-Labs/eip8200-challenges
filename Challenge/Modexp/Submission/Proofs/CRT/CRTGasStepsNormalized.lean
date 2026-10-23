@@ -26,6 +26,19 @@ def entry (s : State) (mem : ByteArray) (f : CRTLoopFrames.Frame) (pbi ent : UIn
   exact g.cast rfl (entry_normalize s mem f pbi ent)
 #print axioms entry
 
+/-- `entry` without the 4816 hook: the initial dispatch lands on 5615 directly. -/
+def entryDirect (s : State) (mem : ByteArray) (f : CRTLoopFrames.Frame) (pbi ent : UInt256)
+    (env : Environment Artifact.submissionArtifact .Osaka s)
+    (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
+    GasSteps (atOld s mem 5615 (UInt256.ofNat 0) pbi ent f)
+      (atCache s (entryMemory mem f.counter) 5859 (inputWord mem 0)
+        (MachineState.readWord mem 2720) f) := by
+  have g := CRTGasSteps.gasSteps_entryDirect {s with memory := mem} pbi (UInt256.ofNat 5297)
+    f.w3 ent f.m32 CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv
+    (UInt256.ofNat 0) f.aprev f.counter f.ret f.rest (env.transfer rfl rfl) hcap hact
+  exact g.cast rfl (entry_normalize s mem f pbi ent)
+#print axioms entryDirect
+
 def kernel (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : CRTLoopFrames.Frame)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
