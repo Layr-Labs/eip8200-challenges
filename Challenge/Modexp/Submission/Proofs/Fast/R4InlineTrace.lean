@@ -97,14 +97,14 @@ def gasSteps_red0 (ret v : UInt256) (P : W5) (k n0 n1 n2 n3 np : UInt256) (rest 
     (hminv : (n0.toNat * np.toNat + 1) % 2^256 = 0)
     (hguard : np ≠ UInt256.ofNat 1) :
     GasSteps { s with pc := UInt256.ofNat 9093,
-                      stack := v :: win0 P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
+                      stack := win0 P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
       { s with pc := UInt256.ofNat 9188,
-               stack := win1 (red n0 n1 n2 n3 np k P v) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
+               stack := win1 (red n0 n1 n2 n3 np k P (⟨0⟩ : UInt256)) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win0, win1]
   seg block_redm_0 (run_redm_0 s ret v P.t3 P.t2 P.t1 P.t0 P.t4 k n0 n1 n2 n3 np rest (by omega) hk hminv hguard)
-  seg block_reds1_0 (run_reds1_0 s _ _ ret (hcap := by lenOK) ..)
-  seg block_reds2_0 (run_reds2_0 s _ _ ret (hcap := by lenOK) ..)
-  seg block_reds3_0 (run_reds3_0 s _ _ ret (hcap := by lenOK) ..)
+  seg block_reds1_0 (run_reds1_0 s _ _ ret v (hcap := by lenOK) ..)
+  seg block_reds2_0 (run_reds2_0 s _ _ ret v (hcap := by lenOK) ..)
+  seg block_reds3_0 (run_reds3_0 s _ _ ret v (hcap := by lenOK) ..)
   exact SquareRow.stepsOf block_redt_0 (run_redt_0 s _ _ ret (hcap := by lenOK) (hjd := hjd) ..) rfl
     hcode hfork hrun hnp
 
@@ -174,8 +174,7 @@ def gasSteps_row0 (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List UInt256)
     (ha3 : MachineState.readWord s.memory 2112 = a3) :
     GasSteps { s with pc := UInt256.ofNat 9021, stack := dHi a0 k :: (a0 * a0) :: (a0 + a0) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest }
       { s with pc := UInt256.ofNat 9093,
-               stack := (⟨0⟩ : UInt256) ::
-                 win0 (row0 a0 a1 a2 a3 k) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
+               stack := win0 (row0 a0 a1 a2 a3 k) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4621 = true := by rw [hcode]; exact jd5158
   simp only [win0]
   seg block_r0z1_0 (run_r0z1_0 s (hcap := by lenOK) (ha1 := ha1) (hact := hact) ..)
