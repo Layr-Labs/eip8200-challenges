@@ -49,10 +49,10 @@ def zLoopProgram : List Instr :=
    .push 2 1024,
    .op .ADD,
    .op .MLOAD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
    .op .OR,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .POP,
    .op (.Dup ⟨0, by decide⟩),
    .push 1 254,
    .op .JUMPI]
