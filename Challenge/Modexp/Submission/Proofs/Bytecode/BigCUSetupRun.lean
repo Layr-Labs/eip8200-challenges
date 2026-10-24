@@ -49,17 +49,17 @@ def zLoopProgram : List Instr :=
    .push 2 1024,
    .op .ADD,
    .op .MLOAD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .op (.Swap ⟨2, by decide⟩),
    .op .OR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
    .push 1 254,
    .op .JUMPI]
 
 /-- Exact U raw interval [290,295). -/
 def zExitProgram : List Instr :=
   [.op .POP,
+   .op .JUMPDEST,
    .push 2 281,
    .op .JUMPI]
 
@@ -90,7 +90,7 @@ structure SetupJumps (code : ByteArray) : Prop where
 structure SetupBlocks (artifact : ProgramArtifact) where
   setup : Block artifact .Osaka 219 setupProgram
   zLoop : Block artifact .Osaka 254 zLoopProgram
-  zExit : Block artifact .Osaka 272 zExitProgram
+  zExit : Block artifact .Osaka 271 zExitProgram
   zeroRet : Block artifact .Osaka 277 zeroRetProgram
   nz : Block artifact .Osaka 281 nzProgram
   jumps : SetupJumps artifact.code
@@ -121,7 +121,7 @@ theorem run_zLoop_exit (s : State) (acc : UInt256)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zLoopProgram
       (st s 254 (UInt256.ofNat 1 :: acc :: rest) mem AW) =
-        some (st s 272 (UInt256.ofNat 0 ::
+        some (st s 271 (UInt256.ofNat 0 ::
           UInt256.lor acc (MachineState.readWord mem 1024) :: rest) mem AW) := by
   have hc := caps _ hcap
   have hdec := dec_ofNat 1 (by omega) (by norm_num)
@@ -133,7 +133,7 @@ theorem run_zExit_nz (s : State) (acc : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hacc : acc.toNat ≠ 0)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zExitProgram
-      (st s 272 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
+      (st s 271 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
         some (st s 281 rest mem AW) := by
   have hc := caps _ hcap
   u_run [zExitProgram, hc, hJ.j236, hJ.j271, hJ.j295, hJ.j299, hacc]
@@ -142,7 +142,7 @@ theorem run_zExit_zero (s : State) (acc : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hacc : acc.toNat = 0)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zExitProgram
-      (st s 272 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
+      (st s 271 (UInt256.ofNat 0 :: acc :: rest) mem AW) =
         some (st s 277 rest mem AW) := by
   have hc := caps _ hcap
   u_run [zExitProgram, hc, hJ.j236, hJ.j271, hJ.j295, hJ.j299, hacc]

@@ -64,10 +64,10 @@ theorem redt_0Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13
   have h := (runInstructions_append_some _ _ _ _ _ g0 g1)
   simpa only [redt_0Old, List.append_assoc] using h
 
-def redt_0NewP0 : List Instr := [.op (.Dup ⟨7, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .op .POP, .op (.Swap ⟨5, by decide⟩)]
+def redt_0NewP0 : List Instr := [.op (.Dup ⟨6, by decide⟩), .op .ADD, .op (.Swap ⟨4, by decide⟩), .op .POP, .op (.Swap ⟨4, by decide⟩)]
 theorem redt_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1007) :
-    runInstructions redt_0NewP0 { s with pc := UInt256.ofNat 9178, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest } =
-    some { s with pc := UInt256.ofNat 9183, stack := x7 :: x2 :: x3 :: x4 :: x5 :: (x7 + x0) :: x1 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest } := by
+    runInstructions redt_0NewP0 { s with pc := UInt256.ofNat 9178, stack := x0 :: x1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest } =
+    some { s with pc := UInt256.ofNat 9183, stack := x7 :: x3 :: x4 :: x5 :: (x7 + x0) :: x1 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -87,10 +87,10 @@ theorem redt_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
   have hc16 : rest.length + 16 < 1024 := by omega
   simp [redt_0NewP0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16]
 
-def redt_0NewP1 : List Instr := [.op (.Dup ⟨5, by decide⟩), .op .LT, .op .ADD, .op (.Swap ⟨4, by decide⟩), .op .POP]
+def redt_0NewP1 : List Instr := [.op (.Dup ⟨4, by decide⟩), .op .LT, .op .JUMPDEST, .op (.Swap ⟨4, by decide⟩), .op .POP]
 theorem redt_0NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1007) :
-    runInstructions redt_0NewP1 { s with pc := UInt256.ofNat 9183, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } =
-    some { s with pc := UInt256.ofNat 9188, stack := x2 :: x3 :: x4 :: x5 :: ((UInt256.lt x5 x0) + x1) :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } := by
+    runInstructions redt_0NewP1 { s with pc := UInt256.ofNat 9183, stack := x0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } =
+    some { s with pc := UInt256.ofNat 9188, stack := x2 :: x3 :: x4 :: x5 :: (UInt256.lt x5 x0) :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -111,8 +111,8 @@ theorem redt_0NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 :
 
 def redt_0New : List Instr := redt_0NewP0 ++ redt_0NewP1
 theorem redt_0New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1007) :
-    runInstructions redt_0New { s with pc := UInt256.ofNat 9178, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: rest } =
-    some { s with pc := UInt256.ofNat 9188, stack := z3 :: z4 :: z5 :: (z7 + z0) :: ((UInt256.lt (z7 + z0) z7) + z2) :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: rest } := by
+    runInstructions redt_0New { s with pc := UInt256.ofNat 9178, stack := z0 :: z1 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: rest } =
+    some { s with pc := UInt256.ofNat 9188, stack := z3 :: z4 :: z5 :: (z7 + z0) :: (UInt256.lt (z7 + z0) z7) :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: rest } := by
   have g0 := redt_0NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) (z12) (z13) rest hcap
   have g1 := redt_0NewP1_run s (z7) (z2) (z3) (z4) (z5) ((z7 + z0)) (z1) (z8) (z9) (z10) (z11) (z12) (z13) rest hcap
   have h := (runInstructions_append_some _ _ _ _ _ g0 g1)
@@ -122,19 +122,13 @@ def redt_0Perm : List UInt256 → List UInt256
   | v0 :: v1 :: v2 :: v3 :: v4 :: v5 :: v6 :: v7 :: v8 :: v9 :: v10 :: rest => v1 :: v2 :: v3 :: v0 :: v4 :: v5 :: v6 :: v7 :: v8 :: v9 :: v10 :: rest
   | xs => xs
 
-theorem run_redt_0 (s : State) (c m ret v p3 q2 q1 q0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
+theorem run_redt_0 (s : State) (c m ret p3 q2 q1 q0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1007)
     (hjd : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
     runInstructions redt_0New
-      { s with pc := UInt256.ofNat 9178, stack := c :: m :: v :: q2 :: q1 :: q0 :: p3 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 9188, stack := q2 :: q1 :: q0 :: (p4 + c) :: (v + (UInt256.lt (p4 + c) p4)) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
-  have ho := redt_0Old_run s (c) (m) (ret) (v) (p3) (q2) (q1) (q0) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap hjd
-  have hc := R4Runs.run_redt s c m ret v p3 q2 q1 q0 p4 k n0 n1 n2 n3 np rest hcap hjd
-  change runInstructions redt_0Old _ = _ at hc
-  have he := congrArg State.stack (Option.some.inj (ho.symm.trans hc))
-  have hp := congrArg redt_0Perm he
-  simp only [redt_0Perm] at hp
-  have hn := redt_0New_run s (c) (m) (v) (q2) (q1) (q0) (p3) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap
-  simpa only [hp] using hn
+      { s with pc := UInt256.ofNat 9178, stack := c :: m :: q2 :: q1 :: q0 :: p3 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
+    some { s with pc := UInt256.ofNat 9188, stack := q2 :: q1 :: q0 :: (p4 + c) :: ((⟨0⟩ : UInt256) + (UInt256.lt (p4 + c) p4)) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+  have hn := redt_0New_run s (c) (m) (⟨0⟩) (q2) (q1) (q0) (p3) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap
+  simpa [zero_add_w] using hn
 #print axioms run_redt_0
 end Challenge.Modexp.Submission.Proofs.Fast.R4InlineTransport
