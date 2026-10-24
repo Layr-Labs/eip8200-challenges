@@ -2324,13 +2324,13 @@ def overflowpart0Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 1760,
    .op .MSTORE,
-   .push 2 8800]
+   .push 2 8324]
 
 def overflowpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1600
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 192)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1760
-  {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
+  {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8324) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
 
 theorem overflowpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
@@ -2386,13 +2386,13 @@ def overflowProgram : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 1760,
    .op .MSTORE,
-   .push 2 8800]
+   .push 2 8324]
 
 def overflowModel (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1600
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 192)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1760
-  {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+  {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8324) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
 
 theorem overflow_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
@@ -2401,7 +2401,7 @@ theorem overflow_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd 
   let v0 : UInt256 := MachineState.readWord s.memory 1600
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 192)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1760
-  have h0 : runInstructions overflowpart0Program {s with pc := UInt256.ofNat 8129, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h0 : runInstructions overflowpart0Program {s with pc := UInt256.ofNat 8129, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8324) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [overflowpart0Model, v0, v1, v2] using overflowpart0_run (s) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   exact h0
 

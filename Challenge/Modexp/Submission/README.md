@@ -1,3 +1,69 @@
+# MODEXP v15: in-domain overflow handler for the eight-digit squaring loop
+
+This submission keeps every byte of the promoted v14 image (`de134b66`, commit
+`3297ede5`) except two places: the target of the squaring footer's overflow branch
+(one `PUSH2` immediate at pc 8141) and the dead `PUSH0`/`PUSH1 00` sled at pc 8324..8799,
+which now holds a 198-instruction (286-byte) overflow handler. The sled keeps its 476 bytes and
+384 instructions, so no other pc or instruction index moves.
+
+## What changes
+
+The eight-digit mixed-radix Montgomery squaring loop (pc 5858) produces
+`T = (A² + M·N)/R` with `T < R + N`. When `T ≥ R` (the "overflow" flag at 0x6e0 is
+nonzero), v14 leaves the mixed-radix domain: it converts the column words to 256-bit
+limbs (pc 8800), subtracts `N` on limbs (pc 4037), copies the result and re-enters the
+kernel through the conversion at pc 5615. That round trip costs about 849 gas more than
+an ordinary iteration, and the RSA-2048 `e = 65537` vector meets it about three times per
+corpus draw on average (never on seed 0).
+
+The handler at pc 8324 does what the ordinary footer does — counter test, decrement,
+repack of the column words into the nine 244-bit digits at 0x300..0x400, jump to 5858 —
+and subtracts the modulus digits (already on the stack) while repacking. Each borrow is
+the sign bit of the 256-bit difference word. When the counter is zero (overflow on the
+last square) it jumps to pc 8800 exactly as before, so that path is unchanged.
+
+| | v14 | v15 |
+|---|---:|---:|
+| Seed-0 score | 392,554 | 392,554 |
+| Mean over 1,000 official-corpus seeds | 395,417 | 393,452 |
+| Paired mean delta | | −1,965 |
+| P(score < 392,726) | 0.038 | 0.174 |
+| P(lower than v14 on the same seed) | | 0.950 |
+| Worst paired delta | | +23 |
+
+The +23 case is an overflow on the last square only: the handler's counter test costs
+23 gas before jumping to the unchanged exit.
+
+Decoded executable SHA-256 (v15):
+`d4b3fb3af0afe234f09feec9fac1738bd855feb869de9cc3ca6ca26a88989141`. The v14 section below keeps the parent's hash.
+
+## Proof map (new and changed)
+
+- `Proofs/CRT/OverflowHandlerExecution.lean` (generated): the handler's two straight-line
+  programs, their symbolic models, part-wise `simp` run lemmas and control lemmas, in the
+  same style as `CRTKernelExecution.lean`.
+- `Proofs/CRT/OverflowHandlerArith.lean`: the 244-bit borrow step on 256-bit words
+  (`sub_step`, `top_step`) and `sub_digits`, which telescopes the borrows with
+  `MixedMontgomery.carryTelescopes` and reads the digits of `Q − N` back.
+- `Proofs/CRT/OverflowHandlerMeaning.lean`: `handlerMemory` in cell form,
+  `handler_model` (generated model = cell form), `handler_represents` (the new digits
+  represent `Q − N` when `R ≤ Q < R + N`), counter and liveness facts.
+- `Fast/CRTArtifactBlocks.lean`: the handler's four artifact blocks and `validJump8324`.
+- `CRT/CRTKernelExecution.lean`, `CRTControl.lean`, `CRTGasSteps.lean`,
+  `CRTGasStepsNormalized.lean`, `CRTLoopFrames.lean`: the overflow branch targets 8324;
+  gas-step and normalization lemmas for the handler.
+- `CRT/PureLoop.lean`: `next` uses `handlerMemory` on overflow; `one_round` uses
+  `handler_represents`. `LoopInvariant`, `CRTLoopInduction`, `CRTLoopOperations`,
+  `CRTLoopRouting`, `CRTLoopComplete`: the overflow round runs the handler and loops; the
+  last round reaches 8800 through the handler's counter test.
+- `CRT/CRTOverflowMore.lean` is removed (the old re-entry route is no longer used by the
+  loop).
+
+All inherited attribution (the v14 text below, `dependencies.json`, `REUSE_PROVENANCE.md`,
+`REDRAW.md`) is kept unchanged.
+
+---
+
 # MODEXP v14: cancelled carries and temporary quotient caches
 
 The candidate uses **392,554 gas** on the 44 seed-zero vectors, compared with

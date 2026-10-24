@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.CRT.CRTAdapterMeaning
 import Challenge.Modexp.Submission.Proofs.CRT.CRTLoopArithmetic
 import Challenge.Modexp.Submission.Proofs.CRT.CRTControl
+import Challenge.Modexp.Submission.Proofs.CRT.OverflowHandlerMeaning
 import Challenge.Modexp.Submission.Proofs.CRT.StateIndependence
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFrames
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareExit
@@ -113,7 +114,7 @@ def overflowState (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UI
 
 theorem overflow_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
     overflowState s mem n minv f = atCache s (checkedMemory mem)
-      (if (UInt256.shiftRight (rawDigits mem 8) (UInt256.ofNat 192)).toNat = 0 then 8145 else 8800)
+      (if (UInt256.shiftRight (rawDigits mem 8) (UInt256.ofNat 192)).toNat = 0 then 8145 else 8324)
       n minv f := by
   by_cases hz : (UInt256.shiftRight (MachineState.readWord mem 1600) (UInt256.ofNat 192)).toNat = 0 <;>
     simp [overflowState, conditionalModel, overflowModel, checkedMemory, CRTMemoryCells.writeCell,
@@ -144,6 +145,35 @@ theorem retain_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (mi
     retainState s mem n minv f = atCache s (retainedMemory mem) 5859 n minv f := by
   unfold retainState
   rw [show maskWord = UInt256.ofNat (2^244-1) from rfl, retain_model]
+  rfl
+
+def handlerCountState (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) : State :=
+  conditionalModel (HistoricalSearch.OverflowHandler.handlerCountModel {s with memory := mem} modulusWord
+    (n 0) (n 1) (n 2) (n 3) (n 4) (n 5) (n 6) (n 7) (n 8) maskWord minv
+    (UInt256.ofNat 0) (UInt256.ofNat 5297) f.w3 (UInt256.ofNat 3643) f.m32
+    CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv (UInt256.ofNat 0)
+    f.aprev f.counter f.ret f.rest)
+
+theorem handlerCount_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
+    handlerCountState s mem n minv f = atCache s mem
+      (if (MachineState.readWord mem 1728).toNat = 0 then 8800 else 8334) n minv f := by
+  by_cases hz : (MachineState.readWord mem 1728).toNat = 0 <;>
+    simp [handlerCountState, HistoricalSearch.OverflowHandler.handlerCountModel, conditionalModel,
+      atCache, cache, saved, Challenge.EvmProof.Word.word_toNat_isZero, hz,
+      Challenge.EvmProof.Word.succ_ofNat_mod]
+
+def handlerBodyState (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) : State :=
+  resumeModel (HistoricalSearch.OverflowHandler.handlerBodyModel {s with memory := mem} modulusWord
+    (n 0) (n 1) (n 2) (n 3) (n 4) (n 5) (n 6) (n 7) (n 8) maskWord minv
+    (UInt256.ofNat 0) (UInt256.ofNat 5297) f.w3 (UInt256.ofNat 3643) f.m32
+    CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv (UInt256.ofNat 0)
+    f.aprev f.counter f.ret f.rest)
+
+theorem handlerBody_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
+    handlerBodyState s mem n minv f =
+      atCache s (HistoricalSearch.OverflowHandlerMeaning.handlerMemory mem maskWord n) 5859 n minv f := by
+  unfold handlerBodyState
+  rw [show maskWord = UInt256.ofNat (2^244-1) from rfl, HistoricalSearch.OverflowHandlerMeaning.handler_model]
   rfl
 
 def atOld (s : State) (mem : ByteArray) (pc : Nat) (tn pbi ent : UInt256) (f : Frame) : State :=
@@ -182,4 +212,6 @@ theorem saved_length (f : Frame) : (saved f).length = 16+f.rest.length := by
 #print axioms count_normalize
 #print axioms retain_normalize
 #print axioms exit_normalize
+#print axioms handlerCount_normalize
+#print axioms handlerBody_normalize
 end HistoricalSearch.CRTLoopFrames

@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.CRT.CRTLoopArithmetic
 import Challenge.Modexp.Submission.Proofs.CRT.LegacyNormalize
 import Challenge.Modexp.Submission.Proofs.CRT.StateIndependence
+import Challenge.Modexp.Submission.Proofs.CRT.OverflowHandlerMeaning
 set_option warningAsError true
 set_option linter.unusedVariables false
 set_option maxHeartbeats 6000000
@@ -63,9 +64,11 @@ def raw (mem : ByteArray) : ByteArray := (result {s with memory := mem} minv n [
 def Q (mem : ByteArray) : Nat := CRTWordPacking.value (rawDigits (raw s minv n mem))
 def checked (mem : ByteArray) : ByteArray := checkedMemory (raw s minv n mem)
 def finish (mem : ByteArray) : ByteArray := tailMemory (exitMemory (checked s minv n mem)) (Q s minv n mem)
+/-- One loop round: the footer repacks a non-overflowing result; on overflow the
+handler at 8324 repacks while subtracting the modulus digit by digit. -/
 def next (remaining : Nat) (mem : ByteArray) : ByteArray :=
   if Q s minv n mem < R then retainedMemory (checked s minv n mem)
-  else entryMemory (finish s minv n mem) (UInt256.ofNat (remaining-1))
+  else OverflowHandlerMeaning.handlerMemory (checked s minv n mem) ConcreteArithmetic.maskWord n
 
 def memory : Nat → ByteArray → ByteArray
   | 0, mem => mem
@@ -97,8 +100,8 @@ theorem next_live (remaining : Nat) (mem : ByteArray) : Live (next s minv n rema
     rw [retained_keep _ addr 32 (by omega)]
     exact checked_live s minv n mem addr hd
   · unfold MachineState.readWord
-    rw [entry_keep _ _ addr 32 (by omega)]
-    exact finish_live s minv n mem addr hd
+    rw [OverflowHandlerMeaning.handler_keep _ _ _ addr 32 (by omega)]
+    exact checked_live s minv n mem addr hd
 
 theorem memory_live (k : Nat) (mem : ByteArray) : Live (memory s minv n k mem) mem := by
   induction k generalizing mem with
@@ -132,7 +135,20 @@ theorem one_round (mem : ByteArray) (A N : Nat) (ha : Represents mem A)
     rw [hv]
     exact retained_represents (raw s minv n mem) hc.1 hlt
   · rw [if_neg hlt]
-    exact entry_represents _ _ _ hf
+    have hv : MixedMontgomery.normalize R N (Q s minv n mem) = Q s minv n mem - N := by
+      simp [MixedMontgomery.normalize, show R ≤ Q s minv n mem from by omega]
+    rw [hv]
+    have hd' : ∀ i < 9, (rawDigits (checked s minv n mem) i).toNat < 2^244 := by
+      intro i hi
+      rw [checked, checked_digits _ i hi]
+      exact hc.1 i hi
+    have hval : CRTWordPacking.value (rawDigits (checked s minv n mem)) = Q s minv n mem := by
+      rw [checked, checked_value]
+      rfl
+    have h := OverflowHandlerMeaning.handler_represents (checked s minv n mem) n N hd' hnlow hnhigh hN
+      (by rw [hval]; exact Nat.le_of_not_lt hlt) (by rw [hval]; exact hc.2.1)
+    rw [hval] at h
+    exact h
 
 theorem square_congr (N a b : Nat) (h : a%N=b%N) :
     Model.montMul N R a a = Model.montMul N R b b := by

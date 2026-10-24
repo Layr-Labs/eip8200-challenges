@@ -46,7 +46,7 @@ def overflow (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps (atCache s mem 8129 n minv f)
       (atCache s (checkedMemory mem)
-        (if (UInt256.shiftRight (rawDigits mem 8) (UInt256.ofNat 192)).toNat = 0 then 8145 else 8800) n minv f) := by
+        (if (UInt256.shiftRight (rawDigits mem 8) (UInt256.ofNat 192)).toNat = 0 then 8145 else 8324) n minv f) := by
   have g := CRTGasSteps.gasSteps_overflow {s with memory := mem}
     modulusWord (n 0) (n 1) (n 2) (n 3) (n 4) (n 5) (n 6) (n 7) (n 8) maskWord minv (UInt256.ofNat 0) (UInt256.ofNat 5297) f.w3 (UInt256.ofNat 3643) f.m32 CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv (UInt256.ofNat 0) f.aprev f.counter f.ret f.rest (env.transfer rfl rfl) hcap hact
   exact g.cast rfl (overflow_normalize s mem n minv f)
@@ -71,6 +71,26 @@ def retain (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) 
     modulusWord (n 0) (n 1) (n 2) (n 3) (n 4) (n 5) (n 6) (n 7) (n 8) maskWord minv (UInt256.ofNat 0) (UInt256.ofNat 5297) f.w3 (UInt256.ofNat 3643) f.m32 CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv (UInt256.ofNat 0) f.aprev f.counter f.ret f.rest (env.transfer rfl rfl) hcap hact
   exact g.cast rfl (retain_normalize s mem n minv f)
 #print axioms retain
+
+def handlerCount (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : CRTLoopFrames.Frame)
+    (env : Environment Artifact.submissionArtifact .Osaka s)
+    (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
+    GasSteps (atCache s mem 8324 n minv f)
+      (atCache s mem (if (MachineState.readWord mem 1728).toNat = 0 then 8800 else 8334) n minv f) := by
+  have g := CRTGasSteps.gasSteps_handlerCount {s with memory := mem}
+    modulusWord (n 0) (n 1) (n 2) (n 3) (n 4) (n 5) (n 6) (n 7) (n 8) maskWord minv (UInt256.ofNat 0) (UInt256.ofNat 5297) f.w3 (UInt256.ofNat 3643) f.m32 CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv (UInt256.ofNat 0) f.aprev f.counter f.ret f.rest (env.transfer rfl rfl) hcap hact
+  exact g.cast rfl (handlerCount_normalize s mem n minv f)
+#print axioms handlerCount
+
+def handlerBody (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : CRTLoopFrames.Frame)
+    (env : Environment Artifact.submissionArtifact .Osaka s)
+    (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
+    GasSteps (atCache s mem 8334 n minv f)
+      (atCache s (HistoricalSearch.OverflowHandlerMeaning.handlerMemory mem maskWord n) 5859 n minv f) := by
+  have g := CRTGasSteps.gasSteps_handlerBody {s with memory := mem}
+    modulusWord (n 0) (n 1) (n 2) (n 3) (n 4) (n 5) (n 6) (n 7) (n 8) maskWord minv (UInt256.ofNat 0) (UInt256.ofNat 5297) f.w3 (UInt256.ofNat 3643) f.m32 CiosCached.allOnes f.m128 f.m64 f.m0 f.tl f.m96 f.inv (UInt256.ofNat 0) f.aprev f.counter f.ret f.rest (env.transfer rfl rfl) hcap hact
+  exact g.cast rfl (handlerBody_normalize s mem n minv f)
+#print axioms handlerBody
 
 def exit (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : CRTLoopFrames.Frame)
     (env : Environment Artifact.submissionArtifact .Osaka s)

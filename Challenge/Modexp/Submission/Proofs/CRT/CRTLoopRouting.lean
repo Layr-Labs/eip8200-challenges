@@ -49,7 +49,12 @@ def lastExit (mem : ByteArray) (f : CRTLoopFrames.Frame) (N A : Nat)
       rw [checked_counter, h.counter]
     rw [if_pos hc] at g2
     exact g1.trans g2
-  · simpa only [if_neg hlt] using g1
+  · rw [if_neg hlt] at g1
+    have g2 := CRTGasStepsNormalized.handlerCount s (checked s minv n mem) n minv f env hcap hact
+    have hc : (MachineState.readWord (checked s minv n mem) 1728).toNat = 0 := by
+      rw [checked_counter, h.counter]
+    rw [if_pos hc] at g2
+    exact g1.trans g2
 
 def lastFrame (mem : ByteArray) (f : CRTLoopFrames.Frame) : CRTLoopFrames.Frame :=
   {f with aprev := cachedTop (checked s minv n mem), counter := CiosCached.allOnes}

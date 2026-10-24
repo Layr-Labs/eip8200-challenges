@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.Modexp.Submission.Proofs.CRT.CRTKernelExecution
 import Challenge.Modexp.Submission.Proofs.CRT.CRTControlBase
+import Challenge.Modexp.Submission.Proofs.CRT.OverflowHandlerExecution
 import Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 set_option warningAsError true
@@ -88,6 +89,34 @@ def block_exitBranch : Block Artifact.submissionArtifact .Osaka 8976 HistoricalS
     (by rw [CRTSliceFast.locations_map]; rfl)
     (by decide)
 
+def block_handlerCount : Block Artifact.submissionArtifact .Osaka 8324 HistoricalSearch.OverflowHandler.handlerCountProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6435 5 8324 HistoricalSearch.OverflowHandler.handlerCountProgram
+    (by change 6435 + 5 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6435 + 5 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [CRTSliceFast.locations_map]; rfl)
+    (by decide)
+
+def block_handlerCountBranch : Block Artifact.submissionArtifact .Osaka 8333 HistoricalSearch.CRTControl.jumpiProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6440 1 8333 HistoricalSearch.CRTControl.jumpiProgram
+    (by change 6440 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6440 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [CRTSliceFast.locations_map]; rfl)
+    (by decide)
+
+def block_handlerBody : Block Artifact.submissionArtifact .Osaka 8334 HistoricalSearch.OverflowHandler.handlerBodyProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6441 191 8334 HistoricalSearch.OverflowHandler.handlerBodyProgram
+    (by change 6441 + 191 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6441 + 191 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [CRTSliceFast.locations_map]; rfl)
+    (by decide)
+
+def block_handlerBodyBranch : Block Artifact.submissionArtifact .Osaka 8609 HistoricalSearch.CRTControl.jumpProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 6632 1 8609 HistoricalSearch.CRTControl.jumpProgram
+    (by change 6632 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 6632 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
+    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [CRTSliceFast.locations_map]; rfl)
+    (by decide)
+
 def block_loopHead : Block Artifact.submissionArtifact .Osaka 5858 HistoricalSearch.CRTControl.jumpDestProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 4608 1 5858 HistoricalSearch.CRTControl.jumpDestProgram
     (by change 4608 + 1 ≤ Artifact.submissionInstructions.length; exact Nat.le_trans (by decide : 4608 + 1 ≤ 8722) (Nat.le_of_eq Artifact.submissionInstructions_count.symm))
@@ -126,5 +155,13 @@ theorem pc_8800 : Artifact.submissionArtifact.instructionPC 6819 = 8800 := by
 theorem validJump8800 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 8800 = true := by
   have h := Artifact.isValidJumpDest_index 6819 (by rfl)
   simpa only [Artifact.instructionPC, pc_8800] using h
+
+theorem pc_8324 : Artifact.submissionArtifact.instructionPC 6435 = 8324 := by
+  rw [PCFast.instructionPC_eq_byteLength]
+  rfl
+
+theorem validJump8324 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 8324 = true := by
+  have h := Artifact.isValidJumpDest_index 6435 (by rfl)
+  simpa only [Artifact.instructionPC, pc_8324] using h
 
 end Challenge.Modexp.Submission.Proofs.Fast.CRTArtifactBlocks

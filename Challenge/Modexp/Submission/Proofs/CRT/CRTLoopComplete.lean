@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.CRT.CRTLoopRouting
-import Challenge.Modexp.Submission.Proofs.CRT.CRTOverflowMore
 import Challenge.Modexp.Submission.Proofs.CRT.FinalProductBridge
 set_option warningAsError true
 set_option linter.unusedVariables false
@@ -31,8 +30,13 @@ noncomputable def advance
   · exact direct s minv n mem f N k A env hcap hact hk h hlt
   · have g1 := checkedRound s minv n mem f N (k+1) A env hcap hact h
     rw [if_neg hlt] at g1
-    have g2 := CRTOverflowMore.gasSteps s minv n mem f N k A hk h env hcap hact
-    have g := g1.trans g2
+    have g2 := CRTGasStepsNormalized.handlerCount s (checked s minv n mem) n minv f env hcap hact
+    have hc : (MachineState.readWord (checked s minv n mem) 1728).toNat ≠ 0 := by
+      rw [checked_counter, h.counter]
+      omega
+    rw [if_neg hc] at g2
+    have g3 := CRTGasStepsNormalized.handlerBody s (checked s minv n mem) n minv f env hcap hact
+    have g := (g1.trans g2).trans g3
     simpa only [next, nextFrame, if_neg hlt] using g
 
 #print axioms advance
@@ -76,7 +80,7 @@ noncomputable def operations
   advance := advance s minv n N env hact
   last := last s minv n N env hact hcds
 
-/-- Concrete retained loop: every direct/overflow branch is linked to the
+/-- Concrete retained loop: every direct/overflow-handler branch is linked to the
 installed instructions, then the existing final mixed product returns to690. -/
 noncomputable def run
     (env : Environment Artifact.submissionArtifact .Osaka s)

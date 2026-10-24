@@ -50,8 +50,8 @@ def gasSteps_overflow (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd
     GasSteps {s with pc := UInt256.ofNat 8129, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
       (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) := by
   have g0 := block_overflow.steps (s := {s with pc := UInt256.ofNat 8129, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}) (env.transfer rfl rfl) rfl (overflow_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact)
-  have hv : Decode.isValidJumpDest s.executionEnv.code 8800 = true := by
-    rw [env.code]; exact validJump8800
+  have hv : Decode.isValidJumpDest s.executionEnv.code 8324 = true := by
+    rw [env.code]; exact validJump8324
   have g1 := block_overflowBranch.steps (s := overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) (env.transfer rfl rfl) rfl
     (overflow_control s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hv)
   exact g0.trans g1
@@ -93,6 +93,43 @@ def gasSteps_retain (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w
   have g2 := block_loopHead.steps (s := jumpModel t) (et.transfer rfl rfl) rfl (jumpDest_run (jumpModel t) hd)
   exact (g0.trans g1).trans g2
 #print axioms gasSteps_retain
+
+def gasSteps_handlerCount (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
+    (env : Environment Artifact.submissionArtifact .Osaka s)
+    (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
+    GasSteps {s with pc := UInt256.ofNat 8324, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+      (conditionalModel (HistoricalSearch.OverflowHandler.handlerCountModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) := by
+  have g0 := block_handlerCount.steps (s := {s with pc := UInt256.ofNat 8324, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}) (env.transfer rfl rfl) rfl (HistoricalSearch.OverflowHandler.handlerCount_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact)
+  have hv : Decode.isValidJumpDest s.executionEnv.code 8800 = true := by
+    rw [env.code]; exact validJump8800
+  have g1 := block_handlerCountBranch.steps (s := HistoricalSearch.OverflowHandler.handlerCountModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) (env.transfer rfl rfl) rfl
+    (HistoricalSearch.OverflowHandler.handlerCount_control s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hv)
+  exact g0.trans g1
+#print axioms gasSteps_handlerCount
+
+def gasSteps_handlerBody (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
+    (env : Environment Artifact.submissionArtifact .Osaka s)
+    (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
+    GasSteps {s with pc := UInt256.ofNat 8334, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+      (resumeModel (HistoricalSearch.OverflowHandler.handlerBodyModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) := by
+  let t := HistoricalSearch.OverflowHandler.handlerBodyModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest
+  have g0 := block_handlerBody.steps (s := {s with pc := UInt256.ofNat 8334, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}) (env.transfer rfl rfl) rfl (HistoricalSearch.OverflowHandler.handlerBody_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact)
+  have et : Environment Artifact.submissionArtifact .Osaka t := env.transfer rfl rfl
+  have hv : Decode.isValidJumpDest t.executionEnv.code (UInt256.ofNat 5858).toNat = true := by
+    rw [et.code]; exact validJump5858
+  have hc : t.stack.length < 1024 := by
+    dsimp only [t, HistoricalSearch.OverflowHandler.handlerBodyModel]
+    simp only [List.length_cons]
+    omega
+  have g1 := block_handlerBodyBranch.steps et rfl
+    (jump_run t (UInt256.ofNat 5858) (t.stack.drop 1) rfl hc hv)
+  have hd : (jumpModel t).stack.length < 1024 := by
+    dsimp only [jumpModel, t, HistoricalSearch.OverflowHandler.handlerBodyModel]
+    simp only [List.drop_succ_cons, List.drop_zero, List.length_cons]
+    omega
+  have g2 := block_loopHead.steps (s := jumpModel t) (et.transfer rfl rfl) rfl (jumpDest_run (jumpModel t) hd)
+  exact (g0.trans g1).trans g2
+#print axioms gasSteps_handlerBody
 
 def gasSteps_exit (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (env : Environment Artifact.submissionArtifact .Osaka s)

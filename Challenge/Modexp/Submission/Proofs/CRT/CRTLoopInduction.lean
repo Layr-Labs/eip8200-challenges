@@ -11,9 +11,9 @@ open HistoricalSearch.CRTLoopFrames HistoricalSearch.LoopInvariant HistoricalSea
 
 variable (s : State) (minv : UInt256) (n : Nat → UInt256)
 
+/-- Both footer branches resume the loop with the saved frame unchanged. -/
 def nextFrame (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame) : CRTLoopFrames.Frame :=
-  if Q s minv n mem < R then f
-  else {f with aprev := CRTAdapterMeaning.cachedTop (checked s minv n mem), counter := UInt256.ofNat (k-1)}
+  if Q s minv n mem < R then f else f
 
 theorem nextFrame_rest (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame) :
     (nextFrame s minv n k mem f).rest = f.rest := by
@@ -24,11 +24,7 @@ theorem nextFrame_invariant (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame
     (h : Invariant (next s minv n k mem) n minv f N k A) :
     Invariant (next s minv n k mem) n minv (nextFrame s minv n k mem f) N k A := by
   unfold nextFrame
-  split
-  · exact h
-  · exact { toStatic := h.toStatic.flow _ _ f.ret f.rest,
-            operand := h.operand, counter := h.counter,
-            countPositive := h.countPositive, countBound := h.countBound }
+  split <;> exact h
 
 def finished (mem : ByteArray) (f : CRTLoopFrames.Frame) : State :=
   {s with pc := UInt256.ofNat 690, stack := f.rest, memory := StagedProduct.memory s mem 8}
@@ -45,7 +41,7 @@ structure Operations (N : Nat) where
     Challenge.EvmProof.GasSteps (atCache s mem 5859 n minv f)
       (finished s (finish s minv n mem) f)
 
-/-- Actual direct and overflow-reentry rounds compose for every allowed
+/-- Actual direct and overflow-handler rounds compose for every allowed
 counter, keeping the saved stack counter separate from mutable memory1728. -/
 noncomputable def run (N : Nat) (ops : Operations s minv n N)
     (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame) (A : Nat)

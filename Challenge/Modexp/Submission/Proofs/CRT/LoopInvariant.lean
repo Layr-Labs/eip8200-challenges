@@ -116,8 +116,8 @@ theorem next_counter (k : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16) (mem : ByteArray
   split
   · rw [retained_counter_toNat _ (by rw [checked_counter s minv n mem, hc]; omega),
       checked_counter s minv n mem, hc]
-  · rw [entry_counter, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt]
-    exact lt_of_le_of_lt (by omega : k-1 ≤ 16) (by norm_num)
+  · rw [OverflowHandlerMeaning.handler_counter_toNat _ _ _ (by rw [checked_counter s minv n mem, hc]; omega),
+      checked_counter s minv n mem, hc]
 
 theorem round_invariant (mem : ByteArray) (f : CRTLoopFrames.Frame) (N k A : Nat)
     (hk : 1 ≤ k) (h : Invariant mem n minv f N (k+1) A) :

@@ -11,21 +11,21 @@ open HistoricalSearch.GeneratedColumns
 
 theorem overflow_control (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 8800 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 8324 = true) :
     runInstructions jumpiProgram (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) = some (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) := by
   let t := overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest
   have hc : t.stack.length < 1024 := by
     dsimp only [t, overflowModel]
     simp only [List.length_cons]
     omega
-  exact jumpi_run t (UInt256.ofNat 8800) (t.stack.drop 1 |>.headD (UInt256.ofNat 0)) (t.stack.drop 2) (by rfl) hc hvalid
+  exact jumpi_run t (UInt256.ofNat 8324) (t.stack.drop 1 |>.headD (UInt256.ofNat 0)) (t.stack.drop 2) (by rfl) hc hvalid
 
 #print axioms overflow_control
 
 theorem overflow_complete_of_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256) (before : State)
     (hrun : runInstructions overflowProgram before = some (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest))
     (hcap : rest.length ≤ 982)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 8800 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 8324 = true) :
     runInstructions (overflowProgram ++ jumpiProgram) before =
       some (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) :=
   runInstructions_append_some _ _ _ _ _ hrun (overflow_control s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hvalid)
@@ -33,7 +33,7 @@ theorem overflow_complete_of_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask 
 #print axioms overflow_complete_of_run
 
 theorem overflow_next_pc (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256) :
-    (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)).pc = (if (UInt256.shiftRight (MachineState.readWord s.memory 1600) (UInt256.ofNat 192)).toNat = 0 then UInt256.ofNat 8145 else UInt256.ofNat 8800) := by rfl
+    (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)).pc = (if (UInt256.shiftRight (MachineState.readWord s.memory 1600) (UInt256.ofNat 192)).toNat = 0 then UInt256.ofNat 8145 else UInt256.ofNat 8324) := by rfl
 
 #print axioms overflow_next_pc
 
@@ -126,7 +126,7 @@ theorem exit_next_pc (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd 
 
 theorem overflow_complete_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 8800 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 8324 = true) :
     runInstructions (overflowProgram ++ jumpiProgram)
       {s with pc := UInt256.ofNat 8129, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
         some (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) :=
