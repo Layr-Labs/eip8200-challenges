@@ -134,7 +134,7 @@ def outer (n bsize esize msize : Nat) : List UInt256 :=
 trampoline at pc 5466), stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5496
+  { s with pc := UInt256.ofNat 5495
            stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
              ret :: tail
            memory := mem }

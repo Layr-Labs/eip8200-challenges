@@ -25,8 +25,8 @@ noncomputable def advance
     (hact : 88 ≤ s.activeWords.toNat) (k : Nat) (mem : ByteArray)
     (f : CRTLoopFrames.Frame) (A : Nat) (hk : 1 ≤ k)
     (hcap : f.rest.length ≤ 982) (h : Invariant mem n minv f N (k+1) A) :
-    GasSteps (atCache s mem 5859 n minv f)
-      (atCache s (next s minv n k mem) 5859 n minv (nextFrame s minv n k mem f)) := by
+    GasSteps (atCache s mem 5858 n minv f)
+      (atCache s (next s minv n k mem) 5858 n minv (nextFrame s minv n k mem f)) := by
   by_cases hlt : Q s minv n mem < R
   · exact direct s minv n mem f N k A env hcap hact hk h hlt
   · have g1 := checkedRound s minv n mem f N (k+1) A env hcap hact h
@@ -60,7 +60,7 @@ noncomputable def last
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (mem : ByteArray) (f : CRTLoopFrames.Frame) (A : Nat)
     (hcap : f.rest.length ≤ 982) (h : Invariant mem n minv f N 1 A) :
-    GasSteps (atCache s mem 5859 n minv f)
+    GasSteps (atCache s mem 5858 n minv f)
       (finished s (finish s minv n mem) f) := by
   have g1 := lastExit s minv n mem f N A env hcap hact h
   have g2 := lastTail s minv n mem f N A env hcap hact h
@@ -83,7 +83,7 @@ noncomputable def run
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame) (A : Nat)
     (hcap : f.rest.length ≤ 982) (h : Invariant mem n minv f N k A) :
-    GasSteps (atCache s mem 5859 n minv f)
+    GasSteps (atCache s mem 5858 n minv f)
       (finished s (memory s minv n k mem) f) :=
   CRTLoopInduction.run s minv n N (operations s minv n N env hact hcds) k mem f A hcap h
 

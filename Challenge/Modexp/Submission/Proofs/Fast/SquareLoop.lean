@@ -325,7 +325,7 @@ private theorem dec_succ4 (c : Nat) (hc : c ≤ 14) :
 def repeatFrameAt (s : State) (M : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev c ret : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8998
+    pc := UInt256.ofNat 8997
     memory := M
     stack := [m0,m64,m32,MachineState.readWord M 0,inv,c,UInt256.ofNat 5297,
       MachineState.readWord M 192,ent,m32,allOnes,MachineState.readWord M 128,

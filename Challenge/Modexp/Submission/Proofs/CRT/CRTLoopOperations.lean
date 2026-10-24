@@ -50,8 +50,8 @@ def checkedRound (mem : ByteArray) (f : CRTLoopFrames.Frame) (N k A : Nat)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (h : Invariant mem n minv f N k A) :
-    GasSteps (atCache s mem 5859 n minv f)
-      (atCache s (checked s minv n mem) (if Q s minv n mem < R then 8145 else 8800) n minv f) := by
+    GasSteps (atCache s mem 5858 n minv f)
+      (atCache s (checked s minv n mem) (if Q s minv n mem < R then 8144 else 8799) n minv f) := by
   have h0 : UInt256.land ConcreteArithmetic.maskWord (MachineState.readWord mem 224) = n 0 := by
     simpa [inputWord, CRTInputMemory.inputDigitWord, CRTInputMemory.loadOffset,
       CRTInputMemory.loadShift, shift_zero, land_comm, ConcreteArithmetic.maskWord]

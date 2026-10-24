@@ -31,12 +31,12 @@ def expFinishTailProgram : List Instr :=
    .push 1 3, .op .SHL, .op .SHL, .push 0 0, .op .MSTORE,
    .op (.Dup ⟨5, by decide⟩), .push 0 0, .op .RETURN]
 
-def expFinishTailBlock : Block Artifact.submissionArtifact .Osaka 5554 expFinishTailProgram :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4439 14 5554 expFinishTailProgram
+def expFinishTailBlock : Block Artifact.submissionArtifact .Osaka 5553 expFinishTailProgram :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4438 14 5553 expFinishTailProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
-  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 5554 }
+  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 5553 }
 
 def outputShift (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft
@@ -53,7 +53,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
   let start := expLoopState input (exponentSize input) acc base
   let storedWords := start.activeWordsAfterUInt256 0 32
   { start with
-    pc := UInt256.ofNat 5569
+    pc := UInt256.ofNat 5568
     stack := [acc, base, UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
@@ -67,7 +67,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
       (modulusSize input) }
 
 @[simp] private theorem jump669 :
-    Decode.isValidJumpDest submissionBytecode 5554 = true := Word.jump669
+    Decode.isValidJumpDest submissionBytecode 5553 = true := Word.jump669
 
 def expFinishGuardBlock : Block Artifact.submissionArtifact .Osaka 194 WordExitGuard.program :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 125 6 194 WordExitGuard.program

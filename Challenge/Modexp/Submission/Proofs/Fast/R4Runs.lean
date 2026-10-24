@@ -1772,10 +1772,10 @@ theorem run_st4_1 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
 theorem run_tail_more (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1000)
     (hc : UInt256.isTrue c)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 8998 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 8997 = true) :
     runInstructions prog_branch
       { s with pc := UInt256.ofNat 4748, stack := p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: c :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } =
-    some { s with pc := UInt256.ofNat 8998, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5+c) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } := by
+    some { s with pc := UInt256.ofNat 8997, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5+c) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega

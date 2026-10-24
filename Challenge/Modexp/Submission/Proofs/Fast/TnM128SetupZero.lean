@@ -167,7 +167,7 @@ theorem run_preclear (s : State) (mem : ByteArray) (n : Nat) (st : List UInt256)
     (hcds : s.executionEnv.calldata.size < 115792089237316195423570985008687907853269984665640564039457584007913129639936)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3181 = true) :
-    runInstructions preclearProgram { s with pc := UInt256.ofNat 5466, stack := st, memory := mem } =
+    runInstructions preclearProgram { s with pc := UInt256.ofNat 5465, stack := st, memory := mem } =
       some { s with pc := UInt256.ofNat 3181, stack := st, memory := mpZeroed s mem n } := by
   have hc0 : st.length < 1024 := by omega
   have hc1 : st.length+1 < 1024 := by omega

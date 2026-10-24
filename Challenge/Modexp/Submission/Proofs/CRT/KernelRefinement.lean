@@ -39,7 +39,7 @@ theorem run_states (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : Li
     (hrestore0 : UInt256.land maskWord (MachineState.readWord s.memory 224) = n 0)
     (hrestore8 : UInt256.shiftRight (MachineState.readWord s.memory 0) (UInt256.ofNat 160) = n 8) :
     runInstructions GeneratedColumns.kernelProgram
-      {s with pc := UInt256.ofNat 5859, stack := modulusWord :: n 0 :: n 1 :: n 2 :: n 3 :: n 4 :: n 5 :: n 6 :: n 7 :: n 8 :: maskWord :: minv :: rest} =
+      {s with pc := UInt256.ofNat 5858, stack := modulusWord :: n 0 :: n 1 :: n 2 :: n 3 :: n 4 :: n 5 :: n 6 :: n 7 :: n 8 :: maskWord :: minv :: rest} =
       some (states s minv n rest 17) := by
   rw [GeneratedColumns.kernel_run s modulusWord (n 0) (n 1) (n 2) (n 3) (n 4)
     (n 5) (n 6) (n 7) (n 8) maskWord minv rest hcap hact rfl hrestore0 hrestore8, model_eq_states]
@@ -59,7 +59,7 @@ theorem run_contract (s : State) (minv : UInt256) (n : Nat → UInt256) (rest : 
     (hn0 : (n 0).toNat = N % radix) (hinv : (N*minv.toNat+1) % 2^256 = 0)
     (hAR : A < 2^2048) (hN : 0 < N) (hNR : N < 2^2048) (hodd : Odd N) :
     runInstructions GeneratedColumns.kernelProgram
-      {s with pc := UInt256.ofNat 5859, stack := modulusWord :: n 0 :: n 1 :: n 2 :: n 3 :: n 4 :: n 5 :: n 6 :: n 7 :: n 8 :: maskWord :: minv :: rest} =
+      {s with pc := UInt256.ofNat 5858, stack := modulusWord :: n 0 :: n 1 :: n 2 :: n 3 :: n 4 :: n 5 :: n 6 :: n 7 :: n 8 :: maskWord :: minv :: rest} =
       some (states s minv n rest 17) ∧
     (∀ i < 9, (dRead (states s minv n rest 17).memory i).toNat < radix) ∧
     output s minv n rest < 2^2048+N ∧

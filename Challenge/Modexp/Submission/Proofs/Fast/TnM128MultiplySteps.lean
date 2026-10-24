@@ -29,7 +29,7 @@ noncomputable def finish_steps (s : State)
   let stack := TnCacheFrameOps.frame (qptr n n) (UInt256.ofNat (headPC n))
     w3 ent m32 (MachineState.readWord z.memory 128) m64 tail
   have htail : tail.length ≤ 1006 := by simp only [tail, List.length_cons]; omega
-  have hhd : headPC n = 3313 ∨ headPC n = 5353 := by
+  have hhd : headPC n = 3313 ∨ headPC n = 5352 := by
     rcases hn with rfl | rfl
     · exact Or.inr rfl
     · exact Or.inl rfl

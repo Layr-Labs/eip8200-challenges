@@ -70,8 +70,8 @@ theorem redm_2Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 : U
 
 def redm_2NewP0 : List Instr := [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MUL, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩)]
 theorem redm_2NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005) :
-    runInstructions redm_2NewP0 { s with pc := UInt256.ofNat 9458, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
-    some { s with pc := UInt256.ofNat 9464, stack := (x11 * x2) :: x6 :: x6 :: (x11 * x2) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
+    runInstructions redm_2NewP0 { s with pc := UInt256.ofNat 9457, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
+    some { s with pc := UInt256.ofNat 9463, stack := (x11 * x2) :: x6 :: x6 :: (x11 * x2) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -94,8 +94,8 @@ theorem redm_2NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UIn
 
 def redm_2NewP1 : List Instr := [.op (.Dup ⟨11, by decide⟩), .op .MULMOD, .op (.Dup ⟨5, by decide⟩), .op .ADDMOD]
 theorem redm_2NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005) :
-    runInstructions redm_2NewP1 { s with pc := UInt256.ofNat 9464, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest } =
-    some { s with pc := UInt256.ofNat 9468, stack := (UInt256.addMod x6 (UInt256.mulMod x11 x0 x1) x2) :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest } := by
+    runInstructions redm_2NewP1 { s with pc := UInt256.ofNat 9463, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest } =
+    some { s with pc := UInt256.ofNat 9467, stack := (UInt256.addMod x6 (UInt256.mulMod x11 x0 x1) x2) :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -119,8 +119,8 @@ theorem redm_2NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 
 def redm_2New : List Instr := redm_2NewP0 ++ redm_2NewP1
 theorem redm_2New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005) :
-    runInstructions redm_2New { s with pc := UInt256.ofNat 9458, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } =
-    some { s with pc := UInt256.ofNat 9468, stack := (UInt256.addMod z2 (UInt256.mulMod z7 (z11 * z2) z6) z6) :: (z11 * z2) :: z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } := by
+    runInstructions redm_2New { s with pc := UInt256.ofNat 9457, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } =
+    some { s with pc := UInt256.ofNat 9467, stack := (UInt256.addMod z2 (UInt256.mulMod z7 (z11 * z2) z6) z6) :: (z11 * z2) :: z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } := by
   have g0 := redm_2NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) rest hcap
   have g1 := redm_2NewP1_run s ((z11 * z2)) (z6) (z6) ((z11 * z2)) (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) rest hcap
   have h := (runInstructions_append_some _ _ _ _ _ g0 g1)
@@ -136,8 +136,8 @@ theorem run_redm_2 (s : State) (ret v p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256)
     (hminv : (n0.toNat * np.toNat + 1) % 2^256 = 0)
     (hguard : np ≠ UInt256.ofNat 1) :
     runInstructions redm_2New
-      { s with pc := UInt256.ofNat 9458, stack := v :: p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 9468, stack := redC n0 (np*p0) p0 k :: (np*p0) :: v :: p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+      { s with pc := UInt256.ofNat 9457, stack := v :: p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
+    some { s with pc := UInt256.ofNat 9467, stack := redC n0 (np*p0) p0 k :: (np*p0) :: v :: p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
   have ho := redm_2Old_run s (ret) (v) (p3) (p2) (p1) (p0) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap
   have hc := R4Runs.run_redm s ret v p3 p2 p1 p0 p4 k n0 n1 n2 n3 np rest hcap hk hminv hguard
   change runInstructions redm_2Old _ = _ at hc

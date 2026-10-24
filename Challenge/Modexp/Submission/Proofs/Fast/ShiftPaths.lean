@@ -543,8 +543,8 @@ theorem jumpDest5366 :
   Artifact.isValidJumpDest_index 2457 (by rfl)
 
 theorem jumpDest5444 :
-    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5522 = true :=
-  Artifact.isValidJumpDest_index 4411 (by rfl)
+    Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5521 = true :=
+  Artifact.isValidJumpDest_index 4410 (by rfl)
 
 /-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
 E3 phase switch has set the last riding slot to `30`. -/
@@ -594,7 +594,7 @@ def blk3346 :
    pushAt 2459 2 1760,
    opAt 2460 .MLOAD,
    opAt 2461 .ISZERO,
-   pushAt 2462 2 5522,
+   pushAt 2462 2 5521,
    opAt 2463 .JUMPI]
 
 /-- The cleanup tail (pcs 5444-5465): sixteen `POP`s drop all riding slots but the last,
@@ -602,7 +602,8 @@ then `PUSH2 0989 ADD JUMP` jumps to `2441 + z`, where `z` is that last slot: `0`
 (the exponent dispatcher at 2441) and `28` after the E3 phase switch (`e3go` at 2471). -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4411 .JUMPDEST,
+  [opAt 4410 .JUMPDEST,
+   opAt 4411 .POP,
    opAt 4412 .POP,
    opAt 4413 .POP,
    opAt 4414 .POP,
@@ -618,9 +619,8 @@ def blk5444 :
    opAt 4424 .POP,
    opAt 4425 .POP,
    opAt 4426 .POP,
-   opAt 4427 .POP,
-   pushAt 4428 2 2317,
-   opAt 4429 .ADD,
-   opAt 4430 .JUMP]
+   pushAt 4427 2 2317,
+   opAt 4428 .ADD,
+   opAt 4429 .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast
