@@ -15,6 +15,8 @@ open Challenge.EvmProof
 
 def l2PC : Nat := 3630
 
+/-- The current eight-limb fallthrough middle, seven reduction cells, and
+long-immediate tail implement the carry-cache model for arbitrary carry words. -/
 noncomputable def reduction_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (q : MacState) (bi tn : UInt256)
@@ -103,4 +105,5 @@ noncomputable def reduction_steps (s : State)
     (env.transfer rfl rfl) hpc hlast
   simpa only [st, tail, tl4] using (g0.trans g1).trans g2
 
+#print axioms reduction_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128R8Reduction

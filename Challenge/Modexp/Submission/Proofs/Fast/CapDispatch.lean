@@ -25,6 +25,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 
+/-- The normalized four-limb selector: `1` when bit 7 of `x` is set, else `0`. -/
 def selectBit (x : UInt256) : UInt256 :=
   UInt256.isZero (UInt256.isZero (UInt256.land (UInt256.ofNat 128) x))
 
@@ -32,6 +33,7 @@ def selectBit (x : UInt256) : UInt256 :=
 
 @[simp] theorem selectBit_256 : selectBit (UInt256.ofNat 256) = UInt256.ofNat 0 := by decide
 
+/-- On the two admissible widths the normalized selector is the old `isFour`. -/
 theorem selectBit_s32 (n : Nat) (hn : n = 4 ∨ n = 8) :
     selectBit (UInt256.ofNat (32 * n)) = isFour n := by
   rcases hn with rfl | rfl <;> decide
@@ -50,6 +52,7 @@ theorem mul_selectBit_256 (dist : UInt256) :
   rw [Monpro.word_toNat_mul, show (UInt256.ofNat 0).toNat = 0 from by decide,
     Nat.mul_zero, Nat.zero_mod]
 
+/-- The computed target, for an arbitrary base and distance. -/
 def target (base dist x : UInt256) : UInt256 := base + dist * selectBit x
 
 theorem target_four (base dist : UInt256) :
@@ -66,6 +69,8 @@ theorem target_eight (base dist : UInt256) :
     target base dist (UInt256.ofNat 256) = base := by
   rw [target, mul_selectBit_256, word_add_zero]
 
+/-- Jump validity of the computed target.  Both reachable destinations are
+supplied as hypotheses; nothing else is admitted. -/
 theorem target_isValidJumpDest (code : ByteArray) (base dist : UInt256) (n : Nat)
     (hn : n = 4 ∨ n = 8)
     (hfour : Decode.isValidJumpDest code (base + dist).toNat = true)
@@ -111,6 +116,7 @@ theorem zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt { val := 0 } x = UInt256.isZero (UInt256.isZero x) :=
   zero_lt_eq_double_isZero x
 
+/-- The direct site: the width word is on top and is consumed. -/
 theorem run_target (s : State) (pc : UInt256) (dist base x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1005) :
     runInstructions (targetProgram dist base)
@@ -127,6 +133,8 @@ theorem run_target (s : State) (pc : UInt256) (dist base x : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, advancePC, succ_eq_add, hp2, hp3,
     word_add_assoc]
 
+/-- The `DUP11` site, on the fusion frame's sixteen-slot stack.  The width word
+`tl` sits at depth nine, so `PUSH1 0x80 DUP11` lifts it. -/
 theorem run_targetDup (s : State) (pc : UInt256) (dist base : UInt256)
     (a b c ent neg mask ent2 inv m0 tl m96 m64 m32 aprev dst : UInt256)
     (rest : List UInt256) (hcap : rest.length <= 1005) :
@@ -144,5 +152,9 @@ theorem run_targetDup (s : State) (pc : UInt256) (dist base : UInt256)
     Challenge.EvmProof.Word.literal_eq_ofNat, advancePC, succ_eq_add, hp2, hp3,
     word_add_assoc]
 
+#print axioms run_target
+#print axioms run_targetDup
+#print axioms target_isValidJumpDest
+#print axioms selectBit_s32
 
 end Challenge.Modexp.Submission.Proofs.Fast.CapDispatch

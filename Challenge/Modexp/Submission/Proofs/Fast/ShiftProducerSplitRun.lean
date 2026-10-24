@@ -80,4 +80,6 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
+#print axioms run_hit
+#print axioms run_copy
 end Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerSplitRun

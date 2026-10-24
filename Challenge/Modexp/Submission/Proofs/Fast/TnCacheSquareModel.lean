@@ -107,4 +107,6 @@ theorem squareRows_lift (z : CacheState) (n i : Nat)
       simp only [sqRowsCarry, squareRows, ih (by omega)]
       exact squareRow_lift _ _ _ (by omega) hn8
 
+#print axioms squareRow_lift
+#print axioms squareRows_lift
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheSquareModel

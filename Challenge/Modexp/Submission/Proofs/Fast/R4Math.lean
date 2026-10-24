@@ -19,23 +19,30 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.R4Math
 
 open EvmSemantics
 
+/-- 累加 limb 为零时的格：存 `c + lo`。 -/
 def zSum (o d c : UInt256) : UInt256 := c + o * d
 
+/-- 累加 limb 为零时的格的进位：`hi + [c + lo 溢出]`，高字经 `MULMOD k` 求出。 -/
 def zCarry (o d c k : UInt256) : UInt256 :=
   (UInt256.gt c (c + o * d) - (UInt256.gt (o * d) (UInt256.mulMod d o k) - UInt256.mulMod d o k)) -
     o * d
 
+/-- 行 0 对角格的高字：`a * a` 的高 256 位。 -/
 def dHi (a k : UInt256) : UInt256 :=
   (⟨0⟩ : UInt256) - (a * a + (UInt256.gt (a * a) (UInt256.mulMod a a k) - UInt256.mulMod a a k))
 
+/-- 一般格：存 `(c + lo) + t`。 -/
 def mSum (o d c t : UInt256) : UInt256 := (c + o * d) + t
 
+/-- 一般格（积行）的进位：第二个溢出位用 `LT(s, t)`。 -/
 def mCarry (o d c t k : UInt256) : UInt256 :=
   zCarry o d c k + UInt256.lt (mSum o d c t) t
 
+/-- 约化格的进位：第二个溢出位用 `GT(x, s)`（`x = c + lo`）。 -/
 def sCarry (o d c t k : UInt256) : UInt256 :=
   zCarry o d c k + UInt256.gt (zSum o d c) (mSum o d c t)
 
+/-- 约化首格（`m = np * t0`）的进位：`y = t0 + MULMOD(n0, m, k)`，`c = [t0 > y] + y`。 -/
 def redC (n0 m t0 k : UInt256) : UInt256 :=
   UInt256.gt t0 (t0 + UInt256.mulMod n0 m k) + (t0 + UInt256.mulMod n0 m k)
 
@@ -53,6 +60,7 @@ structure W5 where
   t3 : UInt256
   t4 : UInt256
 
+/-- 行 0：`t = a0 * a`（累加区为零，`d = a0 + a0`）。 -/
 def row0 (a0 a1 a2 a3 k : UInt256) : W5 :=
   let d := a0 + a0
   let c0 := dHi a0 k
@@ -61,6 +69,7 @@ def row0 (a0 a1 a2 a3 k : UInt256) : W5 :=
   { t0 := a0 * a0, t1 := zSum a1 d c0, t2 := zSum a2 d c1, t3 := zSum a3 d c2,
     t4 := zCarry a3 d c2 k }
 
+/-- 积行 1：`tb = SGT 0 a0`，对角格进位入口 `a1 * tb`，交叉乘数 `(a1 + a1) + tb`。 -/
 def row1 (a0 a1 a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
   let tb := UInt256.sgt ⟨0⟩ a0
   let d := (a1 + a1) + tb
@@ -71,6 +80,7 @@ def row1 (a0 a1 a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
      t3 := mSum a3 d c2 P.t3, t4 := P.t4 + c3 },
    UInt256.lt (P.t4 + c3) P.t4)
 
+/-- 积行 2。 -/
 def row2 (a1 a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
   let tb := UInt256.sgt ⟨0⟩ a1
   let d := (a2 + a2) + tb
@@ -80,12 +90,14 @@ def row2 (a1 a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
      t4 := P.t4 + c3 },
    UInt256.lt (P.t4 + c3) P.t4)
 
+/-- 积行 3（只有对角格）。 -/
 def row3 (a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
   let tb := UInt256.sgt ⟨0⟩ a2
   let c3 := mCarry a3 a3 (a3 * tb) P.t3 k
   ({ t0 := P.t0, t1 := P.t1, t2 := P.t2, t3 := mSum a3 a3 (a3 * tb) P.t3, t4 := P.t4 + c3 },
    UInt256.lt (P.t4 + c3) P.t4)
 
+/-- 约化子程序：`m = np * t0`，四格后整体下移，`t4' = v + 溢出`。 -/
 def red (n0 n1 n2 n3 np k : UInt256) (P : W5) (v : UInt256) : W5 :=
   let m := np * P.t0
   let c0 := redC n0 m P.t0 k
@@ -95,6 +107,7 @@ def red (n0 n1 n2 n3 np k : UInt256) (P : W5) (v : UInt256) : W5 :=
   { t0 := mSum n1 m c0 P.t1, t1 := mSum n2 m c1 P.t2, t2 := mSum n3 m c2 P.t3,
     t3 := P.t4 + c3, t4 := v + UInt256.lt (P.t4 + c3) P.t4 }
 
+/-- 四行之后的五个累加字。 -/
 def final (a0 a1 a2 a3 n0 n1 n2 n3 np k : UInt256) : W5 :=
   let W1 := red n0 n1 n2 n3 np k (row0 a0 a1 a2 a3 k) ⟨0⟩
   let R1 := row1 a0 a1 a2 a3 k W1
@@ -104,6 +117,8 @@ def final (a0 a1 a2 a3 n0 n1 n2 n3 np k : UInt256) : W5 :=
   let R3 := row3 a2 a3 k W3
   red n0 n1 n2 n3 np k R3.1 R3.2
 
+/-- `rare4`: subtract the modulus limbs `n0..n3` from `t0..t3` with a borrow chain (borrow
+`(b > e) | (t < e)` for `e = n + b`); the overflow word becomes zero. -/
 def sub4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
   let b0 := UInt256.lt P.t0 n0
   let b1 := UInt256.lor (UInt256.gt b0 (n1 + b0)) (UInt256.lt P.t1 (n1 + b0))
@@ -111,6 +126,7 @@ def sub4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
   { t0 := P.t0 - n0, t1 := P.t1 - (n1 + b0), t2 := P.t2 - (n2 + b1), t3 := P.t3 - (n3 + b2),
     t4 := ⟨0⟩ }
 
+/-- The n=4 tail: a nonzero overflow word takes `rare4`, otherwise the window is stored as is. -/
 def red4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
   if P.t4 = ⟨0⟩ then P else sub4 n0 n1 n2 n3 P
 
@@ -148,16 +164,19 @@ theorem lt_zero_w (a : UInt256) : UInt256.lt a ⟨0⟩ = ⟨0⟩ := by
 
 /-! ### 与 `Monpro` 的 MAC 步对齐 -/
 
+/-- 零累加格就是 `t = 0` 的 MAC 步（低字）。 -/
 theorem zSum_eq (o d c : UInt256) : zSum o d c = macSum o d ⟨0⟩ c := by
   unfold zSum macSum
   rw [zero_add_w]
 
+/-- 零累加格就是 `t = 0` 的 MAC 步（进位）。 -/
 theorem zCarry_eq (o d c : UInt256) : zCarry o d c maxWord = macCarry o d ⟨0⟩ c := by
   unfold zCarry macCarry mulHi
   rw [MacAlt.mulMod_comm o d]
   simp only [gt_eq_lt]
   rw [MacAlt.subSubFold, zero_add_w, lt_zero_w, zero_add_w]
 
+/-- 行 0 对角格的高字就是 `mulHi a a`。 -/
 theorem dHi_eq (a : UInt256) : dHi a maxWord = mulHi a a := by
   unfold dHi mulHi
   simp only [gt_eq_lt]
@@ -171,6 +190,7 @@ theorem dHi_eq (a : UInt256) : dHi a maxWord = mulHi a a := by
   generalize (UInt256.lt (UInt256.mulMod a a maxWord) (a * a)).toNat = B at *
   omega
 
+/-- **零累加格精确**：`zCarry * R + zSum = o * d + c`。 -/
 theorem zCell_spec (o d c : UInt256) :
     (zCarry o d c maxWord).toNat * 2 ^ 256 + (zSum o d c).toNat = o.toNat * d.toNat + c.toNat := by
   have h := macSpec o d ⟨0⟩ c
@@ -178,6 +198,7 @@ theorem zCell_spec (o d c : UInt256) :
   rw [zCarry_eq, zSum_eq]
   omega
 
+/-- 行 0 对角格高字：`dHi * R + a * a = a²`。 -/
 theorem dHi_spec (a : UInt256) :
     (dHi a maxWord).toNat * 2 ^ 256 + (a * a).toNat = a.toNat * a.toNat := by
   rw [dHi_eq]; exact mulHi_spec a a
@@ -193,6 +214,8 @@ private theorem sq_facts {K : Nat} (hK : 0 < K) :
   simp only [Nat.add_sub_cancel]
   constructor <;> ring
 
+/-- `Z * K + S = X + c` 且 `X ≤ (K-1)²` 时，再加一个累加 limb `t`：进位字 `Z + [溢出]` 不回绕，
+整体仍精确。溢出判据 `P` 可以是 `LT(s, t)` 或 `GT(S, s)`，只要它等价于 `K ≤ S + t`。 -/
 private theorem cell_core {K Z S X c t : Nat} (P : Prop) [Decidable P] (hK : 0 < K)
     (hx : X ≤ (K - 1) * (K - 1)) (hc : c < K) (ht : t < K) (hS : S < K)
     (hz : Z * K + S = X + c) (hP : P ↔ K ≤ S + t) :
@@ -216,6 +239,7 @@ private theorem cell_core {K Z S X c t : Nat} (P : Prop) [Decidable P] (hK : 0 <
     rw [Nat.mod_eq_of_lt hZ, Nat.add_mul, Nat.one_mul]
     omega
 
+/-- **一般格精确（积行）**：`mCarry * R + mSum = o * d + c + t`。 -/
 theorem mCell_spec (o d c t : UInt256) :
     (mCarry o d c t maxWord).toNat * 2 ^ 256 + (mSum o d c t).toNat =
       o.toNat * d.toNat + c.toNat + t.toNat := by
@@ -233,6 +257,7 @@ theorem mCell_spec (o d c t : UInt256) :
       · intro hp
         rw [Nat.mod_eq_sub_mod hp, Nat.mod_eq_of_lt (by omega)]; omega)
 
+/-- **一般格精确（约化行）**：`sCarry * R + mSum = o * d + c + t`。 -/
 theorem sCell_spec (o d c t : UInt256) :
     (sCarry o d c t maxWord).toNat * 2 ^ 256 + (mSum o d c t).toNat =
       o.toNat * d.toNat + c.toNat + t.toNat := by
@@ -252,6 +277,7 @@ theorem sCell_spec (o d c t : UInt256) :
 
 /-! ### 约化首格 -/
 
+/-- `R ≡ 1 (mod R - 1)`：`X mod (R-1) = (X / R + X mod R) mod (R-1)`。 -/
 private theorem mod_pred (X : Nat) :
     X % (2 ^ 256 - 1) = (X / 2 ^ 256 + X % 2 ^ 256) % (2 ^ 256 - 1) := by
   have hmodeq : (2 : Nat) ^ 256 ≡ 1 [MOD 2 ^ 256 - 1] := by
@@ -268,6 +294,7 @@ private theorem high_lt' {K X Y : Nat} (hK : 2 ≤ K) (hX : X < K) (hY : Y < K) 
     rw [Nat.div_lt_iff_lt_mul (by omega)]; nlinarith
   omega
 
+/-- `m = np * t0` 下 `t0 + n0 * m ≡ 0 (mod R)`（`n0 * np ≡ -1`）。 -/
 private theorem mont_zero (n0 np t0 : UInt256)
     (hinv : (n0.toNat * np.toNat + 1) % 2 ^ 256 = 0) :
     (n0.toNat * (np * t0).toNat + t0.toNat) % 2 ^ 256 = 0 := by
@@ -313,6 +340,7 @@ private theorem redc_core {K H L M X t : Nat} (hK : 2 ≤ K) (hH : H + 1 < K) (h
   · rw [h1, hX, show t = 0 by omega, show L = 0 by omega, Nat.mul_comm]; ring
   · rw [h1, hX, Nat.add_mul, Nat.one_mul, Nat.mul_comm H K]; omega
 
+/-- **约化首格精确**：`redC * R = t0 + n0 * m`（`m = np * t0`，`n0 * np ≡ -1`）。 -/
 theorem redC_spec (n0 np t0 : UInt256)
     (hinv : (n0.toNat * np.toNat + 1) % 2 ^ 256 = 0) :
     (redC n0 (np * t0) t0 maxWord).toNat * 2 ^ 256 = t0.toNat + n0.toNat * (np * t0).toNat := by
@@ -330,6 +358,7 @@ local macro "rnum" : tactic =>
     115792089237316195423570985008687907853269984665640564039457584007913129639936 from by norm_num]
     at *)
 
+/-- `t4` 吸收进位：`[p + c 溢出] * R + (p + c) = p + c`。 -/
 theorem add_spec (p c : UInt256) :
     (UInt256.lt (p + c) p).toNat * 2 ^ 256 + (p + c).toNat = p.toNat + c.toNat := by
   have hp := toNat_lt p
@@ -338,6 +367,7 @@ theorem add_spec (p c : UInt256) :
   rnum
   split_ifs <;> omega
 
+/-- 溢出位 `LT(p + c, p)` 与 `LT(p + c, c)` 相同。 -/
 theorem lt_add_left_eq (p c : UInt256) : UInt256.lt (p + c) p = UInt256.lt (p + c) c := by
   apply word_ext
   have hp := toNat_lt p
@@ -346,6 +376,7 @@ theorem lt_add_left_eq (p c : UInt256) : UInt256.lt (p + c) p = UInt256.lt (p + 
   rnum
   split_ifs <;> omega
 
+/-- 高低字对的唯一性。 -/
 theorem pair_unique {a b a' b' : UInt256}
     (h : a.toNat * 2 ^ 256 + b.toNat = a'.toNat * 2 ^ 256 + b'.toNat) : a = a' ∧ b = b' := by
   have hb := toNat_lt b

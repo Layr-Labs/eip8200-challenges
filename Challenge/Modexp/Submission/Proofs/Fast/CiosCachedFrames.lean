@@ -22,9 +22,13 @@ def isFour (n : Nat) : UInt256 :=
 @[simp] theorem isFour_eight : isFour 8 = UInt256.ofNat 0 := by decide
 
 
+/-- First-loop entry of the multiply rows as the setup pushes it (k3222): the Duff base 3347 for
+both widths; msplit gives each width its own head, which falls into its own copy. -/
 def l1Target (_n : Nat) : UInt256 :=
   UInt256.ofNat 3347
 
+/-- Second-loop entry, fixed for the whole kernel call: the four-limb ladder tail pushes
+it directly (`PUSH2 3843; JUMP`, instruction 4274) — shared by both widths. -/
 def l2Target (_n : Nat) : UInt256 :=
   UInt256.ofNat 3655
 
@@ -43,6 +47,7 @@ The kernel keeps, below the per-step words, the row frame
 the `sq_row` pc 2464 for the square) and `ent` is the first-loop entry
 (`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
 
+/-- The first-loop frame on an arbitrary MAC state `q` (memory and running carry). -/
 def l1Q (pc : Nat) (s : State) (q : MacState) (bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
@@ -51,10 +56,12 @@ def l1Q (pc : Nat) (s : State) (q : MacState) (bi : UInt256)
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := q.memory }
 
+/-- Before first-loop step `j` of a multiply row: `q = l1Step mem bi pa n j`. -/
 def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   l1Q pc s (l1Step mem bi pa n j) bi pb n i hd ent pdst ret rest
 
+/-- Row head before the first product; no dummy carry occupies the stack. -/
 def firstAt (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
@@ -63,6 +70,8 @@ def firstAt (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
              negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
+/-- Before second-loop step `k` of row `i`: only the carry and `mu` above
+`b_i` and the row frame. -/
 def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc

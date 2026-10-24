@@ -19,13 +19,17 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro StagedOperand SquareModel SquareResult SquareLoopMem
 
+/-- `k` n=4 rounds. -/
 def r4Steps : Nat → ByteArray → ByteArray
   | 0, mem => mem
   | k + 1, mem => r4Steps k (R4Bridge.rows4r mem)
 
+/-- `k` rounds, then the lazy gate (`[2368, after_sq]` on a zero overflow word: the copy of the
+window to 2368). -/
 def r4RunMem (k : Nat) (mem : ByteArray) : ByteArray :=
   LazyCsub.resultMemory (r4Steps k mem) 4 2368
 
+/-- The whole n=4 call: the setup's self-copy, the cleared scratch word, then the rounds. -/
 def r4LoopMem (_s : State) : Nat → ByteArray → ByteArray
   | 0, mem => mem
   | k + 1, mem => r4RunMem (k + 1) (SquarePartialClear.memory (stageW mem 2112 4))
@@ -94,6 +98,8 @@ theorem r4LoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (k ptr cn
   rw [r4LoopMem_readWord_outside s mem k (ptr + 32 * j) (by omega) (by omega) (by omega)
     (by omega)]
 
+/-- The rounds: after `k ≥ 1` of them the operand window holds the `k`-fold Montgomery square,
+below `R⁴`, and the overflow word is zero. -/
 theorem r4Steps_represents (mm : Nat) (hodd : mm % 2 = 1) :
     ∀ (k : Nat) (mem : ByteArray) (a : Nat), 1 ≤ k →
       Model.FastRepresents mem 2112 4 a → Model.FastRepresents mem 0 4 mm →

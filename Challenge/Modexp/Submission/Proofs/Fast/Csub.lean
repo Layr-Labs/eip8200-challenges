@@ -7,6 +7,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 
+/-- End-to-end: entering `ADDMOD` with `a` at `pa`, `b` at `pb` and `a + b < 2m`
+leaves `(a + b) mod m` in the block at `pd`. -/
 theorem addmod_csub_correct (memory : ByteArray) (pa pb n a b mm pdst : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpa : pa + 32 * n ≤ 2048) (hpb : pb + 32 * n ≤ 2048)
@@ -33,6 +35,7 @@ theorem addmod_csub_correct (memory : ByteArray) (pa pb n a b mm pdst : Nat)
   rwa [show (amStep memory pa pb n n).flag.toNat * Limbs.radix ^ n +
       lowValue (amStep memory pa pb n n).memory 2112 n n = a + b from by omega] at h
 
+/-- Region preservation across the whole `ADDMOD`/`CSUB` pair. -/
 theorem addmod_csub_preserves_region (memory : ByteArray) (pa pb n pdst ptr cnt v : Nat)
     (hn : 2 ≤ n)
     (hdisjT : ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr)

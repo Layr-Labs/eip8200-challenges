@@ -12,12 +12,16 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel
 
+/-- Kernel `setup` entry (pc 4151, 0x0f6c), reached from `common` with the row head
+`hd` above the call frame. -/
 def setupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3182
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
+/-- Row head `i`: the program counter is the frame's own row head `hd`.  P1: the fifth word
+`w5` is modulus[32] (the carry cache starts at zero inside `rest`). -/
 def outState (s : State) (mem : ByteArray) (pb n i : Nat)
     (hd ent w5 pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := hd
@@ -25,6 +29,8 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
                      hd, UInt256.ofNat (pb - 32), ent, w5, allOnes, MachineState.readWord mem 128, pdst, ret] ++ rest
            memory := mem }
 
+/-- After the first loop, at the middle block's `JUMPDEST` (pc 4583): the carry and
+`b_i` above the row frame. -/
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3606
@@ -32,6 +38,9 @@ def midState (s : State) (mem : ByteArray) (c bi : UInt256)
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
+/-- The middle-block frame at an arbitrary entry pc.  The shared ladder's middle block
+sits at 3646; the private four-limb ladder copy carries the same block at 5290, so every
+statement about it is the same statement with one number changed. -/
 def midStateAt (pc : Nat) (s : State) (mem : ByteArray) (c bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
@@ -39,6 +48,9 @@ def midStateAt (pc : Nat) (s : State) (mem : ByteArray) (c bi : UInt256)
                      hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
            memory := mem }
 
+/-- After the second loop: the carry and `b_i` above the row frame.  The last copy
+(`CiosCachedLast`) consumes `mu`, which is kept as an (unused) argument so that every
+statement about the row keeps its shape. -/
 def tailState (s : State) (mem : ByteArray) (c _mu bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3856

@@ -43,6 +43,7 @@ theorem word_toNat_lt' (a b : UInt256) :
 
 theorem word_lt_size (a : UInt256) : a.toNat < 2 ^ 256 := a.val.isLt
 
+/-- The `PUSH32` immediate the 512-bit multiply uses as the `MULMOD` modulus. -/
 def maxWord : UInt256 :=
   UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935
 
@@ -66,6 +67,7 @@ theorem word_toNat_mulMod_max (a b : UInt256) :
 `lo = mul x y`, `mm = mulmod x y (2^256-1)`, `hi = mm - (lo + lt mm lo)`
 satisfies `hi * 2^256 + lo = x * y` over the naturals. -/
 
+/-- The high word of the 512-bit product, exactly as the bytecode computes it. -/
 def mulHi (x y : UInt256) : UInt256 :=
   UInt256.mulMod x y maxWord - (x * y + UInt256.lt (UInt256.mulMod x y maxWord) (x * y))
 
@@ -115,6 +117,7 @@ theorem mulHi_toNat (x y : UInt256) :
   exact mulHi_core (K := 2 ^ 256) (by norm_num) (by omega)
     (Nat.mod_lt _ (by norm_num)) hstep
 
+/-- The 512-bit product identity. -/
 theorem mulHi_spec (x y : UInt256) :
     (mulHi x y).toNat * 2 ^ 256 + (x * y).toNat = x.toNat * y.toNat := by
   rw [mulHi_toNat, word_toNat_mul, Nat.mul_comm]
@@ -127,8 +130,10 @@ limb `x`, form the 512-bit product with the row multiplier `y`, add the
 current `t` limb and the running carry, store the low word back and keep the
 high word as the new carry. -/
 
+/-- The stored limb of one multiply-accumulate step. -/
 def macSum (x y t c : UInt256) : UInt256 := c + (t + x * y)
 
+/-- The carry out of one multiply-accumulate step. -/
 def macCarry (x y t c : UInt256) : UInt256 :=
   UInt256.lt (c + (t + x * y)) c + (UInt256.lt (t + x * y) t + mulHi x y)
 
@@ -149,6 +154,7 @@ private theorem total_lt {K T X Y C : Nat} (hT : T < K) (hX : X < K) (hY : Y < K
   simp only [Nat.add_sub_cancel] at h
   nlinarith
 
+/-- One multiply-accumulate step is exact over the naturals. -/
 theorem macSpec (x y t c : UInt256) :
     (macCarry x y t c).toNat * 2 ^ 256 + (macSum x y t c).toNat =
       t.toNat + x.toNat * y.toNat + c.toNat := by
@@ -232,6 +238,7 @@ theorem macSumNat (x y t c : UInt256) :
   congr 1
   omega
 
+/-- Wrapping subtraction reassociates: `a - (b - d) - e = a + (d - (e + b))`. -/
 theorem subSubFold (a b d e : UInt256) :
     a - (b - d) - e = a + (d - (e + b)) := by
   apply word_ext
@@ -242,6 +249,7 @@ theorem subSubFold (a b d e : UInt256) :
   simp only [word_toNat_sub, word_toNat_add]
   omega
 
+/-- The two carry bits of the reassociated sum add up to the same total. -/
 theorem carryPair (x y t c : UInt256) :
     (if (t.toNat + ((x * y).toNat + c.toNat)) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 < ((x * y).toNat + c.toNat) % 115792089237316195423570985008687907853269984665640564039457584007913129639936
        then 1 else 0) +
@@ -284,6 +292,7 @@ theorem ifBit_toNat (P : Prop) [Decidable P] :
 theorem bit_le (P : Prop) [Decidable P] : (if P then 1 else 0) ≤ 1 := by
   split <;> simp
 
+/-- The carry the reassociated body computes is `macCarry`. -/
 theorem macCarryFix (x y t c : UInt256) :
     (if (t.toNat + ((x * y).toNat + c.toNat)) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 < ((x * y).toNat + c.toNat) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 then
         (UInt256.ofNat 1) else UInt256.ofNat 0) +
@@ -376,13 +385,17 @@ Addresses (absolute, independent of the code offset):
 `2112 + 32 * (n - 1 - k)` and `TL = 2080 + 32 * n` is the address of `t[0]`.
 `V_S32 = 2688`, `V_MINV = 2720`, `V_ML = 2752`, `V_TL = 2784`. -/
 
+/-- Memory together with a running carry. -/
 structure MacState where
   memory : ByteArray
   carry : UInt256
 
+/-- The `b` limb consumed by row `i`. -/
 def rowBi (mem : ByteArray) (pb n i : Nat) : UInt256 :=
   MachineState.readWord mem (pb + 32 * (n - 1 - i))
 
+/-- Memory and carry after `j` steps of the first limb loop of a row:
+step `j` accumulates `a[j] * b[i]` into `t[j]`. -/
 def l1Step (mem : ByteArray) (bi : UInt256) (pa n : Nat) : Nat → MacState
   | 0 => ⟨mem, UInt256.ofNat 0⟩
   | j + 1 =>
@@ -394,18 +407,22 @@ def l1Step (mem : ByteArray) (bi : UInt256) (pa n : Nat) : Nat → MacState
           (2112 + 32 * (n - 1 - j))
         carry := macCarry x bi t prev.carry }
 
+/-- `t[n] := t[n] + C`. -/
 def midMem1 (mem : ByteArray) (c : UInt256) : ByteArray :=
   MachineState.writeBytes mem
     (Data.Bytes.natToBytesPadded (MachineState.readWord mem 2080 + c).toNat 32) 2080
 
+/-- `t[n] := t[n] + C`, then `t[n+1] := carry`. -/
 def midMem (mem : ByteArray) (c : UInt256) : ByteArray :=
   MachineState.writeBytes (midMem1 mem c)
     (Data.Bytes.natToBytesPadded
       (UInt256.lt (MachineState.readWord mem 2080 + c) c).toNat 32) 2048
 
+/-- `mu = minv * t[0]` truncated to one limb. -/
 def rowMu (mem : ByteArray) (n : Nat) : UInt256 :=
   MachineState.readWord mem 2720 * MachineState.readWord mem (2080 + 32 * n)
 
+/-- The carry into the second limb loop: `t[0] + mu * m[0] = C * radix`. -/
 def rowC0 (mem : ByteArray) (n : Nat) : UInt256 :=
   UInt256.isZero
       (UInt256.isZero (MachineState.readWord mem (32 * n - 32) * rowMu mem n)) +
@@ -420,6 +437,8 @@ theorem zero_lt_eq_double_isZero (x : UInt256) :
   · have hp : 0 < x.toNat := Nat.pos_of_ne_zero h
     simp [h, hzero, Nat.not_le_of_gt hp]
 
+/-- Memory and carry after `k` steps of the second limb loop.  Step `k`
+accumulates `m[k+1] * mu` into `t[k+1]` and stores the result one limb down. -/
 def l2Step (mem : ByteArray) (mu c0 : UInt256) (n : Nat) : Nat → MacState
   | 0 => ⟨mem, c0⟩
   | k + 1 =>
@@ -431,33 +450,42 @@ def l2Step (mem : ByteArray) (mu c0 : UInt256) (n : Nat) : Nat → MacState
           (2112 + 32 * (n - 1 - k))
         carry := macCarry x mu t prev.carry }
 
+/-- `t[n-1] := t[n] + C`. -/
 def tailMem1 (mem : ByteArray) (c : UInt256) : ByteArray :=
   MachineState.writeBytes mem
     (Data.Bytes.natToBytesPadded (MachineState.readWord mem 2080 + c).toNat 32) 2112
 
+/-- `t[n-1] := t[n] + C`, then `t[n] := t[n+1] + carry`. -/
 def tailMem (mem : ByteArray) (c : UInt256) : ByteArray :=
   MachineState.writeBytes (tailMem1 mem c)
     (Data.Bytes.natToBytesPadded
       (MachineState.readWord (tailMem1 mem c) 2048 +
         UInt256.lt (MachineState.readWord mem 2080 + c) c).toNat 32) 2080
 
+/-- The first limb loop of row `i`, run to completion. -/
 def rowL1 (mem : ByteArray) (pa pb n i : Nat) : MacState :=
   l1Step mem (rowBi mem pb n i) pa n n
 
+/-- Memory after the middle block of row `i`. -/
 def rowMid (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
   midMem (rowL1 mem pa pb n i).memory (rowL1 mem pa pb n i).carry
 
+/-- The second limb loop of row `i`, run to completion. -/
 def rowL2 (mem : ByteArray) (pa pb n i : Nat) : MacState :=
   l2Step (rowMid mem pa pb n i) (rowMu (rowL1 mem pa pb n i).memory n)
     (rowC0 (rowL1 mem pa pb n i).memory n) n (n - 1)
 
+/-- Memory after row `i`. -/
 def rowMem (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
   tailMem (rowL2 mem pa pb n i).memory (rowL2 mem pa pb n i).carry
 
+/-- Memory after `i` complete CIOS rows. -/
 def rowsMem (mem : ByteArray) (pa pb n : Nat) : Nat → ByteArray
   | 0 => mem
   | i + 1 => rowMem (rowsMem mem pa pb n i) pa pb n i
 
+/-- The prologue zeroes `t[n+1 .. 0]` with `CALLDATACOPY` from the end of the
+calldata. -/
 def mpZeroed (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
   MachineState.writeBytes mem
     (MachineState.readPadded s.executionEnv.calldata s.executionEnv.calldata.size
@@ -470,12 +498,14 @@ indexed state functions; the block-exit states take the popped stack entries
 as opaque parameters, which keeps every reduction lemma stated over an
 arbitrary state constrained only by its `pc` and stack shape. -/
 
+/-- Subroutine entry, pc 2066, stack `[pa, pb, pd, ret]`. -/
 def mpEntryState (s : State) (mem : ByteArray) (pa pb : Nat) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 720
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
+/-- `CSUB` entry, pc 2432, with stack `[pd, ret]`. -/
 def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3902
@@ -487,6 +517,7 @@ def mpCsubState (s : State) (mem : ByteArray) (pdst ret : UInt256)
 set_option linter.unusedSimpArgs false in
 
 
+/-- The `PUSH32` immediate in the `MULMOD`, folded into `maxWord`. -/
 theorem maxWord_literal :
     (115792089237316195423570985008687907853269984665640564039457584007913129639935 :
       UInt256) = maxWord := rfl
@@ -494,6 +525,8 @@ theorem maxWord_literal :
 set_option linter.unusedSimpArgs false in
 
 
+/-- The two `MSTORE`s of the row middle land at `2080` and `2048`, so every
+other word the block reads still has its pre-middle value. -/
 theorem readWord_midMem_peel (mem : ByteArray) (v w r : Nat)
     (hr : r + 32 ≤ 2048 ∨ 2112 ≤ r) :
     MachineState.readWord
@@ -684,8 +717,10 @@ ends exactly at the `CSUB` entry state. -/
 
 theorem radix_eq : Limbs.radix = 2 ^ 256 := rfl
 
+/-- The address of `t[k]`, counted from the least significant limb. -/
 def tAddr (n k : Nat) : Nat := 2112 + 32 * (n - 1 - k)
 
+/-- The value of the first `j` limbs produced by `f`, in radix `2 ^ 256`. -/
 def limbSum (f : Nat → Nat) : Nat → Nat
   | 0 => 0
   | j + 1 => limbSum f j + f j * Limbs.radix ^ j
@@ -703,6 +738,7 @@ theorem limbSum_congr {f g : Nat → Nat} (j : Nat) (h : ∀ k, k < j → f k = 
       rw [limbSum_succ, limbSum_succ, ih (fun k hk => h k (by omega)),
         h j (by omega)]
 
+/-- Limb `k` of `t` is untouched until step `k` of the first loop. -/
 theorem readWord_l1Step_keep (mem : ByteArray) (bi : UInt256) (pa n k : Nat)
     (hkn : k < n) : ∀ j, j ≤ k →
     MachineState.readWord (l1Step mem bi pa n j).memory (tAddr n k) =
@@ -719,12 +755,14 @@ theorem readWord_l1Step_keep (mem : ByteArray) (bi : UInt256) (pa n k : Nat)
         simp only [tAddr]
         omega
 
+/-- The source blocks below `T_` are untouched by the first loop. -/
 theorem readWord_l1Step_src (mem : ByteArray) (bi : UInt256) (pa n j addr : Nat)
     (hn : n ≤ 8) (haddr : addr + 32 ≤ 2048) :
     MachineState.readWord (l1Step mem bi pa n j).memory addr =
       MachineState.readWord mem addr :=
   readWord_l1Step mem bi pa n addr j hn (Or.inl haddr)
 
+/-- The limb the first loop stores at step `k`. -/
 def l1Val (mem : ByteArray) (bi : UInt256) (pa n k : Nat) : UInt256 :=
   macSum (MachineState.readWord mem (pa + 32 * (n - 1 - k))) bi
     (MachineState.readWord mem (tAddr n k)) (l1Step mem bi pa n k).carry
@@ -753,6 +791,7 @@ theorem l1Step_succ_write (mem : ByteArray) (bi : UInt256) (pa n j : Nat)
   simp only [l1Step, l1Val, tAddr]
   rw [readWord_l1Step_src mem bi pa n j (pa + 32 * (n - 1 - j)) hn (by omega), hkeep]
 
+/-- After step `j`, limb `k < j` holds the value the loop stored. -/
 theorem readWord_l1Step_val (mem : ByteArray) (bi : UInt256) (pa n k : Nat)
     (hn : n ≤ 8) (hkn : k < n) (hpaFit : pa + 32 * n ≤ 2048) : ∀ j, k < j → j ≤ n →
     MachineState.readWord (l1Step mem bi pa n j).memory (tAddr n k) =
@@ -785,6 +824,9 @@ private theorem mac_step_alg {S T' A' L C B Wt Wa Bi R Rad : Nat}
   rw [h2, hih]
   ring
 
+/-- `I_L1(j)`: after `j` steps the loop has produced limbs `t'[0..j-1]` and a
+carry `C` with
+`Σ_{k<j} t'[k] rad^k + C rad^j = Σ_{k<j} t[k] rad^k + b[i] Σ_{k<j} a[k] rad^k`. -/
 theorem l1_invariant (mem : ByteArray) (bi : UInt256) (pa n : Nat)
     (hn : n ≤ 8) (hpaFit : pa + 32 * n ≤ 2048) : ∀ j, j ≤ n →
     limbSum (fun k => (l1Val mem bi pa n k).toNat) j +
@@ -813,6 +855,7 @@ theorem l1_invariant (mem : ByteArray) (bi : UInt256) (pa n : Nat)
 Step `k` reads `m[k+1]` at `32 * (n - 2 - k)` and `t[k+1]` at
 `2112 + 32 * (n - 2 - k)`, and stores into `t[k]` at `tAddr n k`. -/
 
+/-- Nothing below `TS = 2112` is written by the first loop. -/
 theorem readWord_l1Step_low (mem : ByteArray) (bi : UInt256) (pa n addr j : Nat)
     (haddr : addr + 32 ≤ 2112) :
     MachineState.readWord (l1Step mem bi pa n j).memory addr =
@@ -826,6 +869,7 @@ theorem readWord_l1Step_low (mem : ByteArray) (bi : UInt256) (pa n addr j : Nat)
       · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
         omega
 
+/-- Nothing below `TS = 2112` is written by the second loop. -/
 theorem readWord_l2Step_low (mem : ByteArray) (mu c0 : UInt256) (n addr k : Nat)
     (haddr : addr + 32 ≤ 2112) :
     MachineState.readWord (l2Step mem mu c0 n k).memory addr =
@@ -839,6 +883,7 @@ theorem readWord_l2Step_low (mem : ByteArray) (mu c0 : UInt256) (n addr k : Nat)
       · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
         omega
 
+/-- Limb `k + 1` of `t` is untouched until step `k + 1` of the second loop. -/
 theorem readWord_l2Step_keep (mem : ByteArray) (mu c0 : UInt256) (n k : Nat)
     (hkn : k + 1 < n) : ∀ j, j ≤ k →
     MachineState.readWord (l2Step mem mu c0 n j).memory (2112 + 32 * (n - 2 - k)) =
@@ -854,6 +899,7 @@ theorem readWord_l2Step_keep (mem : ByteArray) (mu c0 : UInt256) (n k : Nat)
       · rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
         omega
 
+/-- The limb the second loop stores at step `k`. -/
 def l2Val (mem : ByteArray) (mu c0 : UInt256) (n k : Nat) : UInt256 :=
   macSum (MachineState.readWord mem (32 * (n - 2 - k))) mu
     (MachineState.readWord mem (2112 + 32 * (n - 2 - k))) (l2Step mem mu c0 n k).carry
@@ -877,6 +923,7 @@ theorem l2Step_succ_write (mem : ByteArray) (mu c0 : UInt256) (n k : Nat)
   rw [readWord_l2Step_low mem mu c0 n (32 * (n - 2 - k)) k (by omega),
     readWord_l2Step_keep mem mu c0 n k hk k (Nat.le_refl k)]
 
+/-- After step `j`, limb `k < j` holds the value the second loop stored. -/
 theorem readWord_l2Step_val (mem : ByteArray) (mu c0 : UInt256) (n k : Nat)
     (hn : n ≤ 8) (hkn : k + 1 < n) : ∀ j, k < j → j + 1 ≤ n →
     MachineState.readWord (l2Step mem mu c0 n j).memory (tAddr n k) =
@@ -909,6 +956,8 @@ private theorem mac_step_alg2 {S T' A' L C B Wt Wa Bi R Rad C0 : Nat}
   rw [h2, hih]
   ring
 
+/-- `I_L2(j)`: after `j` steps of the second loop,
+`Σ_{k<j} t''[k] rad^k + C rad^j = C₀ + Σ_{k<j} t[k+1] rad^k + mu Σ_{k<j} m[k+1] rad^k`. -/
 theorem l2_invariant (mem : ByteArray) (mu c0 : UInt256) (n : Nat)
     (hn : n ≤ 8) : ∀ j, j + 1 ≤ n →
     limbSum (fun k => (l2Val mem mu c0 n k).toNat) j +
@@ -966,6 +1015,8 @@ theorem limbSum_fastRepresents {mem : ByteArray} {ptr count value : Nat}
     limbSum_digits value count,
     Nat.mod_eq_of_lt (Model.fastRepresents_lt hrep)]
 
+/-- The first loop of a row computes `t_low + b[i] * a` exactly:
+`Σ_{k<n} t'[k] rad^k + C rad^n = t_low + b[i] * a`. -/
 theorem l1_row (mem : ByteArray) (bi : UInt256) (pa n tlow a : Nat)
     (hn : n ≤ 8) (hpaFit : pa + 32 * n ≤ 2048)
     (hta : Model.FastRepresents mem pa n a)
@@ -980,6 +1031,7 @@ theorem l1_row (mem : ByteArray) (bi : UInt256) (pa n tlow a : Nat)
 
 /-! ## The row middle: `t[n] + C` and the `mu` choice -/
 
+/-- A single `ADD` with its carry-out flag. -/
 theorem add_carry_split (x y : UInt256) :
     (UInt256.lt (x + y) y).toNat * 2 ^ 256 + (x + y).toNat = x.toNat + y.toNat := by
   have h := carry_split y.toNat x.toNat (word_lt_size y) (word_lt_size x)
@@ -1007,6 +1059,9 @@ private theorem c0_final {t0 lo hi : Nat} (hlo : lo < 2 ^ 256) (ht0 : t0 < 2 ^ 2
     have hexp : (1 + hi) * 2 ^ 256 = 2 ^ 256 + hi * 2 ^ 256 := by ring
     omega
 
+/-- `mu = minv * t[0]` makes the row sum divisible by the radix, and the
+carry the code computes is exactly the quotient:
+`t[0] + m[0] * mu = C₀ * radix`. -/
 theorem c0_spec (m0 minv t0 : UInt256)
     (hminv : (m0.toNat * minv.toNat + 1) % 2 ^ 256 = 0) :
     (UInt256.isZero (UInt256.isZero (m0 * (minv * t0))) +
@@ -1061,12 +1116,20 @@ theorem c0_spec (m0 minv t0 : UInt256)
 `Csub.csEntryState`'s shape.  `Csub.gasSteps_csub` then reduces `t` modulo the
 modulus, copies the result to `pd` and jumps to `ret`. -/
 
+/-- `limbSum` over the words of a block is `Csub.lowValue`, so the loop
+invariants above line up with the `CSUB` side. -/
 theorem limbSum_eq_lowValue (memory : ByteArray) (ptr n j : Nat) :
     limbSum (fun k => (MachineState.readWord memory (ptr + 32 * (n - 1 - k))).toNat) j =
       Csub.lowValue memory ptr n j := by
   induction j with
   | zero => rfl
   | succ j ih => rw [limbSum_succ, Csub.lowValue_succ, ih]
+
+/-- The whole `MONPRO` call: from the subroutine entry at pc 2066 with stack
+`[pa, pb, pd, ret]` through the `n` CIOS rows and the tail call to `CSUB`, back
+to the caller at `ret`.  The single arithmetic side condition `htn` — the CIOS
+accumulator's top limb is at most one, which is the `t < 2 m` bound of the row
+invariant — is left to the caller. -/
 
 theorem limbSum_shift (f : Nat → Nat) : ∀ j,
     limbSum (fun k => f (k + 1)) j * Limbs.radix + f 0 = limbSum f (j + 1) := by
@@ -1084,16 +1147,19 @@ theorem limbSum_shift (f : Nat → Nat) : ∀ j,
         _ = limbSum f (j + 1) + f (j + 1) * Limbs.radix ^ (j + 1) := by
               rw [pow_succ]
 
+/-- Reads at or above `TS = 2112` see through the row middle. -/
 theorem readWord_midMem_high (mem : ByteArray) (c : UInt256) (r : Nat)
     (hr : 2112 ≤ r) :
     MachineState.readWord (midMem mem c) r = MachineState.readWord mem r :=
   readWord_midMem_peel mem _ _ r (Or.inr hr)
 
+/-- Reads below `T_ = 2048` see through the row middle. -/
 theorem readWord_midMem_low' (mem : ByteArray) (c : UInt256) (r : Nat)
     (hr : r + 32 ≤ 2048) :
     MachineState.readWord (midMem mem c) r = MachineState.readWord mem r :=
   readWord_midMem_peel mem _ _ r (Or.inl hr)
 
+/-- The two `MSTORE`s of the row tail land at `2112` and `2080`. -/
 theorem readWord_tailMem_peel (mem : ByteArray) (v w r : Nat)
     (hr : r + 32 ≤ 2080 ∨ 2144 ≤ r) :
     MachineState.readWord
@@ -1123,6 +1189,7 @@ theorem readWord_tailMem_high (mem : ByteArray) (c : UInt256) (r : Nat)
     MachineState.readWord (tailMem mem c) r = MachineState.readWord mem r :=
   readWord_tailMem_peel mem _ _ r (Or.inr hr)
 
+/-- The row tail stores `t[n] + C` into `t[n-1]` at `TS`. -/
 theorem readWord_tailMem_ts (mem : ByteArray) (c : UInt256) :
     MachineState.readWord (tailMem mem c) 2112 =
       MachineState.readWord mem 2080 + c := by
@@ -1134,6 +1201,7 @@ theorem readWord_tailMem_ts (mem : ByteArray) (c : UInt256) :
   simp only [h1, tailMem1]
   exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
 
+/-- The row tail stores `t[n+1] + carry` into `t[n]` at `TN`. -/
 theorem readWord_tailMem_tn (mem : ByteArray) (c : UInt256) :
     MachineState.readWord (tailMem mem c) 2080 =
       MachineState.readWord mem 2048 +
@@ -1146,6 +1214,7 @@ theorem readWord_tailMem_tn (mem : ByteArray) (c : UInt256) :
   simp only [tailMem]
   rw [Challenge.EvmProof.Memory.readWord_writeWord, hlow]
 
+/-- The row middle stores `t[n] + C` at `TN` and the carry at `T_`. -/
 theorem readWord_midMem_tn (mem : ByteArray) (c : UInt256) :
     MachineState.readWord (midMem mem c) 2080 =
       MachineState.readWord mem 2080 + c := by
@@ -1181,6 +1250,7 @@ theorem rowMem_def (mem : ByteArray) (pa pb n i : Nat) :
     rowMem mem pa pb n i =
       tailMem (rowL2 mem pa pb n i).memory (rowL2 mem pa pb n i).carry := rfl
 
+/-- Limbs `0 .. n-2` of the new `t` are what the second loop stored. -/
 theorem readWord_rowMem_limb (mem : ByteArray) (pa pb n i k : Nat)
     (hn32 : n ≤ 8) (hk : k + 2 ≤ n) :
     MachineState.readWord (rowMem mem pa pb n i) (tAddr n k) =
@@ -1190,12 +1260,14 @@ theorem readWord_rowMem_limb (mem : ByteArray) (pa pb n i k : Nat)
     rowL2_def]
   exact readWord_l2Step_val _ _ _ n k hn32 (by omega) (n - 1) (by omega) (by omega)
 
+/-- Limb `n-1` of the new `t` is `t[n] + C`. -/
 theorem readWord_rowMem_top (mem : ByteArray) (pa pb n i : Nat) :
     MachineState.readWord (rowMem mem pa pb n i) 2112 =
       MachineState.readWord (rowL2 mem pa pb n i).memory 2080 +
         (rowL2 mem pa pb n i).carry := by
   rw [rowMem_def, readWord_tailMem_ts]
 
+/-- The new `t[n]` is `t[n+1] + carry`. -/
 theorem readWord_rowMem_tn (mem : ByteArray) (pa pb n i : Nat) :
     MachineState.readWord (rowMem mem pa pb n i) 2080 =
       MachineState.readWord (rowL2 mem pa pb n i).memory 2048 +
@@ -1255,6 +1327,7 @@ private theorem row_alg {R P tn Cn u cu Cp v cv c0 mu m0 l0 S2 St Sm L1sum mm tl
     _ = tn * (P * R) + (tlow + bi * a) + mu * mm := by rw [hG]
     _ = tn * (P * R) + tlow + a * bi + mu * mm := by ring
 
+/-- One CIOS row is exact: `t_{i+1} · rad = t_i + a · b[i] + mu · m`. -/
 theorem row_equation (mem : ByteArray) (pa pb p i : Nat) (a mm tlow : Nat)
     (hn32 : p + 2 ≤ 8) (hpaFit : pa + 32 * (p + 2) ≤ 2048)
     (ha : Model.FastRepresents mem pa (p + 2) a)
@@ -1491,6 +1564,7 @@ theorem readWord_mpZeroed_tn (s : State) (mem : ByteArray) (n : Nat) :
 
 /-! ## The outer loop -/
 
+/-- The `(n+1)`-limb CIOS accumulator `t = t[n]·rad^n + t_low`. -/
 def tValue (mem : ByteArray) (n : Nat) : Nat :=
   (MachineState.readWord mem 2080).toNat * Limbs.radix ^ n +
     Csub.lowValue mem 2112 n n
@@ -1499,6 +1573,7 @@ private theorem div_of_mul {x y r : Nat} (hr : 0 < r) (h : x * r = y) : y / r = 
   have hy : y / r = x * r / r := by rw [h]
   rw [hy, Nat.mul_div_assoc x (dvd_refl r), Nat.div_self hr, Nat.mul_one]
 
+/-- Consuming one more radix digit of `v`. -/
 theorem mod_pow_succ (v i : Nat) :
     v % Limbs.radix ^ (i + 1) =
       v % Limbs.radix ^ i + v / Limbs.radix ^ i % Limbs.radix * Limbs.radix ^ i := by
@@ -1508,6 +1583,8 @@ theorem mod_pow_succ (v i : Nat) :
   rw [h2] at h1
   exact h1.symm
 
+/-- The outer CIOS invariant: after `i` rows, `t_i · rad^i = a · B_i + Q_i · m`
+with `B_i` the value of the `i` consumed limbs of `b`, and `t_i < 2 m`. -/
 theorem rows_invariant (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm : Nat)
     (hn32 : p + 2 ≤ 8)
     (hpaFit : pa + 32 * (p + 2) ≤ 2048) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
@@ -1612,6 +1689,8 @@ theorem rows_invariant (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm : N
 
 /-! ## The two `MONPRO` postconditions -/
 
+/-- The CIOS accumulator's top limb never exceeds one: this is the `t < 2 m`
+bound of the row invariant together with `m < rad ^ n`. -/
 theorem monpro_tn_le_one (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm : Nat)
     (hn32 : p + 2 ≤ 8)
     (hpaFit : pa + 32 * (p + 2) ≤ 2048) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
@@ -1637,6 +1716,8 @@ theorem monpro_tn_le_one (s : State) (mem : ByteArray) (pa pb p : Nat) (a b mm :
         2080).toNat * Limbs.radix ^ (p + 2) := Nat.mul_le_mul_right _ hge
   omega
 
+/-- `MONPRO` followed by `CSUB` writes the Montgomery product
+`a · b · (rad ^ n)⁻¹ mod m` into the destination block. -/
 theorem monpro_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (a b mm : Nat) (hn32 : p + 2 ≤ 8)
     (hpaFit : pa + 32 * (p + 2) ≤ 2048) (hpbFit : pb + 32 * (p + 2) ≤ 2048)
@@ -1680,6 +1761,8 @@ theorem monpro_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
       (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) (p + 2)) 2112 (p + 2))
     hmR rfl htn1 hmpos hlt
 
+/-- One 32-byte store leaves every other word alone.  This is the shape
+`Fast.Exp.storeWord` unfolds to. -/
 theorem readWord_storeWord_outside (mem : ByteArray) (w dst addr : Nat)
     (hout : addr + 32 ≤ dst ∨ dst + 32 ≤ addr) :
     MachineState.readWord
@@ -1689,6 +1772,8 @@ theorem readWord_storeWord_outside (mem : ByteArray) (w dst addr : Nat)
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   exact hout
 
+/-- One `MCOPY` leaves every word outside the destination alone.  This is the
+shape `Fast.Exp.mcopyMem` unfolds to. -/
 theorem readWord_mcopy_outside (mem : ByteArray) (src dst sz addr : Nat)
     (hout : addr + 32 ≤ dst ∨ dst + sz ≤ addr) :
     MachineState.readWord
@@ -1698,6 +1783,7 @@ theorem readWord_mcopy_outside (mem : ByteArray) (src dst sz addr : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_size]
   exact hout
 
+/-- The `CALLDATACOPY` prologue writes exactly `[2048, 2112 + 32 * n)`. -/
 theorem mpZeroed_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
     (hout : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     MachineState.readWord (mpZeroed s mem n) addr = MachineState.readWord mem addr := by
@@ -1706,12 +1792,15 @@ theorem mpZeroed_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_size]
   omega
 
+/-- The `n` CIOS rows write only inside `[2048, 2624)`. -/
 theorem rowsMem_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
     (hn : n ≤ 8) (hout : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) :
     MachineState.readWord (rowsMem mem pa pb n i) addr =
       MachineState.readWord mem addr :=
   readWord_rowsMem mem pa pb n addr hn hout i
 
+/-- `CSUB` writes only inside `SUBB = [7168, 7168 + 32 * n)` and the
+destination block. -/
 theorem csResultMemory_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
     (hn : 1 ≤ n)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -1720,6 +1809,7 @@ theorem csResultMemory_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
       MachineState.readWord memory addr :=
   Csub.guarded_readWord_outside memory n pdst addr hn hsubb hdst
 
+/-- The memory a whole `MonPro(pa, pb) → pd` call leaves behind. -/
 def monproMem (s : State) (mem : ByteArray) (pa pb n pdst : Nat) : ByteArray :=
   Csub.csResultMemory (rowsMem (mpZeroed s mem n) pa pb n n) n pdst
 
@@ -1727,11 +1817,14 @@ theorem monproMem_def (s : State) (mem : ByteArray) (pa pb n pdst : Nat) :
     monproMem s mem pa pb n pdst =
       Csub.csResultMemory (rowsMem (mpZeroed s mem n) pa pb n n) n pdst := rfl
 
+/-- `gasSteps_monproFull` ends with exactly this memory. -/
 theorem csReturnedState_memory_monproMem (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) :
     (Csub.csReturnedState s (rowsMem (mpZeroed s mem n) pa pb n n) n n pdst ret
       rest).memory = monproMem s mem pa pb n pdst.toNat := rfl
 
+/-- Every word outside `SUBB`, outside the CIOS scratch `[2048, 2624)` and
+outside the destination survives a `MONPRO` call. -/
 theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -1744,6 +1837,8 @@ theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     rowsMem_readWord_outside _ pa pb n n addr hn32 hscratch,
     mpZeroed_readWord_outside s mem n addr (by omega)]
 
+/-- Everything at or above `2624` survives, given only that the destination is
+one of the named blocks below `T_ = 2048`. -/
 theorem monproMem_readWord_high (s : State) (mem : ByteArray)
     (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdst : pdst + 32 * n ≤ 2048) (haddr : 2624 ≤ addr) :
@@ -1752,6 +1847,8 @@ theorem monproMem_readWord_high (s : State) (mem : ByteArray)
   monproMem_readWord_outside s mem pa pb n pdst addr hn hn32 (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr (by omega))
 
+/-- The five configuration words `V_S32`, `V_MINV`, `V_ML`, `V_TL`, `V_EOFF`
+are unchanged by a `MONPRO` call. -/
 theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hdst : pdst + 32 * n ≤ 2048) :
     MachineState.readWord (monproMem s mem pa pb n pdst) 2688 =
@@ -1770,6 +1867,8 @@ theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
    monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2656 hn hn32 hdst (by omega)⟩
 
+/-- Every represented block disjoint from `SUBB`, from the CIOS scratch and
+from the destination survives a `MONPRO` call. -/
 theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -1783,6 +1882,7 @@ theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
   exact (monproMem_readWord_outside s mem pa pb n pdst (ptr + 32 * j) hn hn32
     (by omega) (by omega) (by omega)).symm
 
+/-- The destination block of a `MONPRO` call, in `monproMem` form. -/
 theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (a b mm : Nat) (hn32 : p + 2 ≤ 8)
     (hpaFit : pa + 32 * (p + 2) ≤ 2048) (hpbFit : pb + 32 * (p + 2) ≤ 2048)

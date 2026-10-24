@@ -24,6 +24,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.SquareRoundC
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast Monpro TnCacheMemory
 
+/-- Agreement outside the carry word `[0x820, 0x840)`. -/
 def Same (A B : ByteArray) : Prop := lift A (UInt256.ofNat 0) = lift B (UInt256.ofNat 0)
 
 theorem Same.refl (A : ByteArray) : Same A A := rfl
@@ -40,6 +41,7 @@ theorem Same.readWord {A B : ByteArray} (h : Same A B) (p : Nat) (hp : p + 32 �
     MachineState.readWord A p = MachineState.readWord B p := by
   rw [← read_lift_outside A (UInt256.ofNat 0) p hp, ← read_lift_outside B (UInt256.ofNat 0) p hp, h]
 
+/-- A write that covers `[2080, 2112)` erases the carry word. -/
 theorem writeBytes_lift_absorb (A P : ByteArray) (v : UInt256) (hP : 64 ≤ P.size) :
     MachineState.writeBytes (lift A v) P 2048 = MachineState.writeBytes A P 2048 := by
   apply ByteArray.ext_getElem
@@ -89,6 +91,7 @@ theorem Same.scratchZero {A B : ByteArray} (h : Same A B) (hB : R8RowZeroExact.S
   rw [hl]
   exact hB i hlo hhi
 
+/-- The CSUB limb steps read `t` and the modulus and write the `SUBB` block, all away from `0x820`. -/
 theorem csStep_lift (M : ByteArray) (v : UInt256) (n : Nat) (hn : n ≤ 8) :
     ∀ j, j ≤ n → Csub.csStep (lift M v) n j =
       ⟨lift (Csub.csStep M n j).memory v, (Csub.csStep M n j).flag⟩
@@ -101,6 +104,7 @@ theorem csStep_lift (M : ByteArray) (v : UInt256) (n : Nat) (hn : n ≤ 8) :
       exact (lift_put _ v _ _ (Or.inl (by omega))).symm
 
 
+/-- A write away from the carry word commutes with `lift`. -/
 theorem lift_writeBytes (A P : ByteArray) (v : UInt256) (a : Nat) (hP : P.size ≠ 0)
     (hd : a + P.size ≤ 2080 ∨ 2112 ≤ a) :
     lift (MachineState.writeBytes A P a) v = MachineState.writeBytes (lift A v) P a := by
@@ -121,6 +125,7 @@ theorem readPadded_lift (A : ByteArray) (v : UInt256) (a k : Nat) (hd : a + k �
   Challenge.EvmProof.Memory.readPadded_writeBytes_disjoint _ _ _ _ _
     (by rw [wordBytes_size]; omega)
 
+/-- The eight-limb `t → a` copy. -/
 def copy8 (A : ByteArray) : ByteArray :=
   MachineState.writeBytes A (MachineState.readPadded A 2112 256) 2368
 
@@ -130,6 +135,7 @@ theorem copy8_lift (A : ByteArray) (v : UInt256) : copy8 (lift A v) = lift (copy
     lift_writeBytes _ _ v 2368 (by rw [Challenge.EvmProof.Memory.readPadded_size]; decide)
       (Or.inr (by decide))]
 
+/-- The eight-limb subtraction with the `SUBB` source. -/
 def sub8 (A : ByteArray) : ByteArray :=
   MachineState.writeBytes (Csub.csStep A 8 8).memory
     (MachineState.readPadded (Csub.csStep A 8 8).memory 1792 (32 * 8)) 2368
@@ -155,6 +161,7 @@ theorem sub8_readWord (A : ByteArray) (addr : Nat) (hd : addr + 32 ≤ 1792 ∨ 
     (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)]
   exact Csub.csStep_readWord_disjoint A 8 addr (by decide) (by omega) 8 le_rfl
 
+/-- v9's round result for a zero carry is the copy. -/
 theorem same_copy (F : ByteArray) :
     Same (copy8 F) (LazyCsub.resultMemory (lift F (UInt256.ofNat 0)) 8 2368) := by
   have h0 : (MachineState.readWord (lift F (UInt256.ofNat 0)) 2080).toNat = 0 := by
@@ -165,6 +172,7 @@ theorem same_copy (F : ByteArray) :
   rw [copy8_lift]
   exact (same_lift _ _).symm
 
+/-- v9's round result for a carry of one is the subtraction; st8's flag word does not change it. -/
 theorem same_sub (F : ByteArray) (w : UInt256) :
     Same (sub8 (lift F w)) (LazyCsub.resultMemory (lift F (UInt256.ofNat 1)) 8 2368) := by
   have h1 : (MachineState.readWord (lift F (UInt256.ofNat 1)) 2080).toNat = 1 := by
@@ -181,6 +189,8 @@ theorem same_sub (F : ByteArray) (w : UInt256) :
   rw [sub8_lift, sub8_lift]
   exact (same_lift _ _).trans (same_lift _ _).symm
 
+/-- The rare path's lazy gate: the flag word holds the row head (nonzero, not a carry), so the gate
+takes the subtraction and the select copies `SUBB`. -/
 def gasSteps_lazyFlag8 (s : State) (X : ByteArray) (ret : UInt256) (tail : List UInt256)
     (hcap : tail.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)

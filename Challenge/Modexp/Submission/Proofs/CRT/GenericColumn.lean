@@ -109,5 +109,11 @@ theorem wrappedShiftsAtWidth (W S C H : Nat) (hW : W ≤ 248)
 theorem width244TopCellBound :
     2*((2^96 : Nat)-1)^2+4*((2^96 : Nat)-1)+18 < 2^244 := by norm_num
 
+#print axioms widthBounds
+#print axioms reconstructAtWidth
+#print axioms carryReductionRedundant
+#print axioms columnListInvariantAtWidth
+#print axioms wrappedShiftsAtWidth
+#print axioms width244TopCellBound
 
 end HistoricalSearch.GenericColumn

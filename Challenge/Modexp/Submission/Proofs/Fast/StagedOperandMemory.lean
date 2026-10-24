@@ -10,9 +10,12 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.StagedOperand
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 
+/-- The eight-limb kernel leaves this portion of its scratch block unused. -/
 def stage (mem : ByteArray) (pa n : Nat) : ByteArray :=
   MachineState.writeBytes mem (MachineState.readPadded mem pa (32*n)) 2368
 
+/-- The kernel setup's staging copy (n4a): the operand goes to `0x740 + 2·32n`, i.e. 2368 for
+eight limbs and back onto itself at 2112 for four. -/
 def stageW (mem : ByteArray) (pa n : Nat) : ByteArray :=
   MachineState.writeBytes mem (MachineState.readPadded mem pa (32*n)) (1856 + 64*n)
 
@@ -30,6 +33,7 @@ theorem read_stageW_four_outside (mem : ByteArray) (addr : Nat)
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   simpa using hd
 
+/-- The four-limb staging copy is onto itself: the operand words read back unchanged. -/
 theorem read_stageW_four_member (mem : ByteArray) (j : Nat) (hj : j < 4) :
     MachineState.readWord (stageW mem 2112 4) (2112 + 32*j) =
       MachineState.readWord mem (2112 + 32*j) :=
@@ -54,6 +58,7 @@ theorem represents_stageW_four (mem : ByteArray) (ptr cnt v : Nat)
   · rw [read_stageW_four_outside mem _ (Or.inr (by omega))]
   · rw [read_stageW_four_member mem j (by omega)]
 
+/-- The specialized rows exclude the all-ones low modulus word through the inverse guard. -/
 def eligible (mem : ByteArray) (n : Nat) : Prop :=
   (n = 4 ∨ n = 8) ∧ MachineState.readWord mem 2720 ≠ UInt256.ofNat 1
 

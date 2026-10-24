@@ -13,6 +13,7 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro SquareModel CarryScratchAgreement
 
+/-- Equality outside the still-uninitialized portion of T. -/
 def EqFrom (cut : Nat) (a b : ByteArray) : Prop :=
   ∀ i, i < 2048 ∨ cut ≤ i → a[i]?.getD 0 = b[i]?.getD 0
 
@@ -163,6 +164,8 @@ theorem firstProduct_bridge (s : State) (mem : ByteArray) :
   simpa only [firstProduct, sqL1, sqB2, sqX, aAddr, tAddr,
     Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd, add_zero_word, ← hx] using h
 
+/-- The exact bridge needed before the existing L2 code. The sole permitted
+memory discrepancy is the old return/overflow scratch word2048..2079. -/
 theorem firstMemory_bridge (s : State) (mem : ByteArray) :
     Agree (firstMemory mem)
       (midMem1 (sqL1 (mpZeroed s mem 8) 8 0 (UInt256.ofNat 0)).memory
@@ -176,5 +179,6 @@ theorem firstMemory_bridge (s : State) (mem : ByteArray) :
   rw [hz, zero_add_word, h.2]
   exact eqFrom_store h.1 (by decide) _
 
+#print axioms firstMemory_bridge
 
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow

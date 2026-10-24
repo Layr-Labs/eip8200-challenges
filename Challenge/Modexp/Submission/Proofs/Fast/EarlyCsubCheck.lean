@@ -9,6 +9,7 @@ open EvmSemantics
 open Challenge.Modexp.Submission.Proofs
 open Challenge.EvmProof.Word
 
+/-- Nonzero exactly when the high-limb test cannot rule out subtraction. -/
 def guardWord (mem : ByteArray) : UInt256 :=
   UInt256.lor (MachineState.readWord mem 2080)
     (UInt256.isZero (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)))
@@ -32,6 +33,7 @@ theorem skip_iff (mem : ByteArray) : Skip mem ↔
     have hb := congrArg (fun k : Nat => k.testBit 0) hz
     simp at hb
 
+/-- The flipped guard's jump condition: nonzero exactly when the subtraction is skipped. -/
 def jumpWord (mem : ByteArray) : UInt256 :=
   UInt256.land (UInt256.isZero (MachineState.readWord mem 2080))
     (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0))
@@ -40,6 +42,7 @@ theorem jumpWord_eq (mem : ByteArray) : jumpWord mem =
     UInt256.land (UInt256.isZero (MachineState.readWord mem 2080))
       (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)) := rfl
 
+/-- Comparison results are Boolean words, so one LT implements the same guard. -/
 theorem jumpWord_lt (mem : ByteArray) : jumpWord mem =
     UInt256.lt (MachineState.readWord mem 2080)
       (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)) := by
@@ -64,6 +67,8 @@ theorem jumpWord_toNat (mem : ByteArray) :
       rw [if_pos h2, if_neg h1]; rfl
     · rw [if_neg h2]; split <;> rfl
 
+/-- For equal-width big-endian arrays, a strict high-limb comparison orders
+    the represented integers regardless of all lower limbs. -/
 theorem high_limb_lt {mem : ByteArray} {n t m : Nat}
     (hn : 1 ≤ n) (ht : Model.FastRepresents mem 2112 n t)
     (hm : Model.FastRepresents mem 0 n m)

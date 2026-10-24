@@ -7,6 +7,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.NewtonSeed
 
 open Challenge.Modexp.Submission.Proofs
 
+/-- The low-bit inverse seed, evaluated with the EVM's word multiplication. -/
 def seed (m : Nat) : Nat := (3 * m % Limbs.radix) ^^^ 2
 
 theorem word_seed (m : Nat) :
@@ -26,6 +27,7 @@ def iter (m : Nat) : Nat → Nat
   | 0 => seed m
   | k + 1 => Model.newtonStep m (iter m k)
 
+/-- Four correct bits are enough for six doublings of precision. -/
 theorem seed_spec {m : Nat} (hodd : m % 2 = 1) : m * seed m % 16 = 1 := by
   have small : ∀ a : Fin 16, a.val % 2 = 1 →
       a.val * (((3 * a.val) % 16) ^^^ 2) % 16 = 1 := by decide
@@ -74,6 +76,7 @@ theorem inverse_unique (m a b : Nat) (ha : a < Limbs.radix) (hb : b < Limbs.radi
       _ = b := by
         rw [Nat.mul_mod, hia, Nat.one_mul, Nat.mod_mod, Nat.mod_eq_of_lt hb]
 
+/-- The shorter computation gives exactly the previously proved word inverse. -/
 theorem six_eq_old {m : Nat} (hodd : m % 2 = 1) :
     iter m 6 = Model.newtonIter m 8 :=
   inverse_unique m _ _ (Model.newtonStep_lt _ _) (Model.newtonStep_lt _ _)

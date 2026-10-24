@@ -107,4 +107,14 @@ theorem mod_window (X total shift width : Nat) (h : shift+width ≤ total) :
     rw [← Nat.pow_add, Nat.add_sub_of_le hs], Nat.mod_mul_right_div_self]
   exact Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by omega))
 
+#print axioms weighted_lt
+#print axioms weighted_split
+#print axioms weighted_div
+#print axioms weighted_two
+#print axioms two_digit_window
+#print axioms output_word
+#print axioms retained_digit
+#print axioms retained_top
+#print axioms quotient_overflow
+#print axioms mod_window
 end HistoricalSearch.CRTPacking

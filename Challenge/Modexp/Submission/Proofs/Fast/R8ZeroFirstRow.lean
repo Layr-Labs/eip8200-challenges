@@ -33,6 +33,8 @@ def result (s : State) (hd next stride target inv m0 m96 m64 m32 : UInt256)
              endFrame (UInt256.ofNat 0) (UInt256.ofNat 2592) hd (UInt256.ofNat 2336)
                next stride maxWord target inv m0 m96 m64 m32 (MachineState.readWord s.memory 2592) rest }
 
+/-- Exact 245-byte straight-line first-row program, with its only code immediate
+and final computed target abstract. Incoming T and scratch memory are arbitrary. -/
 theorem run_program (s : State)
     (pc hd ent next stride target inv m0 m96 m64 m32 aprev : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
@@ -77,6 +79,7 @@ theorem run_program (s : State)
   have h012 := runInstructions_append_some _ _ _ _ _ h01b h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 
+/-- Full instruction semantics together with the exact old-model bridge. -/
 theorem run_program_bridge (s : State)
     (pc hd ent next stride target inv m0 m96 m64 m32 aprev : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
@@ -96,4 +99,7 @@ theorem zeroed_first_overflow (s : State) (mem : ByteArray) :
   rw [readWord_sqL1 _ 8 0 2080 _ (by decide) (Or.inl (by decide)),
     readWord_mpZeroed_tn, zero_add_word, lt_self_word]
 
+#print axioms run_program
+#print axioms run_program_bridge
+#print axioms zeroed_first_overflow
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow

@@ -161,5 +161,11 @@ theorem column16Bound (A Q N C : Nat) (hA : A < 2^96) (hQ : Q < 2^96) (hN : N < 
   have hsum : A*A+Q*N+C ≤ 2*((2^96 : Nat)-1)^2+4*((2^96 : Nat)-1)+18 := by nlinarith
   exact hsum.trans_lt HistoricalSearch.GenericColumn.width244TopCellBound
 
+#print axioms lowValue
+#print axioms highInvariant
+#print axioms valueBound
+#print axioms reconstructExpressions
+#print axioms column15CarryBound
+#print axioms column16Bound
 
 end HistoricalSearch.ColumnExpressions

@@ -78,6 +78,7 @@ theorem diagonal_eq (a tb t : UInt256) (htb : tb.toNat ≤ 1) :
   rw [hd, hm]
   ring
 
+#print axioms diagonal_eq
 
 set_option linter.unusedSimpArgs false
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -99,8 +100,24 @@ theorem diag1Part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1007) :
     runInstructions diag1Part3 { s with pc := UInt256.ofNat 4409, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } =
     some { s with pc := UInt256.ofNat 4415, stack := [x5, x1, ((UInt256.lt x0 x1) - x0), x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
-  simp [diag1Part3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  simp [diag1Part3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16]
 
 def diag1Part4 : List Instr := [.op .ADD, .op (.Swap ⟨5, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .LT, .op .SUB, .op .SUB]
 
@@ -108,8 +125,24 @@ theorem diag1Part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1007) :
     runInstructions diag1Part4 { s with pc := UInt256.ofNat 4415, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15] ++ rest } =
     some { s with pc := UInt256.ofNat 4421, stack := [(((UInt256.lt (x0 + x1) x7) - x2) - x3), x4, x5, x6, (x0 + x1), x8, x9, x10, x11, x12, x13, x14, x15] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
-  simp [diag1Part4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  simp [diag1Part4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16]
 
 def diag1Part5 : List Instr := []
 
@@ -117,8 +150,21 @@ theorem diag1Part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : 
     (hcap : rest.length ≤ 1010) :
     runInstructions diag1Part5 { s with pc := UInt256.ofNat 4421, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } =
     some { s with pc := UInt256.ofNat 4421, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 13) : rest.length + j < 1024 := by omega
-  simp [diag1Part5, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  simp [diag1Part5, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13]
 
 theorem diagRun1 (s : State) (tb a p3 p2 p1 p0 p4 n0 n1 n2 n3 np : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1004) :
@@ -138,6 +184,7 @@ theorem diagRun1 (s : State) (tb a p3 p2 p1 p0 p4 n0 n1 n2 n3 np : UInt256)
     (runInstructions_append_some _ _ _ _ _ g0
       (runInstructions_append_some _ _ _ _ _ g3 (runInstructions_append_some _ _ _ _ _ g4 g5)))
 
+#print axioms diagRun1
 
 def diagProgram2 : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .ADD, .op (.Swap ⟨4, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .LT, .op .SUB, .op .SUB]
@@ -148,8 +195,24 @@ theorem diag2Part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1007) :
     runInstructions diag2Part3 { s with pc := UInt256.ofNat 4521, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } =
     some { s with pc := UInt256.ofNat 4527, stack := [x4, x1, ((UInt256.lt x0 x1) - x0), x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
-  simp [diag2Part3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  simp [diag2Part3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16]
 
 def diag2Part4 : List Instr := [.op .ADD, .op (.Swap ⟨4, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .LT, .op .SUB, .op .SUB]
 
@@ -157,8 +220,24 @@ theorem diag2Part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1007) :
     runInstructions diag2Part4 { s with pc := UInt256.ofNat 4527, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15] ++ rest } =
     some { s with pc := UInt256.ofNat 4533, stack := [(((UInt256.lt (x0 + x1) x6) - x2) - x3), x4, x5, (x0 + x1), x7, x8, x9, x10, x11, x12, x13, x14, x15] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
-  simp [diag2Part4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  simp [diag2Part4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16]
 
 def diag2Part5 : List Instr := []
 
@@ -166,8 +245,21 @@ theorem diag2Part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : 
     (hcap : rest.length ≤ 1010) :
     runInstructions diag2Part5 { s with pc := UInt256.ofNat 4533, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } =
     some { s with pc := UInt256.ofNat 4533, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 13) : rest.length + j < 1024 := by omega
-  simp [diag2Part5, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  simp [diag2Part5, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13]
 
 theorem diagRun2 (s : State) (tb a p3 p2 p1 p0 p4 n0 n1 n2 n3 np : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1004) :
@@ -187,6 +279,7 @@ theorem diagRun2 (s : State) (tb a p3 p2 p1 p0 p4 n0 n1 n2 n3 np : UInt256)
     (runInstructions_append_some _ _ _ _ _ g0
       (runInstructions_append_some _ _ _ _ _ g3 (runInstructions_append_some _ _ _ _ _ g4 g5)))
 
+#print axioms diagRun2
 
 def diagProgram3 : List Instr := [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .GT, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .LT, .op .SUB, .op .SUB]
 
@@ -198,8 +291,25 @@ theorem diag3Part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : 
     (hcap : rest.length ≤ 1006) :
     runInstructions diag3Part0 { s with pc := UInt256.ofNat 4588, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } =
     some { s with pc := UInt256.ofNat 4595, stack := [UInt256.gt x1 (x1 + x0), (x1 + x0), x7, (x1 + x0), x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 17) : rest.length + j < 1024 := by omega
-  simp [diag3Part0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  simp [diag3Part0, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17]
 
 def diag3Part1 : List Instr := [.op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩),
   .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD, .op .SUB]
@@ -208,8 +318,26 @@ theorem diag3Part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1005) :
     runInstructions diag3Part1 { s with pc := UInt256.ofNat 4595, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15] ++ rest } =
     some { s with pc := UInt256.ofNat 4601, stack := [(UInt256.mulMod x4 x1 x2 - x0), (x4 * x3), x5, x6, x7, x8, x9, x10, x11, x12, x13, x14, x15] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
-  simp [diag3Part1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  simp [diag3Part1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18]
 
 def diag3Part2 : List Instr := [.op (.Dup ⟨1, by decide⟩),
   .op (.Dup ⟨1, by decide⟩), .op .LT]
@@ -218,8 +346,23 @@ theorem diag3Part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : 
     (hcap : rest.length ≤ 1008) :
     runInstructions diag3Part2 { s with pc := UInt256.ofNat 4601, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } =
     some { s with pc := UInt256.ofNat 4604, stack := [(UInt256.lt x0 x1), x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 15) : rest.length + j < 1024 := by omega
-  simp [diag3Part2, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  simp [diag3Part2, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15]
 
 def diag3Part3 : List Instr := [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Swap ⟨2, by decide⟩), .op (.Dup ⟨3, by decide⟩)]
 
@@ -227,8 +370,23 @@ theorem diag3Part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1008) :
     runInstructions diag3Part3 { s with pc := UInt256.ofNat 4604, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } =
     some { s with pc := UInt256.ofNat 4610, stack := [(x3 + x2), x3, (x0 - x1), x2, (x3 + x2), x4, x5, x6, x7, x8, x9, x10, x11, x12, x13] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 15) : rest.length + j < 1024 := by omega
-  simp [diag3Part3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  simp [diag3Part3, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15]
 
 def diag3Part4 : List Instr := [.op .LT, .op .SUB, .op .SUB]
 
@@ -236,8 +394,23 @@ theorem diag3Part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
     (hcap : rest.length ≤ 1008) :
     runInstructions diag3Part4 { s with pc := UInt256.ofNat 4610, stack := [x0, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14] ++ rest } =
     some { s with pc := UInt256.ofNat 4613, stack := [(((UInt256.lt x0 x1) - x2) - x3), x4, x5, x6, x7, x8, x9, x10, x11, x12, x13, x14] ++ rest } := by
-  have capacity (j : Nat) (hj : j ≤ 15) : rest.length + j < 1024 := by omega
-  simp [diag3Part4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, capacity, Nat.add_assoc]
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  simp [diag3Part4, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15]
 
 theorem diagRun3 (s : State) (tb a p3 p2 p1 p0 p4 n0 n1 n2 n3 np : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1005) :
@@ -254,5 +427,6 @@ theorem diagRun3 (s : State) (tb a p3 p2 p1 p0 p4 n0 n1 n2 n3 np : UInt256)
   have g4 := diag3Part4_run s (p3 + (a * (a + tb))) p3 ((UInt256.lt ((UInt256.mulMod a (a + tb) maxWord) - (UInt256.lt (a + tb) a)) (a * (a + tb))) - ((UInt256.mulMod a (a + tb) maxWord) - (UInt256.lt (a + tb) a))) (a * (a + tb)) (p3 + (a * (a + tb))) p2 p1 p0 p4 maxWord n0 n1 n2 n3 np rest (by omega)
   simpa only [diagSum, diagCarry, List.cons_append, List.nil_append] using (runInstructions_append_some _ _ _ _ _ g0 (runInstructions_append_some _ _ _ _ _ g1 (runInstructions_append_some _ _ _ _ _ g2 (runInstructions_append_some _ _ _ _ _ g3 (g4)))))
 
+#print axioms diagRun3
 
 end Challenge.Modexp.Submission.Proofs.Fast.R4Diagonal

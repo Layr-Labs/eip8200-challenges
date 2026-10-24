@@ -49,4 +49,7 @@ theorem roundedWidthBound (W S C : Nat) (hW : W ≤ 248)
   norm_num [wordRadix, residueModulus] at *
   omega
 
+#print axioms roundedResidual
+#print axioms roundedHigh
+#print axioms roundedWidthBound
 end HistoricalSearch.RoundedCRT

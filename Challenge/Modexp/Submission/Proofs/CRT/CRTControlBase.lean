@@ -63,4 +63,9 @@ theorem hook_run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 102
     h0, h1, hn, hvalid, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
+#print axioms jumpi_run
+#print axioms jump_run
+#print axioms jumpDest_run
+#print axioms resume_run
+#print axioms hook_run
 end HistoricalSearch.CRTControl

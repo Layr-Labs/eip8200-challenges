@@ -22,6 +22,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 
 /-! ## Value facts feeding the trace (proved in `ShiftModel`) -/
 
+/-- The repair-loop facts of one step, from the step's arithmetic. -/
 theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
@@ -36,6 +37,8 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) :=
   (step_spec mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr hpre).1
 
+/-- The estimator words survive the cache store, which writes at 1698 -- two bytes above
+`PRE_DINV`'s word, which ends at 1696. -/
 theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
     PreOK (ShiftCacheModel.cacheMem mem n) := by
   obtain ⟨h1, h2, h3, h4, h5⟩ := h
@@ -53,6 +56,7 @@ theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
   · rw [hread PRE_BMOD (by simp only [PRE_BMOD]; omega), hz]; exact h4
   · rw [hread PRE_DINV (by simp only [PRE_DINV]; omega), hz]; exact h5
 
+/-- The configuration words survive a step. -/
 theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hf : Exp.Frame mem n bsize minv) : Exp.Frame (stepMem mem n mm) n bsize minv where
   s32 := by
@@ -94,9 +98,12 @@ theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n
 
 /-! ## The whole hit path -/
 
+/-- Memory after the raw base has been reduced by the first `CSUB`. -/
 def m1Of (mem input : ByteArray) (n : Nat) : ByteArray :=
   ShiftProducerCanonical.canonicalMemory mem input n
 
+/-- Words at or above `ACC + 32 n` that `hitMem` and the first `CSUB` leave
+alone, apart from `BASE` and `SUBB`. -/
 theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
@@ -105,12 +112,17 @@ theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
     MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr :=
   ShiftProducerCanonical.canonical_readWord mem input n addr hn hn32 hdisj
 
+/-- Memory at the shift loop entry. -/
 def m2Of (mem input : ByteArray) (n : Nat) : ByteArray :=
   ShiftCacheModel.cacheMem (preMem (negStep (m1Of mem input n) n n).memory) n
 
+/-- Memory at `BDONE`. -/
 def hitFinalMem (mem input : ByteArray) (n mm : Nat) : ByteArray :=
   stepMems (m2Of mem input n) n mm n
 
+/-- The shift-reduce route leaves `NEG` holding `radix^n - mm`: the loop never writes it.
+The `MCOPY` at the loop exit copies that word block into `R1`, and on this route
+`TopBitSet` makes `radix^n - mm` equal to `radix^n % mm`. -/
 theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hodd : mm % 2 = 1) (hmod : Model.FastRepresents mem 0 n mm) :
     Model.FastRepresents (hitFinalMem mem input n mm) NEG n (Limbs.radix ^ n - mm) := by
@@ -127,6 +139,7 @@ theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
   exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
 
+/-- The base value the first `CSUB` leaves in the retained `TS`: `b mod m`. -/
 theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
@@ -165,6 +178,7 @@ theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ 
     negStep_readWord_disjoint _ n addr hdisj.2.2.1 n le_rfl]
   exact m1_readWord_disjoint mem input n addr hn hn32 ⟨hdisj.1, hdisj.2.1, hdisj.2.2.2.2⟩
 
+/-- The step invariant at the shift loop entry. -/
 theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
     (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
@@ -222,6 +236,12 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
   exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n,
     PreOK_cacheMem _ n (PreOK_preMem _)⟩
 
+/-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
+
+The miss arm seeds `R1 = 0x0400` with 1 and calls the conversion with the old `r0`
+block (pc 1430) as its return address, so the conversion runs only on this route.  The
+recogniser-hit route instead gets its `R1` from the `MCOPY` at the end of the shift-reduce
+loop (`ShiftTrace3.run_shiftDone`). -/
 def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256) (htop : R1.TopBitSet mem)
     (hmiss : ¬ FullBase.Matches mem n bsize) :

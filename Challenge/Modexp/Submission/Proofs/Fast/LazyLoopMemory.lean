@@ -10,6 +10,7 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro SquareModel SquareResult SquareLoopBlocks
 
+/-- The generic square rows (the n=4 rounds have their own model, `R4Loop`). -/
 def rows (s : State) (n : Nat) (mem : ByteArray) : ByteArray :=
   sqRowsCarry (mpZeroed s mem n) n n
 

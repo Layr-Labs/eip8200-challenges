@@ -147,4 +147,6 @@ theorem miss_of_same_modulus (a b : ByteArray) (n bsize mm : Nat) (hn : 1 ≤ n)
     (hmiss : ¬ FullBase.Matches a n bsize) : ¬ FullBase.Matches b n bsize :=
   fun h => hmiss ((matches_of_same_modulus a b n bsize mm hn ha hb).mpr h)
 
+#print axioms canonical_acc
+#print axioms miss_of_same_modulus
 end Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerCanonical

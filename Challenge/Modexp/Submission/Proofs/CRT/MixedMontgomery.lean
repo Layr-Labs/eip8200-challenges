@@ -313,5 +313,16 @@ theorem repackedWordsExact (w n X : Nat) (words : Nat → Nat) (hX : X < (2^w)^n
         rw [hwords j (Finset.mem_range.mp hj)]
     _ = X := extractedWordsExact (2^w) n X hX
 
+#print axioms convolutionValue
+#print axioms carryTelescopes
+#print axioms montgomeryColumns
+#print axioms cancellationDigit
+#print axioms mixedExact
+#print axioms mixedCancellationBound
+#print axioms normalizeCorrect
+#print axioms arithmeticContract
+#print axioms mixedModelContract
+#print axioms repackOr
+#print axioms repackedWordsExact
 
 end HistoricalSearch.MixedMontgomery

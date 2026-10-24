@@ -15,16 +15,21 @@ rows with their row weights `B ^ r`, these contributions are exactly `a ^ 2`.
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.SquareMath
 
+/-- `Σ_{k<j} f k * B ^ k`. -/
 def lsum (B : Nat) (f : Nat → Nat) : Nat → Nat
   | 0 => 0
   | j + 1 => lsum B f j + f j * B ^ j
 
+/-- Top bit carried into limb `i` (the top bit of limb `i-1`; zero for `i = 0`). -/
 def tbm (h : Nat) (a : Nat → Nat) : Nat → Nat
   | 0 => 0
   | i + 1 => a i / h
 
+/-- Limb `i` of `2a` (radix `B = 2h`). -/
 def a2 (h : Nat) (a : Nat → Nat) (i : Nat) : Nat := (2 * a i + tbm h a i) % (2 * h)
 
+/-- The contribution of row `r` in its own frame: the diagonal at weight `B^r`
+plus `a2 r` times the limbs above `r`. -/
 def rowX (h n : Nat) (a : Nat → Nat) (r : Nat) : Nat :=
   a r * (a r + tbm h a r) * (2 * h) ^ r +
     a2 h a r * (lsum (2 * h) a n - lsum (2 * h) a (r + 1))
@@ -47,6 +52,7 @@ theorem tbm_le_one {h : Nat} (hh : 0 < h) (a : Nat → Nat) (ha : ∀ k, a k < 2
       have := ha i
       exact Nat.lt_succ_iff.mp ((Nat.div_lt_iff_lt_mul hh).2 (by omega))
 
+/-- `2 a_i + tbm_i = a2_i + tbm_{i+1} * B`. -/
 theorem a2_carry {h : Nat} (hh : 0 < h) (a : Nat → Nat) (ha : ∀ k, a k < 2 * h) (i : Nat) :
     2 * a i + tbm h a i = a2 h a i + tbm h a (i + 1) * (2 * h) := by
   have ht := tbm_le_one hh a ha i
@@ -69,6 +75,8 @@ theorem a2_carry {h : Nat} (hh : 0 < h) (a : Nat → Nat) (ha : ∀ k, a k < 2 *
   rw [hd] at this
   linarith
 
+/-- The row invariant: after rows `0..i-1`,
+`Σ_{r<i} X_r B^r + tbm_i B^i U_i = L_i^2 + 2 L_i U_i`, `U_i = A - L_i`. -/
 theorem rows_identity {h : Nat} (hh : 0 < h) (a : Nat → Nat) (ha : ∀ k, a k < 2 * h) (n : Nat) :
     ∀ i, i ≤ n →
       lsum (2 * h) (rowX h n a) i +
@@ -107,6 +115,7 @@ theorem rows_identity {h : Nat} (hh : 0 < h) (a : Nat → Nat) (ha : ∀ k, a k 
         ring
       omega
 
+/-- **The squaring identity**: the n rows contribute exactly `a ^ 2`. -/
 theorem square_identity {h : Nat} (hh : 0 < h) (a : Nat → Nat) (ha : ∀ k, a k < 2 * h) (n : Nat) :
     lsum (2 * h) (rowX h n a) n = lsum (2 * h) a n ^ 2 := by
   have := rows_identity hh a ha n n le_rfl

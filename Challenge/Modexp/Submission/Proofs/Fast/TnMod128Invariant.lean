@@ -8,6 +8,7 @@ open EvmSemantics
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro TnCacheMemory
 
+/-- All reduction writes are disjoint from the fourth cached modulus word. -/
 theorem fromL1_read (q : MacState) (tn : UInt256) (n : Nat) :
     MachineState.readWord (TnCacheSquareModel.fromL1 q tn n).memory 128 =
       MachineState.readWord q.memory 128 := by
@@ -31,6 +32,7 @@ theorem rows_read (z : TnCacheRowModel.CacheState) (pa pb n k : Nat) :
   | succ k ih =>
       rw [TnCacheRowModel.rows, row_read, ih]
 
+/-- Rows leave every word below the T region alone (p2 reads `n1 = mem[0xc0]` through them). -/
 theorem row_read_low (z : TnCacheRowModel.CacheState) (pa pb n i addr : Nat)
     (haddr : addr + 32 ≤ 2112) :
     MachineState.readWord (TnCacheRowModel.row z pa pb n i).memory addr =
@@ -83,4 +85,7 @@ theorem firstProduct_read (mem : ByteArray) :
   change MachineState.readWord (put mem _ 2336) 128 = _
   exact read_put_outside _ _ 2336 128 (Or.inl (by decide))
 
+#print axioms rows_read
+#print axioms squareRows_read
+#print axioms firstProduct_read
 end Challenge.Modexp.Submission.Proofs.Fast.TnMod128Invariant
