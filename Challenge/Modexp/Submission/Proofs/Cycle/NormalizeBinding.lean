@@ -13,18 +13,18 @@ open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
 
 def normalizerBlock : Block Artifact.artifact .Osaka 11014 normalizeProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 9067 129 11014 normalizeProgram
-    (by change 9067+129 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 9067+129 ≤ 9197)
+  WindowTwentyOneSlice.block Artifact.wellFormed 9067 121 11014 normalizeProgram
+    (by change 9067+121 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 9067+121 ≤ 9189)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
-def returnBlock : Block Artifact.artifact .Osaka 11163 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 9196 1 11163 jumpProgram
-    (by change 9196+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 9196+1 ≤ 9197)
+def returnBlock : Block Artifact.artifact .Osaka 11155 jumpProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 9188 1 11155 jumpProgram
+    (by change 9188+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 9188+1 ≤ 9189)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

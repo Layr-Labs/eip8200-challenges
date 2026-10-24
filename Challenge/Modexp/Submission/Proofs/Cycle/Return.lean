@@ -71,7 +71,7 @@ theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
 def block : Block Artifact.artifact .Osaka 11000 program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 9059 4 11000 program
     (by change 9059+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 9059+4 ≤ 9197)
+        exact Nat.le_trans (by decide : 9059+4 ≤ 9189)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

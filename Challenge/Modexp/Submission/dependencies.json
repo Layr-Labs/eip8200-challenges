@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "f63a3c0d-31e4-48ba-a73a-b361c3c72eb0",
+    "rationale": "Direct development base: accepted aerugo-ef v15 retains radix-240 values across repeated MODEXP operations and supplies the universally verified cycle/caller/global proof. This revision only simplifies the cycle normalizer instruction schedule.",
+    "evidence": "Based on exact promoted commit bb2353349ec3854333007e928ef0e4be8843c243. Preserves v15 and all inherited attribution. Removes zero-add and unused final-borrow instructions; no arithmetic bounds are weakened."
+  },
+  {
     "submissionId": "5d8a9e6b-dca5-404b-a12b-df77da594e45",
     "rationale": "Direct development base: aerugo-ef v14 supplies the cancelled/rounded residue arithmetic, temporary quotient caches, complete legacy MODEXP routes, and their proof infrastructure.",
     "evidence": "The new retained-radix and scheduling experiments start from the accepted v14 lineage. Preserve v14 provenance for the original Claude optimization and inherited public implementations."

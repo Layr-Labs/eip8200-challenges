@@ -27,7 +27,7 @@ def cells (a n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 11163
+    pc := UInt256.ofNat 11155
     memory := storeCells s.memory (cells a n)
     stack := ret :: frame (output a n) n (n 0) slot1 rest}
 
