@@ -24,7 +24,6 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro SquareModel SquareResult CarryRowModel CarryScratchAgreement
 
-/-- The scratch word `[2048, 2080)` (the pure model's `t[n+1]` slot) is all zero. -/
 def ScratchZero (mem : ByteArray) : Prop :=
   ∀ i, 2048 ≤ i → i < 2080 → mem[i]?.getD 0 = 0
 
@@ -97,7 +96,6 @@ theorem ScratchZero.sqRowsCarry {mem : ByteArray} (h : ScratchZero mem) (n : Nat
   | 0 => h
   | i + 1 => (ScratchZero.sqRowsCarry h n i).sqRowCarry n i _
 
-/-- The CSUB limb loop writes its differences at `1792 + 32 * (n - 1 - j)`, below 2048. -/
 theorem ScratchZero.csStep {mem : ByteArray} (h : ScratchZero mem) (n : Nat) (hn : n ≤ 8) :
     ∀ j, ScratchZero (Csub.csStep mem n j).memory
   | 0 => h
@@ -193,8 +191,6 @@ theorem size_firstMemory (mem : ByteArray) :
 
 /-! ## The exact bridge -/
 
-/-- With a zero scratch word, the machine memory after the first-row program **is** the
-machine-carry row model of the zeroed memory. -/
 theorem firstMemory_eq (s : State) (mem : ByteArray) (hscr : ScratchZero mem) :
     R8ZeroFirstRow.firstMemory mem =
       midMem1 (sqL1 (mpZeroed s mem 8) 8 0 (UInt256.ofNat 0)).memory

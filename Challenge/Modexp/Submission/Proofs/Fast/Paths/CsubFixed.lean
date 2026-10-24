@@ -35,8 +35,6 @@ def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located Artifact.submission
    opAt 3151 .JUMPI,
    opAt 3083 .JUMPDEST]
 
-/-- rarej: the eight-limb subtraction starts at the `s8` `JUMPDEST` (pc 4374), the target of the
-square exit's carry continuation; the entry block falls into it. -/
 def csFixedStep8_0 : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3152 .JUMPDEST,
    pushAt 3153 2 2336,
@@ -177,8 +175,6 @@ def csFixedStep8_7 : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3274 .GT,
    opAt 3275 .OR]
 
-/-- Selection tail when `use ≠ 0` (`t ≥ m`): `JUMPI` to pc 4538, which copies the
-difference block at `SUBB` (1792) to the destination and returns. -/
 def csFixedTailSub : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3276 .ISZERO,
    pushAt 3277 2 2080,
@@ -194,8 +190,6 @@ def csFixedTailSub : List (Challenge.EvmProof.Stepper.Located Artifact.submissio
    opAt 3301 .MCOPY,
    opAt 3302 .JUMP]
 
-/-- Selection tail when `use = 0` (`t < m`): fall through the `JUMPI` and jump to the
-shared copy block at pc 4527, which copies `t` (2112) to the destination and returns. -/
 def csFixedTailKeep : List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 3276 .ISZERO,
    pushAt 3277 2 2080,
@@ -394,9 +388,6 @@ no pc certificates, so the block could not step. -/
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-/-- The four-limb landing of the rewritten conditional-subtraction dispatch. The old claim here named
-pc 4371 through index 3273, which is now an `MCOPY` at 4392, so it was false and cost a `whnf` runaway
-rather than an honest error. -/
 @[simp] theorem fixedPC3009 : Artifact.submissionArtifact.instructionPC 3079 = 3914 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl

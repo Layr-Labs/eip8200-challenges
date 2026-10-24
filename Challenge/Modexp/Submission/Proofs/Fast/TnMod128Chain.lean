@@ -10,9 +10,6 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.TnMod128Chain
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
-/-- The shared three-cell suffix with its entry JUMPDEST (P1): the fifth cell reads modulus[64]
-from the eleventh frame word and the sixth reads modulus[32] from the eighth; the Montgomery
-inverse rides in the fifteenth word and the carry cache in the sixteenth. -/
 def suffix : List Instr :=
   (([.op .JUMPDEST] ++ TnMod128Trace.program64) ++
     TnMod128Trace.program32) ++
@@ -54,8 +51,6 @@ theorem run_suffix (s : State) (pc : Nat) (mem : ByteArray)
   have h012 := runInstructions_append_some _ _ _ _ _ h01 h2
   exact runInstructions_append_some _ _ _ _ _ h012 h3
 
-/-- Four cells; the first takes modulus[192] from frame word `pb` (p2), the second reads
-modulus[160] from the `m0` frame slot and the third modulus[128] from the cached frame slot. -/
 def prefixProgram : List Instr :=
   ((TnCacheL2Trace.l2ProgramFrame 2304 2336 ++
     TnMod128Trace.program160) ++ TnMod128Trace.program) ++
@@ -100,7 +95,6 @@ def fullProgram (n : Nat) : List Instr :=
 
 def fullSize (n : Nat) : Nat := if n = 4 then 98 else 226
 
-/-- All reduction cells preserve the arbitrary cached carry slot and consume mu. -/
 theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     (n : Nat) (hn : n = 4 ∨ n = 8)
     (pbi hd pb ent tn m128 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
@@ -127,7 +121,4 @@ theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     simpa [fullProgram, fullSize, Nat.add_assoc] using both
 
 
-#print axioms run_suffix
-#print axioms run_prefix
-#print axioms run_full
 end Challenge.Modexp.Submission.Proofs.Fast.TnMod128Chain

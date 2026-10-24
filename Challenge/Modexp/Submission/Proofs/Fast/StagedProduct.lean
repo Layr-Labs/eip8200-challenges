@@ -57,7 +57,6 @@ theorem rows_agree (mem : ByteArray) (pa pb n j : Nat)
   | zero => exact refl mem
   | succ j ih =>
     exact row_agree _ _ (ih (by omega)) pa pb n j hpa hpb hn hn32 (by omega)
-/-- The fused final product starts with an already staged A, and skips entry copying. -/
 def memory (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
   Csub.csResultMemory (rowsCarry (mpZeroed s mem n) 2368 256 n n) n 256
 
@@ -94,5 +93,4 @@ theorem represents (s : State) (mem : ByteArray) (p a b mm : Nat)
     (by omega) (by omega) ha hb hm hodd ham hminv
   exact (CarryRowModel.fastRepresents_iff _ _ hc 256 (p + 2) _ (Or.inl (by omega))).2 hr
 
-#print axioms represents
 end Challenge.Modexp.Submission.Proofs.Fast.StagedProduct

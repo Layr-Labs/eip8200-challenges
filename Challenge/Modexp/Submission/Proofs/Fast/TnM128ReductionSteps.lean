@@ -42,5 +42,4 @@ noncomputable def reduction_steps (s : State)
     exact TnM128R8Reduction.reduction_steps s env q bi tn pbi hd pb ent m128 tl inv m0
       aEnd m96 m64 m32 dst ret rest hcap hact hc he hi hcache (hpb rfl) hjd
 
-#print axioms reduction_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128ReductionSteps

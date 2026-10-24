@@ -12,13 +12,11 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open CiosCachedMacCore CiosCached Monpro
 
-/-- Replace the top carry's middle memory store by a frame-slot update. -/
 def middle : List Instr :=
   [.op (.Dup ⟨6, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨6, by decide⟩), .op .GT,
    .op (.Swap ⟨0, by decide⟩), .op .POP]
 
-/-- Either operand gives the same unsigned addition carry flag. -/
 theorem carry_gt (a b : UInt256) :
     UInt256.gt a (a+b) = UInt256.lt (a+b) b := by
   have ha : a.toNat < 2 ^ 256 := a.val.isLt
@@ -28,7 +26,6 @@ theorem carry_gt (a b : UInt256) :
     omega
   simp only [UInt256.gt, UInt256.lt, he]
 
-/-- The low output is still written; the final top carry stays in the frame. -/
 def tail : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .push 2 2112, .op .MSTORE,
@@ -80,13 +77,11 @@ theorem run_tail (pc0 : Nat) (s : State) (c f pbi hd pb ent tn target inv : UInt
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- P1: `middle` with the carry cache in the fifteenth word below the carry (`DUP15`, `SWAP15`). -/
 def middle15 : List Instr :=
   [.op (.Dup ⟨14, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .op .GT,
    .op (.Swap ⟨0, by decide⟩), .op .POP]
 
-/-- P1: `tail` with the carry cache read by `DUP16` and written back by `SWAP13`. -/
 def tail16 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .push 2 2112, .op .MSTORE,
@@ -114,7 +109,6 @@ theorem run_middle15 (pc0 : Nat) (s : State)
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `middle` when `bi` was already consumed by the last L1 cell (`DUP14`, `SWAP14`, no `SWAP1; POP`). -/
 def middle14 : List Instr :=
   [.op (.Dup ⟨13, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨13, by decide⟩), .op .GT]
@@ -166,9 +160,4 @@ theorem run_tail16 (pc0 : Nat) (s : State)
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod]
 
-#print axioms carry_gt
-#print axioms run_middle
-#print axioms run_tail
-#print axioms run_middle15
-#print axioms run_tail16
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheStoreAt

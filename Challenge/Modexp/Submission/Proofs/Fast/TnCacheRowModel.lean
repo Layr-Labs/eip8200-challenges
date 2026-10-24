@@ -125,6 +125,4 @@ theorem rows_lift (z : CacheState) (pa pb n i : Nat)
       simp only [rowsCarry, rows, ih]
       exact row_lift _ pa pb n i hpa hpb hn hn8
 
-#print axioms row_lift
-#print axioms rows_lift
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheRowModel

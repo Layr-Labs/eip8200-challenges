@@ -41,8 +41,6 @@ theorem result_of_not_skip (memory : ByteArray) (n : Nat) (h : ¬ Skip memory) :
     resultMemory memory n = Csub.subResultMemory memory n 2112 := by
   simp only [resultMemory, if_neg h]
 
-/-- The caller supplies the zero high carry; a high-limb comparison alone
-does not establish this premise. -/
 theorem result_correct (memory : ByteArray) (n tlow modulus : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8)
     (ht : Model.FastRepresents memory 2112 n tlow)
@@ -60,7 +58,6 @@ theorem result_correct (memory : ByteArray) (n tlow modulus : Nat)
       Csub.csub_sub_correct memory n tlow modulus 0 2112 hn hn8 ht hm htn
         (by decide) hmpos (by simpa only [Nat.zero_mul, Nat.zero_add] using hbound)
 
-/-- Only the subtraction scratch and retained accumulator can change. -/
 theorem preserves_region (memory : ByteArray) (n ptr count value : Nat)
     (hn : 2 ≤ n)
     (hsub : ptr + 32 * count ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -138,10 +135,5 @@ theorem preserves_frame (memory : ByteArray) (n bsize inverse : Nat)
   · rw [preserves_high memory n 2656 hn hn8 (by decide)]
     exact hf.eoff
 
-#print axioms result_correct
-#print axioms preserves_tn_zero
-#print axioms preserves_modulus
-#print axioms preserves_high
-#print axioms preserves_frame
 
 end Challenge.Modexp.Submission.Proofs.Fast.RetainedTNormalizer

@@ -43,8 +43,6 @@ private theorem run_fusedHead_state (s : State)
     h11, h12, h13, h14, h15, allOnes_value, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The third reduction cell of an eight-limb row, with arbitrary carry and
-operands. The cached modulus word is preserved and no longer loaded from memory. -/
 theorem run_step (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 pbi hd pb ent tn m128 inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
@@ -119,7 +117,6 @@ private theorem run_fusedHead160_state (s : State)
     h12, h13, h14, h15, h16, allOnes_value, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The second reduction cell of an eight-limb row with modulus[160] cached in the `m0` slot. -/
 theorem run_step160 (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 pbi hd pb ent tn m128 inv m160 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1005)
@@ -194,8 +191,6 @@ private theorem run_fusedHead64_state (s : State)
     h11, h12, h13, h14, h15, allOnes_value, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The fifth reduction cell with modulus[64] cached in the eleventh frame word: cell five of
-an eight-limb row (`k = 4`) and the entry cell of a four-limb row (`k = 0`). -/
 theorem run_step64 (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat)
     (pbi hd pb ent tn m128 m64 : UInt256)
@@ -273,8 +268,6 @@ private theorem run_fusedHead32_state (s : State)
     h11, h12, h13, h14, h15, allOnes_value, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The sixth reduction cell with modulus[32] cached in the eighth cell-frame word: cell six of
-an eight-limb row (`k = 5`) and the second cell of a four-limb row (`k = 1`). -/
 theorem run_step32 (s : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat)
     (pbi hd pb ent m32 m128 m64 : UInt256)
@@ -327,8 +320,6 @@ theorem run_step32 (s : State) (pc : UInt256) (mem : ByteArray)
     hm, htl, hts, hk2, hk1, Nat.reduceSub, Nat.reduceMul, Nat.reduceAdd,
     List.cons_append, List.nil_append] using h01
 
-/-- The cached T-base distinguishes four and eight limbs without using the
-register that has been repurposed for the modulus limb. -/
 theorem width_tag (n : Nat) (hn : n = 4 ∨ n = 8) :
     UInt256.eq (UInt256.ofNat 2208) (UInt256.ofNat (2080+32*n)) =
       isFour n := by
@@ -339,10 +330,4 @@ theorem rebuild_entry (n : Nat) (hn : n = 4 ∨ n = 8) (base : UInt256) :
       UInt256.ofNat 1792 * isFour n + base := by
   rcases hn with rfl | rfl <;> rfl
 
-#print axioms run_step
-#print axioms run_step160
-#print axioms run_step64
-#print axioms run_step32
-#print axioms width_tag
-#print axioms rebuild_entry
 end Challenge.Modexp.Submission.Proofs.Fast.TnMod128Trace

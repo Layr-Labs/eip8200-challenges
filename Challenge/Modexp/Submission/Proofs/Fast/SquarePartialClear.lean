@@ -8,7 +8,6 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.SquarePartialClear
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 
-/-- The square entry clears only the scratch word used by the exact-memory bridge. -/
 def memory (mem : ByteArray) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 0 32) 2048
 
@@ -34,7 +33,6 @@ theorem fastRepresents_outside (mem : ByteArray) (ptr n value : Nat)
   intro j hj
   rw [readWord_outside mem (ptr + 32*j) (by omega)]
 
-/-- The full model clear overwrites the partial store, including its array extent. -/
 theorem mpZeroed_eq (s : State) (mem : ByteArray) (n : Nat) :
     Monpro.mpZeroed s (memory mem) n = Monpro.mpZeroed s mem n := by
   have hsize : (Monpro.mpZeroed s (memory mem) n).size =
@@ -65,7 +63,4 @@ theorem sqRunMem_eq (s : State) (n k : Nat) (mem : ByteArray) (hk : 1 ≤ k) :
   | zero => omega
   | succ k => rw [SquareLoopMem.sqRunMem_succ, SquareLoopMem.sqRunMem_succ, sqRound_eq]
 
-#print axioms scratchZero
-#print axioms mpZeroed_eq
-#print axioms sqRunMem_eq
 end Challenge.Modexp.Submission.Proofs.Fast.SquarePartialClear

@@ -24,15 +24,10 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast CiosCached CiosCachedMacCore
 
-/-- `DUP9 PUSHw x MLOAD DUP1 DUP5 MUL SWAP4 MULMOD JUMPDEST`: load the modulus word above the
-cached all-ones word, take the low product from copies and the high product from the originals.
-Same bytes and instruction count as the former `PUSHw x MLOAD DUP10 DUP2 DUP5 MULMOD SWAP3 MUL SWAP2`,
-two gas cheaper, same resulting frame. -/
 def entryProgram (w : Fin 33) (x : UInt256) : List Instr :=
   [.op (.Dup ⟨8, by decide⟩), .push w x, .op .MLOAD, .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD]
 
-/-- `DUP1 DUP4 GT SUB DUP2 DUP4 ADD`. -/
 def headProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩),
    .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
@@ -43,7 +38,6 @@ def memoryProgram (tl ts : UInt256) : List Instr :=
    .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
    .op (.Dup ⟨1, by decide⟩), .op .GT]
 
-/-- `SWAP3 GT SUB ADD SUB`: the low product is subtracted last, consuming it. -/
 def tailProgram : List Instr :=
   [.op (.Swap ⟨2, by decide⟩), .op .GT, .op .SUB, .op .ADD, .op .SUB]
 
@@ -80,11 +74,7 @@ theorem run_entry (w : Fin 33)
       ([UInt256.mulMod mu (MachineState.readWord template.memory x.toNat) maxWord, carry,
         mu * MachineState.readWord template.memory x.toNat, bi,
         pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
-  have hc15 : rest.length + 15 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 15) : rest.length + j < 1024 := by omega
   have hN : allOnes = maxWord := allOnes_value
   by_cases hw : w.val = 0
   · have hx := hpush hw
@@ -93,11 +83,11 @@ theorem run_entry (w : Fin 33)
     change UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat 0 32) = template.activeWords at hactive
     simp [runInstructions, entryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hw, hc11, hc12, hc13, hc14, hc15, State.activeWordsAfterUInt256, hzero, hactive, hN,
+      hw, capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hzero, hactive, hN,
       succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
       List.exchange]
   · simp [runInstructions, entryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hw, hc11, hc12, hc13, hc14, hc15, State.activeWordsAfterUInt256, hactive, hN,
+      hw, capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, hN,
       succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
       List.exchange]
     exact congrArg (fun n : Nat => pc + UInt256.ofNat n) (by omega)
@@ -152,11 +142,9 @@ private theorem run_store_word (template : State) (pc value sum borrow c lo ts :
           (Data.Bytes.natToBytesPadded value.toNat 32) ts.toNat }
       (pc + UInt256.ofNat 7)
       ([UInt256.lt value sum, sum, borrow, c, lo] ++ rest)) := by
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 7) : rest.length + j < 1024 := by omega
   simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-    List.getElem?_cons_zero, List.getElem?_cons_succ, hc5, hc6, hc7, hrest, Nat.add_assoc,
+    List.getElem?_cons_zero, List.getElem?_cons_succ, capacity, Nat.add_assoc, hrest, Nat.add_assoc,
     State.activeWordsAfterUInt256, hstore, UInt256.gt, UInt256.lt,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
@@ -198,8 +186,6 @@ theorem run_tail (template : State) (pc extra sum borrow c lo : UInt256)
     List.getElem?_cons_succ, hcap, Nat.add_assoc, List.exchange,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- The last cell: same store and carry as `CiosCachedFused.run_fused`, but `y` (= `mu`)
-is consumed. -/
 theorem run_rest (template : State) (pc x y c tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -250,7 +236,6 @@ theorem run_rest (template : State) (pc x y c tl ts : UInt256)
   rw [hc, hpc] at all
   simpa only [stored, t, hs] using all
 
-/-- The frame after the last copy: `mu` is gone. -/
 def lastState (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) : State :=
@@ -260,7 +245,6 @@ def lastState (template : State) (pc : UInt256) (mem : ByteArray)
       negative32, allOnes, destination, returnPC] ++ rest
     memory := (l2Step mem mu c0 n k).memory }
 
-/-- The last second-loop copy (cf. `CiosCachedL2.run_step`). -/
 theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x tl ts : UInt256)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
@@ -302,7 +286,6 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
   simpa only [l2LastProgram, st, CiosCachedL2.state, lastState, framed, l2Step, hx, htl, hts, hpc,
     List.cons_append, List.nil_append] using hall
 
-/-- On the row frame: the last copy of row `i` lands on the row tail frame (pc 4077). -/
 theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
@@ -327,4 +310,3 @@ theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLast
 
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLast.run_l2Last

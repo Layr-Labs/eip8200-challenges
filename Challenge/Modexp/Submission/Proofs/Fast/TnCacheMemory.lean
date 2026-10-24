@@ -6,7 +6,6 @@ set_option warningAsError true
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheMemory
 open EvmSemantics
 
-/-- Concrete and virtual memory agree away from the cached top word. -/
 def Agree (a b : ByteArray) : Prop :=
   ∀ i, i < 2080 ∨ 2112 ≤ i → a[i]?.getD 0 = b[i]?.getD 0
 
@@ -52,14 +51,12 @@ theorem top_word (a : ByteArray) (word : UInt256) :
   apply top_write
   simp [Data.Bytes.natToBytesPadded, ByteArray.size]
 
-/-- Materialize the register value in the virtual memory model. -/
 def lift (mem : ByteArray) (tn : UInt256) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded tn.toNat 32) 2080
 
 def Invariant (actual ideal : ByteArray) (tn : UInt256) : Prop :=
   Agree actual ideal ∧ tn = MachineState.readWord ideal 2080
 
-/-- Writing the same cached value restores agreement at every byte. -/
 theorem flush_agree (a b : ByteArray) (tn : UInt256) (h : Agree a b) :
     ∀ i : Nat, (lift a tn)[i]?.getD 0 = (lift b tn)[i]?.getD 0 := by
   intro i
@@ -74,7 +71,6 @@ theorem flush_agree (a b : ByteArray) (tn : UInt256) (h : Agree a b) :
       rw [hs] at hout
       omega
 
-#print axioms flush_agree
 
 def put (mem : ByteArray) (word : UInt256) (addr : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded word.toNat 32) addr
@@ -137,6 +133,4 @@ theorem read_lift_outside (mem : ByteArray) (tn : UInt256) (p : Nat)
     MachineState.readWord (lift mem tn) p = MachineState.readWord mem p :=
   read_put_outside mem tn 2080 p h
 
-#print axioms put_comm
-#print axioms lift_overwrite
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheMemory

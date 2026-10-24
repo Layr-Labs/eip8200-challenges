@@ -21,7 +21,6 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro R4Math R4Value
 
-/-- 例程写回的内存：`t0..t4` 依次存到 2208, 2176, 2144, 2112, 2080。 -/
 def r4Mem (mem : ByteArray) (W : W5) : ByteArray :=
   MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes
     (MachineState.writeBytes (MachineState.writeBytes mem
@@ -31,13 +30,11 @@ def r4Mem (mem : ByteArray) (W : W5) : ByteArray :=
       (Data.Bytes.natToBytesPadded W.t3.toNat 32) 2112)
       (Data.Bytes.natToBytesPadded W.t4.toNat 32) 2080
 
-/-- R4 的五个输出字：`a` 取自 A 窗口，`n3` 取自字 0，其余模数字、`np`、`k` 取自帧。 -/
 def r4Final (mem : ByteArray) (k n0 n1 n2 np : UInt256) : W5 :=
   final (MachineState.readWord mem 2208) (MachineState.readWord mem 2176)
     (MachineState.readWord mem 2144) (MachineState.readWord mem 2112) n0 n1 n2
     (MachineState.readWord mem 0) np k
 
-/-- 只由内存决定的 R4 输出内存。 -/
 def rows4 (mem : ByteArray) : ByteArray :=
   r4Mem mem (r4Final mem maxWord (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) (MachineState.readWord mem 2720))
@@ -92,7 +89,6 @@ theorem readWord_r4Mem_t0 (mem : ByteArray) (W : W5) :
     readWord_storeWord_outside _ _ 2176 2208 (by omega)]
   exact Challenge.EvmProof.Memory.readWord_writeWord _ 2208 W.t0
 
-/-- 写回后的 CIOS 累加器数值就是 `val5 W`。 -/
 theorem tValue_r4Mem (mem : ByteArray) (W : W5) : tValue (r4Mem mem W) 4 = val5 W := by
   have e3 : Csub.lowValue (r4Mem mem W) 2112 4 4 = Csub.lowValue (r4Mem mem W) 2112 4 3 +
       (MachineState.readWord (r4Mem mem W) 2112).toNat * Limbs.radix ^ 3 :=
@@ -114,7 +110,6 @@ theorem tValue_r4Mem (mem : ByteArray) (W : W5) : tValue (r4Mem mem W) 4 = val5 
 
 /-! ## 数值 -/
 
-/-- 四肢数的肢和展开。 -/
 theorem limbSum_four (f : Nat → Nat) :
     limbSum f 4 = f 0 + f 1 * 2 ^ 256 + f 2 * (2 ^ 256) ^ 2 + f 3 * (2 ^ 256) ^ 3 := by
   have h : limbSum f 4 = 0 + f 0 * Limbs.radix ^ 0 + f 1 * Limbs.radix ^ 1 +
@@ -130,7 +125,6 @@ theorem lsum_four (f : Nat → Nat) :
   rw [h, show (2 : Nat) * 2 ^ 255 = 2 ^ 256 by norm_num]
   ring
 
-/-- `rows4` 的累加器满足 `T · R⁴ = a² + Q · m`，`Q < R⁴`。 -/
 theorem rows4_eq (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
@@ -167,8 +161,6 @@ theorem rows4_fastRepresents_outside (mem : ByteArray) (ptr cnt v : Nat)
   intro j hj
   rw [rows4_readWord_outside mem (ptr + 32 * j) (by omega)]
 
-/-- The n=4 round memory (n4a + n4t + rare4): R4 squares the operand at 2112..2208 and the tail
-stores the reduced window `red4` back over it, with a zero overflow word at 2080. -/
 def rows4r (mem : ByteArray) : ByteArray :=
   r4Mem mem (red4 (MachineState.readWord mem 96) (MachineState.readWord mem 64)
     (MachineState.readWord mem 32) (MachineState.readWord mem 0)
@@ -187,7 +179,6 @@ theorem rows4r_fastRepresents_outside (mem : ByteArray) (ptr cnt v : Nat)
   intro j hj
   rw [rows4r_readWord_outside mem (ptr + 32 * j) (by omega)]
 
-/-- 累加器 `< 2m`。 -/
 theorem rows4_lt (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
@@ -206,7 +197,6 @@ theorem rows4_lt (mem : ByteArray) (a mm : Nat)
   have h5 : 2 * mm * Limbs.radix ^ 4 = mm * Limbs.radix ^ 4 + mm * Limbs.radix ^ 4 := by ring
   omega
 
-/-- 顶字 `≤ 1`。 -/
 theorem rows4_tn_le_one (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hminv : ((MachineState.readWord mem 96).toNat *
@@ -222,7 +212,6 @@ theorem rows4_tn_le_one (mem : ByteArray) (a mm : Nat)
     Nat.mul_le_mul_right _ hge
   omega
 
-/-- **R4 之后的 CSUB 给出 Montgomery 平方。** -/
 theorem rows4_represents (mem : ByteArray) (a mm pdst : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1) (ham : a < mm)

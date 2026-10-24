@@ -8,7 +8,6 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheInitialMemory
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast Monpro TnCacheMemory
 
-/-- The initial memory already contains the zero value of the cached word. -/
 theorem lift_zeroed (s : State) (mem : ByteArray) (n : Nat) :
     lift (mpZeroed s mem n) (UInt256.ofNat 0) = mpZeroed s mem n := by
   have hz : (UInt256.ofNat 0).toNat = 0 := by decide
@@ -31,5 +30,4 @@ theorem lift_zeroed (s : State) (mem : ByteArray) (n : Nat) :
         if_pos (by omega), Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le _ _ (by omega)]
     · rfl
 
-#print axioms lift_zeroed
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheInitialMemory

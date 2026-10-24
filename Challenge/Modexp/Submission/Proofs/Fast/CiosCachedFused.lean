@@ -145,8 +145,6 @@ private theorem run_tail (template : State) (pc extra sum borrow lo c y : UInt25
     List.getElem?_cons_succ, hcap, Nat.add_assoc, List.exchange,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- Public: the slot-zero reduction cell composes onto this directly, since the
-artifact's narrowed address push makes its tail exactly `macFusedPostProgram`. -/
 theorem run_post (template : State) (pc mm lo c y tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -179,7 +177,6 @@ theorem run_post (template : State) (pc mm lo c y tl ts : UInt256)
   have all := runInstructions_append_some _ _ _ _ _ both ht
   simpa only [post_eq, stored, t, pc_add_add, Nat.reduceAdd] using all
 
-/-- An arbitrary-word multiply/accumulate, with the load preceding the store. -/
 theorem run_fused (template : State) (pc x y c tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -494,7 +491,6 @@ private theorem carry_zero_eq (b lo l : UInt256) :
   have hl : l.toNat < 2 ^ 256 := l.val.isLt
   omega
 
-/-- The zero-carry post schedule runs exactly as the general one does on a zero-carry frame. -/
 private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -510,7 +506,6 @@ private theorem run_post_zero_eq (template : State) (pc mm lo y tl ts : UInt256)
     gt_zero_left, carry_zero_eq]
   simp only [word_add_zero]
 
-/-- **The rider.**  Identical conclusion to `run_fused`, under `c = 0`. -/
 theorem run_fused_zero (template : State) (pc x y c tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -651,9 +646,6 @@ private theorem run_top_fill (template : State) (pc : UInt256) (stack : List UIn
     Challenge.EvmProof.Stepper.runInstr,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- **Block-0 top cell.**  With both the incoming carry and the accumulator word known to be
-zero, the cell stores `x * y` and leaves `mulHi x y` as the outgoing carry; the conclusion is
-stated in the `run_fused` form at `c = t = 0`. -/
 theorem run_top_zero (template : State) (pc x y ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
@@ -687,6 +679,3 @@ theorem run_top_zero (template : State) (pc x y ts : UInt256)
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused.run_fused
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused.run_fused_zero
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused.run_top_zero

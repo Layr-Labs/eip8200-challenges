@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 
 set_option warningAsError true
+set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 2000000
 
 /-!
@@ -17,7 +18,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast CiosCached CiosCachedMacCore
 
-/-- The cached word is the actual operand base; there is no physical cursor. -/
 def state (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n j : Nat) (pbi pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) : State :=
@@ -47,7 +47,6 @@ theorem first_eq (off t : UInt256) :
 theorem last_eq (t : UInt256) :
     l1LastProgram t = lastLoadProgram ++ macFusedProgram t t := rfl
 
-/-- Keep symbolic word conversion outside the large execution proof. -/
 theorem base_offset_toNat (pa : Nat) (off : UInt256) (hfit : pa + off.toNat ≤ 2816) :
     (UInt256.ofNat pa + off).toNat = pa + off.toNat := by
   have hpa : pa < 2 ^ 256 := by omega
@@ -66,16 +65,14 @@ theorem run_load (template : State)
     some (framed template (pc + UInt256.ofNat 6)
       ([maxWord, MachineState.readWord template.memory (paBase + off).toNat,
         carry, bi, pbi, paBase, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 12) : rest.length + j < 1024 := by omega
   have hN : allOnes = maxWord := allOnes_value
   simp only [Challenge.EvmProof.Word.word_toNat_add,
     show (2 : Nat) ^ 256 =
       115792089237316195423570985008687907853269984665640564039457584007913129639936
       from by decide] at hactive
   simp [runInstructions, loadProgram, l1LoadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc10, hc11, hc12, State.activeWordsAfterUInt256, hactive, hN, succ_eq_add,
+    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, hN, succ_eq_add,
     word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_last_load (template : State)
@@ -95,7 +92,6 @@ theorem run_last_load (template : State)
   simp [runInstructions, lastLoadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     advancePC, hc10, hc11, State.activeWordsAfterUInt256, hactive, hN]
 
-/-- Ordinary first-loop cell at the cached base plus its immediate offset. -/
 theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
@@ -136,7 +132,6 @@ theorem run_step (template : State) (pc : UInt256) (mem : ByteArray)
   simpa only [program_eq, st, state, framed, l1Step, haddr, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
-/-- The first cell of a row has zero carry by definition, not by a new caller assumption. -/
 theorem run_first (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1)) (ht : t.toNat = 2112 + 32 * (n - 1))
@@ -181,7 +176,6 @@ theorem run_first (template : State) (pc : UInt256) (mem : ByteArray)
   simpa only [first_eq, st, state, framed, l1Step, haddr, ht, hpc,
     Nat.sub_zero, List.cons_append, List.nil_append] using hall
 
-/-- Terminal cell loads directly at the cached base. -/
 theorem run_last (template : State) (pc : UInt256) (mem : ByteArray)
     (bi : UInt256) (pa n : Nat) (t : UInt256) (ht : t.toNat = 2112)
     (pbi pbEnd flag destination returnPC : UInt256)

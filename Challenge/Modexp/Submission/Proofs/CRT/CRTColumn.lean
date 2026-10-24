@@ -218,14 +218,5 @@ theorem kernel248WrappedShifts (S C H : Nat)
   change ((S % wordRadix) / limbRadix + S / wordRadix * 256) % wordRadix = _
   rw [hsplit, Nat.mod_eq_of_lt hcarrylt]
 
-#print axioms reconstructHigh
-#print axioms carryFromHigh
-#print axioms residualHigh
-#print axioms reconstructHighWithoutInverse
-#print axioms columnCarryBound
-#print axioms kernel248Bounds
-#print axioms kernel248Reconstruct
-#print axioms columnListInvariant
-#print axioms kernel248WrappedShifts
 
 end HistoricalSearch.CRTColumn

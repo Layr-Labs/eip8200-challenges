@@ -10,7 +10,6 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Shift
 
-/-- The exact between-loop memory operations: clear phase, then copy the retained `TS` to ACC. -/
 def phaseSwitch (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.mcopyMem (Exp.storeWord mem 1760 (UInt256.ofNat 0)) 256 2112 (32 * n)
 
@@ -99,7 +98,6 @@ theorem two_phase_values (mem : ByteArray) (n bsize mm minv r k : Nat)
   exact ⟨hsecond, represents_acc_after_steps _ n mm _ k (by omega) hn8
     (phaseSwitch_copyY _ n _ (by omega) hn8 firstBase)⟩
 
-/-- Every entered shift path records its phase, including the ordinary path. -/
 def flagSet (mem : ByteArray) (flag : UInt256) : ByteArray := Exp.storeWord mem 1760 flag
 
 theorem flagSet_readWord (mem : ByteArray) (flag : UInt256) (addr : Nat)
@@ -163,10 +161,6 @@ theorem width_guard_iff (n : Nat) (hn : 2 ≤ n) (hn8 : n ≤ 8) :
   have h : n = 2 ∨ n = 3 ∨ n = 4 ∨ n = 5 ∨ n = 6 ∨ n = 7 ∨ n = 8 := by omega
   rcases h with rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> decide
 
-#print axioms flagSet_inv
-#print axioms flag_after_steps
-#print axioms inline_inverse_guard_iff
-#print axioms width_guard_iff
 
 def e3Prepared (mem input : ByteArray) (n : Nat) : ByteArray :=
   flagSet (m2Of mem input n) (UInt256.ofNat 1)
@@ -235,7 +229,6 @@ theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
   have honeFinal := keep_one_steps _ n mm 0 k (by omega) hn8 honeSwitch
   exact ⟨invFinal.frame, invFinal.modulus, vals.1, vals.2, honeFinal⟩
 
-#print axioms e3_output_facts
 
 
 
@@ -297,6 +290,4 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
   have honeFinal := keep_one_steps _ n mm 0 n (by omega) hn8 honePrep
   exact ⟨invFinal.frame, invFinal.modulus, hbaseFinal, haccFinal, honeFinal⟩
 
-#print axioms m2_acc_value
-#print axioms ordinary_output_facts
 end RootE3Phase

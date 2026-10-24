@@ -23,7 +23,6 @@ open Challenge.EvmProof.Word
 def entryProgram : List Instr :=
   [.op .JUMPDEST, .push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD, .op .LT,
    .push 2 5351, .op .JUMPI]
-/-- The fall-through push of the retained destination, ahead of the subtraction entry 4529. -/
 def pushProgram : List Instr := [.push 2 2112]
 def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
@@ -42,7 +41,6 @@ theorem jumpDest4486 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecod
 theorem jumpDest5326 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5351 = true :=
   Artifact.isValidJumpDest_index 4269 (by rfl)
 
-/-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=
   UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)
 
@@ -119,8 +117,6 @@ theorem run_tail (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt
     tailState, returnedState, hc1, Nat.add_assoc, hcode, hjump,
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
-/-- Every outcome of the leading-limb test reaches the caller with the
-retained accumulator holding `resultMemory`. -/
 def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
     (ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -162,5 +158,4 @@ def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
     rw [← hend]
     exact (he.trans hp).trans hk
 
-#print axioms gasSteps_retained
 end Challenge.Modexp.Submission.Proofs.Fast.RetainedT

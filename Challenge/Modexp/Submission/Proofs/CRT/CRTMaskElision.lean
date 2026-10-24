@@ -39,5 +39,4 @@ theorem mask96_mul_mask244 (lo inv : UInt256) :
     UInt256.land (UInt256.ofNat 79228162514264337593543950335) (inv*lo) :=
   mask_mul_mask lo inv 244 96 (by decide) (by decide)
 
-#print axioms mask_mul_mask
 end HistoricalSearch.CRTMaskElision

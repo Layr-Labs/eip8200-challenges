@@ -72,11 +72,9 @@ theorem run_head (s : State) (pc pa n : Nat)
   have first := runInstructions_append_some _ _ _ _ _ hl hf'
   exact runInstructions_append_some _ _ _ _ _ first hjump
 
-/-- zneg2: `JUMPDEST DUP1 PUSH1 e0 SUB MLOAD`, `b_i = mem[0xe0 - q]` (the row pointer is negative). -/
 def loadC : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 1 224, .op .SUB, .op .MLOAD]
 
-/-- The multiplier word the row head reads. -/
 def bAddr (q : UInt256) : Nat := (UInt256.ofNat 224 - q).toNat
 def programC (t : Nat) : List Instr := loadC ++ commonFirstProgramC t
 
@@ -140,6 +138,4 @@ theorem run_headC (s : State) (pc pa n : Nat)
       Nat.add_assoc, Nat.reduceAdd] using hf
   exact runInstructions_append_some _ _ _ _ _ hl hf'
 
-#print axioms run_headC
-#print axioms run_head
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheHeadTrace

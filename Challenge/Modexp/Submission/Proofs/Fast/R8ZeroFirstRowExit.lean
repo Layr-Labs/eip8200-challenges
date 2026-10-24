@@ -92,5 +92,4 @@ theorem run_exit (s : State)
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   exact runInstructions_append_some _ _ _ _ _ h01 h2
 
-#print axioms run_exit
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow

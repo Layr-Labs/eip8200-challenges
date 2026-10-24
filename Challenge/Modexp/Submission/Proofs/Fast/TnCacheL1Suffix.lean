@@ -21,7 +21,6 @@ theorem program_eq (n j0 m i0 k : Nat)
       have ho : n-1-(j0+k) = m-1-(i0+k) := by omega
       simp only [TnCacheL1Chain.program, hp, ho]
 
-/-- The shared last k staged MAC cells, including the reduction entry JUMPDEST. -/
 def program (k : Nat) : List Instr :=
   TnCacheL1Chain.program 8 (8-k) k ++ [.op .JUMPDEST]
 
@@ -73,15 +72,11 @@ theorem run_l1LastEntry (template : State) (pc carry bi pbi hd pbEnd flag tn des
       ([UInt256.mulMod bi (MachineState.readWord template.memory 2368) maxWord, carry,
         bi * MachineState.readWord template.memory 2368,
         pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) := by
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 14) : rest.length + j < 1024 := by omega
   have hN : allOnes = maxWord := allOnes_value
   have hx : (2368 : UInt256).toNat = 2368 := by decide
   simp [runInstructions, l1LastEntry, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc10, hc11, hc12, hc13, hc14, State.activeWordsAfterUInt256, hx, hactive, hN,
+    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hx, hactive, hN,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
     List.exchange]
 
@@ -157,6 +152,4 @@ theorem run_private3 (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
   have c012 := runInstructions_append_some _ _ _ _ _ c01 c2
   simpa only [privateProgram3, l1Run] using c012
 
-#print axioms run_suffix
-#print axioms run_private3
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL1Suffix

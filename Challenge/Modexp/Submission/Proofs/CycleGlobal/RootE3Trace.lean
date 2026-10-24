@@ -1,0 +1,144 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
+import Challenge.Modexp.Submission.Proofs.Fast.RootE3Memory
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.RootE3LoopCount
+import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
+noncomputable section
+set_option warningAsError true
+set_option maxRecDepth 40000
+set_option maxHeartbeats 4000000
+
+namespace CycleSubmission.Global.RootE3Trace
+open Challenge.Modexp
+open Challenge.Modexp.Submission.Proofs
+open Challenge.Modexp.Submission.Proofs.Bytecode
+open Challenge.Modexp.Submission.Proofs.Fast
+open CycleSubmission.Global.Fast
+open CycleSubmission.Global.RootE3Trace
+
+open EvmSemantics EvmSemantics.EVM
+open Challenge.EvmProof
+open Challenge.Modexp.Submission.Proofs
+open Challenge.Modexp.Submission.Proofs.Fast
+open CycleSubmission.Global.Fast
+open Challenge.Modexp.Submission.Proofs.Fast.Shift RootE3Phase
+
+/-- The E3/ordinary guard lives inside `E5` (`blk2764`); the prologue fields
+below therefore land directly on the shift loop head. -/
+
+def Eligible (input : ByteArray) (n bsize esize : Nat) : Prop :=
+  esize = 1 ∧ FixedExponentRoute.exponentValue input bsize 1 = 3 ∧ (n = 4 ∨ n = 8)
+
+/-- All concrete caller obligations are fields. Neither loop trace nor a whole route is assumed.
+The named Shift states follow MAIN's relocated PC definitions when instantiated in J. -/
+structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize : Nat) where
+  prologueOrdinary : ¬ Eligible input n bsize esize →
+    GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 0) s (flagSet (CycleSubmission.Global.Fast.Shift.m2Of mem input n) (UInt256.ofNat 0)) n bsize
+        esize msize n)
+  prologueE3 : Eligible input n bsize esize →
+    GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 0) s (e3Prepared mem input n) n bsize esize msize (n / 2))
+  /-- The switch also sets the riding exit slot from `0` to `28`. -/
+  phaseSwitch : (n = 4 ∨ n = 8) → ∀ phaseMem : ByteArray,
+    MachineState.readWord phaseMem 1760 = UInt256.ofNat 1 →
+    GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 0) s phaseMem n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch phaseMem n) n bsize esize
+        msize (n / 4))
+  /-- Exit slot `0`: the cleanup tail lands on the exponent dispatcher (2441). -/
+  finalTail : ∀ phaseMem : ByteArray,
+    MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
+    MachineState.readWord phaseMem 2688 = UInt256.ofNat (32 * n) →
+    GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 0) s phaseMem n bsize esize msize)
+      (FixedExponentRoute.entryState s phaseMem n bsize esize msize)
+  /-- Exit slot `28` (after the E3 switch): the cleanup tail lands on `e3go` (2471). -/
+  e3Tail : ∀ phaseMem : ByteArray,
+    MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
+    GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 12) s phaseMem n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.frameState s phaseMem 2329 n bsize esize msize)
+
+theorem phaseSwitch_flag_zero (mem : ByteArray) (n : Nat) (hn8 : n ≤ 8) :
+    MachineState.readWord (RootE3Phase.phaseSwitch mem n) 1760 = UInt256.ofNat 0 := by
+  unfold RootE3Phase.phaseSwitch
+  rw [Exp.readWord_mcopyMem_disjoint _ 256 2112 (32 * n) 1760 (Or.inr (by omega))]
+  exact Challenge.EvmProof.Memory.readWord_writeWord mem 1760 (UInt256.ofNat 0)
+
+theorem flag_after_steps_of_read (mem : ByteArray) (flag : UInt256) (n mm count : Nat)
+    (hn : 1 ≤ n) (hn8 : n ≤ 8) (hflag : MachineState.readWord mem 1760 = flag) :
+    MachineState.readWord (stepMems mem n mm count) 1760 = flag := by
+  rw [stepMems_readWord_disjoint mem n mm 1760 hn
+    ⟨Or.inr (by omega), Or.inl (by omega), Or.inl (by omega)⟩ count]
+  exact hflag
+
+/-- Ordinary route: write flag0, execute exactly n inherited reductions, then the R1 tail. -/
+def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv : Nat)
+    (bindings : TraceBindings s mem input n bsize esize msize)
+    (hn : 2 ≤ n) (hn8 : n ≤ 8) (hbs : bsize = 32 * n) (e : CycleSubmission.Global.Fast.Shift.Env s)
+    (hm : 0 < mm) (hodd : mm % 2 = 1)
+    (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
+    (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
+    (hmiss : ¬ Eligible input n bsize esize)
+    (hfast : n = 4 ∨ n = 8) :
+    GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
+      (FixedExponentRoute.entryState s (ordinaryFinal mem input n mm) n bsize esize msize) := by
+  have inv0 := CycleSubmission.Global.Fast.Shift.m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
+  have invPrep := flagSet_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
+  have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
+  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 0) 2112 n _
+    (Or.inr (by omega)) hbase0
+  have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
+  have loop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 0) s
+    (flagSet (CycleSubmission.Global.Fast.Shift.m2Of mem input n) (UInt256.ofNat 0))
+    n bsize esize msize mm minv _ n (by omega) (by omega) hn hn8 hbs e hm (Model.fastRepresents_lt hmod)
+    htwo invPrep hbasePrep (Nat.mod_lt _ hm) hfast
+  have invFinal := CycleSubmission.Global.Fast.Shift.stepInv_stepMems (by omega) hn8 invPrep n
+  have hflag := flag_after_steps (CycleSubmission.Global.Fast.Shift.m2Of mem input n) (UInt256.ofNat 0) n mm n (by omega) hn8
+  exact ((bindings.prologueOrdinary hmiss).trans loop).trans
+    (bindings.finalTail _ hflag invFinal.frame.s32)
+
+/-- E3 route: exactly `2k` reductions, the clear/copy phase change (which sets the exit slot
+to `28`), exactly `k` reductions, then the cleanup tail straight to `e3go` (2471). -/
+def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k : Nat)
+    (bindings : TraceBindings s mem input n bsize esize msize)
+    (hn : 2 ≤ n) (hn8 : n ≤ 8) (hbs : bsize = 32 * n) (hnk : n = 4 * k) (e : CycleSubmission.Global.Fast.Shift.Env s)
+    (hm : 0 < mm) (hodd : mm % 2 = 1)
+    (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix)))
+    (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
+    (hhit : Eligible input n bsize esize) :
+    GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.frameState s (e3Final mem input n mm k) 2329 n bsize esize msize) := by
+  have hhalf : n / 2 = 2 * k := by omega
+  have inv0 := CycleSubmission.Global.Fast.Shift.m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
+  have hquarter : n / 4 = k := by omega
+  have invPrep := flagSet_inv _ (UInt256.ofNat 1) n bsize mm minv hn8 inv0
+  have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
+  have hbasePrep := flagSet_preserves _ (UInt256.ofNat 1) 2112 n _
+    (Or.inr (by omega)) hbase0
+  have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
+  have firstLoop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 0) s (e3Prepared mem input n)
+    n bsize esize msize mm minv _ (2 * k) (by omega) (by omega) hn hn8 hbs e hm
+    (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm) hhit.2.2
+  have invFirst := CycleSubmission.Global.Fast.Shift.stepInv_stepMems (by omega) hn8 invPrep (2 * k)
+  have hbaseFirst := stepMems_represents (e3Prepared mem input n) n mm _ hn hn8 hm
+    (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg hbasePrep
+    (Nat.mod_lt _ hm) invPrep.pre (2 * k)
+  have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
+  have hbaseSwitch := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
+    (Or.inl (by omega)) hbaseFirst
+  have secondLoop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 12) s
+    (RootE3Phase.phaseSwitch (stepMems (e3Prepared mem input n) n mm (2 * k)) n)
+    n bsize esize msize mm minv _ k (by omega) (by omega) hn hn8 hbs e hm
+    (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm) hhit.2.2
+  have hflagFirst : MachineState.readWord (stepMems (e3Prepared mem input n) n mm (2 * k)) 1760 =
+      UInt256.ofNat 1 := flag_after_steps (CycleSubmission.Global.Fast.Shift.m2Of mem input n) _ n mm (2 * k) (by omega) hn8
+  have hflagSwitch := phaseSwitch_flag_zero (stepMems (e3Prepared mem input n) n mm (2 * k)) n hn8
+  have hflagFinal := flag_after_steps_of_read _ (UInt256.ofNat 0) n mm k (by omega) hn8 hflagSwitch
+  have guard := bindings.prologueE3 hhit
+  rw [hhalf] at guard
+  have switch := bindings.phaseSwitch hhit.2.2 _ hflagFirst
+  rw [hquarter] at switch
+  exact ((((guard.trans firstLoop).trans switch).trans secondLoop).trans
+    (bindings.e3Tail _ hflagFinal))
+
+end CycleSubmission.Global.RootE3Trace

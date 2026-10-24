@@ -3,6 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL2
 
 set_option warningAsError true
+set_option linter.unusedSimpArgs false
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyExtra
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -143,12 +144,10 @@ theorem run_legacyExtraStep (slot : Fin 3) (template : State) (pc : UInt256) (me
   simpa only [st,CiosCachedL2.state,framed,extendedStack,l2Step,hx,hloadAddr,hstoreAddr,hpc,
     List.cons_append,List.nil_append] using hall
 
-/-- Fused cached high-modulus load and low product. -/
 def slotZeroPrefix : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MUL,
    .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨15, by decide⟩)]
 
-/-- Widen the first address push by one byte to preserve the shared loop stride. -/
 def slotZeroHead (tl ts : UInt256) : List Instr :=
   (slotZeroPrefix ++ (CiosCached.macProductProgram.drop 4).take 2) ++
     ((CiosCached.macFusedPostProgram tl ts).take 7 ++ [.push 3 tl])
@@ -166,16 +165,12 @@ private theorem run_slotZeroHead (loadAddr storeAddr : UInt256) (s : State)
     runInstructions ((extraLoad 0 ++ CiosCached.macProductProgram.take 6) ++
         (CiosCached.macFusedPostProgram loadAddr storeAddr).take 8)
       (framed s pc (extendedStack carry mu bi pbi pa pb flag target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hc22 : rest.length + 22 < 1024 := by omega
-  have hc23 : rest.length + 23 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
   simp [slotZeroHead, slotZeroPrefix, extraLoad, CiosCached.macProductProgram,
     CiosCached.macFusedPostProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, framed, extendedStack, List.exchange, Nat.add_assoc,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod,
-    hc19, hc20, hc21, hc22, hc23]
+    capacity, Nat.add_assoc]
 
 theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)

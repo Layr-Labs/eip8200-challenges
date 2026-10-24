@@ -51,7 +51,6 @@ def environment (s : State)
       rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
-/-- Start pc of block `b` (`b = 8`: the exit `JUMPDEST JUMPDEST JUMPDEST`).  Blocks 0 and 4 start on their `JUMPDEST`. -/
 def startPC : Nat → Nat
   | 0 => 2785
   | 1 => 2805
@@ -63,20 +62,12 @@ def startPC : Nat → Nat
   | 7 => 2998
   | _ => 3034
 
-/-- Entry pc of the section for width `n`: block 0 for eight limbs, block 4 (`2946 + 116`) for four. -/
 def entryPC : Nat → Nat
   | 4 => 2901
   | _ => 2785
 
 /-! ## One block -/
 
-/-- Block `b` (`b < 8`) performs limb step `j = b + n - 8` of width `n` on any MAC state.
-
-Blocks 0–6 reproduce their `-N` limb from the riding slot `rest[8-b]`, which `hslot` fixes to
-the `um` word at `1280 + 32(7-b)` and `hread` to the running memory's word (the blocks only
-write the `t` area, so the two agree throughout); block 7 `MLOAD`s its limb.  Block 0 alone
-runs the `PUSH0` schedule, so it alone needs its incoming carry to be zero; `hcarry` is vacuous
-for every other `b`. -/
 def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt256)
     (n j : Nat) (rest : List UInt256) (hrest : rest.length ≤ 1014) (hlong : 9 ≤ rest.length)
     (um : ByteArray)
@@ -218,7 +209,6 @@ def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt2
 
 /-! ## The chain -/
 
-/-- Peel the first step off a run. -/
 theorem l1Run_succ_left (q : MacState) (bi : UInt256) (pa n j : Nat) :
     ∀ m, SquareModel.l1Run q bi pa n j (m + 1) =
       SquareModel.l1Run (SquareModel.l1StepOn q bi pa n j) bi pa n (j + 1) m
@@ -228,7 +218,6 @@ theorem l1Run_succ_left (q : MacState) (bi : UInt256) (pa n j : Nat) :
       congr 1
       omega
 
-/-- Blocks `b..7` (`b + m = 8`) from the start of block `b` to the exit at pc 3168. -/
 def gasSteps_run : (m b : Nat) → b + m = 8 →
     (s : State) → (q : MacState) → (bi : UInt256) → (n j : Nat) → (rest : List UInt256) →
     (um : ByteArray) → rest.length ≤ 1014 → 9 ≤ rest.length →
@@ -267,7 +256,6 @@ def gasSteps_run : (m b : Nat) → b + m = 8 →
       rw [← l1Run_succ_left] at h2
       exact h1.trans h2
 
-/-- `JUMPDEST JUMPDEST JUMPDEST` at pc 3168, falling into pc 3171 with the chain frame untouched. -/
 def gasSteps_exit (s : State) (q : MacState) (bi : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1014) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -280,9 +268,6 @@ def gasSteps_exit (s : State) (q : MacState) (bi : UInt256) (rest : List UInt256
   exitBlock.steps (environment (chainState s (UInt256.ofNat 3034) q bi rest) hcode hfork hrun hnp) rfl
     (run_exit s (UInt256.ofNat 3034) q bi rest hrest)
 
-/-- **The section.**  For `n = 4 ∨ n = 8`, from the entry `JUMPDEST` (`entryPC n`) with the frame
-`[0, q, 2^256-1] ++ rest` over `um` to pc 3168 with `[carry, q, 2^256-1] ++ rest`, where memory and carry are
-`Monpro.l1Step um q 1280 n n`. -/
 def gasSteps_chain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) (hlong : 9 ≤ rest.length)
     (hslot : ∀ i : Nat, i < 7 → rest[8 - i]? =
@@ -316,23 +301,16 @@ def gasSteps_chain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray)
 
 /-! ## The E6 entry -/
 
-/-- Both entries are jump destinations. -/
 theorem jumpDest_entry (n : Nat) (hn : n = 4 ∨ n = 8) :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (entryPC n) = true := by
   rcases hn with rfl | rfl
   · exact jumpDest3032
   · exact jumpDest2899
 
-/-- E6's `DUP5 JUMP` (instruction 2248, pc 2898) is the one data-dependent jump the conversion
-section feeds, and its destination is the scratch slot `rest[1]` — pinned by `hslot0` below to
-`entryPC n`.  Neither width's entry is one of the three `JUMPDEST`s the exit opened
-(`Bytecode.ShiftJumpTargets`: pc 3168, 3169, 3170). -/
 theorem entryPC_avoids (n : Nat) (hn : n = 4 ∨ n = 8) :
     entryPC n ≠ 3034 ∧ entryPC n ≠ 3008 ∧ entryPC n ≠ 3009 := by
   rcases hn with rfl | rfl <;> decide
 
-/-- E6 at pc 2895: `[q, 2^256-1] ++ rest` over `um` to the chain frame at the entry parked in the
-scratch slot `rest[1]`. -/
 def gasSteps_entry (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) (hlong : 9 ≤ rest.length)
     (hslot0 : rest[1]? = some (UInt256.ofNat (entryPC n)))
@@ -349,8 +327,6 @@ def gasSteps_entry (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray)
       (by rcases hn with rfl | rfl <;> decide)
       (by rw [hcode]; exact jumpDest_entry n hn))
 
-/-- E6 followed by the section: pc 2895 with `[q, 2^256-1] ++ rest` over `um` to pc 3168 with
-`[carry, q, 2^256-1] ++ rest` over `l1Step um q 1280 n n`. -/
 def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014) (hlong : 9 ≤ rest.length)
     (hslot : ∀ i : Nat, i < 7 → rest[8 - i]? =
@@ -371,9 +347,3 @@ def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArr
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_block
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_run
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_exit
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_chain
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_entry
-#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_macChain

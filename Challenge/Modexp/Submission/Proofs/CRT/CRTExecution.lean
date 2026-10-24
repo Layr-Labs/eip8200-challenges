@@ -35,11 +35,9 @@ theorem run_residue (s : State) (pc H lo P : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1018) :
     runInstructions residueProgram {s with pc := pc, stack := H :: lo :: P :: rest} =
       some {s with pc := advancePC 9 pc, stack := ((P - lo % P + H) % P) :: lo :: P :: rest} := by
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
   simp [residueProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    hc3, hc4, hc5, List.exchange, advancePC]
+    capacity, Nat.add_assoc, List.exchange, advancePC]
 
 theorem run_high (s : State) (pc x high : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1021) :
@@ -56,12 +54,10 @@ theorem run_carry (s : State) (pc q lo low : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1019) :
     runInstructions (carryProgram low) {s with pc := pc, stack := q :: lo :: rest} =
       some {s with pc := advancePC 7 pc, stack := (UInt256.shiftRight lo low + q) :: rest} := by
-  have hc2 : rest.length + 2 < 1024 := by omega
-  have hc3 : rest.length + 3 < 1024 := by omega
-  have hc4 : rest.length + 4 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 4) : rest.length + j < 1024 := by omega
   have hp2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp [carryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    hc2, hc3, hc4, List.exchange, advancePC, succ_eq_add, hp2, word_add_assoc,
+    capacity, Nat.add_assoc, List.exchange, advancePC, succ_eq_add, hp2, word_add_assoc,
     Challenge.EvmProof.Word.literal_eq_ofNat]
 
 /-- Exact symbolic execution, for arbitrary words, starting address and frame.
@@ -80,5 +76,4 @@ theorem run (s : State) (pc H lo P low high : UInt256)
     (runInstructions_append_some _ _ _ _ _ h0 h1) h2
   simpa only [program, carryWord, ← advancePC_add] using both
 
-#print axioms run
 end HistoricalSearch.CRTExecution

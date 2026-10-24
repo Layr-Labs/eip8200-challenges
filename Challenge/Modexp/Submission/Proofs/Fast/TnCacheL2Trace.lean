@@ -2,6 +2,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 
 set_option warningAsError true
+set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 2000000
 
 /-!
@@ -61,7 +62,6 @@ theorem run_load (w : Fin 33)
       hw, hc11, hc12, State.activeWordsAfterUInt256, hactive, hN, succ_eq_add,
       word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
 
-/-- One second-loop copy. PUSH0 is admitted only for an actual zero address. -/
 theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x tl ts : UInt256)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
@@ -103,8 +103,6 @@ theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray
   simpa only [program_eq, st, state, framed, l2Step, hx, htl, hts, hpc,
     List.cons_append, List.nil_append] using hall
 
-/-- p2: the first second-loop cell of the eight-limb reduction takes its multiplier from frame
-word 5 (`DUP2 DUP7 MUL DUP10 DUP8 DUP5 MULMOD`, `n1` under p2) instead of loading it. -/
 def frameMultiplyProgram : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MUL, .op (.Dup ⟨9, by decide⟩),
    .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
@@ -118,16 +116,12 @@ theorem run_frameMultiply (template : State) (pc c y w2 w3 w4 x w6 w7 : UInt256)
       (framed template pc ([c, y, w2, w3, w4, x, w6, w7, allOnes] ++ rest)) =
     some (framed template (advancePC 7 pc)
       ([UInt256.mulMod y x maxWord, x * y, c, y] ++ ([w2, w3, w4, x, w6, w7, allOnes] ++ rest))) := by
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 12) : rest.length + j < 1024 := by omega
   have hc13 : rest.length < 1011 := by omega
   have hN : allOnes = maxWord := allOnes_value
   simp [runInstructions, frameMultiplyProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    advancePC, hc9, hc10, hc11, hc12, hc13, hN]
+    advancePC, capacity, Nat.add_assoc, hc13, hN]
 
-/-- `l2ProgramFrame` computes the cell of `macFusedProgram` with `x` read from the frame. -/
 theorem run_fusedFrame (template : State) (pc x y c w2 w3 w4 w6 w7 tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1008)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -168,7 +162,6 @@ theorem run_fusedFrame (template : State) (pc x y c w2 w3 w4 w6 w7 tl ts : UInt2
   rw [hc, hs] at hp
   exact runInstructions_append_some _ _ _ _ _ hm hp
 
-/-- One second-loop cell with the multiplier taken from the `pbEnd` frame word. -/
 theorem run_stepFrame (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (tl ts : UInt256)
     (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
@@ -201,7 +194,4 @@ theorem run_stepFrame (template : State) (pc : UInt256) (mem : ByteArray)
   simpa only [st, state, framed, l2Step, htl, hts, hpc, hpb,
     List.cons_append, List.nil_append] using hf
 
-#print axioms run_load
-#print axioms run_step
-#print axioms run_stepFrame
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL2Trace

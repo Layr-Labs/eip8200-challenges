@@ -88,6 +88,4 @@ theorem run_save (template : State) (pc : UInt256) (mem : ByteArray)
       advancePC, succ_eq_add, hp2, hp3, word_add_assoc] <;>
     congr 1 <;> congr 1 <;> omega
 
-#print axioms run_lookup
-#print axioms run_save
 end HistoricalSearch.FixedExponentBlocks

@@ -61,7 +61,6 @@ theorem run_load (w : Fin 33)
       hw, hc11, hc12, State.activeWordsAfterUInt256, hactive, hN, succ_eq_add,
       word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
 
-/-- One second-loop copy. PUSH0 is admitted only for an actual zero address. -/
 theorem run_step (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x tl ts : UInt256)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))

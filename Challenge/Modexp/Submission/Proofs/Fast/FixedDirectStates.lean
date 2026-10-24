@@ -22,8 +22,6 @@ def otherWidth (s : State) (mem : ByteArray)
            stack := outer n bsize esize msize
            memory := mem }
 
-/-- `e3go` (pc 2329): the E3 hit block.  The shift cleanup tail jumps to it after the E3
-conversion. -/
 def e3go (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2329
@@ -54,36 +52,24 @@ def squareReturn (s : State) (mem : ByteArray)
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
-/-- `after_sq` (pc 3367), reached two ways with the same shape: the in-kernel
-square loop rewrites the kernel frame's return slot to it (the square count is
-then still the one the caller pushed), and for the unaccelerated widths the
-caller's own loop falls through to it with the count decremented to `0`. -/
 def product (s : State) (mem : ByteArray)
     (n bsize esize msize count : Nat) : State :=
   { s with pc := UInt256.ofNat 2534
            stack := UInt256.ofNat count :: outer n bsize esize msize
            memory := mem }
 
-/-- Where every recogniser miss now goes: the six-word bail trampoline `BAIL6` at
-pc 1054.  All three checks (`esize = 1`, first byte `3`, top three bytes `65537`)
-`JUMPI` here instead of copying `R1` to `ACC` and rejoining the generic loop. -/
 def bailState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 219
            stack := outer n bsize esize msize
            memory := mem }
 
-/-- `modexpBig` at pc 237, where the trampoline lands.  The wide-modulus fallback
-re-reads the header from calldata and is universal in the incoming memory and
-stack, so the frame the fast path built is simply discarded. -/
 def bigCState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 219
            stack := outer n bsize esize msize
            memory := mem }
 
-/-- The generic rejoin the recogniser used to take.  Nothing reaches it any more:
-all three misses divert to `bailState`. -/
 def fallback (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2390

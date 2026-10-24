@@ -125,13 +125,10 @@ The five outer words `[s32, n, bsize, esize, msize]` sit at the bottom of the
 stack for the whole of the appended path; every state below carries them
 explicitly. -/
 
-/-- The persistent outer frame, top first. -/
 def outer (n bsize esize msize : Nat) : List UInt256 :=
   [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
    UInt256.ofNat esize, UInt256.ofNat msize]
 
-/-- The `MONPRO` call state: the kernel's multiply entry (its product-block preclear
-trampoline at pc 5466), stack `[pa, pb, pd, ret] ++ tail`. -/
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 5496
@@ -139,13 +136,6 @@ def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
              ret :: tail
            memory := mem }
 
-/-- The `SQUARE` call state: the kernel's shared `common` block, entered with
-`hd = sq_row`, the source operand at `0x840` (the retained Montgomery base
-`TS`), and the kernel's destination/second operand at `0x200`, stack
-`[sq_row, 2112, 512, 512, ret] ++ tail`.  The base publish from `TS` now goes
-through the CIOS trampoline itself (the kernel stages the `0x840` block and
-writes the square chain to `0x200`), so the caller no longer copies `TS` to
-`BASE` first; the only caller is the fixed-exponent chain. -/
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3181
@@ -153,9 +143,6 @@ def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
              UInt256.ofNat 512 :: ret :: tail
            memory := mem }
 
-/-- The in-kernel square-loop call state (`n ∈ {4, 8}`): `sqCall` with the remaining
-square count minus one in the frame's `pdst` slot, which the kernel's loop counts down
-(pc 3471 overwrites the slot before the final product). -/
 def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3181
@@ -163,7 +150,6 @@ def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
              UInt256.ofNat (k - 1) :: ret :: tail
            memory := mem }
 
-/-- The state a subroutine returns to. -/
 def retTo (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := ret, stack := tail, memory := mem }
@@ -187,11 +173,9 @@ structure Frame (mem : ByteArray) (n bsize minv : Nat) : Prop where
 add) and `gasSteps_csub` (the conditional subtract); the driver only ever calls
 the pair.  `amMemOf` is the memory the pair leaves behind. -/
 
-/-- The memory one `ADDMOD(pa, pb) → pd` call produces. -/
 def amMemOf (mem : ByteArray) (pa pb n pd : Nat) : ByteArray :=
   Csub.csResultMemory (Csub.amResultMemory mem pa pb n) n pd
 
-/-- `ADDMOD` writes only below `2112`, so nothing at or above `V_S32` moves. -/
 theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048) (haddr : 2656 ≤ addr) :
     MachineState.readWord (amMemOf mem pa pb n pd) addr =
@@ -200,7 +184,6 @@ theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
     Double.readWord_csResultMemory_high _ n pd addr hn (by omega) (by omega) haddr,
     Double.readWord_amResultMemory_high _ pa pb n addr hn (by omega) haddr]
 
-/-- `ADDMOD` preserves the configuration words. -/
 theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048)
     (hf : Frame mem n bsize minv) : Frame (amMemOf mem pa pb n pd) n bsize minv := by
@@ -214,39 +197,16 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
          by rw [key 2784 (by omega)]; exact hf.tl,
          by rw [key 2656 (by omega)]; exact hf.eoff⟩
 
-/-- The subroutines the driver calls, as abstract single-step contracts
-carrying exactly the side conditions `Fast.SquareFull.gasSteps_squareFull` and
-`Fast.Csub.gasSteps_addmod`/`gasSteps_csub` require: the configuration words
-(`Frame`), the pointer bounds, the return-address jump destination, and — for
-`SQUARE` — the values of the operand blocks.  `MONPRO` enters only through its
-memory effect `mpMem` (and `SubSpec`): no consumer runs the generic multiply call, which
-the four-limb kernel no longer stages for (n4a).  The `SQUARE` fields
-also carry its value contract, since `SubSpec` is shared by callers that never
-square.  The concrete instance `subs` lives in `Fast.ExpSubs`, so this module
-depends on neither the multiply nor the square kernel development. -/
 structure Subroutines (s : State) (n bsize mm minv : Nat) where
-  /-- The memory effect of `MonPro(pa, pb) → pd`. -/
   mpMem : Nat → Nat → Nat → ByteArray → ByteArray
-  /-- The memory effect of `AddMod(pa, pb) → pd`. -/
   amMem : Nat → Nat → Nat → ByteArray → ByteArray
-  /-- `MONPRO` preserves the configuration words. -/
   mpFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     Frame mem n bsize minv → Frame (mpMem pa pb pd mem) n bsize minv
-  /-- `ADDMOD` preserves the configuration words. -/
   amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     Frame mem n bsize minv → Frame (amMem pa pb pd mem) n bsize minv
-  /-- The memory effect of the in-place `SQUARE(0x800) → 0x800`. -/
   sqMem : ByteArray → ByteArray
-  /-- `SQUARE` preserves the configuration words. -/
   sqFrame : ∀ (mem : ByteArray),
     Frame mem n bsize minv → Frame (sqMem mem) n bsize minv
-  /-- `SQUARE`, entered at the kernel's `common` block with
-  `hd = sq_row`, the source operand at `0x840` (the retained `TS`) and the
-  kernel's other slots at `0x200`.
-
-  Only for the widths the kernel does *not* accelerate: for `n ∈ {4, 8}` the
-  kernel keeps its frame and loops internally (`squareLoop` below), so it never
-  returns to the pushed `ret`. -/
   square : ∀ (ret : UInt256) (tail : List UInt256) (mem : ByteArray) (a : Nat),
     ¬ ((n = 4 ∨ n = 8) ∧ minv ≠ 1) → tail.length ≤ 998 →
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode ret.toNat = true →
@@ -254,22 +214,17 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Model.FastRepresents mem 2112 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqCall s mem ret tail)
       (retTo s (sqMem mem) ret tail)
-  /-- `SQUARE` writes the Montgomery square of the block at `0x840` (the
-  retained `TS`) to `0x200`. -/
   sqValue : ∀ (mem : ByteArray) (a : Nat),
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 2112 n a → a < mm →
     Model.FastRepresents (sqMem mem) 512 n
       (Model.montMul mm (Limbs.radix ^ n) a a)
 
-  /-- `SQUARE` leaves every other named block alone. -/
   sqKeep : ∀ (ptr v : Nat) (mem : ByteArray),
     ptr + 32 * n ≤ 1792 → (512 + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ 512) →
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (sqMem mem) ptr n v
-  /-- Memory after the retained-frame square chain and mixed-domain final product. -/
   sqLoopMem : Nat → ByteArray → ByteArray
-  /-- The accelerated widths complete the final product before returning to the cleanup. -/
   squareLoop : ∀ (k : Nat) (ret : UInt256) (tail : List UInt256)
     (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
@@ -279,7 +234,6 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Model.FastRepresents mem 2112 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqLoopCall s mem k ret tail)
       (retTo s (sqLoopMem k mem) (UInt256.ofNat 690) tail)
-  /-- The raw factor retained in ACC decodes the Montgomery square chain. -/
   sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 2112 n a → Model.FastRepresents mem 256 n b → a < mm → b < mm →
@@ -294,14 +248,12 @@ iteration squares `RR` and multiplies it by `R1` or `CC` according to bit `k`
 of `n`.  The selected operand address is `R1 + 1024 * bit`, i.e. `0x1000` or
 `0x1400`. -/
 
-/-- Bit `k` of `v`. -/
 def bitAt (v k : Nat) : Nat := v / 2 ^ k % 2
 
 theorem bitAt_le_one (v k : Nat) : bitAt v k ≤ 1 := by
   unfold bitAt
   omega
 
-/-- Above its leading one a byte has only zeros. -/
 theorem bitAt_gt_topExp {w k : Nat} (hw : w < 256) (hk : Lz.topExp w < k) :
     bitAt w k = 0 := by
   have hlt : w < 2 ^ k :=
@@ -310,17 +262,13 @@ theorem bitAt_gt_topExp {w k : Nat} (hw : w < 256) (hk : Lz.topExp w < k) :
   unfold bitAt
   rw [Nat.div_eq_of_lt hlt]
 
-/-- The branch-free operand selector: `R1` when bit `k` of `n` is clear, `CC`
-when it is set. -/
 def selOf (n k : Nat) : Nat := 1024 + 256 * bitAt n k
 
-/-- `RRL`, pc 1569, at the top of iteration `k`. -/
 def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat 727
            stack := UInt256.ofNat k :: outer n bsize esize msize
            memory := mem }
 
-/-- `BDONE`, pc 1883, where the base chain rejoins. -/
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2317
            stack := outer n bsize esize msize
@@ -334,15 +282,11 @@ def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
     (outer n bsize esize msize).length = 5 := by
   simp [outer]
 
-/-- One `RR` round: square, and multiply by `CC` only when bit `k` of `n` is
-set.  When it is clear the selector would be `R1`, the Montgomery form of one,
-so the multiply is the identity and the block skips the call. -/
 def rrStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n k : Nat)
     (mem : ByteArray) : ByteArray :=
   if bitAt n k = 0 then mpMem 1536 1536 1536 mem
   else mpMem 1536 1280 1536 (mpMem 1536 1536 1536 mem)
 
-/-- The memory after `i` iterations of the `RR` chain. -/
 def rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n : Nat)
     (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
@@ -366,10 +310,8 @@ theorem lt_ofNat_of_le {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256)
   rw [UInt256.lt, toNat_ofNat_self ha, toNat_ofNat_self hb,
     if_neg (Nat.not_lt.mpr h)]
 
-/-- The number of limbs of the base. -/
 def pbOf (bsize : Nat) : Nat := (31 + bsize) / 32
 
-/-- The width in bytes of the most significant (partial) base limb. -/
 def topWidth (bsize : Nat) : Nat := bsize - 32 * (pbOf bsize - 1)
 
 /-! ### Memory writes and the active-word high-water mark
@@ -384,11 +326,9 @@ theorem mod_word_self {a : Nat} (h : a < 2 ^ 256) :
 
 theorem push0_word : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
 
-/-- One 32-byte store. -/
 def storeWord (mem : ByteArray) (addr : Nat) (w : UInt256) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded w.toNat 32) addr
 
-/-- One `MCOPY`. -/
 def mcopyMem (mem : ByteArray) (dst src sz : Nat) : ByteArray :=
   MachineState.writeBytes mem (MachineState.readPadded mem src sz) dst
 
@@ -400,13 +340,11 @@ theorem readWord_mcopyMem_disjoint (mem : ByteArray) (dst src sz a : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_size]
   exact hdisj
 
-/-- `Csub.fastRepresents_mcopy` in `mcopyMem` shape. -/
 theorem fastRepresents_mcopyMem (mem : ByteArray) (dst src n v : Nat) (hn : 1 ≤ n)
     (hrep : Model.FastRepresents mem src n v) :
     Model.FastRepresents (mcopyMem mem dst src (32 * n)) dst n v :=
   Csub.fastRepresents_mcopy mem src dst n v hn hrep
 
-/-- `Csub.fastRepresents_mcopy_disjoint` in `mcopyMem` shape. -/
 theorem fastRepresents_mcopyMem_disjoint (mem : ByteArray) (dst src sz ptr cnt v : Nat)
     (hdisj : dst + sz ≤ ptr ∨ ptr + 32 * cnt ≤ dst)
     (hrep : Model.FastRepresents mem ptr cnt v) :
@@ -441,12 +379,9 @@ theorem activeWords_fix2 (s : State) (off1 sz1 off2 sz2 : Nat)
 
 /-! ### The head of the base chain and the loop body -/
 
-/-- The most significant, possibly partial, limb of the base. -/
 def topLimbOf (input : ByteArray) (bsize : Nat) : Nat :=
   Precompile.bytesToNatPadded input 96 (topWidth bsize)
 
-/-- The base limb iteration `j` stores into `ONE`: limb `pb - 1 - j` counted
-from the least significant. -/
 def baseLimbWord (input : ByteArray) (bsize pb j : Nat) : UInt256 :=
   MachineState.readWord input (96 + (bsize - 32 * (pb - j)))
 
@@ -460,7 +395,6 @@ fallback certificate is supplied downstream by `FullBaseFallbackCorrect`.
 `FullBaseFallbackCorrect`.
 -/
 
-/-- The memory after `t` iterations of the Horner loop. -/
 def blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (input : ByteArray) (n bsize pb : Nat) (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
@@ -475,23 +409,19 @@ def blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
 (pc 1916) walks its eight bits from the most significant, squaring `ACC` on
 every bit and multiplying by `BASE` on set bits. -/
 
-/-- Exponent byte `i`, counted from the most significant. -/
 def expByte (input : ByteArray) (bsize i : Nat) : Nat :=
   (YulSemantics.EVM.byteFrom input.toList (96 + bsize + i)).toNat
 
-/-- `EB`, pc 1838, at the top of exponent byte `i`. -/
 def ebHead (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
   { s with pc := UInt256.ofNat 809
            stack := UInt256.ofNat i :: outer n bsize esize msize
            memory := mem }
 
-/-- pc 1938, back from the final `MonPro(ACC, ONE)`. -/
 def finHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 692
            stack := outer n bsize esize msize
            memory := mem }
 
-/-- The halted state after `RETURN`. -/
 def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   { s with pc := UInt256.ofNat 696
@@ -501,7 +431,6 @@ def returnedState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
            hReturn := MachineState.readPadded mem (256 + 32 * n - msize) msize }
 
 set_option linter.unusedSimpArgs false in
-/-- `blk1333` (pc 774..779): `RETURN(256, msize)`. -/
 theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hm : 32 < msize) (_hm32 : msize ≤ 32 * n)
     (hfull : msize = 32 * n)
@@ -581,27 +510,22 @@ theorem two_pow_shift {j : Nat} (hj : j < 7) :
 
 /-! ### The bit loop -/
 
-/-- The memory after one exponent bit. -/
 def bitStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (mem : ByteArray) :
     Nat → ByteArray
   | 0 => mpMem 256 256 256 mem
   | _ + 1 => mpMem 256 512 256 (mpMem 256 256 256 mem)
 
-/-- The memory after `k` bits of exponent byte `w`, started at bit index `j0`. -/
 def bitMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (w : Nat)
     (mem : ByteArray) (j0 : Nat) : Nat → ByteArray
   | 0 => mem
   | k + 1 => bitStep mpMem (bitMemsFrom mpMem w mem j0 k) (bitAt w (7 - (j0 + k)))
 
-/-- How many leading bits of exponent byte `i` the loop skips: byte `0` starts
-at its highest set bit, every other byte at bit 7. -/
 def lzSkip (input : ByteArray) (bsize i : Nat) : Nat :=
   if i = 0 then 7 - Lz.topExp (expByte input bsize i) else 0
 
 theorem lzSkip_le (input : ByteArray) (bsize i : Nat) : lzSkip input bsize i ≤ 7 := by
   unfold lzSkip; split <;> omega
 
-/-- The memory after exponent byte `i`, with its leading bits skipped. -/
 def byteMemAt (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (input : ByteArray)
     (bsize n : Nat) (mem : ByteArray) (i : Nat) : ByteArray :=
   if i = 0 ∧ expByte input bsize i ≠ 0 then
@@ -611,7 +535,6 @@ def byteMemAt (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (input :
     bitMemsFrom mpMem (expByte input bsize i) mem (lzSkip input bsize i)
       (8 - lzSkip input bsize i)
 
-/-- The memory after `i` exponent bytes. -/
 def ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (input : ByteArray)
     (bsize n : Nat) (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
@@ -706,7 +629,6 @@ theorem fastLimbs_succ (mem : ByteArray) (ptr count : Nat) :
   rw [Model.fastLimbs_eq_reverse_memoryLimbs, Model.fastLimbs_eq_reverse_memoryLimbs,
     memoryLimbs_succ, List.reverse_cons]
 
-/-- The `32 * count` bytes of a limb block, read big-endian, are its value. -/
 theorem bytesToNatPadded_block (mem : ByteArray) : ∀ (count ptr : Nat),
     Precompile.bytesToNatPadded mem ptr (32 * count) =
       Nat.ofDigits Limbs.radix (Model.fastLimbs mem ptr count) := by
@@ -727,7 +649,6 @@ theorem bytesToNatPadded_of_fastRepresents {mem : ByteArray} {ptr count value : 
     Precompile.bytesToNatPadded mem ptr (32 * count) = value := by
   rw [bytesToNatPadded_block mem count ptr, Model.value_of_fastRepresents hrep]
 
-/-- Byte `k` of a big-endian read. -/
 theorem bytesToNatPadded_digit (bs : ByteArray) (off w k : Nat) (hk : k < w) :
     Precompile.bytesToNatPadded bs off w / 256 ^ (w - 1 - k) % 256 =
       (YulSemantics.EVM.byteFrom bs.toList (off + k)).toNat := by
@@ -753,8 +674,6 @@ theorem bytesToNatPadded_digit (bs : ByteArray) (off w k : Nat) (hk : k < w) :
 theorem uint8_ofNat_toNat (b : UInt8) : UInt8.ofNat b.toNat = b := by
   simp
 
-/-- **The returned slice.**  The last `msize` bytes of a block holding `value`
-are the big-endian `msize`-byte encoding of `value`. -/
 theorem readPadded_eq_natToBytes {mem : ByteArray} {ptr count value msize : Nat}
     (hrep : Model.FastRepresents mem ptr count value) (hm : msize ≤ 32 * count) :
     MachineState.readPadded mem (ptr + 32 * count - msize) msize =
@@ -779,7 +698,6 @@ theorem readPadded_eq_natToBytes {mem : ByteArray} {ptr count value msize : Nat}
       show ptr + 32 * count - msize + k = ptr + (32 * count - msize + k) from by omega,
       ← byteFrom_eq_getD, hdig, uint8_ofNat_toNat]
 
-/-- **The `RETURN` payload is the specification.** -/
 theorem returned_eq_spec (s : State) (mem input : ByteArray)
     (n bsize esize msize result : Nat) (_hn : 2 ≤ n) (hm : msize ≤ 32 * n)
     (hmpos : 0 < msize)
@@ -808,15 +726,12 @@ theorem returned_eq_spec (s : State) (mem input : ByteArray)
 The bits the loop consumes are exactly the big-endian bits of
 `Precompile.bytesToNatPadded input (96 + bsize) esize`. -/
 
-/-- Exponent byte `i` is digit `i` of the exponent. -/
 theorem expByte_eq_digit (input : ByteArray) (bsize esize i : Nat) (hi : i < esize) :
     expByte input bsize i =
       Precompile.bytesToNatPadded input (96 + bsize) esize /
         256 ^ (esize - 1 - i) % 256 :=
   (bytesToNatPadded_digit input (96 + bsize) esize i hi).symm
 
-/-- Bit `r` of exponent byte `i` is bit `8 * (esize - 1 - i) + r` of the
-exponent. -/
 theorem bitAt_expByte (input : ByteArray) (bsize esize i r : Nat)
     (hi : i < esize) (hr : r < 8) :
     bitAt (expByte input bsize i) r =
@@ -833,7 +748,6 @@ theorem bitAt_expByte (input : ByteArray) (bsize esize i r : Nat)
     Nat.mod_mod_of_dvd _ (dvd_pow_self 2 (by omega)), Nat.div_div_eq_div_mul,
     ← pow_add]
 
-/-- One left-to-right step of the accumulated exponent. -/
 theorem expPrefix_step (e B t : Nat) (ht : t < B) :
     Model.expPrefix e (B - t - 1) =
       2 * Model.expPrefix e (B - t) + bitAt e (B - t - 1) := by
@@ -848,8 +762,6 @@ Montgomery product and `(a + b) % m` for the modular addition.  Composing these
 recursions with `Fast.Monpro`'s and `Fast.Csub`'s correctness statements gives
 the memory-level postconditions. -/
 
-/-- The value the `RR` block holds after `i` iterations of the `RR` chain:
-square, then multiply by `R1` or `CC` according to bit `5 - i` of `n`. -/
 def rrValue (mm R n : Nat) : Nat → Nat
   | 0 => R % mm
   | i + 1 =>
@@ -863,14 +775,11 @@ theorem rrValue_succ (mm R n i : Nat) :
         (Model.montMul mm R (rrValue mm R n i) (rrValue mm R n i))
         (if bitAt n (5 - i) = 0 then R % mm else Limbs.radix * R % mm) := rfl
 
-/-- `R1` is the Montgomery form of one, so multiplying by it does nothing. -/
 theorem montMul_by_one {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hx : x < mm) : Model.montMul mm R x (R % mm) = x :=
   Model.montMul_eq_of_modEq hm hcop
     (Nat.ModEq.mul_left x (Nat.mod_modEq R mm).symm) hx
 
-/-- **The `RR` chain invariant.**  After `i` iterations the block holds the
-Montgomery form of `radix ^ (n >>> (6 - i))`. -/
 theorem rrValue_form {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     {n : Nat} (hn : n ≤ 8) : ∀ i, i ≤ 6 →
     rrValue mm R n i ≡ Limbs.radix ^ (n / 2 ^ (6 - i)) * R [MOD mm] := by
@@ -915,15 +824,12 @@ theorem rrValue_form {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
       rw [rrValue_succ, hsq, Model.montMul_form hm hcop hx hsel, hstep, pow_add]
       exact Nat.mod_modEq _ mm
 
-/-- **The `RR` chain postcondition.**  Six iterations leave the Montgomery form
-of `radix ^ n`; taking `R = radix ^ n mod m` this is `R ^ 2 mod m`. -/
 theorem rrValue_final {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     {n : Nat} (hn : n ≤ 8) :
     rrValue mm R n 6 ≡ Limbs.radix ^ n * R [MOD mm] := by
   have h := rrValue_form hm hcop hn 6 le_rfl
   rwa [show (6 : Nat) - 6 = 0 from rfl, pow_zero, Nat.div_one] at h
 
-/-- The value `ACC` holds after `t` Horner steps over the `pb` base limbs. -/
 def blValue (mm b pb : Nat) : Nat → Nat
   | 0 => b / Limbs.radix ^ (pb - 1) % mm
   | t + 1 =>
@@ -935,8 +841,6 @@ theorem blValue_succ (mm b pb t : Nat) :
       (blValue mm b pb t * Limbs.radix % mm +
         b / Limbs.radix ^ (pb - 1 - (t + 1)) % Limbs.radix) % mm := rfl
 
-/-- **The Horner invariant.**  After `t` steps the accumulator holds the top
-`t + 1` limbs of the base, reduced. -/
 theorem blValue_eq (mm b pb : Nat) : ∀ t, t < pb →
     blValue mm b pb t = b / Limbs.radix ^ (pb - 1 - t) % mm := by
   intro t
@@ -948,14 +852,11 @@ theorem blValue_eq (mm b pb : Nat) : ∀ t, t < pb →
       rw [blValue_succ, ih (by omega), hk]
       exact Model.horner_div_step mm b (pb - 1 - (t + 1))
 
-/-- **The base-chain postcondition.**  After `pb - 1` steps the accumulator is
-`b mod m`. -/
 theorem blValue_final (mm b pb : Nat) (hpb : 1 ≤ pb) :
     blValue mm b pb (pb - 1) = b % mm := by
   rw [blValue_eq mm b pb (pb - 1) (by omega),
     show pb - 1 - (pb - 1) = 0 from by omega, pow_zero, Nat.div_one]
 
-/-- The accumulator after `t` exponent bits. -/
 def expAcc (mm R bM : Nat) (bits : Nat → Nat) : Nat → Nat
   | 0 => R % mm
   | t + 1 =>
@@ -974,13 +875,10 @@ theorem expAcc_succ (mm R bM : Nat) (bits : Nat → Nat) (t : Nat) :
           (Model.montMul mm R (expAcc mm R bM bits t) (expAcc mm R bM bits t)) bM :=
   rfl
 
-/-- The exponent the loop has accumulated after `t` bits. -/
 def expExp (bits : Nat → Nat) : Nat → Nat
   | 0 => 0
   | t + 1 => 2 * expExp bits t + bits t
 
-/-- **The exponent-loop invariant.**  The accumulator is the Montgomery form of
-`b ^ E` for the exponent `E` accumulated so far. -/
 theorem expAcc_form {mm R b bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hbM : bM ≡ b * R [MOD mm]) (bits : Nat → Nat) (hbits : ∀ t, bits t ≤ 1) :
     ∀ t, expAcc mm R bM bits t ≡ b ^ expExp bits t * R [MOD mm] := by
@@ -991,8 +889,6 @@ theorem expAcc_form {mm R b bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
       rw [expAcc_succ, Model.mont_bit_step hm hcop ih hbM (hbits t)]
       exact Nat.mod_modEq _ mm
 
-/-- **The exponent bridge.**  Consuming the big-endian bits of `e` accumulates
-exactly `e`. -/
 theorem expExp_eq_prefix {e B : Nat} (he : e < 2 ^ B) (bits : Nat → Nat)
     (hbits : ∀ t, t < B → bits t = bitAt e (B - t - 1)) :
     ∀ t, t ≤ B → expExp bits t = Model.expPrefix e (B - t) := by
@@ -1012,8 +908,6 @@ theorem expExp_eq {e B : Nat} (he : e < 2 ^ B) (bits : Nat → Nat)
   have h := expExp_eq_prefix he bits hbits B le_rfl
   rwa [Nat.sub_self, Model.expPrefix_zero] at h
 
-/-- **The final conversion.**  `MonPro(ACC, 1)` on the Montgomery form of
-`b ^ e` yields the precompile's answer. -/
 theorem expAcc_out {mm R b bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hbM : bM ≡ b * R [MOD mm]) (bits : Nat → Nat) (hbits : ∀ t, bits t ≤ 1)
     {e B : Nat} (he : e < 2 ^ B)
@@ -1030,15 +924,8 @@ The two subroutines enter through the functional contract `SubSpec`; composing
 it with the value recursions above turns each loop's arithmetic invariant into
 a statement about the named blocks. -/
 
-/-- Functional contract for `MONPRO` and `ADDMOD` at `n` limbs, modulus `mm`.
-`Fast.Monpro` and `Fast.Csub` supply it. -/
 structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (n mm R minv : Nat) : Prop where
-  /-- `MonPro(pa, pb) → pd` writes the Montgomery product.  The pointer bounds
-  and the `V_MINV` word are exactly the memory-dependent hypotheses
-  `Fast.Monpro.monpro_represents` takes; its constant side conditions
-  (`2 ≤ n ≤ 8`, `m` odd, and `m % radix * minv + 1 ≡ 0 [MOD 2 ^ 256]`) are
-  supplied once by whoever builds this record. -/
   mpValueRaw : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
     pa + 32 * n ≤ 2048 → pb + 32 * n ≤ 2048 → pd + 32 * n ≤ 2048 →
     Model.FastRepresents mem 0 n mm →
@@ -1046,32 +933,25 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b →
     a < mm →
     Model.FastRepresents (mpMem pa pb pd mem) pd n (Model.montMul mm R a b)
-  /-- `MonPro` leaves every other named block alone. -/
   mpFrame : ∀ (pa pb pd ptr v : Nat) (mem : ByteArray),
     ptr + 32 * n ≤ 1792 → (pd + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ pd) →
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (mpMem pa pb pd mem) ptr n v
-  /-- `MonPro` writes nothing at or above `V_MINV = 0x24A0`. -/
   mpMinv : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     MachineState.readWord (mpMem pa pb pd mem) 2720 = MachineState.readWord mem 2720
-  /-- `AddMod(pa, pb) → pd` writes the modular sum. -/
   amValue : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
     pa + 32 * n ≤ 2048 → pb + 32 * n ≤ 2048 → pd + 32 * n ≤ 2048 →
     Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem pa n a → Model.FastRepresents mem pb n b →
     a + b < 2 * mm →
     Model.FastRepresents (amMem pa pb pd mem) pd n ((a + b) % mm)
-  /-- `AddMod` leaves every other named block alone. -/
   amFrame : ∀ (pa pb pd ptr v : Nat) (mem : ByteArray),
     ptr + 32 * n ≤ 1792 → (pd + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ pd) →
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (amMem pa pb pd mem) ptr n v
-  /-- `AddMod` writes nothing at or above `V_MINV = 0x24A0`. -/
   amMinv : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
     MachineState.readWord (amMem pa pb pd mem) 2720 = MachineState.readWord mem 2720
 
-/-- Reduced-operand compatibility view of the stronger CIOS contract.
-The second operand need only fit its represented limb region. -/
 theorem SubSpec.mpValue {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv)
     (pa pb pd : Nat) (mem : ByteArray) (a b : Nat)
@@ -1089,14 +969,12 @@ theorem rrValue_lt {mm R n : Nat} (hm : 0 < mm) : ∀ i, rrValue mm R n i < mm :
   | zero => exact Nat.mod_lt _ hm
   | succ i => exact Model.montMul_lt hm _ _ _
 
-/-- The four blocks the `RR` chain reads and writes. -/
 structure RrInv (mem : ByteArray) (n mm R v : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   r1 : Model.FastRepresents mem 1024 n (R % mm)
   cc : Model.FastRepresents mem 1280 n (Limbs.radix * R % mm)
   rr : Model.FastRepresents mem 1536 n v
 
-/-- `V_MINV` survives the `RR` chain. -/
 theorem readWord_rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
       MachineState.readWord (mpMem pa pb 1536 mem') 2720 =
@@ -1115,7 +993,6 @@ theorem readWord_rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
       · rw [hkeep 1536 1280 _, hkeep 1536 1536 _, ih]
 
 set_option maxHeartbeats 16000000 in
-/-- **The `RR` chain, at the level of memory.** -/
 theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hcop : Nat.Coprime R mm)
@@ -1190,9 +1067,6 @@ theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
             (by omega) (by omega) hmod1 hmi1 hsq hsel
             (Model.montMul_lt hm _ _ _) hsellt
 
-/-- **The `RR` chain postcondition, at the level of memory.**  After the six
-iterations the `RR` block holds the Montgomery form of `radix ^ n`, which for
-`R = radix ^ n mod m` is `R ^ 2 mod m`. -/
 theorem rrMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm) (mem : ByteArray)
@@ -1207,7 +1081,6 @@ theorem rrMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
 `Fast.Correct` needs to know that the word iteration `j` stores into `ONE` is
 base limb `pb - 1 - j`, and that writing it replaces the whole `ONE` block. -/
 
-/-- Reading one 32-byte word out of a longer big-endian field. -/
 theorem bytesToNatPadded_word (bs : ByteArray) (off w r : Nat) (hr : r + 32 ≤ w) :
     Precompile.bytesToNatPadded bs off w / 256 ^ r % 256 ^ 32 =
       Precompile.bytesToNatPadded bs (off + (w - r - 32)) 32 := by
@@ -1230,7 +1103,6 @@ theorem bytesToNatPadded_word (bs : ByteArray) (off w r : Nat) (hr : r + 32 ≤ 
         Precompile.bytesToNatPadded bs off (w - r - 32) * 256 ^ 32 := by rw [h2]; ring
   rw [hdiv, h2', Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt t2]
 
-/-- The word iteration `j` stores into `ONE` is base limb `pb - 1 - j`. -/
 theorem baseLimbWord_value (input : ByteArray) (bsize pb j : Nat)
     (hjpb : j < pb) (hle : 32 * (pb - j) ≤ bsize) :
     (baseLimbWord input bsize pb j).toNat =
@@ -1243,8 +1115,6 @@ theorem baseLimbWord_value (input : ByteArray) (bsize pb j : Nat)
     Limbs.pow_radix (pb - 1 - j), Limbs.radix_eq,
     show 32 * (pb - 1 - j) = 32 * (pb - j - 1) from by omega]
 
-/-- Writing the least significant limb of a block whose value is below the
-radix replaces the whole value. -/
 theorem write_low_limb {mem : ByteArray} {n one : Nat} (word : UInt256)
     (hn : 0 < n) (hrep : Model.FastRepresents mem 768 n one)
     (hone : one < Limbs.radix) :
@@ -1280,7 +1150,6 @@ theorem storeWord_readWord_disjoint (mem : ByteArray) (addr a : Nat) (w : UInt25
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   exact hdisj
 
-/-- A store below `V_S32` preserves the configuration words. -/
 theorem frame_storeWord {mem : ByteArray} {n bsize minv addr : Nat} (w : UInt256)
     (haddr : addr + 32 ≤ 2656) (hf : Frame mem n bsize minv) :
     Frame (storeWord mem addr w) n bsize minv where
@@ -1297,7 +1166,6 @@ theorem frame_storeWord {mem : ByteArray} {n bsize minv addr : Nat} (w : UInt256
     rw [storeWord_readWord_disjoint mem addr 2656 w (Or.inr (by omega))]
     exact hf.eoff
 
-/-- An `MCOPY` below `V_S32` preserves the configuration words. -/
 theorem frame_mcopyMem {mem : ByteArray} {n bsize minv dst src sz : Nat}
     (hfit : dst + sz ≤ 2656) (hf : Frame mem n bsize minv) :
     Frame (mcopyMem mem dst src sz) n bsize minv where
@@ -1323,7 +1191,6 @@ theorem blValue_lt {mm b pb : Nat} (hm : 0 < mm) (t : Nat) :
   | zero => exact Nat.mod_lt _ hm
   | succ t => exact Nat.mod_lt _ hm
 
-/-- The most significant partial base limb is the top limb of the base. -/
 theorem topLimbOf_value (input : ByteArray) (bsize : Nat) (hb0 : 1 ≤ bsize) :
     topLimbOf input bsize =
       Precompile.bytesToNatPadded input 96 bsize / Limbs.radix ^ (pbOf bsize - 1) := by
@@ -1348,8 +1215,6 @@ theorem topLimbOf_value (input : ByteArray) (bsize : Nat) (hb0 : 1 ≤ bsize) :
   rw [hsplit', Nat.mul_add_div (pow_pos Limbs.radix_pos _), Nat.div_eq_of_lt htail,
     Nat.add_zero]
 
-/-- The blocks the Horner loop reads and writes: the modulus, `ACC`, `ONE`
-(whose value always fits in one limb), `CC` and `RR`. -/
 structure BlInv (mem : ByteArray) (n mm R rr acc : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   accBlock : Model.FastRepresents mem 256 n acc
@@ -1357,7 +1222,6 @@ structure BlInv (mem : ByteArray) (n mm R rr acc : Nat) : Prop where
   ccBlock : Model.FastRepresents mem 1280 n (Limbs.radix * R % mm)
   rrBlock : Model.FastRepresents mem 1536 n rr
 
-/-- The memory one Horner iteration produces. -/
 def blStepMem (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (input : ByteArray) (n bsize pb : Nat) (mem : ByteArray) (j : Nat) : ByteArray :=
   amMem 256 768 256
@@ -1370,8 +1234,6 @@ theorem blMems_succ (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
       blStepMem mpMem amMem input n bsize pb
         (blMems mpMem amMem input n bsize pb mem t) (t + 1) := rfl
 
-/-- One Horner iteration: `ACC := MonPro(ACC, CC)`, store base limb
-`pb - 1 - j` into `ONE`, `ACC := AddMod(ACC, ONE)`. -/
 theorem blStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
@@ -1430,7 +1292,6 @@ theorem blStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       (Or.inl (by omega)) hcc2
   · exact spec.amFrame 256 768 256 1536 rr _ (by omega) (Or.inl (by omega)) hrr2
 
-/-- `V_MINV` survives the Horner loop. -/
 theorem readWord_blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (hmp : ∀ (pa pb : Nat) (mem' : ByteArray),
       MachineState.readWord (mpMem pa pb 256 mem') 2720 =
@@ -1449,7 +1310,6 @@ theorem readWord_blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
         storeWord_readWord_disjoint _ (736 + 32 * n) 2720 _ (Or.inr (by omega)),
         hmp 256 1280 _, ih]
 
-/-- **The Horner loop, at the level of memory.** -/
 theorem blMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
@@ -1479,8 +1339,6 @@ theorem blMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       rw [blMems_succ, blValue_succ]
       exact hstep
 
-/-- **The base-chain postcondition, at the level of memory.**  After `pb - 1`
-Horner iterations the `ACC` block holds `b mod m`. -/
 theorem blMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
@@ -1497,8 +1355,6 @@ theorem blMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
   rwa [blValue_final mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize)
     (by unfold pbOf; omega)] at h
 
-/-- **`BASE := MonPro(ACC, RR)`.**  With `RR` holding `R ^ 2 mod m` this leaves
-`b * R mod m` in the `BASE` block. -/
 theorem blMem_base {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr b minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm) (hrr : rr ≡ R * R [MOD mm])
@@ -1515,8 +1371,6 @@ theorem blMem_base {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
 
 /-! ### The exponent loop, at the level of memory -/
 
-/-- The bit the loop consumes at global step `t`: bit `7 - t % 8` of exponent
-byte `t / 8`. -/
 def expBits (input : ByteArray) (bsize : Nat) (t : Nat) : Nat :=
   bitAt (expByte input bsize (t / 8)) (7 - t % 8)
 
@@ -1535,16 +1389,12 @@ theorem expAcc_lt {mm R bM : Nat} (hm : 0 < mm) (bits : Nat → Nat) (t : Nat) :
       · exact Model.montMul_lt hm _ _ _
       · exact Model.montMul_lt hm _ _ _
 
-/-- The blocks the exponent loop reads and writes: the modulus, `ACC`, `BASE`
-and `ONE` (untouched, and still one limb wide). -/
 structure EbInv (mem : ByteArray) (n mm bM acc : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   accBlock : Model.FastRepresents mem 256 n acc
   baseBlock : Model.FastRepresents mem 512 n bM
   oneBlock : ∃ one, one < Limbs.radix ∧ Model.FastRepresents mem 768 n one
 
-/-- One exponent bit: square `ACC`, and multiply by `BASE` when the bit is
-set. -/
 theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (mem : ByteArray) (bM acc bit : Nat) (hbit : bit ≤ 1)
@@ -1596,7 +1446,6 @@ theorem montMul_mont_one {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm) :
   Model.montMul_eq_of_modEq hm hcop
     (Nat.ModEq.mul_left (R % mm) (Nat.mod_modEq R mm).symm) (Nat.mod_lt _ hm)
 
-/-- Squaring over leading zero bits leaves the accumulator at `Mont 1`. -/
 theorem expAcc_of_zeros {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (bits : Nat → Nat) (k : Nat) (hz : ∀ j, j < k → bits j = 0) :
     expAcc mm R bM bits k = R % mm := by
@@ -1607,7 +1456,6 @@ theorem expAcc_of_zeros {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
         ih (fun j hj => hz j (by omega))]
       exact montMul_mont_one hm hcop
 
-/-- `Mont 1` is a left identity for Montgomery multiplication. -/
 theorem montMul_one_left {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hx : x < mm) : Model.montMul mm R (R % mm) x = x :=
   Model.montMul_eq_of_modEq hm hcop
@@ -1617,8 +1465,6 @@ theorem montMul_one_left {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
       rw [Nat.mul_comm R x] at h
       exact h.symm) hx
 
-/-- Leading zeros then the leading one: the accumulator lands exactly on the
-Montgomery base. -/
 theorem expAcc_of_zeros_then_one {mm R bM : Nat} (hm : 0 < mm)
     (hcop : Nat.Coprime R mm) (hbM : bM < mm) (bits : Nat → Nat) (k : Nat)
     (hz : ∀ j, j < k → bits j = 0) (hone : bits k ≠ 0) :
@@ -1626,7 +1472,6 @@ theorem expAcc_of_zeros_then_one {mm R bM : Nat} (hm : 0 < mm)
   rw [expAcc_succ, if_neg hone, expAcc_of_zeros hm hcop bits k hz,
     montMul_mont_one hm hcop, montMul_one_left hm hcop hbM]
 
-/-- A nonzero byte has its leading bit set. -/
 theorem bitAt_topExp {w : Nat} (hw : w < 256) (hne : w ≠ 0) :
     bitAt w (Lz.topExp w) = 1 := by
   obtain ⟨_, _, hlt⟩ := Lz.topBit_spec w hw
@@ -1667,8 +1512,6 @@ theorem bitMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
         hbits k (by omega)]
       exact hstep
 
-/-- The bits the loop skips are leading zeros of the exponent, so the
-accumulator it starts from is the one the unskipped loop would have had. -/
 theorem ebInv_shift {n mm R bM : Nat} (hm : 0 < mm)
     (hcop : Nat.Coprime R mm) (input : ByteArray) (bsize i : Nat)
     (mem : ByteArray)
@@ -1700,9 +1543,6 @@ theorem ebInv_shift {n mm R bM : Nat} (hm : 0 < mm)
     rw [hz0, Nat.add_zero]
     exact hinv
 
-/-- The accumulator the skipped first iteration would have produced.  The
-leading bit of a nonzero byte is set, so that iteration squares `Mont(1)` — a
-fixed point — and then multiplies by `BASE`, landing on `BASE`. -/
 theorem expAcc_skipOne {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hbM : bM < mm) (input : ByteArray) (bsize : Nat) (bits : Nat → Nat)
     (hwne : expByte input bsize 0 ≠ 0)
@@ -1723,7 +1563,6 @@ theorem expAcc_skipOne {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
           from by omega, bitAt_topExp hwlt hwne]
       exact one_ne_zero)
 
-/-- `LZBASE` copies `BASE` onto `ACC`; every other named block is disjoint. -/
 theorem ebInv_accCopy {mm bM n acc : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (mem : ByteArray) (hinv : EbInv mem n mm bM acc) :
     EbInv (mcopyMem mem 256 512 (32 * n)) n mm bM bM where
@@ -1737,7 +1576,6 @@ theorem ebInv_accCopy {mm bM n acc : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 8)
     exact ⟨one, h1, fastRepresents_mcopyMem_disjoint mem 256 512 (32 * n) 768 n
       one (Or.inl (by omega)) h2⟩
 
-/-- **The exponent loop, at the level of memory.** -/
 theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hcop : Nat.Coprime R mm) (hn : 2 ≤ n)
@@ -1811,9 +1649,6 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
           = 8 * i + lzSkip input bsize i + (8 - lzSkip input bsize i) from by omega]
         exact h
 
-/-- **The exponent-loop postcondition, at the level of memory.**  After the
-`8 * esize` bits, `MSTORE ONE 1` and the closing `MonPro(ACC, ONE)`, the `ACC`
-block holds the precompile's answer. -/
 theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R bM b e minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
@@ -1874,10 +1709,6 @@ theorem returnedState_isDone (s : State) (mem : ByteArray)
     (returnedState s mem n bsize esize msize).isDone = true := by
   simp [State.isDone, State.isHalted, State.isRunning, returnedState, hstack]
 
-/-- **The halted state's result is the specification.**  Together with
-`returnedState_isDone` and the chain traces this is exactly the
-`∃ final, GasSteps … ∧ final.isDone = true ∧ final.toResult = .returned (spec input)`
-that `Fast.Correct.FastPath.handled` asks for. -/
 theorem returnedState_toResult (s : State) (mem input : ByteArray)
     (n bsize esize msize result : Nat) (hn : 2 ≤ n) (hm : msize ≤ 32 * n)
     (hmpos : 0 < msize)
@@ -1908,10 +1739,6 @@ into this file's dependency graph.  The final assembly therefore belongs in
 `Fast.Correct`, which imports everything already; `handled_of_trace` is the
 one-liner it needs. -/
 
-/-- **The `handled` obligation, from a trace and the value of the `ACC` block.**
-`entry` is the state the entry hop produces (`Main.trampolineState input 844`),
-`s` the carrier of the fast-path states (`initialState submissionBytecode input 0`,
-whose `callStack` is `[]` by `rfl`). -/
 theorem handled_of_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
     (n bsize esize msize result : Nat)
     (hstack : s.callStack = [])
@@ -1935,12 +1762,6 @@ theorem handled_of_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
     returnedState_toResult s mem input n bsize esize msize result hn hmsz32 hmpos
       hbsize hesize hmsz hrep hres⟩
 
-#print axioms blMem_final
-#print axioms blMem_base
-#print axioms ebMem_final
-#print axioms rrMem_final
-#print axioms returnedState_toResult
-#print axioms handled_of_trace
 
 /-! ## The gas traces of the three chains
 
@@ -2005,7 +1826,6 @@ doublings produced. -/
 
 /-! ## The setup memory outside the modulus and `R1` blocks -/
 
-/-- Nothing the setup block writes lands between `0x0400` and `0x1000`. -/
 theorem readWord_setupMem_mid (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
     (hlo : 256 ≤ target) (hhi : target + 32 ≤ 1024) :
@@ -2026,7 +1846,6 @@ theorem readWord_setupMem_mid (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_empty]
 
-/-- `ACC`, `BASE` and the `ONE` slot are all zero when the setup hands over. -/
 theorem fastSetup_zero_block (input : ByteArray) (hpath : Setup.FastPath input)
     (ptr : Nat) (hlo : 256 ≤ ptr) (hhi : ptr + 32 * Setup.limbs input ≤ 1024) :
     Model.FastRepresents (Setup.fastSetupMemory input) ptr (Setup.limbs input) 0 := by
@@ -2037,7 +1856,6 @@ theorem fastSetup_zero_block (input : ByteArray) (hpath : Setup.FastPath input)
       (by omega) (by omega),
     toNat_ofNat_self (by norm_num)]
 
-/-- Nothing the setup block writes lands between `0x1020` and the variables. -/
 theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
     (hlo : 2048 ≤ target) (hhi : target + 32 ≤ 2656) :
@@ -2058,8 +1876,6 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_empty]
 
-/-- The CIOS `t` block is still zero when the setup hands over, which is what
-lets `CSUB` compute `radix ^ n - m` from `t[n] = 1` alone. -/
 theorem fastSetup_tblock_zero (input : ByteArray) (hpath : Setup.FastPath input)
     (hn32 : Setup.limbs input ≤ 8) :
     Model.FastRepresents (Setup.fastSetupMemory input) 2112 (Setup.limbs input) 0 := by
@@ -2095,9 +1911,6 @@ theorem fastSetup_notPrecompile (input : ByteArray) :
       (Setup.fastSetupState input).executionEnv.codeAddr = false :=
   Challenge.Modexp.deployAddress_not_precompile
 
-/-- The setup block ends at the dispatcher (pc 3381) with the plain outer frame,
-instead of at the Montgomery-form conversion call.  `Shift.dispState` is definitionally this
-state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
       retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2390)
@@ -2110,11 +1923,6 @@ theorem fastSetup_entry_eq (input : ByteArray) :
 public theorem signature lives in `Fast.RrLeadingCorrect`; retaining this
 source block documents the unchanged legacy argument without introducing an
 assumption into the new proof. -/
-/- /-- Everything after `Fast.Setup`: the hand-over, the three loops and the
-`RETURN`.  Stated over an abstract hand-over state so that every `subs`
-projection is a projection at variables. -/
-
-
--/
+/- -/
 
 end Challenge.Modexp.Submission.Proofs.Fast.Exp

@@ -89,10 +89,4 @@ theorem scratch_preserves_live (mem : ByteArray) (cells : List (Nat × UInt256))
   have hb := h c hc
   omega
 
-#print axioms readPadded_storeCells
-#print axioms readWord_storeCells
-#print axioms writeCell_preserves
-#print axioms storeCells_preserves
-#print axioms storeCells_hit
-#print axioms scratch_preserves_live
 end HistoricalSearch.CRTMemoryCells

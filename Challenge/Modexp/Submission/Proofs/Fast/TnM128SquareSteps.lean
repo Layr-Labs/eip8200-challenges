@@ -15,8 +15,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore SquareModel
 open TnCacheSquareTrace TnM128SquareBlocks
 
-/-- zloop/p2: the row pointer is `q = 32·(n - i)` and the third frame word `w3` is
-`mem[0xc0]` (`n1`, read by cell A). -/
 def outState (tn m128 : UInt256) (s : State) (mem : ByteArray) (n i : Nat)
     (hd w3 ent inv m0 : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := mem} hd
@@ -104,5 +102,4 @@ noncomputable def prologue_steps (s : State) (mem : ByteArray) (tn m128 : UInt25
     Challenge.EvmProof.Word.ofNat_add_mod, List.cons_append, List.nil_append]
   rfl
 
-#print axioms prologue_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareSteps

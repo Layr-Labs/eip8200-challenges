@@ -9,13 +9,9 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 
-/-- The conversion entry the E5 block stores at 1698. The old artifact cycled through four cell
-entries at `2951 + 39 * ((-n) &&& 3)`; the new one has exactly two, the eight-limb chain head and
-the four-limb one 0x91 bytes later, so the word is a two-way choice on the limb count. -/
 def entryWord (n : Nat) : UInt256 :=
   UInt256.ofNat (if n = 4 then 2901 else 2785)
 
-/-- The same value in the MAC chain's own vocabulary, for the section lemma's cache hypothesis. -/
 theorem entryWord_eq_entryPC (n : Nat) (hn : n = 4 ∨ n = 8) :
     entryWord n = UInt256.ofNat (M9Mac.entryPC n) := by
   rcases hn with h | h <;> subst h <;> rfl
@@ -52,7 +48,4 @@ theorem cache_survives_u (mem : ByteArray) (n : Nat)
   rw [Shift.uMem_readWord_disjoint mem n 1698 (Or.inl (by omega))]
   exact h
 
-#print axioms read_cache
-#print axioms represents_cache
-#print axioms cache_survives_step
 end Challenge.Modexp.Submission.Proofs.Fast.ShiftCacheModel

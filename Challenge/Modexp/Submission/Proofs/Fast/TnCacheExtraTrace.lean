@@ -3,6 +3,7 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 import Challenge.Modexp.Submission.Proofs.Fast.TnCacheL2Trace
 
 set_option warningAsError true
+set_option linter.unusedSimpArgs false
 
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheExtraTrace
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
@@ -143,12 +144,10 @@ theorem run_legacyExtraStep (slot : Fin 3) (template : State) (pc : UInt256) (me
   simpa only [st,TnCacheL2Trace.state,framed,extendedStack,l2Step,hx,hloadAddr,hstoreAddr,hpc,
     List.cons_append,List.nil_append] using hall
 
-/-- Fused cached high-modulus load and low product. -/
 def slotZeroPrefix : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MUL,
    .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨15, by decide⟩)]
 
-/-- Widen the first address push by one byte to preserve the shared loop stride. -/
 def slotZeroHead (tl ts : UInt256) : List Instr :=
   (slotZeroPrefix ++ (CiosCached.macProductProgram.drop 4).take 2) ++
     ((CiosCached.macFusedPostProgram tl ts).take 7 ++ [.push 3 tl])
@@ -166,16 +165,12 @@ private theorem run_slotZeroHead (loadAddr storeAddr : UInt256) (s : State)
     runInstructions ((extraLoad 0 ++ CiosCached.macProductProgram.take 6) ++
         (CiosCached.macFusedPostProgram loadAddr storeAddr).take 8)
       (framed s pc (extendedStack carry mu bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hc22 : rest.length + 22 < 1024 := by omega
-  have hc23 : rest.length + 23 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
   simp [slotZeroHead, slotZeroPrefix, extraLoad, CiosCached.macProductProgram,
     CiosCached.macFusedPostProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, framed, extendedStack, List.exchange, Nat.add_assoc,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod,
-    hc19, hc20, hc21, hc22, hc23]
+    capacity, Nat.add_assoc]
 
 theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
@@ -219,16 +214,10 @@ theorem run_extraStep (slot : Fin 3) (template : State) (pc : UInt256) (mem : By
 
 
 
-/-- Slot zero as the M128 artifact spells it: its address push is narrowed to `PUSH2`,
-which makes the cell exactly the fused prefix followed by `macFusedPostProgram`, thirty-two
-bytes rather than thirty-three.  The wider `slotZeroHead` above is unchanged, because the
-other candidate artifact still carries the padded `PUSH3` there. -/
 def extraProgramZeroNarrow (tl ts : UInt256) : List Instr :=
   (slotZeroPrefix ++ (CiosCached.macProductProgram.drop 4).take 2) ++
     CiosCached.macFusedPostProgram tl ts
 
-/-- The fused prefix: `DUP2 DUP15 MUL DUP10 DUP16 DUP5 MULMOD` leaves exactly the frame
-`run_post` consumes, seven bytes where the legacy load-and-product needs eight. -/
 private theorem run_zeroPrefix (s : State) (w : UInt256)
     (pc carry mu bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hw : w = m96) :
@@ -238,20 +227,12 @@ private theorem run_zeroPrefix (s : State) (w : UInt256)
       ([UInt256.mulMod mu w allOnes, w * mu, carry, mu] ++
         ([bi,pbi,pa,pb,flag,tn,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest))) := by
   subst hw
-  have hc19 : rest.length + 19 < 1024 := by omega
-  have hc20 : rest.length + 20 < 1024 := by omega
-  have hc21 : rest.length + 21 < 1024 := by omega
-  have hc22 : rest.length + 22 < 1024 := by omega
-  have hc23 : rest.length + 23 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
   simp [slotZeroPrefix, CiosCached.macProductProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, framed, extendedStack, Nat.add_assoc,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod,
-    hc19, hc20, hc21, hc22, hc23]
+    capacity, Nat.add_assoc]
 
-/-- The whole slot-zero cell: seven-byte fused prefix, then `macFusedPostProgram`
-through the public `run_post`.  Thirty-two bytes, one less than slots one and two.
-The cell reads neither the fifteenth nor the sixteenth frame word, so `hc` may describe any
-middle and low words. -/
 theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
     (hx : x.toNat = 32*(n-2-k))
@@ -315,8 +296,6 @@ theorem run_extraStepZeroNarrow (template : State) (pc : UInt256) (mem : ByteArr
     l2Step, hx, hloadAddr, hstoreAddr, hpc, allOnes_value,
     List.cons_append, List.nil_append] using hall
 
-/-- Slot two (modulus[32]) as `run_legacyExtraStep`, for a frame whose fifteenth word is not
-the cached modulus[64]: the cell never reads that word, so `hc` may describe any middle word. -/
 theorem run_extraStepTwo (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x loadAddr storeAddr : UInt256)
     (hx : x.toNat = 32*(n-2-k))
@@ -365,8 +344,4 @@ theorem run_extraStepTwo (template : State) (pc : UInt256) (mem : ByteArray)
   simpa only [st,TnCacheL2Trace.state,framed,extendedStack,l2Step,hx,hloadAddr,hstoreAddr,hpc,
     List.cons_append,List.nil_append] using hall
 
-#print axioms run_extraLoad
-#print axioms run_extraStepZeroNarrow
-#print axioms run_extraStep
-#print axioms run_extraStepTwo
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheExtraTrace

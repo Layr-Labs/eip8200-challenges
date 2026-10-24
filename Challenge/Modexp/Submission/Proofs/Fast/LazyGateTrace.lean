@@ -39,5 +39,4 @@ def gasSteps_lazy {artifact : Challenge.EvmProof.ProgramArtifact}
   · rw [if_neg hz] at hc
     simpa only [LazyCsub.resultMemory,if_neg hz] using hc.trans subTrace
 
-#print axioms gasSteps_lazy
 end Challenge.Modexp.Submission.Proofs.Fast.LazyGate

@@ -94,8 +94,6 @@ theorem run_cell (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   exact runInstructions_append_some _ _ _ _ _ h01 h2
 
-/-- A cell without its final store (`cellA ++ cellB`): used for the last cell of the
-first row, whose store is merged into `finishStore`. -/
 def cellAB (a : UInt256) : List Instr := cellA a ++ cellB
 
 theorem run_cellAB (s : State) (pc c bi w0 w1 w2 w3 w4 M : UInt256)
@@ -227,7 +225,4 @@ theorem run_cellsM128 (s : State) (pc bi w0 w1 w2 w3 w4 : UInt256)
         congr 1
       simpa only [cellsProgramM128, zeroRun, zeroStep, hpc] using h
 
-#print axioms run_cell
-#print axioms run_cells
-#print axioms run_cellsM128
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow

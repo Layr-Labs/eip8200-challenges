@@ -33,7 +33,6 @@ theorem macSumNat (x y t c : UInt256) :
   congr 1
   omega
 
-/-- Wrapping subtraction reassociates: `a - (b - d) - e = a + (d - (e + b))`. -/
 theorem subSubFold (a b d e : UInt256) :
     a - (b - d) - e = a + (d - (e + b)) := by
   apply word_ext
@@ -44,7 +43,6 @@ theorem subSubFold (a b d e : UInt256) :
   simp only [word_toNat_sub, word_toNat_add]
   omega
 
-/-- The two carry bits of the reassociated sum add up to the same total. -/
 theorem carryPair (x y t c : UInt256) :
     (if (t.toNat + ((x * y).toNat + c.toNat)) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 < ((x * y).toNat + c.toNat) % 115792089237316195423570985008687907853269984665640564039457584007913129639936
        then 1 else 0) +
@@ -87,7 +85,6 @@ theorem ifBit_toNat (P : Prop) [Decidable P] :
 theorem bit_le (P : Prop) [Decidable P] : (if P then 1 else 0) ≤ 1 := by
   split <;> simp
 
-/-- The carry the reassociated body computes is `macCarry`. -/
 theorem macCarryFix (x y t c : UInt256) :
     (if (t.toNat + ((x * y).toNat + c.toNat)) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 < ((x * y).toNat + c.toNat) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 then
         (UInt256.ofNat 1) else UInt256.ofNat 0) +

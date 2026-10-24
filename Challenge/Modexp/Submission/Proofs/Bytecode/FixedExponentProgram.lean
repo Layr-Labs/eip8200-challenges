@@ -142,5 +142,4 @@ theorem run_program (template : State) (pc base modulus exponent : UInt256)
   have hall := runInstructions_append_some _ _ _ _ _ hiplte hr'
   simpa only [program,List.append_assoc] using hall
 
-#print axioms run_program
 end HistoricalSearch.FixedExponentProgram

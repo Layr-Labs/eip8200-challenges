@@ -21,14 +21,12 @@ open Challenge.EvmProof.Word
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro R4Math
 
-/-- 五字窗口的数值（`t4` 最高）。 -/
 def val5 (W : W5) : Nat :=
   W.t0.toNat + W.t1.toNat * 2 ^ 256 + W.t2.toNat * (2 ^ 256) ^ 2 + W.t3.toNat * (2 ^ 256) ^ 3 +
     W.t4.toNat * (2 ^ 256) ^ 4
 
 theorem push0_eq : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
-/-- `SGT 0 p` 的数值是 `p` 的最高位。 -/
 theorem tb_toNat (p : UInt256) : (UInt256.sgt ⟨0⟩ p).toNat = p.toNat / 2 ^ 255 := by
   rw [push0_eq]; exact SquareDiag.sgt_zero_toNat p
 
@@ -37,7 +35,6 @@ theorem tb_le_one (p : UInt256) : (UInt256.sgt ⟨0⟩ p).toNat ≤ 1 := by
   have := toNat_lt p
   exact Nat.lt_succ_iff.mp ((Nat.div_lt_iff_lt_mul (by norm_num)).2 (by omega))
 
-/-- 乘以一个比特不回绕。 -/
 theorem mul_bit (a b : UInt256) (hb : b.toNat ≤ 1) : (a * b).toNat = a.toNat * b.toNat := by
   rw [toNat_mul]
   apply Nat.mod_eq_of_lt
@@ -47,7 +44,6 @@ theorem mul_bit (a b : UInt256) (hb : b.toNat ≤ 1) : (a * b).toNat = a.toNat *
 theorem lt_le_one (a b : UInt256) : (UInt256.lt a b).toNat ≤ 1 := by
   rw [toNat_ltw]; split <;> omega
 
-/-- 行乘数 `(a + a) + tb` 的数值。 -/
 theorem dbl_toNat (a tb : UInt256) :
     ((a + a) + tb).toNat = (2 * a.toNat + tb.toNat) % 2 ^ 256 := by
   rw [word_toNat_add, word_toNat_add, Nat.mod_add_mod]
@@ -144,7 +140,6 @@ theorem red_val (n0 n1 n2 n3 np : UInt256) (P : W5) (v : UInt256) (hv : v.toNat 
 
 /-! ## 四行合成 -/
 
-/-- `a` 的四个 limb（`a0` 最低）。 -/
 def limbs4 (a0 a1 a2 a3 : UInt256) : Nat → Nat
   | 0 => a0.toNat
   | 1 => a1.toNat
@@ -160,7 +155,6 @@ private theorem bound_step {B x y k : Nat} (_hB : 0 < B) (hx : x < B) (hy : y < 
   rw [pow_succ, Nat.mul_comm (B ^ k) B]
   linarith
 
-/-- 四行贡献之和（`h` 保持符号，避免字面量化简干扰差式匹配）。 -/
 private theorem rowX_sum4 (h : Nat) (f : Nat → Nat) :
     SquareMath.lsum (2 * h) (SquareMath.rowX h 4 f) 4 =
       (f 0 * (f 0 + SquareMath.tbm h f 0) + SquareMath.a2 h f 0 *
@@ -187,7 +181,6 @@ private theorem rowX_sum4 (h : Nat) (f : Nat → Nat) :
   ring
 
 set_option maxHeartbeats 8000000 in
-/-- 合成的核心：中间窗口作为变量（避免展开 `final` 造成的项膨胀）。 -/
 theorem final_eq_aux (a0 a1 a2 a3 n0 n1 n2 n3 np : UInt256) (W1 W2 W3 : W5)
     (R1 R2 R3 : W5 × UInt256)
     (hW1 : W1 = red n0 n1 n2 n3 np maxWord (row0 a0 a1 a2 a3 maxWord) ⟨0⟩)
@@ -260,7 +253,6 @@ theorem final_eq_aux (a0 a1 a2 a3 n0 n1 n2 n3 np : UInt256) (W1 W2 W3 : W5)
     linear_combination (2 ^ 256) ^ 3 * e3 + (2 ^ 256) ^ 3 * f3 + (2 ^ 256) ^ 2 * e2 +
       (2 ^ 256) ^ 2 * f2 + 2 ^ 256 * e1 + 2 ^ 256 * f1 + e0
 
-/-- **R4 的数值结论**：`val5 final · R⁴ = A² + Q · M`，`Q < R⁴`。 -/
 theorem final_eq (a0 a1 a2 a3 n0 n1 n2 n3 np : UInt256)
     (hinv : (n0.toNat * np.toNat + 1) % 2 ^ 256 = 0) :
     ∃ Q, Q < (2 ^ 256) ^ 4 ∧
@@ -276,7 +268,6 @@ private theorem or_bits (x y : Nat) (hx : x ≤ 1) (hy : y ≤ 1) :
     x ||| y = if x = 0 then y else 1 := by
   interval_cases x <;> interval_cases y <;> decide
 
-/-- One `rare4` limb: `e = n + b`, `d = p - e`, outgoing borrow `(b > e) | (p < e)`. -/
 theorem sub4Limb_spec (p n b : UInt256) (hb : b.toNat ≤ 1) :
     (p - (n + b)).toNat + n.toNat + b.toNat =
       p.toNat + 2 ^ 256 * (UInt256.lor (UInt256.gt b (n + b)) (UInt256.lt p (n + b))).toNat ∧
@@ -303,11 +294,9 @@ theorem sub4Limb_spec (p n b : UInt256) (hb : b.toNat ≤ 1) :
     rw [hg, if_neg (by omega), word_toNat_sub_cond, he, hb1]
     constructor <;> (try split_ifs) <;> omega
 
-/-- The low four words of a window. -/
 def low4 (W : W5) : Nat :=
   W.t0.toNat + W.t1.toNat * 2 ^ 256 + W.t2.toNat * (2 ^ 256) ^ 2 + W.t3.toNat * (2 ^ 256) ^ 3
 
-/-- The modulus from its four limbs, least significant first. -/
 def mod4 (n0 n1 n2 n3 : UInt256) : Nat :=
   n0.toNat + n1.toNat * 2 ^ 256 + n2.toNat * (2 ^ 256) ^ 2 + n3.toNat * (2 ^ 256) ^ 3
 
@@ -323,8 +312,6 @@ theorem low4_lt (W : W5) : low4 W < (2 ^ 256) ^ 4 := by
   nlinarith [Nat.mul_le_mul_right R h1, Nat.mul_le_mul_right (R * R) h2,
     Nat.mul_le_mul_right (R * R * R) h3]
 
-/-- **`rare4` subtracts the modulus**: below the modulus, the borrow chain wraps once, so the
-four words become `t + R⁴ - N`. -/
 theorem sub4_low (n0 n1 n2 n3 : UInt256) (P : W5) (hlt : low4 P < mod4 n0 n1 n2 n3) :
     low4 (sub4 n0 n1 n2 n3 P) + mod4 n0 n1 n2 n3 = low4 P + (2 ^ 256) ^ 4 := by
   unfold low4 at hlt ⊢
@@ -365,8 +352,6 @@ theorem sub4_low (n0 n1 n2 n3 : UInt256) (P : W5) (hlt : low4 P < mod4 n0 n1 n2 
   · rw [Nat.mul_one] at key
     exact key
 
-/-- **The n=4 tail value**: with the window below `R⁴ + N`, the stored words are the lazy
-conditional subtraction of the window (`LazyCsub.value`), and the overflow word is zero. -/
 theorem red4_val (n0 n1 n2 n3 : UInt256) (W : W5)
     (hN : mod4 n0 n1 n2 n3 < (2 ^ 256) ^ 4)
     (hW : val5 W < (2 ^ 256) ^ 4 + mod4 n0 n1 n2 n3) :

@@ -55,5 +55,4 @@ def gasSteps_csub_lazy (s : State) (memory : ByteArray) (n : Nat)
     hcap hact hn hn32 hs hdstFit (by simpa only [hcode] using hjump)
     (by simpa only [hcode] using jumpDestSub) subTrace
 
-#print axioms gasSteps_csub_lazy
 end Challenge.Modexp.Submission.Proofs.Fast.LazyCsub

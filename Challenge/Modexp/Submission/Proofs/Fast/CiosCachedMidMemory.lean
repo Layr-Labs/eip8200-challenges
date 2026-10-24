@@ -52,7 +52,6 @@ theorem rowC0_mid (mem : ByteArray) (c : UInt256) (n : Nat)
   unfold rowC0
   rw [rowMu_mid mem c n hn, read_mid mem c (32*n-32) (Or.inl (by omega))]
 
-/-- The row-head inverse relation belongs to the logical memory state. -/
 def inverseInvariant (mem : ByteArray) (n : Nat) : Prop :=
   ((MachineState.readWord mem (32*n-32)).toNat *
     (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0

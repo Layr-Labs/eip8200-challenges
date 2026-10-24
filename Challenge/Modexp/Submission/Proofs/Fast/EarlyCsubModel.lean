@@ -10,8 +10,6 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open EarlyCsub
 
-/-- The guarded subtraction leaves SUBB untouched when the leading limb
-    already proves that the accumulator is below the modulus. -/
 def csResultMemory (memory : ByteArray) (n pdst : Nat) : ByteArray :=
   if Skip memory then
     MachineState.writeBytes memory (MachineState.readPadded memory 2112 (32*n)) pdst

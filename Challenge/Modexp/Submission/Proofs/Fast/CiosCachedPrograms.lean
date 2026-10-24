@@ -19,7 +19,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 
-/-- Pointer-free product and incoming-carry schedule. -/
 def macProductProgram : List Instr :=
   [.op (.Dup ⟨3, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
@@ -40,7 +39,6 @@ def macProductProgram : List Instr :=
    .op .SUB,
    .op .SUB]
 
-/-- The first cell starts with carry zero. No other cell uses this schedule. -/
 def macZeroProductProgram : List Instr :=
   [.op (.Dup ⟨3, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
@@ -58,15 +56,11 @@ def macZeroProductProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩),
    .op .SUB]
 
-/-- Store the accumulated word before finishing the outgoing carry. -/
 def macFinishProgram (tl ts : UInt256) : List Instr :=
   [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
    .push 2 tl, .op .MLOAD, .op .ADD, .op (.Dup ⟨0, by decide⟩),
    .push 2 ts, .op .MSTORE, .op .LT, .op .ADD]
 
-/-- Combine both carry tests while storing the low word before the final carry.
-Ported from terrapinelf's promoted submission 8c2efe8b (commit c8f510f); same 26 bytes
-as `macProductProgram`'s tail plus `macFinishProgram`, one instruction fewer, -3 gas. -/
 def macFusedPostProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
@@ -119,13 +113,6 @@ def macFusedPostProgramW3 (tl ts : UInt256) : List Instr :=
 def macFusedProgramW3 (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostProgramW3 tl ts
 
-/-- `macFusedPostProgram` specialised to a known-zero incoming carry `c = 0`: same byte length
-and instruction count, seven gas cheaper, and equivalent *only* on a frame whose incoming carry
-is already zero (the row-head cell of a conversion chain, never a cell fed by a predecessor).
-With `c = 0` the incoming-carry add `DUP4 ADD` is the identity (two `JUMPDEST`s), and the
-first carry test `c > lo + c` is the constant zero, so the `DUP2 GT SWAP4` that computes and
-parks it collapses to one `SWAP1` (plus two `JUMPDEST`s); the zero carry slot is consumed by
-the final `ADD`. -/
 def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
@@ -149,7 +136,6 @@ def macFusedPostZeroProgram (tl ts : UInt256) : List Instr :=
    .op .SUB,
    .op .ADD]
 
-/-- `macFusedProgram` on a known-zero incoming carry. -/
 def macFusedZeroProgram (tl ts : UInt256) : List Instr :=
   macProductProgram.take 6 ++ macFusedPostZeroProgram tl ts
 
@@ -178,7 +164,6 @@ def macTopZeroProgram (ts : UInt256) : List Instr :=
   ((topProductProgram ++ topStoreProgram ts) ++ topCarryProgram) ++ topFillProgram
 
 
-/-- Load at the cached base plus an immediate byte offset. -/
 def l1LoadProgram (off : UInt256) : List Instr :=
   [.push 1 off, .op (.Dup ⟨4, by decide⟩), .op .ADD,
    .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
@@ -193,7 +178,6 @@ def l1LastProgram (t : UInt256) : List Instr :=
   [.op (.Dup ⟨3, by decide⟩), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)] ++
     macFusedProgram t t
 
-/-- The width is one for positive modulus offsets, zero for the final cell. -/
 def l2Program (w : Fin 33) (x tl ts : UInt256) : List Instr :=
   [.push w x, .op .MLOAD, .op (.Dup ⟨9, by decide⟩)] ++
     macFusedProgram tl ts
@@ -312,10 +296,6 @@ def l1DispatchProgram : List Instr :=
 def l2DispatchProgram : List Instr :=
   [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
 
-/-- The private four-limb ladder copy's own tail.  Where the shared ladder ended in
-`DUP10 JUMP` through the stack-held continuation -- a jump that on the eight-limb path
-went to the very next pc and cost 11 gas for nothing -- the copy ends in an explicit
-`PUSH2 0x0ee8 JUMP`, so the shared ladder no longer has to carry a continuation at all. -/
 def l2ExitProgram : List Instr :=
   [.push 2 3816, .op .JUMP]
 

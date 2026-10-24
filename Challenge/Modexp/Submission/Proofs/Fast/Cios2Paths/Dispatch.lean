@@ -25,8 +25,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open WindowTwentyOneBinding
 
-/-- The thirteen-instruction inverse/width guard is gone: the rewritten entry test decides both
-conditions before the fast path is entered, so `common` now falls straight through into `setup`. -/
 def commonGuardProgram : List Instr := [.op .JUMPDEST]
 
 

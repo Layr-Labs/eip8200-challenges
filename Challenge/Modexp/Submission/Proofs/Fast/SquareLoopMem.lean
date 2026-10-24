@@ -16,7 +16,6 @@ def sqRound (s : State) (n c : Nat) (mem : ByteArray) : ByteArray :=
   LazyCsub.resultMemory
     (SquareLoopBlocks.countMem (sqRowsCarry (mpZeroed s mem n) n n) c) n (roundDst c)
 
-/-- Writing the same bytes at the same place twice is the same as writing them once. -/
 theorem writeBytes_writeBytes_same (bs bytes : ByteArray) (start : Nat) :
     MachineState.writeBytes (MachineState.writeBytes bs bytes start) bytes start =
       MachineState.writeBytes bs bytes start := by
@@ -34,13 +33,11 @@ theorem writeBytes_writeBytes_same (bs bytes : ByteArray) (start : Nat) :
   · rw [MachineState.writeBytes_getElem?_getD bs, if_pos h]
   · rfl
 
-/-- Zeroing the accumulator region is idempotent. -/
 theorem mpZeroed_idem (s : State) (mem : ByteArray) (n : Nat) :
     mpZeroed s (mpZeroed s mem n) n = mpZeroed s mem n := by
   unfold mpZeroed
   exact writeBytes_writeBytes_same _ _ _
 
-/-- One squaring round never touches the scratch word `[2048, 2080)`. -/
 theorem scratchZero_sqRound (s : State) (n c : Nat) (M : ByteArray) (hn1 : 1 ≤ n)
     (hn : n ≤ 8) : R8RowZeroExact.ScratchZero (sqRound s n c M) := by
   have h0 := (R8RowZeroExact.scratchZero_mpZeroed s M n hn1).sqRowsCarry n n
@@ -72,7 +69,6 @@ theorem sqRound_mpZeroed (s : State) (n c : Nat) (mem : ByteArray) :
     sqRound s n c (mpZeroed s mem n) = sqRound s n c mem := by
   unfold sqRound; rw [mpZeroed_idem]
 
-/-- A run of at least one round does not see whether its entry memory was already zeroed. -/
 theorem sqRunMem_mpZeroed (s : State) (n k : Nat) (mem : ByteArray) (hk : 1 ≤ k) :
     sqRunMem s n k (mpZeroed s mem n) = sqRunMem s n k mem := by
   cases k with

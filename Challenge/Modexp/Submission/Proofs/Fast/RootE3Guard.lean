@@ -27,8 +27,6 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
-/-- The E5 guard's exponent byte: byte 0 of the calldata word the kernel reads at
-the header's exponent offset (the word `mem 2656` points at). -/
 def exponentByte (mem input : ByteArray) : UInt256 :=
   UInt256.byteAt (UInt256.ofNat 0)
     (MachineState.readWord input (MachineState.readWord mem 2656).toNat)

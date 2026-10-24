@@ -100,8 +100,5 @@ theorem runCorrect (s : State) (pc : UInt256) (rest : List UInt256)
   rw [HistoricalSearch.CRTExecution.run s pc _ _ _ _ _ rest hcap,
     carryWord_eq W S C H hWpos hW hC hS hHbound hH]
 
-#print axioms carryWord_toNat
-#print axioms carryWord_eq
-#print axioms runCorrect
 
 end HistoricalSearch.CRTWordBridge

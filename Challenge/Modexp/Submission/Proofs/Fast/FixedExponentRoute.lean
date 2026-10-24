@@ -22,48 +22,36 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 
-/-- Exponent value as parsed by the MODEXP specification. -/
 def exponentValue (input : ByteArray) (bsize esize : Nat) : Nat :=
   Precompile.bytesToNatPadded input (96 + bsize) esize
 
-/-- Exact semantic cases recognized by the dispatcher. -/
 inductive Case (input : ByteArray) (bsize esize : Nat) : Nat → Prop
   | fermat : esize = 3 → exponentValue input bsize esize = 65537 →
       Case input bsize esize 16
 
-/-- The route handles precisely one of the two fixed addition chains. -/
 def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
   ∃ count : Nat, Case input bsize esize count
 
-/-- State after the replacement in `BDONE` jumps to the appended dispatcher
-at pc 3250. -/
 abbrev entryState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2317 }
 
-/-- Exact inherited exponent-loop state restored by every dispatcher miss. -/
 abbrev missState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
   Exp.ebHead s (Exp.mcopyMem mem 256 1024 (32 * n))
     n bsize esize msize 0
 
-/-- Successful execution from the appended dispatcher. -/
 abbrev Handled (input : ByteArray) (start : State) : Prop :=
   ∃ final : State,
     Nonempty (Challenge.EvmProof.GasSteps start final) ∧
       final.isDone = true ∧
       final.toResult = .returned (Challenge.Modexp.spec input)
 
-/-- Concrete execution and semantic interface for the cc628 dispatcher. -/
 structure Route (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat) where
   enter : Challenge.EvmProof.GasSteps
     (Exp.bDone s mem n bsize esize msize)
     (entryState s mem n bsize esize msize)
-  /-- A recogniser miss is a bail, not a rejoin: all three checks (`esize = 1`,
-  first byte `3`, top three bytes `65537`) `JUMPI` to the six-word trampoline at
-  pc 1054, which lands on `modexpBig` at pc 237.  The class is finished there, so
-  the field carries `Handled` and not a `GasSteps` into `missState`. -/
   miss : ¬ Matches input bsize esize →
     Handled input (entryState s mem n bsize esize msize)
   hit : Matches input bsize esize →

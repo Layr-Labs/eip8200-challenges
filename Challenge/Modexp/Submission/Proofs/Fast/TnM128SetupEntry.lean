@@ -22,8 +22,6 @@ def fullEntryProgram : List Instr :=
 
 theorem fullEntryProgram_length : fullEntryProgram.length = 54 := rfl
 
-/-- The whole `setup`: from `setupState` (pc 4123, `[hd, pa, pb, dst, ret] ++ rest`) to the
-row-0 head at `hd` with the staged, zeroed memory and `ent = l1Target n`. -/
 theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998)
@@ -90,9 +88,6 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
   exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 
-/-- The whole `setup` for the square-loop frame: as `run_entry`, but the riding width
-slot carries the limb count `n` (not the width word at 2688), so the normalized
-selector vanishes and the row head that enters the frame is the constant `3562`. -/
 theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998)

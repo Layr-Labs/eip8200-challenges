@@ -74,10 +74,6 @@ theorem isZero_ofNat_of_ne {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
 theorem isZero_ofNat_zero : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by
   decide
 
-/-- The zero the block pushes with `PUSH0` reaches `NOT` as the raw word, so the rewrite has to be
-stated on that form rather than on `UInt256.ofNat 0`. `PUSH0; NOT` is the all-ones word, and the
-dispatcher's `EQ` against the last modulus word is then zero exactly when that word is not all ones.
-This is the Montgomery-inverse side of the entry test. -/
 -- deliberately NOT @[simp]: as a global rewrite it turns `lnot 0` into `ofNat (radix - 1)` inside
 -- unrelated `decide` proofs, where the literal is then too large to evaluate. It is named explicitly
 -- by the two entry-check lemmas that need it.
@@ -93,8 +89,6 @@ theorem eq_maxWord_of_ne (w : UInt256)
   intro hc
   exact h (Challenge.EvmProof.Word.word_ext hc).symm
 
-/-- `PUSH1 0x7f; AND` on the padded width is zero exactly when the width is a multiple of 128,
-which for `32 * limbs` means a limb count divisible by four. -/
 theorem land_mask_of_mod (n : Nat) (hn : n < 2 ^ 256) (h : n % 128 = 0) :
     UInt256.land (UInt256.ofNat 127) (UInt256.ofNat n) = UInt256.ofNat 0 := by
   apply Challenge.EvmProof.Word.word_ext
@@ -157,29 +151,20 @@ theorem exponentSize_lt (input : ByteArray) : exponentSize input < 2 ^ 256 :=
 theorem modulusSize_lt (input : ByteArray) : modulusSize input < 2 ^ 256 :=
   headerSize_lt input 64
 
-/-- `n = ⌈msize / 32⌉`, the number of limbs of the modulus. -/
 def limbs (input : ByteArray) : Nat := Limbs.limbCount (modulusSize input)
 
-/-- `s32 = 32 n`, the byte size of every limb block. -/
 def s32 (input : ByteArray) : Nat := 32 * limbs input
 
-/-- Calldata offset of the modulus operand. -/
 def modOffset (input : ByteArray) : Nat := 96 + baseSize input + exponentSize input
 
-/-- The modulus operand exactly as the specification reads it. -/
 def modulus (input : ByteArray) : Nat :=
   Precompile.bytesToNatPadded input (modOffset input) (modulusSize input)
 
-/-- Byte width of the most significant limb (`1 ≤ topWidth ≤ 32`). -/
 def topWidth (input : ByteArray) : Nat := modulusSize input - 32 * (limbs input - 1)
 
-/-- The most significant limb of the modulus, as the top-limb check reads it. -/
 def topLimb (input : ByteArray) : Nat :=
   Precompile.bytesToNatPadded input (modOffset input) (topWidth input)
 
-/-- The fast-path precondition, exactly as indices 1112..1120 decide it:
-`33 ≤ msize ≤ 256`, base and exponent sizes at most 1024, the top limb of
-the modulus nonzero, and the modulus odd. -/
 def FastPath (input : ByteArray) : Prop :=
   32 < modulusSize input ∧
     (baseSize input ≤ 1024 ∧ exponentSize input ≤ 1024 ∧ modulusSize input ≤ 256) ∧
@@ -234,39 +219,23 @@ theorem limbs_ge_two (input : ByteArray) (h : 32 < modulusSize input) :
   unfold limbs Limbs.limbCount
   omega
 
-/-- **The rewritten dispatcher's width test.**
-
-The entry block ORs `32 * limbs` against `0x7f` and leaves for the generic byte-serial path when the
-result is nonzero, so falling through forces `32 * limbs` to be a multiple of 128, that is, a limb
-count divisible by 4. The pre-existing bound at the modulus-size check gives `33 ≤ msize ≤ 256` and
-hence `2 ≤ limbs ≤ 8`, so the surviving limb counts are exactly 4 and 8.
-
-This is the fact the M9 deletions rest on: the looped general-width multiply, the modmul fallback
-check and the general-L conditional subtraction are all unreachable once the code after the
-dispatcher may assume a modulus of exactly four or eight limbs. -/
 theorem limbs_four_or_eight (input : ByteArray)
     (hlo : 32 < modulusSize input) (hhi : modulusSize input ≤ 256)
     (hmask : modulusSize input % 128 = 0) : limbs input = 4 ∨ limbs input = 8 := by
   unfold limbs Limbs.limbCount
   omega
 
-/-- A modulus size that is a multiple of 128 needs no padding at all: the limb block is exactly
-as wide as the operand. This is the fact every deletion in the setup block rests on -- with
-`p = s32 - msize = 0` the zero-fill copy is dead and the operand copy lands at offset 0. -/
 theorem s32_eq_of_mask (input : ByteArray) (hmask : modulusSize input % 128 = 0) :
     s32 input = modulusSize input := by
   unfold s32 limbs Limbs.limbCount
   omega
 
-/-- With no padding the most significant limb is a full word, so the top-limb check and the
-top-*bit* check the rewritten dispatcher performs read the same 32 bytes. -/
 theorem topWidth_eq_32_of_mask (input : ByteArray)
     (h32 : 32 < modulusSize input) (hmask : modulusSize input % 128 = 0) :
     topWidth input = 32 := by
   unfold topWidth limbs Limbs.limbCount
   omega
 
-/-- The last calldata word of the modulus operand is its low limb. -/
 theorem lastWord_toNat (input : ByteArray) (h : 32 < modulusSize input) :
     (MachineState.readWord input (modOffset input + modulusSize input - 32)).toNat =
       modulus input % Limbs.radix := by
@@ -280,7 +249,6 @@ theorem lastWord_toNat (input : ByteArray) (h : 32 < modulusSize input) :
   rw [hsplit, Limbs.radix, ← pow_256_32, Nat.mul_add_mod',
     Nat.mod_eq_of_lt (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input _ 32)]
 
-/-- The entry block's `N0 ≠ 2^256 - 1` test, as a fact about the low limb. -/
 theorem lowWord_ne_of_nprime (input : ByteArray) (h : 32 < modulusSize input)
     (hnprime : MachineState.readWord input (modOffset input + modulusSize input - 32) ≠
       UInt256.ofNat (Limbs.radix - 1)) :
@@ -291,7 +259,6 @@ theorem lowWord_ne_of_nprime (input : ByteArray) (h : 32 < modulusSize input)
   rw [lastWord_toNat input h, hlow, Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt (show Limbs.radix - 1 < 2 ^ 256 by unfold Limbs.radix; norm_num)]
 
-/-- Under the Montgomery identity the inverse is one exactly when the low limb is all ones. -/
 theorem minv_ne_one_of_lowWord {mm minv : Nat}
     (hminvA : (mm % Limbs.radix * minv + 1) % 2 ^ 256 = 0)
     (hlow : mm % Limbs.radix ≠ Limbs.radix - 1) : minv ≠ 1 := by
@@ -306,8 +273,6 @@ theorem minv_ne_one_of_lowWord {mm minv : Nat}
   rw [h256] at hlow hlt
   omega
 
-/-- The `minv ≠ 1` that `Exp.subs` needs, from the entry condition and the identity
-`ShiftCorrect.gasSteps_handled` already derives. -/
 theorem minv_ne_one_of_entry (input : ByteArray) (minv : Nat) (h : 32 < modulusSize input)
     (hnprime : MachineState.readWord input (modOffset input + modulusSize input - 32) ≠
       UInt256.ofNat (Limbs.radix - 1))
@@ -357,31 +322,21 @@ constrained only by `s.executionEnv.calldata`, `s.executionEnv.code` and
 calls makes them unfold the frozen bytecode literal, which does not terminate
 in reasonable memory. -/
 
-/-- Gas-erased state at the fast-path entry: pc 1396, empty stack. -/
 def entryState (s : State) : State :=
   { s with pc := UInt256.ofNat 578, stack := [] }
 
-/-- The fallback target: pc 1326 with an empty stack; memory and `activeWords`
-are untouched because indices 1112..1120 and the bail blocks contain no memory
-opcode. -/
 def fallbackState (s : State) : State :=
   { s with pc := UInt256.ofNat 533, stack := [] }
 
-/-- Where the `msize` guard branch lands: the fixed-vector recogniser's entry (pc 795)
-with an empty stack; its miss exits restore `fallbackState`. -/
 def memoEntryState (s : State) : State :=
   { s with pc := UInt256.ofNat 699, stack := [] }
 
-/-- Entry of `BAIL1` (pc 2016): one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 697, stack := [UInt256.ofNat (modulusSize input)] }
 
-/-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 593, stack := [UInt256.ofNat (modulusSize input)] }
 
-/-- Unsigned subtraction rejects values below 33 by wrapping, and values above
-256 by an ordinary difference.  The passing interval is exactly 33..256. -/
 theorem entryCond_zero (m : Nat) (hm : m < 2 ^ 256)
     (hlo : 32 < m) (hhi : m ≤ 256) :
     UInt256.lt (UInt256.ofNat 223) (UInt256.ofNat m - UInt256.ofNat 33) =
@@ -449,7 +404,6 @@ theorem ltWord_1024 (a : Nat) (ha : a < 2 ^ 256) :
   · rw [if_pos hc, lt_ofNat_of_lt (by norm_num) ha hc]
   · rw [if_neg hc, lt_ofNat_of_le (by norm_num) ha (Nat.not_lt.mp hc)]
 
-/-- The disjunction the size check computes, when every declared size fits. -/
 theorem sizeCond_zero (input : ByteArray) (hb : baseSize input ≤ 1024)
     (he : exponentSize input ≤ 1024) (hm : modulusSize input ≤ 1024) :
     UInt256.lor (UInt256.lt (UInt256.ofNat 1024) (UInt256.ofNat (baseSize input)))
@@ -461,7 +415,6 @@ theorem sizeCond_zero (input : ByteArray) (hb : baseSize input ≤ 1024)
     lt_ofNat_of_le (by norm_num) (modulusSize_lt input) hm, lor_zero_zero,
     lor_zero_zero]
 
-/-- The disjunction the size check computes, when some declared size is too big. -/
 theorem sizeCond_one (input : ByteArray)
     (h : 1024 < baseSize input ∨ 1024 < exponentSize input ∨
       1024 < modulusSize input) :
@@ -473,7 +426,6 @@ theorem sizeCond_one (input : ByteArray)
     ltWord_1024 _ (modulusSize_lt input)]
   split_ifs <;> simp_all
 
-/-- After the size checks (pc 1482); also the entry of `BAIL3` at pc 2019. -/
 def sizesOkStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input)]
@@ -502,8 +454,6 @@ theorem run_sizeCheck_pass (s : State) (input : ByteArray)
 
 /-! ## Word arithmetic of the top-limb block -/
 
-/-- `2 ^ 256` spelled the way `simp` normalises it, so that the residual
-`% 2 ^ 256` produced by `word_toNat_ofNat` can be discharged by rewriting. -/
 theorem mod_word_self {a : Nat} (h : a < 2 ^ 256) :
     a % 115792089237316195423570985008687907853269984665640564039457584007913129639936
       = a :=
@@ -568,8 +518,6 @@ theorem topLimb_lt (input : ByteArray) : topLimb input < 2 ^ 256 := by
   rw [pow_256_32] at hle
   exact h.trans_le hle
 
-/-- The right shift performed by the top-limb check extracts the most
-significant limb of the modulus. -/
 theorem shiftRight_topLimb (input : ByteArray) (h : 32 < modulusSize input) :
     UInt256.shiftRight (MachineState.readWord input (modOffset input))
         (UInt256.ofNat ((s32 input - modulusSize input) * 8)) =
@@ -581,8 +529,6 @@ theorem shiftRight_topLimb (input : ByteArray) (h : 32 < modulusSize input) :
   exact Challenge.EvmProof.Bytes.shiftRight_readWord input (modOffset input)
     (topWidth input) (topWidth_pos input h) (topWidth_le input)
 
-/-- **The rewritten top-limb check.** The block shifts the leading modulus word right by 255
-bits, so what reaches `ISZERO` is bit 255 of that word and nothing else. -/
 theorem shiftRight_topBit (input : ByteArray) :
     UInt256.shiftRight (MachineState.readWord input (modOffset input))
         (UInt256.ofNat 255) =
@@ -594,11 +540,6 @@ theorem shiftRight_topBit (input : ByteArray) :
   rw [Challenge.EvmProof.Word.shiftRight_toNat _ (by norm_num),
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt]
 
-/-- **The arithmetic bridge.** The old dispatcher tested `topLimb ≠ 0`, i.e. that the padded-out
-most significant limb is nonzero; the rewritten one tests bit 255 of the leading word. Once the
-width test has forced `msize % 128 = 0` there is no padding, the top limb *is* the leading word,
-and a set top bit is strictly stronger than nonzero. Feeding this to `topLimb_ne_zero_iff`
-recovers `radix ^ (limbs - 1) ≤ modulus` exactly as before. -/
 theorem topLimb_ne_zero_of_topBit (input : ByteArray)
     (h32 : 32 < modulusSize input) (hmask : modulusSize input % 128 = 0)
     (htop : (MachineState.readWord input (modOffset input)).toNat >>> 255 ≠ 0) :
@@ -612,26 +553,19 @@ theorem topLimb_ne_zero_of_topBit (input : ByteArray)
 
 /-! ## The top-limb check -/
 
-/-- `OUTER = [s32, n, bsize, esize, msize]`, the stack bottom the whole fast
-path keeps live. -/
 def outerStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (s32 input), UInt256.ofNat (limbs input),
    UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input)]
 
-/-- After the top-limb check (pc 1514). -/
 def oddCheckState (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 624
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
-/-- Entry of `BAIL6` (pc 1053): six live stack words. -/
 def bail6State (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 219
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
-/-- Where `BAIL6` lands: the wide-modulus fallback entry (pc 236) with the six live
-words kept.  `modexpBig` re-reads the header from calldata and tolerates any incoming
-stack, so nothing is dropped any more. -/
 def bigBailState (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 219
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
@@ -705,7 +639,6 @@ theorem run_topCheck_bail (s : State) (input : ByteArray)
 
 /-! ## The parity check -/
 
-/-- The parity of the modulus is the low bit of its last calldata word. -/
 theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
     UInt256.land (UInt256.ofNat 1)
         (MachineState.readWord input (modOffset input + modulusSize input - 32)) =
@@ -725,7 +658,6 @@ theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
   rw [hsplit, Nat.add_mod, Nat.mul_mod, show (256:Nat) ^ 32 % 2 = 0 from by norm_num]
   simp
 
-/-- State after all four checks passed (pc 1481), before any memory write. -/
 def setupEntryState (s : State) (input : ByteArray) : State :=
   { s with pc := UInt256.ofNat 649
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
@@ -771,7 +703,6 @@ theorem run_oddCheck_pass (s : State) (input : ByteArray)
 The JUMPI at pc 481 ORs three conditions, so the bail is reached from any one of them. The single
 bitwise fact needed is that an ORed word is true exactly when one of its inputs is. -/
 
-/-- `x ||| y = 0` forces both inputs to zero (bit by bit). -/
 theorem lor_eq_zero_nat {x y : Nat} (h : x ||| y = 0) : x = 0 ∧ y = 0 := by
   have hb : ∀ i, x.testBit i = false ∧ y.testBit i = false := by
     intro i
@@ -781,8 +712,6 @@ theorem lor_eq_zero_nat {x y : Nat} (h : x ||| y = 0) : x = 0 ∧ y = 0 := by
   exact ⟨Nat.eq_of_testBit_eq fun i => by rw [(hb i).1, Nat.zero_testBit],
     Nat.eq_of_testBit_eq fun i => by rw [(hb i).2, Nat.zero_testBit]⟩
 
-/-- An ORed word is true exactly when one of its inputs is: the JUMPI takes the bail as soon as
-any of the three dispatcher conditions fails. -/
 theorem isTrue_lor_iff (a b : UInt256) :
     UInt256.isTrue (UInt256.lor a b) ↔ (UInt256.isTrue a ∨ UInt256.isTrue b) := by
   unfold UInt256.isTrue
@@ -799,8 +728,6 @@ theorem isTrue_lor_iff (a b : UInt256) :
     · exact ha (lor_eq_zero_nat h0).1
     · exact hb (lor_eq_zero_nat h0).2
 
-/-- The width side of the bail: `PUSH1 0x7f; AND` on the padded width is nonzero when the width
-is not a multiple of 128 (the complement of `land_mask_of_mod`). -/
 theorem land_mask_isTrue_of_not_mod (n : Nat) (hn : n < 2 ^ 256) (h : n % 128 ≠ 0) :
     UInt256.isTrue (UInt256.land (UInt256.ofNat 127) (UInt256.ofNat n)) := by
   unfold UInt256.isTrue
@@ -810,8 +737,6 @@ theorem land_mask_isTrue_of_not_mod (n : Nat) (hn : n < 2 ^ 256) (h : n % 128 �
   rw [this, Nat.and_comm, Nat.and_two_pow_sub_one_eq_mod]
   simpa using h
 
-/-- The Montgomery-inverse side of the bail: `EQ` against the all-ones word is one when the last
-modulus word is all ones (the complement of `eq_maxWord_of_ne`). -/
 theorem eq_maxWord_of_eq (w : UInt256) (h : w = UInt256.ofNat (Limbs.radix - 1)) :
     UInt256.eq (UInt256.ofNat (Limbs.radix - 1)) w = UInt256.ofNat 1 := by
   rw [h, UInt256.eq, if_pos rfl]
@@ -896,7 +821,6 @@ theorem modulus_lt (input : ByteArray) :
     modulus input < Limbs.radix ^ limbs input :=
   Limbs.byteValue_fits_limbs input (modOffset input) (modulusSize input)
 
-/-- The modulus splits into its top limb and a tail below `radix ^ (n - 1)`. -/
 theorem modulus_split (input : ByteArray) (h : 32 < modulusSize input) :
     modulus input = topLimb input * Limbs.radix ^ (limbs input - 1) +
       Precompile.bytesToNatPadded input (modOffset input + topWidth input)
@@ -911,8 +835,6 @@ theorem modulus_tail_lt (input : ByteArray) :
   rw [Limbs.pow_radix]
   exact Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow _ _ _
 
-/-- The check the code performs (`topLimb ≠ 0`) is the arithmetic statement
-`radix ^ (n - 1) ≤ m`. -/
 theorem topLimb_ne_zero_iff (input : ByteArray) (h : 32 < modulusSize input) :
     topLimb input ≠ 0 ↔ Limbs.radix ^ (limbs input - 1) ≤ modulus input := by
   have hsplit := modulus_split input h
@@ -1057,7 +979,6 @@ word or longer than 256 bytes, or the wide-modulus fallback entry (pc 236) with
 the six live words when the modulus is 33..256 bytes but has a zero top limb or
 is even.  Memory and `activeWords` are untouched on both routes. -/
 
-/-- The two landing sites of a declined fast path, from a gas-erased state `s`. -/
 inductive Declined (s : State) (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
       (steps : Challenge.EvmProof.GasSteps (entryState s) (memoEntryState s))
@@ -1143,7 +1064,6 @@ theorem memoEntryState_initial (input : ByteArray) :
     memoEntryState (initialState submissionBytecode input 0) =
       Main.trampolineState input 699 := rfl
 
-/-- The two landing sites of a declined fast path, from the public entry state. -/
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
@@ -1152,17 +1072,6 @@ inductive Fallback (input : ByteArray) : Type
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
         (bigBailState (initialState submissionBytecode input 0) input))
 
-/-- **Fallback certificate.**  For every calldata in the challenge domain that fails
-the fast-path precondition, the entry block runs from the state the retargeted
-entry `PUSH2 597; JUMP` produces either to `Main.trampolineState input 551` — the
-header dispatcher, empty stack, untouched memory and `activeWords` — or, for a
-33..256-byte modulus with a zero top limb or an even value, straight to the
-wide-modulus fallback entry at pc 236 with the six live words.
-
-`ValidInput` is required because the candidate no longer contains the EIP-7823 oversize
-test: `Correct` quantifies only over `ValidInput` calldata, whose declared sizes are all
-at most 1024, so the deleted test was never taken.  `FastPath.bail` supplies exactly this
-hypothesis. -/
 def gasSteps_fallback (input : ByteArray) (hvalid : ValidInput input)
     (hfail : ¬ FastPath input) : Fallback input :=
   match gasSteps_fallback_of (initialState submissionBytecode input 0) input rfl rfl rfl rfl
@@ -1198,7 +1107,6 @@ theorem ofNat_sub_word (a b : Nat) :
   simp only [Challenge.EvmProof.Word.word_toNat_sub,
     Challenge.EvmProof.Word.word_toNat_ofNat]
 
-/-- One `DUP1; DUP3; MUL; PUSH1 2; SUB; MUL` group is one Newton step. -/
 theorem newton_word_step (m0 x : Nat) :
     (UInt256.ofNat 2 - UInt256.ofNat m0 * UInt256.ofNat x) * UInt256.ofNat x =
       UInt256.ofNat (Model.newtonStep m0 x) := by
@@ -1223,7 +1131,6 @@ compute `minv`, the `R1` initialisation and the jump into `DOUBLE256`.  It is
 reduced in four pieces so that no single `simp` call has to normalise ninety-
 nine instructions at once. -/
 
-/-- `-v mod 2^256`, the value the `PUSH0; SUB` before `MSTORE V_MINV` leaves. -/
 def negWord (v : Nat) : Nat := (Limbs.radix - v % Limbs.radix) % Limbs.radix
 
 theorem negWord_lt (v : Nat) : negWord v < 2 ^ 256 :=
@@ -1237,21 +1144,15 @@ theorem neg_word (v : Nat) :
   rw [Nat.mod_mod_of_dvd _ (dvd_refl (2 ^ 256))]
   congr 1
 
-/-- The first four Newton steps. -/
 def newton4 (m0 : Nat) : Nat :=
   NewtonSeed.iter m0 3
 
-/-- All eight Newton steps. -/
 def newton8 (m0 : Nat) : Nat :=
   Model.newtonStep m0 (Model.newtonStep m0 (Model.newtonStep m0 (newton4 m0)))
 
 theorem newton8_eq (m0 : Nat) (hodd : m0 % 2 = 1) :
     newton8 m0 = Model.newtonIter m0 8 := NewtonSeed.six_eq_old hodd
 
-/-- **Overwriting a write.** Two writes of equal length at the same address collapse to the
-second: the first is entirely covered. This is what kills the zero-fill `CALLDATACOPY` — with
-`msize % 128 = 0` the zero block and the modulus operand are both exactly `s32 = msize` bytes
-wide and both land at offset `0`, so the operand copy overwrites the fill byte for byte. -/
 theorem writeBytes_overwrite (mem a b : ByteArray) (start : Nat) (hsz : a.size = b.size) :
     MachineState.writeBytes (MachineState.writeBytes mem a start) b start =
       MachineState.writeBytes mem b start := by
@@ -1265,18 +1166,14 @@ theorem writeBytes_overwrite (mem a b : ByteArray) (start : Nat) (hsz : a.size =
       MachineState.writeBytes_getElem?_getD, hsz]
     split <;> rfl
 
-/-- One `MSTORE` of a natural-number value. -/
 def mstoreAt (mem : ByteArray) (addr value : Nat) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded value 32) addr
 
-/-- Memory after the four variable stores. -/
 def varsMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
   mstoreAt (mstoreAt (mstoreAt (mstoreAt mem 2688 (s32 input))
     2656 (96 + baseSize input)) 2752 (s32 input - 32))
     2784 (2080 + s32 input)
 
-/-- Memory after the two `CALLDATACOPY`s: the block at `0x0000` is zeroed and
-the `msize` modulus bytes are then written right-aligned into it. -/
 def modulusMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
   MachineState.writeBytes
     (MachineState.writeBytes (varsMem mem input)
@@ -1284,18 +1181,12 @@ def modulusMem (mem : ByteArray) (input : ByteArray) : ByteArray :=
     (MachineState.readPadded input (modOffset input) (modulusSize input))
     (s32 input - modulusSize input)
 
-/-- Memory at the end of the setup block.  The block no longer stores `V_MINV`: the
-recogniser-hit arm stores it from one shared Newton chain (see `Shift.preMemOf`). -/
 def setupMem (mem : ByteArray) (input : ByteArray) (_m0 : Nat) : ByteArray :=
   modulusMem mem input
 
-/-- One memory-expansion step, with the word wrapping the machine performs. -/
 def awNext (w off sz : Nat) : Nat :=
   MachineState.activeWordsAfter (w % 2 ^ 256) off sz
 
-/-- **Re-touching a memory region is free.** The high-water mark is a maximum, so expanding for
-`[0, n)` twice leaves the same active-word count as expanding for it once. This is the
-`activeWords` half of the zero-fill deletion. -/
 theorem activeWordsAfter_max (X off n : Nat) (hn : n ≠ 0) :
     MachineState.activeWordsAfter X off n = max X ((off + n - 1) / 32 + 1) := by
   unfold MachineState.activeWordsAfter
@@ -1314,7 +1205,6 @@ theorem activeWords_refill (X n : Nat) (hX : X < 2 ^ 256) (hn : n < 2 ^ 256) :
       activeWordsAfter_max _ 0 n hz, Nat.max_assoc, Nat.max_self,
       Nat.mod_eq_of_lt hmax]
 
-/-- `activeWords_refill` without the final wrap: the outer result is already a word. -/
 theorem activeWords_refill_raw (X n : Nat) (hX : X < 2 ^ 256) (hn : n < 2 ^ 256) :
     MachineState.activeWordsAfter (MachineState.activeWordsAfter X 0 n % 2 ^ 256) 0 n =
       MachineState.activeWordsAfter X 0 n := by
@@ -1327,14 +1217,11 @@ theorem activeWords_refill_raw (X n : Nat) (hX : X < 2 ^ 256) (hn : n < 2 ^ 256)
     rw [activeWordsAfter_max X 0 n hz, Nat.mod_eq_of_lt hmax,
       activeWordsAfter_max _ 0 n hz, Nat.max_assoc, Nat.max_self]
 
-/-- `activeWords` at the end of the setup block: the variable stores and the copies. -/
 def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
   UInt256.ofNat (awNext (awNext (awNext (awNext (awNext
     (MachineState.activeWordsAfter w.toNat 2688 32) 2656 32) 2752 32)
     2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
 
-/-- Instructions 1174..1205: the variables, the modulus copies and the
-`MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 459 (.Dup ⟨1, by decide⟩),
@@ -1365,16 +1252,12 @@ def setupPathA :
    pushAt 484 2 2390,
    opAt 485 .JUMP]
 
-/-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
-to `DOUBLE256` itself when the modulus's top bit is clear. -/
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
   { s with pc := UInt256.ofNat 2390
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
 
-/-- The dispatcher entry `JUMPDEST` (instruction 2033, pc 2592).  The setup path jumps
-here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2390 = true :=
   Artifact.isValidJumpDest_index 1878 (by rfl)
@@ -1492,7 +1375,6 @@ theorem readWord_empty (target : Nat) :
   exact bytesToNatPadded_eq_zero ByteArray.empty target 32
     (fun i _ => Challenge.EvmProof.Memory.getElem?_getD_eq_zero_of_size_le _ _ (by simp))
 
-/-- Every byte of a zero-padded read that starts at or past the end is zero. -/
 theorem readPadded_beyond_getElem (bs : ByteArray) (start n i : Nat)
     (hstart : bs.size ≤ start) :
     (MachineState.readPadded bs start n)[i]?.getD 0 = 0 := by
@@ -1524,8 +1406,6 @@ theorem readWord_writeBytes_ne (mem src : ByteArray) (start target : Nat)
       MachineState.readWord mem target :=
   Challenge.EvmProof.Memory.readWord_writeBytes_disjoint mem src target start h
 
-/-- Reads in the variable area see straight through the modulus copies and the
-two trailing stores. -/
 theorem readWord_setupMem_var (mem : ByteArray) (input : ByteArray) (m0 target : Nat)
     (hm : modulusSize input ≤ 1024) (hlo : 2688 ≤ target) :
     MachineState.readWord (setupMem mem input m0) target =
@@ -1584,8 +1464,6 @@ theorem readWord_V_TL (mem : ByteArray) (input : ByteArray) (m0 : Nat)
 
 /-! ## The modulus block -/
 
-/-- The `n`-limb block at `ptr` always represents the big-endian number formed
-by its `32 n` bytes. -/
 theorem fastRepresents_bytes (bs : ByteArray) (ptr count : Nat) :
     Model.FastRepresents bs ptr count
       (Precompile.bytesToNatPadded bs ptr (32 * count)) := by
@@ -1666,7 +1544,6 @@ theorem modulusMem_represents (mem : ByteArray) (input : ByteArray) :
   rw [show 32 * limbs input = s32 input from rfl, modulusMem_value mem input] at h
   exact h
 
-/-- The modulus block at `0x0000` holds `m` in `n` limbs. -/
 theorem setupMem_represents (mem : ByteArray) (input : ByteArray) (m0 : Nat)
     (hm : modulusSize input ≤ 1024) :
     Model.FastRepresents (setupMem mem input m0) 0 (limbs input) (modulus input) := by
@@ -1675,7 +1552,6 @@ theorem setupMem_represents (mem : ByteArray) (input : ByteArray) (m0 : Nat)
   unfold setupMem
   exact modulusMem_represents mem input
 
-/-- The least significant limb of the modulus, as the block holds it. -/
 theorem lowLimb_eq (mem : ByteArray) (input : ByteArray) (h32 : 32 < modulusSize input) :
     (MachineState.readWord (modulusMem mem input) (s32 input - 32)).toNat =
       modulus input % Limbs.radix := by
@@ -1689,7 +1565,6 @@ theorem lowLimb_eq (mem : ByteArray) (input : ByteArray) (h32 : 32 < modulusSize
 
 /-! ## The `R1` block and `minv` -/
 
-/-- Nothing in the setup block touches memory in `[2048, 2656)`. -/
 theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     (hm : modulusSize input ≤ 1024) (hlo : 2048 ≤ target) (hhi : target + 32 ≤ 2656) :
     MachineState.readWord (setupMem ByteArray.empty input m0) target =
@@ -1707,9 +1582,6 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     readWord_empty]
 
-/-- The setup block leaves the compact scratch block at `2048` untouched,
-so its first eight limbs read as zero.  The seed store moved to the recogniser-miss arm, which is the only route
-that calls the Montgomery-form conversion (see `Shift.fastRepresents_seed`). -/
 -- `_h32` is kept only so the call sites' argument lists are unchanged: the zero-block fact no
 -- longer needs `32 < modulusSize input`, which the seeded version used for its top limb.
 theorem setupMem_R1_zero (input : ByteArray) (m0 : Nat)
@@ -1721,7 +1593,6 @@ theorem setupMem_R1_zero (input : ByteArray) (m0 : Nat)
   rw [readWord_setupMem_high input m0 (2048 + 32 * j) (by omega) (by omega) (by omega),
     toNat_ofNat_self (show (0 : Nat) < 2 ^ 256 by norm_num)]
 
-/-- `minv` satisfies the CIOS precondition `m[0] · minv ≡ -1 (mod 2^256)`. -/
 theorem minv_correct (input : ByteArray) (m0 : Nat)
     (hodd : modulus input % 2 = 1) (hm0 : m0 = modulus input % Limbs.radix) :
     (m0 * negWord (newton8 m0) + 1) % Limbs.radix = 0 := by
@@ -1789,35 +1660,26 @@ def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
             hpath.2.1.1 hpath.2.1.2.1 (fastPath_modulus_le_1024 input hpath) hpath.1
             (fastPath_width input hpath)))))
 
-/-- The least significant limb of the modulus as the loaded block holds it. -/
 def lowLimb (input : ByteArray) : Nat :=
   (MachineState.readWord (modulusMem ByteArray.empty input) (s32 input - 32)).toNat
 
-/-- `minv = -m[0]⁻¹ mod 2^256`, as the block stores it at `V_MINV`. -/
 def minvValue (input : ByteArray) : Nat := negWord (newton8 (lowLimb input))
 
-/-- The state the setup reaches: the `DOUBLE256` entry `JUMPDEST` at pc 2038. -/
 def fastSetupState (input : ByteArray) : State :=
   setupExitState (initialState submissionBytecode input 0) input (lowLimb input)
 
-/-- Memory at the end of the setup block, for the real initial state. -/
 def fastSetupMemory (input : ByteArray) : ByteArray :=
   setupMem ByteArray.empty input (lowLimb input)
 
 theorem fastSetupState_memory (input : ByteArray) :
     (fastSetupState input).memory = fastSetupMemory input := rfl
 
-/-- The setup block hands over at the dispatcher entry with a plain outer stack,
-rather than at the Montgomery-form conversion call with its two argument words. -/
 theorem fastSetupState_pc (input : ByteArray) :
     (fastSetupState input).pc = UInt256.ofNat 2390 := rfl
 
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl
 
-/-- **Setup certificate.**  For every calldata satisfying the fast-path
-precondition (and the `ValidInput` bound on the calldata length), execution
-runs from the state the retargeted entry produces to the `R1B` guard, with the modulus loaded, `minv` computed and `R1` initialised. -/
 def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
     (hpath : FastPath input) :
     Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
@@ -1860,7 +1722,6 @@ theorem fastSetup_lowLimb (input : ByteArray) (hpath : FastPath input) :
     lowLimb input = modulus input % Limbs.radix :=
   lowLimb_eq ByteArray.empty input hpath.1
 
-/-- `m[0] · minv ≡ -1 (mod 2^256)`. -/
 theorem fastSetup_minv (input : ByteArray) (hpath : FastPath input) :
     (lowLimb input * minvValue input + 1) % Limbs.radix = 0 :=
   minv_correct input (lowLimb input) (fastPath_odd input hpath) (fastSetup_lowLimb input hpath)
@@ -1889,8 +1750,6 @@ theorem fastSetup_modulus_bounds (input : ByteArray) (hpath : FastPath input) :
       modulus input < Limbs.radix ^ limbs input :=
   ⟨hpath.2.2.1, modulus_lt input⟩
 
-/-- The value held in the modulus block is exactly the EIP-198 modulus operand
-read out of the calldata. -/
 theorem fastSetup_modulus_eq (input : ByteArray) :
     modulus input =
       Precompile.bytesToNatPadded input (96 + baseSize input + exponentSize input)
@@ -1925,19 +1784,15 @@ theorem setupWords_initial (input : ByteArray) (hm : modulusSize input ≤ 1024)
   congr 1
   omega
 
-/-- After the setup block exactly 88 words are active. -/
 theorem fastSetup_activeWords (input : ByteArray) (hpath : FastPath input) :
     (fastSetupState input).activeWords = UInt256.ofNat 88 :=
   setupWords_initial input (fastPath_modulus_le_1024 input hpath) hpath.1
 
-/-- The high-water bound the three subroutine modules assume. -/
 theorem fastSetup_activeWords_ge (input : ByteArray) (hpath : FastPath input) :
     88 ≤ (fastSetupState input).activeWords.toNat := by
   rw [fastSetup_activeWords input hpath,
     toNat_ofNat_self (show (88 : Nat) < 2 ^ 256 by norm_num)]
 
-/-- The fast-path precondition is decided, as `Fast.Correct`'s `decide` field
-requires. -/
 theorem fastPath_em (input : ByteArray) : FastPath input ∨ ¬ FastPath input :=
   Classical.em _
 

@@ -15,8 +15,6 @@ open Challenge.EvmProof
 
 def l2PC : Nat := 3758
 
-/-- The exact four-limb reduction of the modulus-cache candidate, preserving
-its cached modulus word separately from the literal reduction entry. -/
 noncomputable def reduction_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (q : MacState) (tn : UInt256)
@@ -118,5 +116,4 @@ noncomputable def reduction_steps (s : State)
     (env.transfer rfl rfl) hpc hlast
   simpa only [st, tail, tl4] using (g0.trans g1).trans g2
 
-#print axioms reduction_steps
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128R4Reduction

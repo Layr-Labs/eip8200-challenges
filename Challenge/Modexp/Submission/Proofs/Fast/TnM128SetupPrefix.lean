@@ -34,17 +34,12 @@ def shuffleProgram : List Instr :=
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨10, by decide⟩)]
 
-/-- `PUSH2 0x0aa0; MLOAD; SWAP11`: the Montgomery inverse, loaded late, swaps `hd` back up.
-P1a: it rides in the fifteenth cell-frame word; the early read (`PUSH1 0x40`) puts modulus[64]
-in the slot named `inverse` below. -/
 def lowProgram : List Instr :=
   [.push 2 2720, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
 
 def readsProgram : List Instr := loadProgram.take 16
 def setupProgram : List Instr := loadProgram.drop 16
 
-/-- The reads.  The m0 slot is `mem[16n+32]` (`DUP9; PUSH1 1; SHR; PUSH1 32; ADD; MLOAD`
-on the riding `32n` word `rest[1]`): the low modulus limb for `n = 4`, limb 2 for `n = 8`. -/
 theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (addr n : Nat) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (haddr : addr + 32 ≤ 2816) (hn4 : n = 4 ∨ n = 8)
@@ -55,19 +50,7 @@ theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     some {s with
         pc := UInt256.ofNat 3205
         stack := [(pa + UInt256.ofNat addr), MachineState.readWord s.memory 64, MachineState.readWord s.memory (16*n+32), MachineState.readWord s.memory 224, MachineState.readWord s.memory 96, hd, pa, pb, dst, ret] ++ rest} := by
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
-  have hc15 : rest.length + 15 < 1024 := by omega
-  have hc16 : rest.length + 16 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
   have hn8 : n ≤ 8 := by rcases hn4 with rfl | rfl <;> omega
   have htonat : (UInt256.ofNat addr).toNat = addr := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -101,7 +84,7 @@ theorem run_reads (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
   have h9344 : (2688 : UInt256).toNat = 2688 := by decide
   simp [readsProgram, loadProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr,
-     hml, hw, hslotAddr, hslotAddr', htonat, htonat16, hact16, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, h9408, h9344, h9376, h9440, h32, h64, h96, h128,
+     hml, hw, hslotAddr, hslotAddr', htonat, htonat16, hact16, capacity, Nat.add_assoc, h9408, h9344, h9376, h9440, h32, h64, h96, h128,
     State.activeWordsAfterUInt256, hact1, hact2, hact3, hact4, hact5, hact6, hact7, hact8, hact9,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   try exact ⟨rfl, rfl⟩
@@ -116,24 +99,12 @@ theorem run_setup (s : State) (hd pa pb dst ret value inverse aEnd tailPointer l
       pc := UInt256.ofNat 3212
       stack := [UInt256.ofNat 3347,
         MachineState.readWord s.memory 32, zeroTn, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} := by
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
-  have hc15 : rest.length + 15 < 1024 := by omega
-  have hc16 : rest.length + 16 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have hact32 := activeWords_fix s 32 32 (by decide) (by omega) hact
   simp [zeroTn, setupProgram, loadProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     State.activeWordsAfterUInt256,
-    hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, h32, hact32,
+    capacity, Nat.add_assoc, h32, hact32,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   try exact ⟨rfl, rfl⟩
@@ -157,8 +128,6 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     rest hcap hact
   exact runInstructions_append_some _ _ _ _ _ hr hs
 
-/-- `PUSH1 0x80; MLOAD; SWAP4; SWAP11; PUSH0; NOT; SWAP4; SWAP11` (pc 3212 → 3221): the l1 entry
-`ent` enters the frame; `hd` moves down to slot 10 (it is swapped back up by `lowProgram`). -/
 theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer low96 low32 z ent : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions shuffleProgram
@@ -169,23 +138,11 @@ theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer
         pc := UInt256.ofNat 3221
         stack := [pa, pb, ent, z, allOnes,
         MachineState.readWord s.memory 128, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
-  have hc4 : rest.length + 4 < 1024 := by omega
-  have hc5 : rest.length + 5 < 1024 := by omega
-  have hc6 : rest.length + 6 < 1024 := by omega
-  have hc7 : rest.length + 7 < 1024 := by omega
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
-  have hc14 : rest.length + 14 < 1024 := by omega
-  have hc15 : rest.length + 15 < 1024 := by omega
-  have hc16 : rest.length + 16 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
   have h128 : (128 : UInt256).toNat = 128 := by decide
   have hact128 := activeWords_fix s 128 32 (by decide) (by decide) hact
   simp [shuffleProgram, h128, State.activeWordsAfterUInt256, hact128, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, ← allOnes_not, List.exchange,
+    Challenge.EvmProof.Stepper.runInstr, capacity, Nat.add_assoc, ← allOnes_not, List.exchange,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   rfl
 

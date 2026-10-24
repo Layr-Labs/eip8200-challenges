@@ -25,9 +25,6 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs
 
-/-- `GT a b` is `LT b a`.  The middle block computes both flags with `GT`
-(`[s, c, q]` ↦ `GT c s`, `GT q s`); rewriting every `GT` to `LT` puts the
-block's jump condition and the model's `negOf` into the same normal form. -/
 theorem midGtSwap (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := rfl
 
 theorem isTrue_lor_left (a b : UInt256) (ha : a.toNat ≠ 0) :
@@ -53,7 +50,6 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   · exact isTrue_lor_right a b h
 
 
-/-- `blk3125` with `neg ||| TN ≠ 0`: store `TN`, jump to `UNC` with `neg` above `k`. -/
 theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -91,7 +87,6 @@ theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk3125` with `neg = 0` and `TN = 0`: fall into the `CSUB` call with `[0, k]`. -/
 theorem run_mid_zero (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -138,7 +133,6 @@ theorem pcUncPop : Artifact.submissionArtifact.instructionPC 2404 = 3074 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-/-- `UNC` with `neg ≠ 0`: fall into `ADD_LOOP`. -/
 theorem run_unc_add (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) (f : UInt256)
     (hf : f.toNat ≠ 0)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -160,7 +154,6 @@ theorem run_unc_add (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize m
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
 
-/-- `blk3153`: the add round's frame `[p, 0, k]`. -/
 theorem run_addEntry (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
@@ -184,8 +177,6 @@ theorem run_addEntry (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk3157a`: one limb of the add pass, up to `OR`, with the loop pointer
-`p` abstract. -/
 theorem run_addBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize msize k j : Nat)
     (rest : List UInt256)
     (hn32 : n ≤ 8) (hj : j < n) (hpv : p.toNat = 2112 + 32 * (n - 1 - j))
@@ -237,7 +228,6 @@ theorem run_addBodyA (s : State) (mem : ByteArray) (p : UInt256) (n bsize esize 
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.ofNat_sub_ofNat, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk3157b` with limbs to go: pointer step and back to the inner loop head. -/
 theorem run_addTail_go (s : State) (mm : ByteArray) (c p p' : UInt256)
     (n bsize esize msize k : Nat) (rest : List UInt256)
     (hp' : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 + p = p')
@@ -268,7 +258,6 @@ theorem run_addTail_go (s : State) (mm : ByteArray) (c p p' : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk3157b` after the last limb: pointer step and fall into the tail. -/
 theorem run_addTail_last (s : State) (mm : ByteArray) (c p p' : UInt256)
     (n bsize esize msize k : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1017)
@@ -299,7 +288,6 @@ theorem run_addTail_last (s : State) (mm : ByteArray) (c p p' : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk3157c`: the five padding `JUMPDEST`s between the add exit test and the tail. -/
 theorem run_addPad (s : State) (mm : ByteArray) (c p' : UInt256)
     (n bsize esize msize k : Nat) (rest : List UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -322,7 +310,6 @@ theorem run_addPad (s : State) (mm : ByteArray) (c p' : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
 
-/-- `blk3192` without a carry out of `TN`: another round. -/
 theorem run_addTail_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hout : addOut mem n = UInt256.ofNat 0)
@@ -355,7 +342,6 @@ theorem run_addTail_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk3192` with a carry out of `TN`: the value is non-negative, go to `SUB_CHECK`. -/
 theorem run_addTail_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hout : addOut mem n = UInt256.ofNat 1)
@@ -389,7 +375,6 @@ theorem run_addTail_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk3204` with `TN = 0`: jump to the `CSUB` call with `[TN, k]`. -/
 theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (htn : (MachineState.readWord mem 2080).toNat = 0)
@@ -419,9 +404,6 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
 
 
 
-/-- `blk3253`: `k := k - 1` (`NOT ADD` on the zero above `k`), then back to the loop head while
-`k - 1 ≠ 0`.  The `CSUB` call this block used to make is the identity on every reachable state
-(`repair_lt_mm`), so the artifact no longer makes it. -/
 theorem run_csubCall (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hk : 2 ≤ k) (hk32 : k ≤ 32)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -449,7 +431,6 @@ theorem run_csubCall (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk3253` on the last step: the counter reaches zero and the `JUMPI` falls through. -/
 theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253
@@ -471,7 +452,6 @@ theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-/-- `blk3253x`: the loop exit jumps to `SHIFT_DONE`. -/
 theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hrun : s.halt = .Running) :
@@ -491,9 +471,6 @@ theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk2764` (`E5`): with a word-sized exponent (`esize ≠ 1`) the squaring flag is
-zero, the counter is the outer `n` itself, and the scratch slot takes the
-unrolled-conversion entry `2940 + 116·[n = 4]`. -/
 theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -585,8 +562,6 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Nat.and_zero, Nat.zero_and, UInt256.toNat, hback3032, hback2899])
   all_goals (first | rfl | decide)
 
-/-- `blk2764` (`E5`), E3 arm: a one-byte exponent equal to `3` on a 4/8-limb
-width sets the squaring flag and halves the loop counter. -/
 theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -700,8 +675,6 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Nat.and_zero, Nat.zero_and, UInt256.toNat, hback3032, hback2899, hmodif, hmodl, hb3m])
   all_goals (first | rfl | decide)
 
-/-- `blk2764` (`E5`), slow-exponent arm: a one-byte exponent whose single byte
-is not `3` leaves the squaring flag at zero and the loop counter at `n`. -/
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -841,7 +814,6 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-/-- Followup-PC facts for the shift-done, cleanup and stub blocks. -/
 @[simp] private theorem pc2701 : Artifact.submissionArtifact.instructionPC 2462 = 3153 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 @[simp] private theorem pc2702 : Artifact.submissionArtifact.instructionPC 2463 = 3156 := by
@@ -913,8 +885,6 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 @[simp] private theorem pc4411 : Artifact.submissionArtifact.instructionPC 4430 = 5543 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl
 
-/-- `blk3346` with the squaring flag clear: drop the counter and jump to the
-cleanup tail. -/
 theorem run_shiftDone_check (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
@@ -939,9 +909,6 @@ theorem run_shiftDone_check (z : UInt256) (s : State) (mem : ByteArray) (n bsize
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `blk5444`: sixteen `POP`s leave the exit slot `z = d` above the outer frame, and
-`PUSH2 0989 ADD JUMP` jumps to `2441 + d`: the exponent dispatcher for `d = 0` (`E5`'s slot)
-and `e3go` at 2471 for `d = 28` (set by the E3 phase switch). -/
 theorem run_cleanup (s : State) (mem : ByteArray) (n bsize esize msize d target : Nat)
     (htarget : 2317 + d = target) (hlt : target < 2 ^ 256)
     (hdest : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode target = true)

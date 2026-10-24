@@ -44,7 +44,6 @@ theorem run_gate (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List 
       haN,Nat.add_assoc,Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,hc2,hc3,hc4,UInt256.isTrue,hz,hjump]
 
-#print axioms run_gate
 
 def copyProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD,
@@ -80,5 +79,4 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
     State.activeWordsAfterUInt256,State.activeWordsAfterUInt256_2,hactS,hactD,hactT,hc1,Nat.add_assoc,
     Challenge.EvmProof.Word.word_toNat_ofNat,List.exchange]
 
-#print axioms run_copy
 end Challenge.Modexp.Submission.Proofs.Fast.LazyGate

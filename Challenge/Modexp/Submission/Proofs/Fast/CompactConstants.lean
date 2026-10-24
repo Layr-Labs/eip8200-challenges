@@ -6,8 +6,6 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 
 open EvmSemantics
 
-/-- Closed word identities for the compact constants in cold paths.
-These are used locally by trace proofs and carry no global simp attributes. -/
 theorem notZero : UInt256.lnot (0 : UInt256) =
     (115792089237316195423570985008687907853269984665640564039457584007913129639935 : UInt256) := by
   decide

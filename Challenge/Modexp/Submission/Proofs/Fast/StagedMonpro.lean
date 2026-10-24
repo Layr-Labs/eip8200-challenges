@@ -598,5 +598,4 @@ theorem monpro_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
       (rowsMem (mpZeroed s mem (p + 2)) pa pb (p + 2) (p + 2)) 2112 (p + 2))
     hmR rfl htn1 hmpos hlt
 
-#print axioms monpro_represents
 end Challenge.Modexp.Submission.Proofs.Fast.StagedMonpro

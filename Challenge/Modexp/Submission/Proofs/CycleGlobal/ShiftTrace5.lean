@@ -1,0 +1,263 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftTrace4
+
+noncomputable section
+set_option warningAsError false
+set_option maxRecDepth 40000
+set_option maxHeartbeats 8000000
+
+/-!
+# The shift loop and the whole hit path
+
+`gasSteps_hitPath` runs from the dispatcher entry to `BDONE`; `gasSteps_missPath`
+runs from the dispatcher entry to the old `r0` block.  The value facts the
+exponent phase needs at `BDONE` are collected in `hitFacts`.
+-/
+
+namespace CycleSubmission.Global.Fast.Shift
+open Challenge.Modexp
+open Challenge.Modexp.Submission.Proofs
+open Challenge.Modexp.Submission.Proofs.Bytecode
+open Challenge.Modexp.Submission.Proofs.Fast
+open Challenge.Modexp.Submission.Proofs.Fast.Shift
+
+
+open EvmSemantics
+open EvmSemantics.EVM
+open Challenge.Modexp.Submission.Proofs
+open Challenge.Modexp.Submission.Proofs.Fast
+open Challenge.Modexp.Submission.Proofs.Bytecode
+
+/-! ## Value facts feeding the trace (proved in `ShiftModel`) -/
+
+/-- The repair-loop facts of one step, from the step's arithmetic. -/
+theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
+    (htop : Limbs.radix ^ n < 2 * mm)
+    (hmod : Model.FastRepresents mem 0 n mm)
+    (hneg : Model.FastRepresents mem NEG n (Limbs.radix ^ n - mm))
+    (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) (hpre : PreOK mem) :
+    RepairFacts
+      (midMem (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n)))
+      n mm
+      (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
+        (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) :=
+  (step_spec mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr hpre).1
+
+/-- The estimator words survive the cache store, which writes at 1698 -- two bytes above
+`PRE_DINV`'s word, which ends at 1696. -/
+theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
+    PreOK (ShiftCacheModel.cacheMem mem n) := by
+  obtain ⟨h1, h2, h3, h4, h5⟩ := h
+  have hread : ∀ a : Nat, a + 32 ≤ 1698 →
+      MachineState.readWord (ShiftCacheModel.cacheMem mem n) a = MachineState.readWord mem a := by
+    intro a ha
+    show MachineState.readWord (Exp.storeWord mem 1698 _) a = _
+    unfold Exp.storeWord
+    exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
+  have hz := hread 0 (by omega)
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · rw [hread PRE_L (by simp only [PRE_L]; omega), hz]; exact h1
+  · rw [hread PRE_DODD (by simp only [PRE_DODD]; omega), hz]; exact h2
+  · rw [hread PRE_X (by simp only [PRE_X]; omega), hz]; exact h3
+  · rw [hread PRE_BMOD (by simp only [PRE_BMOD]; omega), hz]; exact h4
+  · rw [hread PRE_DINV (by simp only [PRE_DINV]; omega), hz]; exact h5
+
+/-- The configuration words survive a step. -/
+theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hf : Exp.Frame mem n bsize minv) : Exp.Frame (stepMem mem n mm) n bsize minv where
+  s32 := by
+    rw [stepMem_readWord_disjoint mem n mm 2688 hn
+      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.s32
+  minvW := by
+    rw [stepMem_readWord_disjoint mem n mm 2720 hn
+      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.minvW
+  ml := by
+    rw [stepMem_readWord_disjoint mem n mm 2752 hn
+      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.ml
+  tl := by
+    rw [stepMem_readWord_disjoint mem n mm 2784 hn
+      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.tl
+  eoff := by
+    rw [stepMem_readWord_disjoint mem n mm 2656 hn
+      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.eoff
+
+theorem stepInv_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (inv : StepInv mem n bsize mm minv) : StepInv (stepMem mem n mm) n bsize mm minv where
+  pre := PreOK_stepMem mem n mm hn hn32 inv.pre
+  frame := frame_stepMem hn hn32 inv.frame
+  modulus := fastRepresents_stepMem mem n mm 0 n mm hn
+    ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩ inv.modulus
+  neg := fastRepresents_stepMem mem n mm NEG n _ hn
+    ⟨Or.inr (by unfold NEG; omega), Or.inl (by unfold NEG; omega), Or.inl (by unfold NEG; omega)⟩
+    inv.neg
+  cache := ShiftCacheModel.cache_survives_step mem n mm hn hn32 inv.cache
+
+theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (inv : StepInv mem n bsize mm minv) :
+    ∀ i, StepInv (stepMems mem n mm i) n bsize mm minv := by
+  intro i
+  induction i with
+  | zero => exact inv
+  | succ i ih => exact stepInv_stepMem hn hn32 ih
+
+/-! ## The shift loop -/
+
+/-! ## The whole hit path -/
+
+/-- Memory after the raw base has been reduced by the first `CSUB`. -/
+def m1Of (mem input : ByteArray) (n : Nat) : ByteArray :=
+  ShiftProducerCanonical.canonicalMemory mem input n
+
+/-- Words at or above `ACC + 32 n` that `hitMem` and the first `CSUB` leave
+alone, apart from `BASE` and `SUBB`. -/
+theorem m1_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr)) :
+    MachineState.readWord (m1Of mem input n) addr = MachineState.readWord mem addr :=
+  ShiftProducerCanonical.canonical_readWord mem input n addr hn hn32 hdisj
+
+/-- Memory at the shift loop entry. -/
+def m2Of (mem input : ByteArray) (n : Nat) : ByteArray :=
+  ShiftCacheModel.cacheMem (preMem (negStep (m1Of mem input n) n n).memory) n
+
+/-- Memory at `BDONE`. -/
+def hitFinalMem (mem input : ByteArray) (n mm : Nat) : ByteArray :=
+  stepMems (m2Of mem input n) n mm n
+
+/-- The shift-reduce route leaves `NEG` holding `radix^n - mm`: the loop never writes it.
+The `MCOPY` at the loop exit copies that word block into `R1`, and on this route
+`TopBitSet` makes `radix^n - mm` equal to `radix^n % mm`. -/
+theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hmpos : 0 < mm) (hodd : mm % 2 = 1) (hmod : Model.FastRepresents mem 0 n mm) :
+    Model.FastRepresents (hitFinalMem mem input n mm) NEG n (Limbs.radix ^ n - mm) := by
+  have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
+    refine (Model.fastRepresents_congr ?_ mm).2 hmod
+    intro i hi
+    exact m1_readWord_disjoint mem input n _ (by omega) hn32
+      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
+  have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
+    unfold m2Of
+    refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
+    exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+      (by unfold NEG; omega)
+      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
+  exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
+
+/-- The base value the first `CSUB` leaves in the retained `TS`: `b mod m`. -/
+theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hmpos : 0 < mm) (hodd : mm % 2 = 1)
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
+    Model.FastRepresents (m1Of mem input n) 2112 n
+      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
+  ShiftProducerCanonical.canonical_base mem input n mm hn hn32 hmpos hodd hmod htop htn0
+
+theorem m1_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hmpos : 0 < mm) (hodd : mm % 2 = 1)
+    (hmod : Model.FastRepresents mem 0 n mm) (htop : R1.TopBitSet mem)
+    (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
+    Model.FastRepresents (m1Of mem input n) 256 n
+      (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
+  ShiftProducerCanonical.canonical_acc mem input n mm hn hn32 hmpos hodd hmod htop htn0
+
+theorem m2_readWord_disjoint (mem input : ByteArray) (n addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
+    (hdisj : (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ PRE_L ∨ PRE_DINV + 66 ≤ addr) ∧
+      (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
+      (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr))
+    (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
+    MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr := by
+  have hpre : addr + 32 ≤ PRE_L ∨ PRE_DINV + 32 ≤ addr := by
+    rcases hdisj.2.2.2.1 with h | h
+    · exact Or.inl h
+    · exact Or.inr (by omega)
+  unfold m2Of
+  rw [ShiftCacheModel.read_disjoint _ n addr (by
+    rcases hdisj.2.2.2.1 with h | h
+    · left; unfold PRE_L at h; omega
+    · right; unfold PRE_DINV at h; omega)]
+  rw [preMem_readWord_disjoint _ addr hpre h2720,
+    negStep_readWord_disjoint _ n addr hdisj.2.2.1 n le_rfl]
+  exact m1_readWord_disjoint mem input n addr hn hn32 ⟨hdisj.1, hdisj.2.1, hdisj.2.2.2.2⟩
+
+/-- The step invariant at the shift loop entry. -/
+theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
+    (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
+    (hframe : Exp.Frame mem n bsize 0) (hmod : Model.FastRepresents mem 0 n mm)
+    (hminvDef : minv = Setup.negWord (Setup.newton8 (mm % Limbs.radix))) :
+    StepInv (m2Of mem input n) n bsize mm minv := by
+  have hm2high : ∀ addr, 2656 ≤ addr → (addr + 32 ≤ 2720 ∨ 2752 ≤ addr) →
+      MachineState.readWord (m2Of mem input n) addr = MachineState.readWord mem addr :=
+    fun addr haddr h2720 => m2_readWord_disjoint mem input n addr (by omega) hn32
+      ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by unfold NEG; omega),
+        Or.inr (by unfold PRE_DINV; omega), Or.inr (by omega), Or.inr (by omega)⟩ h2720
+  -- `V_MINV` is no longer set up before the dispatcher: the hit arm stores `-n0⁻¹`
+  -- (`preMem`) from the modulus low limb `n0 = mem[V_ML]`.
+  have hminvW : MachineState.readWord (m2Of mem input n) 2720 = UInt256.ofNat minv := by
+    have hX : ∀ addr, (addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) →
+        (addr + 32 ≤ NEG ∨ NEG + 32 * n ≤ addr) →
+        (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) →
+        (addr + 32 ≤ 2080 ∨ 2112 + 32 * n ≤ addr) →
+        (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) →
+        MachineState.readWord (negStep (m1Of mem input n) n n).memory addr =
+          MachineState.readWord mem addr := by
+      intro addr h1 h2 h3 h4 h5
+      rw [negStep_readWord_disjoint _ n addr h2 n le_rfl]
+      exact m1_readWord_disjoint mem input n addr (by omega) hn32 ⟨h1, h3, h5, h4⟩
+    unfold m2Of
+    rw [ShiftCacheModel.read_disjoint _ n 2720 (Or.inr (by omega)), preMem_readWord_minv,
+      hX 2752 (Or.inr (by omega)) (Or.inr (by unfold NEG; omega)) (Or.inr (by omega))
+        (Or.inr (by omega)) (Or.inr (by omega)),
+      hframe.ml, Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (show 32 * n - 32 < 2 ^ 256 by omega),
+      hX (32 * n - 32) (Or.inl (by omega)) (Or.inl (by unfold NEG; omega)) (Or.inl (by omega))
+        (Or.inl (by omega)) (Or.inl (by omega)),
+      lowLimb_word mem n mm (by omega) hmod, newton8W_eq, Setup.neg_word, hminvDef]
+  have hframe2 : Exp.Frame (m2Of mem input n) n bsize minv :=
+    ⟨by rw [hm2high 2688 (by omega) (Or.inl (by omega))]; exact hframe.s32,
+     hminvW,
+     by rw [hm2high 2752 (by omega) (Or.inr le_rfl)]; exact hframe.ml,
+     by rw [hm2high 2784 (by omega) (Or.inr (by omega))]; exact hframe.tl,
+     by rw [hm2high 2656 (by omega) (Or.inl (by omega))]; exact hframe.eoff⟩
+  have hmod1 : Model.FastRepresents (m1Of mem input n) 0 n mm := by
+    refine (Model.fastRepresents_congr ?_ mm).2 hmod
+    intro i hi
+    exact m1_readWord_disjoint mem input n _ (by omega) hn32
+      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
+  have hmod2 : Model.FastRepresents (m2Of mem input n) 0 n mm := by
+    unfold m2Of
+    refine ShiftCacheModel.represents_cache _ n 0 n _ (Or.inl (by omega)) ?_
+    exact fastRepresents_preMem _ 0 n mm (Or.inl (by unfold PRE_L; omega)) (by omega)
+      (fastRepresents_negStep _ n 0 n mm (Or.inl (by unfold NEG; omega)) hmod1 n le_rfl)
+  have hneg2 : Model.FastRepresents (m2Of mem input n) NEG n (Limbs.radix ^ n - mm) := by
+    unfold m2Of
+    refine ShiftCacheModel.represents_cache _ n NEG n _ (Or.inl (by unfold NEG; omega)) ?_
+    exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
+      (by unfold NEG; omega)
+      (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
+  exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n,
+    PreOK_cacheMem _ n (PreOK_preMem _)⟩
+
+/-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
+
+The miss arm seeds `R1 = 0x0400` with 1 and calls the conversion with the old `r0`
+block (pc 1430) as its return address, so the conversion runs only on this route.  The
+recogniser-hit route instead gets its `R1` from the `MCOPY` at the end of the shift-reduce
+loop (`ShiftTrace3.run_shiftDone`). -/
+def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (hn32 : n ≤ 8) (e : Env s) (hb : bsize < 2 ^ 256) (htop : R1.TopBitSet mem)
+    (hmiss : ¬ FullBase.Matches mem n bsize) :
+    Challenge.EvmProof.GasSteps (dispState s mem n bsize esize msize)
+      (bigCState s mem n bsize esize msize) := by
+  have h := soundEnv blk2862 e
+    (run_dispatch s mem n bsize esize msize hn32 hb htop e.code e.run)
+  rw [if_neg hmiss] at h
+  exact h
+
+end CycleSubmission.Global.Fast.Shift

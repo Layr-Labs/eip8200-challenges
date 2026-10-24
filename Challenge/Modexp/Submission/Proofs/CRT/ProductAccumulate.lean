@@ -127,15 +127,5 @@ theorem fixedModulusRoom (k H : Nat) (hk : k ≤ 19)
   norm_num [residueModulus, wordRadix] at *
   omega
 
-#print axioms runLow
-#print axioms runResidue
-#print axioms lowAccumulate
-#print axioms residueAccumulate
-#print axioms appendInvariant
-#print axioms doubleInvariant
-#print axioms accumulateInvariant
-#print axioms seededInvariant
-#print axioms doubleWordInvariant
-#print axioms fixedModulusRoom
 
 end HistoricalSearch.ProductAccumulate

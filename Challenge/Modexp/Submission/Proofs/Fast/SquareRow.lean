@@ -31,8 +31,6 @@ def environment (s : State)
       rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
-/-- `Block.steps` with the symbolic run first, so that the block's start state is read off
-the run (used on record-update states). -/
 def stepsOf {pc : Nat} {instructions : List Instr}
     (block : Block Artifact.submissionArtifact .Osaka pc instructions) {s t : State}
     (hrun' : runInstructions instructions s = some t) (hpc : s.pc = UInt256.ofNat pc)

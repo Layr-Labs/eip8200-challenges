@@ -11,7 +11,6 @@ open EvmSemantics
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CarryScratchAgreement
 
-/-- Overflow is carried in a stack slot, rather than the scratch word. -/
 def overflow (mem : ByteArray) (c : UInt256) : UInt256 :=
   UInt256.lt (MachineState.readWord mem 2080 + c) c
 

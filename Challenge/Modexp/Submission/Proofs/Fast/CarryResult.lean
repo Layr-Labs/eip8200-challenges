@@ -30,7 +30,6 @@ theorem selectedRows_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
   · exact readWord_rowsCarry mem pa pb n addr hn hout i
   · exact rowsMem_readWord_outside mem pa pb n i addr hn hout
 
-/-- The memory a whole `MonPro(pa, pb) → pd` call leaves behind. -/
 def monproMem (s : State) (mem : ByteArray) (pa pb n pdst : Nat) : ByteArray :=
   Csub.csResultMemory (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst
 
@@ -38,14 +37,11 @@ theorem monproMem_def (s : State) (mem : ByteArray) (pa pb n pdst : Nat) :
     monproMem s mem pa pb n pdst =
       Csub.csResultMemory (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst := rfl
 
-/-- `gasSteps_monproFull` ends with exactly this memory. -/
 theorem csReturnedState_memory_monproMem (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) :
     (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
       rest).memory = monproMem s mem pa pb n pdst.toNat := rfl
 
-/-- Every word outside `SUBB`, outside the CIOS scratch `[2048, 2624)` and
-outside the destination survives a `MONPRO` call. -/
 theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -59,8 +55,6 @@ theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     mpZeroed_readWord_outside s (inputMemory mem pa n) n addr (by omega),
     read_inputMemory_outside mem pa n addr hscratch]
 
-/-- Everything at or above `2624` survives, given only that the destination is
-one of the named blocks below `T_ = 2048`. -/
 theorem monproMem_readWord_high (s : State) (mem : ByteArray)
     (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdst : pdst + 32 * n ≤ 2048) (haddr : 2624 ≤ addr) :
@@ -69,8 +63,6 @@ theorem monproMem_readWord_high (s : State) (mem : ByteArray)
   monproMem_readWord_outside s mem pa pb n pdst addr hn hn32 (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr (by omega))
 
-/-- The five configuration words `V_S32`, `V_MINV`, `V_ML`, `V_TL`, `V_EOFF`
-are unchanged by a `MONPRO` call. -/
 theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hdst : pdst + 32 * n ≤ 2048) :
     MachineState.readWord (monproMem s mem pa pb n pdst) 2688 =
@@ -89,8 +81,6 @@ theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
    monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2656 hn hn32 hdst (by omega)⟩
 
-/-- Every represented block disjoint from `SUBB`, from the CIOS scratch and
-from the destination survives a `MONPRO` call. -/
 theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)

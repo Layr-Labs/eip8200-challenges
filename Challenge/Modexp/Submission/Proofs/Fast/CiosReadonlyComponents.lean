@@ -16,9 +16,7 @@ open Monpro
 open CiosEndAroundCarry
 
 
-/-- Physical read-only words retained across all CIOS rows. -/
 structure ReadonlyCache (mem : ByteArray) (n : Nat) (tl inv m0 : UInt256) : Prop where
-  /-- TL: the frame's `tl` slot holds `mem[0xe0]` (the low modulus word for eight limbs). -/
   lowAddress : tl = MachineState.readWord mem 224
   inverse : inv = MachineState.readWord mem 2720
   modulusLow : m0 = MachineState.readWord mem (16*n+32)

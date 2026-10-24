@@ -64,6 +64,5 @@ theorem run_product (s : State) (pc x y : UInt256)
   rw [high_eq] at hh
   simpa only [productProgram,advancePC] using runInstructions_append_some _ _ _ _ _ hm hh
 
-#print axioms run_product
 
 end Challenge.Modexp.Submission.Proofs.Fast.CiosNoDummyCarry

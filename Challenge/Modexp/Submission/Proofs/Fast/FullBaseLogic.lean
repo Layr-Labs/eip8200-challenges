@@ -16,7 +16,6 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 
-/-- The exact semantic predicate tested by the branch. -/
 def Matches (memory : ByteArray) (n bsize : Nat) : Prop :=
   bsize = 32 * n ∧ R1.TopBitSet memory
 
@@ -24,12 +23,9 @@ instance (memory : ByteArray) (n bsize : Nat) : Decidable (Matches memory n bsiz
   unfold Matches
   infer_instance
 
-/-- Memory after copying the complete `n`-word base from calldata to `ACC`. -/
 def copyBaseMem (memory input : ByteArray) (n : Nat) : ByteArray :=
   MachineState.writeBytes memory (MachineState.readPadded input 96 (32 * n)) 256
 
-/-- A word wholly inside a copied region is the corresponding source word.
-This is the calldata-to-memory analogue of `Csub.readWord_mcopy`. -/
 theorem readPadded_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
     (h : 32 * i + 32 ≤ sz) :
     MachineState.readPadded (MachineState.writeBytes memory
@@ -60,7 +56,6 @@ theorem readWord_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
   unfold MachineState.readWord
   rw [readPadded_copyFrom memory source src dst sz i h]
 
-/-- The copied block represents the calldata base as an `n`-word integer. -/
 theorem copyBaseMem_represents (memory input : ByteArray) (n : Nat) :
     Model.FastRepresents (copyBaseMem memory input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
@@ -71,7 +66,6 @@ theorem copyBaseMem_represents (memory input : ByteArray) (n : Nat) :
   rw [readWord_copyFrom memory input 96 256 (32 * n) (n - 1 - k) (by omega)]
   exact Model.readLimb_of_fastRepresents hsource hk
 
-/-- The copy leaves a represented block outside `ACC` unchanged. -/
 theorem copyBaseMem_preserves (memory input : ByteArray) (n ptr count value : Nat)
     (hdisjoint : 256 + 32 * n ≤ ptr ∨ ptr + 32 * count ≤ 256)
     (hrep : Model.FastRepresents memory ptr count value) :
@@ -82,7 +76,6 @@ theorem copyBaseMem_preserves (memory input : ByteArray) (n ptr count value : Na
     exact hdisjoint
   · exact hrep
 
-/-- A disjoint word is unchanged by the calldata copy. -/
 theorem copyBaseMem_readWord_disjoint (memory input : ByteArray) (n addr : Nat)
     (hdisjoint : addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) :
     MachineState.readWord (copyBaseMem memory input n) addr =
@@ -91,7 +84,6 @@ theorem copyBaseMem_readWord_disjoint (memory input : ByteArray) (n addr : Nat)
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   simpa only [Challenge.EvmProof.Memory.readPadded_size] using hdisjoint
 
-/-- All words above the ACC block, including configuration words, survive. -/
 theorem copyBaseMem_readWord_high (memory input : ByteArray) (n addr : Nat)
     (hn32 : n ≤ 8) (haddr : 512 ≤ addr) :
     MachineState.readWord (copyBaseMem memory input n) addr =
@@ -110,7 +102,6 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
       (Nat.div_lt_iff_lt_mul (by omega)).2 (by omega)
     omega
 
-/-- The ACC copy stays inside the already allocated fast-path memory. -/
 theorem copyBase_activeWords (s : State) (n : Nat)
     (hn32 : n ≤ 8) (hactive : 88 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 256 (32 * n) = s.activeWords := by
@@ -119,13 +110,11 @@ theorem copyBase_activeWords (s : State) (n : Nat)
   · exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
   · omega
 
-/-- In particular, the modulus block survives the calldata copy. -/
 theorem copyBaseMem_modulus {memory input : ByteArray} {n mm : Nat}
     (hn32 : n ≤ 8) (hmod : Model.FastRepresents memory 0 n mm) :
     Model.FastRepresents (copyBaseMem memory input n) 0 n mm :=
   copyBaseMem_preserves memory input n 0 n mm (Or.inr (by omega)) hmod
 
-/-- A full-width calldata value fits below the Montgomery radix. -/
 theorem baseValue_lt_radix (input : ByteArray) (n : Nat) :
     Precompile.bytesToNatPadded input 96 (32 * n) < Limbs.radix ^ n := by
   have h := Limbs.byteValue_fits_limbs input 96 (32 * n)
@@ -134,8 +123,6 @@ theorem baseValue_lt_radix (input : ByteArray) (n : Nat) :
     omega
   rwa [hcount] at h
 
-/-- Under the top-bit guard, the copied value meets `ADDMOD`/`CSUB`'s
-single-subtraction bound. -/
 theorem baseValue_lt_two_mul {memory input : ByteArray} {n mm : Nat}
     (hn : 1 ≤ n) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents memory 0 n mm) (htop : R1.TopBitSet memory) :

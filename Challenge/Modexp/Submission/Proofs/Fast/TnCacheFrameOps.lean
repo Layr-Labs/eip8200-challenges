@@ -22,8 +22,6 @@ def advanceShort : List Instr :=
   [.push 1 31, .op .NOT, .op .ADD, .op (.Dup ⟨2, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op .GT, .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
 
-/-- zneg2: the row pointer counts up to zero through negatives (`PUSH1 20 ADD DUP1 DUP3 JUMPI`):
-the next row while it is nonzero. -/
 def advance : List Instr :=
   [.push 1 32, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
 
@@ -88,10 +86,8 @@ theorem run_advanceShort (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : 
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- P1: the carry cache rides in the thirteenth frame word; `PUSH0; SWAP13; POP` clears it. -/
 def reset13 : List Instr := [.push 0 0, .op (.Swap ⟨12, by decide⟩), .op .POP]
 
-/-- P1: `DUP13; PUSH2 2080; MSTORE` flushes the carry cache from the thirteenth frame word. -/
 def flush13 : List Instr := [.op (.Dup ⟨12, by decide⟩), .push 2 2080, .op .MSTORE]
 
 theorem run_reset13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn : UInt256)
@@ -127,10 +123,4 @@ theorem run_flush13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-#print axioms run_reset
-#print axioms run_flush
-#print axioms run_advance
-#print axioms run_advanceShort
-#print axioms run_reset13
-#print axioms run_flush13
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheFrameOps

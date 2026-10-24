@@ -40,29 +40,22 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareModel
 
 /-! ## Programs -/
 
-/-- `JUMPDEST DUP1 MLOAD DUP1 SWAP15 PUSH0` (idx 3559..3698). -/
 def programA : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2336, .op .SUB, .op .MLOAD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .push 0 0]
 
-/-- `DUP2 ADD DUP2 DUP2 ADD SWAP2 DUP9 DUP3` (idx 3700..3721). -/
 def programB1 : List Instr :=
   [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD]
 
 
 
 
-/-- `PUSH1 0x26 DUP7 ADD SWAP6 JUMP` (idx 3840..3840). -/
 def programB4 : List Instr :=
   [.push 1 37, .op (.Dup ⟨6, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .op .JUMP]
 
-/-- Fuse the diagonal high-word borrow with the stored-low-word carry.
-The two bytes it saves are re-placed as unreachable `JUMPDEST`s after the row's final
-`JUMP` (pc 5032..5032), so every pc and instruction index from 43 (idx 3720) on is unchanged. -/
 def programB23 : List Instr :=
   [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB, .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE, .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
 
-/-- Everything after the `SGT` (idx 3700..3840). -/
 def programB : List Instr :=
   (programB1 ++ programB23) ++ programB4
 
@@ -116,11 +109,9 @@ theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
     List.exchange, hjump]
   rfl
 
-/-- The fused borrow up to the store address (pc 4997..5014). -/
 def programB23a : List Instr :=
   [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB]
 
-/-- Load/add/store and the two-subtraction carry (pc 5014..2336). -/
 def programB23b : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
    .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,
@@ -192,7 +183,6 @@ theorem run_B23b (s : State) (tA d lo b2 P : UInt256)
     List.exchange, State.activeWordsAfterUInt256, hact]
   decide
 
-/-- The fused program preserves the original carry formula for arbitrary words. -/
 theorem run_B23 (s : State) (x f M b2 P : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1013)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -214,15 +204,12 @@ theorem run_B23 (s : State) (x f M b2 P : UInt256)
   rw [programB23_split, runInstructions_append_some _ _ _ _ _ ha hb, carryReassociate, gt_eq_lt,
     mul_comm' f x]
 
-/-- The word after the prologue: `lo = x * (x + tb)`. -/
 abbrev loOf (x tb : UInt256) : UInt256 := x * (x + tb)
 
-/-- The high word as the machine computes it (with the modulus word `M`). -/
 abbrev hiOf (x tb M : UInt256) : UInt256 :=
   ((UInt256.mulMod x (x + tb) M - UInt256.lt (x + tb) x) -
     UInt256.lt (UInt256.mulMod x (x + tb) M - UInt256.lt (x + tb) x) (x * (x + tb))) - x * (x + tb)
 
-/-- Block B on a generic stack: from the `SGT` result `tb` to the jump to `ent`. -/
 theorem run_B (s : State) (tb x P hd w3 ent w5 M : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (hact : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -258,7 +245,6 @@ theorem run_B (s : State) (tb x P hd w3 ent w5 M : UInt256)
 private theorem two256 : (2:Nat)^256 =
     115792089237316195423570985008687907853269984665640564039457584007913129639936 := by norm_num
 
-/-- `c - q` with the zneg2 row pointer `q = -32·(n - i)`, `i < n`. -/
 theorem sub_neg_toNat (c n i : Nat) (hi : i < n) (hn : n ≤ 8) (hc : c ≤ 4096) :
     (UInt256.ofNat c - UInt256.ofNat (2^256 - 32*(n-i))).toNat = c + 32*(n-i) := by
   rw [Challenge.EvmProof.Word.word_toNat_sub, Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -268,13 +254,11 @@ theorem sub_neg_toNat (c n i : Nat) (hi : i < n) (hn : n ≤ 8) (hc : c ≤ 4096
       115792089237316195423570985008687907853269984665640564039457584007913129639936 by omega)]
   omega
 
-/-- zloop + zneg2: the square row pointer is `q = -32·(n - i)`; `0x920 - q` is the address of `a_i`. -/
 theorem ptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
     (UInt256.ofNat 2336 - UInt256.ofNat (2^256 - 32*(n-i))).toNat = aAddr n i := by
   rw [sub_neg_toNat 2336 n i hi hn (by omega), aAddr]
   omega
 
-/-- ... and `0x820 - q` is the address of `t_i`. -/
 theorem tptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
     (UInt256.ofNat 2080 - UInt256.ofNat (2^256 - 32*(n-i))).toNat = tAddr n i := by
   rw [sub_neg_toNat 2080 n i hi hn (by omega), tAddr]
@@ -283,6 +267,4 @@ theorem tptr_toNat (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
 theorem push0_eq : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
 
-#print axioms run_A
-#print axioms run_B
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheSquareTrace

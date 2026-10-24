@@ -12,13 +12,11 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
-/-- The shared three-cell suffix includes its real entry JUMPDEST. -/
 def suffix : List Instr :=
   (([.op .JUMPDEST] ++ TnCacheExtraTrace.extraProgram 1 2176 2208) ++
     TnCacheExtraTrace.extraProgram 2 2144 2176) ++
     CiosCachedLast.l2LastProgram 0 0 2112 2144
 
-/-- The first four cells of the eight-limb reduction reach the shared suffix. -/
 def prefixProgram : List Instr :=
   ((([.op .JUMPDEST] ++ l2Program 10 192 2304 2336) ++
     l2Program 1 160 2272 2304) ++ l2Program 1 128 2240 2272) ++
@@ -101,15 +99,12 @@ theorem run_prefix (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
   have h0123 := runInstructions_append_some _ _ _ _ _ h012 h3
   exact runInstructions_append_some _ _ _ _ _ h0123 h4
 
-#print axioms run_suffix
-#print axioms run_prefix
 
 def fullProgram (n : Nat) : List Instr :=
   if n = 4 then suffix else prefixProgram ++ suffix
 
 def fullSize (n : Nat) : Nat := if n = 4 then 100 else 248
 
-/-- All reduction cells preserve the arbitrary cached carry slot and consume mu. -/
 theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     (n : Nat) (hn : n = 4 ∨ n = 8)
     (pbi hd pb ent tn target tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
@@ -132,5 +127,4 @@ theorem run_full (s : State) (pc : Nat) (mem : ByteArray) (bi mu c0 : UInt256)
     have both := runInstructions_append_some _ _ _ _ _ hp hs
     simpa [fullProgram, fullSize, Nat.add_assoc] using both
 
-#print axioms run_full
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL2Chain

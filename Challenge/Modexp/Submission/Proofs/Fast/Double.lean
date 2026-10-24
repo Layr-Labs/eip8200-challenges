@@ -46,26 +46,21 @@ Every state is stated over an arbitrary carrier `s` and overrides only `pc`,
 `stack` and `memory`; `activeWords` is carried by `s` and never changes here
 because `DOUBLE256` itself contains no memory opcode. -/
 
-/-- The live part of the stack inside the loop: the counter, the block pointer
-and the caller's return address. -/
 def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 :=
   [UInt256.ofNat k, UInt256.ofNat px, ret] ++ rest
 
-/-- Subroutine entry, pc 2038, stack `[px, ret]`. -/
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 794
            stack := [UInt256.ofNat px, ret] ++ rest
            memory := mem }
 
-/-- The loop head `DBL`, pc 1968, with the counter at `k`. -/
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 797
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The `ADDMOD` call, pc 2347, with the frame `[px, px, px, 1931]` pushed. -/
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 817
@@ -73,21 +68,18 @@ def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
                      UInt256.ofNat 804] ++ loopStack px k ret rest
            memory := mem }
 
-/-- The return point, pc 1931, with the counter still at `k`. -/
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 804
            stack := loopStack px k ret rest
            memory := mem }
 
-/-- The loop exit, pc 1984, with the counter at zero. -/
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 1083
            stack := loopStack px 0 ret rest
            memory := mem }
 
-/-- Back at the caller, pc `ret`, with the frame popped. -/
 def doneState (s : State) (mem : ByteArray) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := ret
@@ -110,7 +102,6 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 where `mems i` is the memory after `i` calls.  `Fast.Csub` supplies it; the
 instantiation is `gasSteps_double256_addmod` below. -/
 
-/-- `i` applications of a memory transformer. -/
 def iterMem (f : ByteArray → ByteArray) (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
   | i + 1 => f (iterMem f mem i)
@@ -121,8 +112,6 @@ def iterMem (f : ByteArray → ByteArray) (mem : ByteArray) : Nat → ByteArray
 theorem iterMem_succ (f : ByteArray → ByteArray) (mem : ByteArray) (i : Nat) :
     iterMem f mem (i + 1) = f (iterMem f mem i) := rfl
 
-/-- The indexed loop-head family: after `i` `ADDMOD` calls the counter stands
-at `256 - i`. -/
 def loopFamily (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
     (mems : Nat → ByteArray) (i : Nat) : State :=
   loopState s (mems i) px (256 - i) ret rest
@@ -134,8 +123,6 @@ such steps multiply it by `radix`.  Both facts are stated over an abstract
 step contract so that they compose with `Fast.Csub.addmod_csub_correct`
 without this module depending on it. -/
 
-/-- The doubling invariant: after `i` steps the block at `px` holds
-`x * 2 ^ i mod m`. -/
 theorem iterMem_represents (f : ByteArray → ByteArray) (mem : ByteArray)
     (px n m x : Nat) (hm : 0 < m)
     (hstep : ∀ (mem' : ByteArray) (y : Nat),
@@ -149,8 +136,6 @@ theorem iterMem_represents (f : ByteArray → ByteArray) (mem : ByteArray)
       rw [iterMem_succ, Model.doubleChain_succ]
       exact hstep _ _ ih (Model.doubleChain_lt hm hx i)
 
-/-- **Functional postcondition of `DOUBLE256`.**  The block at `px` goes from
-`x` to `x * radix mod m`. -/
 theorem double256_represents (f : ByteArray → ByteArray) (mem : ByteArray)
     (px n m x : Nat) (hm : 0 < m)
     (hstep : ∀ (mem' : ByteArray) (y : Nat),
@@ -161,12 +146,9 @@ theorem double256_represents (f : ByteArray → ByteArray) (mem : ByteArray)
   have h := iterMem_represents f mem px n m x hm hstep hrep hx 256
   rwa [Model.doubleChain_256 hx] at h
 
-/-- The result is still reduced. -/
 theorem double256_lt (m x : Nat) (hm : 0 < m) : x * Limbs.radix % m < m :=
   Nat.mod_lt _ hm
 
-/-- **Frame condition.**  Every block the `ADDMOD` step leaves alone survives
-all 256 iterations. -/
 theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
     (ptr cnt v : Nat)
     (hpres : ∀ (mem' : ByteArray),
@@ -184,12 +166,9 @@ at pc 2432, and `CSUB` from there to the return jump.  Composing the two gives
 the indexed contract the loop above consumes, with memory transformer
 `dblStep px n`. -/
 
-/-- The memory one `ADDMOD(px, px, px)` call leaves behind. -/
 def dblStep (px n : Nat) (mem : ByteArray) : ByteArray :=
   Csub.csResultMemory (Csub.amResultMemory mem px px n) n px
 
-/-- The three derived variables `ADDMOD` and `CSUB` read: `V_S32 = 0x2480`,
-`V_ML = 0x24C0` and `V_TL = 0x24E0`. -/
 structure Vars (mem : ByteArray) (n : Nat) : Prop where
   s32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)
   ml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)
@@ -199,7 +178,6 @@ theorem loopStack_length (px k : Nat) (ret : UInt256) (rest : List UInt256) :
     (loopStack px k ret rest).length = rest.length + 3 := by
   simp [loopStack]
 
-/-- `ADDMOD` touches nothing at or above `0x2480`. -/
 theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
     MachineState.readWord (Csub.amResultMemory mem pa pb n) addr =
@@ -208,8 +186,6 @@ theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
     Csub.readWord_write_disjoint _ _ _ _ (Or.inr (by omega)),
     Csub.amStep_readWord_disjoint mem pa pb n addr hn (Or.inr (by omega)) n le_rfl]
 
-/-- `CSUB` touches nothing at or above `0x2480` either, as long as its
-destination block stays below. -/
 theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpdst : pdst + 32 * n ≤ 2656) (haddr : 2656 ≤ addr) :
     MachineState.readWord (Csub.csResultMemory mem n pdst) addr =
@@ -237,7 +213,6 @@ theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤
   | zero => exact hv
   | succ i ih => exact vars_dblStep _ px n hn hn32 hpxFit ih
 
-/-- The `CSUB` return state, spelled as the loop's return state. -/
 theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) (hpx : px < 2 ^ 256) :
     Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n (UInt256.ofNat px)
@@ -249,7 +224,6 @@ theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt25
 
 /-! ## Functional correctness against the concrete `ADDMOD` -/
 
-/-- One `ADDMOD(px, px, px)` call doubles the block at `px` modulo `m`. -/
 theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (_hpxLow : 32 * n ≤ px)
     (hm : Model.FastRepresents mem 0 n mm) (hmpos : 0 < mm)
@@ -258,8 +232,6 @@ theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
   Csub.addmod_csub_correct mem px px n x x mm px hn hn32 (by omega) (by omega)
     hx hx hm hmpos (by omega)
 
-/-- One `ADDMOD(px, px, px)` call leaves every block outside the `t`, `SUBB`
-and destination areas alone. -/
 theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n)
     (hdisjT : ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr)
     (hdisjSubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -269,8 +241,6 @@ theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n
   Csub.addmod_csub_preserves_region mem px px n px ptr cnt v hn hdisjT hdisjSubb
     hdisjDst hrep
 
-/-- **The loop invariant.**  After `i` calls the modulus block is intact and
-the block at `px` holds `x * 2 ^ i mod m`. -/
 theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
@@ -288,8 +258,6 @@ theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
         exact dblStep_represents _ px n mm _ hn hn32 hpxFit hpxLow ih.1 hmpos ih.2
           (Model.doubleChain_lt hmpos hxlt i)
 
-/-- **Functional postcondition of `DOUBLE256`.**  The block at `px` goes from
-`x` to `x * radix mod m`. -/
 theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
@@ -300,7 +268,6 @@ theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
     hxlt 256).2
   rwa [Model.doubleChain_256 hxlt] at h
 
-/-- The modulus block survives the whole subroutine. -/
 theorem double256_addmod_modulus (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
@@ -308,8 +275,6 @@ theorem double256_addmod_modulus (mem : ByteArray) (px n mm x : Nat)
     Model.FastRepresents (iterMem (dblStep px n) mem 256) 0 n mm :=
   (iterMem_dblStep_invariant mem px n mm x hn hn32 hpxFit hpxLow hmpos hm hx hxlt 256).1
 
-/-- **Frame condition.**  Every named block outside `T`/`TN`/`TS`, `SUBB` and
-`px` itself survives all 256 iterations. -/
 theorem double256_addmod_preserves (mem : ByteArray) (px n ptr cnt v : Nat)
     (hn : 2 ≤ n)
     (hdisjT : ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr)

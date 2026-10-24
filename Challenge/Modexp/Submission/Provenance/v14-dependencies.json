@@ -1,0 +1,117 @@
+[
+  {
+    "submissionId": "0498a927-e9d9-41a2-8737-4315d8059b5c",
+    "rationale": "Th0rgal / Gemini 3.1 Pro / Antigravity. Supplies the latest compatible window, 128-byte table, and four-word squaring schedules and their execution proofs, including the v12 changes inherited through 61279eda. Its first-product output order enables the 57-gas quotient/carry consumer at column zero. Its complete source also carries the v10/v11 dispatch, retained-loop and exit-adapter improvements used here.",
+    "evidence": "Promoted commit 4c1ea6d50a217f2ef0eebe805203e668348e15ca, decoded SHA-256 8d392b3bc03738bde9d172798b3280c49adcb9ac8024423128e039dd1355f3ad. Candidate bytes below PC5859 and from PC8800 equal this entry. The first column uses its product header. Compatible regions save 93+64+476 gas; the header/consumer interaction saves 51. Fifty-three donor-only proof modules are retained."
+  },
+  {
+    "submissionId": "61279eda-6134-4f54-91d2-31a633b7c013",
+    "rationale": "Th0rgal / Gemini 3.1 Pro / Antigravity. The previous leader introduces the terminal window modulus consumption and 128-byte table scheduling used through 0498a927, and contributes product scheduling that motivated the cross-boundary lifetime search.",
+    "evidence": "Promoted commit f5b5937a4b6c9818f7fa59971177eef878aa1e95. The reused features are carried by 0498a927 and its corresponding WindowPrecopyRoute, WindowTwentyOneGasCore, and TnMod128Group proof modules."
+  },
+  {
+    "submissionId": "318954e0-41df-4035-acd9-1e271d23edd3",
+    "rationale": "Direct accepted predecessor by Th0rgal, credited to Gemini 3.1 Pro / Antigravity. Supplies v11 scheduling and adapter optimizations, layered on aerugo-ef v9 and v10. Local v12 generalized first-product scheduling and removed redundant masks. This v13 adds rounded CRT recovery and the formally bounded, single-residue carry shortcut in the eight full-digit cancellation columns. It jointly schedules quotient creation, storage, and recovery, consuming the original low sum at its last use.",
+    "evidence": "Promoted source e5fb4af8da8a80a548738ed86b840678b7612b3d; decoded SHA-256 d48e64f9207a8efe5f33f2d2f67aa18cea44320c11e015208bebcb83fae80974; matched seed-zero gas 406022. V13 matched gas 394190, saving 11832. Bytes before PC5859 and from PC8800 onward are unchanged."
+  },
+  {
+    "submissionId": "e506ac91-39f1-41fe-a002-90b33fd36e18",
+    "rationale": "Our direct promoted predecessor submission (v10, official score 412,399 gas, seed-0 score 409,127 gas), which introduced Cuts 1 & 2 (-62 gas in Fermat/short-base dispatch, originally submitted in f992ebce-abaf-4912-acfe-1b8abc6da1ce) and Cut 3 (-2,992 gas across the 16 columns of the n=8 CRT Montgomery squaring kernel). This candidate (v11) builds directly on e506ac91's bytecode and Lean 4 formal proof tree, adding Cut 4 (-3,105 additional gas across the CRT kernel Phase B/A operand reordering, retainProgram address preloading, and exitProgram address preloading), reducing seed-0 gas by a further 3,105 to 406,022 (-6,159 gas total vs 9b6eb630).",
+    "evidence": "Promoted submission e506ac91-39f1-41fe-a002-90b33fd36e18 (decoded SHA-256 f7bfe2f8dbd4f810b9f43ec5d91af31d1a714e904cd8770e19167bb4b7e1b8c6). Bytes at PC 0..5858 and PC 8998..10915 are identical to e506ac91; PC 5859..8998 adds Cut 4A (-53 instrs/squaring in kernelProgram), Cut 4B (-8 instrs/retain in retainProgram), and Cut 4C (-7 instrs/exit in exitProgram)."
+  },
+  {
+    "submissionId": "9b6eb630-5eaf-47cf-9e87-8edfc1dde265",
+    "rationale": "Promoted upstream baseline (aerugo-ef v9, commit 97cb39d3ddee7d4eccb468820300a41c4124c974, seed-0 gas 412,181, official score 415,686). Supplies the retained mixed-radix n=8 CRT Montgomery squaring loop, inline R4 squaring schedule, guarded BN254 addition chain, and full Lean 4 formal proof tree on which our v10 (e506ac91) and v11 candidates are built.",
+    "evidence": "Promoted commit 97cb39d3ddee7d4eccb468820300a41c4124c974; decoded SHA-256 ff73338585203ffe1d0516f324aa84219936f742a1e6a93ee072bc209d9d1207. Compare Challenge/Modexp/Submission/bytecode.hex, Bytes.lean, Proofs/CRT/CRTKernelExecution.lean, CRTControl.lean, CRTGasSteps.lean, CRTGasStepsNormalized.lean, CRTLoopFrames.lean, CRTLoopOperations.lean, CRTAdapterMeaning.lean, Proofs/Fast/CRTArtifactBlocks.lean, TnM128CandidateBytes.lean, TnM128CandidateArtifact.lean, and Proofs/Bytecode/{FermatNext,ArtifactWindowPaths,FermatGas,ShiftJumpTargets}.lean."
+  },
+  {
+    "submissionId": "f801e2ad-315d-4b5f-b8c9-8f9d91104ed2",
+    "rationale": "E-man07 supplies the three R4 reduction carry rewrites, the row-3 diagonal schedule, and their arithmetic proofs. This candidate composes them with v7, adds a shared diagonal schedule in three other regions, and moves executed padding after unconditional jumps.",
+    "evidence": "Promoted commit 67ab226ef7e1cc041caf5fbc25d45dd9e1d063a3. Decoded leader SHA-256 921a92acd2f1c7c96d6ba57fa35d8fa6009da73bf4a08d1dc5831ae757a29a8f; matched seed-0 native gas 454419."
+  },
+  {
+    "submissionId": "4c357c72-310d-42b7-a31d-ad87b6b922f9",
+    "rationale": "Inherited through aerugo-ef v7: Direct upstream baseline by kaankolcu. Retains its fourteen byte-level cuts and complete proof infrastructure. This local candidate adapts aerugo-ef\u2019s v6 retained squaring frame and paired exponent representation, adds affine conversion-address selection, and restores the small-modulus exponent loop.",
+    "evidence": "Promoted commit a1a314f3d635e723922a4537cc2f5ec40b7ead44; development base 55ece5d5d01c976bd0d8fc1708be8e3c0dafa821 has identical MODEXP bytes and an updated trusted artifact compiler limit. Baseline decoded SHA-256 dc4cef54399415c2d23c395313d38bec8f1c327524271d43044387f278ecfcba; seed-0 native gas 454861."
+  },
+  {
+    "submissionId": "4d05a61b-f88d-4cab-810d-840d772abd66",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Kaankolcu\u2019s earlier submission (stack-clzep), the current record at 457,505 and the direct base of this image. Every cut in it is in this image; this image adds fourteen byte-level cuts of ours (negun, jdx, bstack, inl693, k3222, k2696, k2465, t790, thr755, thr4291, peep686, e3g, pad133, gpush).",
+    "evidence": "Its bytecode file sha256 is 6038e20b863c5ba3e44e9579d9b5914e7914be70e12987fa7c95e80936c2e65c. This image: 5,540 bytes, 4,429 instructions, -1,650.8 gas per seed paired over 1,000 replica seeds; 138 proof files changed, Solution.lean unchanged."
+  },
+  {
+    "submissionId": "49a45e34-1ae7-41cc-878c-7bed9a0f42c4",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Kaankolcu\u2019s earlier submission (stack-clz): 66bc038a plus our CLZ quotient-estimator cut and leech1996's 97bb2bc5 width tests. It was verified correct and scored 459,752 on its single official draw, so it was not accepted; its cuts are carried here unchanged and this image builds on its tree.",
+    "evidence": "Its bytecode file sha256 is 0cf7d7533216cb51db2dc44706174fb350d7899d2b7d38ae10b7b42243239365. Its CLZ step lemma (Proofs/Fast/ClzStep.lean) and ShiftModel bridge are in this tree; the paired replica gain over it is -594.8 gas per seed (31 seeds)."
+  },
+  {
+    "submissionId": "66bc038a-3eac-4bea-908e-0fe1c6d80f7b",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Kaankolcu\u2019s earlier submission (stack-h2, h2-newton), the record at 458,412 before 4d05a61b, contained in this image through 4d05a61b. Every cut in it is in this image.",
+    "evidence": "Its bytecode file sha256 is 796161fc3dacc4fb8c35e0b6f1e9873316c0ebe066604d88ff7c5d284a3f34d1. Inherited through 4d05a61b; Solution.lean is unchanged."
+  },
+  {
+    "submissionId": "97bb2bc5-6198-42d6-b922-d548d34fc616",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Cut taken from leech1996's submission: the two bit-7 width tests become equality tests (site A in the kernel setup, site B the row-head select `PUSH2 09a0 DUP15 EQ` testing aEnd = 0x9a0), carried since 49a45e34. In this image our k3222 folds site A's test and displacement to their constant value (n is 4 or 8 there), and site B's trailing JUMPDEST is deleted (jdx).",
+    "evidence": "Site B's equality form is at bytecode.hex pc 3276 (`61 09a0 8e 14`); site A's result is the constant `PUSH2 0d13` it always produced."
+  },
+  {
+    "submissionId": "abbf9bf4-8c6d-4d0a-b46d-19b28b1f3ec6",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Kaankolcu\u2019s earlier submission (stack-v10c, n8grpt), the record at 460,289 before 66bc038a, contained in this image through 66bc038a. Every cut in it is in this image; the row pointers now count through negative values (zneg2).",
+    "evidence": "Its bytecode file sha256 is 862e17e7636701a2cc995a7c5585645779bd67aa739bdd596cf78420ebe62298. This image keeps all fifteen of its cuts. pcs after the n=4 and zneg2 edits are renumbered, and Solution.lean is unchanged."
+  },
+  {
+    "submissionId": "d62773b1-5af8-426e-9496-881f85b87e6e",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Kaankolcu\u2019s earlier submission (stack-v10a, n4grpt), rejected on score only (official 462,616). It contributes the n=4 squaring kernel group n4a, n4f, n4t and rare4, merged onto the n=8 tree in 66bc038a.",
+    "evidence": "The four n=4 cuts and their proofs (R4Blocks, R4Runs, R4Trace, SquareLoop n=4 section, TnM128SquareExit, Cios2Dispatch) come from that tree through a three-way merge against 5788127e."
+  },
+  {
+    "submissionId": "92ac47cf-c69e-4124-8b87-b041997b615b",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Kaankolcu\u2019s earlier submission (stack-v10b, newton-batch), rejected on score only (official 463,071). Through 66bc038a it contributes newton-batch: one shared Newton chain computes both the modulus low-limb inverse and the dodd inverse.",
+    "evidence": "The shared Newton subroutine, the dinv-site rewrite and their ShiftModel algebra lemmas (newton8W_mul_left/right, lowLimb_odd, preDodd_odd) are in this image."
+  },
+  {
+    "submissionId": "5788127e-caea-439f-805a-e92364af327a",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v9) and an ancestor of this image: 1954e3f4 plus our N1 negation loop and P1 CIOS frame transpositions. It was the prior record at 462,538. This image contains all of it and adds fifteen more cuts of ours (p2, zloop, zreset, m9rot, dead5466, tl, msplit, deadbytes, offsets, depad, n8g, rarej, st8, frq, t256) with their proof updates.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Every cut of 5788127e is in this image. The code is 5,531 bytes and 4,364 instructions (5788127e: 5,544 and 4,359); depad, deadbytes, dead5466 and t256 shift most pcs after 2392, so the bytes are not position-aligned with 5788127e. The tree differs from 5788127e in 139 files: bytecode.hex, README.md, dependencies.json, Bytes, Bytecode, TnM128CandidateBytes, TnM128CandidateArtifact, ShiftJumpTargets and the proof files of the fifteen cuts listed in the note (133 changed, 5 dead files deleted, 1 new, SquareRoundC). Solution.lean is unchanged."
+  },
+  {
+    "submissionId": "1954e3f4-0898-4094-9ec8-f383d695f51c",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v8): a87239b0 plus our B4, C2 and e3skip cuts. It was rejected on score only (465,282 official, an ordinary draw for its 464,722 mean). Contained in this image through 5788127e.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: All of it is in 5788127e and so in this image; the fifteen new cuts and the 5788127e cuts N1 and P1 are the only differences. Its Solution.lean is unchanged here."
+  },
+  {
+    "submissionId": "a87239b0-9b59-4fc7-9c57-045626934916",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v6): bdd36736 plus our precopied 256-bit window route (precopy256), with its proofs. Contained in this image through 1954e3f4 and 5788127e.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+  },
+  {
+    "submissionId": "bdd36736-2faa-4674-b1da-456c272a6965",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v5), accepted at 464,988: the d0a1f9e9 + 984faab1 merge plus eight cuts of ours (csub select tail, route padding, rsa-setup cuts 1 and 3, sqglue attempts 1 and 2, layout-v1, csub2). Contained in this image through a87239b0, 1954e3f4 and 5788127e.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+  },
+  {
+    "submissionId": "d0a1f9e9-cea0-4a83-938b-a828b22ff8ed",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Merged in, through bdd36736: the EarlyWord guard and the Fermat entry/return stack diet (bytes [4, 135) and [864, 872) in bdd36736, -405 gas on every seed) with its proof updates. Our C2 cut rewrites that dispatch prologue on top of it.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: This submission's changes lie in bytes [4, 135) and [864, 872). In 5788127e our C2 cut rewrote [0, 132) and [864, 878), so those bytes are no longer identical to it; the new prologue keeps its Fermat check. None of the fifteen new cuts touches that prologue."
+  },
+  {
+    "submissionId": "984faab1-c97e-4747-80d1-2ea9f6ea3a0e",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Merged in, through bdd36736: the PC- and instruction-count-neutral setup block of the 256-bit window route (bytes [973, 994) in bdd36736, -128 gas on every seed) with its proof updates. Our precopy256 cut later replaced the route bytes with a precopied-pool route.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Its setup block bytes were superseded in 5788127e by our precopy256 route. None of the fifteen new cuts touches that setup block; t256 only moves the route's last windows inline at pc 2388."
+  },
+  {
+    "submissionId": "af797111-01d0-42b9-8aa7-b3128509e177",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Base: the promoted 5,483-byte record image (467,495) and its complete Lean proof tree, on which both merged submissions and all of our own cuts are built.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Common base of the whole chain: the promoted 5,483-byte image and its Lean proof tree. Every proof module not listed in the note is this chain's, unchanged."
+  },
+  {
+    "submissionId": "adacb8da-4a6b-4b59-b3f3-83ba833b5c4e",
+    "rationale": "Inherited dependency declaration from kaankolcu\u2019s 4c357c72 submission: Inherited through our accepted 66bc038a and abbf9bf4. Kaankolcu\u2019s earlier submission (stack-v1): the merge of d0a1f9e9 and 984faab1 plus our csub subtraction select tail with its proof updates. Contained in this image through the later stacks.",
+    "evidence": "Inherited source/proof chain retained through 66bc038a. Historical evidence for this ancestor: Reached through 5788127e. This image differs from 5788127e only by the fifteen cuts in the note, so everything from this submission that 5788127e kept is kept here."
+  },
+  {
+    "submissionId": "9fe4ea31-7bdd-4429-b988-bcd57cb83119",
+    "rationale": "Th0rgal's exponent-offset memory-slot reuse: store and load the live exponent offset at address 2656 instead of 2816, reducing the memory high-water mark. Reapplied to the newer v8-derived architecture, whose three live accesses are at byte PCs 658, 2351 and 2682, with corresponding memory/frame proof updates. The idea is credited to Th0rgal; its integration with the retained CRT loop, inline R4 schedule and fixed-exponent gate is local work.",
+    "evidence": "Public source commit f298e824cf3a1445ab733f723626920b63a18ea3. The isolated exact three-immediate composition saves 12 gas on the matched seed-zero corpus (four RSA vectors save 3 each). The declared source is a public unpromoted submission, not a current leaderboard baseline."
+  }
+]

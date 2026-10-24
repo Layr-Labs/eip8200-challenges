@@ -70,7 +70,6 @@ private theorem mul_add_zero (x y : UInt256) : x*y + UInt256.ofNat 0 = x*y := by
     Challenge.EvmProof.Word.word_toNat_ofNat,Nat.zero_mod,Nat.add_zero]
   exact Nat.mod_eq_of_lt (x*y).val.isLt
 
-/-- The fused carry is `carry_eq` at carry-in `0`, reassociated. -/
 theorem fused_carry (x y t : UInt256) :
     (UInt256.gt (x*y) (t+x*y) -
       (UInt256.lt (UInt256.mulMod y x maxWord) (x*y) - UInt256.mulMod y x maxWord)) - x*y =
@@ -112,7 +111,6 @@ theorem run_fused (s : State)
   rw [fused_carry,fused_sum] at both
   simpa only [pc_add_add] using both
 
-/-- The full first-limb program preserves any cached high carry in its frame. -/
 theorem run_first (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
@@ -184,7 +182,6 @@ theorem run_fusedStoreC (s : State) (t : Nat) (ht : t < 65536)
     framed,tail,hc18,hc19,hc20,hc21,hc22,State.activeWordsAfterUInt256,hactive,htn,
     succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `run_first` with the accumulator word at the code constant `t`. -/
 theorem run_firstC (pc0 : Nat) (s : State) (t : Nat) (ht : t < 65536)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
@@ -224,6 +221,4 @@ theorem run_firstC (pc0 : Nat) (s : State) (t : Nat) (ht : t < 65536)
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
   simpa only [commonFirstProgramC, frame, x, hpc] using hall
 
-#print axioms run_first
-#print axioms run_firstC
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheFirstTrace

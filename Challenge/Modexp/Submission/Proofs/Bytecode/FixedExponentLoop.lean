@@ -75,5 +75,4 @@ theorem run_program (template : State) (pc : UInt256) (mem : ByteArray)
     simpa only [program,programSize,value,List.length_cons,List.replicate_succ,
       List.cons_append,←advancePC_add] using hall
 
-#print axioms run_program
 end HistoricalSearch.FixedExponentLoop

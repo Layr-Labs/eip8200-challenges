@@ -88,9 +88,5 @@ theorem fullDigitZero (lo inv : UInt256) (W S N n0 : Nat)
     (S+(maskedDigit lo inv W W).toNat*n0) % 2^W = 0 :=
   (maskedDigitCancels lo inv W W S N n0 (by omega) hW hlo hn0 hinv).2.1
 
-#print axioms maskedDigit_toNat
-#print axioms inverseAtWidth
-#print axioms maskedDigitCancels
-#print axioms fullDigitZero
 
 end HistoricalSearch.WordCancellation

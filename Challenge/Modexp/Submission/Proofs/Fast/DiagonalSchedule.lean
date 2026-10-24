@@ -32,16 +32,10 @@ theorem diagonalPrefix_run (s : State) (pc tb x P hd w3 ent stride M : UInt256)
     some { s with pc := advancePC 15 pc,
                   stack := UInt256.mulMod (x + tb) x M :: UInt256.gt x (x + tb) ::
                     ((x + tb) * x) :: (x + (x + tb)) :: P :: hd :: w3 :: ent :: stride :: M :: rest } := by
-  have hc8 : rest.length + 8 < 1024 := by omega
-  have hc9 : rest.length + 9 < 1024 := by omega
-  have hc10 : rest.length + 10 < 1024 := by omega
-  have hc11 : rest.length + 11 < 1024 := by omega
-  have hc12 : rest.length + 12 < 1024 := by omega
-  have hc13 : rest.length + 13 < 1024 := by omega
+  have capacity (j : Nat) (hj : j ≤ 13) : rest.length + j < 1024 := by omega
   simp [diagonalPrefix, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    List.exchange, hc8, hc9, hc10, hc11, hc12, hc13, advancePC]
+    List.exchange, capacity, Nat.add_assoc, advancePC]
 
-#print axioms diagonalPrefix_run
 
 theorem mul_comm_word (a b : UInt256) : a * b = b * a := by
   apply Challenge.EvmProof.Word.word_ext
@@ -77,5 +71,4 @@ theorem diagonalPrefixSub_run (s : State) (pc tb x P hd w3 ent stride M : UInt25
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, advancePC]
   omega
 
-#print axioms diagonalPrefixSub_run
 end Challenge.Modexp.Submission.Proofs.Fast.DiagonalSchedule

@@ -76,6 +76,4 @@ theorem Cached.rows {z : CacheState} {pa n : Nat} {tl inv m0 m96 m64 m32 : UInt2
   | zero => exact h
   | succ i ih => exact ih.row pb i hn hpa
 
-#print axioms Cached.row
-#print axioms Cached.rows
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheRowPreserves

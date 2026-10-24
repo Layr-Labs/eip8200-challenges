@@ -10,8 +10,6 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached
 
 def pointer (pb n i : Nat) : UInt256 := UInt256.ofNat (ptrAt (pb+32*n-32) i)
 
-/-- zloop + zneg2: the row pointer word is `q = -32·(n - i)`; it counts up to zero
-(`b_i = mem[0xe0 - q]` in the multiply rows, `a_i = mem[0x920 - q]` in the square rows). -/
 def qptr (n i : Nat) : UInt256 := UInt256.ofNat (2^256 - 32*(n-i))
 
 private theorem two256 : (2:Nat)^256 =
@@ -30,7 +28,6 @@ theorem qptr_end (n : Nat) : qptr n n = UInt256.ofNat 0 := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat, two256]
   simp
 
-/-- `c - q` for a constant base `c`: the address `c + 32·(n - i)`. -/
 theorem sub_qptr (c n i : Nat) (hn : n ≤ 8) (hc : c < 2^200) :
     UInt256.ofNat c - qptr n i = UInt256.ofNat (c + 32*(n-i)) := by
   apply Challenge.EvmProof.Word.word_ext
@@ -90,6 +87,4 @@ theorem pointer_end (pb n : Nat) (hpb : 32 ≤ pb) (hfit : pb+32*n ≤ 2816) :
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
   simp
 
-#print axioms pointer_succ
-#print axioms pointer_condition
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheRowPointers
