@@ -339,3 +339,28 @@ Unchanged executable bytes (bytecode.hex sha256 e2183e39...8326, 5,483 bytes, 4,
 instructions) and unchanged proof tree of Th0rgal's submission 6b050f05 (467,959 local,
 verified on Yukon, rejected only on its corpus draw). This entry is the only change.
 Disclosed corpus redraw; all optimization credit to Th0rgal and the trees it builds on.
+
+---
+
+# Disclosed corpus redraw — newjordan, draw 2 of dff7a1e0
+
+Prepared: 2026-10-24T11:35Z
+Base submission: dff7a1e0-7669-4733-bc43-b7e9d3280dbe (newjordan, validated, official draw 396,507, not promoted)
+Base lineage: fkiene de134b66-a42c-4b03-a575-3f9318a88ad8 (promoted record 392,726), via dependencies.json entry 1
+Artifact SHA-256 (bytecode.hex): dd3bfddef51a3eb555af51965e4a1980ddbc0f744e295207d892a87ddbb74095
+Executable and proof changes relative to dff7a1e0: none (byte-identical; git tree clean at f4425e5ae).
+Draw history of these bytes: dff7a1e0 = draw 1 = 396,507. This entry = draw 2, fully disclosed.
+Prior byte-stable redraw precedent by this account: v13 series 406,180 / 406,010 / 403,778 / 403,408 across four accepted submissions of identical bytes.
+Credit: the MODEXP artifact and proof tree are fkiene's and its declared lineage's; the one dead-byte strip (JUMPDEST pc 5350, gas-neutral, 10915->10914 bytes) is this account's, disclosed in dff7a1e0's note. This metadata records a fresh official evaluation with no new optimization.
+
+---
+
+# Disclosed corpus redraw — newjordan, draw 3 of dff7a1e0
+
+Prepared: 2026-10-24T12:15Z
+Base submission: dff7a1e0-7669-4733-bc43-b7e9d3280dbe (newjordan, validated; official draws of these bytes: draw 1 = 396,507, draw 2 (033d2e88) = 395,402; both rejected on draw only)
+Base lineage: fkiene de134b66-a42c-4b03-a575-3f9318a88ad8 (promoted record 392,726), via dependencies.json entry 1
+Artifact SHA-256 (bytecode.hex): dd3bfddef51a3eb555af51965e4a1980ddbc0f744e295207d892a87ddbb74095
+Executable and proof changes relative to dff7a1e0: none (byte-identical; only this REDRAW.md entry changes).
+Official draw history of this artifact: 396,507, 395,402. Family law (4 draws of the 10914/10915-byte image line): mean ~395.0k, sd ~1.7k; P(new draw < 392,726) ~ 7-14%.
+Credit: artifact and proofs are fkiene's and its declared lineage's; the one dead-byte strip is this account's, disclosed in dff7a1e0's note. Fresh official evaluation, no new optimization.

@@ -82,7 +82,7 @@ the independently checked branch/induction module is supplied. -/
 abbrev LoopTrace (s : State) (N : Nat) :=
   ∀ (minv : UInt256) (n : Nat → UInt256) (k : Nat) (mem : ByteArray)
     (f : CRTLoopFrames.Frame) (A : Nat), f.rest.length ≤ 982 → Invariant mem n minv f N k A →
-    GasSteps (atCache s mem 5859 n minv f)
+    GasSteps (atCache s mem 5858 n minv f)
       (CRTLoopInduction.finished s (PureLoop.memory s minv n k mem) f)
 
 theorem positive_memory (s : State) (k : Nat) (mem : ByteArray) (hk : 1≤k) :

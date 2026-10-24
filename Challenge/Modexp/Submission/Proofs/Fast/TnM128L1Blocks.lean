@@ -44,8 +44,8 @@ def common7 : Block submissionArtifact .Osaka 3347 (TnCacheL1Suffix.program 7) :
   WindowTwentyOneSlice.block allWellFormed 2599 218 3347 (TnCacheL1Suffix.program 7)
     (by decide) (by rfl) (by rfl) (by decide)
 
-def private3 : Block submissionArtifact .Osaka 5387 TnCacheL1Suffix.privateProgram3 :=
-  WindowTwentyOneSlice.block allWellFormed 4300 89 5387 TnCacheL1Suffix.privateProgram3
+def private3 : Block submissionArtifact .Osaka 5386 TnCacheL1Suffix.privateProgram3 :=
+  WindowTwentyOneSlice.block allWellFormed 4299 89 5386 TnCacheL1Suffix.privateProgram3
     (by decide) (by rfl) (by rfl) (by decide)
 
 def head : Block submissionArtifact .Osaka 3313 (TnCacheHeadTrace.programC 2336) :=
@@ -53,8 +53,8 @@ def head : Block submissionArtifact .Osaka 3313 (TnCacheHeadTrace.programC 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The four-limb multiply row head (msplit's `m4` copy), falling into `private3`. -/
-def head4 : Block submissionArtifact .Osaka 5353 (TnCacheHeadTrace.programC 2208) :=
-  WindowTwentyOneSlice.block allWellFormed 4271 29 5353 (TnCacheHeadTrace.programC 2208)
+def head4 : Block submissionArtifact .Osaka 5352 (TnCacheHeadTrace.programC 2208) :=
+  WindowTwentyOneSlice.block allWellFormed 4270 29 5352 (TnCacheHeadTrace.programC 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
 def guard : Block submissionArtifact .Osaka 3874 (TnCacheExitTrace.normalGuard) :=

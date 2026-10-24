@@ -28,7 +28,7 @@ open WindowNibbleKernel WindowTwentyOneBinding
 /-- The multiply call state: the preclear trampoline, pc 5466, `[pa, pb, pdst, ret] ++ rest`. -/
 def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 5466
+  { s with pc := UInt256.ofNat 5465
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -80,7 +80,7 @@ example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
 /-- The multiply call state (`Exp.mpCall s mem pa pb pd ret tail`) is definitionally
 `dispatchState`. -/
 example (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256) :
-    ({ s with pc := UInt256.ofNat 5466
+    ({ s with pc := UInt256.ofNat 5465
               stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd :: ret :: tail
               memory := mem } : State) =
       dispatchState s mem pa pb (UInt256.ofNat pd) ret tail := rfl

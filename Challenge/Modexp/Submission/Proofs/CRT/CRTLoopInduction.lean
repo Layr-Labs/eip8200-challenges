@@ -38,11 +38,11 @@ installed bytecode, not assumptions of arithmetic correctness or test success. -
 structure Operations (N : Nat) where
   advance : ∀ (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame) (A : Nat),
     1 ≤ k → f.rest.length ≤ 982 → Invariant mem n minv f N (k+1) A →
-    Challenge.EvmProof.GasSteps (atCache s mem 5859 n minv f)
-      (atCache s (next s minv n k mem) 5859 n minv (nextFrame s minv n k mem f))
+    Challenge.EvmProof.GasSteps (atCache s mem 5858 n minv f)
+      (atCache s (next s minv n k mem) 5858 n minv (nextFrame s minv n k mem f))
   last : ∀ (mem : ByteArray) (f : CRTLoopFrames.Frame) (A : Nat),
     f.rest.length ≤ 982 → Invariant mem n minv f N 1 A →
-    Challenge.EvmProof.GasSteps (atCache s mem 5859 n minv f)
+    Challenge.EvmProof.GasSteps (atCache s mem 5858 n minv f)
       (finished s (finish s minv n mem) f)
 
 /-- Actual direct and overflow-reentry rounds compose for every allowed
@@ -50,7 +50,7 @@ counter, keeping the saved stack counter separate from mutable memory1728. -/
 noncomputable def run (N : Nat) (ops : Operations s minv n N)
     (k : Nat) (mem : ByteArray) (f : CRTLoopFrames.Frame) (A : Nat)
     (hcap : f.rest.length ≤ 982) (h : Invariant mem n minv f N k A) :
-    Challenge.EvmProof.GasSteps (atCache s mem 5859 n minv f)
+    Challenge.EvmProof.GasSteps (atCache s mem 5858 n minv f)
       (finished s (memory s minv n k mem) f) := by
   induction k generalizing mem f A with
   | zero => have := h.countPositive; omega

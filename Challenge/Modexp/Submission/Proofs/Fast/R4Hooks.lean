@@ -34,7 +34,7 @@ def h1Block : Block Artifact.submissionArtifact .Osaka 4260 h1Program :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3313 5 4260 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 8998 = true :=
+theorem jumpDestR4 : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 8997 = true :=
   R4InlineBlocks.validJump5615
 
 theorem jumpDestRow : Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5297 = true :=
@@ -202,7 +202,7 @@ def gasSteps_entry (s : State)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
       { s with pc := UInt256.ofNat 4268, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest }
-      { s with pc := UInt256.ofNat 8998, memory := R4RetainedMemory.initMemory s.memory, stack := x8 :: x7 :: x4 :: n3 :: x11 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x0 :: x15 :: rest } := by
+      { s with pc := UInt256.ofNat 8997, memory := R4RetainedMemory.initMemory s.memory, stack := x8 :: x7 :: x4 :: n3 :: x11 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x0 :: x15 :: rest } := by
   have ge := SquareRow.stepsOf entryBlock
     (run_entry s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 n3 rest hcap hn3 hact)
     rfl hcode hfork hrun hnp

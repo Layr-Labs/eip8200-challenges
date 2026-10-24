@@ -145,8 +145,8 @@ theorem prodiag_0Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 
 
 def prodiag_0NewP0 : List Instr := [.op .JUMPDEST, .push 2 2208, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .ADD]
 theorem prodiag_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prodiag_0NewP0 { s with pc := UInt256.ofNat 8998, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest } =
-    some { s with pc := UInt256.ofNat 9006, stack := ((MachineState.readWord s.memory 2208) + (MachineState.readWord s.memory 2208)) :: (MachineState.readWord s.memory 2208) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest } := by
+    runInstructions prodiag_0NewP0 { s with pc := UInt256.ofNat 8997, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest } =
+    some { s with pc := UInt256.ofNat 9005, stack := ((MachineState.readWord s.memory 2208) + (MachineState.readWord s.memory 2208)) :: (MachineState.readWord s.memory 2208) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -175,8 +175,8 @@ theorem prodiag_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x1
 
 def prodiag_0NewP1 : List Instr := [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MUL, .op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨3, by decide⟩)]
 theorem prodiag_0NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990) :
-    runInstructions prodiag_0NewP1 { s with pc := UInt256.ofNat 9006, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest } =
-    some { s with pc := UInt256.ofNat 9012, stack := x1 :: x12 :: (x1 * x1) :: x0 :: x12 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest } := by
+    runInstructions prodiag_0NewP1 { s with pc := UInt256.ofNat 9005, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest } =
+    some { s with pc := UInt256.ofNat 9011, stack := x1 :: x12 :: (x1 * x1) :: x0 :: x12 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -206,8 +206,8 @@ theorem prodiag_0NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x1
 
 def prodiag_0NewP2 : List Instr := [.op (.Dup ⟨0, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Dup ⟨2, by decide⟩)]
 theorem prodiag_0NewP2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990) :
-    runInstructions prodiag_0NewP2 { s with pc := UInt256.ofNat 9012, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: rest } =
-    some { s with pc := UInt256.ofNat 9018, stack := x2 :: (UInt256.gt x2 (UInt256.mulMod x0 x0 x1)) :: (UInt256.mulMod x0 x0 x1) :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: rest } := by
+    runInstructions prodiag_0NewP2 { s with pc := UInt256.ofNat 9011, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: rest } =
+    some { s with pc := UInt256.ofNat 9017, stack := x2 :: (UInt256.gt x2 (UInt256.mulMod x0 x0 x1)) :: (UInt256.mulMod x0 x0 x1) :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -238,8 +238,8 @@ theorem prodiag_0NewP2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x1
 
 def prodiag_0NewP3 : List Instr := [.op (.Swap ⟨1, by decide⟩), .op .SUB, .op .SUB]
 theorem prodiag_0NewP3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990) :
-    runInstructions prodiag_0NewP3 { s with pc := UInt256.ofNat 9018, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest } =
-    some { s with pc := UInt256.ofNat 9021, stack := ((x2 - x1) - x0) :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest } := by
+    runInstructions prodiag_0NewP3 { s with pc := UInt256.ofNat 9017, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest } =
+    some { s with pc := UInt256.ofNat 9020, stack := ((x2 - x1) - x0) :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -270,8 +270,8 @@ theorem prodiag_0NewP3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x1
 
 def prodiag_0New : List Instr := prodiag_0NewP0 ++ prodiag_0NewP1 ++ prodiag_0NewP2 ++ prodiag_0NewP3
 theorem prodiag_0New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prodiag_0New { s with pc := UInt256.ofNat 8998, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: z14 :: z15 :: z16 :: z17 :: rest } =
-    some { s with pc := UInt256.ofNat 9021, stack := (((UInt256.mulMod (MachineState.readWord s.memory 2208) (MachineState.readWord s.memory 2208) z10) - (UInt256.gt ((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208)) (UInt256.mulMod (MachineState.readWord s.memory 2208) (MachineState.readWord s.memory 2208) z10))) - ((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208))) :: ((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208)) :: ((MachineState.readWord s.memory 2208) + (MachineState.readWord s.memory 2208)) :: z10 :: z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: z14 :: z15 :: z16 :: z17 :: rest } := by
+    runInstructions prodiag_0New { s with pc := UInt256.ofNat 8997, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: z14 :: z15 :: z16 :: z17 :: rest } =
+    some { s with pc := UInt256.ofNat 9020, stack := (((UInt256.mulMod (MachineState.readWord s.memory 2208) (MachineState.readWord s.memory 2208) z10) - (UInt256.gt ((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208)) (UInt256.mulMod (MachineState.readWord s.memory 2208) (MachineState.readWord s.memory 2208) z10))) - ((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208))) :: ((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208)) :: ((MachineState.readWord s.memory 2208) + (MachineState.readWord s.memory 2208)) :: z10 :: z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: z12 :: z13 :: z14 :: z15 :: z16 :: z17 :: rest } := by
   have g0 := prodiag_0NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) (z12) (z13) (z14) (z15) (z16) (z17) rest hcap hact
   have g1 := prodiag_0NewP1_run s (((MachineState.readWord s.memory 2208) + (MachineState.readWord s.memory 2208))) ((MachineState.readWord s.memory 2208)) (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) (z12) (z13) (z14) (z15) (z16) (z17) rest hcap
   have g2 := prodiag_0NewP2_run s ((MachineState.readWord s.memory 2208)) (z10) (((MachineState.readWord s.memory 2208) * (MachineState.readWord s.memory 2208))) (((MachineState.readWord s.memory 2208) + (MachineState.readWord s.memory 2208))) (z10) (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) (z12) (z13) (z14) (z15) (z16) (z17) rest hcap
@@ -289,8 +289,8 @@ theorem run_prodiag_0 (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 
     (ha0 : MachineState.readWord s.memory 2208 = a0)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prodiag_0New
-      { s with pc := UInt256.ofNat 8998, stack := e8 :: e7 :: e4 :: n3 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest } =
-    some { s with pc := UInt256.ofNat 9021, stack := dHi a0 e5 :: (a0 * a0) :: (a0 + a0) :: e5 :: e8 :: e7 :: e4 :: n3 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest } := by
+      { s with pc := UInt256.ofNat 8997, stack := e8 :: e7 :: e4 :: n3 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest } =
+    some { s with pc := UInt256.ofNat 9020, stack := dHi a0 e5 :: (a0 * a0) :: (a0 + a0) :: e5 :: e8 :: e7 :: e4 :: n3 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest } := by
   have ho := prodiag_0Old_run s (e8) (e7) (e4) (n3) (e11) (e0) (e1) (e2) (e3) (e4) (e5) (e6) (e7) (e8) (e9) (e10) (e11) (e12) rest hcap hact
   have hc := R4Runs.run_prodiag s e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 a0 rest hcap hn3 ha0 hact
   change runInstructions prodiag_0Old _ = _ at hc
