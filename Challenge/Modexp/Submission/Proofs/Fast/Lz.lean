@@ -52,21 +52,29 @@ theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
 
 /-! ## The mask -/
 
+/-- The three smear steps, in the operand order the `OR`s produce them:
+`OR` pops the shifted copy first. -/
 def sm1 (w : Nat) : Nat := (w >>> 1) ||| w
 def sm2 (w : Nat) : Nat := (sm1 w >>> 2) ||| sm1 w
 def sm3 (w : Nat) : Nat := (sm2 w >>> 4) ||| sm2 w
 
+/-- The smear halved and incremented: the highest set bit of a byte, and `1`
+for a zero byte. -/
 def topBit (w : Nat) : Nat := (sm3 w >>> 1) + 1
 
+/-- Its exponent. -/
 def topExp (w : Nat) : Nat :=
   if 128 ≤ w then 7 else if 64 ≤ w then 6 else if 32 ≤ w then 5 else
   if 16 ≤ w then 4 else if 8 ≤ w then 3 else if 4 ≤ w then 2 else
   if 2 ≤ w then 1 else 0
 
+/-- **The mask is a power of two that dominates the byte.**  Everything the
+skipped iterations of the bit loop would have tested is zero. -/
 theorem topBit_spec (w : Nat) (hw : w < 256) :
     topBit w = 2 ^ topExp w ∧ topExp w ≤ 7 ∧ w < 2 ^ (topExp w + 1) := by
   interval_cases w <;> exact ⟨by decide, by decide, by decide⟩
 
+/-- A nonzero byte has its `topExp` bit set. -/
 theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w := by
   interval_cases w
   · exact absurd rfl hne
@@ -74,27 +82,33 @@ theorem topExp_le (w : Nat) (hw : w < 256) (hne : w ≠ 0) : 2 ^ topExp w ≤ w 
 
 /-! ## States at the block boundaries -/
 
+/-- The `LZ` entry, pc 2695.  The driver frame below the byte index is left
+abstract so that this module does not depend on `Fast.Exp`. -/
 def lzEntry (s : State) (mem : ByteArray) (i : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 887
            stack := UInt256.ofNat i :: rest
            memory := mem }
 
+/-- pc 2711, the arm every byte after the first takes. -/
 def lzOther (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 903
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
+/-- pc 2720, the arm byte `0` takes. -/
 def lzFirst (s : State) (mem : ByteArray) (i w : Nat) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 909
            stack := UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
+/-- The bit-loop head both arms rejoin, pc 1916. -/
 def lzJoin (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 821
            stack := UInt256.ofNat mask :: UInt256.ofNat w :: UInt256.ofNat i :: rest
            memory := mem }
 
+/-- The state handed to the relocated leading-bit shortcut at pc3865. -/
 def lzBase (s : State) (mem : ByteArray) (i w mask : Nat)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 2317

@@ -1256,4 +1256,5 @@ theorem value_toNat (base modulus : UInt256) (hm : 0 < modulus.toNat) :
   rw [Nat.mod_eq_of_lt hlt] at h306
   exact h306
 
+#print axioms value_toNat
 end HistoricalSearch.FixedExponent

@@ -42,10 +42,12 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
+/-- The chain frame `[carry, q, 2^256-1] ++ rest` over the MAC state `m`. -/
 def chainState (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (rest : List UInt256) : State :=
   { template with pc := pc, stack := [m.carry, bi, maxWord] ++ rest, memory := m.memory }
 
+/-- The section entry state: `q` above `rest`, memory `um`. -/
 def setupState (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt256)
     (rest : List UInt256) : State :=
   { template with pc := pc, stack := bi :: rest, memory := um }
@@ -64,6 +66,8 @@ theorem run_load (template : State) (pc a carry bi : UInt256) (rest : List UInt2
     hc3, hc4, State.activeWordsAfterUInt256, hactive,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
+/-- The riding two-`DUP` head: `DUP (d+1)` reproduces the `-N` limb from slot `rest[d-3]`,
+`DUP4` lifts the mask. -/
 theorem run_dupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd3 : 3 ≤ d.val) (_hin : d.val < 3 + rest.length)
@@ -72,7 +76,9 @@ theorem run_dupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x :
       (framed template pc ([carry, bi, maxWord] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 2)
       ([maxWord, x, carry, bi, maxWord] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
   have hframe : (carry :: bi :: maxWord :: rest)[d.val]? = some x := by
     rw [show d.val = (d.val - 3) + 3 from by omega,
       List.getElem?_cons_succ, List.getElem?_cons_succ, List.getElem?_cons_succ]
@@ -82,7 +88,7 @@ theorem run_dupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x :
     Challenge.EvmProof.Word.ofNat_add_mod]
   rw [hframe]
   simp (disch := omega) [List.getElem?_cons_zero, List.getElem?_cons_succ,
-    capacity, Nat.add_assoc, succ_eq_add, word_add_assoc,
+    hc3, hc4, hc5, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 set_option maxRecDepth 40000
@@ -96,7 +102,12 @@ theorem run_rideHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x 
       (framed template pc ([carry, bi, maxWord] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 7)
       ([UInt256.mulMod bi x maxWord, x * bi, carry, bi, maxWord] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 8) : rest.length + j < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
   have hframe0 : (carry :: bi :: maxWord :: rest)[d.val]? = some x := by
     rw [show d.val = (d.val - 3) + 3 from by omega,
       List.getElem?_cons_succ, List.getElem?_cons_succ, List.getElem?_cons_succ]
@@ -113,7 +124,7 @@ theorem run_rideHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x 
   dsimp only [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
     List.cons_append, List.nil_append]
   simp [List.getElem?_cons_zero, List.getElem?_cons_succ,
-    List.exchange, hframe0, hframe1, hframe2, capacity, Nat.add_assoc, Nat.add_assoc,
+    List.exchange, hframe0, hframe1, hframe2, hc3, hc4, hc5, hc6, hc7, hc8, Nat.add_assoc,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 private theorem add_comm_word (a b : UInt256) : a + b = b + a := by
@@ -121,6 +132,8 @@ private theorem add_comm_word (a b : UInt256) : a + b = b + a := by
   congr 1
   ac_rfl
 
+/-- One straight block (no `JUMPDEST`, 33 bytes) whose `-N` limb rides in slot `rest[d-3]`,
+which must agree with the `l1StepOn` read at `1280 + 32(n-1-j)`: limb step `j` of width `n`. -/
 theorem run_ride (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (n j : Nat) (t : UInt256) (d : Fin 16)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
@@ -164,6 +177,7 @@ theorem run_ride (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
   simpa only [rideProgram, st, x0, chainState, framed, SquareModel.l1StepOn, ht, hpc,
     List.cons_append, List.nil_append] using both
 
+/-- A head block with the riding limb (`JUMPDEST` included, 34 bytes). -/
 theorem run_ride_head (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (n j : Nat) (t : UInt256) (d : Fin 16)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
@@ -187,6 +201,8 @@ theorem run_ride_head (template : State) (pc : UInt256) (m : MacState) (bi : UIn
   rw [hpc] at h
   exact h
 
+/-- Block 0's head on a zero incoming carry (`JUMPDEST` + riding limb + `PUSH0` schedule,
+34 bytes). -/
 theorem run_ride_zero_head (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (n j : Nat) (t : UInt256) (d : Fin 16)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
@@ -225,6 +241,8 @@ theorem run_ride_zero_head (template : State) (pc : UInt256) (m : MacState) (bi 
   simpa only [rideZeroProgram, st, chainState, framed, SquareModel.l1StepOn, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
+/-- The top-word riding head: `POP` the zero carry, `DUP (d+1)` reproduces the `-N` limb from
+slot `rest[d-2]`, `DUP3` lifts the mask. -/
 theorem run_popDupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd2 : 2 ≤ d.val) (_hin : d.val < 2 + rest.length)
@@ -233,7 +251,9 @@ theorem run_popDupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi 
       (framed template pc ([carry, bi, maxWord] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 3)
       ([maxWord, x, bi, maxWord] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 4) : rest.length + j < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
   have hframe : (bi :: maxWord :: rest)[d.val]? = some x := by
     rw [show d.val = (d.val - 2) + 2 from by omega,
       List.getElem?_cons_succ, List.getElem?_cons_succ]
@@ -242,7 +262,7 @@ theorem run_popDupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi 
     List.cons_append, List.nil_append, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
   simp (disch := omega) [List.getElem?_cons_zero, List.getElem?_cons_succ, hframe,
-    capacity, Nat.add_assoc, succ_eq_add, word_add_assoc,
+    hc2, hc3, hc4, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_rideTopHead_state (template : State) (pc : UInt256) (d : Fin 16) (carry bi x : UInt256)
@@ -253,7 +273,13 @@ theorem run_rideTopHead_state (template : State) (pc : UInt256) (d : Fin 16) (ca
       (framed template pc ([carry, bi, maxWord] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 8)
       ([UInt256.mulMod bi x maxWord, x * bi, bi, maxWord] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 8) : rest.length + j < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
   have hframe0 : (bi :: maxWord :: rest)[d.val]? = some x := by
     rw [show d.val = (d.val - 2) + 2 from by omega,
       List.getElem?_cons_succ, List.getElem?_cons_succ]
@@ -267,7 +293,7 @@ theorem run_rideTopHead_state (template : State) (pc : UInt256) (d : Fin 16) (ca
   dsimp only [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
     List.cons_append, List.nil_append]
   simp [List.getElem?_cons_zero, List.getElem?_cons_succ,
-    List.exchange, hframe0, hframe2, capacity, Nat.add_assoc, Nat.add_assoc,
+    List.exchange, hframe0, hframe2, hc2, hc3, hc4, hc5, hc6, hc7, hc8, Nat.add_assoc,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 private theorem sub_lt_eq (mm lo : UInt256) :
@@ -389,6 +415,8 @@ private theorem top_sum_eq (x y : UInt256) :
   unfold macSum
   rw [zero_add_word, zero_add_word]
 
+/-- Block 0's head on a zero incoming carry *and* a zero accumulator word (`JUMPDEST` +
+`POP` + riding limb + `macTopZeroProgram`, 34 bytes). -/
 theorem run_ride_top_head (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (n j : Nat) (t : UInt256) (d : Fin 16)
     (ht : t.toNat = 2112 + 32 * (n - 1 - j))
@@ -435,6 +463,8 @@ theorem run_ride_top_head (template : State) (pc : UInt256) (m : MacState) (bi :
   simpa only [rideTopProgram, st, chainState, framed, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
+/-- One straight block (no `JUMPDEST`) with the staged `MLOAD` load — block 7 only: the
+immediates must be the `-N` limb `pa + 32(n-1-j)` and the `t` limb `2112 + 32(n-1-j)`. -/
 theorem run_block (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
     (pa n j : Nat) (a t : UInt256)
     (ha : a.toNat = pa + 32 * (n - 1 - j)) (ht : t.toNat = 2112 + 32 * (n - 1 - j))
@@ -467,6 +497,7 @@ theorem run_block (template : State) (pc : UInt256) (m : MacState) (bi : UInt256
   simpa only [blockProgram, st, chainState, framed, SquareModel.l1StepOn, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
+/-- An `l1StepOn` write (the `t` limb at `2112 + 32(n-1-j)`) is invisible below `0x840`. -/
 theorem l1StepOn_readWord_below (q : Monpro.MacState) (bi : UInt256) (pa n j addr : Nat)
     (h : addr + 32 ≤ 2112) :
     MachineState.readWord (SquareModel.l1StepOn q bi pa n j).memory addr =
@@ -486,6 +517,9 @@ private theorem notZeroOfNat_maxWord : UInt256.lnot (UInt256.ofNat 0) = maxWord 
 
 private theorem push0_ofNat : (⟨0⟩ : UInt256) = UInt256.ofNat 0 := by decide
 
+/-- E6: from `[q, 2^256-1] ++ rest` over `um` (the estimate block already built the mask) to
+the chain frame `[0, q, mask] ++ rest` at the entry parked in the scratch slot, `rest[1]`
+(`rest` = counter :: slots ++ frame). -/
 theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt256)
     (rest : List UInt256) (ent : Nat) (hrest : rest.length ≤ 1014)
     (hlen : 2 ≤ rest.length)
@@ -541,3 +575,11 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_dupHead
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_ride
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_ride_head
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_ride_zero_head
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_block
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.l1StepOn_readWord_below
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_exit
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.run_entry

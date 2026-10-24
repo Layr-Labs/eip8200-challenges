@@ -26,6 +26,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- Gas-parametric `CLZ` transition for any state whose decoder sees `CLZ`. -/
 def gasStep_clz {s : State} {a : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .CLZ)
     (hstack : s.stack = a :: rest)
@@ -41,9 +42,11 @@ def gasStep_clz {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.clz (withGas s gas) a rest hop hgas hstack hcap
 
+/-- The candidate's only `CLZ` is instruction 2091. -/
 theorem clz_index : Artifact.submissionInstructions[1952]? = some (.op .CLZ) := by
   rfl
 
+/-- ... at program counter 2672 (0x0a70). -/
 theorem clz_pc : Artifact.submissionArtifact.instructionPC 1952 = 2502 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
@@ -63,6 +66,8 @@ theorem decodedOp_clz (s : State)
 theorem succ_2672 : (UInt256.ofNat 2502).succ = UInt256.ofNat 2503 := by
   decide
 
+/-- The `CLZ` of the estimator prologue (pc 2672 → 2673): pops `a`, pushes `UInt256.clz a`.
+There `a = L`, the lowest set bit of the modulus top limb; see `Shift.clz_two_pow`. -/
 def gasSteps_clz (s : State) (a : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
@@ -83,6 +88,9 @@ def gasSteps_clz (s : State) (a : UInt256) (rest : List UInt256)
   rw [hpc, succ_2672] at h
   exact h
 
+/-- Same rule for a state written as a record update of a carrier
+(`{ t with pc := 2502, stack := a :: rest, memory := m }`), the form of the shift-reduce
+states. -/
 def gasSteps_clz_framed (t : State) (m : ByteArray) (a : UInt256) (rest : List UInt256)
     (hcode : t.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : t.fork = .Osaka)

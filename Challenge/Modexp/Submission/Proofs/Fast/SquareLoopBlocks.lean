@@ -10,7 +10,9 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareRows
 
 def pcNx : Nat := 3888
 def pcLast : Nat := 3997
+/-- The four-limb exit into the lazy gate (`m4j`, inside `last`). -/
 def pcM4j : Nat := 3999
+/-- The four-limb loop head: R4. -/
 def pcH2 : Nat := 4280
 
 def frameStack (mem : ByteArray) (_n : Nat)
@@ -32,6 +34,8 @@ abbrev m4jBlock := TnM128SquareExit.m4jBlock
 abbrev lastBlock := TnM128SquareExit.lastBlock
 abbrev jumpDestLazy := TnM128SquareExit.jumpDestLazy
 
+/-- The square counter lives in the frame's `pdst` slot, so a round no longer stores it in
+memory.  `countMem` stays as the identity to keep the round memory models' shape. -/
 def countMem (mem : ByteArray) (_c : Nat) : ByteArray := mem
 
 theorem readWord_countMem_disjoint (mem : ByteArray) (c addr : Nat)

@@ -139,6 +139,8 @@ theorem r4_tn_le_one (mem : ByteArray) (a mm : Nat)
     exact hb.1.trans hb.2
   · rfl
 
+/-- **One n=4 round** (`rows4r`, n4a + n4t + rare4): the operand window at 2112 holds the lazy
+Montgomery square `roundValue (rows4 mem)`, and the overflow word at 2080 is zero. -/
 theorem r4r_result (mem : ByteArray) (a mm : Nat)
     (ha : Model.FastRepresents mem 2112 4 a) (hm : Model.FastRepresents mem 0 4 mm)
     (hodd : mm % 2 = 1)

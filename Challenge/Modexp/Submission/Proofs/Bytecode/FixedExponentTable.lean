@@ -294,4 +294,5 @@ theorem run_program (template : State) (pc base modulus : UInt256)
   have hprefix8 := runInstructions_append_some _ _ _ _ _ hprefix7 h8
   simpa only [program,power0,←advancePC_add,advancePC,Nat.add_zero,List.append_assoc] using hprefix8
 
+#print axioms run_program
 end HistoricalSearch.FixedExponentTable

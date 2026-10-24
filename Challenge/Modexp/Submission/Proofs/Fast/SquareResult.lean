@@ -25,9 +25,11 @@ open Monpro CarryRowModel CarryScratchAgreement StagedOperand SquareModel
 
 /-! ## The machine-carry row on a first-loop result -/
 
+/-- The second limb loop of the machine-carry row on a first-loop result `q`. -/
 def rowFromL2Carry (q : MacState) (n : Nat) : MacState :=
   l2Step (midMem1 q.memory q.carry) (rowMu q.memory n) (rowC0 q.memory n) n (n - 1)
 
+/-- Middle, second loop and tail of the machine-carry row (overflow on the stack). -/
 def rowFromCarry (q : MacState) (n : Nat) : ByteArray :=
   tailCarry (rowFromL2Carry q n).memory (rowFromL2Carry q n).carry (overflow q.memory q.carry)
 
@@ -37,9 +39,11 @@ theorem rowCarry_eq_rowFromCarry (mem : ByteArray) (pa pb n i : Nat) :
 theorem rowL2Carry_eq (mem : ByteArray) (pa pb n i : Nat) :
     rowL2Carry mem pa pb n i = rowFromL2Carry (rowL1 mem pa pb n i) n := rfl
 
+/-- Memory after machine-carry square row `i` with carried top bit `tb`. -/
 def sqRowCarry (mem : ByteArray) (n i : Nat) (tb : UInt256) : ByteArray :=
   rowFromCarry (sqL1 mem n i tb) n
 
+/-- Memory after `i` machine-carry square rows. -/
 def sqRowsCarry (mem : ByteArray) (n : Nat) : Nat → ByteArray
   | 0 => mem
   | i + 1 => sqRowCarry (sqRowsCarry mem n i) n i (sqTb (sqRowsCarry mem n i) n i)
@@ -126,6 +130,7 @@ theorem sqRow_agree (a b : ByteArray) (h : Agree a b) (n i : Nat) (hi : i < n) (
   have hl := sqL1_agree a b h n i (sqTb b n i) hi hn
   exact rowFrom_agree _ _ hl.1 hl.2 n hn
 
+/-- The machine-carry square rows agree with the Monpro-style ones outside `T_`. -/
 theorem sqRows_agree (mem : ByteArray) (n : Nat) (hn : n ≤ 8) :
     ∀ i, i ≤ n → Agree (sqRowsCarry mem n i) (sqRowsMem mem n i) := by
   intro i
@@ -137,6 +142,8 @@ theorem sqRows_agree (mem : ByteArray) (n : Nat) (hn : n ≤ 8) :
 
 /-! ## Where the machine-carry rows write -/
 
+/-- One 32-byte store at `dst ∈ [2048, 2112 + 32 n)` leaves every word outside
+that region alone. -/
 theorem readWord_store_far (mem : ByteArray) (w dst n addr : Nat)
     (hdst : 2048 ≤ dst) (hdstHi : dst + 32 ≤ 2112 + 32 * n)
     (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
@@ -171,6 +178,7 @@ theorem readWord_sqRowCarry_far (mem : ByteArray) (n i addr : Nat) (tb : UInt256
   rw [readWord_rowFromCarry_far _ n addr (by omega) haddr,
     readWord_sqL1 mem n i addr tb hi (by omega)]
 
+/-- The machine-carry square rows write only inside `[2048, 2112 + 32 n)`. -/
 theorem readWord_sqRowsCarry_far (mem : ByteArray) (n addr : Nat)
     (haddr : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     ∀ i, i ≤ n → MachineState.readWord (sqRowsCarry mem n i) addr = MachineState.readWord mem addr := by
@@ -183,11 +191,13 @@ theorem readWord_sqRowsCarry_far (mem : ByteArray) (n addr : Nat)
         readWord_sqRowCarry_far (sqRowsCarry mem n i) n i addr _ (by omega) haddr]
       exact ih (by omega)
 
+/-- The machine-carry square rows write only inside `[2048, 2624)`. -/
 theorem readWord_sqRowsCarry (mem : ByteArray) (n addr : Nat) (hn : n ≤ 8)
     (haddr : addr + 32 ≤ 2048 ∨ 2624 ≤ addr) (i : Nat) (hi : i ≤ n) :
     MachineState.readWord (sqRowsCarry mem n i) addr = MachineState.readWord mem addr :=
   readWord_sqRowsCarry_far mem n addr (by omega) i hi
 
+/-- The top bit fed into row `i + 1` is `SGT 0 x_i`, with `x_i` the limb row `i` read. -/
 theorem sqTb_succ_carry (mem : ByteArray) (n i : Nat) (hi : i < n) (hn : n ≤ 8) :
     sqTb (sqRowsCarry mem n (i + 1)) n (i + 1) =
       UInt256.sgt (UInt256.ofNat 0) (sqX (sqRowsCarry mem n i) n i) := by
@@ -198,6 +208,7 @@ theorem sqTb_succ_carry (mem : ByteArray) (n i : Nat) (hi : i < n) (hn : n ≤ 8
 
 /-! ## The square rows' value, machine-carry form -/
 
+/-- The top limb of the final machine-carry accumulator is at most one. -/
 theorem sqRowsCarry_tn_le_one (m0 : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
     (ha : Model.FastRepresents m0 2368 (p + 2) a)
     (hm : Model.FastRepresents m0 0 (p + 2) mm)
@@ -224,6 +235,7 @@ theorem sqRowsCarry_represents (m0 : ByteArray) (p a mm pdst : Nat) (hn32 : p + 
   have hrep := sqRows_represents m0 p a mm pdst (by omega) ha hm hodd ham hminv hz
   exact (fastRepresents_iff _ _ hres pdst (p + 2) _ hpd).2 hrep
 
+/-- Zeroing touches only the accumulator, including its two leading words. -/
 theorem readWord_mpZeroed_far (s : State) (mem : ByteArray) (n addr : Nat)
     (hd : addr + 32 ≤ 2048 ∨ 2112 + 32 * n ≤ addr) :
     MachineState.readWord (mpZeroed s mem n) addr = MachineState.readWord mem addr := by
@@ -231,6 +243,7 @@ theorem readWord_mpZeroed_far (s : State) (mem : ByteArray) (n addr : Nat)
   rw [Challenge.EvmProof.Memory.readPadded_size]
   omega
 
+/-- The staged copy represents the input operand. -/
 theorem represents_stage (mem : ByteArray) (n a : Nat)
     (ha : Model.FastRepresents mem 2112 n a) :
     Model.FastRepresents (stage mem 2112 n) 2368 n a := by
@@ -244,6 +257,7 @@ theorem represents_stage (mem : ByteArray) (n a : Nat)
     rw [read_stage_member mem 2112 n (n - 1 - k) (by omega)]
   simpa only [heq] using ha
 
+/-- The accumulator zeroing preserves the staged operand. -/
 theorem represents_zeroed_stage (s : State) (mem : ByteArray) (n a : Nat) (hn : n ≤ 8)
     (ha : Model.FastRepresents mem 2368 n a) :
     Model.FastRepresents (mpZeroed s mem n) 2368 n a := by
@@ -253,6 +267,7 @@ theorem represents_zeroed_stage (s : State) (mem : ByteArray) (n a : Nat) (hn : 
 
 /-! ## The square subroutine's result memory -/
 
+/-- The memory a whole `SQUARE(0x840 → 0x200)` call leaves behind. -/
 def sqMem (s : State) (mem : ByteArray) (n : Nat) : ByteArray :=
   if eligible mem n then
     Csub.csResultMemory (sqRowsCarry (mpZeroed s (inputMemory mem 2112 n) n) n n) n 512
@@ -273,6 +288,7 @@ theorem sqMem_of_not_fast (s : State) (mem : ByteArray) (n : Nat) (h : ¬ eligib
   rw [CarryResult.selectedRows, if_neg hz]
   rfl
 
+/-- The fast-path call ends with exactly this memory (the `CSUB` return state). -/
 theorem csReturnedState_memory_sqMem (s : State) (mem : ByteArray) (n : Nat) (h : eligible mem n)
     (ret : UInt256) (rest : List UInt256) :
     (Csub.csReturnedState s (sqRowsCarry (mpZeroed s (inputMemory mem 2112 n) n) n n) n n
@@ -280,6 +296,9 @@ theorem csReturnedState_memory_sqMem (s : State) (mem : ByteArray) (n : Nat) (h 
   rw [Csub.csReturnedState_memory, sqMem_of_fast s mem n h]
   rfl
 
+/-- `SQUARE(0x840 → 0x200)` writes the Montgomery square `a · a · R⁻¹ mod m`
+(the accelerated widths; the generic fallback is vacuous at every fixed-chain
+call site, where `n ∈ {4, 8}` holds). -/
 theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
     (hn32 : p + 2 ≤ 8) (he : eligible mem (p + 2))
     (ha : Model.FastRepresents mem 2112 (p + 2) a)
@@ -315,6 +334,8 @@ theorem sqMem_represents (s : State) (mem : ByteArray) (p a mm : Nat)
   exact sqRowsCarry_represents (mpZeroed s prepared (p + 2)) p a mm 512 hn8 (by omega)
     ha0 hm0 hodd ham hminv0 (tValue_mpZeroed s prepared (p + 2))
 
+/-- Every word outside `SUBB`, outside the CIOS scratch `[2048, 2624)` and
+outside the operand/destination block at `2048` survives a `SQUARE` call. -/
 theorem sqMem_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -330,12 +351,15 @@ theorem sqMem_readWord_outside (s : State) (mem : ByteArray) (n addr : Nat)
   · exact CarryResult.monproMem_readWord_outside s mem 2112 512 n 512 addr hn hn32
       hsubb hscratch hdst
 
+/-- Everything at or above `2624` survives a `SQUARE` call. -/
 theorem sqMem_readWord_high (s : State) (mem : ByteArray) (n addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2624 ≤ addr) :
     MachineState.readWord (sqMem s mem n) addr = MachineState.readWord mem addr :=
   sqMem_readWord_outside s mem n addr hn hn32 (Or.inr (by omega)) (Or.inr haddr)
     (Or.inr (by omega))
 
+/-- The five configuration words `V_S32`, `V_MINV`, `V_ML`, `V_TL`, `V_EOFF`
+are unchanged by a `SQUARE` call. -/
 theorem sqMem_frame (s : State) (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8) :
     MachineState.readWord (sqMem s mem n) 2688 = MachineState.readWord mem 2688 ∧
       MachineState.readWord (sqMem s mem n) 2720 = MachineState.readWord mem 2720 ∧
@@ -348,6 +372,8 @@ theorem sqMem_frame (s : State) (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32
    sqMem_readWord_high s mem n 2784 hn hn32 (by omega),
    sqMem_readWord_high s mem n 2656 hn hn32 (by omega)⟩
 
+/-- Every represented block disjoint from `SUBB`, from the CIOS scratch and from
+the block at `2048` survives a `SQUARE` call. -/
 theorem sqMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (n ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)

@@ -24,6 +24,7 @@ open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 
 
+/-- Arithmetic value represented by BASE after `t` in-place squares. -/
 def fixedDirectValue (mm R bM : Nat) : Nat → Nat
   | 0 => bM
   | t + 1 => Model.montMul mm R
@@ -36,6 +37,7 @@ theorem fixedDirectValue_lt {mm R bM : Nat} (hm : 0 < mm)
   | zero => exact hbM
   | succ t _ => exact Model.montMul_lt hm _ _ _
 
+/-- Squaring first and then iterating is the whole chain. -/
 theorem fixedDirectValue_step (mm R bM : Nat) : ∀ t,
     fixedDirectValue mm R (Model.montMul mm R bM bM) t =
       fixedDirectValue mm R bM (t + 1) := by
@@ -44,6 +46,7 @@ theorem fixedDirectValue_step (mm R bM : Nat) : ∀ t,
   | zero => rfl
   | succ t ih => simp only [fixedDirectValue, ih]
 
+/-- The chain value in the iterate form the kernel's loop lemma uses. -/
 theorem fixedDirectValue_eq_iterate (mm R bM : Nat) : ∀ t,
     fixedDirectValue mm R bM t =
       (fun x => Model.montMul mm R x x)^[t] bM := by
@@ -64,6 +67,8 @@ theorem fixedDirectValue_form {mm R b bM : Nat} (hm : 0 < mm)
       rw [hs, pow_succ, Nat.mul_comm (2 ^ t) 2]
       exact Nat.mod_modEq _ _
 
+/-- The blocks carried by the direct fixed chain. ACC deliberately remains a
+normal-domain residue while BASE is in Montgomery form. -/
 structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   rawAcc : Model.FastRepresents mem 256 n rawBase
@@ -71,11 +76,14 @@ structure Inv (mem : ByteArray) (n mm rawBase squareBase : Nat) : Prop where
   oneBlock : ∃ one, one < Limbs.radix ∧
     Model.FastRepresents mem 768 n one
 
+/-- The square count the loop head writes sits at `0x2440`, above every block
+the chain reads and below the configuration words. -/
 theorem countStore_frame {mem : ByteArray} {n bsize minv : Nat} (c : Nat)
     (hframe : Exp.Frame mem n bsize minv) :
     Exp.Frame (Exp.storeWord mem 2624 (UInt256.ofNat c)) n bsize minv :=
   Exp.frame_storeWord (UInt256.ofNat c) (by omega) hframe
 
+/-- The square count the loop head writes disturbs no block of the chain. -/
 theorem countStore_inv {mem : ByteArray} {n mm rawBase squareBase : Nat} (c : Nat)
     (hn32 : n ≤ 8) (hinv : Inv mem n mm rawBase squareBase) :
     Inv (Exp.storeWord mem 2624 (UInt256.ofNat c)) n mm rawBase squareBase := by
@@ -88,6 +96,8 @@ theorem countStore_inv {mem : ByteArray} {n mm rawBase squareBase : Nat} (c : Na
       Exp.storeWord_frame mem 2624 768 n one _ (Or.inr (by omega)) honeRep⟩⟩
 
 
+/-- A Montgomery-form left operand times a normal-form right operand is a
+normal-domain product. -/
 theorem montMul_normal_right {m R x y xM y0 : Nat} (hm : 0 < m)
     (hcop : Nat.Coprime R m) (hx : xM ≡ x * R [MOD m])
     (hy : y0 ≡ y [MOD m]) :
@@ -98,6 +108,7 @@ theorem montMul_normal_right {m R x y xM y0 : Nat} (hm : 0 < m)
     _ = (x * R) * y := by ring
     _ ≡ xM * y0 [MOD m] := hx.symm.mul hy.symm
 
+/-- The final mixed-domain product is already the normal-domain power. -/
 theorem directProduct_value {mm R b bM rawBase count : Nat}
     (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hbMform : bM ≡ b * R [MOD mm]) (hraw : rawBase ≡ b [MOD mm]) :
@@ -107,11 +118,13 @@ theorem directProduct_value {mm R b bM rawBase count : Nat}
     (fixedDirectValue_form hm hcop hbMform count) hraw]
   simp only [pow_succ]
 
+/-- Interface for the direct-output implementation of the two fixed cases. -/
 structure Handler (s : State) (mem input : ByteArray)
     (n bsize esize msize : Nat) where
   enter : Challenge.EvmProof.GasSteps
     (Exp.bDone s mem n bsize esize msize)
     (FixedExponentRoute.entryState s mem n bsize esize msize)
+  /-- A miss bails to `modexpBig`; it does not rejoin the generic loop. -/
   miss : ¬ FixedExponentRoute.Matches input bsize esize →
     FixedExponentRoute.Handled input
       (FixedExponentRoute.entryState s mem n bsize esize msize)
@@ -119,6 +132,7 @@ structure Handler (s : State) (mem input : ByteArray)
     FixedExponentRoute.Handled input
       (FixedExponentRoute.entryState s mem n bsize esize msize)
 
+/-- Forget implementation details and expose the ordinary fixed route. -/
 def Handler.toRoute (handler : Handler s mem input n bsize esize msize) :
     FixedExponentRoute.Route s mem input n bsize esize msize where
   enter := handler.enter
@@ -127,6 +141,7 @@ def Handler.toRoute (handler : Handler s mem input n bsize esize msize) :
     rintro ⟨count, hcase⟩
     exact handler.hit count hcase
 
+/-- Compose a direct-output handler: both arms finish on their own. -/
 def handled_of_bDoneWithGeneric
     (handler : Handler s mem input n bsize esize msize) :
     FixedExponentRoute.Handled input (Exp.bDone s mem n bsize esize msize) := by

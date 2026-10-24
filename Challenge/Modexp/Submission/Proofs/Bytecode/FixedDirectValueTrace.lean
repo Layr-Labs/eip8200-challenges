@@ -1,0 +1,242 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectDispatchTrace
+import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRouteLogic
+
+set_option warningAsError true
+set_option maxRecDepth 40000
+set_option maxHeartbeats 4000000
+
+/-!
+# Located exponent-value checks
+
+The two blocks below connect the single-byte and three-byte calldata reads to
+the semantic exponent value used by the route interface.
+-/
+
+namespace Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectValueTrace
+
+open EvmSemantics EvmSemantics.EVM YulEvmCompiler
+open Challenge.Modexp.Submission.Proofs.Fast
+open Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
+open Challenge.Modexp.Submission.Proofs.Fast.FixedDirectStates
+open Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths
+
+private theorem isTrue_of_xor_ne (x : UInt256) (hx : x ≠ 0) :
+    UInt256.isTrue x := by
+  unfold UInt256.isTrue
+  intro hz
+  apply hx
+  apply Challenge.EvmProof.Word.word_ext
+  change x.toNat = 0
+  exact hz
+
+private theorem exponentValue_one (input : ByteArray) (bsize : Nat) :
+    exponentValue input bsize 1 =
+      (YulSemantics.EVM.byteFrom input.toList (96 + bsize)).toNat := by
+  unfold exponentValue
+  simpa using Challenge.EvmProof.Bytes.bytesToNatPadded_succ
+    input (96 + bsize) 0
+
+private theorem isTrue_lor_left (a b : UInt256) (ha : a.toNat ≠ 0) :
+    UInt256.isTrue (UInt256.lor a b) := by
+  show (UInt256.lor a b).toNat ≠ 0
+  intro h
+  have h0 : UInt256.lor a b = 0 := Challenge.EvmProof.Word.word_ext (h.trans (by decide))
+  apply ha
+  rw [((Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordOr_eq_zero_iff
+    a b).1 h0).1]
+  decide
+
+set_option linter.unusedSimpArgs false in
+/-- `e3go`: square count `1`, jump to the loop head 2498.  Reads nothing, so it holds for
+every frame, including the one the shift cleanup tail lands with. -/
+theorem run_threeHit (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.threeHit
+      (FixedDirectStates.e3go s memory n bsize esize msize) =
+      some (FixedDirectStates.special s memory n bsize esize msize 1) := by
+  simp (config := { maxSteps := 400000 })
+    [FixedDirectPaths.threeHit, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      FixedDirectStates.e3go, FixedDirectStates.special, Exp.outer,
+      hcode, hrun, jumpDest3953,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_check65537_hit (s : State) (memory input : ByteArray)
+    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (hvalue : exponentValue input bsize 3 = 65537)
+    (hdata : s.executionEnv.calldata = input)
+    (hactive : 88 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2656 = UInt256.ofNat (96 + bsize))
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock
+      (FixedDirectPaths.check65537 ++ FixedDirectPaths.fermatHit)
+      (FixedDirectStates.check65537 s memory n bsize 3 msize) =
+      some (FixedDirectStates.special s memory n bsize 3 msize 16) := by
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter
+      s.activeWords.toNat 2656 32) = s.activeWords :=
+    Exp.activeWords_fix s 2656 32 (by omega) (by omega) hactive
+  have haddr : (96 + bsize) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      96 + bsize := by
+    apply Nat.mod_eq_of_lt
+    omega
+  have hshr := Challenge.EvmProof.Bytes.shiftRight_readWord
+    input (96 + bsize) 3 (by omega) (by omega)
+  rw [show (32 - 3) * 8 = 232 by norm_num] at hshr
+  unfold exponentValue at hvalue
+  rw [hvalue] at hshr
+  have hxor : UInt256.xor (UInt256.ofNat 65537) (UInt256.ofNat 65537) =
+      UInt256.ofNat 0 := by decide
+  simp (config := { maxSteps := 700000 })
+    [FixedDirectPaths.check65537, FixedDirectPaths.fermatHit,
+      opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      FixedDirectStates.check65537, FixedDirectStates.special, Exp.outer,
+      hdata, hrun, heoff, hfix, haddr, hshr, hxor,
+      Exp.isZero_ofNat_one, Exp.not_isTrue_zero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_check65537_miss (s : State) (memory input : ByteArray)
+    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (hvalue : exponentValue input bsize 3 ≠ 65537)
+    (hdata : s.executionEnv.calldata = input)
+    (hactive : 88 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2656 = UInt256.ofNat (96 + bsize))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock FixedDirectPaths.check65537
+      (FixedDirectStates.check65537 s memory n bsize 3 msize) =
+      some (FixedDirectStates.bailState s memory n bsize 3 msize) := by
+  have hfix : UInt256.ofNat (MachineState.activeWordsAfter
+      s.activeWords.toNat 2656 32) = s.activeWords :=
+    Exp.activeWords_fix s 2656 32 (by omega) (by omega) hactive
+  have haddr : (96 + bsize) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      96 + bsize := by
+    apply Nat.mod_eq_of_lt
+    omega
+  have hshr := Challenge.EvmProof.Bytes.shiftRight_readWord
+    input (96 + bsize) 3 (by omega) (by omega)
+  rw [show (32 - 3) * 8 = 232 by norm_num] at hshr
+  change UInt256.shiftRight (MachineState.readWord input (96 + bsize))
+      (UInt256.ofNat 232) = UInt256.ofNat (exponentValue input bsize 3) at hshr
+  have hvlt : exponentValue input bsize 3 < 2 ^ 256 :=
+    (Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow
+      input (96 + bsize) 3).trans_le (by norm_num)
+  have hxor : UInt256.xor (UInt256.ofNat 65537)
+      (UInt256.ofNat (exponentValue input bsize 3)) ≠ 0 := by
+    intro hx
+    have heq' : UInt256.ofNat 65537 =
+        UInt256.ofNat (exponentValue input bsize 3) :=
+      (Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic.wordXor_eq_zero_iff
+        _ _).mp hx
+    have hnat := congrArg UInt256.toNat heq'
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt (by norm_num),
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Nat.mod_eq_of_lt hvlt] at hnat
+    exact hvalue hnat.symm
+  have htrue : UInt256.isTrue
+      (UInt256.xor (UInt256.ofNat 65537)
+        (UInt256.ofNat (exponentValue input bsize 3))) :=
+    isTrue_of_xor_ne _ hxor
+  simp (config := { maxSteps := 700000 })
+    [FixedDirectPaths.check65537, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      FixedDirectStates.check65537, FixedDirectStates.bailState, Exp.outer,
+      hdata, hcode, hrun, heoff, hfix, haddr, hshr, hxor, htrue,
+      Exp.isZero_ofNat_zero, Exp.isTrue_one, jumpDestBail,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod,
+      Challenge.EvmProof.Word.word_toNat_ofNat]
+
+private def sound {start finish : State}
+    (path : List (Challenge.EvmProof.Stepper.Located
+      Artifact.submissionArtifact .Osaka))
+    (h : Challenge.EvmProof.Stepper.runLocatedBlock path start = some finish)
+    (hcode : start.executionEnv.code = Artifact.submissionArtifact.code)
+    (hfork : start.fork = .Osaka) (hrun : start.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig start.executionEnv.precompileConfig
+      start.executionEnv.fork start.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps start finish :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    Artifact.submissionArtifact .Osaka path hcode hfork h hrun hnp
+
+def gasSteps_threeHit (s : State) (memory : ByteArray)
+    (n bsize esize msize : Nat)
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (FixedDirectStates.e3go s memory n bsize esize msize)
+      (FixedDirectStates.special s memory n bsize esize msize 1) :=
+  sound FixedDirectPaths.threeHit
+    (run_threeHit s memory n bsize esize msize hcode hrun)
+    (by simpa [FixedDirectStates.e3go, Artifact.submissionArtifact] using hcode)
+    (by simpa [FixedDirectStates.e3go] using hfork)
+    (by simpa [FixedDirectStates.e3go] using hrun)
+    (by simpa [FixedDirectStates.e3go] using hnp)
+
+def gasSteps_check65537_hit (s : State) (memory input : ByteArray)
+    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (hvalue : exponentValue input bsize 3 = 65537)
+    (hdata : s.executionEnv.calldata = input)
+    (hactive : 88 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2656 = UInt256.ofNat (96 + bsize))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (FixedDirectStates.check65537 s memory n bsize 3 msize)
+      (FixedDirectStates.special s memory n bsize 3 msize 16) :=
+  sound (FixedDirectPaths.check65537 ++ FixedDirectPaths.fermatHit)
+    (run_check65537_hit s memory input n bsize msize hb hvalue hdata hactive
+      heoff hrun)
+    (by simpa [FixedDirectStates.check65537, Artifact.submissionArtifact] using hcode)
+    (by simpa [FixedDirectStates.check65537] using hfork)
+    (by simpa [FixedDirectStates.check65537] using hrun)
+    (by simpa [FixedDirectStates.check65537] using hnp)
+
+def gasSteps_check65537_miss (s : State) (memory input : ByteArray)
+    (n bsize msize : Nat) (hb : bsize ≤ 1024)
+    (hvalue : exponentValue input bsize 3 ≠ 65537)
+    (hdata : s.executionEnv.calldata = input)
+    (hactive : 88 ≤ s.activeWords.toNat)
+    (heoff : MachineState.readWord memory 2656 = UInt256.ofNat (96 + bsize))
+    (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    Challenge.EvmProof.GasSteps
+      (FixedDirectStates.check65537 s memory n bsize 3 msize)
+      (FixedDirectStates.bailState s memory n bsize 3 msize) :=
+  sound FixedDirectPaths.check65537
+    (run_check65537_miss s memory input n bsize msize hb hvalue hdata hactive
+      heoff hcode hrun)
+    (by simpa [FixedDirectStates.check65537, Artifact.submissionArtifact] using hcode)
+    (by simpa [FixedDirectStates.check65537] using hfork)
+    (by simpa [FixedDirectStates.check65537] using hrun)
+    (by simpa [FixedDirectStates.check65537] using hnp)
+
+end Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectValueTrace

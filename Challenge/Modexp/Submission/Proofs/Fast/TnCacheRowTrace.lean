@@ -13,10 +13,13 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
 
 def middle : List Instr := TnCacheStoreAt.middle ++ TnCacheProductTrace.cachedProduct
+/-- P1: the eight-limb head keeps the carry cache in the fifteenth word below the carry. -/
 def middle8 : List Instr := TnCacheStoreAt.middle15 ++ TnCacheProductTrace.cachedProduct8
+/-- The four-limb multiply head copy at 5494 (P1a: the inverse is the thirteenth cache word). -/
 def middle4 : List Instr := TnCacheStoreAt.middle14 ++ TnCacheProductTrace.cachedProduct4
 def tailShort : List Instr := TnCacheStoreAt.tail ++ TnCacheFrameOps.advanceShort
 
+/-- P1: the row tail reads and writes the carry cache in the thirteenth frame word. -/
 def tail : List Instr := TnCacheStoreAt.tail16 ++ TnCacheFrameOps.advance
 
 theorem run_middle8 (pc0 : Nat) (s : State)
@@ -102,4 +105,8 @@ theorem run_tailShort (pc0 : Nat) (s : State)
   simpa only [tailShort, TnCacheMemory.put, TnCacheFrameOps.frame, List.cons_append, List.nil_append,
     Nat.add_zero, Nat.add_assoc, Nat.reduceAdd] using both
 
+#print axioms run_middle8
+#print axioms run_middle4
+#print axioms run_tail
+#print axioms run_tailShort
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheRowTrace

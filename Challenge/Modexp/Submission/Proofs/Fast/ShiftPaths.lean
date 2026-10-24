@@ -10,6 +10,7 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- The dispatcher guard (k2465): `bsize = 32 n` or jump straight to `modexpBig` (pc 219). -/
 def blk2862 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1878 .JUMPDEST,
@@ -20,6 +21,7 @@ def blk2862 :
    pushAt 1883 1 219,
    opAt 1884 .JUMPI]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk2874 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1885 (.Dup ⟨0, by decide⟩),
@@ -31,6 +33,7 @@ def blk2874 :
    opAt 1891 .JUMP]
 
 
+/-- The negation width test (negun): `32 n = 128` jumps to the four-limb stub at pc 2336. -/
 def blkNegW :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1897 (.Dup ⟨0, by decide⟩),
@@ -39,6 +42,7 @@ def blkNegW :
    pushAt 1900 2 2336,
    opAt 1901 .JUMPI]
 
+/-- Negation cell at pc 2429: `NEG[1504] := 0 - mem[224]`. -/
 def negS8 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1902 1 224,
@@ -48,6 +52,7 @@ def negS8 :
    pushAt 1906 2 1504,
    opAt 1907 .MSTORE]
 
+/-- Negation cell at pc 2438: `NEG[1472] := NOT mem[192]`. -/
 def negN8a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1908 1 192,
@@ -56,6 +61,7 @@ def negN8a :
    pushAt 1911 2 1472,
    opAt 1912 .MSTORE]
 
+/-- Negation cell at pc 2446: `NEG[1440] := NOT mem[160]`. -/
 def negN8b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1913 1 160,
@@ -64,6 +70,7 @@ def negN8b :
    pushAt 1916 2 1440,
    opAt 1917 .MSTORE]
 
+/-- Negation cell at pc 2454: `NEG[1408] := NOT mem[128]`. -/
 def negN8c :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1918 1 128,
@@ -72,6 +79,7 @@ def negN8c :
    pushAt 1921 2 1408,
    opAt 1922 .MSTORE]
 
+/-- Negation cell at pc 2462: `NEG[1376] := NOT mem[96]`. -/
 def negN8d :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1923 1 96,
@@ -80,6 +88,7 @@ def negN8d :
    pushAt 1926 2 1376,
    opAt 1927 .MSTORE]
 
+/-- Negation cell at pc 2471: `NEG[1344] := NOT mem[64]`. -/
 def negNTa :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1929 1 64,
@@ -88,6 +97,7 @@ def negNTa :
    pushAt 1932 2 1344,
    opAt 1933 .MSTORE]
 
+/-- Negation cell at pc 2479: `NEG[1312] := NOT mem[32]`. -/
 def negNTb :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1934 1 32,
@@ -96,6 +106,7 @@ def negNTb :
    pushAt 1937 2 1312,
    opAt 1938 .MSTORE]
 
+/-- Negation cell at pc 2487: `NEG[1280] := NOT mem[0]`. -/
 def negNTc :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1939 0 0,
@@ -104,6 +115,7 @@ def negNTc :
    pushAt 1942 2 1280,
    opAt 1943 .MSTORE]
 
+/-- Negation cell at pc 2337: `NEG[1376] := 0 - mem[96]`. -/
 def negS4 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1848 1 96,
@@ -113,31 +125,38 @@ def negS4 :
    pushAt 1852 2 1376,
    opAt 1853 .MSTORE]
 
+/-- The four-limb stub's `JUMPDEST` (pc 2336). -/
 def negJ4 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1847 .JUMPDEST]
 
+/-- The four-limb stub joins `NEG_TAIL` (pc 2470). -/
 def negJ4b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1854 2 2470,
    opAt 1855 .JUMP]
 
+/-- `NEG_TAIL`'s `JUMPDEST` (pc 2470). -/
 def negJT :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1928 .JUMPDEST]
 
+/-- Eight-limb negation cells 7..3 (limb 7: `0 - m_7`), falling into `NEG_TAIL`. -/
 def blkNeg8 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   negS8 ++ negN8a ++ negN8b ++ negN8c ++ negN8d
 
+/-- Four-limb negation stub (pc 2336): limb 3 as `0 - m_3`, then `NEG_TAIL` at pc 2470. -/
 def blkNeg4 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   negJ4 ++ negS4 ++ negJ4b
 
+/-- `NEG_TAIL` (pc 2470): negation cells 2..0. -/
 def blkNegT :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   negJT ++ negNTa ++ negNTb ++ negNTc
 
+/-- `blk2919`, first part: `L = d &&& -d` twice on top of `d`, stopping before the `CLZ`. -/
 def blk2919a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1944 0 0,
@@ -149,6 +168,8 @@ def blk2919a :
    opAt 1950 .AND,
    opAt 1951 (.Dup ⟨0, by decide⟩)]
 
+/-- `blk2919`, second part (pc 2673..2704), after the `CLZ`: `PRE_X := 0 - ~clz L`,
+`PRE_L := 255 - clz L`, `PRE_DODD := d / L`, `PRE_BMOD := -dodd mod dodd`. -/
 def blk2919b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1953 (.Dup ⟨0, by decide⟩),
@@ -175,6 +196,7 @@ def blk2919b :
    pushAt 1974 2 1632,
    opAt 1975 .MSTORE]
 
+/-- newton-batch head (pc 2535): load `n0 = mem[mem[0xac0]]` and form `dodd * n0` (inl693: the chain is inline). -/
 def blkNbHead :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1976 2 2752,
@@ -184,6 +206,7 @@ def blkNbHead :
    opAt 1980 (.Dup ⟨2, by decide⟩),
    opAt 1981 .MUL]
 
+/-- The inlined Newton chain (pc 2543): `[p] ++ rest` becomes `[newton8W p] ++ rest`. -/
 def blkNbSub :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1982 (.Dup ⟨0, by decide⟩),
@@ -230,6 +253,8 @@ def blkNbSub :
    opAt 2023 (.Swap ⟨0, by decide⟩),
    opAt 2024 .POP]
 
+/-- newton-batch tail (pc 2741): `dinv := x * n0`, `V_MINV := -(dodd * x)`, drop the four
+words, then the old `k := n` prologue. -/
 def blkNbTail :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2025 (.Dup ⟨1, by decide⟩),
@@ -276,10 +301,12 @@ def blkNbTail :
    opAt 2066 .MLOAD,
    opAt 2067 (.Dup ⟨12, by decide⟩)]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk3013 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2093 .JUMPDEST]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk3018 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2094 (.Dup ⟨15, by decide⟩),
@@ -291,6 +318,7 @@ def blk3018 :
    opAt 2100 .MLOAD,
    opAt 2101 .MSTORE]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk3026 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2102 2 2080,
@@ -348,6 +376,10 @@ def blk3026 :
 
 
 
+/-- The middle block: flags, `TN := Wn - q`, and the three-way exit test on `neg ||| TN`.
+Instructions 2578..2579 are `SWAP3 POP` (pc 3184..3185): they lift the `2^256-1` mask that the
+three `JUMPDEST`s at pc 3168..3170 left in place and drop it, restoring the `[carry, q]` shape
+before `SUB`. -/
 def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   -- the three pops that discarded the old pointer loop's carried words are gone; the block now
@@ -374,11 +406,13 @@ def blk3125 :
    pushAt 2393 2 3073,
    opAt 2394 .JUMPI]
 
+/-- `UNC`: entered only with `neg ≠ 0`; drops it and falls into `ADD_LOOP`. -/
 def blkUnc :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2403 .JUMPDEST,
    opAt 2404 .POP]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk3153 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2405 .JUMPDEST,
@@ -386,6 +420,7 @@ def blk3153 :
    pushAt 2407 2 2784,
    opAt 2408 .MLOAD]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk3157 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2409 .JUMPDEST,
@@ -419,6 +454,7 @@ def blk3157 :
    pushAt 2437 2 3081,
    opAt 2438 .JUMPI]
 
+/-- Located block of the selected shift-reduce program. -/
 def blk3192 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2439 .POP,
@@ -434,6 +470,7 @@ def blk3192 :
    pushAt 2449 2 3075,
    opAt 2450 .JUMPI]
 
+/-- `SUB_CHECK` up to its jump: `TN = 0` jumps to the `CSUB` call with `[TN, k]`. -/
 def blk3204 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2451 2 2080,
@@ -443,6 +480,7 @@ def blk3204 :
    pushAt 2455 2 3061,
    opAt 2456 .JUMPI]
 
+/-- `k := k - 1` (`NOT ADD` on the zero above `k`), back to the loop head while `k ≠ 0` (the `CSUB` call is the identity on every reachable state). -/
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2395 .JUMPDEST,
@@ -452,6 +490,7 @@ def blk3253 :
    pushAt 2399 2 2704,
    opAt 2400 .JUMPI]
 
+/-- The loop exit after the last step: jump to `SHIFT_DONE`. -/
 def blk3253x :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2401 2 3146,
@@ -461,6 +500,7 @@ theorem jumpDest4608 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2390 = true :=
   Artifact.isValidJumpDest_index 1878 (by rfl)
 
+/-- `modexpBig`, where the trampoline lands. -/
 theorem jumpDestBigC :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 219 = true :=
   Artifact.isValidJumpDest_index 146 (by rfl)
@@ -506,10 +546,16 @@ theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5522 = true :=
   Artifact.isValidJumpDest_index 4411 (by rfl)
 
+/-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
+E3 phase switch has set the last riding slot to `30`. -/
 theorem jumpDest2471 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2329 = true :=
   Artifact.isValidJumpDest_index 1843 (by rfl)
 
+/-- The cache-setup block (`E5`, pcs 2764-2810): computes the unrolled-conversion
+entry `2946 + 116·[n = 4]`, stores it at `0x6a2` (1698) and the squaring flag at
+`0x6e0` (1760), and leaves the loop counter `n ≫ flag` on top of the riding slots
+with the entry parked in the scratch slot. -/
 def blk2764 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2068 (.Dup ⟨0, by decide⟩),
@@ -538,6 +584,9 @@ def blk2764 :
    opAt 2091 .MLOAD,
    opAt 2092 (.Swap ⟨0, by decide⟩)]
 
+/-- The loop-exit check (pcs 3346-3356): drop the spent counter, and with the
+squaring flag clear jump to the cleanup tail; otherwise fall into the squaring
+round (pcs 3357-3380). -/
 def blk3346 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2457 .JUMPDEST,
@@ -548,6 +597,9 @@ def blk3346 :
    pushAt 2462 2 5522,
    opAt 2463 .JUMPI]
 
+/-- The cleanup tail (pcs 5444-5465): sixteen `POP`s drop all riding slots but the last,
+then `PUSH2 0989 ADD JUMP` jumps to `2441 + z`, where `z` is that last slot: `0` from `E5`
+(the exponent dispatcher at 2441) and `28` after the E3 phase switch (`e3go` at 2471). -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 4411 .JUMPDEST,

@@ -38,4 +38,6 @@ theorem reconstructExpressions (hi : Expr) (C : Nat)
     (hi.high (UInt256.ofNat residueModulus)).toNat (by positivity) (by norm_num [residueModulus])
     (by norm_num [residueModulus]) hh.2 hcancel hb
 
+#print axioms cancelledResidual
+#print axioms reconstructExpressions
 end HistoricalSearch.CancelledCRT

@@ -8,6 +8,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.FullBase
 
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 
+/-- Symbolic instruction execution; actual byte locations and gas are separate obligations. -/
 def runInstructions : List Instr → State → Option State
   | [], state => some state
   | instruction :: rest, state => do

@@ -11,6 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro SquareModel StagedOperand
 open TnCacheL1Trace
 
+/-- A consecutive suffix of the staged first loop, retaining each JUMPDEST. -/
 def program (n j0 : Nat) : Nat → List Instr
   | 0 => []
   | k+1 => program n j0 k ++ TnCacheL1Trace.stepProgram
@@ -53,4 +54,5 @@ theorem run_chain (s : State) (pc : Nat) (q : MacState) (bi : UInt256)
       have hpc : pc+37*k+37 = pc+37*(k+1) := by omega
       simpa only [program, l1Run_succ, Challenge.EvmProof.Word.ofNat_add_mod, hpc] using both
 
+#print axioms run_chain
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL1Chain

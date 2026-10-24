@@ -6,6 +6,7 @@ set_option warningAsError true
 namespace Challenge.Modexp.Submission.Proofs.Fast.CarryScratchAgreement
 open EvmSemantics
 
+/-- The scratch word8192 is not part of the persistent operand or result region. -/
 def Agree (a b : ByteArray) : Prop :=
   ∀ i, i < 2048 ∨ 2080 ≤ i → a[i]?.getD 0 = b[i]?.getD 0
 

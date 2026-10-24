@@ -60,4 +60,5 @@ theorem carryWord_toNat (W S C H : Nat) (hWpos : 0 < W) (hW : W ≤ 248)
   change ((S % wordRadix)/2^W + (((H+(wordRadix-1-S%wordRadix))%residueModulus)/32*2^(256-W))%wordRadix)%wordRadix = _
   rw [hq, Nat.mod_eq_of_lt hqshift, hsplit, Nat.mod_eq_of_lt hcarrylt]
 
+#print axioms carryWord_toNat
 end HistoricalSearch.RoundedWordBridge

@@ -28,6 +28,8 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
+/-- The conversion frame's riding `-N` slots: `entrySlots`' words 1..7 are exactly the
+`readWord um (1280 + 32 i)` limbs `gasSteps_run` wants, by construction. -/
 theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
     ∀ i : Nat, i < 7 →
       (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
@@ -37,6 +39,8 @@ theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : 
   interval_cases i <;>
     simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
 
+/-- The scratch slot: `entrySlots`' word 0 is the section entry `shiftEntry n = entryPC n`
+for the two widths the routine runs. -/
 theorem entrySlots_scratch (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat)
     (hn : n = 4 ∨ n = 8) :
     (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
@@ -45,11 +49,15 @@ theorem entrySlots_scratch (z : UInt256) (um : ByteArray) (n bsize esize msize k
   rcases hn with rfl | rfl <;>
     simp [Shift.entrySlots, Shift.rideSlots, Shift.shiftEntry, entryPC, Exp.outer]
 
+/-- The riding frame is twenty-three words: the counter, seventeen slots, five outer. -/
 theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
     (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
       Exp.outer n bsize esize msize).length = 23 := by
   simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
 
+/-- The section on the conversion frame: from `macSetupState` (E6, pc 2895) with the
+quotient guess above the counter, slots and outer frame over `um`, to the middle block at
+pc 3171 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
 def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
     (htop : n = 8 → MachineState.readWord um 2336 = UInt256.ofNat 0)
@@ -78,3 +86,4 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 
+#print axioms Challenge.Modexp.Submission.Proofs.Fast.M9Mac.gasSteps_macSection

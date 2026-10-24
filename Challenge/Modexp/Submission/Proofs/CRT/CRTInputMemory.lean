@@ -132,4 +132,12 @@ theorem inputTopWord_toNat {mem : ByteArray} {ptr A : Nat}
     Nat.shiftRight_eq_div_pow]
   exact inputTop hrep
 
+#print axioms readWord_window
+#print axioms fullBytes_of_fastRepresents
+#print axioms window_digit
+#print axioms unaligned_digit
+#print axioms input244
+#print axioms inputTop
+#print axioms inputDigitWord_toNat
+#print axioms inputTopWord_toNat
 end HistoricalSearch.CRTInputMemory

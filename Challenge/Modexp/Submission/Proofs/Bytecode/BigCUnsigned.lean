@@ -217,5 +217,8 @@ theorem addResult_correct (ml src : Nat) (mem : ByteArray)
     rw [if_neg hc0]
     exact h1.2.2 k hk
 
+#print axioms pass_spec
+#print axioms pass_one
+#print axioms addResult_correct
 
 end Challenge.Modexp.Submission.Proofs.Bytecode.BigC.Unsigned

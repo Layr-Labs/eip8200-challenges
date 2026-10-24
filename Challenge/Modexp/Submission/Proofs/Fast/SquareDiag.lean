@@ -15,6 +15,7 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.SquareDiag
 open EvmSemantics
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 
+/-- `SGT 0 p` is the top bit of `p`. -/
 theorem sgt_zero_toNat (p : UInt256) :
     (UInt256.sgt (UInt256.ofNat 0) p).toNat = p.toNat / 2 ^ 255 := by
   have hp : p.toNat < 2 ^ 256 := word_lt_size p
@@ -30,12 +31,15 @@ theorem sgt_zero_toNat (p : UInt256) :
       · exact (Nat.le_div_iff_mul_le (by norm_num)).2 (by omega)
     rw [if_neg h, if_pos (by push_cast; omega), h1]; decide
 
+/-- The high word as `sq_row` computes it. -/
 def diagHi (x f : UInt256) : UInt256 :=
   let w := UInt256.lt f x
   let lo := x * f
   let mm := UInt256.mulMod x f maxWord - w
   (mm - UInt256.lt mm lo) - lo
 
+/-- Exactness of the diagonal: `hi * 2^256 + lo = x * (x + tb)` for `tb ≤ 1`,
+with `f = x + tb` computed modulo `2^256`. -/
 theorem diag_spec (x tb : UInt256) (htb : tb.toNat ≤ 1) :
     (diagHi x (x + tb)).toNat * 2 ^ 256 + (x * (x + tb)).toNat =
       x.toNat * (x.toNat + tb.toNat) := by

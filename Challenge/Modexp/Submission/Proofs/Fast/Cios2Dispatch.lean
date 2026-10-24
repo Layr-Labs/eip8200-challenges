@@ -25,12 +25,15 @@ open Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel WindowTwentyOneBinding
 
+/-- The multiply call state: the preclear trampoline, pc 5466, `[pa, pb, pdst, ret] ++ rest`. -/
 def dispatchState (s : State) (mem : ByteArray) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 5466
            stack := [UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
+/-- The shared `common` block, pc 4132, with the row head `hd` above the call frame
+(`hd = 4289` after the `mul entry`, `hd = 2464` for the square). -/
 def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3181
@@ -38,28 +41,35 @@ def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
            memory := mem }
 
 
+/-- The `common` JUMPDEST (instruction 3190, pc 4132 = 0x0f54). -/
 theorem jumpDestCommon :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3181 = true := by
   exact Artifact.isValidJumpDest_index 2478 (by rfl)
 
+/-- The multiply row head (instruction 2703, pc 3543). -/
 theorem jumpDestRowHead :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3313 = true := by
   exact Artifact.isValidJumpDest_index 2570 (by rfl)
 
+/-- The square row head `sq_row` (instruction 3275, pc 4268). -/
 theorem jumpDestSqRow :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5297 = true := by
   exact Artifact.isValidJumpDest_index 4220 (by rfl)
 
+/-- `jumpDestRowHead` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestRowHead' :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 3313).toNat = true := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact jumpDestRowHead
 
+/-- `jumpDestSqRow` in the `hd.toNat` form taken by `gasSteps_setup`/`gasSteps_commonSetup`. -/
 theorem jumpDestSqRow' :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode (UInt256.ofNat 5297).toNat = true := by
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   exact jumpDestSqRow
 
+/-- The square call state (`Exp.sqCall s mem ret tail`) is definitionally `commonState`
+with `hd = 2464` and `pa = pb = pdst = 2048`. -/
 example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
     ({ s with pc := UInt256.ofNat 3181
               stack := UInt256.ofNat 5297 :: UInt256.ofNat 512 :: UInt256.ofNat 512 ::
@@ -67,6 +77,8 @@ example (s : State) (mem : ByteArray) (ret : UInt256) (tail : List UInt256) :
               memory := mem } : State) =
       commonState s mem 5297 512 512 (UInt256.ofNat 512) ret tail := rfl
 
+/-- The multiply call state (`Exp.mpCall s mem pa pb pd ret tail`) is definitionally
+`dispatchState`. -/
 example (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256) (tail : List UInt256) :
     ({ s with pc := UInt256.ofNat 5466
               stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd :: ret :: tail
@@ -97,6 +109,7 @@ private theorem toNat_ne_of_ne {a b : UInt256} (h : a ≠ b) :
       exact Fin.ext hab
 
 set_option linter.unusedSimpArgs false in
+/-- `common` with a four- or eight-limb width word jumps to the kernel `setup`. -/
 theorem run_commonGuard (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1008)
     (_hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
@@ -114,6 +127,7 @@ theorem run_commonGuard (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Na
 set_option linter.unusedSimpArgs false in
 
 
+/-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block Artifact.submissionArtifact .Osaka 3182 TnM128Setup.fullEntryProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 2479 54 3182 TnM128Setup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
@@ -127,6 +141,7 @@ def environment (s : State)
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode, hfork, hrun, hnp⟩
 
+/-- `common` → kernel `setup` for a four- or eight-limb width (any `hd`). -/
 opaque gasSteps_common (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
@@ -146,6 +161,10 @@ opaque gasSteps_common (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat
     (run_commonGuard s mem hd pa pb pdst ret rest hcap hcode hact hs32 hguard hzero)
 
 
+/-- The kernel `setup` (pc 3402 → `hd`): stages `a` at `0x740 + 2·32n`, clears the scratch word and builds the
+row-0 frame `[pbi, hd, pb-32, l1Target n, m32, …, m64, m0, tl, m96, inv, 0, aEnd, pdst, ret]`
+(P1: modulus[32] in the fifth word, modulus[64] in the eighth, the Montgomery inverse in the
+twelfth and the zero carry cache in the thirteenth). -/
 opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -176,6 +195,9 @@ opaque gasSteps_setup (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Na
     (TnM128Setup.run_entry s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
       hcds hs32 hml hw hslot (by rw [hcode]; exact hjump))
 
+/-- `gasSteps_setup` for the square-loop frame: the riding width slot carries the limb
+count, so the row head entering the frame is the constant `3562` (the four/eight-limb
+staircase is selected later, from the row pointer word at H1). -/
 opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)
@@ -206,6 +228,7 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
     (TnM128Setup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
       hcds hs32 hml hw hslotn (by rw [hcode]; exact hjump))
 
+/-- `common` → `setup` with the square-loop frame's width slot (the limb count). -/
 opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hrun : s.halt = .Running)

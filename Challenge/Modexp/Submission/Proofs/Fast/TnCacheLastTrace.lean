@@ -21,7 +21,11 @@ theorem run_entry (w : Fin 33)
       ([UInt256.mulMod mu (MachineState.readWord template.memory x.toNat) maxWord, carry,
         mu * MachineState.readWord template.memory x.toNat, bi,
         pbi, paEnd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 15) : rest.length + j < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
   have hN : allOnes = maxWord := allOnes_value
   by_cases hw : w.val = 0
   · have hx := hpush hw
@@ -30,15 +34,16 @@ theorem run_entry (w : Fin 33)
     change UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat 0 32) = template.activeWords at hactive
     simp [runInstructions, CiosCachedLast.entryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hw, capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hzero, hactive, hN,
+      hw, hc11, hc12, hc13, hc14, hc15, State.activeWordsAfterUInt256, hzero, hactive, hN,
       succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
       List.exchange]
   · simp [runInstructions, CiosCachedLast.entryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hw, capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, hN,
+      hw, hc11, hc12, hc13, hc14, hc15, State.activeWordsAfterUInt256, hactive, hN,
       succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
       List.exchange]
     exact congrArg (fun n : Nat => pc + UInt256.ofNat n) (by omega)
 
+/-- The frame after the last copy: `mu` is gone. -/
 def lastState (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (pbi paEnd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) : State :=
@@ -48,6 +53,7 @@ def lastState (template : State) (pc : UInt256) (mem : ByteArray)
       tn, allOnes, destination, returnPC] ++ rest
     memory := (l2Step mem mu c0 n k).memory }
 
+/-- The last second-loop copy (cf. `TnCacheL2Trace.run_step`). -/
 theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x tl ts : UInt256)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
@@ -91,4 +97,5 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
     List.cons_append, List.nil_append] using hall
 
 
+#print axioms run_stepLast
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheLastTrace

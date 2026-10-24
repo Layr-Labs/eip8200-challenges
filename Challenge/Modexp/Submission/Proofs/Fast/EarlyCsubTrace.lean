@@ -10,6 +10,7 @@ open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open EarlyCsub
 
+/-- Every guard outcome reaches the caller with the specified result memory. -/
 def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)

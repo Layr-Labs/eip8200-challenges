@@ -24,10 +24,14 @@ open Challenge.Modexp.Submission.Proofs
 
 /-! ## Big-endian limb blocks -/
 
+/-- The limbs of the block at `ptr`, least significant first.  Limb `k`
+(counted from the least significant) is stored at `ptr + 32 * (count - 1 - k)`. -/
 def fastLimbs (memory : ByteArray) (ptr count : Nat) : List Nat :=
   (List.range count).map fun k =>
     (MachineState.readWord memory (ptr + 32 * (count - 1 - k))).toNat
 
+/-- `memory[ptr .. ptr + 32*count]` is the big-endian-limb encoding of
+`value`: the most significant limb sits at `ptr`. -/
 def FastRepresents (memory : ByteArray) (ptr count value : Nat) : Prop :=
   value < Limbs.radix ^ count ∧
     fastLimbs memory ptr count = Limbs.limbDigits count value
@@ -49,6 +53,8 @@ theorem fastLimbs_getElem (memory : ByteArray) (ptr count k : Nat)
       (MachineState.readWord memory (ptr + 32 * (count - 1 - k))).toNat := by
   simp [fastLimbs]
 
+/-- The bridge to the project's little-endian-index convention: the fast
+limb list is the reversal of `Limbs.memoryLimbs`. -/
 theorem fastLimbs_eq_reverse_memoryLimbs (memory : ByteArray) (ptr count : Nat) :
     fastLimbs memory ptr count = (Limbs.memoryLimbs memory ptr count).reverse := by
   apply List.ext_getElem
@@ -101,6 +107,7 @@ private theorem getElem_eq_div_mod_ofDigits (digits : List Nat) (index : Nat)
   rw [Nat.add_mul_mod_self_left,
     Nat.mod_eq_of_lt (hdigits digits[index] (List.getElem_mem hindex))]
 
+/-- Limb `k` (from the least significant) of a represented block. -/
 theorem readLimb_of_fastRepresents {memory : ByteArray} {ptr count value k : Nat}
     (hrep : FastRepresents memory ptr count value) (hk : k < count) :
     (MachineState.readWord memory (ptr + 32 * (count - 1 - k))).toNat =
@@ -111,6 +118,7 @@ theorem readLimb_of_fastRepresents {memory : ByteArray} {ptr count value k : Nat
   rw [value_of_fastRepresents hrep, fastLimbs_getElem] at hget
   exact hget
 
+/-- The word at offset `32 * j` from the base holds limb `count - 1 - j`. -/
 theorem readWord_of_fastRepresents {memory : ByteArray} {ptr count value j : Nat}
     (hrep : FastRepresents memory ptr count value) (hj : j < count) :
     (MachineState.readWord memory (ptr + 32 * j)).toNat =
@@ -118,6 +126,8 @@ theorem readWord_of_fastRepresents {memory : ByteArray} {ptr count value j : Nat
   have h := readLimb_of_fastRepresents hrep (k := count - 1 - j) (by omega)
   rwa [show count - 1 - (count - 1 - j) = j by omega] at h
 
+/-- Introduction rule: a block whose limbs are the radix digits of `value`
+represents `value`. -/
 theorem fastRepresents_of_limbs {memory : ByteArray} {ptr count value : Nat}
     (hvalue : value < Limbs.radix ^ count)
     (hlimbs : ∀ k, k < count →
@@ -154,6 +164,7 @@ theorem fastLimbs_congr {a b : ByteArray} {ptr count : Nat}
   have hk' : k < count := by simpa using hk
   rw [h _ (by omega)]
 
+/-- Representation depends only on the words of the block. -/
 theorem fastRepresents_congr {a b : ByteArray} {ptr count : Nat}
     (h : ∀ j, j < count →
       MachineState.readWord a (ptr + 32 * j) = MachineState.readWord b (ptr + 32 * j))
@@ -162,6 +173,7 @@ theorem fastRepresents_congr {a b : ByteArray} {ptr count : Nat}
   unfold FastRepresents
   rw [fastLimbs_congr h]
 
+/-- Representation depends only on the bytes of the block. -/
 theorem fastRepresents_congr_bytes {a b : ByteArray} {ptr count : Nat}
     (h : ∀ i, i < 32 * count → a[ptr + i]?.getD 0 = b[ptr + i]?.getD 0)
     (value : Nat) :
@@ -174,6 +186,7 @@ theorem fastRepresents_congr_bytes {a b : ByteArray} {ptr count : Nat}
   have := h (32 * j + i) (by omega)
   rwa [← Nat.add_assoc] at this
 
+/-- Writing outside the block preserves the representation. -/
 theorem fastRepresents_writeBytes_disjoint (memory bytes : ByteArray)
     (dst ptr count value : Nat)
     (hdisjoint : dst + bytes.size ≤ ptr ∨ ptr + 32 * count ≤ dst)
@@ -188,6 +201,7 @@ theorem fastRepresents_writeBytes_disjoint (memory bytes : ByteArray)
   · left
     omega
 
+/-- Writing a word outside the block preserves the representation. -/
 theorem fastRepresents_writeWord_disjoint (memory : ByteArray)
     (dst ptr count value word : Nat)
     (hdisjoint : dst + 32 ≤ ptr ∨ ptr + 32 * count ≤ dst)
@@ -199,6 +213,8 @@ theorem fastRepresents_writeWord_disjoint (memory : ByteArray)
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   exact hdisjoint
 
+/-- Writing limb `k` (from the least significant) updates exactly that entry
+of the limb list. -/
 theorem fastLimbs_write_at (memory : ByteArray) (ptr count k : Nat)
     (word : UInt256) (hk : k < count) :
     fastLimbs
@@ -227,6 +243,7 @@ theorem fastLimbs_write_at (memory : ByteArray) (ptr count k : Nat)
           | (left; omega)
           | (right; omega)
 
+/-- Replacing one digit of a radix expansion. -/
 theorem ofDigits_set (base : Nat) (digits : List Nat) (k w : Nat)
     (hk : k < digits.length) :
     Nat.ofDigits base (digits.set k w) + digits[k] * base ^ k =
@@ -245,6 +262,7 @@ theorem ofDigits_set (base : Nat) (digits : List Nat) (k w : Nat)
               base * (Nat.ofDigits base digits + w * base ^ k) := by rw [ih']
           nlinarith [h2]
 
+/-- Writing limb `k` of a represented block: the new value replaces digit `k`. -/
 theorem fastRepresents_write_limb {memory : ByteArray} {ptr count value k value' : Nat}
     (word : UInt256) (hrep : FastRepresents memory ptr count value) (hk : k < count)
     (hvalue' : value' + value / Limbs.radix ^ k % Limbs.radix * Limbs.radix ^ k =
@@ -272,6 +290,7 @@ theorem fastRepresents_write_limb {memory : ByteArray} {ptr count value k value'
   refine (fastRepresents_iff_value hlt).2 ?_
   rw [fastLimbs_write_at memory ptr count k word hk, hval]
 
+/-- Writing into a zero limb adds `word * radix ^ k`. -/
 theorem fastRepresents_write_zero_limb {memory : ByteArray} {ptr count value k : Nat}
     (word : UInt256) (hrep : FastRepresents memory ptr count value) (hk : k < count)
     (hzero : value / Limbs.radix ^ k % Limbs.radix = 0) :
@@ -282,6 +301,7 @@ theorem fastRepresents_write_zero_limb {memory : ByteArray} {ptr count value k :
   apply fastRepresents_write_limb word hrep hk
   rw [hzero, Nat.zero_mul, Nat.add_zero]
 
+/-- Writing the least significant limb of a zero block. -/
 theorem fastRepresents_write_low_of_zero {memory : ByteArray} {ptr count : Nat}
     (word : UInt256) (hrep : FastRepresents memory ptr count 0) (hcount : 0 < count) :
     FastRepresents
@@ -291,6 +311,7 @@ theorem fastRepresents_write_low_of_zero {memory : ByteArray} {ptr count : Nat}
   have h := fastRepresents_write_zero_limb (k := 0) word hrep hcount (by simp)
   simpa using h
 
+/-- Writing the most significant limb of a zero block. -/
 theorem fastRepresents_write_high_of_zero {memory : ByteArray} {ptr count : Nat}
     (word : UInt256) (hrep : FastRepresents memory ptr count 0) (hcount : 0 < count) :
     FastRepresents
@@ -323,6 +344,8 @@ theorem low_limb_odd {m : Nat} (hodd : m % 2 = 1) : m % Limbs.radix % 2 = 1 := b
   rw [Nat.mod_mod_of_dvd m two_dvd_radix]
   exact hodd
 
+/-- P3 and P4: an odd modulus with a nonzero top limb strictly exceeds
+`radix ^ (n - 1)`. -/
 theorem radix_pow_lt_of_odd {m n : Nat} (hn : 2 ≤ n)
     (hm : Limbs.radix ^ (n - 1) ≤ m) (hodd : m % 2 = 1) :
     Limbs.radix ^ (n - 1) < m := by
@@ -335,9 +358,11 @@ theorem radix_pow_lt_of_odd {m n : Nat} (hn : 2 ≤ n)
 
 /-! ## Montgomery multiplication -/
 
+/-- Montgomery product: the residue `x * y * R⁻¹ mod m`. -/
 def montMul (m R x y : Nat) : Nat :=
   ((x : ZMod m) * (y : ZMod m) * (R : ZMod m)⁻¹).val
 
+/-- Value symmetry, independent of the asymmetric CIOS operand bounds. -/
 theorem montMul_comm (m R x y : Nat) : montMul m R x y = montMul m R y x := by
   unfold montMul
   rw [mul_comm (x : ZMod m) (y : ZMod m)]
@@ -346,6 +371,7 @@ theorem montMul_lt {m : Nat} (hm : 0 < m) (R x y : Nat) : montMul m R x y < m :=
   haveI : NeZero m := ⟨hm.ne'⟩
   exact ZMod.val_lt _
 
+/-- The defining congruence of the Montgomery product. -/
 theorem montMul_mul_R_modEq {m R : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (x y : Nat) : montMul m R x y * R ≡ x * y [MOD m] := by
   haveI : NeZero m := ⟨hm.ne'⟩
@@ -358,6 +384,7 @@ theorem montMul_mul_R_modEq {m R : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
       = x * y * ((R : ZMod m) * (R : ZMod m)⁻¹) := by ring
     _ = x * y := by rw [h1, mul_one]
 
+/-- Uniqueness: any `z < m` with `z * R ≡ x * y` is the Montgomery product. -/
 theorem montMul_eq_of_modEq {m R x y z : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hz : z * R ≡ x * y [MOD m]) (hzlt : z < m) : montMul m R x y = z := by
   have hmne : m ≠ 0 := Nat.ne_of_gt hm
@@ -373,12 +400,14 @@ theorem montMul_eq_of_modEq {m R x y z : Nat} (hm : 0 < m) (hcop : Nat.Coprime R
     _ = (z : ZMod m).val := by rw [h1, mul_one]
     _ = z := by rw [ZMod.val_natCast, Nat.mod_eq_of_lt hzlt]
 
+/-- The shape a CIOS loop produces: `z * R = x * y + q * m`. -/
 theorem montMul_eq_of_mul_eq {m R x y z q : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hz : z * R = x * y + q * m) (hzlt : z < m) : montMul m R x y = z := by
   apply montMul_eq_of_modEq hm hcop _ hzlt
   unfold Nat.ModEq
   rw [hz, Nat.add_mul_mod_self_right]
 
+/-- After the final conditional subtraction, `t mod m` is the product. -/
 theorem montMul_eq_mod_of_mul_eq {m R x y t q : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (ht : t * R = x * y + q * m) : montMul m R x y = t % m := by
   apply montMul_eq_of_modEq hm hcop _ (Nat.mod_lt _ hm)
@@ -388,11 +417,13 @@ theorem montMul_eq_mod_of_mul_eq {m R x y t q : Nat} (hm : 0 < m) (hcop : Nat.Co
         unfold Nat.ModEq
         rw [Nat.add_mul_mod_self_right]
 
+/-- Exact-division form: `montMul = (x * y + q * m) / R`. -/
 theorem montMul_eq_div {m R x y q : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hdiv : R ∣ x * y + q * m) (hlt : (x * y + q * m) / R < m) :
     montMul m R x y = (x * y + q * m) / R :=
   montMul_eq_of_mul_eq hm hcop (Nat.div_mul_cancel hdiv) hlt
 
+/-- Montgomery form is multiplicative: `φ(x) ⊗ φ(y) = φ(x * y)`. -/
 theorem montMul_form {m R x y x' y' : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hx : x' ≡ x * R [MOD m]) (hy : y' ≡ y * R [MOD m]) :
     montMul m R x' y' = x * y * R % m := by
@@ -401,6 +432,7 @@ theorem montMul_form {m R x y x' y' : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     _ = (x * R) * (y * R) := by ring
     _ ≡ x' * y' [MOD m] := hx.symm.mul hy.symm
 
+/-- Multiplying by a constant given in Montgomery form: `x ⊗ φ(c) = x * c`. -/
 theorem montMul_const_form {m R c c' : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hc : c' ≡ c * R [MOD m]) (x : Nat) :
     montMul m R x c' = x * c % m := by
@@ -409,10 +441,12 @@ theorem montMul_const_form {m R c c' : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m
     _ = x * (c * R) := by ring
     _ ≡ x * c' [MOD m] := hc.symm.mul_left x
 
+/-- Conversion in: multiplying by `R² mod m` produces the Montgomery form. -/
 theorem montMul_R_sq {m R : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m) (x : Nat) :
     montMul m R x (R * R % m) = x * R % m :=
   montMul_const_form hm hcop (Nat.mod_modEq _ _) x
 
+/-- Conversion out: multiplying a Montgomery form by `1` recovers the value. -/
 theorem montMul_one_of_form {m R x x' : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hx : x' ≡ x * R [MOD m]) : montMul m R x' 1 = x % m := by
   apply montMul_eq_of_modEq hm hcop _ (Nat.mod_lt _ hm)
@@ -426,6 +460,9 @@ theorem montMul_one_eq {m R x : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m) (hx :
 
 /-! ## The CIOS row -/
 
+/-- The `mu` choice makes the row sum divisible by the radix: `u` is any
+number congruent to the current low limb `t + a * bi`, and `minv` satisfies
+`m * minv ≡ -1`. -/
 theorem cios_mu_dvd {β m minv u t a bi : Nat}
     (hminv : (m * minv + 1) % β = 0) (hu : u % β = (t + a * bi) % β) :
     β ∣ t + a * bi + u * minv % β * m := by
@@ -440,6 +477,7 @@ theorem cios_mu_dvd {β m minv u t a bi : Nat}
     _ ≡ u * 0 [MOD β] := h3.mul_left u
     _ = 0 := by ring
 
+/-- `minv` only depends on the low limb of the modulus. -/
 theorem minv_of_low_limb {β m minv : Nat} (h : (m % β * minv + 1) % β = 0) :
     (m * minv + 1) % β = 0 := by
   have hcongr : m * minv + 1 ≡ m % β * minv + 1 [MOD β] :=
@@ -447,6 +485,7 @@ theorem minv_of_low_limb {β m minv : Nat} (h : (m % β * minv + 1) % β = 0) :
   rw [hcongr]
   exact h
 
+/-- Negating an inverse: from `m * x ≡ 1` to `m * (β - x) + 1 ≡ 0`. -/
 theorem negInv_spec {β m x : Nat} (hβ : 1 < β) (hx : m * x % β = 1) (hxβ : x ≤ β) :
     (m * (β - x) + 1) % β = 0 := by
   have hone : (1 : Nat) ≡ m * x [MOD β] := by
@@ -458,6 +497,7 @@ theorem negInv_spec {β m x : Nat} (hβ : 1 < β) (hx : m * x % β = 1) (hxβ : 
     hone.add_left (m * (β - x))
   rw [hstep, hsum, Nat.mul_mod_left]
 
+/-- Bound for one CIOS row: the new partial product stays below `2m`. -/
 theorem cios_bound {m β a bi t mu : Nat} (hβ : 0 < β)
     (ha : a < m) (hbi : bi < β) (ht : t < 2 * m) (hmu : mu < β) :
     (t + a * bi + mu * m) / β < 2 * m := by
@@ -468,6 +508,7 @@ theorem cios_bound {m β a bi t mu : Nat} (hβ : 0 < β)
     Nat.mul_le_mul_right _ (by omega)
   nlinarith [hmu']
 
+/-- Tighter bound used by the plan: `t < a + m` is preserved. -/
 theorem cios_bound_tight {m β a bi t mu : Nat} (hβ : 0 < β)
     (hbi : bi < β) (ht : t < a + m) (hmu : mu < β) :
     (t + a * bi + mu * m) / β < a + m := by
@@ -476,6 +517,10 @@ theorem cios_bound_tight {m β a bi t mu : Nat} (hβ : 0 < β)
   have hmu' : mu * m ≤ (bi + k) * m := Nat.mul_le_mul_right _ (by omega)
   nlinarith [hmu']
 
+/-- One CIOS row.  From the invariant `t * β ^ i = a * bpre + Q * m`, where
+`bpre` is the value of the `i` consumed limbs of `b`, and a `mu` making the
+row sum divisible by `β`, the next partial product `t' = (t + a*bi + mu*m)/β`
+satisfies the invariant with one more limb and stays below `2m`. -/
 theorem cios_step {m β a bpre bi t Q mu i : Nat} (hβ : 0 < β)
     (ha : a < m) (hbi : bi < β) (ht : t < 2 * m) (hmu : mu < β)
     (hinv : t * β ^ i = a * bpre + Q * m)
@@ -493,15 +538,19 @@ theorem cios_step {m β a bpre bi t Q mu i : Nat} (hβ : 0 < β)
     _ = a * bpre + Q * m + (a * bi + mu * m) * β ^ i := by rw [hinv]
     _ = a * (bpre + bi * β ^ i) + (Q + mu * β ^ i) * m := by ring
 
+/-- The exact row equation without the bound, for invariants that track the
+partial product as a limb string. -/
 theorem cios_row_eq {β s : Nat} (hdiv : β ∣ s) : s / β * β = s :=
   Nat.div_mul_cancel hdiv
 
+/-- Conditional subtraction after the last row. -/
 theorem mod_eq_cond_sub_of_lt_twice {t m : Nat} (ht : t < 2 * m) :
     t % m = if t < m then t else t - m :=
   Limbs.mod_eq_cond_sub ht
 
 /-! ## Modular doubling chains -/
 
+/-- `k` modular doublings of `x`. -/
 def doubleChain (m x : Nat) : Nat → Nat
   | 0 => x
   | k + 1 => (doubleChain m x k + doubleChain m x k) % m
@@ -532,10 +581,12 @@ theorem doubleChain_eq {m x : Nat} (hx : x < m) (k : Nat) :
       congr 1
       ring
 
+/-- One doubling step is an `ADDMOD` of a value with itself. -/
 theorem double_mod_eq_cond_sub {m x : Nat} (hx : x < m) :
     (x + x) % m = if x + x < m then x + x else x + x - m :=
   Limbs.mod_eq_cond_sub (by omega)
 
+/-- 256 doublings multiply by the radix. -/
 theorem doubleChain_256 {m x : Nat} (hx : x < m) :
     doubleChain m x 256 = x * Limbs.radix % m :=
   doubleChain_eq hx 256
@@ -544,10 +595,12 @@ theorem doubleChain_mul_256 {m x : Nat} (hx : x < m) (n : Nat) :
     doubleChain m x (256 * n) = x * Limbs.radix ^ n % m := by
   rw [doubleChain_eq hx, Limbs.radix, ← pow_mul]
 
+/-- The `R1` construction: doubling `radix ^ (n - 1)` 256 times gives `R mod m`. -/
 theorem doubleChain_R1 {m n : Nat} (hn : 1 ≤ n) (hx : Limbs.radix ^ (n - 1) < m) :
     doubleChain m (Limbs.radix ^ (n - 1)) 256 = Limbs.radix ^ n % m := by
   rw [doubleChain_256 hx, ← pow_succ, Nat.sub_add_cancel hn]
 
+/-- The `CC` construction: doubling `R mod m` 256 times gives `radix * R mod m`. -/
 theorem doubleChain_CC {m R : Nat} (hm : 0 < m) :
     doubleChain m (R % m) 256 = Limbs.radix * R % m := by
   rw [doubleChain_256 (Nat.mod_lt _ hm), Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod,
@@ -555,8 +608,10 @@ theorem doubleChain_CC {m R : Nat} (hm : 0 < m) :
 
 /-! ## Horner base reduction -/
 
+/-- One Horner step: shift in a limb and reduce. -/
 def hornerStep (m r limb : Nat) : Nat := (r * Limbs.radix + limb) % m
 
+/-- Horner reduction of a most-significant-first limb list. -/
 def hornerMod (m : Nat) (limbs : List Nat) : Nat := limbs.foldl (hornerStep m) 0
 
 theorem hornerMod_nil (m : Nat) : hornerMod m [] = 0 := rfl
@@ -589,17 +644,23 @@ theorem foldl_hornerStep {m r : Nat} (hm : 0 < m) (hr : r < m) (limbs : List Nat
       congr 1
       ring
 
+/-- Horner reduction computes the value of the limb list modulo `m`. -/
 theorem hornerMod_eq {m : Nat} (hm : 0 < m) (limbs : List Nat) :
     hornerMod m limbs = Nat.ofDigits Limbs.radix limbs.reverse % m := by
   unfold hornerMod
   rw [foldl_hornerStep hm hm limbs, Nat.zero_mul, Nat.zero_add]
 
+/-- Folding over the limbs of a represented block (in address order, i.e. most
+significant first) yields the value modulo `m`. -/
 theorem hornerMod_of_fastRepresents {memory : ByteArray} {ptr count value m : Nat}
     (hm : 0 < m) (hrep : FastRepresents memory ptr count value) :
     hornerMod m (Limbs.memoryLimbs memory ptr count) = value % m := by
   rw [hornerMod_eq hm, memoryLimbs_eq_reverse_fastLimbs, List.reverse_reverse,
     value_of_fastRepresents hrep]
 
+/-- Horner in quotient form: consuming limb `k` of `b` (from the least
+significant) moves the accumulator from `⌊b / radix^(k+1)⌋ mod m` to
+`⌊b / radix^k⌋ mod m`. -/
 theorem horner_div_step (m b k : Nat) :
     (b / Limbs.radix ^ (k + 1) % m * Limbs.radix % m + b / Limbs.radix ^ k % Limbs.radix) % m =
       b / Limbs.radix ^ k % m := by
@@ -624,6 +685,8 @@ theorem div_pow_zero (b : Nat) : b / Limbs.radix ^ 0 = b := by
 
 /-! ## Left-to-right square-and-multiply -/
 
+/-- The exponent formed by the bits of `e` above position `j`: the prefix a
+left-to-right scan has consumed once it reaches bit `j`. -/
 def expPrefix (e j : Nat) : Nat := e / 2 ^ j
 
 @[simp] theorem expPrefix_zero (e : Nat) : expPrefix e 0 = e := by
@@ -635,6 +698,7 @@ theorem expPrefix_top {e B : Nat} (he : e < 2 ^ B) : expPrefix e B = 0 :=
 theorem expPrefix_of_le {e B j : Nat} (he : e < 2 ^ B) (hj : B ≤ j) : expPrefix e j = 0 :=
   Nat.div_eq_of_lt (he.trans_le (Nat.pow_le_pow_right (by norm_num) hj))
 
+/-- Consuming bit `j` doubles the prefix and adds the bit. -/
 theorem expPrefix_succ (e j : Nat) :
     expPrefix e j = 2 * expPrefix e (j + 1) + e / 2 ^ j % 2 := by
   unfold expPrefix
@@ -660,16 +724,19 @@ theorem mul_step_of_modEq {m b b' E acc : Nat} (hacc : acc = b ^ E % m)
   rw [hacc, pow_succ]
   exact ((Nat.mod_modEq _ _).mul hb)
 
+/-- Squaring in Montgomery form. -/
 theorem mont_sq_step {m R b E acc : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hacc : acc ≡ b ^ E * R [MOD m]) :
     montMul m R acc acc = b ^ (2 * E) * R % m := by
   rw [montMul_form hm hcop hacc hacc, ← pow_add, two_mul]
 
+/-- Multiplying by the Montgomery form of the base. -/
 theorem mont_mul_step {m R b bM E acc : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hacc : acc ≡ b ^ E * R [MOD m]) (hb : bM ≡ b * R [MOD m]) :
     montMul m R acc bM = b ^ (E + 1) * R % m := by
   rw [montMul_form hm hcop hacc hb, pow_succ]
 
+/-- One left-to-right bit: square, then multiply if the bit is set. -/
 theorem mont_bit_step {m R b bM E acc bit : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hacc : acc ≡ b ^ E * R [MOD m]) (hb : bM ≡ b * R [MOD m]) (hbit : bit ≤ 1) :
     (if bit = 0 then montMul m R acc acc
@@ -683,10 +750,12 @@ theorem mont_bit_step {m R b bM E acc bit : Nat} (hm : 0 < m) (hcop : Nat.Coprim
       rw [hsq]
       exact Nat.mod_modEq _ _
 
+/-- Converting the accumulator out of Montgomery form. -/
 theorem mont_out {m R b e acc : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hacc : acc ≡ b ^ e * R [MOD m]) : montMul m R acc 1 = b ^ e % m :=
   montMul_one_of_form hm hcop hacc
 
+/-- The Montgomery form of `1` is `R mod m`, the start of the exponent loop. -/
 theorem mont_one_form (m R : Nat) : R % m ≡ 1 ^ 0 * R [MOD m] := by
   rw [pow_zero, one_mul]
   exact Nat.mod_modEq _ _
@@ -695,10 +764,13 @@ theorem mont_pow_zero_form (m R b : Nat) : R % m ≡ b ^ 0 * R [MOD m] := by
   rw [pow_zero, one_mul]
   exact Nat.mod_modEq _ _
 
+/-- The reference precompile is ordinary modular exponentiation. -/
 theorem modPow_eq_pow_mod {m : Nat} (hm : 0 < m) (b e : Nat) :
     EVM.Precompile.modPow b e m = b ^ e % m := by
   rw [Algorithm.modPow_eq, if_neg hm.ne']
 
+/-- Endpoint of the exponent loop: the accumulator in Montgomery form for the
+whole exponent converts to the precompile's answer. -/
 theorem mont_out_modPow {m R b e acc : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m)
     (hacc : acc ≡ b ^ e * R [MOD m]) :
     montMul m R acc 1 = EVM.Precompile.modPow b e m := by
@@ -706,9 +778,11 @@ theorem mont_out_modPow {m R b e acc : Nat} (hm : 0 < m) (hcop : Nat.Coprime R m
 
 /-! ## Newton iteration for the inverse modulo `2^256` -/
 
+/-- One Newton step `x ↦ x * (2 - m * x)` with the EVM's wrapping arithmetic. -/
 def newtonStep (m x : Nat) : Nat :=
   x * ((2 + Limbs.radix - m * x % Limbs.radix) % Limbs.radix) % Limbs.radix
 
+/-- `j` Newton steps starting from `1`. -/
 def newtonIter (m : Nat) : Nat → Nat
   | 0 => 1
   | j + 1 => newtonStep m (newtonIter m j)
@@ -723,6 +797,7 @@ theorem radix_int : ((Limbs.radix : Nat) : Int) = (2 : Int) ^ 256 := by
   rw [Limbs.radix]
   push_cast
 
+/-- The wrapped step agrees with the integer Newton step modulo `2^256`. -/
 theorem newtonStep_modEq (m x : Nat) :
     ((newtonStep m x : Nat) : Int) ≡ (x : Int) * (2 - (m : Int) * x) [ZMOD (2 : Int) ^ 256] := by
   unfold newtonStep
@@ -744,6 +819,8 @@ theorem newtonStep_modEq (m x : Nat) :
         ((h0.add_left 2).sub hmx).mul_left x
     _ = x * (2 - (m : Int) * x) := by ring
 
+/-- Newton doubles the precision: `k` correct bits become `2k` bits, as long as
+`2k` bits fit in a word. -/
 theorem newton_step_int {m x y : Int} {k : Nat} (hk : 2 * k ≤ 256)
     (hx : (2 : Int) ^ k ∣ m * x - 1)
     (hy : y ≡ x * (2 - m * x) [ZMOD (2 : Int) ^ 256]) :
@@ -762,6 +839,7 @@ theorem newton_step_int {m x y : Int} {k : Nat} (hk : 2 * k ≤ 256)
   have h4 := dvd_add h3.dvd h2
   simpa using h4
 
+/-- The same statement over `Nat`. -/
 theorem newton_step_nat {m x y k : Nat} (hk : 2 * k ≤ 256)
     (hx : m * x % 2 ^ k = 1 % 2 ^ k)
     (hy : (y : Int) ≡ (x : Int) * (2 - (m : Int) * x) [ZMOD (2 : Int) ^ 256]) :
@@ -780,6 +858,7 @@ theorem newton_step_nat {m x y k : Nat} (hk : 2 * k ≤ 256)
   rw [Int.natCast_modEq_iff] at hresult
   exact hresult.symm
 
+/-- After `j ≤ 8` Newton steps from `1`, `m * x ≡ 1` modulo `2 ^ (2 ^ j)`. -/
 theorem newtonIter_spec {m : Nat} (hodd : m % 2 = 1) :
     ∀ j, j ≤ 8 → m * newtonIter m j % 2 ^ (2 ^ j) = 1 % 2 ^ (2 ^ j)
   | 0, _ => by
@@ -795,6 +874,7 @@ theorem newtonIter_spec {m : Nat} (hodd : m % 2 = 1) :
       rw [newtonIter_succ, pow_succ, Nat.mul_comm (2 ^ j) 2]
       exact h
 
+/-- Eight Newton steps give the inverse of an odd `m` modulo `2^256`. -/
 theorem newtonIter_eight {m : Nat} (hodd : m % 2 = 1) :
     m * newtonIter m 8 % Limbs.radix = 1 := by
   have h := newtonIter_spec hodd 8 le_rfl
@@ -802,6 +882,8 @@ theorem newtonIter_eight {m : Nat} (hodd : m % 2 = 1) :
   rw [h]
   exact Nat.mod_eq_of_lt Limbs.radix_gt_one
 
+/-- The negated inverse `-m⁻¹ mod 2^256` used by CIOS, computed from the
+Newton inverse of the low limb. -/
 theorem minv_spec {m x : Nat} (hx : m % Limbs.radix * x % Limbs.radix = 1) (hxr : x ≤ Limbs.radix) :
     (m * (Limbs.radix - x) + 1) % Limbs.radix = 0 :=
   minv_of_low_limb (negInv_spec Limbs.radix_gt_one hx hxr)

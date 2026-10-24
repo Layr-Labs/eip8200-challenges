@@ -14,6 +14,7 @@ theorem addMod_comm (a b m : UInt256) :
   unfold UInt256.addMod
   split <;> simp only [Nat.add_comm]
 
+/-- Cancellation carries below the all-ones word have a canonical Mersenne residue. -/
 theorem cancellation_nat {B q n t c : Nat} (hB : 2 ≤ B)
     (hq : q < B) (hn : n < B - 1) (ht : t < B)
     (hc : q * n + t = B * c) :

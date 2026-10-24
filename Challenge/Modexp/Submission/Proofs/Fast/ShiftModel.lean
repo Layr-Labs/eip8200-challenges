@@ -34,7 +34,9 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 /-! ## Address constants -/
 
+/-- `n`-limb block holding `radix ^ n - m` (the former `CC` block). -/
 def NEG : Nat := 1280
+/-- Per-modulus words of the quotient estimator (the former `RR` block). -/
 def PRE_L : Nat := 1536
 def PRE_DODD : Nat := 1568
 def PRE_X : Nat := 1600
@@ -43,9 +45,13 @@ def PRE_DINV : Nat := 1664
 
 /-! ## Phase 1: the raw base into `ACC` and `TS` -/
 
+/-- `ACC := base`, `TS := base`, `TN := 0`. -/
 def hitMem (mem input : ByteArray) (n : Nat) : ByteArray :=
   ShiftProducerCanonical.hitMemory mem input n
 
+/-- Memory and flag after `j` limbs of the negation loop.  The flag is `1` before limb 0
+and `0` afterwards: the loop adds it to `NOT m_j` and then pushes a fresh zero.  With an
+odd low limb the first sum never carries (`negStep_invariant`). -/
 def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
   | 0 => ⟨mem, UInt256.ofNat 1⟩
   | j + 1 =>
@@ -58,6 +64,7 @@ def negStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
 
 /-! ## Phase 3: the per-modulus estimator words -/
 
+/-- One Newton step `x ↦ (2 - d * x) * x`, as the bytecode computes it. -/
 def newtonW (d x : UInt256) : UInt256 := (UInt256.ofNat 2 - d * x) * x
 
 def newton4W (d : UInt256) : UInt256 :=
@@ -72,14 +79,22 @@ def preDodd (d : UInt256) : UInt256 := d / preL d
 def preX (d : UInt256) : UInt256 := UInt256.ofNat 1 + (UInt256.ofNat 0 - preL d) / preL d
 def preBmod (d : UInt256) : UInt256 := (UInt256.ofNat 0 - preDodd d) % preDodd d
 def preDinv (d : UInt256) : UInt256 := newton8W (preDodd d)
+/-- CLZ cut: the `PRE_L` word is the shift `k = 255 - clz L` (`= log2 L` for a nonzero
+top limb), stored by `CLZ ... PUSH1 ff SUB PUSH2 0600 MSTORE`. -/
 def preK (d : UInt256) : UInt256 := UInt256.ofNat 255 - UInt256.clz (preL d)
+/-- CLZ cut: the `PRE_X` word is the left shift `0 - ~clz L = clz L + 1` (`= 256 - k`),
+stored first, by `DUP1 NOT PUSH0 SUB PUSH2 0640 MSTORE`. -/
 def preS (d : UInt256) : UInt256 := UInt256.ofNat 0 - UInt256.lnot (UInt256.clz (preL d))
 
+/-- The five stores, in program order, from the top limb `d` of the modulus (CLZ cut:
+`PRE_X := preS d` first, then `PRE_L := preK d`). -/
 def preMemOf (mem : ByteArray) (d : UInt256) : ByteArray :=
   Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
     PRE_X (preS d)) PRE_L (preK d)) PRE_DODD (preDodd d)) PRE_BMOD (preBmod d))
     PRE_DINV (preDinv d)
 
+/-- The five estimator stores, then `V_MINV := -n0⁻¹` from the modulus low limb
+`n0 = mem[mem[V_ML]]`: newton-batch computes both inverses from one Newton chain. -/
 def preMem (mem : ByteArray) : ByteArray :=
   Exp.storeWord (preMemOf mem (MachineState.readWord mem 0)) 2720
     (UInt256.ofNat 0 - newton8W
@@ -87,9 +102,12 @@ def preMem (mem : ByteArray) : ByteArray :=
 
 /-! ## Phase 4: one shift step -/
 
+/-- `u := r * radix` in the `t` area: `MCOPY(TN, BASE, s32)` then `t[0] := 0`. -/
 def uMem (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord (Exp.mcopyMem mem 2080 2112 (32 * n)) (2080 + 32 * n) (UInt256.ofNat 0)
 
+/-- The quotient guess, exactly as the `ESTIMATE` block computes it.  Its value
+is irrelevant to correctness. -/
 def qhatOf (mem : ByteArray) : UInt256 :=
   let utop := MachineState.readWord mem 2080
   let K := MachineState.readWord mem PRE_L
@@ -117,6 +135,7 @@ def qhatOf (mem : ByteArray) : UInt256 :=
         UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128))
       (unext - MachineState.readWord mem 0 * q))
 
+/-- The limb pass `t += q * NEG` is exactly a CIOS first loop with `a = NEG`. -/
 def macOf (mem : ByteArray) (n : Nat) (q : UInt256) : Monpro.MacState :=
   Monpro.l1Step mem q NEG n n
 
@@ -132,6 +151,7 @@ def midMem (mem : ByteArray) (c q : UInt256) : ByteArray :=
 
 /-! ### The repair rounds -/
 
+/-- One limb of `t += m`, in place, least significant limb first. -/
 def addStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
   | 0 => ⟨mem, UInt256.ofNat 0⟩
   | j + 1 =>
@@ -146,12 +166,15 @@ def addStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
           (Data.Bytes.natToBytesPadded s2.toNat 32) (2112 + 32 * (n - 1 - j))
         flag := UInt256.lor c2 c1 }
 
+/-- The carry into `TN` after a full add pass. -/
 def addCarry (mem : ByteArray) (n : Nat) : UInt256 := (addStep mem n n).flag
 
+/-- Memory after one whole add round: the pass and `TN += carry`. -/
 def addRoundMem (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord (addStep mem n n).memory 2080
     (addCarry mem n + MachineState.readWord (addStep mem n n).memory 2080)
 
+/-- The carry out of `TN` in that round: the round is the last one iff it is `1`. -/
 def addOut (mem : ByteArray) (n : Nat) : UInt256 :=
   UInt256.lt (addCarry mem n + MachineState.readWord (addStep mem n n).memory 2080)
     (addCarry mem n)
@@ -160,6 +183,7 @@ def addRounds (mem : ByteArray) (n : Nat) : Nat → ByteArray
   | 0 => mem
   | k + 1 => addRoundMem (addRounds mem n k) n
 
+/-- One limb of `t -= m`, in place, least significant limb first. -/
 def subStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
   | 0 => ⟨mem, UInt256.ofNat 0⟩
   | j + 1 =>
@@ -176,6 +200,7 @@ def subStep (mem : ByteArray) (n : Nat) : Nat → Csub.LimbState
 
 def subBorrow (mem : ByteArray) (n : Nat) : UInt256 := (subStep mem n n).flag
 
+/-- Memory after one whole subtract round: the pass and `TN -= borrow`. -/
 def subRoundMem (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.storeWord (subStep mem n n).memory 2080
     (MachineState.readWord (subStep mem n n).memory 2080 - subBorrow mem n)
@@ -186,18 +211,24 @@ def subRounds (mem : ByteArray) (n : Nat) : Nat → ByteArray
 
 /-! ### Round counts, as functions of the `t` value -/
 
+/-- The `(n+1)`-limb value held by `TN` and `TS`. -/
 def tv (mem : ByteArray) (n : Nat) : Nat := Monpro.tValue mem n
 
+/-- Number of add rounds: none when the sign flag is clear, otherwise the
+least `k ≥ 1` with `tv + k * m ≥ radix ^ (n + 1)`. -/
 def addCount (mem : ByteArray) (n mm : Nat) (neg : UInt256) : Nat :=
   if neg.toNat = 0 then 0 else (Limbs.radix ^ (n + 1) - tv mem n + mm - 1) / mm
 
+/-- Number of subtract rounds: the least `k` with `tv - k * m < radix ^ n`. -/
 def subCount (mem : ByteArray) (n mm : Nat) : Nat :=
   if tv mem n < Limbs.radix ^ n then 0 else (tv mem n - Limbs.radix ^ n) / mm + 1
 
+/-- Memory after the repair rounds, from the middle block's output. -/
 def fixMem (mem : ByteArray) (n mm : Nat) (neg : UInt256) : ByteArray :=
   subRounds (addRounds mem n (addCount mem n mm neg)) n
     (subCount (addRounds mem n (addCount mem n mm neg)) n mm)
 
+/-- The whole step, from the memory at `SHIFT_LOOP` to the memory back at it. -/
 def stepMem (mem : ByteArray) (n mm : Nat) : ByteArray :=
   let um := uMem mem n
   let q := qhatOf um
@@ -227,6 +258,7 @@ theorem gt_toNat (a b : UInt256) :
 
 theorem radix_eq : Limbs.radix = 2 ^ 256 := rfl
 
+/-- One word addition with its carry-out, tested against the first summand. -/
 theorem add_carry_spec (a b : UInt256) :
     (a + b).toNat + (UInt256.lt (a + b) a).toNat * Limbs.radix = a.toNat + b.toNat ∧
       (UInt256.lt (a + b) a).toNat ≤ 1 := by
@@ -245,6 +277,7 @@ theorem add_carry_spec (a b : UInt256) :
     · rw [if_pos (by omega)]; omega
     · split <;> omega
 
+/-- One word addition with its carry-out, tested against the second summand. -/
 theorem add_carry_spec' (a b : UInt256) :
     (a + b).toNat + (UInt256.lt (a + b) b).toNat * Limbs.radix = a.toNat + b.toNat ∧
       (UInt256.lt (a + b) b).toNat ≤ 1 := by
@@ -263,6 +296,7 @@ theorem add_carry_spec' (a b : UInt256) :
     · rw [if_pos (by omega)]; omega
     · split <;> omega
 
+/-- One word subtraction with its borrow. -/
 theorem sub_borrow_spec (a b : UInt256) :
     (a - b).toNat + b.toNat = a.toNat + (UInt256.lt a b).toNat * Limbs.radix ∧
       (UInt256.lt a b).toNat ≤ 1 := by
@@ -273,6 +307,7 @@ theorem sub_borrow_spec (a b : UInt256) :
   · split_ifs <;> omega
   · split <;> omega
 
+/-- `tv` in terms of `TN` and the `TS` limbs. -/
 theorem tv_def (mem : ByteArray) (n : Nat) :
     tv mem n = (MachineState.readWord mem 2080).toNat * Limbs.radix ^ n +
       Csub.lowValue mem 2112 n n := rfl
@@ -334,6 +369,7 @@ theorem negStep_flag_succ (mem : ByteArray) (n j : Nat) :
 theorem ofNat_zero_toNat : (UInt256.ofNat 0 : UInt256).toNat = 0 := by
   decide
 
+/-- Only the initial flag is set. -/
 theorem negStep_flag_pos (mem : ByteArray) (n j : Nat)
     (h : (negStep mem n j).flag.toNat = 1) : j = 0 := by
   cases j with
@@ -342,6 +378,7 @@ theorem negStep_flag_pos (mem : ByteArray) (n j : Nat)
       rw [negStep_flag_succ, ofNat_zero_toNat] at h
       exact absurd h (by decide)
 
+/-- The parity of a block value is the parity of its low limb. -/
 theorem lowValue_mod_two (memory : ByteArray) (ptr n : Nat) :
     ∀ j, 1 ≤ j → Csub.lowValue memory ptr n j % 2 =
       (MachineState.readWord memory (ptr + 32 * (n - 1))).toNat % 2
@@ -364,6 +401,8 @@ private theorem neg_algebra {L S F M x c P R : Nat}
   have h : (S + F * R + x + 1) * P = (c + R) * P := by rw [hspec]
   nlinarith [h, hinv]
 
+/-- `I_NEG(j)`: the low `j` limbs of `NEG` plus the carry complement the low
+`j` limbs of `m` to `radix ^ j`. -/
 theorem negStep_invariant (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8)
     (hodd0 : (MachineState.readWord mem (32 * (n - 1))).toNat % 2 = 1) :
     ∀ j, j ≤ n →
@@ -504,6 +543,7 @@ theorem uMem_readWord_disjoint (mem : ByteArray) (n addr : Nat)
   rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ _ _
     (by rw [Challenge.EvmProof.Memory.readPadded_size]; omega)]
 
+/-- The word of `u` at `TN`: the top limb of `r`. -/
 theorem uMem_readWord_tn (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) :
     MachineState.readWord (uMem mem n) 2080 = MachineState.readWord mem 2112 := by
   unfold uMem Exp.storeWord Exp.mcopyMem
@@ -511,6 +551,8 @@ theorem uMem_readWord_tn (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) :
   have h := Csub.readWord_mcopy mem 2112 2080 (32 * n) 0 (by omega)
   simpa using h
 
+/-- The limbs of `u` inside `TS`: limb `j` of `u` is limb `j - 1` of `r`, and
+limb `0` is zero. -/
 theorem uMem_readWord_limb (mem : ByteArray) (n k : Nat) (hn : 1 ≤ n) (hk : k < n) :
     MachineState.readWord (uMem mem n) (2112 + 32 * (n - 1 - k)) =
       if k = 0 then UInt256.ofNat 0
@@ -531,6 +573,8 @@ theorem uMem_readWord_limb (mem : ByteArray) (n k : Nat) (hn : 1 ≤ n) (hk : k 
     congr 1
     omega
 
+/-- The `TS` limbs of `u` are the limbs of `r` shifted up by one, so their value
+below limb `j + 1` is `radix * (r mod radix ^ j)`. -/
 theorem uMem_lowValue (mem : ByteArray) (n r : Nat) (hn : 1 ≤ n)
     (hrep : Model.FastRepresents mem 2112 n r) :
     ∀ j, j + 1 ≤ n →
@@ -611,6 +655,7 @@ theorem mac_readWord_disjoint (mem : ByteArray) (n addr : Nat) (q : UInt256)
     MachineState.readWord (macOf mem n q).memory addr = MachineState.readWord mem addr :=
   l1Step_readWord_disjoint mem q NEG n addr hn hdisj n
 
+/-- The middle block: the signed relation `u + neg * radix^(n+1) = q * m + t`. -/
 theorem mid_relation (mem : ByteArray) (n mm : Nat) (q : UInt256) (u : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
@@ -711,6 +756,7 @@ theorem addStep_readWord_disjoint (mem : ByteArray) (n addr : Nat)
         exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
       rw [hstep, ih (by omega)]
 
+/-- Limbs at or above `j` are untouched by the first `j` steps. -/
 theorem addStep_readWord_keep (mem : ByteArray) (n k : Nat) (hk : k < n) :
     ∀ j, j ≤ k → MachineState.readWord (addStep mem n j).memory (2112 + 32 * (n - 1 - k)) =
       MachineState.readWord mem (2112 + 32 * (n - 1 - k)) := by
@@ -753,6 +799,7 @@ theorem addStep_flag_succ (mem : ByteArray) (n j : Nat) :
             MachineState.readWord (addStep mem n j).memory (32 * (n - 1 - j)))) := by
   simp only [addStep]
 
+/-- One in-place add limb: `t + m + c` with its carry. -/
 theorem addLimb_spec' (t md c : UInt256) (hc : c.toNat ≤ 1) :
     (c + (t + md)).toNat + Limbs.radix *
         (UInt256.lor (UInt256.gt c (c + (t + md))) (UInt256.gt t (t + md))).toNat =
@@ -1014,6 +1061,7 @@ theorem fastRepresents_subRounds (mem : ByteArray) (n ptr cnt v : Nat)
   intro i hi
   exact subRounds_readWord_disjoint mem n _ (by omega) k
 
+/-- Add rounds without a carry out: the value grows by `m` each round. -/
 theorem addRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm) :
     ∀ i, tv mem n + i * mm < Limbs.radix ^ (n + 1) →
@@ -1048,6 +1096,7 @@ theorem addRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n 
         · exact hout j h
         · subst h; exact hout0'
 
+/-- The final add round overflows and leaves `tv + k m - radix^(n+1)`. -/
 theorem addRounds_last (mem : ByteArray) (n mm k : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm)
     (hlt : tv mem n + k * mm < Limbs.radix ^ (n + 1))
@@ -1077,6 +1126,8 @@ theorem addRounds_last (mem : ByteArray) (n mm k : Nat) (hn : 1 ≤ n) (hn32 : n
     rw [Nat.succ_mul]
     omega
 
+/-- Subtract rounds: the value drops by `m` each round while the top limb is
+nonzero. -/
 theorem subRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmod : Model.FastRepresents mem 0 n mm) :
     ∀ i, (∀ j, j < i → Limbs.radix ^ n + j * mm ≤ tv mem n) →
@@ -1098,6 +1149,7 @@ theorem subRounds_value (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n 
       rw [Nat.succ_mul]
       omega
 
+/-- The round counts and exit conditions the repair loops need. -/
 structure RepairFacts (mid : ByteArray) (n mm : Nat) (neg : UInt256) : Prop where
   addRoundsOut : ∀ i, i < addCount mid n mm neg - 1 →
     addOut (addRounds mid n i) n = UInt256.ofNat 0
@@ -1110,6 +1162,8 @@ structure RepairFacts (mid : ByteArray) (n mm : Nat) (neg : UInt256) : Prop wher
   negCount : neg = UInt256.ofNat 1 → 1 ≤ addCount mid n mm neg
   posCount : neg = UInt256.ofNat 0 → addCount mid n mm neg = 0
 
+/-- The subtract phase from a non-negative value: rounds while the top limb is
+nonzero, ending below `radix ^ n`. -/
 theorem subPhase_spec (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hmpos : 0 < mm) (hmod : Model.FastRepresents mem 0 n mm) :
     (∀ i, i < subCount mem n mm →
@@ -1152,6 +1206,8 @@ theorem subRounds_zero (mem : ByteArray) (n : Nat) : subRounds mem n 0 = mem := 
 theorem addRounds_zero (mem : ByteArray) (n : Nat) : addRounds mem n 0 = mem := by
   simp [addRounds]
 
+/-- After the repair rounds the value is `u`-congruent, below `radix ^ n`,
+and `TN` is zero; and the loop facts hold. -/
 theorem repair_spec (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
@@ -1253,6 +1309,10 @@ theorem repair_spec (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     · rw [hfix]; exact hltP
     · rw [hfix]; exact htn0
 
+/-- **The repair lands strictly below the modulus** once the quotient is known not to
+under-shoot.  For `neg = 1` this is already what `repair_spec` derives internally before
+weakening it to `< radix ^ n`; for `neg = 0` it is exactly where `u / mm ≤ q` is load-bearing,
+because the subtract phase stops at `radix ^ n`, not at `mm`. -/
 theorem repair_lt_mm (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
@@ -1310,6 +1370,10 @@ theorem repair_lt_mm (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     rw [hfix]
     exact hlt'
 
+/-- The subtract repair rounds never run: with the estimate never under-shooting,
+`repair_lt_mm`'s arithmetic shows the value after the (possibly empty) add rounds
+is already below `mm`, hence below `radix ^ n`, so `subCount` is zero and `fixMem`
+is exactly the add rounds.  The artifact's subtract-round jumps are unreachable. -/
 theorem fixMem_subCount_zero (mem : ByteArray) (n mm : Nat) (neg : UInt256) (u q : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (hmod : Model.FastRepresents mem 0 n mm)
@@ -1385,6 +1449,7 @@ theorem fixMem_readWord_disjoint (mem : ByteArray) (n mm : Nat) (neg : UInt256) 
 
 /-! ### The whole step -/
 
+/-- Words the step leaves alone. -/
 theorem stepMem_readWord_disjoint (mem : ByteArray) (n mm addr : Nat) (hn : 1 ≤ n)
     (hdisj : (addr + 32 ≤ 512 ∨ 512 + 32 * n ≤ addr) ∧
       (addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr) ∧
@@ -1414,6 +1479,7 @@ open Challenge.EvmProof.Word
 open Challenge.Modexp.Submission.Proofs.Fast.QHat
 
 
+/-- One word-level Newton step is one `Nat`-level Newton step. -/
 theorem newtonW_ofNat (D x : Nat) :
     newtonW (UInt256.ofNat D) (UInt256.ofNat x) = UInt256.ofNat (Model.newtonStep D x) :=
   Setup.newton_word_step D x
@@ -1435,6 +1501,7 @@ theorem newton8W_eq (D : Nat) :
   rw [newton4W_eq, newtonW_ofNat, newtonW_ofNat, newtonW_ofNat]
   rfl
 
+/-- The stored inverse really inverts the odd part, modulo the radix. -/
 theorem preDinv_inv (d : UInt256) (hodd : (preDodd d).toNat % 2 = 1) :
     (preDodd d).toNat * (preDinv d).toNat ≡ 1 [MOD Limbs.radix] := by
   have hD : preDodd d = UInt256.ofNat (preDodd d).toNat := word_eq_ofNat_toNat _
@@ -1453,6 +1520,7 @@ theorem preDinv_inv (d : UInt256) (hodd : (preDodd d).toNat % 2 = 1) :
   rw [Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod, h3]
   exact (Nat.mod_eq_of_lt (by norm_num)).symm
 
+/-- `newton8W` inverts every odd word modulo the radix. -/
 theorem newton8W_inv (a : UInt256) (ha : a.toNat % 2 = 1) :
     a.toNat * (newton8W a).toNat % 2 ^ 256 = 1 := by
   have hD : a = UInt256.ofNat a.toNat := word_eq_ofNat_toNat _
@@ -1466,6 +1534,7 @@ theorem newton8W_inv (a : UInt256) (ha : a.toNat % 2 = 1) :
   rw [hr] at h3
   rw [h1, h2, Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod, h3]
 
+/-- Two inverses of one word modulo the radix are the same word. -/
 theorem word_inv_unique (a y z : UInt256)
     (hy : a.toNat * y.toNat % 2 ^ 256 = 1) (hz : a.toNat * z.toNat % 2 ^ 256 = 1) : y = z := by
   apply word_ext
@@ -1488,6 +1557,7 @@ theorem word_mul_odd (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat % 2 = 
     (a * b).toNat % 2 = 1 := by
   rw [Setup.word_toNat_mul, Nat.mod_mod_of_dvd _ (by norm_num : 2 ∣ 2 ^ 256), Nat.mul_mod, ha, hb]
 
+/-- **Batch inversion, left factor.** With `x = (a b)⁻¹`, `x b = a⁻¹`. -/
 theorem newton8W_mul_left (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat % 2 = 1) :
     newton8W (a * b) * b = newton8W a := by
   apply word_inv_unique a _ _ _ (newton8W_inv a ha)
@@ -1497,6 +1567,7 @@ theorem newton8W_mul_left (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat %
   congr 1
   ring
 
+/-- **Batch inversion, right factor.** With `x = (a b)⁻¹`, `a x = b⁻¹`. -/
 theorem newton8W_mul_right (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat % 2 = 1) :
     a * newton8W (a * b) = newton8W b := by
   apply word_inv_unique b _ _ _ (newton8W_inv b hb)
@@ -1506,6 +1577,7 @@ theorem newton8W_mul_right (a b : UInt256) (ha : a.toNat % 2 = 1) (hb : b.toNat 
   congr 1
   ring
 
+/-- The least significant limb of a represented block, as a word. -/
 theorem lowLimb_word (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n)
     (hmod : Model.FastRepresents mem 0 n mm) :
     MachineState.readWord mem (32 * n - 32) = UInt256.ofNat (mm % Limbs.radix) := by
@@ -1544,6 +1616,7 @@ theorem neg_toNat (a : UInt256) (ha : a.toNat ≠ 0) :
   rw [h0, Nat.add_zero]
   exact Nat.mod_eq_of_lt (by omega)
 
+/-- Everything the estimator's five stored words mean, for a nonzero top limb. -/
 theorem pre_facts (d : UInt256) (hd : d.toNat ≠ 0) :
     ∃ v, v < 256 ∧ (preL d).toNat = 2 ^ v ∧
       2 ^ v * (preDodd d).toNat = d.toNat ∧
@@ -1644,6 +1717,7 @@ theorem preX_toNat (d : UInt256) (v : Nat) (hv : v < 256) (hL : (preL d).toNat =
   have hge : 1 ≤ 2 ^ 256 / 2 ^ v := by rw [hdiv]; exact Nat.one_le_two_pow
   rw [hXnat, hq, show 1 + (2 ^ 256 / 2 ^ v - 1) = 2 ^ 256 / 2 ^ v by omega, hdiv]
 
+/-- `SHR` by `k` is the old division by `L = 2^k`. -/
 theorem shiftRight_preK (x d : UInt256) (v : Nat) (hv : v < 256)
     (hL : (preL d).toNat = 2 ^ v) :
     (UInt256.shiftRight x (preK d)).toNat = x.toNat / (preL d).toNat := by
@@ -1655,6 +1729,7 @@ theorem shiftRight_preK (x d : UInt256) (v : Nat) (hv : v < 256)
   change x.toNat >>> (preK d).toNat = _
   rw [hk, hL, Nat.shiftRight_eq_div_pow]
 
+/-- `SHL` by `256 - k` is the old wrapping product with `X` (both vanish at `k = 0`). -/
 theorem shiftLeft_preS (x d : UInt256) (v : Nat) (hv : v < 256)
     (hL : (preL d).toNat = 2 ^ v) :
     (UInt256.shiftLeft x (preS d)).toNat = (preX d).toNat * x.toNat % 2 ^ 256 := by
@@ -1724,6 +1799,7 @@ theorem tv_three_limbs (mem : ByteArray) (n : Nat) (hn : 2 ≤ n) :
 
 /-! ## The estimator, unfolded -/
 
+/-- The five words the estimator reads, as a predicate on memory. -/
 def PreOK (mem : ByteArray) : Prop :=
   MachineState.readWord mem PRE_L = preK (MachineState.readWord mem 0) ∧
   MachineState.readWord mem PRE_DODD = preDodd (MachineState.readWord mem 0) ∧
@@ -1731,6 +1807,7 @@ def PreOK (mem : ByteArray) : Prop :=
   MachineState.readWord mem PRE_BMOD = preBmod (MachineState.readWord mem 0) ∧
   MachineState.readWord mem PRE_DINV = preDinv (MachineState.readWord mem 0)
 
+/-- The five estimator stores establish the estimator words by construction. -/
 theorem PreOK_preMemOf (mem : ByteArray) : PreOK (preMemOf mem (MachineState.readWord mem 0)) := by
   have hz : MachineState.readWord (preMemOf mem (MachineState.readWord mem 0)) 0 =
       MachineState.readWord mem 0 :=
@@ -1740,6 +1817,7 @@ theorem PreOK_preMemOf (mem : ByteArray) : PreOK (preMemOf mem (MachineState.rea
      repeat rw [Csub.readWord_write_disjoint _ _ _ _ (by omega)]) <;>
     exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
 
+/-- `preMem` keeps them: its `V_MINV` store lies above the estimator words. -/
 theorem PreOK_preMem (mem : ByteArray) : PreOK (preMem mem) := by
   obtain ⟨h1, h2, h3, h4, h5⟩ := PreOK_preMemOf mem
   have hlow : ∀ a : Nat, a + 32 ≤ 2720 → MachineState.readWord (preMem mem) a =
@@ -1769,6 +1847,7 @@ theorem PreOK_uMem (mem : ByteArray) (n : Nat) (hn32 : n ≤ 8) (h : PreOK mem) 
     exact h5
 
 
+/-- The estimator's own intermediate values, named so the proof can talk about them. -/
 def eHi (mem : ByteArray) : UInt256 :=
   UInt256.shiftRight (MachineState.readWord mem 2080) (MachineState.readWord mem PRE_L)
 def eLo (mem : ByteArray) : UInt256 :=
@@ -1879,6 +1958,7 @@ theorem eDec_le_one (mem : ByteArray) : (eDec mem).toNat ≤ 1 := by
   rw [QHat.toNat_gt]
   split <;> omega
 
+/-- The artifact's final quotient, as a branch on the saturation test. -/
 theorem qhatOf_branch (mem : ByteArray)
     (hPD : MachineState.readWord mem PRE_DODD = preDodd (MachineState.readWord mem 0))
     (hdec : (eDec mem).toNat ≤ (eQ mem).toNat) :
@@ -1918,6 +1998,8 @@ theorem qhatOf_branch (mem : ByteArray)
     exact QHat.or_two_pow_sub_one 256 _ (eQ mem - eDec mem).val.isLt
 
 
+/-- **The estimator never under-shoots the true quotient.**  This is the fact the
+conditional subtract after the limb pass was paying for at runtime. -/
 theorem qhatOf_ge (mem : ByteArray) (n mm u : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (htop : Limbs.radix ^ n < 2 * mm)
     (hmod : Model.FastRepresents mem 0 n mm)
@@ -2147,12 +2229,16 @@ theorem qhatOf_ge (mem : ByteArray) (n mm u : Nat)
     · have : (eDec mem).toNat = 0 := by omega
       rw [this]; simp [hd]
 
+/-- A nonzero top limb has an odd odd part. -/
 theorem preDodd_odd (d : UInt256) (hd : d.toNat ≠ 0) : (preDodd d).toNat % 2 = 1 := by
   obtain ⟨_, _, _, _, h, _⟩ := pre_facts d hd
   exact h
 
 end QHatGe
 
+/-- With the sign flag clear the middle block's top-limb indicator is zero: the
+estimate never under-shoots, so `tv` is already below `mm`, a fortiori below
+`radix ^ n`.  The `UNC`-into-`SUBL` branch is unreachable. -/
 theorem mid_neg_tn_zero (mem : ByteArray) (n mm r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
@@ -2218,6 +2304,7 @@ theorem mid_neg_tn_zero (mem : ByteArray) (n mm r : Nat)
   rw [← hrd]
   exact Challenge.EvmProof.Word.word_ext (htn.trans (by decide))
 
+/-- The value-side facts of one step: the repair facts and the result. -/
 theorem step_spec (mem : ByteArray) (n mm r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)
@@ -2318,6 +2405,7 @@ theorem stepMems_neg (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤
         ⟨Or.inr (by unfold NEG; omega), Or.inl (by unfold NEG; omega),
           Or.inl (by unfold NEG; omega)⟩ ih
 
+/-- The five estimator words survive a step: they lie outside everything it writes. -/
 theorem PreOK_stepMem (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (h : PreOK mem) : PreOK (stepMem mem n mm) := by
   obtain ⟨h1, h2, h3, h4, h5⟩ := h
@@ -2353,6 +2441,7 @@ theorem PreOK_stepMems (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hn32 : n �
   | zero => exact h
   | succ k ih => exact PreOK_stepMem _ n mm hn hn32 ih
 
+/-- **`k` steps multiply `BASE` by `radix ^ k` modulo `m`.** -/
 theorem stepMems_represents (mem : ByteArray) (n mm r : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm)

@@ -47,6 +47,7 @@ theorem inv_cancel (R W dodd dinv diff : Nat) (hdodd : 0 < dodd)
   unfold Nat.ModEq at this
   rw [this, Nat.mod_eq_of_lt hlt]
 
+/-- The two-word shift, no wrap. -/
 theorem shift_split (R s t H L : Nat) (hs : 0 < s) (hst : s * t = R) :
     (H / s) * R + (t * (H % s) + L / s) = (H * R + L) / s := by
   have hdvd : s ∣ H * R := ⟨H * t, by rw [← hst]; ring⟩
@@ -60,6 +61,7 @@ theorem shift_split (R s t H L : Nat) (hs : 0 < s) (hst : s * t = R) :
       _ = H * t := by rw [hdm]
   omega
 
+/-- `lo - rho` computed in a word is congruent to `dodd * (W / dodd)`. -/
 theorem diff_modeq (R W dodd hi lo rho : Nat) (hdodd : 0 < dodd)
     (hW : hi * R + lo = W) (hrho : rho = W % dodd) (hrR : rho ≤ R) :
     (lo + (R - rho)) ≡ dodd * (W / dodd) [MOD R] := by
@@ -95,6 +97,7 @@ theorem and_mod_two_of_odd {a b : Nat} (ha : a % 2 = 1) (hb : b % 2 = 1) :
   rw [Nat.testBit_zero] at h
   simpa using h
 
+/-- Complement within `k` bits: `g + f = 2^k - 1` forces disjoint bits. -/
 theorem land_eq_zero_of_add : ∀ (k g f : Nat), g + f = 2^k - 1 → g &&& f = 0 := by
   intro k
   induction k with
@@ -113,6 +116,7 @@ theorem land_eq_zero_of_add : ∀ (k g f : Nat), g + f = 2^k - 1 → g &&& f = 0
           rw [Nat.and_comm]; exact and_mod_two_of_even g hf0
       omega
 
+/-- The lowest set bit, as `d &&& (2^m - d)`, together with the 2-adic split it certifies. -/
 theorem lsb_spec : ∀ (m d : Nat), 0 < d → d < 2^m →
     ∃ v, v < m ∧ 2^v ∣ d ∧ (d / 2^v) % 2 = 1 ∧ d &&& (2^m - d) = 2^v := by
   intro m
@@ -162,6 +166,9 @@ theorem lsb_spec : ∀ (m d : Nat), 0 < d → d < 2^m →
 
 
 
+/-- **Step 3.** `⌊U/m0⌋ ≥ ⌊V/m⌋` whenever `V < (U+1)·P` and `m0·P ≤ m`.
+No normalisation of `m0` is needed: this is the direction the repair loop
+cannot supply for itself. -/
 theorem div_top_ge (V m U m0 P : Nat) (hm0 : 0 < m0) (hP : 0 < P)
     (hV : V < (U + 1) * P) (hm : m0 * P ≤ m) : V / m ≤ U / m0 := by
   have hmpos : 0 < m := lt_of_lt_of_le (Nat.mul_pos hm0 hP) hm
@@ -180,6 +187,9 @@ theorem div_top_ge (V m U m0 P : Nat) (hm0 : 0 < m0) (hP : 0 < P)
     _ = V / P / m0 := h2
     _ ≤ U / m0 := Nat.div_le_div_right h3
 
+/-- **Step 4.** The correction criterion, by direct contradiction.
+If `q·m1 > r̂·b + a2` with `U = q·m0 + r̂`, then `q` is strictly above the true
+quotient, so decrementing it once cannot take it below. -/
 theorem d3_gt (V m U m0 m1 a2 q rhat b Q2 : Nat)
     (_hb : 0 < b) (_hQ2 : 0 < Q2)
     (hU : U = q * m0 + rhat)
@@ -208,6 +218,10 @@ theorem d3_gt (V m U m0 m1 a2 q rhat b Q2 : Nat)
 
 /-! ## The raw estimate is the exact one-word quotient -/
 
+/-- **The estimator, at Nat level.** With `s * t = R` (so `s` divides the radix) and
+`s * dodd = m0`, the shifted pair `(H/s, lo)` divided by the odd part `dodd` through the
+modular inverse is exactly `⌊(H·R+L)/m0⌋` — provided the quotient fits a word, which is
+exactly the non-saturation test `H/s < dodd`. -/
 theorem est_raw (R s t dodd m0 H L rho diff dinv : Nat)
     (hs : 0 < s) (ht : 0 < t) (hst : s * t = R) (hsm : s * dodd = m0) (hdodd : 0 < dodd)
     (hH : H < R) (hL : L < R) (hm0R : m0 < R) (hhi : H / s < dodd)
@@ -243,6 +257,9 @@ theorem est_raw (R s t dodd m0 H L rho diff dinv : Nat)
 
 /-! ## The truncated correction test implies the classical one -/
 
+/-- The artifact compares `⌊q/2^128⌋ · ⌊m1/2^128⌋` against `r̂`.  Because both factors
+lose at most their low half, the product it tests is at most `q·m1 / R`, so firing
+forces a full radix of slack — more than the `a2` the classical test carries. -/
 theorem trunc_gt (R h q m1 rhat a2 : Nat) (hR : h * h = R) (ha2 : a2 < R)
     (hc : rhat < (q / h) * (m1 / h)) : rhat * R + a2 < q * m1 := by
   have h1 : h * (q / h) ≤ q := by rw [Nat.mul_comm]; exact Nat.div_mul_le_self q h
@@ -256,6 +273,9 @@ theorem trunc_gt (R h q m1 rhat a2 : Nat) (hR : h * h = R) (ha2 : a2 < R)
 
 /-! ## The estimator never under-shoots -/
 
+/-- **The whole lower bound, at Nat level, all three branches.**
+`qfin` is the artifact's final quotient: the raw estimate, decremented when `cond`
+fires, or saturated to `R - 1` when the raw quotient would not fit a word. -/
 theorem est_ge (R s t dodd m0 m1 a2 H L V m rho diff dinv Q2 qfin : Nat) (cond : Bool)
     (hs : 0 < s) (ht : 0 < t) (hst : s * t = R) (hsm : s * dodd = m0) (hdodd : 0 < dodd)
     (hH : H < R) (hL : L < R) (hm0R : m0 < R) (hQ2 : 0 < Q2) (hm0 : 0 < m0)
@@ -326,6 +346,7 @@ theorem toNat_gt (a b : UInt256) :
   unfold UInt256.gt
   split <;> simp_all [word_toNat_ofNat]
 
+/-- `land d (0 - d)` is the lowest set bit of a nonzero word. -/
 theorem lsb_word (d : UInt256) (hd : d.toNat ≠ 0) :
     ∃ v, v < 256 ∧ (UInt256.land d (UInt256.ofNat 0 - d)).toNat = 2 ^ v ∧
       2 ^ v ∣ d.toNat ∧ (d.toNat / 2 ^ v) % 2 = 1 := by
@@ -341,6 +362,8 @@ theorem lsb_word (d : UInt256) (hd : d.toNat ≠ 0) :
 
 /-! ## Two small facts the word layer needs -/
 
+/-- `X * H` in a word, with `X = R / s`, is exactly `t * (H % s)`: the multiply by the
+scaled radix keeps only the low bits of `H`, and the result cannot wrap. -/
 theorem mul_shift_mod (R s t H : Nat) (hs : 0 < s) (ht : 0 < t) (hst : s * t = R) :
     (t * H) % R = t * (H % s) := by
   have hdm := Nat.div_add_mod H s
@@ -355,12 +378,14 @@ theorem mul_shift_mod (R s t H : Nat) (hs : 0 < s) (ht : 0 < t) (hst : s * t = R
     exact h2
   rw [hkey, Nat.mul_add_mod, Nat.mod_eq_of_lt hlt]
 
+/-- `(R - dodd) % dodd = R % dodd`: what `preBmod` stores really is `R mod dodd`. -/
 theorem sub_mod_self (R dodd : Nat) (hd : 0 < dodd) (hle : dodd ≤ R) :
     (R - dodd) % dodd = R % dodd := by
   conv_rhs => rw [show R = (R - dodd) + dodd by omega]
   rw [Nat.add_mod_right]
 
 
+/-- Saturation: OR-ing with the all-ones word swallows everything below the radix. -/
 theorem or_two_pow_sub_one (k a : Nat) (ha : a < 2 ^ k) : (2 ^ k - 1) ||| a = 2 ^ k - 1 := by
   apply Nat.eq_of_testBit_eq
   intro i

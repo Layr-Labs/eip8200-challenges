@@ -1,7 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacWords
 
 set_option warningAsError true
-set_option linter.unusedSimpArgs false
 
 /-! Shared MAC execution for the immediate-address kernel, split before
 symbolic words grow. The selected loops share the pointer-free `L2` product
@@ -101,9 +100,11 @@ theorem run_load (template : State) (pc part sum y pa t : UInt256)
       (framed template pc ([part, pa, sum, y] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 5)
       ([MachineState.readWord template.memory t.toNat, sum, part, pa, sum, y] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 6) : rest.length + j < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
   simp [runInstructions, loadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, succ_eq_add, word_add_assoc,
+    hc4, hc5, hc6, State.activeWordsAfterUInt256, hactive, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_sum (template : State) (pc t sum part y pa : UInt256)
@@ -112,9 +113,11 @@ theorem run_sum (template : State) (pc t sum part y pa : UInt256)
       (framed template pc ([t, sum, part, pa, sum, y] ++ rest)) =
     some (framed template (advancePC 6 pc)
       ([t + sum, pa, UInt256.gt sum (t + sum) + part, y] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 6) : rest.length + j < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
   simp [runInstructions, sumProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    advancePC, capacity, Nat.add_assoc, List.exchange]
+    advancePC, hc4, hc5, hc6, List.exchange]
 
 theorem run_accumulate (template : State) (pc x y c pa t : UInt256)
     (rest : List UInt256) (hrest : rest.length + 7 < 1024)
@@ -232,9 +235,11 @@ theorem run_load (template : State) (pc part sum y t : UInt256)
       (framed template pc ([part, sum, y] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 5)
       ([MachineState.readWord template.memory t.toNat, sum, part, sum, y] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
   simp [runInstructions, loadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, succ_eq_add, word_add_assoc,
+    hc3, hc4, hc5, State.activeWordsAfterUInt256, hactive, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_sum (template : State) (pc t sum part y : UInt256)
@@ -243,9 +248,11 @@ theorem run_sum (template : State) (pc t sum part y : UInt256)
       (framed template pc ([t, sum, part, sum, y] ++ rest)) =
     some (framed template (advancePC 6 pc)
       ([t + sum, UInt256.gt sum (t + sum) + part, y] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
   simp [runInstructions, sumProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    advancePC, capacity, Nat.add_assoc, List.exchange]
+    advancePC, hc3, hc4, hc5, List.exchange]
 
 theorem run_accumulate (template : State) (pc x y c t : UInt256)
     (rest : List UInt256) (hrest : rest.length + 6 < 1024)
@@ -309,6 +316,7 @@ theorem run_zero_carry (template : State) (pc hi lo y : UInt256)
   simp [runInstructions, zeroCarryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
     advancePC, hrest, hc4, hc5, List.exchange]
 
+/-- Only a cell whose incoming carry is zero may use this product schedule. -/
 theorem run_product_zero (template : State) (pc x y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 6 < 1024) :
     runInstructions zeroProductProgram
@@ -345,9 +353,11 @@ theorem run_finish_load (template : State) (pc part sum y tl : UInt256)
       (framed template pc ([part, sum, y] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 7)
       ([MachineState.readWord template.memory tl.toNat + sum, sum, part, y] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
   simp [runInstructions, finishLoadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, List.exchange,
+    hc3, hc4, hc5, State.activeWordsAfterUInt256, hactive, List.exchange,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_finish_store (template : State) (pc value sum part y ts : UInt256)
@@ -362,11 +372,14 @@ theorem run_finish_store (template : State) (pc value sum part y ts : UInt256)
           (Data.Bytes.natToBytesPadded value.toNat 32) ts.toNat }
       (pc + UInt256.ofNat 7)
       ([UInt256.lt value sum + part, y] ++ rest)) := by
-  have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
   simp [runInstructions, finishStoreProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    capacity, Nat.add_assoc, hrest, State.activeWordsAfterUInt256, hactive,
+    hc3, hc4, hc5, hrest, State.activeWordsAfterUInt256, hactive,
     succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
 
+/-- Finish either loop without retaining a cursor or reading after the store. -/
 theorem run_finish (template : State) (pc x y c tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 6 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter

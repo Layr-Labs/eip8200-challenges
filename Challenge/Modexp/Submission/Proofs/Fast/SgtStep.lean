@@ -26,6 +26,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
+/-- Gas-parametric `SGT` transition for any state whose decoder sees `SGT`. -/
 def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
     (hop : s.decodedOp = some .SGT)
     (hstack : s.stack = a :: b :: rest)
@@ -41,9 +42,11 @@ def gasStep_sgt {s : State} {a b : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.sgt (withGas s gas) a b rest hop hgas hstack hcap
 
+/-- The candidate's only `SGT` is instruction 3742. -/
 theorem sqRowSgt_index : Artifact.submissionInstructions[4228]? = some (.op .SGT) := by
   rfl
 
+/-- ... at program counter 4835 (0x126c). -/
 theorem sqRowSgt_pc : Artifact.submissionArtifact.instructionPC 4228 = 5307 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
@@ -63,6 +66,9 @@ theorem decodedOp_sqRowSgt (s : State)
 theorem succ_4716 : (UInt256.ofNat 5307).succ = UInt256.ofNat 5308 := by
   decide
 
+/-- The `SGT` of `sq_row` (pc 4835 → 4955): pops `a, b`, pushes `UInt256.sgt a b`.
+In `sq_row` the operands are `a = 0` (from `PUSH0`) and `b = aprev`; see
+`SquareDiag.sgt_zero_toNat` / `SquareModel.sgt_zero_eq_zero_of_lt`. -/
 def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka)
@@ -83,6 +89,9 @@ def gasSteps_sqRowSgt (s : State) (a b : UInt256) (rest : List UInt256)
   rw [hpc, succ_4716] at h
   exact h
 
+/-- Same rule for a state written as a record update of a template
+(`{ t with pc := 4291, stack := a :: b :: rest, memory := m }`), the form used by
+the kernel frames. -/
 def gasSteps_sqRowSgt_framed (t : State) (m : ByteArray) (a b : UInt256)
     (rest : List UInt256)
     (hcode : t.executionEnv.code = Challenge.Modexp.submissionBytecode)

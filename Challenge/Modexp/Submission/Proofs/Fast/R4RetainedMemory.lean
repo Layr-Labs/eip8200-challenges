@@ -42,6 +42,7 @@ theorem flush_zero_noop (mem : ByteArray) (hsize : 2112 ≤ mem.size) (hz : Zero
       exact (hz i (by omega) (by omega)).symm
     · rfl
 
+/-- The actual store block after eliminating the last zero-word flush. -/
 def fourStores (mem : ByteArray) (W : W5) : ByteArray :=
   MachineState.writeBytes (MachineState.writeBytes (MachineState.writeBytes
     (MachineState.writeBytes mem
@@ -76,6 +77,11 @@ theorem red4_zero (n0 n1 n2 n3 : UInt256) (W : W5) :
   · assumption
   · rfl
 
+#print axioms zeroTN_init
+#print axioms zeroTN_store
+#print axioms flush_zero_noop
+#print axioms fourStores_eq_r4Mem
+#print axioms red4_zero
 
 def initMemory (mem : ByteArray) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 0 32) 2080
@@ -88,6 +94,7 @@ theorem initMemory_read (mem : ByteArray) (address : Nat)
   rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   exact hout
 
+/-- The original round writes the top word last, so initialization is erased. -/
 theorem r4Mem_init (mem : ByteArray) (W : W5) :
     r4Mem (initMemory mem) W = r4Mem mem W := by
   apply ByteArray.ext_getElem
@@ -113,6 +120,9 @@ theorem r4Steps_init (k : Nat) (mem : ByteArray) :
     R4Loop.r4Steps (k+1) (initMemory mem) = R4Loop.r4Steps (k+1) mem := by
   rw [R4Loop.r4Steps_succ, R4Loop.r4Steps_succ, rows4r_init]
 
+#print axioms r4Mem_init
+#print axioms rows4r_init
+#print axioms r4Steps_init
 
 theorem r4RunMem_init (k : Nat) (mem : ByteArray) (hk : 1 ≤ k) :
     R4Loop.r4RunMem k (initMemory mem) = R4Loop.r4RunMem k mem := by
@@ -120,6 +130,7 @@ theorem r4RunMem_init (k : Nat) (mem : ByteArray) (hk : 1 ≤ k) :
   | zero => omega
   | succ k => unfold R4Loop.r4RunMem; rw [r4Steps_init]
 
+#print axioms r4RunMem_init
 
 theorem rows4r_zero (mem : ByteArray) : ZeroTN (rows4r mem) := by
   change ZeroTN (MachineState.writeBytes (fourStores mem _)
@@ -127,4 +138,5 @@ theorem rows4r_zero (mem : ByteArray) : ZeroTN (rows4r mem) := by
   rw [red4_zero]
   exact zeroTN_init _
 
+#print axioms rows4r_zero
 end Challenge.Modexp.Submission.Proofs.Fast.R4RetainedMemory

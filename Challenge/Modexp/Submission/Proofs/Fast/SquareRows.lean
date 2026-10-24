@@ -20,12 +20,19 @@ open CiosCachedMidMemory CarryRowModel StagedOperand
 
 /-! ## Row bookkeeping -/
 
+/-- Entry retained by setup: 3562 for eight limbs, 5309 for four limbs.
+Eight-limb square rows advance this slot by 37. Four-limb squares use the
+separate R4 routine and retain their initial slot throughout the call. -/
 def sqEnt (n i : Nat) : Nat := 3347 + 1769 * ((8 - n) / 4) + 37 * i
 
+/-- Frame slot 14 at row head `i`: the row-0 value `a0` (the setup's `aEnd`, or zero when
+the in-kernel loop re-enters), and the limb `x_{i-1}` that row `i - 1` parked there. -/
 def sqPrev (a0 : UInt256) (M0 : ByteArray) (n : Nat) : Nat → UInt256
   | 0 => a0
   | i + 1 => sqX (sqRowsCarry M0 n i) n i
 
+/-- Any row-0 slot 14 with a clear top bit gives the row-0 carry `tb = 0`: the setup's
+`&a_{n-1} < 2 ^ 255` and the loop's zero both qualify. -/
 theorem sgt_zero_setup (n : Nat) (hn : n ≤ 8) :
     UInt256.sgt (UInt256.ofNat 0) (UInt256.ofNat (512 + 32 * n - 32)) = UInt256.ofNat 0 := by
   apply sgt_zero_eq_zero_of_lt
@@ -35,6 +42,7 @@ theorem sgt_zero_setup (n : Nat) (hn : n ≤ 8) :
 theorem sgt_zero_zero : UInt256.sgt (UInt256.ofNat 0) (UInt256.ofNat 0) = UInt256.ofNat 0 := by
   decide
 
+/-- Slot 14 when the rows are done: the limb the last row parked there. -/
 def sqLast (M0 : ByteArray) (n : Nat) : UInt256 := sqX (sqRowsCarry M0 n (n - 1)) n (n - 1)
 
 theorem sqTb_eq_prev (a0 : UInt256) (M0 : ByteArray) (n i : Nat) (hi : i < n) (hn : n ≤ 8)

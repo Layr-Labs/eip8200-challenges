@@ -72,6 +72,7 @@ theorem run_diagonal (s : State)
   have hpc : advancePC 8 (advancePC 22 pc) = advancePC 30 pc := (advancePC_add 22 8 pc).symm
   simpa only [diagonalProgram, diagonal, hn, subtract_hi, x, hpc] using h
 
+/-- Two writes to disjoint windows commute. -/
 theorem writeBytes_comm_disjoint (bs b1 b2 : ByteArray) (a1 a2 : Nat)
     (h1 : b1.size ≠ 0) (h2 : b2.size ≠ 0) (hd : a1 + b1.size ≤ a2 ∨ a2 + b2.size ≤ a1) :
     MachineState.writeBytes (MachineState.writeBytes bs b1 a1) b2 a2 =
@@ -88,6 +89,9 @@ theorem writeBytes_comm_disjoint (bs b1 b2 : ByteArray) (a1 a2 : Nat)
   simp only [MachineState.writeBytes_getElem?_getD]
   split_ifs <;> first | rfl | omega
 
+/-- The tail of the first row after the last cell's arithmetic: the carry is stored to
+`0x820`, the last cell's sum to `0x840` (store address widened to `PUSH3`), then the
+loop counter is dropped and the quotient word starts at zero. -/
 def finishStore : List Instr :=
   [.push 2 2080, .op .MSTORE, .push 2 2112, .op .MSTORE, .op .POP, .push 0 0]
 
@@ -179,4 +183,6 @@ theorem run_diagonalM128 (s : State)
   have hpc : advancePC 21 (advancePC 8 pc) = advancePC 29 pc := (advancePC_add 8 21 pc).symm
   simpa only [diagonalProgramM128, diagonal, hn, subtract_hi, x, hpc] using h
 
+#print axioms run_finishStore
+#print axioms run_diagonalM128
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow
