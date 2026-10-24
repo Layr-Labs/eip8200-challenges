@@ -31,7 +31,7 @@ def selTop (x : UInt256) : UInt256 := UInt256.eq x (UInt256.ofNat 2464)
 /-- The width's row head from `aEnd` (msplit, 97bb site B). -/
 def prefixSelect : List Instr :=
   [.push 2 2464, .op (.Dup ⟨14, by decide⟩), .op .EQ,
-   .push 2 2040, .op .MUL, .push 2 3313, .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .POP]
+   .push 2 2039, .op .MUL, .push 2 3313, .op .ADD, .op (.Swap ⟨1, by decide⟩), .op .POP]
 
 def prefixTail : List Instr :=
   [.push 2 256, .op (.Swap ⟨14, by decide⟩), .op .POP,
@@ -101,7 +101,7 @@ theorem run_prefixSelect (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z a
       (framed s (UInt256.ofNat 3276)
         ([q, hd, w3, ent, m32, allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) =
       some (framed s (UInt256.ofNat 3291)
-        ([q, UInt256.ofNat 3313 + UInt256.ofNat 2040 * selTop aEnd, w3, ent, m32,
+        ([q, UInt256.ofNat 3313 + UInt256.ofNat 2039 * selTop aEnd, w3, ent, m32,
           allOnes, m128, m64, m0, tl, m96, inv, z, aEnd, pdst, ret] ++ rest)) := by
   have hc16 : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
@@ -128,7 +128,7 @@ theorem run_prefixTail (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z aEn
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem headPC_select (n : Nat) (hn : n = 4 ∨ n = 8) :
-    UInt256.ofNat 3313 + UInt256.ofNat 2040 * selTop (UInt256.ofNat (2368+32*n-32)) =
+    UInt256.ofNat 3313 + UInt256.ofNat 2039 * selTop (UInt256.ofNat (2368+32*n-32)) =
       UInt256.ofNat (TnM128RowSteps.headPC n) := by
   rcases hn with rfl | rfl <;> decide
 
@@ -146,7 +146,7 @@ theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
     (UInt256.ofNat (2368+32*n-32)) pdst ret rest hcap
   have h3 := run_prefixTail {s with memory := mem} (UInt256.ofNat (2^256 - 32*n))
-    (UInt256.ofNat 3313 + UInt256.ofNat 2040 * selTop (UInt256.ofNat (2368+32*n-32)))
+    (UInt256.ofNat 3313 + UInt256.ofNat 2039 * selTop (UInt256.ofNat (2368+32*n-32)))
     w3 ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
     (UInt256.ofNat (2368+32*n-32)) pdst ret rest hcap
   have hq : UInt256.ofNat (2^256 - 32*n) = TnCacheRowPointers.qptr n 0 := by

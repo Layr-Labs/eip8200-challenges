@@ -99,7 +99,7 @@ case "$mode" in
     # on a machine with more RAM if a particular proof needs a larger address
     # space.
     if [[ "${MODEXP_VMEM_KB:-33554432}" != 0 ]]; then
-      ulimit -v "$MODEXP_VMEM_KB"
+      ulimit -v "${MODEXP_VMEM_KB:-33554432}"
     fi
     lake env "$root/$comparator" "$root/$config"
     "$scorer" --hex="$trusted" --csv > "$result_dir/scorer.csv"

@@ -44,8 +44,8 @@ theorem r2h_2Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 : UInt256) (
 
 def r2h_2NewP0 : List Instr := [.push 2 2144, .op .MLOAD, .push 2 2176, .op .MLOAD, .push 0 0]
 theorem r2h_2NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1009) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions r2h_2NewP0 { s with pc := UInt256.ofNat 9385, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest } =
-    some { s with pc := UInt256.ofNat 9394, stack := (0 : UInt256) :: (MachineState.readWord s.memory 2176) :: (MachineState.readWord s.memory 2144) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest } := by
+    runInstructions r2h_2NewP0 { s with pc := UInt256.ofNat 9384, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest } =
+    some { s with pc := UInt256.ofNat 9393, stack := (0 : UInt256) :: (MachineState.readWord s.memory 2176) :: (MachineState.readWord s.memory 2144) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -67,8 +67,8 @@ theorem r2h_2NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256)
 
 def r2h_2New : List Instr := r2h_2NewP0
 theorem r2h_2New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1009) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions r2h_2New { s with pc := UInt256.ofNat 9385, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: rest } =
-    some { s with pc := UInt256.ofNat 9394, stack := (0 : UInt256) :: (MachineState.readWord s.memory 2176) :: (MachineState.readWord s.memory 2144) :: z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: rest } := by
+    runInstructions r2h_2New { s with pc := UInt256.ofNat 9384, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: rest } =
+    some { s with pc := UInt256.ofNat 9393, stack := (0 : UInt256) :: (MachineState.readWord s.memory 2176) :: (MachineState.readWord s.memory 2144) :: z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: rest } := by
   have g0 := r2h_2NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) rest hcap hact
   have h := g0
   simpa only [r2h_2New, List.append_assoc] using h
@@ -83,8 +83,8 @@ theorem run_r2h_2 (s : State) (p3 p2 p1 p0 p4 k n0 n1 n2 n3 np a2 a1 : UInt256) 
     (ha1 : MachineState.readWord s.memory 2176 = a1)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions r2h_2New
-      { s with pc := UInt256.ofNat 9385, stack := p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 9394, stack := (⟨0⟩ : UInt256) :: a1 :: a2 :: p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+      { s with pc := UInt256.ofNat 9384, stack := p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
+    some { s with pc := UInt256.ofNat 9393, stack := (⟨0⟩ : UInt256) :: a1 :: a2 :: p1 :: p0 :: p3 :: p2 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
   have ho := r2h_2Old_run s (p3) (p2) (p1) (p0) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap hact
   have hc := R4Runs.run_r2h s p3 p2 p1 p0 p4 k n0 n1 n2 n3 np a2 a1 rest hcap ha2 ha1 hact
   change runInstructions r2h_2Old _ = _ at hc

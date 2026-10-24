@@ -105,8 +105,8 @@ theorem r0z1_0Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 : UInt256) (rest :
 
 def r0z1_0NewP0 : List Instr := [.push 2 2176, .op .MLOAD, .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL]
 theorem r0z1_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions r0z1_0NewP0 { s with pc := UInt256.ofNat 9021, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: rest } =
-    some { s with pc := UInt256.ofNat 9029, stack := ((MachineState.readWord s.memory 2176) * x2) :: x3 :: (MachineState.readWord s.memory 2176) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: rest } := by
+    runInstructions r0z1_0NewP0 { s with pc := UInt256.ofNat 9020, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: rest } =
+    some { s with pc := UInt256.ofNat 9028, stack := ((MachineState.readWord s.memory 2176) * x2) :: x3 :: (MachineState.readWord s.memory 2176) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -126,8 +126,8 @@ theorem r0z1_0NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 : UInt256) (rest
 
 def r0z1_0NewP1 : List Instr := [.op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MULMOD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT]
 theorem r0z1_0NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) :
-    runInstructions r0z1_0NewP1 { s with pc := UInt256.ofNat 9029, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
-    some { s with pc := UInt256.ofNat 9035, stack := (UInt256.gt x0 (UInt256.mulMod x5 x2 x1)) :: (UInt256.mulMod x5 x2 x1) :: x0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
+    runInstructions r0z1_0NewP1 { s with pc := UInt256.ofNat 9028, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
+    some { s with pc := UInt256.ofNat 9034, stack := (UInt256.gt x0 (UInt256.mulMod x5 x2 x1)) :: (UInt256.mulMod x5 x2 x1) :: x0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -146,8 +146,8 @@ theorem r0z1_0NewP1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UIn
 
 def r0z1_0NewP2 : List Instr := [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨3, by decide⟩)]
 theorem r0z1_0NewP2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) :
-    runInstructions r0z1_0NewP2 { s with pc := UInt256.ofNat 9035, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
-    some { s with pc := UInt256.ofNat 9041, stack := x3 :: (x3 + x2) :: (x0 - x1) :: x2 :: (x3 + x2) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
+    runInstructions r0z1_0NewP2 { s with pc := UInt256.ofNat 9034, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
+    some { s with pc := UInt256.ofNat 9040, stack := x3 :: (x3 + x2) :: (x0 - x1) :: x2 :: (x3 + x2) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -166,8 +166,8 @@ theorem r0z1_0NewP2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UIn
 
 def r0z1_0NewP3 : List Instr := [.op .GT, .op .SUB, .op .SUB]
 theorem r0z1_0NewP3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) :
-    runInstructions r0z1_0NewP3 { s with pc := UInt256.ofNat 9041, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } =
-    some { s with pc := UInt256.ofNat 9044, stack := (((UInt256.gt x0 x1) - x2) - x3) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } := by
+    runInstructions r0z1_0NewP3 { s with pc := UInt256.ofNat 9040, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } =
+    some { s with pc := UInt256.ofNat 9043, stack := (((UInt256.gt x0 x1) - x2) - x3) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -186,8 +186,8 @@ theorem r0z1_0NewP3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 :
 
 def r0z1_0New : List Instr := r0z1_0NewP0 ++ r0z1_0NewP1 ++ r0z1_0NewP2 ++ r0z1_0NewP3
 theorem r0z1_0New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions r0z1_0New { s with pc := UInt256.ofNat 9021, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: rest } =
-    some { s with pc := UInt256.ofNat 9044, stack := (((UInt256.gt z0 (z0 + ((MachineState.readWord s.memory 2176) * z2))) - ((UInt256.gt ((MachineState.readWord s.memory 2176) * z2) (UInt256.mulMod z2 (MachineState.readWord s.memory 2176) z3)) - (UInt256.mulMod z2 (MachineState.readWord s.memory 2176) z3))) - ((MachineState.readWord s.memory 2176) * z2)) :: (z0 + ((MachineState.readWord s.memory 2176) * z2)) :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: rest } := by
+    runInstructions r0z1_0New { s with pc := UInt256.ofNat 9020, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: rest } =
+    some { s with pc := UInt256.ofNat 9043, stack := (((UInt256.gt z0 (z0 + ((MachineState.readWord s.memory 2176) * z2))) - ((UInt256.gt ((MachineState.readWord s.memory 2176) * z2) (UInt256.mulMod z2 (MachineState.readWord s.memory 2176) z3)) - (UInt256.mulMod z2 (MachineState.readWord s.memory 2176) z3))) - ((MachineState.readWord s.memory 2176) * z2)) :: (z0 + ((MachineState.readWord s.memory 2176) * z2)) :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: rest } := by
   have g0 := r0z1_0NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) rest hcap hact
   have g1 := r0z1_0NewP1_run s (((MachineState.readWord s.memory 2176) * z2)) (z3) ((MachineState.readWord s.memory 2176)) (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) rest hcap
   have g2 := r0z1_0NewP2_run s ((UInt256.gt ((MachineState.readWord s.memory 2176) * z2) (UInt256.mulMod z2 (MachineState.readWord s.memory 2176) z3))) ((UInt256.mulMod z2 (MachineState.readWord s.memory 2176) z3)) (((MachineState.readWord s.memory 2176) * z2)) (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) rest hcap
@@ -204,8 +204,8 @@ theorem run_r0z1_0 (s : State) (c t0 d k n0 n1 n2 n3 np a1 : UInt256) (rest : Li
     (ha1 : MachineState.readWord s.memory 2176 = a1)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions r0z1_0New
-      { s with pc := UInt256.ofNat 9021, stack := c :: t0 :: d :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 9044, stack := (zCarry a1 d c k) :: (zSum a1 d c) :: t0 :: d :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+      { s with pc := UInt256.ofNat 9020, stack := c :: t0 :: d :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
+    some { s with pc := UInt256.ofNat 9043, stack := (zCarry a1 d c k) :: (zSum a1 d c) :: t0 :: d :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
   have ho := r0z1_0Old_run s (c) (t0) (d) (k) (n0) (n1) (n2) (n3) (np) rest hcap hact
   have hc := R4Runs.run_r0z1 s c t0 d k n0 n1 n2 n3 np a1 rest hcap ha1 hact
   change runInstructions r0z1_0Old _ = _ at hc

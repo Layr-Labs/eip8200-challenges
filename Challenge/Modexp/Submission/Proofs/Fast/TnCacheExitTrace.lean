@@ -15,7 +15,7 @@ def normalGuard : List Instr :=
 def drop : List Instr := List.replicate 14 (.op .POP)
 
 /-- A multiply row head (`hd` is one width's head, 3545 or 5339) falls through the mode test. -/
-theorem run_guard (s : State) (pc hd : Nat) (hhd : hd = 3313 ∨ hd = 5353)
+theorem run_guard (s : State) (pc hd : Nat) (hhd : hd = 3313 ∨ hd = 5352)
     (pbi pb ent tn target inv : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions normalGuard
       (framed s (UInt256.ofNat pc)

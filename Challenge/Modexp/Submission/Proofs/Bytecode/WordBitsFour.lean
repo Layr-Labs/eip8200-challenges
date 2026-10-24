@@ -39,18 +39,18 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
   exact blockCostW block.path work hresult hs.fork hfree hcost hactive
 
 /-- The single bit body at pc 2454 (instruction indices 1948 to 1966). -/
-def bodyBlock : BoundBlock 5576 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4458 19 5576
+def bodyBlock : BoundBlock 5575 (bodyProgram 7) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4457 19 5575
     (bodyProgram 7) (by decide) (by rfl) (by rfl) (by rfl)
 
 /-- The body head `JUMPDEST` at pc 2453 (index 1947), the target of the loop control. -/
-def startBlock : BoundBlock 5575 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4457 1 5575
+def startBlock : BoundBlock 5574 ([.op .JUMPDEST]) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4456 1 5574
     ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
 
 /-- The loop control at pc 2476 (indices 1967 to 1974). -/
-def controlBlock : BoundBlock 5598 (controlProgram) :=
-  WindowTwentyOneSlice.block Artifact.allWellFormed 4477 8 5598
+def controlBlock : BoundBlock 5597 (controlProgram) :=
+  WindowTwentyOneSlice.block Artifact.allWellFormed 4476 8 5597
     (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 variable (s : State) (rest : List UInt256)
@@ -58,11 +58,11 @@ variable (s : State) (rest : List UInt256)
 
 /-- The body with the loop counter symbolic: it selects bit `7 - counter`. -/
 def body (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 5576 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 5598 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m] ++ rest)) :=
+    GasSteps (stW s 5575 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 5597 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m] ++ rest)) :=
   lift bodyBlock s hs _ _ (by
     simpa only [stW, framed, Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 5576 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 5575 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem body_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
@@ -70,8 +70,8 @@ def body (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 
 def start (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 5575 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 5576 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) :=
+    GasSteps (stW s 5574 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 5575 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift startBlock s hs _ _ (run_start s Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem start_cost (hrest : rest.length < 1000) (counter : UInt256) :
@@ -82,12 +82,12 @@ def start (hrest : rest.length < 1000) (counter : UInt256) :
 /-- The loop control with the counter at `c < 8`: back to the body head for
 `c < 7`, otherwise on to the exit at 2413; the counter becomes `c + 1`. -/
 def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
-    GasSteps (stW s 5598 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s (if c < 7 then 5575 else 5610)
+    GasSteps (stW s 5597 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s (if c < 7 then 5574 else 5609)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
-    have hj : Decode.isValidJumpDest s.executionEnv.code 5575 = true := by
-      rw [hs.code]; exact Artifact.isValidJumpDest_index 4457 (by rfl)
+    have hj : Decode.isValidJumpDest s.executionEnv.code 5574 = true := by
+      rw [hs.code]; exact Artifact.isValidJumpDest_index 4456 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 

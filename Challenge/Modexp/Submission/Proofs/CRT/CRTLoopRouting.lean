@@ -23,8 +23,8 @@ def direct (mem : ByteArray) (f : CRTLoopFrames.Frame) (N k A : Nat)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (hk : 1 ≤ k) (h : Invariant mem n minv f N (k+1) A)
     (hlt : Q s minv n mem < R) :
-    GasSteps (atCache s mem 5859 n minv f)
-      (atCache s (next s minv n k mem) 5859 n minv (nextFrame s minv n k mem f)) := by
+    GasSteps (atCache s mem 5858 n minv f)
+      (atCache s (next s minv n k mem) 5858 n minv (nextFrame s minv n k mem f)) := by
   have g1 := checkedRound s minv n mem f N (k+1) A env hcap hact h
   rw [if_pos hlt] at g1
   have g2 := CRTGasStepsNormalized.count s (checked s minv n mem) n minv f env hcap hact
@@ -39,8 +39,8 @@ def lastExit (mem : ByteArray) (f : CRTLoopFrames.Frame) (N A : Nat)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (h : Invariant mem n minv f N 1 A) :
-    GasSteps (atCache s mem 5859 n minv f)
-      (atCache s (checked s minv n mem) 8800 n minv f) := by
+    GasSteps (atCache s mem 5858 n minv f)
+      (atCache s (checked s minv n mem) 8799 n minv f) := by
   have g1 := checkedRound s minv n mem f N 1 A env hcap hact h
   by_cases hlt : Q s minv n mem < R
   · rw [if_pos hlt] at g1
@@ -58,7 +58,7 @@ def lastTail (mem : ByteArray) (f : CRTLoopFrames.Frame) (N A : Nat)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (h : Invariant mem n minv f N 1 A) :
-    GasSteps (atCache s (checked s minv n mem) 8800 n minv f)
+    GasSteps (atCache s (checked s minv n mem) 8799 n minv f)
       (atOld s (finish s minv n mem) 3256 (UInt256.ofNat 0)
         (UInt256.ofNat (2^256-256)) (UInt256.ofNat 3643) (lastFrame s minv n mem f)) := by
   let E := exitMemory (checked s minv n mem)

@@ -50,9 +50,9 @@ include hcode hfork hrun hnp
 /-- Apply the final conditional subtraction before storing four limbs. -/
 def gasSteps_tail (W : W5) (k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) :
-    GasSteps { s with pc := UInt256.ofNat 9688,
+    GasSteps { s with pc := UInt256.ofNat 9687,
                       stack := win W (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
-      { s with pc := UInt256.ofNat 9693,
+      { s with pc := UInt256.ofNat 9692,
                stack := win (red4 n0 n1 n2 n3 W) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   obtain ⟨t0, t1, t2, t3, t4⟩ := W
   if h0 : t4.toNat = 0 then
@@ -69,9 +69,9 @@ def gasSteps_tail (W : W5) (k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
       if_neg hne
     rw [hr]
     simp only [win]
-    have hj77 : Decode.isValidJumpDest s.executionEnv.code 9730 = true := by
+    have hj77 : Decode.isValidJumpDest s.executionEnv.code 9729 = true := by
       rw [hcode]; exact R4InlineTailBlocks.jd4768
-    have hj38 : Decode.isValidJumpDest s.executionEnv.code 9693 = true := by
+    have hj38 : Decode.isValidJumpDest s.executionEnv.code 9692 = true := by
       rw [hcode]; exact R4InlineTailBlocks.jd4731
     refine GasSteps.trans (SquareRow.stepsOf R4InlineTailBlocks.block_tail
       (R4InlineTailRuns.run_tail_rare s t3 t2 t1 t0 t4 _ (by lenOK) hne hj77) rfl hcode hfork hrun hnp) ?_
@@ -84,19 +84,19 @@ def gasSteps_st4More (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e1
     (hact : 88 ≤ s.activeWords.toNat) (hc : UInt256.isTrue e0)
     (hz : R4RetainedMemory.ZeroTN s.memory) (ht : P.t4 = UInt256.ofNat 0) :
     GasSteps { s with
-      pc := UInt256.ofNat 9693,
+      pc := UInt256.ofNat 9692,
       stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
         e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest) }
       { s with
-      pc := UInt256.ofNat 8998, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5 + e0) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest, memory := r4Mem s.memory P } := by
-  have hj : Decode.isValidJumpDest s.executionEnv.code 8998 = true := by
+      pc := UInt256.ofNat 8997, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5 + e0) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest, memory := r4Mem s.memory P } := by
+  have hj : Decode.isValidJumpDest s.executionEnv.code 8997 = true := by
     rw [hcode]; exact R4InlineTailBlocks.jd4280
   have h1 := R4InlineTailRuns.run_st4_stores s P.t3 P.t2 P.t1 P.t0
     (P.t4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
       e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest)
     (by lenOK) hact
   change _ = some { s with
-      pc := UInt256.ofNat 9710,
+      pc := UInt256.ofNat 9709,
       stack := P.t4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
       e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest,
       memory := R4RetainedMemory.fourStores s.memory P } at h1
@@ -112,7 +112,7 @@ def gasSteps_st4Last (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e1
     (hact : 88 ≤ s.activeWords.toNat) (hc : ¬ UInt256.isTrue e0)
     (hz : R4RetainedMemory.ZeroTN s.memory) (ht : P.t4 = UInt256.ofNat 0) :
     GasSteps { s with
-      pc := UInt256.ofNat 9693,
+      pc := UInt256.ofNat 9692,
       stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
         e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest) }
       { s with
@@ -124,7 +124,7 @@ def gasSteps_st4Last (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e1
       e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest)
     (by lenOK) hact
   change _ = some { s with
-      pc := UInt256.ofNat 9710,
+      pc := UInt256.ofNat 9709,
       stack := P.t4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
       e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: aprev :: c :: rest,
       memory := R4RetainedMemory.fourStores s.memory P } at h1
@@ -155,9 +155,9 @@ def gasSteps_r4Cached (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : U
     (hminv : (e8.toNat * e11.toNat + 1) % 2^256 = 0)
     (hguard : e11 ≠ UInt256.ofNat 1) :
     GasSteps
-      { s with pc := UInt256.ofNat 8998,
+      { s with pc := UInt256.ofNat 8997,
                stack := e8 :: e7 :: e4 :: MachineState.readWord s.memory 0 :: e11 :: e0 :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: rest }
-      { s with pc := UInt256.ofNat 9693,
+      { s with pc := UInt256.ofNat 9692,
                stack := win (red4 e8 e7 e4 (MachineState.readWord s.memory 0)
                    (r4Final s.memory e5 e8 e7 e4 e11))
                  (e5 :: e8 :: e7 :: e4 :: MachineState.readWord s.memory 0 :: e11 ::

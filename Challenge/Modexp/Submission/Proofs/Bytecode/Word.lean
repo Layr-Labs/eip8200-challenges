@@ -144,7 +144,7 @@ def expGuardPath :
    opAt 126 (.Dup ⟨5, by decide⟩),
    opAt 127 (.Dup ⟨1, by decide⟩),
    opAt 128 .EQ,
-   pushAt 129 2 5554,
+   pushAt 129 2 5553,
    opAt 130 .JUMPI]
 
 def expLoadPath :
@@ -165,23 +165,23 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4453 .JUMPDEST,
-   pushAt 4454 1 1,
-   opAt 4455 (.Dup ⟨6, by decide⟩),
-   opAt 4456 .SUB]
+  [opAt 4452 .JUMPDEST,
+   pushAt 4453 1 1,
+   opAt 4454 (.Dup ⟨6, by decide⟩),
+   opAt 4455 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 4485 .POP,
-   pushAt 4486 2 5544,
-   opAt 4487 .JUMP]
+  [opAt 4484 .POP,
+   pushAt 4485 2 5543,
+   opAt 4486 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
   match j with
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 5575
-  | _ => 5610
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 5574
+  | _ => 5609
 
 def bitCounter (j : Nat) : Nat := if j < 8 then j else 8
 
@@ -337,16 +337,16 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 213, stack := UInt256.ofNat 5570 :: s.stack }
+  { s with pc := UInt256.ofNat 213, stack := UInt256.ofNat 5569 :: s.stack }
 
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 5570
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 5569
     ([UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
-theorem jump3695 : Decode.isValidJumpDest submissionBytecode 5570 = true :=
-  Artifact.isValidJumpDest_index 4453 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest submissionBytecode 5569 = true :=
+  Artifact.isValidJumpDest_index 4452 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -495,17 +495,17 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 @[simp] theorem expTailPCs (i : Nat)
     (hi : 4431 ≤ i) (hii : i ≤ 4438) :
     Artifact.submissionArtifact.instructionPC i =
-      ([5544,5545,5546,5547,5548,5550,5551,5553] : List Nat)[i - 4431]! := by
+      ([5544,5545,5546,5547,5549,5550,5552,5553] : List Nat)[i - 4431]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump669 :
-    Decode.isValidJumpDest submissionBytecode 5554 = true :=
-  Artifact.isValidJumpDest_index 4439 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 5553 = true :=
+  Artifact.isValidJumpDest_index 4438 (by rfl)
 
 @[simp] theorem jump655 :
-    Decode.isValidJumpDest submissionBytecode 5544 = true :=
-  Artifact.isValidJumpDest_index 4431 (by rfl)
+    Decode.isValidJumpDest submissionBytecode 5543 = true :=
+  Artifact.isValidJumpDest_index 4430 (by rfl)
 
 @[simp] theorem jump589 :
     Decode.isValidJumpDest submissionBytecode 194 = true :=

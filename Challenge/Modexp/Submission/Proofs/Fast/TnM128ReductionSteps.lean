@@ -9,7 +9,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
 
-def middlePC (n : Nat) : Nat := if n = 4 then 5494 else 3607
+def middlePC (n : Nat) : Nat := if n = 4 then 5493 else 3607
 def l2PC (n : Nat) : Nat := if n = 4 then 3758 else 3655
 
 noncomputable def reduction_steps (s : State)

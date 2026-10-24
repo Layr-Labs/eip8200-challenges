@@ -41,8 +41,8 @@ theorem r3e_3Old_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 : UInt25
 
 def r3e_3NewP0 : List Instr := [.op (.Dup ⟨5, by decide⟩), .op .ADD, .op (.Swap ⟨4, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .LT]
 theorem r3e_3NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) :
-    runInstructions r3e_3NewP0 { s with pc := UInt256.ofNat 9588, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
-    some { s with pc := UInt256.ofNat 9593, stack := (UInt256.lt (x5 + x0) x5) :: x1 :: x2 :: x3 :: x4 :: (x5 + x0) :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
+    runInstructions r3e_3NewP0 { s with pc := UInt256.ofNat 9587, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } =
+    some { s with pc := UInt256.ofNat 9592, stack := (UInt256.lt (x5 + x0) x5) :: x1 :: x2 :: x3 :: x4 :: (x5 + x0) :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: rest } := by
   have hc0 : rest.length + 0 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -61,8 +61,8 @@ theorem r3e_3NewP0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : UInt
 
 def r3e_3New : List Instr := r3e_3NewP0
 theorem r3e_3New_run (s : State) (z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1010) :
-    runInstructions r3e_3New { s with pc := UInt256.ofNat 9588, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } =
-    some { s with pc := UInt256.ofNat 9593, stack := (UInt256.lt (z5 + z0) z5) :: z1 :: z2 :: z3 :: z4 :: (z5 + z0) :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } := by
+    runInstructions r3e_3New { s with pc := UInt256.ofNat 9587, stack := z0 :: z1 :: z2 :: z3 :: z4 :: z5 :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } =
+    some { s with pc := UInt256.ofNat 9592, stack := (UInt256.lt (z5 + z0) z5) :: z1 :: z2 :: z3 :: z4 :: (z5 + z0) :: z6 :: z7 :: z8 :: z9 :: z10 :: z11 :: rest } := by
   have g0 := r3e_3NewP0_run s (z0) (z1) (z2) (z3) (z4) (z5) (z6) (z7) (z8) (z9) (z10) (z11) rest hcap
   have h := g0
   simpa only [r3e_3New, List.append_assoc] using h
@@ -74,8 +74,8 @@ def r3e_3Perm : List UInt256 → List UInt256
 theorem run_r3e_3 (s : State) (c p3 p2 p1 p0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1010) :
     runInstructions r3e_3New
-      { s with pc := UInt256.ofNat 9588, stack := c :: p0 :: p3 :: p2 :: p1 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
-    some { s with pc := UInt256.ofNat 9593, stack := (UInt256.lt (p4 + c) p4) :: p0 :: p3 :: p2 :: p1 :: (p4 + c) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+      { s with pc := UInt256.ofNat 9587, stack := c :: p0 :: p3 :: p2 :: p1 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
+    some { s with pc := UInt256.ofNat 9592, stack := (UInt256.lt (p4 + c) p4) :: p0 :: p3 :: p2 :: p1 :: (p4 + c) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
   have ho := r3e_3Old_run s (c) (p3) (p2) (p1) (p0) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap
   have hc := R4Runs.run_r3e s c p3 p2 p1 p0 p4 k n0 n1 n2 n3 np rest hcap
   change runInstructions r3e_3Old _ = _ at hc

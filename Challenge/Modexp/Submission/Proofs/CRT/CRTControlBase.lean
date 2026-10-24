@@ -50,15 +50,15 @@ theorem resume_run (s : State) (target : UInt256) (tail : List UInt256)
   exact runInstructions_append_some _ _ _ _ _ hj (jumpDest_run (jumpModel s) hc)
 
 def hookProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 (UInt256.ofNat 5615), .op .JUMP]
+  [.op .JUMPDEST, .push 2 (UInt256.ofNat 5614), .op .JUMP]
 
 theorem hook_run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1022)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5615 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5614 = true) :
     runInstructions hookProgram {s with pc := UInt256.ofNat 4816, stack := stack} =
-      some {s with pc := UInt256.ofNat 5615, stack := stack} := by
+      some {s with pc := UInt256.ofNat 5614, stack := stack} := by
   have h0 : stack.length < 1024 := by omega
   have h1 : stack.length + 1 < 1024 := by omega
-  have hn : (UInt256.ofNat 5615).toNat = 5615 := rfl
+  have hn : (UInt256.ofNat 5614).toNat = 5614 := rfl
   simp [hookProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     h0, h1, hn, hvalid, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]

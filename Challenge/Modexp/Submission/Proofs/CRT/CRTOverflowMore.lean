@@ -22,8 +22,8 @@ def gasSteps (s : State) (minv : UInt256) (n : Nat → UInt256)
     (hk : 1 ≤ k) (h : Invariant mem n minv f N (k+1) A)
     (env : Environment Artifact.submissionArtifact .Osaka s)
     (hcap : f.rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps (atCache s (checked s minv n mem) 8800 n minv f)
-      (atCache s (entryMemory (finish s minv n mem) (UInt256.ofNat (k-1))) 5859 n minv
+    GasSteps (atCache s (checked s minv n mem) 8799 n minv f)
+      (atCache s (entryMemory (finish s minv n mem) (UInt256.ofNat (k-1))) 5858 n minv
         {f with aprev := cachedTop (checked s minv n mem), counter := UInt256.ofNat (k-1)}) := by
   let cm := checked s minv n mem
   let em := exitMemory cm
@@ -64,9 +64,9 @@ def gasSteps (s : State) (minv : UInt256) (n : Nat → UInt256)
   have g2 := CRTGasStepsNormalized.entry s (finish s minv n mem) fn
     (UInt256.ofNat (2^256-256)) (UInt256.ofNat 3643) env hcap hact
   have hout :
-      atCache s (entryMemory (finish s minv n mem) fn.counter) 5859
+      atCache s (entryMemory (finish s minv n mem) fn.counter) 5858
         (inputWord (finish s minv n mem) 0) (MachineState.readWord (finish s minv n mem) 2720) fn =
-      atCache s (entryMemory (finish s minv n mem) (UInt256.ofNat (k-1))) 5859 n minv fn := by
+      atCache s (entryMemory (finish s minv n mem) (UInt256.ofNat (k-1))) 5858 n minv fn := by
     unfold atCache cache
     rw [←hf.cachedInverse, ←hf.cachedDigits 0 (by decide), ←hf.cachedDigits 1 (by decide),
       ←hf.cachedDigits 2 (by decide), ←hf.cachedDigits 3 (by decide),

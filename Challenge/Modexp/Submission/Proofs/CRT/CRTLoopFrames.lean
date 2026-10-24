@@ -51,7 +51,7 @@ def entryState (s : State) (mem : ByteArray) (f : Frame) (pbi ent : UInt256) : S
     f.aprev f.counter f.ret f.rest
 
 theorem entry_normalize (s : State) (mem : ByteArray) (f : Frame) (pbi ent : UInt256) :
-    entryState s mem f pbi ent = atCache s (entryMemory mem f.counter) 5859
+    entryState s mem f pbi ent = atCache s (entryMemory mem f.counter) 5858
       (inputWord mem 0) (MachineState.readWord mem 2720) f := by
   unfold entryState
   rw [entry_model]
@@ -61,14 +61,14 @@ def afterKernel (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt
   result {s with memory := mem} minv n (saved f)
 
 theorem step16_pc (s : State) (carry minv : UInt256) (n : Nat → UInt256) (rest : List UInt256) :
-    (ColumnMemory.step 16 s carry minv n rest).pc = UInt256.ofNat 8129 := by rfl
+    (ColumnMemory.step 16 s carry minv n rest).pc = UInt256.ofNat 8128 := by rfl
 
 theorem step16_stack (s : State) (carry minv : UInt256) (n : Nat → UInt256) (rest : List UInt256) :
     (ColumnMemory.step 16 s carry minv n rest).stack =
       [modulusWord, n 0, n 1, n 2, n 3, n 4, n 5, n 6, n 7, n 8, maskWord, minv] ++ rest := by rfl
 
 theorem afterKernel_pc (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
-    (afterKernel s mem n minv f).pc = UInt256.ofNat 8129 := by
+    (afterKernel s mem n minv f).pc = UInt256.ofNat 8128 := by
   unfold afterKernel result
   rw [show 17 = 16+1 from rfl, ColumnSequence.states_succ, step16_pc]
 
@@ -97,7 +97,7 @@ theorem state_eq (a b : State) (h : StateIndependence.metadata a = StateIndepend
     _ = b := rfl
 
 theorem afterKernel_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
-    afterKernel s mem n minv f = atCache s (result {s with memory := mem} minv n []).memory 8129 n minv f := by
+    afterKernel s mem n minv f = atCache s (result {s with memory := mem} minv n []).memory 8128 n minv f := by
   apply state_eq
   · exact StateIndependence.states_metadata {s with memory := mem} minv n (saved f) 17 (by decide)
   · exact afterKernel_pc s mem n minv f
@@ -113,7 +113,7 @@ def overflowState (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UI
 
 theorem overflow_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
     overflowState s mem n minv f = atCache s (checkedMemory mem)
-      (if (UInt256.shiftRight (rawDigits mem 8) (UInt256.ofNat 192)).toNat = 0 then 8145 else 8800)
+      (if (UInt256.shiftRight (rawDigits mem 8) (UInt256.ofNat 192)).toNat = 0 then 8144 else 8799)
       n minv f := by
   by_cases hz : (UInt256.shiftRight (MachineState.readWord mem 1600) (UInt256.ofNat 192)).toNat = 0 <;>
     simp [overflowState, conditionalModel, overflowModel, checkedMemory, CRTMemoryCells.writeCell,
@@ -128,7 +128,7 @@ def countState (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt2
 
 theorem count_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
     countState s mem n minv f = atCache s mem
-      (if (MachineState.readWord mem 1728).toNat = 0 then 8800 else 8154) n minv f := by
+      (if (MachineState.readWord mem 1728).toNat = 0 then 8799 else 8153) n minv f := by
   by_cases hz : (MachineState.readWord mem 1728).toNat = 0 <;>
     simp [countState, countModel, conditionalModel, atCache, cache, saved,
       Challenge.EvmProof.Word.word_toNat_isZero, hz, Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -141,7 +141,7 @@ def retainState (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt
     f.aprev f.counter f.ret f.rest)
 
 theorem retain_normalize (s : State) (mem : ByteArray) (n : Nat → UInt256) (minv : UInt256) (f : Frame) :
-    retainState s mem n minv f = atCache s (retainedMemory mem) 5859 n minv f := by
+    retainState s mem n minv f = atCache s (retainedMemory mem) 5858 n minv f := by
   unfold retainState
   rw [show maskWord = UInt256.ofNat (2^244-1) from rfl, retain_model]
   rfl

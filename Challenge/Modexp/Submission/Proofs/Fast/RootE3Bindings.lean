@@ -131,7 +131,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : E
     GasSteps (shiftDoneState (UInt256.ofNat 0) s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
         (n / 4)) := by
-  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5522 = true := by
+  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 5521 = true := by
     rw [e.code]; exact jumpDest5444
   have hd2811 : Decode.isValidJumpDest s.executionEnv.code 2704 = true := by
     rw [e.code]; exact jumpDest2811
