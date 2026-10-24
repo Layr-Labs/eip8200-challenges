@@ -1251,11 +1251,11 @@ def entrypart0Program : List Instr :=
    .push 2 3643,
    .op (.Swap ⟨3, by decide⟩),
    .op .POP,
-   .push 0 0]
+   .op .POP]
 
 def entrypart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded x14.toNat 32) 1728
-  {s with pc := UInt256.ofNat 5627, memory := v0, stack := (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: (UInt256.ofNat 3643) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := UInt256.ofNat 5627, memory := v0, stack := x1 :: x2 :: (UInt256.ofNat 3643) :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem entrypart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
@@ -1289,8 +1289,8 @@ theorem entrypart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 #print axioms entrypart0_run
 
 def entrypart1Program : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩),
-   .op .POP,
+  [.push 0 0,
+   .op .JUMPDEST,
    .push 2 2720,
    .op .MLOAD,
    .push 31 28269553036454149273332760011886696253239742350009903329945699220681916415,
@@ -1298,15 +1298,15 @@ def entrypart1Program : List Instr :=
    .op .MLOAD,
    .op (.Dup ⟨1, by decide⟩)]
 
-def entrypart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
+def entrypart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 2720
   let v1 : UInt256 := MachineState.readWord s.memory 2592
-  {s with pc := UInt256.ofNat 5670, memory := s.memory, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v0 :: x0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := UInt256.ofNat 5670, memory := s.memory, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v0 :: (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
 
-theorem entrypart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
+theorem entrypart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
-      some (entrypart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
+    runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+      some (entrypart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have hc0 : rest.length + 0 < 1024 := by omega
@@ -2048,9 +2048,9 @@ def entryProgram : List Instr :=
    .push 2 3643,
    .op (.Swap ⟨3, by decide⟩),
    .op .POP,
-   .push 0 0,
-   .op (.Swap ⟨0, by decide⟩),
    .op .POP,
+   .push 0 0,
+   .op .JUMPDEST,
    .push 2 2720,
    .op .MLOAD,
    .push 31 28269553036454149273332760011886696253239742350009903329945699220681916415,
@@ -2280,10 +2280,10 @@ theorem entry_run (s : State) (pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv 
   let v52 : UInt256 := UInt256.land (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) v51
   let v53 : UInt256 := MachineState.readWord v32 224
   let v54 : UInt256 := UInt256.land (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) v53
-  have h0 : runInstructions entrypart0Program {s with pc := UInt256.ofNat 5615, memory := s.memory, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5627, memory := v0, stack := (UInt256.ofNat 0) :: pbi :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h0 : runInstructions entrypart0Program {s with pc := UInt256.ofNat 5615, memory := s.memory, stack := pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5627, memory := v0, stack := hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [entrypart0Model, v0] using entrypart0_run (s) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h1 : runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, memory := v0, stack := (UInt256.ofNat 0) :: pbi :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5670, memory := v0, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v2 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
-    simpa only [entrypart1Model, v1, v2] using entrypart1_run ({s with memory := v0}) ((UInt256.ofNat 0)) (pbi) (hd) (w3) ((UInt256.ofNat 3643)) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
+  have h1 : runInstructions entrypart1Program {s with pc := UInt256.ofNat 5627, memory := v0, stack := hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5670, memory := v0, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v2 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+    simpa only [entrypart1Model, v1, v2] using entrypart1_run ({s with memory := v0}) (hd) (w3) ((UInt256.ofNat 3643)) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   have h2 : runInstructions entrypart2Program {s with pc := UInt256.ofNat 5670, memory := v0, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v2 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5683, memory := v4, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v6 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [entrypart2Model, v3, v4, v5, v6] using entrypart2_run ({s with memory := v0}) ((UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415)) (v2) ((UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415)) (v1) ((UInt256.ofNat 0)) (hd) (w3) ((UInt256.ofNat 3643)) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   have h3 : runInstructions entrypart3Program {s with pc := UInt256.ofNat 5683, memory := v4, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v6 :: (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 5698, memory := v11, stack := (UInt256.ofNat 28269553036454149273332760011886696253239742350009903329945699220681916415) :: v1 :: (UInt256.ofNat 0) :: hd :: w3 :: (UInt256.ofNat 3643) :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
@@ -2330,11 +2330,11 @@ def overflowpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v0 : UInt256 := MachineState.readWord s.memory 1600
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 192)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1760
-  {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
+  {s with pc := UInt256.ofNat 8087, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
 
 theorem overflowpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions overflowpart0Program {s with pc := UInt256.ofNat 8129, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest} =
+    runInstructions overflowpart0Program {s with pc := UInt256.ofNat 8072, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest} =
       some (overflowpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2392,16 +2392,16 @@ def overflowModel (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 
   let v0 : UInt256 := MachineState.readWord s.memory 1600
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 192)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1760
-  {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+  {s with pc := UInt256.ofNat 8087, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
 
 theorem overflow_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions overflowProgram {s with pc := UInt256.ofNat 8129, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
+    runInstructions overflowProgram {s with pc := UInt256.ofNat 8072, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
       some (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 1600
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 192)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1760
-  have h0 : runInstructions overflowpart0Program {s with pc := UInt256.ofNat 8129, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8144, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h0 : runInstructions overflowpart0Program {s with pc := UInt256.ofNat 8072, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8087, memory := v2, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [overflowpart0Model, v0, v1, v2] using overflowpart0_run (s) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   exact h0
 
@@ -2416,11 +2416,11 @@ def countpart0Program : List Instr :=
 def countpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1728
   let v1 : UInt256 := UInt256.isZero v0
-  {s with pc := UInt256.ofNat 8153, memory := s.memory, stack := (UInt256.ofNat 8800) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
+  {s with pc := UInt256.ofNat 8096, memory := s.memory, stack := (UInt256.ofNat 8800) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
 
 theorem countpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions countpart0Program {s with pc := UInt256.ofNat 8145, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest} =
+    runInstructions countpart0Program {s with pc := UInt256.ofNat 8088, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest} =
       some (countpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2470,15 +2470,15 @@ def countProgram : List Instr :=
 def countModel (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1728
   let v1 : UInt256 := UInt256.isZero v0
-  {s with pc := UInt256.ofNat 8153, memory := s.memory, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+  {s with pc := UInt256.ofNat 8096, memory := s.memory, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
 
 theorem count_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions countProgram {s with pc := UInt256.ofNat 8145, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
+    runInstructions countProgram {s with pc := UInt256.ofNat 8088, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
       some (countModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 1728
   let v1 : UInt256 := UInt256.isZero v0
-  have h0 : runInstructions countpart0Program {s with pc := UInt256.ofNat 8145, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8153, memory := s.memory, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h0 : runInstructions countpart0Program {s with pc := UInt256.ofNat 8088, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8096, memory := s.memory, stack := (UInt256.ofNat 8800) :: v1 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [countpart0Model, v0, v1] using countpart0_run (s) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   exact h0
 
@@ -2500,11 +2500,11 @@ def retainpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v1 : UInt256 := v0 - (UInt256.ofNat 1)
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 1728
   let v3 : UInt256 := MachineState.readWord v2 1600
-  {s with pc := UInt256.ofNat 8169, memory := v2, stack := v3 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
+  {s with pc := UInt256.ofNat 8112, memory := v2, stack := v3 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest}
 
 theorem retainpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart0Program {s with pc := UInt256.ofNat 8154, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest} =
+    runInstructions retainpart0Program {s with pc := UInt256.ofNat 8097, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: rest} =
       some (retainpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2571,11 +2571,11 @@ def retainpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v0 : UInt256 := MachineState.readWord s.memory 1568
   let v1 : UInt256 := MachineState.readWord s.memory 1536
   let v2 : UInt256 := MachineState.readWord s.memory 1504
-  {s with pc := UInt256.ofNat 8182, memory := s.memory, stack := v2 :: v1 :: v0 :: x11 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest}
+  {s with pc := UInt256.ofNat 8125, memory := s.memory, stack := v2 :: v1 :: v0 :: x11 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest}
 
 theorem retainpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart1Program {s with pc := UInt256.ofNat 8169, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest} =
+    runInstructions retainpart1Program {s with pc := UInt256.ofNat 8112, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest} =
       some (retainpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2646,11 +2646,11 @@ def retainpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v1 : UInt256 := MachineState.readWord s.memory 1440
   let v2 : UInt256 := MachineState.readWord s.memory 1408
   let v3 : UInt256 := MachineState.readWord s.memory 1376
-  {s with pc := UInt256.ofNat 8198, memory := s.memory, stack := v3 :: v2 :: v1 :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: rest}
+  {s with pc := UInt256.ofNat 8141, memory := s.memory, stack := v3 :: v2 :: v1 :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: rest}
 
 theorem retainpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart2Program {s with pc := UInt256.ofNat 8182, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: rest} =
+    runInstructions retainpart2Program {s with pc := UInt256.ofNat 8125, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: rest} =
       some (retainpart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2723,11 +2723,11 @@ def retainpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v1 : UInt256 := UInt256.shiftRight v0 (UInt256.ofNat 96)
   let v2 : UInt256 := UInt256.shiftLeft x0 (UInt256.ofNat 148)
   let v3 : UInt256 := UInt256.lor v2 v1
-  {s with pc := UInt256.ofNat 8210, memory := s.memory, stack := v3 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: rest}
+  {s with pc := UInt256.ofNat 8153, memory := s.memory, stack := v3 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: rest}
 
 theorem retainpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 x36 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart3Program {s with pc := UInt256.ofNat 8198, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: rest} =
+    runInstructions retainpart3Program {s with pc := UInt256.ofNat 8141, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: rest} =
       some (retainpart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 x36 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2793,11 +2793,11 @@ def retainpart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v0 : UInt256 := UInt256.land x8 x0
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 768
   let v2 : UInt256 := UInt256.shiftRight x1 (UInt256.ofNat 96)
-  {s with pc := UInt256.ofNat 8222, memory := v1, stack := (UInt256.ofNat 148) :: x2 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: rest}
+  {s with pc := UInt256.ofNat 8165, memory := v1, stack := (UInt256.ofNat 148) :: x2 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: rest}
 
 theorem retainpart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 x36 x37 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart4Program {s with pc := UInt256.ofNat 8210, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: rest} =
+    runInstructions retainpart4Program {s with pc := UInt256.ofNat 8153, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: rest} =
       some (retainpart4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 x36 x37 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2865,11 +2865,11 @@ def retainpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v2 : UInt256 := UInt256.land x9 v1
   let v3 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v2.toNat 32) 800
   let v4 : UInt256 := UInt256.shiftRight x3 (UInt256.ofNat 96)
-  {s with pc := UInt256.ofNat 8233, memory := v3, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: x38 :: rest}
+  {s with pc := UInt256.ofNat 8176, memory := v3, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: x38 :: rest}
 
 theorem retainpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 x36 x37 x38 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart5Program {s with pc := UInt256.ofNat 8222, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: x38 :: rest} =
+    runInstructions retainpart5Program {s with pc := UInt256.ofNat 8165, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: x36 :: x37 :: x38 :: rest} =
       some (retainpart5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 x36 x37 x38 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -2936,11 +2936,11 @@ def retainpart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v1 : UInt256 := UInt256.lor v0 x0
   let v2 : UInt256 := UInt256.land x6 v1
   let v3 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v2.toNat 32) 832
-  {s with pc := UInt256.ofNat 8244, memory := v3, stack := x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: rest}
+  {s with pc := UInt256.ofNat 8187, memory := v3, stack := x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: rest}
 
 theorem retainpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart6Program {s with pc := UInt256.ofNat 8233, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: rest} =
+    runInstructions retainpart6Program {s with pc := UInt256.ofNat 8176, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: x35 :: rest} =
       some (retainpart6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 x35 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3007,11 +3007,11 @@ def retainpart7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v1 : UInt256 := UInt256.shiftLeft x1 (UInt256.ofNat 148)
   let v2 : UInt256 := UInt256.lor v1 v0
   let v3 : UInt256 := UInt256.land x5 v2
-  {s with pc := UInt256.ofNat 8254, memory := s.memory, stack := v3 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest}
+  {s with pc := UInt256.ofNat 8197, memory := s.memory, stack := v3 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest}
 
 theorem retainpart7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart7Program {s with pc := UInt256.ofNat 8244, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest} =
+    runInstructions retainpart7Program {s with pc := UInt256.ofNat 8187, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest} =
       some (retainpart7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3076,11 +3076,11 @@ def retainpart8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v1 : UInt256 := UInt256.shiftRight x1 (UInt256.ofNat 96)
   let v2 : UInt256 := UInt256.shiftLeft x2 (UInt256.ofNat 148)
   let v3 : UInt256 := UInt256.lor v2 v1
-  {s with pc := UInt256.ofNat 8266, memory := v0, stack := v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest}
+  {s with pc := UInt256.ofNat 8209, memory := v0, stack := v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest}
 
 theorem retainpart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart8Program {s with pc := UInt256.ofNat 8254, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest} =
+    runInstructions retainpart8Program {s with pc := UInt256.ofNat 8197, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest} =
       some (retainpart8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3146,11 +3146,11 @@ def retainpart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v0 : UInt256 := UInt256.land x4 x0
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 896
   let v2 : UInt256 := UInt256.shiftRight x1 (UInt256.ofNat 96)
-  {s with pc := UInt256.ofNat 8278, memory := v1, stack := (UInt256.ofNat 148) :: x2 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: rest}
+  {s with pc := UInt256.ofNat 8221, memory := v1, stack := (UInt256.ofNat 148) :: x2 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: rest}
 
 theorem retainpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart9Program {s with pc := UInt256.ofNat 8266, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: rest} =
+    runInstructions retainpart9Program {s with pc := UInt256.ofNat 8209, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: rest} =
       some (retainpart9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3218,11 +3218,11 @@ def retainpart10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v2 : UInt256 := UInt256.land x5 v1
   let v3 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v2.toNat 32) 928
   let v4 : UInt256 := UInt256.shiftRight x3 (UInt256.ofNat 96)
-  {s with pc := UInt256.ofNat 8289, memory := v3, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest}
+  {s with pc := UInt256.ofNat 8232, memory := v3, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest}
 
 theorem retainpart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart10Program {s with pc := UInt256.ofNat 8278, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest} =
+    runInstructions retainpart10Program {s with pc := UInt256.ofNat 8221, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: x32 :: x33 :: x34 :: rest} =
       some (retainpart10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 x32 x33 x34 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3289,11 +3289,11 @@ def retainpart11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v1 : UInt256 := UInt256.lor v0 x0
   let v2 : UInt256 := UInt256.land x2 v1
   let v3 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v2.toNat 32) 960
-  {s with pc := UInt256.ofNat 8300, memory := v3, stack := x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: rest}
+  {s with pc := UInt256.ofNat 8243, memory := v3, stack := x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: rest}
 
 theorem retainpart11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart11Program {s with pc := UInt256.ofNat 8289, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: rest} =
+    runInstructions retainpart11Program {s with pc := UInt256.ofNat 8232, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: x31 :: rest} =
       some (retainpart11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3359,11 +3359,11 @@ def retainpart12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v1 : UInt256 := UInt256.shiftLeft x2 (UInt256.ofNat 148)
   let v2 : UInt256 := UInt256.lor v1 v0
   let v3 : UInt256 := UInt256.land v2 x1
-  {s with pc := UInt256.ofNat 8309, memory := s.memory, stack := v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: rest}
+  {s with pc := UInt256.ofNat 8252, memory := s.memory, stack := v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: rest}
 
 theorem retainpart12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart12Program {s with pc := UInt256.ofNat 8300, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: rest} =
+    runInstructions retainpart12Program {s with pc := UInt256.ofNat 8243, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: x30 :: rest} =
       some (retainpart12Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3426,11 +3426,11 @@ def retainpart13Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
   let v0 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded x0.toNat 32) 992
   let v1 : UInt256 := UInt256.shiftRight x1 (UInt256.ofNat 96)
   let v2 : ByteArray := MachineState.writeBytes v0 (Data.Bytes.natToBytesPadded v1.toNat 32) 1024
-  {s with pc := UInt256.ofNat 8323, memory := v2, stack := (UInt256.ofNat 5858) :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: rest}
+  {s with pc := UInt256.ofNat 8266, memory := v2, stack := (UInt256.ofNat 5858) :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: rest}
 
 theorem retainpart13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainpart13Program {s with pc := UInt256.ofNat 8309, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: rest} =
+    runInstructions retainpart13Program {s with pc := UInt256.ofNat 8252, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: x29 :: rest} =
       some (retainpart13Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -3650,11 +3650,11 @@ def retainModel (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 en
   let v51 : ByteArray := MachineState.writeBytes v46 (Data.Bytes.natToBytesPadded v50.toNat 32) 992
   let v52 : UInt256 := UInt256.shiftRight v3 (UInt256.ofNat 96)
   let v53 : ByteArray := MachineState.writeBytes v51 (Data.Bytes.natToBytesPadded v52.toNat 32) 1024
-  {s with pc := UInt256.ofNat 8323, memory := v53, stack := (UInt256.ofNat 5858) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
+  {s with pc := UInt256.ofNat 8266, memory := v53, stack := (UInt256.ofNat 5858) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest}
 
 theorem retain_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions retainProgram {s with pc := UInt256.ofNat 8154, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
+    runInstructions retainProgram {s with pc := UInt256.ofNat 8097, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
       some (retainModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 1728
   let v1 : UInt256 := v0 - (UInt256.ofNat 1)
@@ -3710,33 +3710,33 @@ theorem retain_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3
   let v51 : ByteArray := MachineState.writeBytes v46 (Data.Bytes.natToBytesPadded v50.toNat 32) 992
   let v52 : UInt256 := UInt256.shiftRight v3 (UInt256.ofNat 96)
   let v53 : ByteArray := MachineState.writeBytes v51 (Data.Bytes.natToBytesPadded v52.toNat 32) 1024
-  have h0 : runInstructions retainpart0Program {s with pc := UInt256.ofNat 8154, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8169, memory := v2, stack := v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h0 : runInstructions retainpart0Program {s with pc := UInt256.ofNat 8097, memory := s.memory, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8112, memory := v2, stack := v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart0Model, v0, v1, v2, v3] using retainpart0_run (s) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h1 : runInstructions retainpart1Program {s with pc := UInt256.ofNat 8169, memory := v2, stack := v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8182, memory := v2, stack := v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h1 : runInstructions retainpart1Program {s with pc := UInt256.ofNat 8112, memory := v2, stack := v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8125, memory := v2, stack := v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart1Model, v4, v5, v6] using retainpart1_run ({s with memory := v2}) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h2 : runInstructions retainpart2Program {s with pc := UInt256.ofNat 8182, memory := v2, stack := v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8198, memory := v2, stack := v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h2 : runInstructions retainpart2Program {s with pc := UInt256.ofNat 8125, memory := v2, stack := v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8141, memory := v2, stack := v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart2Model, v7, v8, v9, v10] using retainpart2_run ({s with memory := v2}) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h3 : runInstructions retainpart3Program {s with pc := UInt256.ofNat 8198, memory := v2, stack := v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8210, memory := v2, stack := v14 :: v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h3 : runInstructions retainpart3Program {s with pc := UInt256.ofNat 8141, memory := v2, stack := v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8153, memory := v2, stack := v14 :: v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart3Model, v11, v12, v13, v14] using retainpart3_run ({s with memory := v2}) (v10) (v9) (v8) (v7) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h4 : runInstructions retainpart4Program {s with pc := UInt256.ofNat 8210, memory := v2, stack := v14 :: v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8222, memory := v16, stack := (UInt256.ofNat 148) :: v9 :: v17 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h4 : runInstructions retainpart4Program {s with pc := UInt256.ofNat 8153, memory := v2, stack := v14 :: v10 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8165, memory := v16, stack := (UInt256.ofNat 148) :: v9 :: v17 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart4Model, v15, v16, v17] using retainpart4_run ({s with memory := v2}) (v14) (v10) (v9) (v8) (v7) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h5 : runInstructions retainpart5Program {s with pc := UInt256.ofNat 8222, memory := v16, stack := (UInt256.ofNat 148) :: v9 :: v17 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8233, memory := v21, stack := v22 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h5 : runInstructions retainpart5Program {s with pc := UInt256.ofNat 8165, memory := v16, stack := (UInt256.ofNat 148) :: v9 :: v17 :: v9 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8176, memory := v21, stack := v22 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart5Model, v18, v19, v20, v21, v22] using retainpart5_run ({s with memory := v16}) ((UInt256.ofNat 148)) (v9) (v17) (v9) (v8) (v7) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h6 : runInstructions retainpart6Program {s with pc := UInt256.ofNat 8233, memory := v21, stack := v22 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8244, memory := v26, stack := v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h6 : runInstructions retainpart6Program {s with pc := UInt256.ofNat 8176, memory := v21, stack := v22 :: v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8187, memory := v26, stack := v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart6Model, v23, v24, v25, v26] using retainpart6_run ({s with memory := v21}) (v22) (v8) (v7) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h7 : runInstructions retainpart7Program {s with pc := UInt256.ofNat 8244, memory := v26, stack := v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8254, memory := v26, stack := v30 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h7 : runInstructions retainpart7Program {s with pc := UInt256.ofNat 8187, memory := v26, stack := v8 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8197, memory := v26, stack := v30 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart7Model, v27, v28, v29, v30] using retainpart7_run ({s with memory := v26}) (v8) (v7) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h8 : runInstructions retainpart8Program {s with pc := UInt256.ofNat 8254, memory := v26, stack := v30 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8266, memory := v31, stack := v34 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h8 : runInstructions retainpart8Program {s with pc := UInt256.ofNat 8197, memory := v26, stack := v30 :: v7 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8209, memory := v31, stack := v34 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart8Model, v31, v32, v33, v34] using retainpart8_run ({s with memory := v26}) (v30) (v7) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h9 : runInstructions retainpart9Program {s with pc := UInt256.ofNat 8266, memory := v31, stack := v34 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8278, memory := v36, stack := (UInt256.ofNat 148) :: v5 :: v37 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h9 : runInstructions retainpart9Program {s with pc := UInt256.ofNat 8209, memory := v31, stack := v34 :: v6 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8221, memory := v36, stack := (UInt256.ofNat 148) :: v5 :: v37 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart9Model, v35, v36, v37] using retainpart9_run ({s with memory := v31}) (v34) (v6) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h10 : runInstructions retainpart10Program {s with pc := UInt256.ofNat 8278, memory := v36, stack := (UInt256.ofNat 148) :: v5 :: v37 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8289, memory := v41, stack := v42 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h10 : runInstructions retainpart10Program {s with pc := UInt256.ofNat 8221, memory := v36, stack := (UInt256.ofNat 148) :: v5 :: v37 :: v5 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8232, memory := v41, stack := v42 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart10Model, v38, v39, v40, v41, v42] using retainpart10_run ({s with memory := v36}) ((UInt256.ofNat 148)) (v5) (v37) (v5) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h11 : runInstructions retainpart11Program {s with pc := UInt256.ofNat 8289, memory := v41, stack := v42 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8300, memory := v46, stack := v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h11 : runInstructions retainpart11Program {s with pc := UInt256.ofNat 8232, memory := v41, stack := v42 :: v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8243, memory := v46, stack := v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart11Model, v43, v44, v45, v46] using retainpart11_run ({s with memory := v41}) (v42) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h12 : runInstructions retainpart12Program {s with pc := UInt256.ofNat 8300, memory := v46, stack := v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8309, memory := v46, stack := v50 :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h12 : runInstructions retainpart12Program {s with pc := UInt256.ofNat 8243, memory := v46, stack := v4 :: mask :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8252, memory := v46, stack := v50 :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart12Model, v47, v48, v49, v50] using retainpart12_run ({s with memory := v46}) (v4) (mask) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
-  have h13 : runInstructions retainpart13Program {s with pc := UInt256.ofNat 8309, memory := v46, stack := v50 :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8323, memory := v53, stack := (UInt256.ofNat 5858) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
+  have h13 : runInstructions retainpart13Program {s with pc := UInt256.ofNat 8252, memory := v46, stack := v50 :: v3 :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} = some {s with pc := UInt256.ofNat 8266, memory := v53, stack := (UInt256.ofNat 5858) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} := by
     simpa only [retainpart13Model, v51, v52, v53] using retainpart13_run ({s with memory := v46}) (v50) (v3) (P) (n0) (n1) (n2) (n3) (n4) (n5) (n6) (n7) (n8) (mask) (minv) (pbi) (hd) (w3) (ent) (m32) (allones) (m128) (m64) (m0) (tl) (m96) (inv) (tn) (aprev) (counter) (ret) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 h13)))))))))))))
 
@@ -5137,7 +5137,7 @@ theorem col8_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask mi
     (col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col8_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7070, stack := (col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7082, stack := (col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col8Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col9_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
@@ -5151,52 +5151,54 @@ theorem col10_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask m
     (col10Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col10_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col10Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7495, stack := (col10Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col10Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7483, stack := (col10Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col10Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col11_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     (col11Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col11_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col11Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7667, stack := (col11Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col11Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7643, stack := (col11Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col11Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col12_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     (col12Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col12_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col12Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7818, stack := (col12Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col12Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7782, stack := (col12Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col12Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col13_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     (col13Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col13_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col13Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7939, stack := (col13Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col13Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7891, stack := (col13Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col13Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col14_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     (col14Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col14_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col14Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 8039, stack := (col14Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col14Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 7979, stack := (col14Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col14Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col15_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     (col15Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem col15_normalize (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
-    {col15Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 8109, stack := (col15Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
+    {col15Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest with pc := UInt256.ofNat 8043, stack := (col15Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).stack.headD (UInt256.ofNat 0) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       col15Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by rfl
 
 theorem col16_activeWords (s : State) (carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256) :
     (col16Model s carry P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).activeWords = s.activeWords := by rfl
 
 theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : rest.length ≤ 998) (hrest : 1 ≤ rest.length) (hzero : rest.headD (UInt256.ofNat 0) = UInt256.ofNat 0)
+    (hact : 88 ≤ s.activeWords.toNat)
     (hmask : mask = UInt256.ofNat (2^244-1))
     (h0 : UInt256.land mask (MachineState.readWord s.memory 224) = n0)
-    (h8 : UInt256.shiftRight (MachineState.readWord s.memory 0) (UInt256.ofNat 160) = n8) :
+    (h8 : UInt256.shiftRight (MachineState.readWord s.memory 0) (UInt256.ofNat 160) = n8)
+    (hminv : MachineState.readWord s.memory 2720 = minv) :
     runInstructions kernelProgram {s with pc := UInt256.ofNat 5859, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} =
       some (kernelModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest) := by
   obtain ⟨t0, ht0⟩ : ∃ t : State, t = col0Model s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5206,6 +5208,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_0 : MachineState.readWord t0.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht0]
     exact (col0_read224 s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest)
+  have hm2720_0 : MachineState.readWord t0.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht0]
+    exact (col0_read2720 s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest)
   have hr0 : runInstructions col0Program {s with pc := UInt256.ofNat 5859, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = some (cachedState 1 t0) := (col0_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hact hmask).trans (congrArg (fun st => some (cachedState 1 st)) ht0.symm)
   obtain ⟨t1, ht1⟩ : ∃ t : State, t = col1Model t0 (t0.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
   have hs1 : {t0 with pc := UInt256.ofNat 5891, stack := (t0.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t0 := by rw [ht0]; exact col0_normalize s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
@@ -5217,6 +5222,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_1 : MachineState.readWord t1.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht1]
     exact (col1_read224 t0 (t0.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_0
+  have hm2720_1 : MachineState.readWord t1.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht1]
+    exact (col1_read2720 t0 (t0.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_0
   have hr1 : runInstructions col1Program (cachedState 1 t0) = some (cachedState 2 t1) :=
     (congrArg (fun st => runInstructions col1Program (cachedState 1 st)) hs1.symm).trans ((col1_run t0 (t0.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha1 hmask).trans (congrArg (fun st => some (cachedState 2 st)) ht1.symm))
   obtain ⟨t2, ht2⟩ : ∃ t : State, t = col2Model t1 (t1.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5229,6 +5237,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_2 : MachineState.readWord t2.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht2]
     exact (col2_read224 t1 (t1.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_1
+  have hm2720_2 : MachineState.readWord t2.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht2]
+    exact (col2_read2720 t1 (t1.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_1
   have hr2 : runInstructions col2Program (cachedState 2 t1) = some (cachedState 3 t2) :=
     (congrArg (fun st => runInstructions col2Program (cachedState 2 st)) hs2.symm).trans ((col2_run t1 (t1.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha2 hmask).trans (congrArg (fun st => some (cachedState 3 st)) ht2.symm))
   obtain ⟨t3, ht3⟩ : ∃ t : State, t = col3Model t2 (t2.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5241,6 +5252,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_3 : MachineState.readWord t3.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht3]
     exact (col3_read224 t2 (t2.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_2
+  have hm2720_3 : MachineState.readWord t3.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht3]
+    exact (col3_read2720 t2 (t2.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_2
   have hr3 : runInstructions col3Program (cachedState 3 t2) = some (cachedState 4 t3) :=
     (congrArg (fun st => runInstructions col3Program (cachedState 3 st)) hs3.symm).trans ((col3_run t2 (t2.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha3 hmask).trans (congrArg (fun st => some (cachedState 4 st)) ht3.symm))
   obtain ⟨t4, ht4⟩ : ∃ t : State, t = col4Model t3 (t3.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5253,6 +5267,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_4 : MachineState.readWord t4.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht4]
     exact (col4_read224 t3 (t3.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_3
+  have hm2720_4 : MachineState.readWord t4.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht4]
+    exact (col4_read2720 t3 (t3.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_3
   have hr4 : runInstructions col4Program (cachedState 4 t3) = some (cachedState 5 t4) :=
     (congrArg (fun st => runInstructions col4Program (cachedState 4 st)) hs4.symm).trans ((col4_run t3 (t3.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha4 hmask).trans (congrArg (fun st => some (cachedState 5 st)) ht4.symm))
   obtain ⟨t5, ht5⟩ : ∃ t : State, t = col5Model t4 (t4.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5265,6 +5282,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_5 : MachineState.readWord t5.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht5]
     exact (col5_read224 t4 (t4.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_4
+  have hm2720_5 : MachineState.readWord t5.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht5]
+    exact (col5_read2720 t4 (t4.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_4
   have hr5 : runInstructions col5Program (cachedState 5 t4) = some (cachedState 6 t5) :=
     (congrArg (fun st => runInstructions col5Program (cachedState 5 st)) hs5.symm).trans ((col5_run t4 (t4.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha5 hmask).trans (congrArg (fun st => some (cachedState 6 st)) ht5.symm))
   obtain ⟨t6, ht6⟩ : ∃ t : State, t = col6Model t5 (t5.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5277,6 +5297,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_6 : MachineState.readWord t6.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht6]
     exact (col6_read224 t5 (t5.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_5
+  have hm2720_6 : MachineState.readWord t6.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht6]
+    exact (col6_read2720 t5 (t5.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_5
   have hr6 : runInstructions col6Program (cachedState 6 t5) = some (cachedState 7 t6) :=
     (congrArg (fun st => runInstructions col6Program (cachedState 6 st)) hs6.symm).trans ((col6_run t5 (t5.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha6 hmask).trans (congrArg (fun st => some (cachedState 7 st)) ht6.symm))
   obtain ⟨t7, ht7⟩ : ∃ t : State, t = col7Model t6 (t6.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5289,6 +5312,9 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_7 : MachineState.readWord t7.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht7]
     exact (col7_read224 t6 (t6.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_6
+  have hm2720_7 : MachineState.readWord t7.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht7]
+    exact (col7_read2720 t6 (t6.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_6
   have hr7 : runInstructions col7Program (cachedState 7 t6) = some (cachedState 8 t7) :=
     (congrArg (fun st => runInstructions col7Program (cachedState 7 st)) hs7.symm).trans ((col7_run t6 (t6.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha7 hmask).trans (congrArg (fun st => some (cachedState 8 st)) ht7.symm))
   obtain ⟨t8, ht8⟩ : ∃ t : State, t = col8Model t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
@@ -5301,10 +5327,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_8 : MachineState.readWord t8.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht8]
     exact (col8_read224 t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_7
+  have hm2720_8 : MachineState.readWord t8.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht8]
+    exact (col8_read2720 t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_7
   have hr8 : runInstructions col8Program (cachedState 8 t7) = some (cachedState 9 t8) :=
-    (congrArg (fun st => runInstructions col8Program (cachedState 8 st)) hs8.symm).trans ((col8_run t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha8 hmask (by rw [hm0_7]; exact h8)).trans (congrArg (fun st => some (cachedState 9 st)) ht8.symm))
+    (congrArg (fun st => runInstructions col8Program (cachedState 8 st)) hs8.symm).trans ((col8_run t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha8 hmask (by rw [hm0_7]; exact h8)).trans (congrArg (fun st => some (cachedState 9 st)) ht8.symm))
   obtain ⟨t9, ht9⟩ : ∃ t : State, t = col9Model t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs9 : {t8 with pc := UInt256.ofNat 7070, stack := (t8.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t8 := by rw [ht8]; exact col8_normalize t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs9 : {t8 with pc := UInt256.ofNat 7082, stack := (t8.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t8 := by rw [ht8]; exact col8_normalize t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he9 : t8.activeWords = t7.activeWords := by rw [ht8]; exact col8_activeWords t7 (t7.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha9 : 88 ≤ t8.activeWords.toNat := by rw [he9]; exact ha8
   have hm0_9 : MachineState.readWord t9.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5313,8 +5342,11 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_9 : MachineState.readWord t9.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht9]
     exact (col9_read224 t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_8
+  have hm2720_9 : MachineState.readWord t9.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht9]
+    exact (col9_read2720 t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_8
   have hr9 : runInstructions col9Program (cachedState 9 t8) = some (cachedState 10 t9) :=
-    (congrArg (fun st => runInstructions col9Program (cachedState 9 st)) hs9.symm).trans ((col9_run t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha9 hmask).trans (congrArg (fun st => some (cachedState 10 st)) ht9.symm))
+    (congrArg (fun st => runInstructions col9Program (cachedState 9 st)) hs9.symm).trans ((col9_run t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha9 hmask).trans (congrArg (fun st => some (cachedState 10 st)) ht9.symm))
   obtain ⟨t10, ht10⟩ : ∃ t : State, t = col10Model t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
   have hs10 : {t9 with pc := UInt256.ofNat 7293, stack := (t9.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t9 := by rw [ht9]; exact col9_normalize t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he10 : t9.activeWords = t8.activeWords := by rw [ht9]; exact col9_activeWords t8 (t8.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
@@ -5325,10 +5357,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_10 : MachineState.readWord t10.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht10]
     exact (col10_read224 t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_9
+  have hm2720_10 : MachineState.readWord t10.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht10]
+    exact (col10_read2720 t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_9
   have hr10 : runInstructions col10Program (cachedState 10 t9) = some (cachedState 11 t10) :=
-    (congrArg (fun st => runInstructions col10Program (cachedState 10 st)) hs10.symm).trans ((col10_run t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha10 hmask).trans (congrArg (fun st => some (cachedState 11 st)) ht10.symm))
+    (congrArg (fun st => runInstructions col10Program (cachedState 10 st)) hs10.symm).trans ((col10_run t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha10 hmask).trans (congrArg (fun st => some (cachedState 11 st)) ht10.symm))
   obtain ⟨t11, ht11⟩ : ∃ t : State, t = col11Model t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs11 : {t10 with pc := UInt256.ofNat 7495, stack := (t10.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t10 := by rw [ht10]; exact col10_normalize t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs11 : {t10 with pc := UInt256.ofNat 7483, stack := (t10.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t10 := by rw [ht10]; exact col10_normalize t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he11 : t10.activeWords = t9.activeWords := by rw [ht10]; exact col10_activeWords t9 (t9.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha11 : 88 ≤ t10.activeWords.toNat := by rw [he11]; exact ha10
   have hm0_11 : MachineState.readWord t11.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5337,10 +5372,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_11 : MachineState.readWord t11.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht11]
     exact (col11_read224 t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_10
+  have hm2720_11 : MachineState.readWord t11.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht11]
+    exact (col11_read2720 t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_10
   have hr11 : runInstructions col11Program (cachedState 11 t10) = some (cachedState 12 t11) :=
-    (congrArg (fun st => runInstructions col11Program (cachedState 11 st)) hs11.symm).trans ((col11_run t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha11 hmask).trans (congrArg (fun st => some (cachedState 12 st)) ht11.symm))
+    (congrArg (fun st => runInstructions col11Program (cachedState 11 st)) hs11.symm).trans ((col11_run t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha11 hmask).trans (congrArg (fun st => some (cachedState 12 st)) ht11.symm))
   obtain ⟨t12, ht12⟩ : ∃ t : State, t = col12Model t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs12 : {t11 with pc := UInt256.ofNat 7667, stack := (t11.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t11 := by rw [ht11]; exact col11_normalize t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs12 : {t11 with pc := UInt256.ofNat 7643, stack := (t11.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t11 := by rw [ht11]; exact col11_normalize t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he12 : t11.activeWords = t10.activeWords := by rw [ht11]; exact col11_activeWords t10 (t10.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha12 : 88 ≤ t11.activeWords.toNat := by rw [he12]; exact ha11
   have hm0_12 : MachineState.readWord t12.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5349,10 +5387,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_12 : MachineState.readWord t12.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht12]
     exact (col12_read224 t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_11
+  have hm2720_12 : MachineState.readWord t12.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht12]
+    exact (col12_read2720 t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_11
   have hr12 : runInstructions col12Program (cachedState 12 t11) = some (cachedState 13 t12) :=
-    (congrArg (fun st => runInstructions col12Program (cachedState 12 st)) hs12.symm).trans ((col12_run t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha12 hmask).trans (congrArg (fun st => some (cachedState 13 st)) ht12.symm))
+    (congrArg (fun st => runInstructions col12Program (cachedState 12 st)) hs12.symm).trans ((col12_run t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha12 hmask).trans (congrArg (fun st => some (cachedState 13 st)) ht12.symm))
   obtain ⟨t13, ht13⟩ : ∃ t : State, t = col13Model t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs13 : {t12 with pc := UInt256.ofNat 7818, stack := (t12.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t12 := by rw [ht12]; exact col12_normalize t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs13 : {t12 with pc := UInt256.ofNat 7782, stack := (t12.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t12 := by rw [ht12]; exact col12_normalize t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he13 : t12.activeWords = t11.activeWords := by rw [ht12]; exact col12_activeWords t11 (t11.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha13 : 88 ≤ t12.activeWords.toNat := by rw [he13]; exact ha12
   have hm0_13 : MachineState.readWord t13.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5361,10 +5402,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_13 : MachineState.readWord t13.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht13]
     exact (col13_read224 t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_12
+  have hm2720_13 : MachineState.readWord t13.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht13]
+    exact (col13_read2720 t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_12
   have hr13 : runInstructions col13Program (cachedState 13 t12) = some (cachedState 14 t13) :=
-    (congrArg (fun st => runInstructions col13Program (cachedState 13 st)) hs13.symm).trans ((col13_run t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha13 hmask).trans (congrArg (fun st => some (cachedState 14 st)) ht13.symm))
+    (congrArg (fun st => runInstructions col13Program (cachedState 13 st)) hs13.symm).trans ((col13_run t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha13 hmask).trans (congrArg (fun st => some (cachedState 14 st)) ht13.symm))
   obtain ⟨t14, ht14⟩ : ∃ t : State, t = col14Model t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs14 : {t13 with pc := UInt256.ofNat 7939, stack := (t13.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t13 := by rw [ht13]; exact col13_normalize t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs14 : {t13 with pc := UInt256.ofNat 7891, stack := (t13.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t13 := by rw [ht13]; exact col13_normalize t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he14 : t13.activeWords = t12.activeWords := by rw [ht13]; exact col13_activeWords t12 (t12.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha14 : 88 ≤ t13.activeWords.toNat := by rw [he14]; exact ha13
   have hm0_14 : MachineState.readWord t14.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5373,10 +5417,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_14 : MachineState.readWord t14.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht14]
     exact (col14_read224 t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_13
+  have hm2720_14 : MachineState.readWord t14.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht14]
+    exact (col14_read2720 t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_13
   have hr14 : runInstructions col14Program (cachedState 14 t13) = some (cachedState 15 t14) :=
-    (congrArg (fun st => runInstructions col14Program (cachedState 14 st)) hs14.symm).trans ((col14_run t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha14 hmask).trans (congrArg (fun st => some (cachedState 15 st)) ht14.symm))
+    (congrArg (fun st => runInstructions col14Program (cachedState 14 st)) hs14.symm).trans ((col14_run t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha14 hmask).trans (congrArg (fun st => some (cachedState 15 st)) ht14.symm))
   obtain ⟨t15, ht15⟩ : ∃ t : State, t = col15Model t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs15 : {t14 with pc := UInt256.ofNat 8039, stack := (t14.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t14 := by rw [ht14]; exact col14_normalize t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs15 : {t14 with pc := UInt256.ofNat 7979, stack := (t14.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t14 := by rw [ht14]; exact col14_normalize t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he15 : t14.activeWords = t13.activeWords := by rw [ht14]; exact col14_activeWords t13 (t13.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha15 : 88 ≤ t14.activeWords.toNat := by rw [he15]; exact ha14
   have hm0_15 : MachineState.readWord t15.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5385,10 +5432,13 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_15 : MachineState.readWord t15.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht15]
     exact (col15_read224 t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_14
+  have hm2720_15 : MachineState.readWord t15.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht15]
+    exact (col15_read2720 t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_14
   have hr15 : runInstructions col15Program (cachedState 15 t14) = some (cachedState 16 t15) :=
-    (congrArg (fun st => runInstructions col15Program (cachedState 15 st)) hs15.symm).trans ((col15_run t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha15 hmask).trans (congrArg (fun st => some (cachedState 16 st)) ht15.symm))
+    (congrArg (fun st => runInstructions col15Program (cachedState 15 st)) hs15.symm).trans ((col15_run t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest ha15 hmask).trans (congrArg (fun st => some (cachedState 16 st)) ht15.symm))
   obtain ⟨t16, ht16⟩ : ∃ t : State, t = col16Model t15 (t15.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := ⟨_, rfl⟩
-  have hs16 : {t15 with pc := UInt256.ofNat 8109, stack := (t15.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t15 := by rw [ht15]; exact col15_normalize t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
+  have hs16 : {t15 with pc := UInt256.ofNat 8043, stack := (t15.stack.headD (UInt256.ofNat 0)) :: P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: rest} = t15 := by rw [ht15]; exact col15_normalize t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have he16 : t15.activeWords = t14.activeWords := by rw [ht15]; exact col15_activeWords t14 (t14.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest
   have ha16 : 88 ≤ t15.activeWords.toNat := by rw [he16]; exact ha15
   have hm0_16 : MachineState.readWord t16.memory 0 = MachineState.readWord s.memory 0 := by
@@ -5397,8 +5447,11 @@ theorem kernel_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv : UInt256
   have hm224_16 : MachineState.readWord t16.memory 224 = MachineState.readWord s.memory 224 := by
     rw [ht16]
     exact (col16_read224 t15 (t15.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm224_15
+  have hm2720_16 : MachineState.readWord t16.memory 2720 = MachineState.readWord s.memory 2720 := by
+    rw [ht16]
+    exact (col16_read2720 t15 (t15.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest).trans hm2720_15
   have hr16 : runInstructions col16Program (cachedState 16 t15) = some (cachedState 17 t16) :=
-    (congrArg (fun st => runInstructions col16Program (cachedState 16 st)) hs16.symm).trans ((col16_run t15 (t15.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap ha16 hmask (by rw [hm224_15]; exact h0)).trans (congrArg (fun st => some (cachedState 17 st)) ht16.symm))
+    (congrArg (fun st => runInstructions col16Program (cachedState 16 st)) hs16.symm).trans ((col16_run t15 (t15.stack.headD (UInt256.ofNat 0)) P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest hcap hrest hzero ha16 hmask (by rw [hm224_15]; exact h0) (by rw [hm2720_15]; exact hminv)).trans (congrArg (fun st => some (cachedState 17 st)) ht16.symm))
   have hend : t16 = kernelModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv rest := by
     simp only [kernelModel, ← ht0, ← ht1, ← ht2, ← ht3, ← ht4, ← ht5, ← ht6, ← ht7, ← ht8, ← ht9, ← ht10, ← ht11, ← ht12, ← ht13, ← ht14, ← ht15, ← ht16]
   exact (runInstructions_append_some _ _ _ _ _ hr0 (runInstructions_append_some _ _ _ _ _ hr1 (runInstructions_append_some _ _ _ _ _ hr2 (runInstructions_append_some _ _ _ _ _ hr3 (runInstructions_append_some _ _ _ _ _ hr4 (runInstructions_append_some _ _ _ _ _ hr5 (runInstructions_append_some _ _ _ _ _ hr6 (runInstructions_append_some _ _ _ _ _ hr7 (runInstructions_append_some _ _ _ _ _ hr8 (runInstructions_append_some _ _ _ _ _ hr9 (runInstructions_append_some _ _ _ _ _ hr10 (runInstructions_append_some _ _ _ _ _ hr11 (runInstructions_append_some _ _ _ _ _ hr12 (runInstructions_append_some _ _ _ _ _ hr13 (runInstructions_append_some _ _ _ _ _ hr14 (runInstructions_append_some _ _ _ _ _ hr15 hr16)))))))))))))))).trans (congrArg some hend)

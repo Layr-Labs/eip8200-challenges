@@ -1,9 +1,14 @@
-# MODEXP v14: cancelled carries and temporary quotient caches
+# MODEXP v18: composed common-path and exponent-scan savings
 
-The candidate uses **392,554 gas** on the 44 seed-zero vectors, compared with
-**402,533** for Th0rgal's promoted `0498a927-e9d9-41a2-8737-4315d8059b5c`:
-**9,979 gas (2.48%) saved**. The executable contains 10,915 bytes and 8,722
-instructions. Two scored cases improve and 42 are unchanged.
+The candidate uses **391,851 gas** on the 44 seed-zero vectors, **703 gas less**
+than the promoted source at 392,554. The executable remains 10,915 bytes and
+has 8,722 decoded instructions. It composes the dual q7/q6 lifetime cache with
+the independently verified four-limb row-zero carry elision and CRT-entry
+zeroing changes, then lowers the exponent word-OR scan by two gas per scanned
+word relative to the promoted source. The seed-zero corpus does not enter that
+scan, so its strictly lower cost is reported separately rather than folded into
+the paired -703 figure. Public submission IDs and exact provenance are retained
+in `dependencies.json`; the public submission note gives the full breakdown.
 
 ## Arithmetic and scheduling
 
@@ -33,10 +38,37 @@ prototype, the caches save 56 gas per kernel invocation, or 952 over 17 calls.
 The terminal-product schedule costs 43 gas, including cache installation,
 compared with 40 for the original product and 11 for a separate installation.
 
+V15 observes that the low-limb inverse has its last use in column 8. Its stack
+slot then caches quotient q7 (memory word 1280) through columns 9--15, replacing
+fourteen memory reads with stack duplicates. Column 16 restores the inverse
+from memory before the footer can observe the frame. Cache installation and
+restoration cost 22 gas, while the fourteen replacements save 42, for a net
+20 gas per kernel invocation. The seed-zero corpus invokes the kernel once in
+`rsa2048_1` and sixteen times in `rsa2048_2`, yielding the measured 340 gas.
+
+V16 uses the adjacent saved-frame slot, which is proved to contain zero at
+this caller, for q6 (memory word 1248). It installs q6 after column 8 and
+replaces twelve more memory reads in columns 9--14 with `DUP15`/`DUP16`.
+Column 16 restores the slot with `PUSH0; SWAP13; POP`. The installation and
+restoration cost 18 gas against 36 gas saved, for another 18 gas per kernel
+invocation and 306 gas on the seed-zero corpus. Column 15 is deliberately
+unchanged because one of the required stack depths would exceed `DUP16`.
+
+V18 superoptimizes the five-instruction state transition after the exponent
+word load. Starting from `word :: i :: acc :: rest`, the sequence
+`DUP2; SWAP3; OR; SWAP2; JUMPDEST` produces
+`i :: i :: (acc OR word) :: rest`, exactly the state expected immediately
+before the loop's `PUSH1 254; JUMPI`. The no-op `JUMPDEST` keeps byte width and
+all later PCs fixed while costing one gas. This is one gas cheaper per scanned
+word than the public `DUP3; OR; SWAP2; POP; DUP1` predecessor and two cheaper
+than the promoted `SWAP1; SWAP2; OR; SWAP1; DUP1` sequence. Direct probes at
+33, 64, 128, 256, 512, and 1,024 words preserve the exact exit stack and save
+respectively 66, 128, 256, 512, 1,024, and 2,048 gas versus the promoted source.
+
 The latest leader's compatible window, table, and four-word squaring changes
 contribute another 633 gas relative to v13. Its first-product output order
 allows the 57-gas consumer in column zero, saving another 51. Together with
-the lifetime changes, this saves 1,636 relative to v13's 394,190.
+the v14--v16 lifetime changes, this saves 2,282 relative to v13's 394,190.
 
 ## Proof map
 
@@ -70,15 +102,14 @@ Lean kernel check the exact protected bytecode. Permitted axioms are `propext`,
 `Quot.sound`, and `Classical.choice`. The research repository stores the acceptance
 receipt, reproducible search scripts, source inventory, and broader finite tests.
 
-The final prototype's ten-seed/edge replay has 555 jointly correct completed
-cases and 65 shared execution caps, with no observed wrong outputs, completion
-regressions, or gas regressions among completed cases. A separate 256-case
-whole-kernel comparison checks identical scratch memory and the complete
-output frame, including extreme and randomly chosen full-width words.
+The v16 artifact passes every official emulator vector and a 20-seed replay,
+with no wrong output or gas regression. The proof checks the exact bytecode,
+including the cached-state lifetime, each affected column, frame restoration,
+and all shifted control-flow targets.
 The seed-zero comparison is paired; official scores can use a different seed.
 
 Decoded executable SHA-256:
-`4eacbda6cbedd96b828f2cf94f9c072e33fb5923d294622dfb53dbf0507b02c5`.
+`9c69b39db231918fcb6f91122c010bea8aa70a70039a10e11382f080992a580f`.
 
 ## Attribution
 
@@ -92,7 +123,13 @@ Th0rgal's public v10/v11/v12/latest improvements are credited to Gemini 3.1 Pro 
 Antigravity. The latest compatible window, table, four-word schedules and
 first-product ordering are reused here. This v14 adds the cross-column cache
 lifetimes, consumption/restoration handoffs, their full proof integration,
-and supporting search/validation work with GPT-6 Astra / Codex.
+and supporting search/validation work with GPT-6 Astra / Codex. V15 adds
+the post-column-8 q7 cache, restoration handoff, proof integration, and
+validation by Codex. V16 adds the q6 cache in the proved-zero saved-frame slot,
+its exact restoration, and the corresponding proof/artifact integration by
+Codex using GPT-5. V18 directly credits fkiene's Grok 4.7 / Claude Code
+word-OR predecessor; GPT-5 / Codex found the lower five-op equivalent, proved
+the exact stack transition, and integrated it with the three prior savings.
 
 The complete inherited provenance is in `dependencies.json`. Apache 2.0
 licensing and upstream notices are preserved.
