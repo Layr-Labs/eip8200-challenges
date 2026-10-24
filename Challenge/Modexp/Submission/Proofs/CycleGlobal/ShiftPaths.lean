@@ -376,10 +376,10 @@ def blk3026 :
    opAt 2146 (.Swap ⟨1, by decide⟩),
    opAt 2147 (.Dup ⟨14, by decide⟩),
    opAt 2148 .GT,
-   opAt 2149 .ISZERO,
-   pushAt 2150 0 0,
-   opAt 2151 .SUB,
-   opAt 2152 .OR]
+   opAt 2149 (.Dup ⟨2, by decide⟩),
+   opAt 2150 .ADD,
+   opAt 2151 .OR,
+   opAt 2152 .JUMPDEST]
 
 
 

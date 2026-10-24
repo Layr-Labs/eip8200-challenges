@@ -129,3 +129,66 @@ Do not subtract the local 374,457 from official 374,193: these are different
 corpus configurations. The new caller revision still needs its own official
 validation. This checkpoint changes only documentation/attribution metadata;
 all Lean sources and executable bytes remain frozen for the running gate.
+
+
+## Shared-complement dispatch predicate (iteration 109)
+
+The modulus-tail dispatch at byte PCs 631..640 now uses
+`NOT; DUP1; ISZERO; SWAP1; JUMPDEST; PUSH1 1; AND; OR; JUMPDEST`.
+The old sequence was
+`DUP1; PUSH0; NOT; EQ; SWAP1; PUSH1 1; AND; ISZERO; OR`.
+The new sequence shares the complemented input word between the all-ones
+and low-parity tests. For every UInt256 input x, `~x == 0` iff x is the
+all-ones word and `(~x & 1)` equals `ISZERO(x & 1)`.
+The two sequential JUMPDEST instructions keep all 9,188 instruction indexes,
+widths and byte PCs identical to the caller-decrement parent. The PUSH1 at
+instruction 449 remains at byte PC 636. No existing destination literal moves.
+`PredicateIdentity.lean` proves these scalar identities without premises;
+`FastP1.lean` and `Setup.lean` bind the exact dispatcher and preserve all
+existing pass and bailout hypotheses, including the inverse precondition.
+
+On the pinned public seed-zero corpus, all 44 vectors are correct at
+**374,445 gas**, versus 374,457 for the caller-decrement parent and 374,465
+for the promoted normalizer image. Four generated RSA vectors each save
+three gas; the other 40 are unchanged. These are matched local totals, not
+an official hosted score. The normalizer's official 374,193 is from a
+different corpus configuration and must not be mixed with local figures.
+
+Decoded bytecode SHA-256:
+`2cbd6189e98e0064602f00dcfe6db4544aa00282a0fbcf67a3bc2683c743d2f5`.
+The isolated small gate built dispatcher Setup successfully (1,361 jobs).
+Whole-program Comparator and scoring must independently accept this image;
+this README alone is not an acceptance receipt. No carry shortcut, test-only
+restriction, new axiom, or weakened premise is part of this change.
+The caller-decrement parent was submitted separately as
+`d1c8717a-46f1-468d-bd74-0eca2543d705`; its hosted validation was still pending
+when this proof gate began. All earlier provenance and license notices remain.
+
+
+## Sentinel-backed quotient-estimate mask (#112)
+
+This revision additionally replaces bytes 2778..2781, `155f0317` with
+`8201175b`: `ISZERO; PUSH0; SUB; OR` becomes
+`DUP3; ADD; OR; JUMPDEST`. The all-ones sentinel was already on the entry
+stack and is preserved. For a comparison bit b, `maxWord + b = 0 - isZero b`
+in UInt256 arithmetic. The quotient word ORed with this mask is unrestricted.
+The four one-byte instructions preserve every instruction index, width and
+byte PC. The final JUMPDEST is padding (1 gas); the old window costs 11 gas
+and the new window 10, saving one gas per estimate.
+
+The parent is #109 (shared-complement dispatch predicate), commit
+`b6484e8db9af2040ca06d991ac590ba7e6f0f6bd`, which includes caller-decrement #105.
+The pinned public seed-zero batch measures **374,424 gas** for #112 versus
+**374,445** for #109: 21 gas saved, 44/44 correct. These are local measurements,
+not a hosted official score. Versus #105's 374,457, the cumulative saving is 33.
+
+`CycleGlobal/ShiftPaths.lean` binds the changed instructions to the artifact;
+`ShiftTrace2.run_estimate` proves the same result with the same premises.
+No arithmetic or input restriction is added. The separate report theorem
+`SentinelMask112.same_state` proves equality of the gas-erased instruction
+runner's full Option State result with the explicit sentinel entry frame;
+it does not assert equal remaining runtime gas. Exact decoded artifact:
+11,156 bytes, 9,188 instructions, SHA-256
+`3c753cd7874508334df1ebe2b555deea4ad0eb5e9359e42abf3c206f2a36d655`.
+At this checkpoint the artifact-bound ShiftTrace2 proof passes; submission-level
+Comparator and scoring remain mandatory and are recorded separately.
