@@ -33,7 +33,7 @@ theorem overflow_complete_of_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask 
 #print axioms overflow_complete_of_run
 
 theorem overflow_next_pc (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256) :
-    (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)).pc = (if (UInt256.shiftRight (MachineState.readWord s.memory 1600) (UInt256.ofNat 192)).toNat = 0 then UInt256.ofNat 8145 else UInt256.ofNat 8800) := by rfl
+    (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)).pc = (if (UInt256.shiftRight (MachineState.readWord s.memory 1600) (UInt256.ofNat 192)).toNat = 0 then UInt256.ofNat 8088 else UInt256.ofNat 8800) := by rfl
 
 #print axioms overflow_next_pc
 
@@ -61,7 +61,7 @@ theorem count_complete_of_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask min
 #print axioms count_complete_of_run
 
 theorem count_next_pc (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret : UInt256) (rest : List UInt256) :
-    (conditionalModel (countModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)).pc = (if (MachineState.readWord s.memory 1728).toNat = 0 then UInt256.ofNat 8800 else UInt256.ofNat 8154) := by
+    (conditionalModel (countModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)).pc = (if (MachineState.readWord s.memory 1728).toNat = 0 then UInt256.ofNat 8800 else UInt256.ofNat 8097) := by
   by_cases hz : (MachineState.readWord s.memory 1728).toNat = 0 <;>
     simp [conditionalModel, countModel, Challenge.EvmProof.Word.word_toNat_isZero,
       hz, Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -128,7 +128,7 @@ theorem overflow_complete_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask min
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 8800 = true) :
     runInstructions (overflowProgram ++ jumpiProgram)
-      {s with pc := UInt256.ofNat 8129, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
+      {s with pc := UInt256.ofNat 8072, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
         some (conditionalModel (overflowModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) :=
   overflow_complete_of_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest _
     (overflow_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact) hcap hvalid
@@ -139,7 +139,7 @@ theorem count_complete_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv p
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 8800 = true) :
     runInstructions (countProgram ++ jumpiProgram)
-      {s with pc := UInt256.ofNat 8145, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
+      {s with pc := UInt256.ofNat 8088, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
         some (conditionalModel (countModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) :=
   count_complete_of_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest _
     (count_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact) hcap hvalid
@@ -150,7 +150,7 @@ theorem retain_complete_run (s : State) (P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv 
     (hcap : rest.length ≤ 982) (hact : 88 ≤ s.activeWords.toNat)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 5858 = true) :
     runInstructions (retainProgram ++ resumeProgram)
-      {s with pc := UInt256.ofNat 8154, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
+      {s with pc := UInt256.ofNat 8097, stack := P :: n0 :: n1 :: n2 :: n3 :: n4 :: n5 :: n6 :: n7 :: n8 :: mask :: minv :: pbi :: hd :: w3 :: ent :: m32 :: allones :: m128 :: m64 :: m0 :: tl :: m96 :: inv :: tn :: aprev :: counter :: ret :: rest} =
         some (resumeModel (retainModel s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest)) :=
   retain_complete_of_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest _
     (retain_run s P n0 n1 n2 n3 n4 n5 n6 n7 n8 mask minv pbi hd w3 ent m32 allones m128 m64 m0 tl m96 inv tn aprev counter ret rest hcap hact) hcap hvalid
