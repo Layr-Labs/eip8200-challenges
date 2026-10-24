@@ -38,11 +38,11 @@ abbrev Located :=
   rw [CycleSubmission.Global.PrefixPC.eq_old i (by omega) (by omega)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths.directPC0 i hi hii
 
-@[simp] theorem directPC1 (i : Nat) (hi : 1867 ≤ i) (hii : i ≤ 1877) :
+@[simp] theorem directPC1 (i : Nat) (hi : 1867 ≤ i) (hii : i ≤ 1876) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([2369,2370,2373,2374,2375,2376,2377,2380,2383,2386,2389] : List Nat)[i - 1867]! := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old i (by omega) (by omega)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.FixedDirectPaths.directPC1 i hi hii
+      ([2369,2370,2373,2375,2376,2377,2380,2383,2386,2389] : List Nat)[i - 1867]! := by
+  interval_cases i <;>
+    rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength] <;> rfl
 
 def check65537 : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [CycleSubmission.Global.Fast.opAt 1856 .JUMPDEST,
@@ -89,15 +89,14 @@ entering the kernel's `common` block with `hd = sq_row` and return address 2519.
 def squareCall : List Located :=
   [CycleSubmission.Global.Fast.opAt 1867 .JUMPDEST,
    CycleSubmission.Global.Fast.pushAt 1868 2 2519,
-   CycleSubmission.Global.Fast.pushAt 1869 0 0,
-   CycleSubmission.Global.Fast.opAt 1870 .NOT,
-   CycleSubmission.Global.Fast.opAt 1871 (.Dup ⟨2, by decide⟩),
-   CycleSubmission.Global.Fast.opAt 1872 .ADD,
-   CycleSubmission.Global.Fast.pushAt 1873 2 512,
-   CycleSubmission.Global.Fast.pushAt 1874 2 2112,
-   CycleSubmission.Global.Fast.pushAt 1875 2 3728,
-   CycleSubmission.Global.Fast.pushAt 1876 2 3181,
-   CycleSubmission.Global.Fast.opAt 1877 .JUMP]
+   CycleSubmission.Global.Fast.pushAt 1869 1 1,
+   CycleSubmission.Global.Fast.opAt 1870 (.Dup ⟨2, by decide⟩),
+   CycleSubmission.Global.Fast.opAt 1871 .SUB,
+   CycleSubmission.Global.Fast.pushAt 1872 2 512,
+   CycleSubmission.Global.Fast.pushAt 1873 2 2112,
+   CycleSubmission.Global.Fast.pushAt 1874 2 3728,
+   CycleSubmission.Global.Fast.pushAt 1875 2 3181,
+   CycleSubmission.Global.Fast.opAt 1876 .JUMP]
 
 theorem jumpDest3892 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2317 = true :=
@@ -124,7 +123,7 @@ theorem jumpDestBigC :
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3181 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2478 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2477 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

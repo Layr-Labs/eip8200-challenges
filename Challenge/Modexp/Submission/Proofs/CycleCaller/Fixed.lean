@@ -16,7 +16,7 @@ theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     runInstructions fixedProgram (FixedDirectStates.special s mem 8 bsize esize 256 k) =
       some (call s mem k (UInt256.ofNat 2519)
         (UInt256.ofNat k :: Exp.outer 8 bsize esize 256)) := by
-  have hdec : UInt256.ofNat k + UInt256.lnot ({ val := 0 } : UInt256) = UInt256.ofNat (k-1) := by
+  have hdec : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k-1) := by
     interval_cases k <;> decide
   simp [fixedProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     FixedDirectStates.special, call, Exp.outer, hdec, hjump,

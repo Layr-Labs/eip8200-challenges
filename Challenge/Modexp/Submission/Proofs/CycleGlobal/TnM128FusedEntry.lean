@@ -26,10 +26,10 @@ def prefixProgram : List Instr := (prefixHead ++ prefixSelect) ++ prefixTail
 def clearProgram : List Instr :=
   [.push 1 192, .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 def prefixBlock : Block CycleSubmission.Artifact.artifact .Osaka 3256 prefixProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2533 22 3256 prefixProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2532 22 3256 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block CycleSubmission.Artifact.artifact .Osaka 3289 clearProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2555 6 3289 clearProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2554 6 3289 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=

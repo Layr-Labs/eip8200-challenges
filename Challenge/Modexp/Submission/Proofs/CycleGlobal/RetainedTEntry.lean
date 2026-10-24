@@ -36,19 +36,19 @@ def pushProgram : List Instr := [.push 2 2112]
 def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
 def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3493 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2714 8 3493 entryProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2713 8 3493 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 3505 pushProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2722 1 3505 pushProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2721 1 3505 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def tailBlock : Block CycleSubmission.Artifact.artifact .Osaka 3773 tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2912 2 3773 tailProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2911 2 3773 tailProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest4486 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3493 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2714 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2713 (by rfl)
 theorem jumpDest5326 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3773 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2912 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2911 (by rfl)
 
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=

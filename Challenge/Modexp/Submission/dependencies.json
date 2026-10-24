@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "84b3089d-b76a-43ea-907e-0d4357e4f387",
+    "rationale": "Direct development parent: local commit 429f6dae universally proves cycle-normalizer zero-add and dead-borrow elimination; its submission was accepted and promoted during integration at source 8f8a0b2c59e8f761088c97b21a6f4099a67305e1. This revision additionally simplifies the fixed caller decrement and rebinds instruction indexes.",
+    "evidence": "The parent bytes score 374465 on the pinned seed-zero 44-vector batch; the caller decrement changes exactly bytes 2373, 2374 and 2376, preserves byte length and destination addresses, and measures 374457. Authenticated validation accepted the parent at official score 374193. Its promoted Submission tree is identical to local 429f6dae. This revision is not yet officially validated; the matched local improvement is 8 gas."
+  },
+  {
     "submissionId": "f63a3c0d-31e4-48ba-a73a-b361c3c72eb0",
     "rationale": "Direct development base: accepted aerugo-ef v15 retains radix-240 values across repeated MODEXP operations and supplies the universally verified cycle/caller/global proof. This revision only simplifies the cycle normalizer instruction schedule.",
     "evidence": "Based on exact promoted commit bb2353349ec3854333007e928ef0e4be8843c243. Preserves v15 and all inherited attribution. Removes zero-add and unused final-borrow instructions; no arithmetic bounds are weakened."

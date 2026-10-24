@@ -429,7 +429,7 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
   have hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
       (UInt256.ofNat 3256).toNat = true := by
     change Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3256 = true
-    exact CycleSubmission.Global.Binding.jumpDest 2533 (by rfl)
+    exact CycleSubmission.Global.Binding.jumpDest 2532 (by rfl)
   have g4 := gasSteps_lazyCsubAt s (R4Bridge.rows4r M) 4 2368 (UInt256.ofNat 3256)
     (CycleSubmission.Global.Fast.SquareLoopBlocks.frameStack (R4Bridge.rows4r M) 4 pbi ent tl inv m0 m96 m64 m32 aprev allOnes ret rest)
     (by simp only [CycleSubmission.Global.Fast.SquareLoopBlocks.frameStack, List.length_append, List.length_cons, List.length_nil]; omega)

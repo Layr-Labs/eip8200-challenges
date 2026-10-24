@@ -37,7 +37,7 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 3768, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2891 5 3743 h1Program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2890 5 3743 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDestR4 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4037 = true :=
@@ -132,11 +132,11 @@ theorem run_resume (s : State) (rest : List UInt256) (hcap : rest.length < 1024)
 
 
 def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3751 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2896 10 3751 entryProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2895 10 3751 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def resumeBlock : Block CycleSubmission.Artifact.artifact .Osaka 3763 resumeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2906 1 3763 resumeProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2905 1 3763 resumeProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Initialize the carry word once and retain the six reduction constants on the stack. -/

@@ -38,16 +38,16 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
 
-@[simp] private theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2027 = 2596 := by
+@[simp] private theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2026 = 2596 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2033 = 2604 := by
+@[simp] private theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2032 = 2604 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] private theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2043 = 2616 := by
+@[simp] private theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2042 = 2616 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

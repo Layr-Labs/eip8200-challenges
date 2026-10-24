@@ -31,15 +31,15 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to 2811). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2457 2 3146
+  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2456 2 3146
     RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2459 5 3148
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2458 5 3148
     RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2464 14 3157
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2463 14 3157
     RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest2811 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2704 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2093 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2092 (by rfl)
 
 /-! ## Junction lemmas
 

@@ -45,16 +45,16 @@ def m4jProgram : List Instr :=
 
 
 def m4jBlock : Block CycleSubmission.Artifact.artifact .Osaka 3482 m4jProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2709 5 3482 m4jProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2708 5 3482 m4jProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 
 theorem jumpDestM4j : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3482 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2709 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2708 (by rfl)
 
 
 theorem jumpDestLazy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3697 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2862 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2861 (by rfl)
 
 
 end CycleSubmission.Global.Fast.TnM128SquareExit

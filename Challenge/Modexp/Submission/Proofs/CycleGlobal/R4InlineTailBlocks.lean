@@ -17,28 +17,28 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
 def block_tail : Block CycleSubmission.Artifact.artifact .Osaka 4727 prog_tail :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3795 3 4727 prog_tail
-    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3795 + 3 ≤ 9189) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 664 4727 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 664 3 prog_tail rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3794 3 4727 prog_tail
+    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3794 + 3 ≤ 9188) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 664 4727 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 664 3 prog_tail rfl) (by decide)
 
 def block_st4 : Block CycleSubmission.Artifact.artifact .Osaka 4732 prog_st4 :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3798 9 4732 prog_st4
-    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3798 + 9 ≤ 9189) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 667 4732 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 667 9 prog_st4 rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3797 9 4732 prog_st4
+    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3797 + 9 ≤ 9188) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 667 4732 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 667 9 prog_st4 rfl) (by decide)
 
 def block_branch : Block CycleSubmission.Artifact.artifact .Osaka 4749 prog_branch :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3807 8 4749 prog_branch
-    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3807 + 8 ≤ 9189) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 676 4749 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 676 8 prog_branch rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3806 8 4749 prog_branch
+    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3806 + 8 ≤ 9188) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 676 4749 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 676 8 prog_branch rfl) (by decide)
 
 def block_m4 : Block CycleSubmission.Artifact.artifact .Osaka 4759 prog_m4 :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3815 8 4759 prog_m4
-    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3815 + 8 ≤ 9189) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 684 4759 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 684 8 prog_m4 rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3814 8 4759 prog_m4
+    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3814 + 8 ≤ 9188) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 684 4759 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 684 8 prog_m4 rfl) (by decide)
 
 def block_rare4 : Block CycleSubmission.Artifact.artifact .Osaka 4769 prog_rare4 :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3823 46 4769 prog_rare4
-    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3823 + 46 ≤ 9189) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 692 4769 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 692 46 prog_rare4 rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3822 46 4769 prog_rare4
+    (by change _ ≤ CycleSubmission.Artifact.instructions.length; exact Nat.le_trans (by decide : 3822 + 46 ≤ 9188) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (R4InlineArtifactSuffix.pc 692 4769 rfl) (by rw [R4SliceFast.locations_map]; exact R4InlineArtifactSuffix.slice 692 46 prog_rare4 rfl) (by decide)
 theorem jd4280 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4037 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3131 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3130 (by rfl)
 theorem jd4731 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4732 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3798 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3797 (by rfl)
 theorem jd4768 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4769 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3823 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3822 (by rfl)
 end CycleSubmission.Global.Fast.R4InlineTailBlocks

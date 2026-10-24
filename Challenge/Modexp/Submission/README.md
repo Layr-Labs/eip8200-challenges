@@ -92,3 +92,40 @@ and `Provenance/` preserve the v14 declarations, attribution and historical
 documents; their measurements and implementation descriptions refer to those
 earlier versions. Original local work uses Apache 2.0; see `LICENSE` and the
 upstream notices retained in the source.
+
+## Fixed-caller decrement scheduling (iteration 105)
+
+The cycle fixed caller at PC 2369 previously computed `k-1` by
+`PUSH0; NOT; DUP3; ADD`. It now uses `PUSH1 1; DUP3; SUB`.
+Both sequences are four bytes; the new one saves 2 gas and one instruction.
+The existing `1 <= k <= 16` caller conditions are unchanged. Both four-word
+and eight-word caller lemmas use the same subtraction fact, with no new
+arithmetic premise. No byte address or jump literal moves.
+
+The full artifact remains 11,156 bytes and has 9,188 instructions.
+Instruction indexes after the caller decrease by one. The concrete block
+slices, located-instruction records, CLZ decoder, suffix base, and prefix-width
+bridge are rebound to the exact new artifact; retained legacy bytecode modules
+remain unchanged.
+
+Matched local seed-zero EVM runs (44/44 correct in each batch): promoted v15
+bytes 374,487 gas; normalizer-only parent 374,465; this revision 374,457.
+Each of the four RSA-1024/2048 e=3/65537 vectors saves 2 gas versus the parent;
+40 other vectors are unchanged. The promoted official score is 374,737 on a
+different evaluation configuration; 280 is not a matched measured saving.
+Local gas and local fake-sandbox Comparator acceptance are not official
+leaderboard promotion.
+
+
+### Current frontier checkpoint during iteration 105
+
+The normalizer-only parent `84b3089d-b76a-43ea-907e-0d4357e4f387` was accepted
+and promoted at official score **374,193**, source
+`8f8a0b2c59e8f761088c97b21a6f4099a67305e1`. Its complete editable Submission
+tree is identical to local `429f6dae`. Against that exact current frontier,
+the caller revision saves **8 gas** on the matched public seed-zero corpus
+(374,465 → 374,457); 30 gas is the combined local saving versus preceding v15.
+Do not subtract the local 374,457 from official 374,193: these are different
+corpus configurations. The new caller revision still needs its own official
+validation. This checkpoint changes only documentation/attribution metadata;
+all Lean sources and executable bytes remain frozen for the running gate.

@@ -22,7 +22,7 @@ theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
       some (CycleSubmission.Global.Fast.Cios2Dispatch.commonState s mem
         (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) (UInt256.ofNat 2519)
         (UInt256.ofNat k :: Exp.outer 4 bsize esize 128)) := by
-  have hdec : UInt256.ofNat k + UInt256.lnot ({ val := 0 } : UInt256) = UInt256.ofNat (k-1) := by
+  have hdec : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k-1) := by
     interval_cases k <;> decide
   simp [CallerBlocks.fixedProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     FixedDirectStates.special, CycleSubmission.Global.Fast.Cios2Dispatch.commonState, Exp.outer, hdec, hjump,

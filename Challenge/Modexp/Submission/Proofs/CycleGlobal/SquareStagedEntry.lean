@@ -26,12 +26,12 @@ def program : List Instr :=
    .push 2 480, .op .SUB]
 
 def block : Block CycleSubmission.Artifact.artifact .Osaka 3728 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2881 10 3728 program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2880 10 3728 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat 3728).toNat = true :=
-  CycleSubmission.Global.Binding.jumpDest 2881 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2880 (by rfl)
 
 /-- The entry's row pointer word. -/
 def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512 + 32 * n - 32)
