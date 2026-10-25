@@ -812,85 +812,85 @@ open EvmSemantics.EVM
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail2 2321 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcSaturate2993
 
-@[simp] theorem earlyExtraPC2883 : CycleSubmission.Artifact.artifact.instructionPC 2678 = 3438 := by
+@[simp] theorem earlyExtraPC2883 : CycleSubmission.Artifact.artifact.instructionPC 2669 = 3438 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2884 : CycleSubmission.Artifact.artifact.instructionPC 2679 = 3439 := by
+@[simp] theorem earlyExtraPC2884 : CycleSubmission.Artifact.artifact.instructionPC 2670 = 3439 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2885 : CycleSubmission.Artifact.artifact.instructionPC 2680 = 3440 := by
+@[simp] theorem earlyExtraPC2885 : CycleSubmission.Artifact.artifact.instructionPC 2671 = 3440 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2886 : CycleSubmission.Artifact.artifact.instructionPC 2681 = 3441 := by
+@[simp] theorem earlyExtraPC2886 : CycleSubmission.Artifact.artifact.instructionPC 2672 = 3441 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2888 : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3442 := by
+@[simp] theorem earlyExtraPC2888 : CycleSubmission.Artifact.artifact.instructionPC 2673 = 3442 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2889 : CycleSubmission.Artifact.artifact.instructionPC 2683 = 3443 := by
+@[simp] theorem earlyExtraPC2889 : CycleSubmission.Artifact.artifact.instructionPC 2674 = 3443 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2890 : CycleSubmission.Artifact.artifact.instructionPC 2684 = 3444 := by
+@[simp] theorem earlyExtraPC2890 : CycleSubmission.Artifact.artifact.instructionPC 2675 = 3444 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2891 : CycleSubmission.Artifact.artifact.instructionPC 2685 = 3447 := by
+@[simp] theorem earlyExtraPC2891 : CycleSubmission.Artifact.artifact.instructionPC 2676 = 3447 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2892 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3448 := by
+@[simp] theorem earlyExtraPC2892 : CycleSubmission.Artifact.artifact.instructionPC 2677 = 3448 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2893 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3448 := by
+@[simp] theorem earlyExtraPC2893 : CycleSubmission.Artifact.artifact.instructionPC 2677 = 3448 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2894 : CycleSubmission.Artifact.artifact.instructionPC 2687 = 3449 := by
+@[simp] theorem earlyExtraPC2894 : CycleSubmission.Artifact.artifact.instructionPC 2678 = 3449 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2895 : CycleSubmission.Artifact.artifact.instructionPC 2688 = 3452 := by
+@[simp] theorem earlyExtraPC2895 : CycleSubmission.Artifact.artifact.instructionPC 2679 = 3452 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2896 : CycleSubmission.Artifact.artifact.instructionPC 2689 = 3453 := by
+@[simp] theorem earlyExtraPC2896 : CycleSubmission.Artifact.artifact.instructionPC 2680 = 3453 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2930 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3454 := by
+@[simp] theorem earlyExtraPC2930 : CycleSubmission.Artifact.artifact.instructionPC 2681 = 3454 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2931 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3457 := by
+@[simp] theorem earlyExtraPC2931 : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3457 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2932 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3458 := by
+@[simp] theorem earlyExtraPC2932 : CycleSubmission.Artifact.artifact.instructionPC 2683 = 3458 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2933 : CycleSubmission.Artifact.artifact.instructionPC 2693 = 3461 := by
+@[simp] theorem earlyExtraPC2933 : CycleSubmission.Artifact.artifact.instructionPC 2684 = 3461 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2934 : CycleSubmission.Artifact.artifact.instructionPC 2694 = 3462 := by
+@[simp] theorem earlyExtraPC2934 : CycleSubmission.Artifact.artifact.instructionPC 2685 = 3462 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2935 : CycleSubmission.Artifact.artifact.instructionPC 2695 = 3463 := by
+@[simp] theorem earlyExtraPC2935 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3463 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2936 : CycleSubmission.Artifact.artifact.instructionPC 2696 = 3466 := by
+@[simp] theorem earlyExtraPC2936 : CycleSubmission.Artifact.artifact.instructionPC 2687 = 3466 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2937 : CycleSubmission.Artifact.artifact.instructionPC 2697 = 3467 := by
+@[simp] theorem earlyExtraPC2937 : CycleSubmission.Artifact.artifact.instructionPC 2688 = 3467 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2938 : CycleSubmission.Artifact.artifact.instructionPC 2698 = 3469 := by
+@[simp] theorem earlyExtraPC2938 : CycleSubmission.Artifact.artifact.instructionPC 2689 = 3469 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2939 : CycleSubmission.Artifact.artifact.instructionPC 2699 = 3470 := by
+@[simp] theorem earlyExtraPC2939 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3470 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2940 : CycleSubmission.Artifact.artifact.instructionPC 2700 = 3471 := by
+@[simp] theorem earlyExtraPC2940 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3471 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2941 : CycleSubmission.Artifact.artifact.instructionPC 2701 = 3472 := by
+@[simp] theorem earlyExtraPC2941 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3472 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2942 : CycleSubmission.Artifact.artifact.instructionPC 2702 = 3473 := by
+@[simp] theorem earlyExtraPC2942 : CycleSubmission.Artifact.artifact.instructionPC 2693 = 3473 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2943 : CycleSubmission.Artifact.artifact.instructionPC 2703 = 3476 := by
+@[simp] theorem earlyExtraPC2943 : CycleSubmission.Artifact.artifact.instructionPC 2694 = 3476 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
 

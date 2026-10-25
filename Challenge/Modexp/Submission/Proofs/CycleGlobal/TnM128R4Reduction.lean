@@ -60,7 +60,7 @@ noncomputable def reduction_steps (s : State)
         m128 m64 tail) := by
     have hj : Decode.isValidJumpDest s.executionEnv.code 3298 = true := by
       rw [env.code]
-      exact CycleSubmission.Global.Binding.jumpDest 2559 (by rfl)
+      exact CycleSubmission.Global.Binding.jumpDest 2553 (by rfl)
     have h19 : rest.length+19 < 1024 := by omega
     have h20 : rest.length+20 < 1024 := by omega
     have hjump : runInstructions [.push 2 3298, .op .JUMP]

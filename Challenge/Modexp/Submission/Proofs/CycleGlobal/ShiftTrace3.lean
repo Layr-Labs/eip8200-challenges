@@ -849,7 +849,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rfl
 
 @[simp] private theorem pcFact4392 :
-    CycleSubmission.Artifact.artifact.instructionPC 3052 = 3944 := by
+    CycleSubmission.Artifact.artifact.instructionPC 3043 = 3944 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -899,64 +899,64 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 @[simp] private theorem pc2715 : CycleSubmission.Artifact.artifact.instructionPC 2474 = 3177 := by
   rw [show (2474:Nat)=2402+(2474-2402) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3053 = 3945 := by
-  rw [show (3053:Nat)=3052+(3053-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3044 = 3945 := by
+  rw [show (3044:Nat)=3043+(3044-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3054 = 3946 := by
-  rw [show (3054:Nat)=3052+(3054-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3045 = 3946 := by
+  rw [show (3045:Nat)=3043+(3045-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3055 = 3947 := by
-  rw [show (3055:Nat)=3052+(3055-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3046 = 3947 := by
+  rw [show (3046:Nat)=3043+(3046-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3056 = 3948 := by
-  rw [show (3056:Nat)=3052+(3056-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3047 = 3948 := by
+  rw [show (3047:Nat)=3043+(3047-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3057 = 3949 := by
-  rw [show (3057:Nat)=3052+(3057-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3048 = 3949 := by
+  rw [show (3048:Nat)=3043+(3048-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3058 = 3950 := by
-  rw [show (3058:Nat)=3052+(3058-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3049 = 3950 := by
+  rw [show (3049:Nat)=3043+(3049-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3059 = 3951 := by
-  rw [show (3059:Nat)=3052+(3059-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3050 = 3951 := by
+  rw [show (3050:Nat)=3043+(3050-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3060 = 3952 := by
-  rw [show (3060:Nat)=3052+(3060-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3051 = 3952 := by
+  rw [show (3051:Nat)=3043+(3051-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3063 = 3955 := by
-  rw [show (3063:Nat)=3052+(3063-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
-  rfl
-
-@[simp] private theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3062 = 3954 := by
-  rw [show (3062:Nat)=3052+(3062-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3054 = 3955 := by
+  rw [show (3054:Nat)=3043+(3054-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
 
-@[simp] private theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3061 = 3953 := by
-  rw [show (3061:Nat)=3052+(3061-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3053 = 3954 := by
+  rw [show (3053:Nat)=3043+(3053-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3064 = 3956 := by
-  rw [show (3064:Nat)=3052+(3064-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+
+@[simp] private theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3052 = 3953 := by
+  rw [show (3052:Nat)=3043+(3052-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3065 = 3957 := by
-  rw [show (3065:Nat)=3052+(3065-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3055 = 3956 := by
+  rw [show (3055:Nat)=3043+(3055-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3066 = 3958 := by
-  rw [show (3066:Nat)=3052+(3066-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3056 = 3957 := by
+  rw [show (3056:Nat)=3043+(3056-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3067 = 3959 := by
-  rw [show (3067:Nat)=3052+(3067-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3057 = 3958 := by
+  rw [show (3057:Nat)=3043+(3057-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3068 = 3960 := by
-  rw [show (3068:Nat)=3052+(3068-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3058 = 3959 := by
+  rw [show (3058:Nat)=3043+(3058-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3069 = 3961 := by
-  rw [show (3069:Nat)=3052+(3069-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3059 = 3960 := by
+  rw [show (3059:Nat)=3043+(3059-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3070 = 3964 := by
-  rw [show (3070:Nat)=3052+(3070-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3060 = 3961 := by
+  rw [show (3060:Nat)=3043+(3060-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
-@[simp] private theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3071 = 3965 := by
-  rw [show (3071:Nat)=3052+(3071-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+@[simp] private theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3061 = 3964 := by
+  rw [show (3061:Nat)=3043+(3061-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
+  rfl
+@[simp] private theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3062 = 3965 := by
+  rw [show (3062:Nat)=3043+(3062-3043) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]
   rfl
 
 /-- `blk3346` with the squaring flag clear: drop the counter and jump to the
