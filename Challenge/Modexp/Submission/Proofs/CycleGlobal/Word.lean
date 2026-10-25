@@ -89,8 +89,8 @@ def baseGuardPath :
   [opAt 93 .JUMPDEST,
    opAt 94 (.Dup ⟨3, by decide⟩),
    opAt 95 (.Dup ⟨1, by decide⟩),
-   opAt 96 .LT,
-   opAt 97 .ISZERO,
+   opAt 96 .EQ,
+   opAt 97 .JUMPDEST,
    pushAt 98 1 187,
    opAt 99 .JUMPI]
 
@@ -170,17 +170,17 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3095 .JUMPDEST,
-   pushAt 3096 1 1,
-   opAt 3097 (.Dup ⟨6, by decide⟩),
-   opAt 3098 .SUB]
+  [opAt 3094 .JUMPDEST,
+   pushAt 3095 1 1,
+   opAt 3096 (.Dup ⟨6, by decide⟩),
+   opAt 3097 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3127 .POP,
-   pushAt 3128 2 3966,
-   opAt 3129 .JUMP]
+  [opAt 3126 .POP,
+   pushAt 3127 2 3966,
+   opAt 3128 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
@@ -351,7 +351,7 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
 theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3992 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3095 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3094 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -498,19 +498,19 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
   interval_cases i <;> rfl
 
 @[simp] theorem expTailPCs (i : Nat)
-    (hi : 3073 ≤ i) (hii : i ≤ 3080) :
+    (hi : 3072 ≤ i) (hii : i ≤ 3079) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3966,3967,3968,3969,3970,3972,3973,3975] : List Nat)[i - 3073]! := by
+      ([3966,3967,3968,3969,3970,3972,3973,3975] : List Nat)[i - 3072]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump669 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3976 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3081 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3080 (by rfl)
 
 @[simp] theorem jump655 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3966 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3073 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3072 (by rfl)
 
 @[simp] theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 194 = true :=
@@ -659,6 +659,12 @@ theorem run_baseGuard (input : ByteArray) (i : Nat) (base : UInt256)
           115792089237316195423570985008687907853269984665640564039457584007913129639936
         then UInt256.ofNat 1 else UInt256.ofNat 0).isZero.toNat = 0 := by
     exact hcond
+  have hne : i % 2 ^ 256 ≠ baseSize input % 2 ^ 256 := by
+    rw [himod, hbmod]
+    omega
+  have hneLiteral :
+      i % 115792089237316195423570985008687907853269984665640564039457584007913129639936 ≠
+      baseSize input % 115792089237316195423570985008687907853269984665640564039457584007913129639936 := hne
   have h550 : (177 : UInt256).toNat = 177 := by decide
   simp (config := { maxSteps := 150000 })
     [baseGuardPath, opAt, pushAt,
@@ -666,9 +672,9 @@ theorem run_baseGuard (input : ByteArray) (i : Nat) (base : UInt256)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       baseLoopState, baseGuardState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, wordPCs,
-      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      UInt256.isTrue, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       hi, hi256, hb256, himod, hbmod, hilt, hisZero, hcond, hcondLiteral,
-      h550]
+      hne, hneLiteral, h550]
 
 set_option linter.unusedSimpArgs false in
 theorem run_baseCall (input : ByteArray) (i : Nat) (base : UInt256)
@@ -712,7 +718,7 @@ theorem run_baseFinishGuard (input : ByteArray) (base : UInt256)
       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
       baseLoopState, baseFinishDispatchState, nonzeroState, callerRest,
       Dispatch.wordEntryState, Main.headerState, initialState, wordPCs,
-      UInt256.isTrue, UInt256.lt, Challenge.EvmProof.Word.word_toNat_ofNat,
+      UInt256.isTrue, UInt256.eq, Challenge.EvmProof.Word.word_toNat_ofNat,
       hb256, hbmod, hzeroFalse, h582, h582Word, jump582]
 
 /- The exponent trace declarations live in `WordExpRuns` so their large

@@ -1,3 +1,35 @@
+# Current refinement #115: estimator increment
+
+This version replaces byte PCs2504..2506 `NOT; PUSH0; SUB` with
+`PUSH1 1; ADD`. The modular UInt256 identity is universal, including wraparound:
+`1 + x = 0 - NOT(x)`. Both byte strings are three bytes; the new image has
+11,156 bytes and 9,187 decoded instructions. Existing JUMPDEST PCs and all
+following instruction byte PCs are unchanged. Instruction indices starting at
+old index1955 move down one and their artifact proof bindings are updated.
+
+Matched seed-zero executable measurements: 374,391 gas, 44/44 correct, versus
+374,399 for local #114 (now submitted as
+`8209e460-f3f8-4abb-baba-5e14f082044b`) and 374,457 for accepted #105 on that same
+corpus. This is not a direct comparison to hosted official scores. The current
+hosted frontier remains 373,913 until a new official result is returned.
+
+`Proofs/CycleGlobal/ShiftTrace1.lean` proves the word identity and the exact
+`run_negDoneB` state transition with the inherited theorem contract. The focused
+artifact-bound build passed; the full protected local gate and hosted status
+are documented separately in the submission note and receipt. No proof trust
+exception, runtime special case, scorer change, or vector-specific route is used.
+
+Decoded byte SHA-256:
+`bea8ea1aa6ea98eb602d509b1097075d3212fb89503699c4012f61b123f87573`.
+
+Run the repository's documented local gate with:
+`BENCHMARK_INSECURE_LOCAL=1 ./benchmark.sh modexp`.
+It explicitly uses Comparator's insecure local sandbox here, so only an actual
+Yukon evaluation can establish an official result. Prior documentation follows
+as historical provenance and does not describe the current byte count/hash.
+
+---
+
 # MODEXP: cycle normalizer dead-code elimination
 
 Development base: accepted aerugo-ef v15, commit
@@ -129,3 +161,99 @@ Do not subtract the local 374,457 from official 374,193: these are different
 corpus configurations. The new caller revision still needs its own official
 validation. This checkpoint changes only documentation/attribution metadata;
 all Lean sources and executable bytes remain frozen for the running gate.
+
+
+## Shared-complement dispatch predicate (iteration 109)
+
+The modulus-tail dispatch at byte PCs 631..640 now uses
+`NOT; DUP1; ISZERO; SWAP1; JUMPDEST; PUSH1 1; AND; OR; JUMPDEST`.
+The old sequence was
+`DUP1; PUSH0; NOT; EQ; SWAP1; PUSH1 1; AND; ISZERO; OR`.
+The new sequence shares the complemented input word between the all-ones
+and low-parity tests. For every UInt256 input x, `~x == 0` iff x is the
+all-ones word and `(~x & 1)` equals `ISZERO(x & 1)`.
+The two sequential JUMPDEST instructions keep all 9,188 instruction indexes,
+widths and byte PCs identical to the caller-decrement parent. The PUSH1 at
+instruction 449 remains at byte PC 636. No existing destination literal moves.
+`PredicateIdentity.lean` proves these scalar identities without premises;
+`FastP1.lean` and `Setup.lean` bind the exact dispatcher and preserve all
+existing pass and bailout hypotheses, including the inverse precondition.
+
+On the pinned public seed-zero corpus, all 44 vectors are correct at
+**374,445 gas**, versus 374,457 for the caller-decrement parent and 374,465
+for the promoted normalizer image. Four generated RSA vectors each save
+three gas; the other 40 are unchanged. These are matched local totals, not
+an official hosted score. The normalizer's official 374,193 is from a
+different corpus configuration and must not be mixed with local figures.
+
+Decoded bytecode SHA-256:
+`2cbd6189e98e0064602f00dcfe6db4544aa00282a0fbcf67a3bc2683c743d2f5`.
+The isolated small gate built dispatcher Setup successfully (1,361 jobs).
+Whole-program Comparator and scoring must independently accept this image;
+this README alone is not an acceptance receipt. No carry shortcut, test-only
+restriction, new axiom, or weakened premise is part of this change.
+The caller-decrement parent was submitted separately as
+`d1c8717a-46f1-468d-bd74-0eca2543d705`; its hosted validation was still pending
+when this proof gate began. All earlier provenance and license notices remain.
+
+
+## Sentinel-backed quotient-estimate mask (#112)
+
+This revision additionally replaces bytes 2778..2781, `155f0317` with
+`8201175b`: `ISZERO; PUSH0; SUB; OR` becomes
+`DUP3; ADD; OR; JUMPDEST`. The all-ones sentinel was already on the entry
+stack and is preserved. For a comparison bit b, `maxWord + b = 0 - isZero b`
+in UInt256 arithmetic. The quotient word ORed with this mask is unrestricted.
+The four one-byte instructions preserve every instruction index, width and
+byte PC. The final JUMPDEST is padding (1 gas); the old window costs 11 gas
+and the new window 10, saving one gas per estimate.
+
+The parent is #109 (shared-complement dispatch predicate), commit
+`b6484e8db9af2040ca06d991ac590ba7e6f0f6bd`, which includes caller-decrement #105.
+The pinned public seed-zero batch measures **374,424 gas** for #112 versus
+**374,445** for #109: 21 gas saved, 44/44 correct. These are local measurements,
+not a hosted official score. Versus #105's 374,457, the cumulative saving is 33.
+
+`CycleGlobal/ShiftPaths.lean` binds the changed instructions to the artifact;
+`ShiftTrace2.run_estimate` proves the same result with the same premises.
+No arithmetic or input restriction is added. The separate report theorem
+`SentinelMask112.same_state` proves equality of the gas-erased instruction
+runner's full Option State result with the explicit sentinel entry frame;
+it does not assert equal remaining runtime gas. Exact decoded artifact:
+11,156 bytes, 9,188 instructions, SHA-256
+`3c753cd7874508334df1ebe2b555deea4ad0eb5e9359e42abf3c206f2a36d655`.
+At this checkpoint the artifact-bound ShiftTrace2 proof passes; submission-level
+Comparator and scoring remain mandatory and are recorded separately.
+
+
+## Consumed dispatcher inequality condition (#113)
+
+Replace PCs 2393..2394, `EQ; ISZERO` with `XOR; JUMPDEST`, retaining the
+following `PUSH1 219; JUMPI`. XOR is zero iff its operands are equal. Since
+the branch consumes the entire condition, preserving zero/nonzero truth is
+sufficient; numeric equality of intermediate conditions is neither claimed
+nor needed. `ShiftTrace1.dispatch_xor_isTrue` proves this for arbitrary words
+and `run_dispatch` keeps the inherited premises. Artifact-bound ShiftTrace1
+build: 1,385 jobs clean. Pinned combined public result: 374,416 gas, 44/44,
+8 gas lower than #112 and 41 lower than #105 on the same seed-zero batch.
+The artifact is 11,156 bytes / 9,188 instructions, decoded SHA-256
+`103eb09ad3db35e38ab34bd7c95621e35a5ed4127b25868031a459e133104d30`.
+A separate protected submission-level gate is required for this exact image.
+
+
+## First-row carried-zero elimination (#114)
+
+At PCs 4221..4226 replace `958510019450` with `505093831093`, i.e.
+`SWAP6; DUP6; LT; ADD; SWAP5; POP` with
+`POP; POP; SWAP4; DUP4; LT; SWAP4`. This removes addition of the carried
+zero produced by the actual `PUSH0` at PC4131. The unsigned overflow
+comparison `LT (p4+c) p4` remains intact for arbitrary wrapped sums.
+`R4InlineRedt0.run_redt_0Zero114` proves the new schedule, and
+`R4InlineBlocks.block_redt_0Zero114` binds it to the changed artifact.
+`R4InlineTrace.gasSteps_red0Zero114` composes the entire zero-preserving
+reduction, leaving the outer `gasSteps_core` statement unchanged.
+Artifact-bound trace build: 1,470 jobs completed. Pinned EVM result:
+374,399 gas / 44 correct, versus #113 374,416 on the same public batch.
+There is no arbitrary-carried-word equivalence claim. All PCs and widths
+are preserved; artifact remains 11,156 bytes / 9,188 instructions,
+decoded SHA-256 `9edcd83a2c11e5969ac326c1d37338ca830481b0be998c65bea8bb0cec4ff5f4`.

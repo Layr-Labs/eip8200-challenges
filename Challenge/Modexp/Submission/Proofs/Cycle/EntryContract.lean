@@ -20,12 +20,11 @@ theorem keeps_base (s : State) (f : Caller) (start count : Nat)
   apply readPadded_storeCells
   intro c hc
   simp only [cells, List.mem_cons, List.mem_nil_iff, or_false] at hc
-  rcases hc with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> dsimp <;> omega
+  rcases hc with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> dsimp <;> omega
 
 theorem counter (s : State) (f : Caller) :
     CounterControl.counter (EntryBinding.entered s f) = f.counter := by
-  simp (disch := decide) only [CounterControl.counter, EntryBinding.entered, result, cells,
-    storeCells, writeCell, NormalizeMeaning.readStore, Challenge.EvmProof.Memory.readWord_writeWord]
+  rfl
 
 structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   state : State
@@ -33,7 +32,7 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   a : Nat → UInt256
   n : Nat → UInt256
   trace : GasSteps {s with pc := UInt256.ofNat 5964, stack := saved f} state
-  frame : state.stack = SquareMeaning.frame0 inv a SquareStep.zeroWords n (saved f)
+  frame : state.stack = SquareMeaning.frame0 inv a SquareStep.zeroWords n (f.counter :: saved f)
   pc : state.pc = UInt256.ofNat 6153
   memory : SquareMeaning.Memory0 state.memory inv a SquareStep.zeroWords n
   env : state.executionEnv = s.executionEnv
@@ -51,7 +50,7 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
 
 noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : f.tail.length ≤ 944) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)

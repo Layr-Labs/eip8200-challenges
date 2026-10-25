@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Cycle.Execution.overflowHead
 import Challenge.Modexp.Submission.Proofs.Cycle.Execution.counterHead
-import Challenge.Modexp.Submission.Proofs.Cycle.Execution.decrement
 import Challenge.Modexp.Submission.Proofs.Cycle.Execution.normalizesquare
 import Challenge.Modexp.Submission.Proofs.Cycle.Artifact
 import Challenge.Modexp.Submission.Proofs.CRT.CRTControlBase
@@ -15,79 +14,63 @@ open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 def overflowBlock : Block Artifact.artifact .Osaka 8077 overflowHeadProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6686 4 8077 overflowHeadProgram
-    (by change 6686+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6686+4 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 6683 4 8077 overflowHeadProgram
+    (by change 6683+4 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6683+4 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def overflowJumpBlock : Block Artifact.artifact .Osaka 8084 jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6690 1 8084 jumpiProgram
-    (by change 6690+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6690+1 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 6687 1 8084 jumpiProgram
+    (by change 6687+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6687+1 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def counterBlock : Block Artifact.artifact .Osaka 8085 counterHeadProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6691 5 8085 counterHeadProgram
-    (by change 6691+5 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6691+5 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 6688 6 8085 counterHeadProgram
+    (by change 6688+6 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6688+6 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def counterJumpBlock : Block Artifact.artifact .Osaka 8094 jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6696 1 8094 jumpiProgram
-    (by change 6696+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6696+1 ≤ 9188)
-          (Nat.le_of_eq Artifact.instructionCount.symm))
-    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def decrementBlock : Block Artifact.artifact .Osaka 8095 decrementProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6697 7 8095 decrementProgram
-    (by change 6697+7 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6697+7 ≤ 9188)
-          (Nat.le_of_eq Artifact.instructionCount.symm))
-    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def repeatJumpBlock : Block Artifact.artifact .Osaka 8109 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6704 1 8109 jumpProgram
-    (by change 6704+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6704+1 ≤ 9188)
+def counterJumpBlock : Block Artifact.artifact .Osaka 8109 jumpiProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 6694 1 8109 jumpiProgram
+    (by change 6694+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6694+1 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def normalizesquareBlock : Block Artifact.artifact .Osaka 11008 normalizesquareProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 9062 4 11008 normalizesquareProgram
-    (by change 9062+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 9062+4 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 9052 4 11008 normalizesquareProgram
+    (by change 9052+4 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 9052+4 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 theorem validJump6152 : Decode.isValidJumpDest Artifact.bytecode 6152 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 5030
-    (show Artifact.instructions[5030]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 5030 = 6152 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 5027
+    (show Artifact.instructions[5027]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 5027 = 6152 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
 theorem validJump8110 : Decode.isValidJumpDest Artifact.bytecode 8110 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6705
-    (show Artifact.instructions[6705]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 6705 = 8110 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6695
+    (show Artifact.instructions[6695]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 6695 = 8110 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
 theorem validJump11008 : Decode.isValidJumpDest Artifact.bytecode 11008 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 9062
-    (show Artifact.instructions[9062]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 9062 = 11008 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 9052
+    (show Artifact.instructions[9052]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 9052 = 11008 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

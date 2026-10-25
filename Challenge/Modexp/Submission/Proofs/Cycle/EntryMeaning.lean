@@ -34,8 +34,9 @@ def saved (f : Caller) : List UInt256 :=
   [f.pbi, f.hd, f.w3, f.ent, f.m32, UInt256.ofNat (2^256-1), f.m128, f.m64,
    f.m0, f.tl, f.m96, f.inv, f.tn, f.aprev, f.counter, f.ret] ++ f.tail
 
+set_option linter.unusedVariables false in
 def cells (mem : ByteArray) (f : Caller) : List (Nat × UInt256) :=
-  [(1728, f.counter), (1344, ordinary mem 0 0), (1376, ordinary mem 0 1),
+  [(1344, ordinary mem 0 0), (1376, ordinary mem 0 1),
    (1600, ordinary mem 0 8), (1568, ordinary mem 0 7),
    (768, scaled mem 2368 0), (32, scaled mem 2368 3), (64, scaled mem 2368 4),
    (96, scaled mem 2368 5), (128, scaled mem 2368 6), (160, scaled mem 2368 7)]
@@ -45,7 +46,7 @@ def result (s : State) (f : Caller) : State :=
     pc := UInt256.ofNat 6152
     memory := storeCells s.memory (cells s.memory f)
     stack := CycleSubmission.SquareMeaning.frame0 (MachineState.readWord s.memory 2720)
-      (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (saved f)}
+      (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (f.counter :: saved f)}
 
 theorem model_eq (s : State) (f : Caller) :
     entryModel s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
@@ -53,7 +54,7 @@ theorem model_eq (s : State) (f : Caller) :
   simp (disch := decide) only [entryModel, readStore]
   rfl
 
-theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 960)
+theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions entryProgram {s with pc := UInt256.ofNat 5964, stack := saved f} =
       some (result s f) := by

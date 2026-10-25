@@ -16,8 +16,13 @@ def prog_tail : List Instr :=
   [.op (.Dup ⟨4, by decide⟩), .push 2 4769, .op .JUMPI]
 def prog_st4 : List Instr :=
   [.op .JUMPDEST, .push 2 2112, .op .MSTORE, .push 2 2144, .op .MSTORE, .push 2 2176, .op .MSTORE, .push 2 2208, .op .MSTORE]
-def prog_branch : List Instr :=
+def prog_branchOld116 : List Instr :=
   [.op .POP, .op .POP, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .push 2 4037, .op .JUMPI]
+/-- Consume the first copy of the loop decrement, instead of discarding it
+and duplicating the equal cached copy. Fillers retain all subsequent PCs. -/
+def prog_branch : List Instr :=
+  [.op .POP, .op (.Dup ⟨6, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩),
+   .op .JUMPDEST, .op .JUMPDEST, .push 2 4037, .op .JUMPI]
 def prog_m4 : List Instr :=
   [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op (.Swap ⟨13, by decide⟩), .push 2 3482, .op .JUMP]
 def prog_rare4 : List Instr :=

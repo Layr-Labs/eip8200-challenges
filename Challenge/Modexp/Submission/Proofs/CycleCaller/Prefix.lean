@@ -56,7 +56,7 @@ def stateAt (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List
     stack := saved (frame mem k ret tail)}
 
 theorem entry_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
-    (hcap : tail.length ≤ 944) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions entryProgram (staged s mem k ret tail) = some (stateAt s mem k ret tail 3743) := by
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
@@ -74,7 +74,7 @@ def tested (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List 
     stack := UInt256.ofNat 3768 :: UInt256.ofNat (2^256-128) :: saved (frame mem k ret tail)}
 
 theorem test_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
-    (hcap : tail.length ≤ 944) :
+    (hcap : tail.length ≤ 943) :
     runInstructions testProgram (stateAt s mem k ret tail 3743) = some (tested s mem k ret tail) := by
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
@@ -87,7 +87,7 @@ theorem test_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail :
 
 noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : tail.length ≤ 944) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
@@ -108,7 +108,7 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
 
 noncomputable opaque suffixTrace (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : tail.length ≤ 944) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5964) := by
   have he2 := entryBlock.steps (s := staged s mem k ret tail)
     (env.transfer rfl rfl) rfl (entry_run s mem k ret tail hcap hact)
@@ -148,7 +148,7 @@ noncomputable opaque suffixTrace (s : State) (mem : ByteArray) (k : Nat) (ret : 
 
 noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : tail.length ≤ 944) (hact : 88 ≤ s.activeWords.toNat)
+    (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)

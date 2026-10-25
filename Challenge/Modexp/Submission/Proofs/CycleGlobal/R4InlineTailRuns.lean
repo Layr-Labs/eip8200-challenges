@@ -205,30 +205,59 @@ theorem run_st4_1 (s : State) (x0 x1 : UInt256) (rest : List UInt256)
   have hl2208 : (2208 : UInt256).toNat = 2208 := rfl
   simp [hc0, hz0, prog_st4_1, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, capacity, Nat.add_assoc, hl2176, hl2208, State.activeWordsAfterUInt256, Monpro.activeWords_fix s 2176 32 (by decide) (by norm_num) hact, Monpro.activeWords_fix s 2208 32 (by decide) (by norm_num) hact]
 
-theorem run_tail_more (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
+theorem run_tail_moreOld116 (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1000)
+    (hc : UInt256.isTrue c)
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 4037 = true) :
+    runInstructions prog_branchOld116
+      { s with pc := UInt256.ofNat 4749, stack := p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: c :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } =
+    some { s with pc := UInt256.ofNat 4037, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5+c) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } := by
+  have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
+  simp [prog_branchOld116, prog_m4, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, hc, hjd, Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    capacity, Nat.add_assoc]
+
+theorem run_tail_moreAlias116 (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1000)
+    (hke : k = e5)
     (hc : UInt256.isTrue c)
     (hjd : Decode.isValidJumpDest s.executionEnv.code 4037 = true) :
     runInstructions prog_branch
       { s with pc := UInt256.ofNat 4749, stack := p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: c :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } =
     some { s with pc := UInt256.ofNat 4037, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5+c) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } := by
   have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
-  simp [prog_branch, prog_m4, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  simp [hke, prog_branch, prog_m4, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     List.exchange, hc, hjd, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
     capacity, Nat.add_assoc]
+  exact Challenge.EvmProof.Word.word_add_comm c e5
 
-theorem run_tail_fall (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
+theorem run_tail_fallOld116 (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1000)
+    (hc : ¬ UInt256.isTrue c) :
+    runInstructions prog_branchOld116
+      { s with pc := UInt256.ofNat 4749, stack := p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: c :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } =
+    some { s with pc := UInt256.ofNat 4759, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5+c) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } := by
+  have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
+  simp [prog_branchOld116, prog_m4, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, hc, Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
+    capacity, Nat.add_assoc]
+
+theorem run_tail_fallAlias116 (s : State) (p4 k n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
+    (rest : List UInt256) (hcap : rest.length ≤ 1000)
+    (hke : k = e5)
     (hc : ¬ UInt256.isTrue c) :
     runInstructions prog_branch
       { s with pc := UInt256.ofNat 4749, stack := p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: c :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } =
     some { s with pc := UInt256.ofNat 4759, stack := n0 :: n1 :: n2 :: n3 :: np :: (e5+c) :: e1 :: e2 :: e3 :: e4 :: e5 :: e6 :: e7 :: e8 :: e9 :: e10 :: e11 :: e12 :: e13 :: pbi :: rest } := by
   have capacity (j : Nat) (hj : j ≤ 23) : rest.length + j < 1024 := by omega
-  simp [prog_branch, prog_m4, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  simp [hke, prog_branch, prog_m4, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     List.exchange, hc, Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
     capacity, Nat.add_assoc]
+  exact Challenge.EvmProof.Word.word_add_comm c e5
 
 theorem run_tail_exit (s : State) (n0 n1 n2 n3 np c e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 e13 pbi : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1000)

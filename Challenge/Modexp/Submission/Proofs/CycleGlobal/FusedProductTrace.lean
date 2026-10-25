@@ -39,7 +39,7 @@ def gasSteps_rows (s : State) (mem : ByteArray) (n : Nat)
 
 def gasSteps_product (tn : UInt256) (s : State) (mem : ByteArray) (p a mm : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hn : p+2 = 4)
+    (hcap : rest.length ≤ 998) (hn : p+2 = 4) (htn : tn = UInt256.ofNat 0)
     (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -59,7 +59,7 @@ def gasSteps_product (tn : UInt256) (s : State) (mem : ByteArray) (p a mm : Nat)
       {s with pc := UInt256.ofNat 690, stack := rest, memory := StagedProduct.memory s mem (p+2)} := by
   have hn8 : p+2 ≤ 8 := by omega
   have g1 := TnM128FusedEntry.gasSteps_entry tn s mem (p+2) pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest
-    (by omega) hn hrun hcode hfork hnp hact hcds htl
+    (by omega) hn htn hrun hcode hfork hnp hact hcds htl
   have g2 := gasSteps_rows s mem (p+2) w3 ent tl inv m0 m96 m64 m32 rest hcap hn hrun hcode hfork hnp
     hact hminv hc he hw3
   have hj : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode

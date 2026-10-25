@@ -4,6 +4,7 @@ import Challenge.Modexp.Submission.Proofs.CycleGlobal.TnM128SquareExit
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
+set_option linter.unusedVariables false
 set_option linter.unusedTactic false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -14,9 +15,9 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
 def prefixHead : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op (.Swap ⟨12, by decide⟩), .op .POP,
-   .push 2 2784, .op .MLOAD, .push 2 256, .op .ADD, .op (.Swap ⟨13, by decide⟩), .op .POP,
-   .op .POP]
+  [.op .JUMPDEST, .push 4 2464, .op .JUMPDEST, .op .JUMPDEST,
+    .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+    .op (.Swap ⟨13, by decide⟩), .op .POP, .op .POP]
 def prefixSelect : List Instr :=
   [.push 1 127, .op .NOT, .push 2 3775, .op (.Swap ⟨1, by decide⟩), .op .POP]
 def prefixTail : List Instr :=
@@ -26,10 +27,10 @@ def prefixProgram : List Instr := (prefixHead ++ prefixSelect) ++ prefixTail
 def clearProgram : List Instr :=
   [.push 1 192, .op .CALLDATASIZE, .push 2 2048, .op .CALLDATACOPY, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 def prefixBlock : Block CycleSubmission.Artifact.artifact .Osaka 3256 prefixProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2532 22 3256 prefixProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2531 22 3256 prefixProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def clearBlock : Block CycleSubmission.Artifact.artifact .Osaka 3289 clearProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2554 6 3289 clearProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2553 6 3289 clearProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def rowReady (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 : UInt256) (rest : List UInt256) : State :=
@@ -46,7 +47,7 @@ def prefixState (s : State) (mem : ByteArray) (n : Nat)
 
 theorem run_prefixHead (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hn : n = 4)
+    (hcap : rest.length ≤ 1000) (hn : n = 4) (htn : tn = UInt256.ofNat 0)
     (htlw : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*n))
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prefixHead
@@ -55,18 +56,14 @@ theorem run_prefixHead (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
         ([UInt256.ofNat 5297, w3, ent, m32, allOnes,
           MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0,
           UInt256.ofNat (2368+32*n-32), pdst, ret] ++ rest)) := by
+  subst tn
+  subst n
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
-  have hactT : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
-      s.activeWords := activeWords_fix s 2784 32 (by decide) (by decide) hact
-  have h2784 : (2784 : UInt256).toNat = 2784 := by decide
-  rcases hn with rfl
-  · simp [prefixHead, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-      TnM128SquareExit.frameAt, TnM128SquareExit.frameStack, framed,
-      State.activeWordsAfterUInt256, hactT, htlw, h2784,
-      capacity, Nat.add_assoc, List.exchange,
-      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-    all_goals decide
+  simp [prefixHead, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    TnM128SquareExit.frameAt, TnM128SquareExit.frameStack, framed,
+    capacity, Nat.add_assoc, List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_prefixSelect (s : State) (hd w3 ent m32 m128 m64 m0 tl m96 inv z aEnd pdst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1000) :
@@ -101,14 +98,14 @@ theorem run_prefixTail (s : State) (q hd w3 ent m32 m128 m64 m0 tl m96 inv z aEn
 
 theorem run_prefix (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hn : n = 4)
+    (hcap : rest.length ≤ 1000) (hn : n = 4) (htn : tn = UInt256.ofNat 0)
     (htlw : MachineState.readWord mem 2784 = UInt256.ofNat (2080+32*n))
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prefixProgram
       (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3256 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
       some (prefixState s mem n w3 ent tl inv m0 m96 m64 m32 rest) := by
   subst n
-  have h1 := run_prefixHead tn s mem 4 pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap rfl
+  have h1 := run_prefixHead tn s mem 4 pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap rfl htn
     htlw hact
   have h2 := run_prefixSelect {s with memory := mem} (UInt256.ofNat 5297) w3
     ent m32 (MachineState.readWord mem 128) m64 m0 tl m96 inv (UInt256.ofNat 0)
@@ -156,7 +153,7 @@ theorem run_clear (s : State) (mem : ByteArray) (n : Nat)
 
 noncomputable def gasSteps_entry (tn : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1000) (hn : n = 4)
+    (hcap : rest.length ≤ 1000) (hn : n = 4) (htn : tn = UInt256.ofNat 0)
     (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -168,7 +165,7 @@ noncomputable def gasSteps_entry (tn : UInt256) (s : State) (mem : ByteArray) (n
       (rowReady s (mpZeroed s mem n) n w3 ent tl inv m0 m96 m64 m32 rest) :=
   (prefixBlock.steps (CycleSubmission.Global.Fast.EarlyCsub.environment
     (TnM128SquareExit.frameAt tn (MachineState.readWord mem 128) 3256 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
-    (run_prefix tn s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn htlw hact)).trans
+    (run_prefix tn s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hn htn htlw hact)).trans
   (clearBlock.steps (CycleSubmission.Global.Fast.EarlyCsub.environment
     (prefixState s mem n w3 ent tl inv m0 m96 m64 m32 rest) hcode hfork hrun hnp) rfl
     (run_clear s mem n w3 ent tl inv m0 m96 m64 m32 rest hcap hn hact hcds

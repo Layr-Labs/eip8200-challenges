@@ -30,6 +30,6 @@ def gasSteps_bitExit (input : ByteArray) (outer : Nat)
     (bitTail input) (base - UInt256.ofNat 1) (UInt256.ofNat 8) byte offset
     (UInt256.ofNat outer) acc base (UInt256.ofNat (modulusValue input))
     (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-    (by exact CycleSubmission.Global.Binding.jumpDest 3073 (by rfl))
+    (by exact CycleSubmission.Global.Binding.jumpDest 3072 (by rfl))
 
 end CycleSubmission.Global.WordLoops

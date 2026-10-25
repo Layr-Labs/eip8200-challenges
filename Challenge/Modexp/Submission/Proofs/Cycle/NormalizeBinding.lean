@@ -13,35 +13,35 @@ open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
 
 def normalizerBlock : Block Artifact.artifact .Osaka 11014 normalizeProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 9066 121 11014 normalizeProgram
-    (by change 9066+121 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 9066+121 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 9056 121 11014 normalizeProgram
+    (by change 9056+121 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 9056+121 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 def returnBlock : Block Artifact.artifact .Osaka 11155 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 9187 1 11155 jumpProgram
-    (by change 9187+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 9187+1 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 9177 1 11155 jumpProgram
+    (by change 9177+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 9177+1 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 theorem validJump8085 : Decode.isValidJumpDest Artifact.bytecode 8085 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6691
-    (show Artifact.instructions[6691]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 6691 = 8085 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6688
+    (show Artifact.instructions[6688]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 6688 = 8085 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
 
 theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 10867 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8971
-    (show Artifact.instructions[8971]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8971 = 10867 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8961
+    (show Artifact.instructions[8961]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8961 = 10867 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

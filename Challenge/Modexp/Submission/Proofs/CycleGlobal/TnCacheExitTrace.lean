@@ -16,12 +16,12 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast CiosCachedMacCore
 
 def normalGuard : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 5297, .op .EQ, .push 2 3942, .op .JUMPI]
+  [.push 4 0, .op .POP, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
 
 
 def drop : List Instr := List.replicate 14 (.op .POP)
 
-/-- A multiply row head (`hd` is one width's head, 3545 or 5339) falls through the mode test. -/
+/-- Fixed-width no-op replaces the multiply-only guard; preserve its caller contract. -/
 
 theorem run_guard (s : State) (pc hd : Nat) (hhd : hd = 3775)
     (pbi pb ent tn target inv : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1006) :

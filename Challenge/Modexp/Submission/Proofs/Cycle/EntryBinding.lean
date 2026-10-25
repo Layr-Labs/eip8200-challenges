@@ -12,17 +12,17 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.CRTControl
 def entryBlock : Block Artifact.artifact .Osaka 5964 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 4921 109 5964 entryProgram
-    (by change 4921+109 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4921+109 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 4920 107 5964 entryProgram
+    (by change 4920+107 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 4920+107 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def headBlock : Block Artifact.artifact .Osaka 6152 jumpDestProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 5030 1 6152 jumpDestProgram
-    (by change 5030+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 5030+1 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 5027 1 6152 jumpDestProgram
+    (by change 5027+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 5027+1 ≤ 9178)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -33,7 +33,7 @@ def entered (s : State) (f : Caller) : State :=
 
 noncomputable def gasSteps (s : State) (f : Caller)
     (env : Environment Artifact.artifact .Osaka s)
-    (hcap : f.tail.length ≤ 944) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 5964, stack := saved f} (entered s f) := by
   have h := entryBlock.steps
     (s := {s with pc := UInt256.ofNat 5964, stack := saved f})
