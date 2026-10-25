@@ -31,7 +31,7 @@ noncomputable opaque run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N) :
     Finish.Outcome (call s mem k ret tail) (Precompile.natToBytes (result N A B k) 256) := by
   have lead := CallerPrefix.run s mem k ret tail env hcap hact hcds hs32 hml hw hn
-  let entry := stateAt s mem k ret tail 5964
+  let entry := stateAt s mem k ret tail 5506
   have hmod' : Model.FastRepresents entry.memory 0 8 N :=
     CallerMemory.keep mem 0 8 N (Or.inl (by decide)) hmod
   have ha' : Model.FastRepresents entry.memory 2368 8 A := CallerMemory.represents mem A ha

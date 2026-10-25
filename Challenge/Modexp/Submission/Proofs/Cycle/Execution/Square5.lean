@@ -27,11 +27,11 @@ def squareColumn5part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v3 : UInt256 := MachineState.readWord s.memory 32
   let v4 : UInt256 := v3 * v2
   let v5 : UInt256 := v4 + v1
-  {s with pc := UInt256.ofNat 6803, memory := s.memory, stack := v5 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: rest}
+  {s with pc := UInt256.ofNat 6345, memory := s.memory, stack := v5 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: rest}
 
 theorem squareColumn5part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part0Program {s with pc := UInt256.ofNat 6793, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: rest} =
+    runInstructions squareColumn5part0Program {s with pc := UInt256.ofNat 6335, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: rest} =
       some (squareColumn5part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -57,11 +57,11 @@ def squareColumn5part1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v0 : UInt256 := x0 + x0
   let v1 : UInt256 := UInt256.mulMod x3 x1 x2
   let v2 : UInt256 := MachineState.readWord s.memory 128
-  {s with pc := UInt256.ofNat 6812, memory := s.memory, stack := x9 :: v2 :: x13 :: v1 :: v0 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+  {s with pc := UInt256.ofNat 6354, memory := s.memory, stack := x9 :: v2 :: x13 :: v1 :: v0 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
 
 theorem squareColumn5part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part1Program {s with pc := UInt256.ofNat 6803, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
+    runInstructions squareColumn5part1Program {s with pc := UInt256.ofNat 6345, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
       some (squareColumn5part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -87,11 +87,11 @@ def squareColumn5part2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v2 : UInt256 := MachineState.readWord s.memory 96
   let v3 : UInt256 := UInt256.mulMod x11 v2 x14
   let v4 : UInt256 := v3 + v1
-  {s with pc := UInt256.ofNat 6821, memory := s.memory, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest}
+  {s with pc := UInt256.ofNat 6363, memory := s.memory, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest}
 
 theorem squareColumn5part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part2Program {s with pc := UInt256.ofNat 6812, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest} =
+    runInstructions squareColumn5part2Program {s with pc := UInt256.ofNat 6354, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest} =
       some (squareColumn5part2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -116,11 +116,11 @@ def squareColumn5part3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v1 : UInt256 := MachineState.readWord s.memory 32
   let v2 : UInt256 := UInt256.mulMod v1 v0 x11
   let v3 : UInt256 := v2 + x0
-  {s with pc := UInt256.ofNat 6831, memory := s.memory, stack := v3 :: v3 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6373, memory := s.memory, stack := v3 :: v3 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part3Program {s with pc := UInt256.ofNat 6821, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part3Program {s with pc := UInt256.ofNat 6363, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -147,11 +147,11 @@ def squareColumn5part4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v1 : UInt256 := x4 + v0
   let v2 : UInt256 := x4 + x2
   let v3 : UInt256 := x11 * x13
-  {s with pc := UInt256.ofNat 6839, memory := s.memory, stack := v3 :: v2 :: x3 :: v1 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  {s with pc := UInt256.ofNat 6381, memory := s.memory, stack := v3 :: v2 :: x3 :: v1 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem squareColumn5part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part4Program {s with pc := UInt256.ofNat 6831, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions squareColumn5part4Program {s with pc := UInt256.ofNat 6373, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (squareColumn5part4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -174,11 +174,11 @@ def squareColumn5part5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v1 : UInt256 := x2 * x5
   let v2 : UInt256 := v1 + v0
   let v3 : UInt256 := MachineState.readWord s.memory 192
-  {s with pc := UInt256.ofNat 6848, memory := s.memory, stack := v3 :: x9 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6390, memory := s.memory, stack := v3 :: x9 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part5Program {s with pc := UInt256.ofNat 6839, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part5Program {s with pc := UInt256.ofNat 6381, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -204,11 +204,11 @@ def squareColumn5part6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v2 : UInt256 := MachineState.readWord s.memory 0
   let v3 : UInt256 := v2 * x7
   let v4 : UInt256 := v3 + v1
-  {s with pc := UInt256.ofNat 6856, memory := s.memory, stack := x17 :: v4 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  {s with pc := UInt256.ofNat 6398, memory := s.memory, stack := x17 :: v4 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem squareColumn5part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part6Program {s with pc := UInt256.ofNat 6848, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions squareColumn5part6Program {s with pc := UInt256.ofNat 6390, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (squareColumn5part6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -234,11 +234,11 @@ def squareColumn5part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v2 : UInt256 := v1 + x1
   let v3 : UInt256 := MachineState.readWord s.memory 1216
   let v4 : UInt256 := v3 * x4
-  {s with pc := UInt256.ofNat 6867, memory := s.memory, stack := v4 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6409, memory := s.memory, stack := v4 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part7Program {s with pc := UInt256.ofNat 6856, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part7Program {s with pc := UInt256.ofNat 6398, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -265,11 +265,11 @@ def squareColumn5part8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v1 : UInt256 := MachineState.readWord s.memory 1248
   let v2 : UInt256 := v1 * x13
   let v3 : UInt256 := v2 + v0
-  {s with pc := UInt256.ofNat 6877, memory := s.memory, stack := x11 :: x3 :: x2 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6419, memory := s.memory, stack := x11 :: x3 :: x2 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part8Program {s with pc := UInt256.ofNat 6867, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part8Program {s with pc := UInt256.ofNat 6409, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -293,11 +293,11 @@ def squareColumn5part9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x
   let v0 : UInt256 := UInt256.mulMod x10 x12 x0
   let v1 : UInt256 := v0 + x1
   let v2 : UInt256 := UInt256.mulMod x2 x5 x11
-  {s with pc := UInt256.ofNat 6885, memory := s.memory, stack := v2 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6427, memory := s.memory, stack := v2 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part9Program {s with pc := UInt256.ofNat 6877, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part9Program {s with pc := UInt256.ofNat 6419, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -319,11 +319,11 @@ def squareColumn5part10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 
   let v0 : UInt256 := x0 + x1
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded x2.toNat 32) 1088
   let v2 : UInt256 := MachineState.readWord v1 192
-  {s with pc := UInt256.ofNat 6896, memory := v1, stack := v2 :: x9 :: x11 :: v0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6438, memory := v1, stack := v2 :: x9 :: x11 :: v0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part10Program {s with pc := UInt256.ofNat 6885, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part10Program {s with pc := UInt256.ofNat 6427, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -351,11 +351,11 @@ def squareColumn5part11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 
   let v2 : UInt256 := MachineState.readWord s.memory 0
   let v3 : UInt256 := UInt256.mulMod v2 x7 x12
   let v4 : UInt256 := v3 + v1
-  {s with pc := UInt256.ofNat 6904, memory := s.memory, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  {s with pc := UInt256.ofNat 6446, memory := s.memory, stack := v4 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem squareColumn5part11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part11Program {s with pc := UInt256.ofNat 6896, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions squareColumn5part11Program {s with pc := UInt256.ofNat 6438, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (squareColumn5part11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -379,11 +379,11 @@ def squareColumn5part12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 
   let v0 : UInt256 := MachineState.readWord s.memory 224
   let v1 : UInt256 := UInt256.mulMod v0 x14 x9
   let v2 : UInt256 := v1 + x0
-  {s with pc := UInt256.ofNat 6913, memory := s.memory, stack := x2 :: x9 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := UInt256.ofNat 6455, memory := s.memory, stack := x2 :: x9 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem squareColumn5part12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part12Program {s with pc := UInt256.ofNat 6904, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions squareColumn5part12Program {s with pc := UInt256.ofNat 6446, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
       some (squareColumn5part12Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -405,11 +405,11 @@ def squareColumn5part13Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 
   let v0 : UInt256 := MachineState.readWord s.memory 1216
   let v1 : UInt256 := UInt256.mulMod v0 x0 x1
   let v2 : UInt256 := v1 + x2
-  {s with pc := UInt256.ofNat 6921, memory := s.memory, stack := x13 :: x11 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := UInt256.ofNat 6463, memory := s.memory, stack := x13 :: x11 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem squareColumn5part13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5part13Program {s with pc := UInt256.ofNat 6913, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions squareColumn5part13Program {s with pc := UInt256.ofNat 6455, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (squareColumn5part13Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -589,11 +589,11 @@ def squareColumn5Model (s : State) (carry word0 word1 word2 word3 word4 word5 wo
   let v54 : UInt256 := MachineState.readWord v44 1216
   let v55 : UInt256 := UInt256.mulMod v54 word7 word14
   let v56 : UInt256 := v55 + v53
-  {s with pc := UInt256.ofNat 6921, memory := v44, stack := word16 :: word14 :: v56 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest}
+  {s with pc := UInt256.ofNat 6463, memory := v44, stack := word16 :: word14 :: v56 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest}
 
 theorem squareColumn5_run (s : State) (carry word0 word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions squareColumn5Program {s with pc := UInt256.ofNat 6793, stack := carry :: word0 :: word1 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} =
+    runInstructions squareColumn5Program {s with pc := UInt256.ofNat 6335, stack := carry :: word0 :: word1 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} =
       some (squareColumn5Model s carry word0 word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 word15 word16 word17 word18 word19 word20 rest) := by
   let v0 : UInt256 := carry * word0
   let v1 : UInt256 := v0 + word1
@@ -652,33 +652,33 @@ theorem squareColumn5_run (s : State) (carry word0 word1 word2 word3 word4 word5
   let v54 : UInt256 := MachineState.readWord v44 1216
   let v55 : UInt256 := UInt256.mulMod v54 word7 word14
   let v56 : UInt256 := v55 + v53
-  have h0 : runInstructions squareColumn5part0Program {s with pc := UInt256.ofNat 6793, memory := s.memory, stack := carry :: word0 :: word1 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6803, memory := s.memory, stack := v5 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h0 : runInstructions squareColumn5part0Program {s with pc := UInt256.ofNat 6335, memory := s.memory, stack := carry :: word0 :: word1 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6345, memory := s.memory, stack := v5 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part0Model, v0, v1, v2, v3, v4, v5] using squareColumn5part0_run (s) (carry) (word0) (word1) (word2) (word3) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h1 : runInstructions squareColumn5part1Program {s with pc := UInt256.ofNat 6803, memory := s.memory, stack := v5 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6812, memory := s.memory, stack := word10 :: v8 :: word14 :: v7 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h1 : runInstructions squareColumn5part1Program {s with pc := UInt256.ofNat 6345, memory := s.memory, stack := v5 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6354, memory := s.memory, stack := word10 :: v8 :: word14 :: v7 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part1Model, v6, v7, v8] using squareColumn5part1_run (s) (v5) (word2) (word3) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h2 : runInstructions squareColumn5part2Program {s with pc := UInt256.ofNat 6812, memory := s.memory, stack := word10 :: v8 :: word14 :: v7 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6821, memory := s.memory, stack := v13 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h2 : runInstructions squareColumn5part2Program {s with pc := UInt256.ofNat 6354, memory := s.memory, stack := word10 :: v8 :: word14 :: v7 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6363, memory := s.memory, stack := v13 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part2Model, v9, v10, v11, v12, v13] using squareColumn5part2_run (s) (word10) (v8) (word14) (v7) (v6) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h3 : runInstructions squareColumn5part3Program {s with pc := UInt256.ofNat 6821, memory := s.memory, stack := v13 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6831, memory := s.memory, stack := v17 :: v17 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h3 : runInstructions squareColumn5part3Program {s with pc := UInt256.ofNat 6363, memory := s.memory, stack := v13 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6373, memory := s.memory, stack := v17 :: v17 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part3Model, v14, v15, v16, v17] using squareColumn5part3_run (s) (v13) (v6) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h4 : runInstructions squareColumn5part4Program {s with pc := UInt256.ofNat 6831, memory := s.memory, stack := v17 :: v17 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6839, memory := s.memory, stack := v21 :: v20 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h4 : runInstructions squareColumn5part4Program {s with pc := UInt256.ofNat 6373, memory := s.memory, stack := v17 :: v17 :: v6 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6381, memory := s.memory, stack := v21 :: v20 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part4Model, v18, v19, v20, v21] using squareColumn5part4_run (s) (v17) (v17) (v6) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h5 : runInstructions squareColumn5part5Program {s with pc := UInt256.ofNat 6839, memory := s.memory, stack := v21 :: v20 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6848, memory := s.memory, stack := v25 :: word12 :: v24 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h5 : runInstructions squareColumn5part5Program {s with pc := UInt256.ofNat 6381, memory := s.memory, stack := v21 :: v20 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6390, memory := s.memory, stack := v25 :: word12 :: v24 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part5Model, v22, v23, v24, v25] using squareColumn5part5_run (s) (v21) (v20) (word5) (v19) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h6 : runInstructions squareColumn5part6Program {s with pc := UInt256.ofNat 6848, memory := s.memory, stack := v25 :: word12 :: v24 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6856, memory := s.memory, stack := word19 :: v30 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h6 : runInstructions squareColumn5part6Program {s with pc := UInt256.ofNat 6390, memory := s.memory, stack := v25 :: word12 :: v24 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6398, memory := s.memory, stack := word19 :: v30 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part6Model, v26, v27, v28, v29, v30] using squareColumn5part6_run (s) (v25) (word12) (v24) (word5) (v19) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h7 : runInstructions squareColumn5part7Program {s with pc := UInt256.ofNat 6856, memory := s.memory, stack := word19 :: v30 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6867, memory := s.memory, stack := v35 :: v33 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h7 : runInstructions squareColumn5part7Program {s with pc := UInt256.ofNat 6398, memory := s.memory, stack := word19 :: v30 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6409, memory := s.memory, stack := v35 :: v33 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part7Model, v31, v32, v33, v34, v35] using squareColumn5part7_run (s) (word19) (v30) (word5) (v19) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h8 : runInstructions squareColumn5part8Program {s with pc := UInt256.ofNat 6867, memory := s.memory, stack := v35 :: v33 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6877, memory := s.memory, stack := word14 :: v19 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h8 : runInstructions squareColumn5part8Program {s with pc := UInt256.ofNat 6409, memory := s.memory, stack := v35 :: v33 :: word5 :: v19 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6419, memory := s.memory, stack := word14 :: v19 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part8Model, v36, v37, v38, v39] using squareColumn5part8_run (s) (v35) (v33) (word5) (v19) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h9 : runInstructions squareColumn5part9Program {s with pc := UInt256.ofNat 6877, memory := s.memory, stack := word14 :: v19 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6885, memory := s.memory, stack := v42 :: v41 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h9 : runInstructions squareColumn5part9Program {s with pc := UInt256.ofNat 6419, memory := s.memory, stack := word14 :: v19 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6427, memory := s.memory, stack := v42 :: v41 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part9Model, v40, v41, v42] using squareColumn5part9_run (s) (word14) (v19) (word5) (v39) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h10 : runInstructions squareColumn5part10Program {s with pc := UInt256.ofNat 6885, memory := s.memory, stack := v42 :: v41 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6896, memory := v44, stack := v45 :: word12 :: word14 :: v43 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h10 : runInstructions squareColumn5part10Program {s with pc := UInt256.ofNat 6427, memory := s.memory, stack := v42 :: v41 :: word5 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6438, memory := v44, stack := v45 :: word12 :: word14 :: v43 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part10Model, v43, v44, v45] using squareColumn5part10_run (s) (v42) (v41) (word5) (v39) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h11 : runInstructions squareColumn5part11Program {s with pc := UInt256.ofNat 6896, memory := v44, stack := v45 :: word12 :: word14 :: v43 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6904, memory := v44, stack := v50 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h11 : runInstructions squareColumn5part11Program {s with pc := UInt256.ofNat 6438, memory := v44, stack := v45 :: word12 :: word14 :: v43 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6446, memory := v44, stack := v50 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part11Model, v46, v47, v48, v49, v50] using squareColumn5part11_run ({s with memory := v44}) (v45) (word12) (word14) (v43) (v39) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h12 : runInstructions squareColumn5part12Program {s with pc := UInt256.ofNat 6904, memory := v44, stack := v50 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6913, memory := v44, stack := word7 :: word14 :: v53 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h12 : runInstructions squareColumn5part12Program {s with pc := UInt256.ofNat 6446, memory := v44, stack := v50 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6455, memory := v44, stack := word7 :: word14 :: v53 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part12Model, v51, v52, v53] using squareColumn5part12_run ({s with memory := v44}) (v50) (v39) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
-  have h13 : runInstructions squareColumn5part13Program {s with pc := UInt256.ofNat 6913, memory := v44, stack := word7 :: word14 :: v53 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6921, memory := v44, stack := word16 :: word14 :: v56 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
+  have h13 : runInstructions squareColumn5part13Program {s with pc := UInt256.ofNat 6455, memory := v44, stack := word7 :: word14 :: v53 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} = some {s with pc := UInt256.ofNat 6463, memory := v44, stack := word16 :: word14 :: v56 :: v39 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: word20 :: rest} := by
     simpa only [squareColumn5part13Model, v54, v55, v56] using squareColumn5part13_run ({s with memory := v44}) (word7) (word14) (v53) (v39) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) (word20) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 h13)))))))))))))
 

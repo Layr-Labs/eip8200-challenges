@@ -87,7 +87,7 @@ theorem fermatDiff_one (modulus exponent : UInt256)
 def jumpTailProgram : List Instr := [.push 2 745, .op .JUMP]
 def tailProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .push 2 4857, .op .JUMPI]
+   .push 2 745, .op .JUMPI]
 def inverseGuardProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 32 FermatProgram.bn, .op .XOR,
     .push 2 745, .op .JUMPI]
@@ -265,11 +265,11 @@ theorem run_jumpTail (template : State) (rest : List UInt256) (hrest : rest.leng
 
 theorem run_tail (template : State) (modulus exponent : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 4857 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 745 = true) :
     runInstructions tailProgram
       (framed template (UInt256.ofNat 4839) (modulus :: exponent :: rest)) =
     some (framed template
-      (if (fermatDiff modulus exponent).toNat = 0 then UInt256.ofNat 4848 else UInt256.ofNat 4857)
+      (if (fermatDiff modulus exponent).toNat = 0 then UInt256.ofNat 4848 else UInt256.ofNat 745)
       (modulus :: exponent :: rest)) := by
   have hk0 : rest.length < 1024 := by omega
   have hk1 : rest.length + 1 < 1024 := by omega
@@ -310,14 +310,11 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   jumpTail : WindowTwentyOneBinding.Block artifact fork 94 jumpTailProgram
   tail : WindowTwentyOneBinding.Block artifact fork 4839 tailProgram
   result : WindowTwentyOneBinding.Block artifact fork 4848 FermatProgram.returnProgram
-  inverseGuard : WindowTwentyOneBinding.Block artifact fork 4857 inverseGuardProgram
-  inverse : WindowTwentyOneBinding.Block artifact fork 4897 FixedExponentProgram.program
   genCheck : WindowTwentyOneBinding.Block artifact fork 101 genCheckProgram
   genLoad : WindowTwentyOneBinding.Block artifact fork 112 genLoadProgram
   routeJump : Decode.isValidJumpDest artifact.code 745 = true
   joinJump : Decode.isValidJumpDest artifact.code 33 = true
   bigJump : Decode.isValidJumpDest artifact.code 219 = true
   tailJump : Decode.isValidJumpDest artifact.code 4839 = true
-  inverseJump : Decode.isValidJumpDest artifact.code 4857 = true
 
 end CycleSubmission.Global.FermatNext

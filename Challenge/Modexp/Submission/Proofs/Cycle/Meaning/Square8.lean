@@ -20,7 +20,7 @@ def cells8 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result8 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 7306
+    pc := UInt256.ofNat 6848
     memory := storeCells s.memory (cells8 inv a b n)
     stack := frame9 inv a b n rest}
 
@@ -34,7 +34,7 @@ theorem run8 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List 
     (h : Memory8 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions squareColumn8Program
-      {s with pc := UInt256.ofNat 7177, stack := frame8 inv a b n rest} =
+      {s with pc := UInt256.ofNat 6719, stack := frame8 inv a b n rest} =
       some (result8 s inv a b n rest) := by
   have hx := squareColumn8_run s ((a 6)) ((((a 2) * (a 7)) + ((a 8) * (a 1)))) ((a 1)) (P) ((a 8)) ((squareC9 inv a b n)) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((a 2)) ((n 5)) ((n 7)) (P) ((n 8)) ((n 1)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact
   rw [model8_eq s inv a b n rest h] at hx

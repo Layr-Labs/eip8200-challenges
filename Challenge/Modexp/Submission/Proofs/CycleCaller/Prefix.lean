@@ -109,7 +109,7 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
 noncomputable opaque suffixTrace (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5964) := by
+    GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5506) := by
   have he2 := entryBlock.steps (s := staged s mem k ret tail)
     (env.transfer rfl rfl) rfl (entry_run s mem k ret tail hcap hact)
   have ht := testBlock.steps (s := stateAt s mem k ret tail 3743)
@@ -128,22 +128,22 @@ noncomputable opaque suffixTrace (s : State) (mem : ByteArray) (k : Nat) (ret : 
     simp only [saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
   have hc17 : (saved (frame mem k ret tail)).length + 1 < 1024 := by
     simp only [saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  let pushed : State := {stateAt s mem k ret tail 3772 with stack := UInt256.ofNat 5964 :: saved (frame mem k ret tail)}
+  let pushed : State := {stateAt s mem k ret tail 3772 with stack := UInt256.ofNat 5506 :: saved (frame mem k ret tail)}
   have htr : runInstructions trampolineProgram (stateAt s mem k ret tail 3768) = some pushed := by
     simp [trampolineProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
       stateAt, pushed, hc16, hc17, Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   have hg := trampolineBlock.steps (s := stateAt s mem k ret tail 3768)
     (env.transfer rfl rfl) rfl htr
-  have hjr := jump_run pushed (UInt256.ofNat 5964) (saved (frame mem k ret tail)) rfl
+  have hjr := jump_run pushed (UInt256.ofNat 5506) (saved (frame mem k ret tail)) rfl
     (by simpa only [pushed, List.length_cons] using hc17)
     (by rw [show pushed.executionEnv.code = Artifact.bytecode from env.code]; exact valid5964)
   have hj2 := jumpBlock.steps (s := pushed) (env.transfer rfl rfl) rfl hjr
-  change GasSteps pushed (stateAt s mem k ret tail 5964) at hj2
-  have tailTrace : GasSteps (stateAt s mem k ret tail 3768) (stateAt s mem k ret tail 5964) := hg.trans hj2
-  have branchTrace : GasSteps (tested s mem k ret tail) (stateAt s mem k ret tail 5964) := hj.trans tailTrace
-  have testTrace : GasSteps (stateAt s mem k ret tail 3743) (stateAt s mem k ret tail 5964) := ht.trans branchTrace
-  have entryTrace : GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5964) := he2.trans testTrace
+  change GasSteps pushed (stateAt s mem k ret tail 5506) at hj2
+  have tailTrace : GasSteps (stateAt s mem k ret tail 3768) (stateAt s mem k ret tail 5506) := hg.trans hj2
+  have branchTrace : GasSteps (tested s mem k ret tail) (stateAt s mem k ret tail 5506) := hj.trans tailTrace
+  have testTrace : GasSteps (stateAt s mem k ret tail 3743) (stateAt s mem k ret tail 5506) := ht.trans branchTrace
+  have entryTrace : GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5506) := he2.trans testTrace
   exact entryTrace
 
 noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
@@ -154,7 +154,7 @@ noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (t
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
     (hw : tail[1]? = some (UInt256.ofNat 256))
     (hn : tail[2]? = some (UInt256.ofNat 8)) :
-    GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5964) :=
+    GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5506) :=
   (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw hn).trans
     (suffixTrace s mem k ret tail env hcap hact)
 

@@ -15,16 +15,16 @@ def canonicalCompare15part0Program : List Instr :=
    .op .MLOAD,
    .op (.Dup ⟨4, by decide⟩),
    .op .GT,
-   .push 2 10857]
+   .push 2 10399]
 
 def canonicalCompare15part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1376
   let v1 : UInt256 := UInt256.gt x3 v0
-  {s with pc := UInt256.ofNat 10830, memory := s.memory, stack := (UInt256.ofNat 10857) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 10372, memory := s.memory, stack := (UInt256.ofNat 10399) :: v1 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
 
 theorem canonicalCompare15part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalCompare15part0Program {s with pc := UInt256.ofNat 10821, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions canonicalCompare15part0Program {s with pc := UInt256.ofNat 10363, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (canonicalCompare15part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -39,20 +39,20 @@ def canonicalCompare15Program : List Instr :=
    .op .MLOAD,
    .op (.Dup ⟨4, by decide⟩),
    .op .GT,
-   .push 2 10857]
+   .push 2 10399]
 
 def canonicalCompare15Model (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1376
   let v1 : UInt256 := UInt256.gt a1 v0
-  {s with pc := UInt256.ofNat 10830, memory := s.memory, stack := (UInt256.ofNat 10857) :: v1 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
+  {s with pc := UInt256.ofNat 10372, memory := s.memory, stack := (UInt256.ofNat 10399) :: v1 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
 
 theorem canonicalCompare15_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalCompare15Program {s with pc := UInt256.ofNat 10821, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions canonicalCompare15Program {s with pc := UInt256.ofNat 10363, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
       some (canonicalCompare15Model s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 1376
   let v1 : UInt256 := UInt256.gt a1 v0
-  have h0 : runInstructions canonicalCompare15part0Program {s with pc := UInt256.ofNat 10821, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10830, memory := s.memory, stack := (UInt256.ofNat 10857) :: v1 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
+  have h0 : runInstructions canonicalCompare15part0Program {s with pc := UInt256.ofNat 10363, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10372, memory := s.memory, stack := (UInt256.ofNat 10399) :: v1 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
     simpa only [canonicalCompare15part0Model, v0, v1] using canonicalCompare15part0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   exact h0
 

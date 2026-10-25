@@ -20,7 +20,7 @@ def cells5 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result5 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8972
+    pc := UInt256.ofNat 8514
     memory := storeCells s.memory (cells5 inv a b n)
     stack := frame6 inv a b n rest}
 
@@ -34,7 +34,7 @@ theorem run5 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List 
     (h : Memory5 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions productColumn5Program
-      {s with pc := UInt256.ofNat 8844, stack := frame5 inv a b n rest} =
+      {s with pc := UInt256.ofNat 8386, stack := frame5 inv a b n rest} =
       some (result5 s inv a b n rest) := by
   have hx := productColumn5_run s (((b 5) * (a 1))) ((((b 6) * (a 0)) + (productC6 inv a b n))) ((a 1)) (P) (((UInt256.mulMod (b 6) (a 0) P) + (productC6 inv a b n))) ((b 5)) ((n 2)) ((n 6)) ((n 4)) ((a 1)) ((a 2)) ((n 5)) ((productQ1 inv a b n)) (P) ((productQ0 inv a b n)) ((n 1)) ((UInt256.ofNat (2^240-1))) ((n 0)) ((n 3)) ((a 8)) rest hcap hact
   rw [model5_eq s inv a b n rest h] at hx

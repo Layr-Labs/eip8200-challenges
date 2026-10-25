@@ -14,15 +14,15 @@ def canonicalCompare13part0Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .GT,
-   .push 2 10857]
+   .push 2 10399]
 
 def canonicalCompare13part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.gt x4 x0
-  {s with pc := UInt256.ofNat 10810, memory := s.memory, stack := (UInt256.ofNat 10857) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 10352, memory := s.memory, stack := (UInt256.ofNat 10399) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
 
 theorem canonicalCompare13part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalCompare13part0Program {s with pc := UInt256.ofNat 10804, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions canonicalCompare13part0Program {s with pc := UInt256.ofNat 10346, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (canonicalCompare13part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -34,18 +34,18 @@ def canonicalCompare13Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .GT,
-   .push 2 10857]
+   .push 2 10399]
 
 def canonicalCompare13Model (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.gt a2 n2
-  {s with pc := UInt256.ofNat 10810, memory := s.memory, stack := (UInt256.ofNat 10857) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
+  {s with pc := UInt256.ofNat 10352, memory := s.memory, stack := (UInt256.ofNat 10399) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
 
 theorem canonicalCompare13_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalCompare13Program {s with pc := UInt256.ofNat 10804, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions canonicalCompare13Program {s with pc := UInt256.ofNat 10346, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
       some (canonicalCompare13Model s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := UInt256.gt a2 n2
-  have h0 : runInstructions canonicalCompare13part0Program {s with pc := UInt256.ofNat 10804, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10810, memory := s.memory, stack := (UInt256.ofNat 10857) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
+  have h0 : runInstructions canonicalCompare13part0Program {s with pc := UInt256.ofNat 10346, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10352, memory := s.memory, stack := (UInt256.ofNat 10399) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
     simpa only [canonicalCompare13part0Model, v0] using canonicalCompare13part0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   exact h0
 

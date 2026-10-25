@@ -24,7 +24,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (env : Environment Artifact.artifact .Osaka s)
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 6153, stack := SquareMeaning.frame0 inv a zeroWords n rest}
+    GasSteps {s with pc := UInt256.ofNat 5695, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
   have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact
   have hm := SquareExecution.normalizer_input s inv a zeroWords n rest h
@@ -49,7 +49,7 @@ theorem frame_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
   SquareNormalize.frame_output _ _ _ _
 
 theorem pc_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a n rest).pc = UInt256.ofNat 8085 := by
+    (result s inv a n rest).pc = UInt256.ofNat 7627 := by
   unfold result SquareNormalize.completed
   split_ifs <;> rfl
 
@@ -105,7 +105,7 @@ theorem keeps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List U
   split_ifs
   · exact h
   · exact (NormalizeMeaning.preserves (middle s inv a n rest) (squared inv a zeroWords n) n
-      (UInt256.ofNat 8085) (n 1) rest start count (Or.inr (by omega)) (Or.inr (by omega))).trans h
+      (UInt256.ofNat 7627) (n 1) rest start count (Or.inr (by omega)) (Or.inr (by omega))).trans h
 
 theorem keeps_base (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (start count : Nat) (hs : 256 ≤ start) (he : start+count ≤ 768) :
@@ -116,6 +116,6 @@ theorem keeps_base (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : L
   split_ifs
   · exact h
   · exact (NormalizeMeaning.preserves (middle s inv a n rest) (squared inv a zeroWords n) n
-      (UInt256.ofNat 8085) (n 1) rest start count (Or.inr (by omega)) (Or.inl he)).trans h
+      (UInt256.ofNat 7627) (n 1) rest start count (Or.inr (by omega)) (Or.inl he)).trans h
 
 end CycleSubmission.SquareStep

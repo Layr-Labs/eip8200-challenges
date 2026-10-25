@@ -20,7 +20,7 @@ def cells14 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8077
+    pc := UInt256.ofNat 7619
     memory := storeCells s.memory (cells14 inv a b n)
     stack := frame15 inv a b n rest}
 
@@ -34,7 +34,7 @@ theorem run14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List
     (h : Memory14 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions squareColumn14Program
-      {s with pc := UInt256.ofNat 7950, stack := frame14 inv a b n rest} =
+      {s with pc := UInt256.ofNat 7492, stack := frame14 inv a b n rest} =
       some (result14 s inv a b n rest) := by
   have hx := squareColumn14_run s ((UInt256.ofNat 16)) ((UInt256.shiftRight (UInt256.addMod ((UInt256.mulMod (n 6) (squareQ8 inv a b n) P) + ((UInt256.mulMod (n 7) (squareQ7 inv a b n) P) + ((UInt256.mulMod (n 8) (squareQ6 inv a b n) P) + ((UInt256.mulMod (a 7) (a 7) P) + ((squareC14 inv a b n) + ((UInt256.mulMod (a 8) (a 6) P) + (UInt256.mulMod (a 8) (a 6) P))))))) (UInt256.lnot (((squareQ8 inv a b n) * (n 6)) + (((n 7) * (squareQ7 inv a b n)) + (((n 8) * (squareQ6 inv a b n)) + (((a 7) * (a 7)) + ((squareC14 inv a b n) + (((a 8) * (a 6)) + ((a 8) * (a 6))))))))) P) (UInt256.ofNat 5))) ((((squareQ8 inv a b n) * (n 6)) + (((n 7) * (squareQ7 inv a b n)) + (((n 8) * (squareQ6 inv a b n)) + (((a 7) * (a 7)) + ((squareC14 inv a b n) + (((a 8) * (a 6)) + ((a 8) * (a 6))))))))) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareD2 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact
   rw [model14_eq s inv a b n rest h] at hx

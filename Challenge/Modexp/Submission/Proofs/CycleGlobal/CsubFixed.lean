@@ -289,7 +289,7 @@ def csFixedStep4_3 : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Ar
    opAt 2850 .GT,
    opAt 2851 .OR]
 
-private theorem cycleAnchor : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3442 := by
+private theorem cycleAnchor : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3427 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem fixedPC3777 : CycleSubmission.Artifact.artifact.instructionPC 2717 = 3500 := by
@@ -314,15 +314,15 @@ private theorem cycleAnchor : CycleSubmission.Artifact.artifact.instructionPC 26
   rw [show (2860:Nat)=2682+(2860-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC3788 : CycleSubmission.Artifact.artifact.instructionPC 2861 = 3698 := by
+@[simp] theorem fixedPC3788 : CycleSubmission.Artifact.artifact.instructionPC 2861 = 3702 := by
   rw [show (2861:Nat)=2682+(2861-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC3789 : CycleSubmission.Artifact.artifact.instructionPC 2862 = 3701 := by
+@[simp] theorem fixedPC3789 : CycleSubmission.Artifact.artifact.instructionPC 2862 = 3703 := by
   rw [show (2862:Nat)=2682+(2862-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC3790 : CycleSubmission.Artifact.artifact.instructionPC 2863 = 3702 := by
+@[simp] theorem fixedPC3790 : CycleSubmission.Artifact.artifact.instructionPC 2863 = 3704 := by
   rw [show (2863:Nat)=2682+(2863-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
@@ -407,7 +407,7 @@ no pc certificates, so the block could not step. -/
 /-- The four-limb landing of the rewritten conditional-subtraction dispatch. The old claim here named
 pc 4371 through index 3273, which is now an `MCOPY` at 4392, so it was false and cost a `whnf` runaway
 rather than an honest error. -/
-@[simp] theorem fixedPC3009 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3454 := by
+@[simp] theorem fixedPC3009 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3458 := by
   rw [show (2690:Nat)=2682+(2690-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
@@ -1048,7 +1048,7 @@ rather than an honest error. -/
 @[simp] theorem fixedPC4548 : CycleSubmission.Artifact.artifact.instructionPC 2878 = 3727 := by
   rw [show (2878:Nat)=2682+(2878-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
-@[simp] theorem fixedPC3999 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3454 := by
+@[simp] theorem fixedPC3999 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3458 := by
   rw [show (2690:Nat)=2682+(2690-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
@@ -1058,11 +1058,11 @@ rather than an honest error. -/
     rfl
   simpa only [h] using CycleSubmission.Global.Binding.jumpDest 2694 (by rfl)
 
-@[simp] theorem fixedPC4000 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3457 := by
+@[simp] theorem fixedPC4000 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3459 := by
   rw [show (2691:Nat)=2682+(2691-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC4001 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3458 := by
+@[simp] theorem fixedPC4001 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3460 := by
   rw [show (2692:Nat)=2682+(2692-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
@@ -1110,67 +1110,67 @@ rather than an honest error. -/
   rw [show (2703:Nat)=2682+(2703-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2883 : CycleSubmission.Artifact.artifact.instructionPC 2678 = 3438 := by
+@[simp] theorem earlyExtraPC2883 : CycleSubmission.Artifact.artifact.instructionPC 2678 = 3423 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2884 : CycleSubmission.Artifact.artifact.instructionPC 2679 = 3439 := by
+@[simp] theorem earlyExtraPC2884 : CycleSubmission.Artifact.artifact.instructionPC 2679 = 3424 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2885 : CycleSubmission.Artifact.artifact.instructionPC 2680 = 3440 := by
+@[simp] theorem earlyExtraPC2885 : CycleSubmission.Artifact.artifact.instructionPC 2680 = 3425 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2886 : CycleSubmission.Artifact.artifact.instructionPC 2681 = 3441 := by
+@[simp] theorem earlyExtraPC2886 : CycleSubmission.Artifact.artifact.instructionPC 2681 = 3426 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2888 : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3442 := by
+@[simp] theorem earlyExtraPC2888 : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3427 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem earlyExtraPC2889 : CycleSubmission.Artifact.artifact.instructionPC 2683 = 3443 := by
+@[simp] theorem earlyExtraPC2889 : CycleSubmission.Artifact.artifact.instructionPC 2683 = 3428 := by
   rw [show (2683:Nat)=2682+(2683-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2890 : CycleSubmission.Artifact.artifact.instructionPC 2684 = 3444 := by
+@[simp] theorem earlyExtraPC2890 : CycleSubmission.Artifact.artifact.instructionPC 2684 = 3429 := by
   rw [show (2684:Nat)=2682+(2684-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2891 : CycleSubmission.Artifact.artifact.instructionPC 2685 = 3447 := by
+@[simp] theorem earlyExtraPC2891 : CycleSubmission.Artifact.artifact.instructionPC 2685 = 3432 := by
   rw [show (2685:Nat)=2682+(2685-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2892 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3448 := by
+@[simp] theorem earlyExtraPC2892 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3433 := by
   rw [show (2686:Nat)=2682+(2686-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2893 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3448 := by
+@[simp] theorem earlyExtraPC2893 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3433 := by
   rw [show (2686:Nat)=2682+(2686-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2894 : CycleSubmission.Artifact.artifact.instructionPC 2687 = 3449 := by
+@[simp] theorem earlyExtraPC2894 : CycleSubmission.Artifact.artifact.instructionPC 2687 = 3436 := by
   rw [show (2687:Nat)=2682+(2687-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2895 : CycleSubmission.Artifact.artifact.instructionPC 2688 = 3452 := by
+@[simp] theorem earlyExtraPC2895 : CycleSubmission.Artifact.artifact.instructionPC 2688 = 3437 := by
   rw [show (2688:Nat)=2682+(2688-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2896 : CycleSubmission.Artifact.artifact.instructionPC 2689 = 3453 := by
+@[simp] theorem earlyExtraPC2896 : CycleSubmission.Artifact.artifact.instructionPC 2689 = 3457 := by
   rw [show (2689:Nat)=2682+(2689-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2930 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3454 := by
+@[simp] theorem earlyExtraPC2930 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3458 := by
   rw [show (2690:Nat)=2682+(2690-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2931 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3457 := by
+@[simp] theorem earlyExtraPC2931 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3459 := by
   rw [show (2691:Nat)=2682+(2691-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC2932 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3458 := by
+@[simp] theorem earlyExtraPC2932 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3460 := by
   rw [show (2692:Nat)=2682+(2692-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
@@ -1218,15 +1218,15 @@ rather than an honest error. -/
   rw [show (2703:Nat)=2682+(2703-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC3921 : CycleSubmission.Artifact.artifact.instructionPC 2861 = 3698 := by
+@[simp] theorem earlyExtraPC3921 : CycleSubmission.Artifact.artifact.instructionPC 2861 = 3702 := by
   rw [show (2861:Nat)=2682+(2861-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC3922 : CycleSubmission.Artifact.artifact.instructionPC 2862 = 3701 := by
+@[simp] theorem earlyExtraPC3922 : CycleSubmission.Artifact.artifact.instructionPC 2862 = 3703 := by
   rw [show (2862:Nat)=2682+(2862-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem earlyExtraPC3923 : CycleSubmission.Artifact.artifact.instructionPC 2863 = 3702 := by
+@[simp] theorem earlyExtraPC3923 : CycleSubmission.Artifact.artifact.instructionPC 2863 = 3704 := by
   rw [show (2863:Nat)=2682+(2863-2682) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 

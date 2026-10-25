@@ -20,7 +20,7 @@ def cells2 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result2 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 6537
+    pc := UInt256.ofNat 6079
     memory := storeCells s.memory (cells2 inv a b n)
     stack := frame3 inv a b n rest}
 
@@ -34,7 +34,7 @@ theorem run2 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List 
     (h : Memory2 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions squareColumn2Program
-      {s with pc := UInt256.ofNat 6409, stack := frame2 inv a b n rest} =
+      {s with pc := UInt256.ofNat 5951, stack := frame2 inv a b n rest} =
       some (result2 s inv a b n rest) := by
   have hx := squareColumn2_run s ((UInt256.mulMod (a 1) (a 3) P)) ((UInt256.mulMod (a 4) (a 0) P)) (((((a 1) * (a 3)) + ((a 4) * (a 0))) + (((a 1) * (a 3)) + ((a 4) * (a 0))))) ((squareC4 inv a b n)) ((n 2)) ((n 6)) ((n 4)) ((a 1)) ((a 2)) ((n 5)) ((squareQ1 inv a b n)) (P) ((squareQ0 inv a b n)) ((n 1)) ((UInt256.ofNat (2^240-1))) ((n 0)) ((n 3)) ((a 8)) rest hcap hact
   rw [model2_eq s inv a b n rest h] at hx

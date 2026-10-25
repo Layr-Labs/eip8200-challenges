@@ -44,12 +44,6 @@ def copyProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD,
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
 
-def checkBlock : Block CycleSubmission.Artifact.artifact .Osaka 3442 checkProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2682 10 3442 checkProgram
-    (by decide) (by rfl) (by rfl) (by decide)
-def jumpBlock : Block CycleSubmission.Artifact.artifact .Osaka 3458 jumpProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2692 2 3458 jumpProgram
-    (by decide) (by rfl) (by rfl) (by decide)
 def copyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3706 copyProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2865 7 3706 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)

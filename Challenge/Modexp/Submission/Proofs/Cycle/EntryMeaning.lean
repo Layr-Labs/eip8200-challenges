@@ -43,7 +43,7 @@ def cells (mem : ByteArray) (f : Caller) : List (Nat × UInt256) :=
 
 def result (s : State) (f : Caller) : State :=
   {s with
-    pc := UInt256.ofNat 6152
+    pc := UInt256.ofNat 5694
     memory := storeCells s.memory (cells s.memory f)
     stack := CycleSubmission.SquareMeaning.frame0 (MachineState.readWord s.memory 2720)
       (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (f.counter :: saved f)}
@@ -56,7 +56,7 @@ theorem model_eq (s : State) (f : Caller) :
 
 theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
     (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entryProgram {s with pc := UInt256.ofNat 5964, stack := saved f} =
+    runInstructions entryProgram {s with pc := UInt256.ofNat 5506, stack := saved f} =
       some (result s f) := by
   have h := entry_run s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
     f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail hcap hact

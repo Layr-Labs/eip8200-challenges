@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.CycleGlobal.Terminal
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.FourTerminal
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FixedDirectEntryTrace
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Fallback
 set_option warningAsError true
@@ -20,8 +20,10 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize k N A B mi : Nat)
     (hn : n = 4 ∨ n = 8) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
-    (hcalls : s.callStack = [])
+    (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
+    (hcds : s.executionEnv.calldata.size < 2^256)
+    (hcalls : s.callStack = []) (hdata : s.executionEnv.calldata = input)
+    (hvalid : Challenge.Modexp.ValidInput input)
     (hf : Exp.Frame mem n bsize mi) (hmi : mi < 2^256) (hmi1 : mi ≠ 1)
     (hinv : (N % Limbs.radix * mi + 1) % 2^256 = 0)
     (hmod : Model.FastRepresents mem 0 n N)
@@ -34,12 +36,19 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     (hv : Terminal.result n N A B k = Precompile.bytesToNatPadded input 96 bsize ^
       Precompile.bytesToNatPadded input (96+bsize) esize % N) :
     Handled input (FixedDirectStates.special s mem n bsize esize msize k) := by
-  have out := Terminal.run s mem n bsize esize k N A B mi hn hk hk16 env hact hcds
-    hf hmi hmi1 hinv hmod ha hb hN hodd hA hB
-  rw [Terminal.output_eq input n bsize esize msize N _ (by omega) hN
-    hbs hes hms hfull hm hv] at out
-  rw [← hfull] at out
-  exact Terminal.handled out hcalls
+  have hout := Terminal.output_eq input n bsize esize msize N _ (by omega) hN
+    hbs hes hms hfull hm hv
+  by_cases h4 : n = 4
+  · subst n
+    rw [hfull]
+    exact FourTerminal.handled input s mem bsize esize k N A B mi hk hk16 env hact hactLe hcds
+      hcalls hdata hvalid hf hmi hmi1 hinv hmod ha hb hodd hA hB hout (by omega)
+  · have h8 : n = 8 := by omega
+    have out := Terminal.run s mem n bsize esize k N A B mi h8 hk hk16 env hact hcds
+      hf hmi hinv hmod ha hb hN hodd hB
+    rw [hout] at out
+    rw [← hfull] at out
+    exact Terminal.handled out hcalls
 
 theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize N A B mi : Nat)
@@ -80,7 +89,7 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
         hbsize he hdata hact hf.eoff env.code env.forkEq env.running env.noPrecompile
       apply prepend (entry.trans hit)
       apply special input s mem n bsize 3 msize 16 N A B mi hn (by decide) (by decide)
-        env hact (by rw [hdata]; exact lt_trans hvalid.1 (by norm_num)) hcalls
+        env hact hactLe (by rw [hdata]; exact lt_trans hvalid.1 (by norm_num)) hcalls hdata hvalid
         hf hmi hmi1 hinv hmod ha hb hN hodd hA hB hbs hes hms hfull hm
       rw [he]
       simpa only [show (2:Nat)^16+1=65537 from by decide] using

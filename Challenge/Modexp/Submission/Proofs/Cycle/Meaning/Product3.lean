@@ -20,7 +20,7 @@ def cells3 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result3 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8716
+    pc := UInt256.ofNat 8258
     memory := storeCells s.memory (cells3 inv a b n)
     stack := frame4 inv a b n rest}
 
@@ -34,7 +34,7 @@ theorem run3 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List 
     (h : Memory3 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions productColumn3Program
-      {s with pc := UInt256.ofNat 8588, stack := frame3 inv a b n rest} =
+      {s with pc := UInt256.ofNat 8130, stack := frame3 inv a b n rest} =
       some (result3 s inv a b n rest) := by
   have hx := productColumn3_run s ((n 2)) ((((productQ1 inv a b n) * (n 3)) + (((productQ0 inv a b n) * (n 4)) + (((b 0) * (a 4)) + (((b 1) * (a 3)) + (((b 2) * (a 2)) + (((b 3) * (a 1)) + (((b 4) * (a 0)) + (productC4 inv a b n))))))))) (((UInt256.mulMod (b 0) (a 4) P) + ((UInt256.mulMod (b 1) (a 3) P) + ((UInt256.mulMod (b 2) (a 2) P) + ((UInt256.mulMod (b 3) (a 1) P) + ((UInt256.mulMod (b 4) (a 0) P) + (productC4 inv a b n))))))) ((n 2)) ((n 6)) ((n 4)) ((a 1)) ((a 2)) ((n 5)) ((productQ1 inv a b n)) (P) ((productQ0 inv a b n)) ((n 1)) ((UInt256.ofNat (2^240-1))) ((n 0)) ((n 3)) ((a 8)) rest hcap hact
   rw [model3_eq s inv a b n rest h] at hx

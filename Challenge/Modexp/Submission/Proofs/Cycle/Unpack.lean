@@ -19,7 +19,7 @@ def cells (b : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8202
+    pc := UInt256.ofNat 7744
     memory := storeCells s.memory (cells (ordinary s.memory 256))
     stack := ProductMeaning.frame0 inv a (ordinary s.memory 256) n rest}
 
@@ -33,7 +33,7 @@ theorem model_eq (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Lis
 theorem run (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions unpackFinalProgram
-      {s with pc := UInt256.ofNat 8110, stack := SquareMeaning.frame0 inv a (fun _ => UInt256.ofNat 0) n rest} =
+      {s with pc := UInt256.ofNat 7652, stack := SquareMeaning.frame0 inv a (fun _ => UInt256.ofNat 0) n rest} =
       some (result s inv a n rest) := by
   have h := unpackFinal_run s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7)
     P (n 8) (n 1) (UInt256.ofNat (2^240-1)) (n 0) (n 3) (a 8) rest hcap hact

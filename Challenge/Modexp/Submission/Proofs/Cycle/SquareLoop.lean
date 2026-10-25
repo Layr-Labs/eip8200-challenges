@@ -15,10 +15,10 @@ structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
     (count N x : Nat) where
   state : State
   output : Nat → UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 6153, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)} state
+  trace : GasSteps {s with pc := UInt256.ofNat 5695, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)} state
   memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
   frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (CounterControl.counter state :: rest)
-  pc : state.pc = UInt256.ofNat 8110
+  pc : state.pc = UInt256.ofNat 7652
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
@@ -36,10 +36,10 @@ structure RoundOutcome (s : State) (inv : UInt256) (a n : Nat → UInt256)
     (rest : List UInt256) (k N x : Nat) where
   state : State
   output : Nat → UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 6153, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)} state
+  trace : GasSteps {s with pc := UInt256.ofNat 5695, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)} state
   memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
   frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (CounterControl.counter state :: rest)
-  pc : state.pc = if k = 1 then UInt256.ofNat 8110 else UInt256.ofNat 6153
+  pc : state.pc = if k = 1 then UInt256.ofNat 7652 else UInt256.ofNat 5695
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
@@ -102,7 +102,7 @@ noncomputable def run (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest 
     obtain ⟨tstate, tout, ttrace, tmem, tframe, tpc, tenv, thalt, tact, tbound, tform, tkeep, tcalls⟩ :=
       run st inv out n rest (k-1) N (x*x) (by omega) (by omega)
       en hmem (hcounter hmore) hcap act hbound hn hn0 hNvalue hinv hN hNR hodd hnext
-    have hstart : {st with pc := UInt256.ofNat 6153, stack := SquareMeaning.frame0 inv out zeroWords n (CounterControl.counter st :: rest)} = st :=
+    have hstart : {st with pc := UInt256.ofNat 5695, stack := SquareMeaning.frame0 inv out zeroWords n (CounterControl.counter st :: rest)} = st :=
       SquareExecution.reset_self st _ _ (by simpa only [if_neg he] using hpc) hstack
     have htail : GasSteps st tstate := by
       have h := ttrace

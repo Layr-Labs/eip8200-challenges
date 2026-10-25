@@ -12,16 +12,16 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def normalizesquarepart0Program : List Instr :=
   [.op .JUMPDEST,
-   .push 2 8085,
+   .push 2 7627,
    .op (.Swap ⟨11, by decide⟩),
    .op .POP]
 
 def normalizesquarepart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 11014, memory := s.memory, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: (UInt256.ofNat 8085) :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 10556, memory := s.memory, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: (UInt256.ofNat 7627) :: x12 :: x13 :: rest}
 
 theorem normalizesquarepart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions normalizesquarepart0Program {s with pc := UInt256.ofNat 11008, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions normalizesquarepart0Program {s with pc := UInt256.ofNat 10550, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (normalizesquarepart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -31,18 +31,18 @@ theorem normalizesquarepart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
 
 def normalizesquareProgram : List Instr :=
   [.op .JUMPDEST,
-   .push 2 8085,
+   .push 2 7627,
    .op (.Swap ⟨11, by decide⟩),
    .op .POP]
 
 def normalizesquareModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 11014, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 8085) :: n3 :: a8 :: rest}
+  {s with pc := UInt256.ofNat 10556, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 7627) :: n3 :: a8 :: rest}
 
 theorem normalizesquare_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions normalizesquareProgram {s with pc := UInt256.ofNat 11008, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions normalizesquareProgram {s with pc := UInt256.ofNat 10550, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
       some (normalizesquareModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
-  have h0 : runInstructions normalizesquarepart0Program {s with pc := UInt256.ofNat 11008, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 11014, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 8085) :: n3 :: a8 :: rest} := by
+  have h0 : runInstructions normalizesquarepart0Program {s with pc := UInt256.ofNat 10550, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10556, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 7627) :: n3 :: a8 :: rest} := by
     simpa only [normalizesquarepart0Model] using normalizesquarepart0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   exact h0
 

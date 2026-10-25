@@ -18,32 +18,32 @@ def slot (a n : Nat → UInt256) (slot0 : UInt256) : UInt256 :=
   if value a < value n then slot0 else n 0
 def result (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) : State :=
   if value a < value n then
-    {s with pc := UInt256.ofNat 10867, stack := frame a n slot0 slot1 rest}
-  else NormalizeBinding.returned s a n (UInt256.ofNat 10867) slot1 rest
+    {s with pc := UInt256.ofNat 10409, stack := frame a n slot0 slot1 rest}
+  else NormalizeBinding.returned s a n (UInt256.ofNat 10409) slot1 rest
 
 noncomputable def subtraction (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 10857, stack := frame a n slot0 slot1 rest}
-      (NormalizeBinding.returned s a n (UInt256.ofNat 10867) slot1 rest) := by
+    GasSteps {s with pc := UInt256.ofNat 10399, stack := frame a n slot0 slot1 rest}
+      (NormalizeBinding.returned s a n (UInt256.ofNat 10409) slot1 rest) := by
   let ready : State := {s with
-    pc := UInt256.ofNat 10866
-    stack := UInt256.ofNat 11014 :: frame a n (UInt256.ofNat 10867) slot1 rest}
+    pc := UInt256.ofNat 10408
+    stack := UInt256.ofNat 10556 :: frame a n (UInt256.ofNat 10409) slot1 rest}
   have hr := canonicalsub_run s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7) modulusP
     (n 8) slot1 mask slot0 (n 3) (a 8) rest hcap hact
   have h1 := FinalBlocks.canonicalsubBlock.steps
-    (s := {s with pc := UInt256.ofNat 10857, stack := frame a n slot0 slot1 rest})
+    (s := {s with pc := UInt256.ofNat 10399, stack := frame a n slot0 slot1 rest})
     (env.transfer rfl rfl) rfl hr
-  have valid : Decode.isValidJumpDest ready.executionEnv.code 11014 = true := by
+  have valid : Decode.isValidJumpDest ready.executionEnv.code 10556 = true := by
     rw [show ready.executionEnv.code = Artifact.bytecode from env.code]
     exact FinalBlocks.validJump11014
   have cap : ready.stack.length < 1024 := by
     simp only [ready, frame, List.length_cons, List.length_append, List.length_nil]
     omega
-  have hj := jump_run ready (UInt256.ofNat 11014) (frame a n (UInt256.ofNat 10867) slot1 rest) rfl cap valid
+  have hj := jump_run ready (UInt256.ofNat 10556) (frame a n (UInt256.ofNat 10409) slot1 rest) rfl cap valid
   have h2 := FinalBlocks.canonicalJumpBlock.steps (s := ready) (env.transfer rfl rfl) rfl hj
-  have h3 := NormalizeBinding.gasSteps s a n (UInt256.ofNat 10867) slot1 rest
+  have h3 := NormalizeBinding.gasSteps s a n (UInt256.ofNat 10409) slot1 rest
     env hm hcap hact NormalizeBinding.validJump10867
   exact h1.trans (h2.trans h3)
 
@@ -53,7 +53,7 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (slot0 slot1 : UI
     (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < 2^240)
     (hn : ∀ i < 8, (n i).toNat < 2^240) :
-    GasSteps {s with pc := UInt256.ofNat 10692, stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 10234, stack := frame a n slot0 slot1 rest}
       (result s a n slot0 slot1 rest) := by
   have h := CompareScan.gasSteps s a n slot0 slot1 rest env hm hcap hact ha hn
   by_cases hl : value a < value n
@@ -67,7 +67,7 @@ theorem memory_output (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256
   by_cases hl : value a < value n
   · simpa only [result, digits, if_pos hl] using hm
   · simpa only [result, digits, if_neg hl, NormalizeBinding.returned] using
-      NormalizeMeaning.memory_output s a n (UInt256.ofNat 10867) slot1 rest hm
+      NormalizeMeaning.memory_output s a n (UInt256.ofNat 10409) slot1 rest hm
 
 theorem frame_output (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) :
@@ -76,7 +76,7 @@ theorem frame_output (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     simp only [result, digits, slot, hl, ite_true, ite_false, NormalizeBinding.returned, NormalizeMeaning.result]
 
 theorem pc_output (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) :
-    (result s a n slot0 slot1 rest).pc = UInt256.ofNat 10867 := by
+    (result s a n slot0 slot1 rest).pc = UInt256.ofNat 10409 := by
   unfold result; split_ifs <;> rfl
 theorem executionEnv_eq (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) :
     (result s a n slot0 slot1 rest).executionEnv = s.executionEnv := by

@@ -82,7 +82,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
         (FixedDirectStates.e3go s (e3Final mem input n mm k) n bsize 1 msize) := tr
     have finish := FixedRoute.special input s (e3Final mem input n mm k)
       n bsize 1 msize 1 mm X Y minv hn48 (by decide) (by decide)
-      env hact hcds hstack hf hmi hminv1 hinv hmrep hx hy hm hodd
+      env hact hactLe hcds hstack hdata hvalid hf hmi hminv1 hinv hmrep hx hy hm hodd
       (Nat.mod_lt _ hm) (Nat.mod_lt _ hm) hbsize hesize hmsz hfull hmm
       (by rw [hexp]; exact Terminal.result_cube n mm X Y _ _ _ hm hodd hxform hyform hscale)
     have go := FixedDirectValueTrace.gasSteps_threeHit s (e3Final mem input n mm k)

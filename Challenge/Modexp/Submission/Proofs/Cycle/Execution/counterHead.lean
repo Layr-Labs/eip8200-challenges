@@ -14,17 +14,17 @@ open Challenge.Modexp.Submission.Proofs.Fast
 The original count is retained for JUMPI; the working count is decremented in place. -/
 def counterHeadProgram : List Instr :=
   [.op .JUMPDEST, .push 1 1, .op (.Dup ⟨15, by decide⟩),
-   .op .SUB, .op (.Swap ⟨14, by decide⟩), .push 17 6152]
+   .op .SUB, .op (.Swap ⟨14, by decide⟩), .push 17 5694]
 
 def counterHeadModel (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 c : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8109
-    stack := UInt256.ofNat 6152 :: c :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: (c - UInt256.ofNat 1) :: rest}
+    pc := UInt256.ofNat 7651
+    stack := UInt256.ofNat 5694 :: c :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: (c - UInt256.ofNat 1) :: rest}
 
 theorem counterHead_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 c : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions counterHeadProgram {s with
-      pc := UInt256.ofNat 8085
+      pc := UInt256.ofNat 7627
       stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: c :: rest} =
       some (counterHeadModel s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 c rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
