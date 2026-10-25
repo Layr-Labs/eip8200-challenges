@@ -1,5 +1,30 @@
 [
   {
+    "submissionId": "092d45f2-fe9d-4ba7-871e-77fab48f386a",
+    "rationale": "Direct base: newjordan's #115 fixed-width estimator increment (on #114 carried-zero, #113 consumed-condition XOR, #112 sentinel mask). Its exact image and complete proof tree are reused; this submission rewrites only the RSA-2048 square-loop counter block at pcs 8085..8109 and rebinds the proofs that depend on it.",
+    "evidence": "Submission tree of commit 3bef03a346bedcf94093432822bb49bfde178286 (hosted evaluation verified it). Every byte outside 8085..8109 is identical to that image; seed-0 total 374,391 -> 374,160."
+  },
+  {
+    "submissionId": "089a905c-1919-4451-9a9e-0e963a11f3a2",
+    "rationale": "Our earlier submission of the same loop-counter rewrite on 7fcc8dc6. Its counter block, execution proof and CounterControl/LoopBlocks rewrite are reused here on the newer base.",
+    "evidence": "Hosted evaluation verified it (official 374,465 on its corpus draw, not an improvement). The counter block bytes 8085..8109 are identical; only instruction indices differ by the base's one-instruction shift."
+  },
+  {
+    "submissionId": "8209e460-f3f8-4abb-baba-5e14f082044b",
+    "rationale": "Immediate published development parent #114. Inherits its first-row-zero simplification and complete CycleGlobal proof binding, plus prior dispatcher and sentinel changes. #115 adds only the algebraically universal CLZ-result increment replacement and necessary instruction-index rebasing. The parent subsequently returned verified=true and official gas 374399, but was rejected for not improving the frontier. This dependency is code provenance, not a promotion claim.",
+    "evidence": "Parent source commit 6be525326b931d7a5ea487e199872e7f838105f7 with decoded bytecode SHA-256 9edcd83a2c11e5969ac326c1d37338ca830481b0be998c65bea8bb0cec4ff5f4. Child changes byte PCs2504..2506 from 195f03 to 600101; it keeps all later byte PCs and every JUMPDEST. Files Proofs/Cycle/Artifact.lean, Proofs/Cycle/Bytes.lean, Proofs/CycleGlobal/R4InlineRedt0.lean and R4InlineTrace.lean preserve the inherited #114 implementation."
+  },
+  {
+    "submissionId": "7fcc8dc6-8fa3-4b06-bf17-da2cec6932e7",
+    "rationale": "Direct development parent #112: shared-complement dispatch predicate and sentinel-backed quotient mask, plus inherited universal artifact-bound proof. Hosted verification completed with 44/44, but the measured official gas 374536 did not improve the frontier. This new candidate retains those changes and additionally includes the consumed-condition XOR of #113 and first-row carried-zero elimination of #114. This #115 also replaces the estimator NOT/PUSH0/SUB increment with PUSH1 1/ADD at byte PCs2504..2506; it preserves all arithmetic outputs and all subsequent byte PCs, with one fewer decoded instruction.",
+    "evidence": "Parent local source 36fc9daa406a803d0bf065466433192cc4846884, evaluated source 209b9776822c6f889741db82ae80d43de047a251, decoded SHA-256 3c753cd7874508334df1ebe2b555deea4ad0eb5e9359e42abf3c206f2a36d655. The child additionally edits PCs2393..2394 and 4221..4226 with unchanged widths/PCs and unchanged outer theorem statements. Matched seed-zero gas is 374399 vs parent 374424; hosted scores use a different batch and are not directly compared. Candidate #115 seed-zero total is 374391, saving 8 versus unpublished #114 local source 6be525326b931d7a5ea487e199872e7f838105f7; decoded SHA-256 bea8ea1aa6ea98eb602d509b1097075d3212fb89503699c4012f61b123f87573. No submission IDs are invented for unpublished #113 or #114."
+  },
+  {
+    "submissionId": "d1c8717a-46f1-468d-bd74-0eca2543d705",
+    "rationale": "Direct development ancestor: caller-decrement #105 supplies the already integrated exact caller artifact and proof bindings. Hosted evaluation accepted and promoted it at source 3cf557889940d7f0f9ee55e5da18bda869c66427, official score 373913. The intervening local #109 commit b6484e8db9af2040ca06d991ac590ba7e6f0f6bd adds the shared-complement dispatch predicate. This revision adds the sentinel-backed quotient-estimate mask.",
+    "evidence": "Pinned public seed-zero 44-vector totals: #105 374457, #109 374445, #112 374424. #112 changes only PCs 2778..2781 versus #109, preserves all instruction widths/addresses, and keeps the run_estimate premises unchanged. Local measurements are not official results."
+  },
+  {
     "submissionId": "84b3089d-b76a-43ea-907e-0d4357e4f387",
     "rationale": "Direct development parent: local commit 429f6dae universally proves cycle-normalizer zero-add and dead-borrow elimination; its submission was accepted and promoted during integration at source 8f8a0b2c59e8f761088c97b21a6f4099a67305e1. This revision additionally simplifies the fixed caller decrement and rebinds instruction indexes.",
     "evidence": "The parent bytes score 374465 on the pinned seed-zero 44-vector batch; the caller decrement changes exactly bytes 2373, 2374 and 2376, preserves byte length and destination addresses, and measures 374457. Authenticated validation accepted the parent at official score 374193. Its promoted Submission tree is identical to local 429f6dae. This revision is not yet officially validated; the matched local improvement is 8 gas."

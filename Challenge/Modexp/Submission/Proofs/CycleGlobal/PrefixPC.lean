@@ -46,19 +46,19 @@ with the accepted proof base, despite changed destination literals. -/
 
 
 private theorem suffix_widths_eq :
-    (((CycleSubmission.Artifact.instructions.drop 1872).take (2532-1872)).map width) =
-    (((Artifact.submissionInstructions.drop 1873).take (2533-1873)).map width) := by rfl
+    (((CycleSubmission.Artifact.instructions.drop 1872).take (1953-1872)).map width) =
+    (((Artifact.submissionInstructions.drop 1873).take (1954-1873)).map width) := by rfl
 
 /-- After the shortened fixed caller, instruction indexes shift by one but all
     byte addresses and destination literals remain unchanged. -/
-@[simp] theorem eq_old_tail (i : Nat) (hlo : 1872 ≤ i) (hhi : i ≤ 2532) :
+@[simp] theorem eq_old_tail (i : Nat) (hlo : 1872 ≤ i) (hhi : i ≤ 1953) :
     CycleSubmission.Artifact.artifact.instructionPC i =
       Artifact.submissionArtifact.instructionPC (i+1) := by
   have h : (((CycleSubmission.Artifact.instructions.drop 1872).take (i-1872)).map width) =
       (((Artifact.submissionInstructions.drop 1873).take (i-1872)).map width) := by
     have h := congrArg (List.take (i-1872)) suffix_widths_eq
     simpa only [← List.map_take, List.take_take,
-      Nat.min_eq_left (show i-1872 ≤ 2532-1872 by omega)] using h
+      Nat.min_eq_left (show i-1872 ≤ 1953-1872 by omega)] using h
   have ha : CycleSubmission.Artifact.artifact.instructionPC 1872 = 2377 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   have hb : Artifact.submissionArtifact.instructionPC 1873 = 2377 := by
@@ -69,6 +69,29 @@ private theorem suffix_widths_eq :
   rw [show 1872+(i-1872)+1 = 1873+(i-1872) by omega, pc_add, hb]
   change 2377 + PCFast.byteLength ((CycleSubmission.Artifact.instructions.drop 1872).take (i-1872)) =
     2377 + PCFast.byteLength ((Artifact.submissionInstructions.drop 1873).take (i-1872))
+  rw [length_eq, length_eq, h]
+
+private theorem suffix_widths_eq2 :
+    (((CycleSubmission.Artifact.instructions.drop 1954).take (2531-1954)).map width) =
+    (((Artifact.submissionInstructions.drop 1956).take (2533-1956)).map width) := by rfl
+
+@[simp] theorem eq_old_tail2 (i : Nat) (hlo : 1954 ≤ i) (hhi : i ≤ 2531) :
+    CycleSubmission.Artifact.artifact.instructionPC i =
+      Artifact.submissionArtifact.instructionPC (i+2) := by
+  have h : (((CycleSubmission.Artifact.instructions.drop 1954).take (i-1954)).map width) =
+      (((Artifact.submissionInstructions.drop 1956).take (i-1954)).map width) := by
+    have h := congrArg (List.take (i-1954)) suffix_widths_eq2
+    simpa only [← List.map_take, List.take_take,
+      Nat.min_eq_left (show i-1954 ≤ 2531-1954 by omega)] using h
+  have ha : CycleSubmission.Artifact.artifact.instructionPC 1954 = 2506 := by
+    rw [PCFast.instructionPC_eq_byteLength]; rfl
+  have hb : Artifact.submissionArtifact.instructionPC 1956 = 2506 := by
+    rw [PCFast.instructionPC_eq_byteLength]; rfl
+  have hi : 1954+(i-1954)=i := by omega
+  rw [← hi, pc_add, ha]
+  rw [show 1954+(i-1954)+2 = 1956+(i-1954) by omega, pc_add, hb]
+  change 2506 + PCFast.byteLength ((CycleSubmission.Artifact.instructions.drop 1954).take (i-1954)) =
+    2506 + PCFast.byteLength ((Artifact.submissionInstructions.drop 1956).take (i-1954))
   rw [length_eq, length_eq, h]
 
 end CycleSubmission.Global.PrefixPC

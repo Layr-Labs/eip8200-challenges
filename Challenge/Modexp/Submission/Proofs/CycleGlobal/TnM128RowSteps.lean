@@ -28,7 +28,7 @@ def headPC (n : Nat) : Nat := if n = 4 then 3775 else 3313
 theorem head_jump (n : Nat) (hn : n = 4) :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode (UInt256.ofNat (headPC n)).toNat = true := by
   subst n
-  exact CycleSubmission.Global.Binding.jumpDest 2913 (by rfl)
+  exact CycleSubmission.Global.Binding.jumpDest 2912 (by rfl)
 
 def result (mem : ByteArray) (tn : UInt256) (pa n : Nat) (q : UInt256) :
     TnCacheRowModel.CacheState :=

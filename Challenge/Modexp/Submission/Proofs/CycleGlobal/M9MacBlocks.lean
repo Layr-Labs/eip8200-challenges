@@ -51,68 +51,68 @@ accumulator word it reads (`0x920`) is the limb the shift just zeroed.  It pops 
 the limb rides in `Dup 10`.  Block 4 keeps the fused schedule — pc 3032 is both jumped to
 (four limbs, carry zero) and fallen into from block 3 (carry nonzero). -/
 def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2785 ([.op .JUMPDEST] ++ rideTopProgram 10 2336) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2156 18 2785 ([.op .JUMPDEST] ++ rideTopProgram 10 2336)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2155 18 2785 ([.op .JUMPDEST] ++ rideTopProgram 10 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2347..2374, pc 2933..2965,
 `-N` limb riding in slot 6 (`Dup 11`, address 1472 = 0x5c0), `t` limb at 2304. -/
 def block1 : Block CycleSubmission.Artifact.artifact .Osaka 2805 (rideProgram 10 2304) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2174 28 2805 (rideProgram 10 2304)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2173 28 2805 (rideProgram 10 2304)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 2: instructions 2375..2402, pc 2966..2998,
 `-N` limb riding in slot 5 (`Dup 10`, address 1440 = 0x5a0), `t` limb at 2272. -/
 def block2 : Block CycleSubmission.Artifact.artifact .Osaka 2837 (rideProgram 9 2272) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2202 28 2837 (rideProgram 9 2272)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2201 28 2837 (rideProgram 9 2272)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 3: instructions 2403..2430, pc 2999..3031,
 `-N` limb riding in slot 4 (`Dup 9`, address 1408 = 0x580), `t` limb at 2240. -/
 def block3 : Block CycleSubmission.Artifact.artifact .Osaka 2869 (rideProgram 8 2240) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2230 28 2869 (rideProgram 8 2240)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2229 28 2869 (rideProgram 8 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 4: instructions 2431..2459, pc 3032..3065 (JUMPDEST included),
 `-N` limb riding in slot 3 (`Dup 8`, address 1376 = 0x560), `t` limb at 2208. -/
 def block4 : Block CycleSubmission.Artifact.artifact .Osaka 2901 ([.op .JUMPDEST] ++ rideProgram 7 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2258 29 2901 ([.op .JUMPDEST] ++ rideProgram 7 2208)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2257 29 2901 ([.op .JUMPDEST] ++ rideProgram 7 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 5: instructions 2460..2487, pc 3066..3098,
 `-N` limb riding in slot 2 (`Dup 7`, address 1344 = 0x540), `t` limb at 2176. -/
 def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2934 (rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2287 28 2934 (rideProgram 6 2176)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2286 28 2934 (rideProgram 6 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 6: instructions 2488..2515, pc 3099..3131,
 `-N` limb riding in slot 1 (`Dup 6`, address 1312 = 0x520), `t` limb at 2144. -/
 def block6 : Block CycleSubmission.Artifact.artifact .Osaka 2966 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2315 28 2966 (rideProgram 5 2144)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2314 28 2966 (rideProgram 5 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 7: instructions 2516..2545, pc 3132..3167 — the one `MLOAD` block left:
 `0x500 = 1280` is not a riding slot, `t` limb at 2112 (0x840). -/
 def block7 : Block CycleSubmission.Artifact.artifact .Osaka 2998 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2343 30 2998 (blockProgram 1280 2112)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2342 30 2998 (blockProgram 1280 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The exit: empty program at pc 3168. -/
 def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3034 exitProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2373 0 3034 exitProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2372 0 3034 exitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- E6, the section entry: instructions 2325..2328, pc 2895..2898 (`Dup 5` = the scratch slot). -/
 def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 2782 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2153 3 2782 entryProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2152 3 2782 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The eight-limb entry (block 0's `JUMPDEST`, instruction 2329). -/
 theorem jumpDest2899 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2785 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2156 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2155 (by rfl)
 
 /-- The four-limb entry (block 4's `JUMPDEST`, instruction 2431, = 2946 + 116). -/
 theorem jumpDest3032 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2901 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2258 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2257 (by rfl)
 
 end CycleSubmission.Global.Fast.M9Mac
 

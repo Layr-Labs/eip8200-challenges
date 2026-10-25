@@ -66,7 +66,7 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win0, win1, win2, win3] at *) <;> omega))
 
 theorem jd4248 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3482 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2708 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2707 (by rfl)
 
 section
 variable (s : State)
@@ -77,21 +77,21 @@ variable (s : State)
 
 include hcode hfork hrun hnp
 
-def gasSteps_red0 (ret v : UInt256) (P : W5) (k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
+def gasSteps_red0Zero114 (ret : UInt256) (P : W5) (k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1003)
     (hk : k = Monpro.maxWord)
     (hminv : (n0.toNat * np.toNat + 1) % 2^256 = 0)
     (hguard : np ≠ UInt256.ofNat 1) :
     GasSteps { s with pc := UInt256.ofNat 4132,
-                      stack := v :: win0 P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
+                      stack := UInt256.ofNat 0 :: win0 P (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) }
       { s with pc := UInt256.ofNat 4227,
-               stack := win1 (red n0 n1 n2 n3 np k P v) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
+               stack := win1 (red n0 n1 n2 n3 np k P (UInt256.ofNat 0)) (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win0, win1]
-  seg block_redm_0 (run_redm_0 s ret v P.t3 P.t2 P.t1 P.t0 P.t4 k n0 n1 n2 n3 np rest (by omega) hk hminv hguard)
+  seg block_redm_0 (run_redm_0 s ret (UInt256.ofNat 0) P.t3 P.t2 P.t1 P.t0 P.t4 k n0 n1 n2 n3 np rest (by omega) hk hminv hguard)
   seg block_reds1_0 (run_reds1_0 s _ _ ret (hcap := by lenOK) ..)
   seg block_reds2_0 (run_reds2_0 s _ _ ret (hcap := by lenOK) ..)
   seg block_reds3_0 (run_reds3_0 s _ _ ret (hcap := by lenOK) ..)
-  exact SquareRow.stepsOf block_redt_0 (run_redt_0 s _ _ ret (hcap := by lenOK) ..) rfl
+  exact SquareRow.stepsOf block_redt_0Zero114 (run_redt_0Zero114 s _ _ ret (hcap := by lenOK) ..) rfl
     hcode hfork hrun hnp
 
 
@@ -178,7 +178,7 @@ def gasSteps_row1 (P : W5) (k n0 n1 n2 n3 np a0 a1 a2 a3 : UInt256) (rest : List
                  win1 (row1 a0 a1 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win1]
   seg block_r1h_1 (run_r1h_1 s (hcap := by lenOK) (ha1 := ha1) (ha0 := ha0) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3317 4236 (by rfl) (R4InlineArtifactSuffix.pc 187 4236 rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3316 4236 (by rfl) (R4InlineArtifactSuffix.pc 187 4236 rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r1d_1 (run_r1d_1 s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r1c2_1 (run_r1c2_1 s (hcap := by lenOK) (ha2 := ha2) (hact := hact) ..)
@@ -197,7 +197,7 @@ def gasSteps_row2 (P : W5) (k n0 n1 n2 n3 np a1 a2 a3 : UInt256) (rest : List UI
                  win2 (row2 a1 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win2]
   seg block_r2h_2 (run_r2h_2 s (hcap := by lenOK) (ha2 := ha2) (ha1 := ha1) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3506 4433 (by rfl) (R4InlineArtifactSuffix.pc 376 4433 rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3505 4433 (by rfl) (R4InlineArtifactSuffix.pc 376 4433 rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r2d_2 (run_r2d_2 s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   seg block_r2c3_2 (run_r2c3_2 s (hcap := by lenOK) (ha3 := ha3) (hact := hact) ..)
@@ -214,7 +214,7 @@ def gasSteps_row3 (P : W5) (k n0 n1 n2 n3 np a2 a3 : UInt256) (rest : List UInt2
                  win3 (row3 a2 a3 k P).1 (k :: n0 :: n1 :: n2 :: n3 :: np :: rest) } := by
   simp only [win3]
   seg block_r3h_3 (run_r3h_3 s (hcap := by lenOK) (ha3 := ha3) (ha2 := ha2) (hact := hact) ..)
-  refine GasSteps.trans (gasSteps_sgtAt 3668 4601 (by rfl) (R4InlineArtifactSuffix.pc 538 4601 rfl) (by norm_num) s _ _ _
+  refine GasSteps.trans (gasSteps_sgtAt 3667 4601 (by rfl) (R4InlineArtifactSuffix.pc 538 4601 rfl) (by norm_num) s _ _ _
     hcode hfork (by lenOK) hrun hnp) ?_
   seg block_r3d_3 (run_r3d_3 s (hcap := by lenOK) (hk := hk) (htb := R4Value.tb_le_one _) ..)
   exact SquareRow.stepsOf block_r3e_3 (run_r3e_3 s (hcap := by lenOK) ..) rfl hcode hfork hrun hnp
@@ -277,7 +277,7 @@ def gasSteps_core (s : State) (e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 : UInt2
     (run_prodiag_0 s e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 n3 a0 rest (by omega) hn3 ha0 hact) rfl
     hcode hfork hrun hnp
   have g1 := gasSteps_row0 s hcode hfork hrun hnp e5 e8 e7 e4 n3 e11 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
-  have g2 := gasSteps_red0 s hcode hfork hrun hnp 4382 ⟨0⟩ (row0 a0 a1 a2 a3 e5) e5 e8 e7 e4 n3 e11 E hE
+  have g2 := gasSteps_red0Zero114 s hcode hfork hrun hnp 4382 (row0 a0 a1 a2 a3 e5) e5 e8 e7 e4 n3 e11 E hE
     hk hminv hguard
   have g3 := gasSteps_row1 (hk := hk) s hcode hfork hrun hnp W1 e5 e8 e7 e4 n3 e11 a0 a1 a2 a3 E hE hact ha0 ha1 ha2 ha3
   have g4 := gasSteps_red1 s hcode hfork hrun hnp 4494 R1.2 R1.1 e5 e8 e7 e4 n3 e11 E hE hk hminv hguard

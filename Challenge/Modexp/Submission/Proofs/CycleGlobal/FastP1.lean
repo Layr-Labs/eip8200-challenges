@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.PredicateIdentity
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
 noncomputable section
@@ -25,15 +26,15 @@ def blk1028 :
    opAt 441 .ADD,
    opAt 442 .SUB,
    opAt 443 .CALLDATALOAD,
-   opAt 444 (.Dup ⟨0, by decide⟩),
-   pushAt 445 0 0,
-   opAt 446 .NOT,
-   opAt 447 .EQ,
-   opAt 448 (.Swap ⟨0, by decide⟩),
+   opAt 444 .NOT,
+   opAt 445 (.Dup ⟨0, by decide⟩),
+   opAt 446 .ISZERO,
+   opAt 447 (.Swap ⟨0, by decide⟩),
+   opAt 448 .JUMPDEST,
    pushAt 449 1 1,
    opAt 450 .AND,
-   opAt 451 .ISZERO,
-   opAt 452 .OR,
+   opAt 451 .OR,
+   opAt 452 .JUMPDEST,
    opAt 453 (.Dup ⟨6, by decide⟩),
    pushAt 454 1 127,
    opAt 455 .AND,
