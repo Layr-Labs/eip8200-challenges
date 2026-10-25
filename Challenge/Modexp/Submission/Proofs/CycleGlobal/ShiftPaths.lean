@@ -550,7 +550,7 @@ theorem jumpDest5366 :
 
 theorem jumpDest5444 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3944 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3052 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3043 (by rfl)
 
 /-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
 E3 phase switch has set the last riding slot to `30`. -/
@@ -608,7 +608,16 @@ then `PUSH2 0989 ADD JUMP` jumps to `2441 + z`, where `z` is that last slot: `0`
 (the exponent dispatcher at 2441) and `28` after the E3 phase switch (`e3go` at 2471). -/
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3052 .JUMPDEST,
+  [opAt 3043 .JUMPDEST,
+   opAt 3044 .POP,
+   opAt 3045 .POP,
+   opAt 3046 .POP,
+   opAt 3047 .POP,
+   opAt 3048 .POP,
+   opAt 3049 .POP,
+   opAt 3050 .POP,
+   opAt 3051 .POP,
+   opAt 3052 .POP,
    opAt 3053 .POP,
    opAt 3054 .POP,
    opAt 3055 .POP,
@@ -616,17 +625,8 @@ def blk5444 :
    opAt 3057 .POP,
    opAt 3058 .POP,
    opAt 3059 .POP,
-   opAt 3060 .POP,
-   opAt 3061 .POP,
-   opAt 3062 .POP,
-   opAt 3063 .POP,
-   opAt 3064 .POP,
-   opAt 3065 .POP,
-   opAt 3066 .POP,
-   opAt 3067 .POP,
-   opAt 3068 .POP,
-   pushAt 3069 2 2317,
-   opAt 3070 .ADD,
-   opAt 3071 .JUMP]
+   pushAt 3060 2 2317,
+   opAt 3061 .ADD,
+   opAt 3062 .JUMP]
 
 end CycleSubmission.Global.Fast

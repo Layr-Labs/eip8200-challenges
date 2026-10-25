@@ -66,7 +66,7 @@ local macro "lenOK" : tactic =>
   `(tactic| ((try simp only [List.length_cons, List.length_append, win0, win1, win2, win3] at *) <;> omega))
 
 theorem jd4248 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3482 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2707 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2698 (by rfl)
 
 section
 variable (s : State)

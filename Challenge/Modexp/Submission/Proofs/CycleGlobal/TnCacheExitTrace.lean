@@ -16,7 +16,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast CiosCachedMacCore
 
 def normalGuard : List Instr :=
-  [.push 4 0, .op .POP, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST]
+  [.push 7 0, .op .POP]
 
 
 def drop : List Instr := List.replicate 14 (.op .POP)

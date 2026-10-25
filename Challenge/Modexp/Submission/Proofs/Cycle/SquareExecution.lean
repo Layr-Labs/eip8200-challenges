@@ -406,9 +406,9 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 6153 program :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 5028 1655 6153 program
-    (by change 5028+1655 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 5028+1655 ≤ 9178)
+  WindowTwentyOneSlice.block Artifact.wellFormed 5019 1655 6153 program
+    (by change 5019+1655 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 5019+1655 ≤ 9169)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
