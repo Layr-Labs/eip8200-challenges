@@ -19,9 +19,9 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
 @[simp] private theorem exitPCs (i : Nat)
-    (hi : 3073 ≤ i) (hii : i ≤ 3094) :
+    (hi : 3072 ≤ i) (hii : i ≤ 3093) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3966,3967,3968,3969,3970,3972,3973,3975,3976,3977,3978,3979,3980,3982,3983,3985,3986,3987,3988,3989,3990,3991] : List Nat)[i - 3073]! := by
+      ([3966,3967,3968,3969,3970,3972,3973,3975,3976,3977,3978,3979,3980,3982,3983,3985,3986,3987,3988,3989,3990,3991] : List Nat)[i - 3072]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

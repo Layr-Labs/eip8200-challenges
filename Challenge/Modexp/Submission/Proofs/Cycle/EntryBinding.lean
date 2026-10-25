@@ -12,17 +12,17 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.CRTControl
 def entryBlock : Block Artifact.artifact .Osaka 5964 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 4921 109 5964 entryProgram
-    (by change 4921+109 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4921+109 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 4920 109 5964 entryProgram
+    (by change 4920+109 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 4920+109 ≤ 9187)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def headBlock : Block Artifact.artifact .Osaka 6152 jumpDestProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 5030 1 6152 jumpDestProgram
-    (by change 5030+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 5030+1 ≤ 9188)
+  WindowTwentyOneSlice.block Artifact.wellFormed 5029 1 6152 jumpDestProgram
+    (by change 5029+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 5029+1 ≤ 9187)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
