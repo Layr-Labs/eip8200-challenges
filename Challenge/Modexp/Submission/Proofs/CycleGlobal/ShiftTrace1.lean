@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Bitwise
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
@@ -57,6 +58,19 @@ theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
 
 attribute [local simp] notThirtyOneOfNat
 
+private theorem dispatch_xor_isTrue (a b : UInt256) :
+    UInt256.isTrue (UInt256.xor a b) ↔
+      UInt256.isTrue (UInt256.isZero (UInt256.eq a b)) := by
+  unfold UInt256.isTrue UInt256.xor UInt256.isZero UInt256.eq UInt256.toNat
+  have hlt : (a.val.val ^^^ b.val.val) < UInt256.size :=
+    Nat.xor_lt_two_pow a.val.isLt b.val.isLt
+  simp only [Fin.xor, Fin.val_ofNat, Nat.mod_eq_of_lt hlt]
+  have hx : (a.val.val ^^^ b.val.val) % UInt256.size ≠ 0 ↔ a.val.val ≠ b.val.val := by
+    rw [Nat.mod_eq_of_lt hlt, ne_eq, Nat.xor_eq_zero_iff]
+  by_cases h : a.val.val = b.val.val
+  · simp [h, Nat.xor_eq_zero_iff, UInt256.ofNat, UInt256.size]
+  · simpa [h, UInt256.ofNat, UInt256.size] using hx.mpr h
+
 /-- `blk2862`: the guard `bsize = 32 n`; the modulus top bit was already required by the
 fast-path entry, so with it the test decides `FullBase.Matches`. -/
 theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -76,7 +90,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   · have heq : UInt256.eq (UInt256.ofNat bsize) (UInt256.ofNat (32 * n)) = UInt256.ofNat 1 := by
       rw [UInt256.eq, Exp.toNat_ofNat_self hb, Exp.toNat_ofNat_self hsize, if_pos hm.1]
     simp (config := { maxSteps := 300000 })
-      [blk2862, opAt, pushAt, wfOp,
+      [dispatch_xor_isTrue, blk2862, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
@@ -90,7 +104,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     have heq : UInt256.eq (UInt256.ofNat bsize) (UInt256.ofNat (32 * n)) = UInt256.ofNat 0 := by
       rw [UInt256.eq, Exp.toNat_ofNat_self hb, Exp.toNat_ofNat_self hsize, if_neg hne]
     simp (config := { maxSteps := 300000 })
-      [blk2862, opAt, pushAt, wfOp,
+      [dispatch_xor_isTrue, blk2862, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,

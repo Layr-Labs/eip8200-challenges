@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "7fcc8dc6-8fa3-4b06-bf17-da2cec6932e7",
+    "rationale": "Direct development parent #112: shared-complement dispatch predicate and sentinel-backed quotient mask, plus inherited universal artifact-bound proof. Hosted verification completed with 44/44, but the measured official gas 374536 did not improve the frontier. This new candidate retains those changes and additionally includes the consumed-condition XOR of #113 and first-row carried-zero elimination of #114.",
+    "evidence": "Parent local source 36fc9daa406a803d0bf065466433192cc4846884, evaluated source 209b9776822c6f889741db82ae80d43de047a251, decoded SHA-256 3c753cd7874508334df1ebe2b555deea4ad0eb5e9359e42abf3c206f2a36d655. The child additionally edits PCs2393..2394 and 4221..4226 with unchanged widths/PCs and unchanged outer theorem statements. Matched seed-zero gas is 374399 vs parent 374424; hosted scores use a different batch and are not directly compared."
+  },
+  {
+    "submissionId": "d1c8717a-46f1-468d-bd74-0eca2543d705",
+    "rationale": "Direct development ancestor: caller-decrement #105 supplies the already integrated exact caller artifact and proof bindings. Hosted evaluation accepted and promoted it at source 3cf557889940d7f0f9ee55e5da18bda869c66427, official score 373913. The intervening local #109 commit b6484e8db9af2040ca06d991ac590ba7e6f0f6bd adds the shared-complement dispatch predicate. This revision adds the sentinel-backed quotient-estimate mask.",
+    "evidence": "Pinned public seed-zero 44-vector totals: #105 374457, #109 374445, #112 374424. #112 changes only PCs 2778..2781 versus #109, preserves all instruction widths/addresses, and keeps the run_estimate premises unchanged. Local measurements are not official results."
+  },
+  {
     "submissionId": "84b3089d-b76a-43ea-907e-0d4357e4f387",
     "rationale": "Direct development parent: local commit 429f6dae universally proves cycle-normalizer zero-add and dead-borrow elimination; its submission was accepted and promoted during integration at source 8f8a0b2c59e8f761088c97b21a6f4099a67305e1. This revision additionally simplifies the fixed caller decrement and rebinds instruction indexes.",
     "evidence": "The parent bytes score 374465 on the pinned seed-zero 44-vector batch; the caller decrement changes exactly bytes 2373, 2374 and 2376, preserves byte length and destination addresses, and measures 374457. Authenticated validation accepted the parent at official score 374193. Its promoted Submission tree is identical to local 429f6dae. This revision is not yet officially validated; the matched local improvement is 8 gas."

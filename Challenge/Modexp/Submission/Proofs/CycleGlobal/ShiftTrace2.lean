@@ -642,6 +642,13 @@ private theorem saturation_gt_eq_lt (a b : UInt256) : a.gt b = b.lt a := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
+/-- Use the inherited all-ones sentinel to complement a boolean mask. -/
+private theorem sentinel_add_lt (a b : UInt256) :
+    Monpro.maxWord + UInt256.lt a b =
+      UInt256.ofNat 0 - UInt256.isZero (UInt256.lt a b) := by
+  unfold UInt256.lt
+  split <;> decide
+
 theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -681,7 +688,7 @@ theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
 
 
 

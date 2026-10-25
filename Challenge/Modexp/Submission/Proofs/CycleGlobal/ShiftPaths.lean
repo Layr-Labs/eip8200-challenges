@@ -23,8 +23,8 @@ def blk2862 :
   [opAt 1877 .JUMPDEST,
    opAt 1878 (.Dup ⟨0, by decide⟩),
    opAt 1879 (.Dup ⟨3, by decide⟩),
-   opAt 1880 .EQ,
-   opAt 1881 .ISZERO,
+   opAt 1880 .XOR,
+   opAt 1881 .JUMPDEST,
    pushAt 1882 1 219,
    opAt 1883 .JUMPI]
 
@@ -376,10 +376,10 @@ def blk3026 :
    opAt 2146 (.Swap ⟨1, by decide⟩),
    opAt 2147 (.Dup ⟨14, by decide⟩),
    opAt 2148 .GT,
-   opAt 2149 .ISZERO,
-   pushAt 2150 0 0,
-   opAt 2151 .SUB,
-   opAt 2152 .OR]
+   opAt 2149 (.Dup ⟨2, by decide⟩),
+   opAt 2150 .ADD,
+   opAt 2151 .OR,
+   opAt 2152 .JUMPDEST]
 
 
 
