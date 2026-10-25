@@ -1,3 +1,4 @@
+import Mathlib.Data.Nat.Bitwise
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
@@ -38,16 +39,16 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
 
-@[simp] private theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2026 = 2596 := by
+@[simp] private theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2025 = 2596 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2032 = 2604 := by
+@[simp] private theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2031 = 2604 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] private theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2042 = 2616 := by
+@[simp] private theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2041 = 2616 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -56,6 +57,19 @@ theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
   decide
 
 attribute [local simp] notThirtyOneOfNat
+
+private theorem dispatch_xor_isTrue (a b : UInt256) :
+    UInt256.isTrue (UInt256.xor a b) ↔
+      UInt256.isTrue (UInt256.isZero (UInt256.eq a b)) := by
+  unfold UInt256.isTrue UInt256.xor UInt256.isZero UInt256.eq UInt256.toNat
+  have hlt : (a.val.val ^^^ b.val.val) < UInt256.size :=
+    Nat.xor_lt_two_pow a.val.isLt b.val.isLt
+  simp only [Fin.xor, Fin.val_ofNat, Nat.mod_eq_of_lt hlt]
+  have hx : (a.val.val ^^^ b.val.val) % UInt256.size ≠ 0 ↔ a.val.val ≠ b.val.val := by
+    rw [Nat.mod_eq_of_lt hlt, ne_eq, Nat.xor_eq_zero_iff]
+  by_cases h : a.val.val = b.val.val
+  · simp [h, Nat.xor_eq_zero_iff, UInt256.ofNat, UInt256.size]
+  · simpa [h, UInt256.ofNat, UInt256.size] using hx.mpr h
 
 /-- `blk2862`: the guard `bsize = 32 n`; the modulus top bit was already required by the
 fast-path entry, so with it the test decides `FullBase.Matches`. -/
@@ -76,7 +90,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   · have heq : UInt256.eq (UInt256.ofNat bsize) (UInt256.ofNat (32 * n)) = UInt256.ofNat 1 := by
       rw [UInt256.eq, Exp.toNat_ofNat_self hb, Exp.toNat_ofNat_self hsize, if_pos hm.1]
     simp (config := { maxSteps := 300000 })
-      [blk2862, opAt, pushAt, wfOp,
+      [dispatch_xor_isTrue, blk2862, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
@@ -90,7 +104,7 @@ theorem run_dispatch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     have heq : UInt256.eq (UInt256.ofNat bsize) (UInt256.ofNat (32 * n)) = UInt256.ofNat 0 := by
       rw [UInt256.eq, Exp.toNat_ofNat_self hb, Exp.toNat_ofNat_self hsize, if_neg hne]
     simp (config := { maxSteps := 300000 })
-      [blk2862, opAt, pushAt, wfOp,
+      [dispatch_xor_isTrue, blk2862, opAt, pushAt, wfOp,
         Challenge.EvmProof.Stepper.runLocatedBlock,
         Challenge.EvmProof.Stepper.runLocated,
         Challenge.EvmProof.Stepper.runInstr,
@@ -604,6 +618,15 @@ theorem run_negDoneA (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
+private theorem add_one_eq_neg_not115 (x : UInt256) :
+    UInt256.ofNat 1 + x = UInt256.ofNat 0 - UInt256.lnot x := by
+  apply Challenge.EvmProof.Word.word_ext
+  have hx : x.toNat < 2 ^ 256 := x.val.isLt
+  rw [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_sub]
+  unfold UInt256.lnot
+  simp only [Challenge.EvmProof.Word.word_toNat_ofNat, UInt256.size]
+  omega
+
 /-- `blk2919b` (after the `CLZ`): store `PRE_X := 0 - ~clz L`, `PRE_L := 255 - clz L`,
 `dodd`, `Bmod`. -/
 theorem run_negDoneB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -622,7 +645,7 @@ theorem run_negDoneB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have haw4 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1632 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 600000 })
-    [blk2919b, opAt, pushAt, wfOp,
+    [add_one_eq_neg_not115, blk2919b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,

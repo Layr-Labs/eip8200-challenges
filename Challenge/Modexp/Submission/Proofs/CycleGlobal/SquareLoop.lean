@@ -367,7 +367,7 @@ def gasSteps_r4More (s : State) (M : ByteArray) (c a mm : Nat)
     allOnes m0 m64 m32 (MachineState.readWord M 0) inv (UInt256.ofNat c) (UInt256.ofNat 5297)
     (MachineState.readWord M 192) ent m32 allOnes (MachineState.readWord M 128) m64 m0 tl m96 inv
     (UInt256.ofNat 0) aprev pbi (ret :: rest)
-    (by simp only [List.length_cons]; omega) hact htrue hz (R4RetainedMemory.red4_zero ..)
+    (by simp only [List.length_cons]; omega) hact htrue hz (R4RetainedMemory.red4_zero ..) rfl
   have hdec : allOnes + UInt256.ofNat c = UInt256.ofNat (c - 1) := by
     have hd := dec_succ4 (c - 1) (by omega)
     rwa [Nat.sub_add_cancel hcpos] at hd
@@ -406,7 +406,7 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
     allOnes m0 m64 m32 (MachineState.readWord M 0) inv (UInt256.ofNat 0) (UInt256.ofNat 5297)
     (MachineState.readWord M 192) ent m32 allOnes (MachineState.readWord M 128) m64 m0 tl m96 inv
     (UInt256.ofNat 0) aprev pbi (ret :: rest)
-    (by simp only [List.length_cons]; omega) hact hfalse hzTN (R4RetainedMemory.red4_zero ..)
+    (by simp only [List.length_cons]; omega) hact hfalse hzTN (R4RetainedMemory.red4_zero ..) rfl
   have hp := h.round hodd
   obtain ⟨-, -, -, h0⟩ := LazySquareMemory.r4r_result M a mm h.arep h.mrep hodd h.minv'
   have hz : allOnes + UInt256.ofNat 0 = allOnes := by decide
@@ -429,7 +429,7 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
   have hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
       (UInt256.ofNat 3256).toNat = true := by
     change Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3256 = true
-    exact CycleSubmission.Global.Binding.jumpDest 2532 (by rfl)
+    exact CycleSubmission.Global.Binding.jumpDest 2531 (by rfl)
   have g4 := gasSteps_lazyCsubAt s (R4Bridge.rows4r M) 4 2368 (UInt256.ofNat 3256)
     (CycleSubmission.Global.Fast.SquareLoopBlocks.frameStack (R4Bridge.rows4r M) 4 pbi ent tl inv m0 m96 m64 m32 aprev allOnes ret rest)
     (by simp only [CycleSubmission.Global.Fast.SquareLoopBlocks.frameStack, List.length_append, List.length_cons, List.length_nil]; omega)
@@ -447,7 +447,7 @@ def gasSteps_r4Last (s : State) (M : ByteArray) (a mm : Nat)
     (LazyCsub.resultMemory (R4Bridge.rows4r M) 4 2368) 2
     (LazySquareMemory.roundValue (R4Bridge.rows4 M) 4 mm) mm pbi
     (MachineState.readWord (LazyCsub.resultMemory (R4Bridge.rows4r M) 4 2368) 192) ent tl inv
-    m0 m96 m64 m32 aprev allOnes ret rest (by omega) rfl hrun hcode hfork hnp hact hcds hE.minv'
+    m0 m96 m64 m32 aprev allOnes ret rest (by omega) rfl rfl hrun hcode hfork hnp hact hcds hE.minv'
     ⟨hE.tlv, hE.invw.symm, hE.m0w.symm, hE.inverseGuard⟩
     ⟨hE.m96w.symm, hE.m64w.symm, hE.m32w.symm⟩
     hE.arep hE.mrep hE.alt hE.mpos hE.ml hE.tlw hE.s32 (fun h => absurd h (by decide))

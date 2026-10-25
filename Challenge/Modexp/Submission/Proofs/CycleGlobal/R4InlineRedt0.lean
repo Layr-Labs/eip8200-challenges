@@ -74,4 +74,31 @@ theorem run_redt_0 (s : State) (c m ret v p3 q2 q1 q0 p4 k n0 n1 n2 n3 np : UInt
     some { s with pc := UInt256.ofNat 4227, stack := q2 :: q1 :: q0 :: (p4 + c) :: (v + (UInt256.lt (p4 + c) p4)) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
   have hn := redt_0New_run s (c) (m) (v) (q2) (q1) (q0) (p3) (p4) (k) (n0) (n1) (n2) (n3) (np) rest hcap
   simpa only [Challenge.EvmProof.Word.word_add_comm, show (0 : UInt256) = ⟨0⟩ by decide] using hn
+
+/-- Exact first-row schedule: the carried v was produced by PUSH0 at PC4131.
+The inherited arbitrary-v runners above remain unbound comparison lemmas. -/
+def redt_0Zero114 : List Instr :=
+  [.op (.Dup ⟨7, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .op .POP,
+   .op .POP, .op .POP, .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨3, by decide⟩),
+   .op .LT, .op (.Swap ⟨3, by decide⟩)]
+
+private theorem zero_add_word114 (x : UInt256) : UInt256.ofNat 0 + x = x := by
+  apply Challenge.EvmProof.Word.word_ext
+  rw [Challenge.EvmProof.Word.word_toNat_add]
+  simp only [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.zero_mod, Nat.zero_add]
+  exact Nat.mod_eq_of_lt x.val.isLt
+
+/-- The changed block retains the carry comparison even for wrapped sums.
+No claim of arbitrary-v equivalence is used in the actual artifact. -/
+theorem run_redt_0Zero114 (s : State)
+    (c m ret p3 q2 q1 q0 p4 k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 1007) :
+    runInstructions redt_0Zero114
+      { s with pc := UInt256.ofNat 4217, stack := c :: m :: UInt256.ofNat 0 :: q2 :: q1 :: q0 :: p3 :: p4 :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } =
+    some { s with pc := UInt256.ofNat 4227, stack := q2 :: q1 :: q0 :: (p4 + c) :: (UInt256.ofNat 0 + UInt256.lt (p4 + c) p4) :: k :: n0 :: n1 :: n2 :: n3 :: np :: rest } := by
+  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
+  simp [redt_0Zero114, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, capacity, zero_add_word114]
+
 end CycleSubmission.Global.Fast.R4InlineTransport

@@ -88,7 +88,7 @@ def gasSteps_tail (W : W5) (k n0 n1 n2 n3 np : UInt256) (rest : List UInt256)
 def gasSteps_st4More (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
     aprev c : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990)
     (hact : 88 ≤ s.activeWords.toNat) (hc : UInt256.isTrue e0)
-    (hz : R4RetainedMemory.ZeroTN s.memory) (ht : P.t4 = UInt256.ofNat 0) :
+    (hz : R4RetainedMemory.ZeroTN s.memory) (ht : P.t4 = UInt256.ofNat 0) (hke : k = e5) :
     GasSteps { s with
       pc := UInt256.ofNat 4732,
       stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
@@ -108,15 +108,15 @@ def gasSteps_st4More (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e1
       memory := R4RetainedMemory.fourStores s.memory P } at h1
   rw [R4RetainedMemory.fourStores_eq_r4Mem s.memory P hz ht] at h1
   have g1 := SquareRow.stepsOf R4InlineTailBlocks.block_st4 h1 rfl hcode hfork hrun hnp
-  have h2 := R4InlineTailRuns.run_tail_more { s with memory := r4Mem s.memory P } P.t4 k n0 n1 n2 n3 np
-    e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 aprev c rest (by lenOK) hc hj
+  have h2 := R4InlineTailRuns.run_tail_moreAlias116 { s with memory := r4Mem s.memory P } P.t4 k n0 n1 n2 n3 np
+    e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 aprev c rest (by lenOK) hke hc hj
   exact g1.trans (SquareRow.stepsOf R4InlineTailBlocks.block_branch h2 rfl hcode hfork hrun hnp)
 
 /-- Store four limbs and restore the original frame on exit. -/
 def gasSteps_st4Last (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12
     aprev c : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 990)
     (hact : 88 ≤ s.activeWords.toNat) (hc : ¬ UInt256.isTrue e0)
-    (hz : R4RetainedMemory.ZeroTN s.memory) (ht : P.t4 = UInt256.ofNat 0) :
+    (hz : R4RetainedMemory.ZeroTN s.memory) (ht : P.t4 = UInt256.ofNat 0) (hke : k = e5) :
     GasSteps { s with
       pc := UInt256.ofNat 4732,
       stack := win P (k :: n0 :: n1 :: n2 :: n3 :: np :: e0 :: e1 :: e2 :: e3 :: e4 ::
@@ -136,8 +136,8 @@ def gasSteps_st4Last (P : W5) (k n0 n1 n2 n3 np e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e1
       memory := R4RetainedMemory.fourStores s.memory P } at h1
   rw [R4RetainedMemory.fourStores_eq_r4Mem s.memory P hz ht] at h1
   have g1 := SquareRow.stepsOf R4InlineTailBlocks.block_st4 h1 rfl hcode hfork hrun hnp
-  have h2 := R4InlineTailRuns.run_tail_fall { s with memory := r4Mem s.memory P } P.t4 k n0 n1 n2 n3 np
-    e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 aprev c rest (by lenOK) hc
+  have h2 := R4InlineTailRuns.run_tail_fallAlias116 { s with memory := r4Mem s.memory P } P.t4 k n0 n1 n2 n3 np
+    e0 e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 aprev c rest (by lenOK) hke hc
   have g2 := SquareRow.stepsOf R4InlineTailBlocks.block_branch h2 rfl hcode hfork hrun hnp
   have h3 := R4InlineTailRuns.run_tail_exit { s with memory := r4Mem s.memory P } n0 n1 n2 n3 np
     (e5 + e0) e1 e2 e3 e4 e5 e6 e7 e8 e9 e10 e11 e12 aprev c rest (by lenOK) hj
