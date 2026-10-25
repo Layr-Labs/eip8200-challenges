@@ -17,17 +17,17 @@ open Word
 
 def bitFinishTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3072 .JUMPDEST,
-   opAt 3073 .POP,
-   opAt 3074 .POP,
-   opAt 3075 .POP]
+  [opAt 3063 .JUMPDEST,
+   opAt 3064 .POP,
+   opAt 3065 .POP,
+   opAt 3066 .POP]
 
 def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 3076 1 1,
-   opAt 3077 .ADD,
-   pushAt 3078 1 194,
-   opAt 3079 .JUMP]
+  [pushAt 3067 1 1,
+   opAt 3068 .ADD,
+   pushAt 3069 1 194,
+   opAt 3070 .JUMP]
 
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=

@@ -19,10 +19,11 @@ def prog_st4 : List Instr :=
 def prog_branchOld116 : List Instr :=
   [.op .POP, .op .POP, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .push 2 4037, .op .JUMPI]
 /-- Consume the first copy of the loop decrement, instead of discarding it
-and duplicating the equal cached copy. Fillers retain all subsequent PCs. -/
+and duplicating the equal cached copy. A wider PUSH absorbs the former two
+JUMPDEST fillers, preserving every downstream byte PC without executing padding. -/
 def prog_branch : List Instr :=
   [.op .POP, .op (.Dup ⟨6, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩),
-   .op .JUMPDEST, .op .JUMPDEST, .push 2 4037, .op .JUMPI]
+   .push 4 4037, .op .JUMPI]
 def prog_m4 : List Instr :=
   [.op .POP, .op .POP, .op .POP, .op .POP, .op .POP, .op (.Swap ⟨13, by decide⟩), .push 2 3482, .op .JUMP]
 def prog_rare4 : List Instr :=

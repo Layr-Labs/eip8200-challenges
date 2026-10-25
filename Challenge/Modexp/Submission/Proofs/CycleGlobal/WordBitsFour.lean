@@ -45,18 +45,15 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
 
 /-- The single bit body at pc 2454 (instruction indices 1948 to 1966). -/
 def bodyBlock : BoundBlock 3998 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3099 19 3998
-    (bodyProgram 7) (by decide) (by rfl) (by rfl) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3090 19 3998 (bodyProgram 7) (by decide) (by rfl) (by rfl) (by rfl)
 
 /-- The body head `JUMPDEST` at pc 2453 (index 1947), the target of the loop control. -/
 def startBlock : BoundBlock 3997 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3098 1 3997
-    ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3089 1 3997 ([.op .JUMPDEST]) (by decide) (by rfl) (by rfl) (by rfl)
 
 /-- The loop control at pc 2476 (indices 1967 to 1974). -/
 def controlBlock : BoundBlock 4020 (controlProgram) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3118 8 4020
-    (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3109 8 4020 (controlProgram) (by decide) (by rfl) (by rfl) (by rfl)
 
 variable (s : State) (rest : List UInt256)
   (Bm1 byte offset outerW acc base m : UInt256) (hs : Frame s)
@@ -92,7 +89,7 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
     have hj : Decode.isValidJumpDest s.executionEnv.code 3997 = true := by
-      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 3098 (by rfl)
+      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 3089 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 
