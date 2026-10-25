@@ -92,6 +92,11 @@ theorem lnot_zero_raw :
   unfold UInt256.lnot Limbs.radix
   norm_num [UInt256.size, UInt256.toNat]
 
+/-- Typed zero bridge for the shared-complement dispatch proof. -/
+theorem lnot_ofNat_zero :
+    UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat (Limbs.radix - 1) :=
+  lnot_zero_raw
+
 theorem eq_maxWord_of_ne (w : UInt256)
     (h : w ≠ UInt256.ofNat (Limbs.radix - 1)) :
     UInt256.eq (UInt256.ofNat (Limbs.radix - 1)) w = UInt256.ofNat 0 := by
@@ -759,7 +764,9 @@ theorem run_oddCheck_pass (s : State) (input : ByteArray)
   have hmodmod := mod_word_self
     (show modOffset input + modulusSize input - 32 < 2 ^ 256 by omega)
   simp (config := { maxSteps := 800000 })
-    [blk1028, opAt, pushAt, wfOp,
+    [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+     lnot_ofNat_zero,
+     blk1028, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
      oddCheckState, setupEntryState, outerStack, hdata, hrun, hsub, hmodmod,
@@ -845,7 +852,9 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
   rcases hfail with hodd | hwidth | hnprime
   · -- even modulus: `ISZERO` of the parity bit is one
     simp (config := { maxSteps := 800000 })
-      [blk1028, opAt, pushAt, wfOp,
+      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+     lnot_ofNat_zero,
+     blk1028, opAt, pushAt, wfOp,
        Challenge.EvmProof.Stepper.runLocatedBlock,
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
@@ -857,7 +866,9 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Word.word_toNat_ofNat]
   · -- width not a multiple of 128: the masked width is nonzero
     simp (config := { maxSteps := 800000 })
-      [blk1028, opAt, pushAt, wfOp,
+      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+     lnot_ofNat_zero,
+     blk1028, opAt, pushAt, wfOp,
        Challenge.EvmProof.Stepper.runLocatedBlock,
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,
@@ -870,7 +881,9 @@ theorem run_oddCheck_bail (s : State) (input : ByteArray)
        Challenge.EvmProof.Word.word_toNat_ofNat]
   · -- last modulus word all ones: `EQ` against the all-ones word is one
     simp (config := { maxSteps := 800000 })
-      [blk1028, opAt, pushAt, wfOp,
+      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+     lnot_ofNat_zero,
+     blk1028, opAt, pushAt, wfOp,
        Challenge.EvmProof.Stepper.runLocatedBlock,
        Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
        oddCheckState, bail6State, outerStack, hdata, hcode, hrun, hsub, hmodmod,

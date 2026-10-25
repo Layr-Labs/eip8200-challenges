@@ -13,25 +13,29 @@ open HistoricalSearch.CRTControl
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 
 def counter (s : State) : UInt256 := MachineState.readWord s.memory 1728
+/-- Memory after the block: the count minus one is stored on both paths (the exit path's value is
+never read again). -/
+def written (s : State) : ByteArray :=
+  MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded (counter s - UInt256.ofNat 1).toNat 32) 1728
 def initial (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 8085, stack := frame a n (n 0) (n 1) rest}
 def tested (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8094
-    stack := UInt256.ofNat 8110 :: UInt256.isZero (counter s) :: frame a n (n 0) (n 1) rest}
+    pc := UInt256.ofNat 8109
+    memory := written s
+    stack := UInt256.ofNat 6152 :: counter s :: frame a n (n 0) (n 1) rest}
 def branched (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := if (counter s).toNat = 0 then UInt256.ofNat 8110 else UInt256.ofNat 8095
+    pc := if (counter s).toNat = 0 then UInt256.ofNat 8110 else UInt256.ofNat 6152
+    memory := written s
     stack := frame a n (n 0) (n 1) rest}
-def decremented (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with
-    pc := UInt256.ofNat 8109
-    memory := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded (counter s - UInt256.ofNat 1).toNat 32) 1728
-    stack := UInt256.ofNat 6152 :: frame a n (n 0) (n 1) rest}
+def looped (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
+  {s with pc := UInt256.ofNat 6152, memory := written s, stack := frame a n (n 0) (n 1) rest}
 def repeated (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {decremented s a n rest with pc := UInt256.ofNat 6153, stack := frame a n (n 0) (n 1) rest}
+  {s with pc := UInt256.ofNat 6153, memory := written s, stack := frame a n (n 0) (n 1) rest}
 def completed (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  if (counter s).toNat = 0 then {s with pc := UInt256.ofNat 8110, stack := frame a n (n 0) (n 1) rest}
+  if (counter s).toNat = 0 then
+    {s with pc := UInt256.ofNat 8110, memory := written s, stack := frame a n (n 0) (n 1) rest}
   else repeated s a n rest
 
 theorem head_run (s : State) (a n : Nat → UInt256) (rest : List UInt256)
@@ -46,51 +50,31 @@ noncomputable def decision (s : State) (a n : Nat → UInt256) (rest : List UInt
     GasSteps (initial s a n rest) (branched s a n rest) := by
   have h1 := LoopBlocks.counterBlock.steps (s := initial s a n rest)
     (env.transfer rfl rfl) rfl (head_run s a n rest hcap hact)
-  have valid : Decode.isValidJumpDest (tested s a n rest).executionEnv.code 8110 = true := by
+  have valid : Decode.isValidJumpDest (tested s a n rest).executionEnv.code 6152 = true := by
     rw [show (tested s a n rest).executionEnv.code = Artifact.bytecode from env.code]
-    exact LoopBlocks.validJump8110
+    exact LoopBlocks.validJump6152
   have cap : (tested s a n rest).stack.length < 1024 := by
     simp only [tested, frame, List.length_cons, List.length_append, List.length_nil]
     omega
-  have hr := jumpi_run (tested s a n rest) (UInt256.ofNat 8110) (UInt256.isZero (counter s))
+  have hr := jumpi_run (tested s a n rest) (UInt256.ofNat 6152) (counter s)
     (frame a n (n 0) (n 1) rest) rfl cap valid
   have h2 := LoopBlocks.counterJumpBlock.steps (s := tested s a n rest)
     (env.transfer rfl rfl) rfl hr
   have he : conditionalModel (tested s a n rest) = branched s a n rest := by
     by_cases hz : (counter s).toNat = 0
-    · simp [conditionalModel, tested, branched, word_toNat_isZero, hz]
-    · simp [conditionalModel, tested, branched, word_toNat_isZero, hz]
+    · simp [conditionalModel, tested, branched, hz]
       rfl
+    · simp [conditionalModel, tested, branched, hz]
   rw [he] at h2
   exact h1.trans h2
 
 noncomputable def repeatSteps (s : State) (a n : Nat → UInt256) (rest : List UInt256)
-    (env : Environment Artifact.artifact .Osaka s)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8095, stack := frame a n (n 0) (n 1) rest}
-      (repeated s a n rest) := by
-  have hr := decrement_run s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7) modulusP
-    (n 8) (n 1) mask (n 0) (n 3) (a 8) rest hcap hact
-  have h1 := LoopBlocks.decrementBlock.steps
-    (s := {s with pc := UInt256.ofNat 8095, stack := frame a n (n 0) (n 1) rest})
-    (env.transfer rfl rfl) rfl hr
-  have valid : Decode.isValidJumpDest (decremented s a n rest).executionEnv.code 6152 = true := by
-    rw [show (decremented s a n rest).executionEnv.code = Artifact.bytecode from env.code]
-    exact LoopBlocks.validJump6152
-  have cap : (decremented s a n rest).stack.length < 1024 := by
-    simp only [decremented, frame, List.length_cons, List.length_append, List.length_nil]
-    omega
-  have hj := jump_run (decremented s a n rest) (UInt256.ofNat 6152)
-    (frame a n (n 0) (n 1) rest) rfl cap valid
-  have h2 := LoopBlocks.repeatJumpBlock.steps (s := decremented s a n rest)
-    (env.transfer rfl rfl) rfl hj
-  have hd := jumpDest_run (jumpModel (decremented s a n rest)) (by
-    simp only [jumpModel, decremented, List.drop_succ_cons, List.drop_zero,
-      frame, List.length_cons, List.length_append, List.length_nil]
+    (env : Environment Artifact.artifact .Osaka s) (hcap : rest.length ≤ 960) :
+    GasSteps (looped s a n rest) (repeated s a n rest) := by
+  have hd := jumpDest_run (looped s a n rest) (by
+    simp only [looped, frame, List.length_cons, List.length_append, List.length_nil]
     omega)
-  have h3 := EntryBinding.headBlock.steps (s := jumpModel (decremented s a n rest))
-    (env.transfer rfl rfl) rfl hd
-  exact h1.trans (h2.trans h3)
+  exact EntryBinding.headBlock.steps (s := looped s a n rest) (env.transfer rfl rfl) rfl hd
 
 noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
@@ -99,20 +83,25 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (rest : List UInt
   have h := decision s a n rest env hcap hact
   by_cases hz : (counter s).toNat = 0
   · simpa only [completed, branched, if_pos hz] using h
-  · simp only [branched, if_neg hz] at h
+  · have hb : branched s a n rest = looped s a n rest := by
+      simp only [branched, looped, if_neg hz]
+    rw [hb] at h
     simp only [completed, if_neg hz]
-    exact h.trans (repeatSteps s a n rest env hcap hact)
+    exact h.trans (repeatSteps s a n rest env hcap)
+
+theorem memory_written (s : State) (a n : Nat → UInt256) (rest : List UInt256) :
+    (completed s a n rest).memory = written s := by
+  unfold completed
+  split_ifs <;> rfl
 
 theorem memory_output (s : State) (a b n : Nat → UInt256) (inv : UInt256) (rest : List UInt256)
     (h : SquareMeaning.Memory0 s.memory inv a b n) :
     SquareMeaning.Memory0 (completed s a n rest).memory inv a b n := by
-  by_cases hz : (counter s).toNat = 0
-  · simpa only [completed, if_pos hz] using h
-  · simp only [completed, if_neg hz]
-    constructor <;>
-      simp (disch := decide) only [repeated, decremented, readStore,
-        h.at768, h.at1344, h.at1376, h.at2720, h.at1568, h.at1600,
-        h.at32, h.at64, h.at96, h.at128, h.at160]
+  rw [memory_written]
+  constructor <;>
+    simp (disch := decide) only [written, readStore,
+      h.at768, h.at1344, h.at1376, h.at2720, h.at1568, h.at1600,
+      h.at32, h.at64, h.at96, h.at128, h.at160]
 
 theorem executionEnv_eq (s : State) (a n : Nat → UInt256) (rest : List UInt256) :
     (completed s a n rest).executionEnv = s.executionEnv := by
@@ -135,17 +124,15 @@ theorem counter_value (s : State) (a n : Nat → UInt256) (rest : List UInt256)
     (hz : (counter s).toNat ≠ 0) :
     counter (completed s a n rest) = counter s - UInt256.ofNat 1 := by
   rw [completed, if_neg hz]
-  simp only [counter, repeated, decremented, Challenge.EvmProof.Memory.readWord_writeWord]
+  simp only [counter, repeated, written, Challenge.EvmProof.Memory.readWord_writeWord]
 
 theorem keeps_low (s : State) (a n : Nat → UInt256) (rest : List UInt256)
     (start count : Nat) (he : start+count ≤ 1728) :
     MachineState.readPadded (completed s a n rest).memory start count =
       MachineState.readPadded s.memory start count := by
-  unfold completed
-  split_ifs
-  · rfl
-  · apply Challenge.EvmProof.Memory.readPadded_writeBytes_disjoint
-    exact Or.inl he
+  rw [memory_written, written]
+  apply Challenge.EvmProof.Memory.readPadded_writeBytes_disjoint
+  exact Or.inl he
 
 theorem calls_eq (s : State) (a n : Nat → UInt256) (rest : List UInt256) :
     (completed s a n rest).callStack = s.callStack := by

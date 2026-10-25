@@ -1,3 +1,71 @@
+# MODEXP: single-load square-loop counter
+
+Development base: newjordan's `7fcc8dc6-8fa3-4b06-bf17-da2cec6932e7` (shared-complement dispatch
+and sentinel-backed quotient mask), commit `209b9776822c6f889741db82ae80d43de047a251`, whose tree
+was verified by hosted evaluation. Its own parent is the promoted `d1c8717a` (commit
+`3cf557889940d7f0f9ee55e5da18bda869c66427`).
+
+## Change
+
+The RSA-2048 radix-240 square loop decides after every square whether to run another one. It kept
+the remaining count in memory at 0x6c0 and read it twice per repetition:
+
+    8085 JUMPDEST  PUSH2 0x6c0 MLOAD ISZERO PUSH2 8110 JUMPI          (exit test)
+    8095 PUSH1 1  PUSH2 0x6c0 MLOAD SUB PUSH2 0x6c0 MSTORE PUSH2 6152 JUMP   (decrement)
+
+The new block reads the count once, stores the decremented value, and branches on the old value:
+
+    8085 JUMPDEST  PUSH4 0x6c0 MLOAD PUSH3 1 DUP2 SUB PUSH4 0x6c0 MSTORE PUSH4 6152 JUMPI
+
+When the old count is nonzero the JUMPI returns to the square at 6152; otherwise execution falls
+through into the terminal product at 8110. The number of squares is unchanged for every count. The
+wider PUSH immediates keep the block at exactly 25 bytes, so every byte PC (including the 8110
+fall-through target and the overflow handler's return to 8085) is unchanged; the block has 4 fewer
+instructions, so instruction indices from 6705 on move down by 4 (9,188 -> 9,184 instructions).
+
+A repeated square now costs 36 gas of loop control instead of 53 (-17); the final exit costs 12
+more (it now also stores). The only state difference is that the counter word at 0x6c0 holds
+2^256-1 instead of 0 after the last square; no later instruction reads 0x6c0 or an overlapping
+word.
+
+## Measurements (pinned local EVM, not official scores)
+
+| image | seed-0 total | RSA-2048 e=3 | RSA-2048 e=65537 |
+|---|---:|---:|---:|
+| d1c8717a (promoted) | 374,457 | | |
+| 7fcc8dc6 (base) | 374,424 | 22,624 | 113,916 |
+| this image | **374,193** | 22,636 | 113,673 |
+
+The other 42 vectors are unchanged and all 44 return the expected output. Over 400 corpus seeds the
+image is exactly 231 gas below its base on every seed. Differential fuzzing against the promoted
+image (general mix including generic, big-modulus and truncated shapes, plus RSA-only runs) found no
+output difference.
+
+## Proof binding
+
+- `Proofs/Cycle/Execution/counterHead.lean`: exact run of the nine instructions before the JUMPI
+  (the old `decrement.lean` is removed).
+- `Proofs/Cycle/LoopBlocks.lean`: the counter block (index 6691, 9 instructions) and its JUMPI
+  (6700); the later blocks and jump-destination lemmas use the shifted indices.
+- `Proofs/Cycle/CounterControl.lean`: same public interface as before (`completed`, `gasSteps`,
+  `memory_output`, `counter_value`, `keeps_low`, environment/halt/active/frame/call equalities);
+  `completed` now writes count-1 on both paths, and `memory_output`/`keeps_low` are proved for that
+  write. `Round`, `SquareLoop`, `Core` and everything downstream are unchanged.
+- `Proofs/Cycle/Artifact.lean` and `Bytes.lean`: the new instruction list assembles to the exact
+  literal; instruction-index arguments and the 9,184 count are rebound in the block files.
+
+The allowed axiom set remains `propext`, `Classical.choice`, `Quot.sound`.
+
+## Attribution
+
+This change was developed with Claude Fable 5.1 in Claude Code. It builds directly on newjordan's
+7fcc8dc6 and d1c8717a, aerugo-ef v15 and v14, fkiene's public refinements, and every earlier work
+credited below and in `INHERITED_PROVENANCE.json` / `Provenance/`; all inherited notices are kept.
+
+---
+
+## Inherited documentation
+
 # MODEXP: cycle normalizer dead-code elimination
 
 Development base: accepted aerugo-ef v15, commit
@@ -129,3 +197,66 @@ Do not subtract the local 374,457 from official 374,193: these are different
 corpus configurations. The new caller revision still needs its own official
 validation. This checkpoint changes only documentation/attribution metadata;
 all Lean sources and executable bytes remain frozen for the running gate.
+
+
+## Shared-complement dispatch predicate (iteration 109)
+
+The modulus-tail dispatch at byte PCs 631..640 now uses
+`NOT; DUP1; ISZERO; SWAP1; JUMPDEST; PUSH1 1; AND; OR; JUMPDEST`.
+The old sequence was
+`DUP1; PUSH0; NOT; EQ; SWAP1; PUSH1 1; AND; ISZERO; OR`.
+The new sequence shares the complemented input word between the all-ones
+and low-parity tests. For every UInt256 input x, `~x == 0` iff x is the
+all-ones word and `(~x & 1)` equals `ISZERO(x & 1)`.
+The two sequential JUMPDEST instructions keep all 9,188 instruction indexes,
+widths and byte PCs identical to the caller-decrement parent. The PUSH1 at
+instruction 449 remains at byte PC 636. No existing destination literal moves.
+`PredicateIdentity.lean` proves these scalar identities without premises;
+`FastP1.lean` and `Setup.lean` bind the exact dispatcher and preserve all
+existing pass and bailout hypotheses, including the inverse precondition.
+
+On the pinned public seed-zero corpus, all 44 vectors are correct at
+**374,445 gas**, versus 374,457 for the caller-decrement parent and 374,465
+for the promoted normalizer image. Four generated RSA vectors each save
+three gas; the other 40 are unchanged. These are matched local totals, not
+an official hosted score. The normalizer's official 374,193 is from a
+different corpus configuration and must not be mixed with local figures.
+
+Decoded bytecode SHA-256:
+`2cbd6189e98e0064602f00dcfe6db4544aa00282a0fbcf67a3bc2683c743d2f5`.
+The isolated small gate built dispatcher Setup successfully (1,361 jobs).
+Whole-program Comparator and scoring must independently accept this image;
+this README alone is not an acceptance receipt. No carry shortcut, test-only
+restriction, new axiom, or weakened premise is part of this change.
+The caller-decrement parent was submitted separately as
+`d1c8717a-46f1-468d-bd74-0eca2543d705`; its hosted validation was still pending
+when this proof gate began. All earlier provenance and license notices remain.
+
+
+## Sentinel-backed quotient-estimate mask (#112)
+
+This revision additionally replaces bytes 2778..2781, `155f0317` with
+`8201175b`: `ISZERO; PUSH0; SUB; OR` becomes
+`DUP3; ADD; OR; JUMPDEST`. The all-ones sentinel was already on the entry
+stack and is preserved. For a comparison bit b, `maxWord + b = 0 - isZero b`
+in UInt256 arithmetic. The quotient word ORed with this mask is unrestricted.
+The four one-byte instructions preserve every instruction index, width and
+byte PC. The final JUMPDEST is padding (1 gas); the old window costs 11 gas
+and the new window 10, saving one gas per estimate.
+
+The parent is #109 (shared-complement dispatch predicate), commit
+`b6484e8db9af2040ca06d991ac590ba7e6f0f6bd`, which includes caller-decrement #105.
+The pinned public seed-zero batch measures **374,424 gas** for #112 versus
+**374,445** for #109: 21 gas saved, 44/44 correct. These are local measurements,
+not a hosted official score. Versus #105's 374,457, the cumulative saving is 33.
+
+`CycleGlobal/ShiftPaths.lean` binds the changed instructions to the artifact;
+`ShiftTrace2.run_estimate` proves the same result with the same premises.
+No arithmetic or input restriction is added. The separate report theorem
+`SentinelMask112.same_state` proves equality of the gas-erased instruction
+runner's full Option State result with the explicit sentinel entry frame;
+it does not assert equal remaining runtime gas. Exact decoded artifact:
+11,156 bytes, 9,188 instructions, SHA-256
+`3c753cd7874508334df1ebe2b555deea4ad0eb5e9359e42abf3c206f2a36d655`.
+At this checkpoint the artifact-bound ShiftTrace2 proof passes; submission-level
+Comparator and scoring remain mandatory and are recorded separately.
