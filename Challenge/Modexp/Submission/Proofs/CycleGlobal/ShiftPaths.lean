@@ -188,8 +188,8 @@ def blk2919b :
    opAt 1958 .SUB,
    pushAt 1959 2 1536,
    opAt 1960 .MSTORE,
-   opAt 1961 (.Dup ⟨0, by decide⟩),
-   opAt 1962 (.Dup ⟨2, by decide⟩),
+   opAt 1961 .JUMPDEST,
+   opAt 1962 (.Dup ⟨1, by decide⟩),
    opAt 1963 .DIV,
    opAt 1964 (.Dup ⟨0, by decide⟩),
    pushAt 1965 2 1568,
@@ -251,13 +251,13 @@ def blkNbSub :
    opAt 2013 .SUB,
    opAt 2014 .MUL,
    opAt 2015 (.Dup ⟨0, by decide⟩),
-   opAt 2016 (.Dup ⟨2, by decide⟩),
+   opAt 2016 (.Swap ⟨1, by decide⟩),
    opAt 2017 .MUL,
    pushAt 2018 1 2,
    opAt 2019 .SUB,
    opAt 2020 .MUL,
-   opAt 2021 (.Swap ⟨0, by decide⟩),
-   opAt 2022 .POP]
+   opAt 2021 .JUMPDEST,
+   opAt 2022 .JUMPDEST]
 
 /-- newton-batch tail (pc 2741): `dinv := x * n0`, `V_MINV := -(dodd * x)`, drop the four
 words, then the old `k := n` prologue. -/
@@ -274,7 +274,7 @@ def blkNbTail :
    opAt 2031 .SUB,
    pushAt 2032 2 2720,
    opAt 2033 .MSTORE,
-   opAt 2034 .POP,
+   opAt 2034 .JUMPDEST,
    opAt 2035 .POP,
    opAt 2036 .POP,
    opAt 2037 .POP,

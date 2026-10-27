@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "d363d598-afc4-47a9-a786-26bd04436ecc",
+    "rationale": "Own earlier submission with the identical R5 square-column fusion (rejected only on a tail corpus draw, 367076, despite verification). Its ExecSquare/Artifact changes are included unchanged.",
+    "evidence": "Same bytes 4235..4372 changes and same Proofs/R5/ExecSquare.lean; local gate for that image: 366566 seed 0, Comparator accepted."
+  },
+  {
+    "submissionId": "d052f5da-65fe-4de8-8cf9-6fecac1693a6",
+    "rationale": "Direct parent (own earlier submission): single-test Fermat join guard and no-op recheck on top of be76a99a. This submission keeps it unchanged and adds only the R5 square-kernel pair fusion.",
+    "evidence": "Parent local gate: Comparator accepted, verified score 366770 (seed 0). Child differs from the parent only in bytes 4235..4248, 4275..4286, 4329..4344, 4359..4372 and in Proofs/R5/ExecSquare.lean, Proofs/Cycle/Artifact.lean, Proofs/Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "be76a99a-6bdc-433f-9c2e-cc34523f4381",
     "rationale": "Direct parent: promoted juanbono tree with the R5 1024-bit kernel and all inherited newjordan/aerugo-ef/fkiene/Th0rgal work. This refinement changes only the 256-bit dispatch join guard (PC 33) and the Fermat recheck block (PC 4839) plus their proofs in FermatNext.lean and FermatGas.lean.",
     "evidence": "Parent bytecode.hex at promoted commit 3c4266d4; child differs in bytes 34..40 and 4840..4847 only. Seed-zero totals 366951 -> 366770 on the pinned Lean scorer; identical 181-gas saving on 300 random corpus seeds in an independent Python EVM."

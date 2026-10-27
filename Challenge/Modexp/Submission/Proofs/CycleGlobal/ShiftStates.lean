@@ -178,11 +178,11 @@ def postClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
              MachineState.readWord mem 0 :: outer n bsize esize msize
            memory := mem }
 
-/-- `PRE_NEWTON`: `[dodd, L, d]` above the frame, four words stored (CLZ cut: the shift
+/-- `PRE_NEWTON`: `[dodd, d]` above the frame (the spare `L` copy is no longer kept), four words stored (CLZ cut: the shift
 words `PRE_X := preS d` and `PRE_L := preK d` first). -/
 def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pcPreNewton
-           stack := preDodd (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
+           stack := preDodd (MachineState.readWord mem 0) ::
              MachineState.readWord mem 0 :: outer n bsize esize msize
            memory := Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
              PRE_X (preS (MachineState.readWord mem 0)))
@@ -193,20 +193,20 @@ def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : S
 /-- The newton-batch head (pc 2705) over a raw memory `M`, with the top limb `d`. -/
 def nbHeadState (s : State) (M : ByteArray) (d : UInt256) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pcPreNewton
-           stack := preDodd d :: preL d :: d :: outer n bsize esize msize
+           stack := preDodd d :: d :: outer n bsize esize msize
            memory := M }
 
 /-- The shared Newton chain entry (pc 714): `dodd * n0` and the return pc 2741 on top. -/
 def nbSubState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2543
-           stack := preDodd d * n0 :: n0 :: preDodd d :: preL d :: d ::
+           stack := preDodd d * n0 :: n0 :: preDodd d :: d ::
              outer n bsize esize msize
            memory := M }
 
 /-- The newton-batch tail (pc 2741): the inverse of `dodd * n0` on top. -/
 def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2594
-           stack := newton8W (preDodd d * n0) :: n0 :: preDodd d :: preL d :: d ::
+           stack := newton8W (preDodd d * n0) :: n0 :: preDodd d :: d ::
              outer n bsize esize msize
            memory := M }
 
