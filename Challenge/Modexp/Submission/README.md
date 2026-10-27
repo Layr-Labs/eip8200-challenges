@@ -1,3 +1,32 @@
+# Current refinement: setup-path stack cleanups (-24 gas per draw, on top of R5 fusion)
+
+* `setupPathA` (PCs 649..689): drop a `DUP1` copy that was only popped at the end;
+  re-index the following `DUP`s and replace one final `POP` by `JUMPDEST`.
+* Newton chain `blkNbSub` (PCs 2543..2593): the last step consumes `p` with `SWAP2`
+  instead of `DUP3`, so the trailing `SWAP1 POP` becomes two `JUMPDEST`s.
+Both keep byte PCs and instruction indices; the run lemmas keep their statements.
+Seed-zero pinned total with the R5 fusion below: 366,542 (44/44).
+
+---
+
+# Current refinement: fused doubled cross products in the R5 square (-204 gas per draw)
+
+Parent: own submission `d052f5da-65fe-4de8-8cf9-6fecac1693a6` (Fermat join).
+In R5 square columns 4 and 5, two cross products per column were each doubled
+separately (`MUL DUP1 ADD ADD` twice). They are now summed first and doubled once,
+on the low (`MUL`) side and the mod-P (`MULMOD`) side; on the mod-P side `P` is
+duplicated once (`DUP16 DUP1`) and kept under the operands with `SWAP1`. Freed
+bytes are `JUMPDEST` padding, so every byte PC and instruction index is unchanged.
+12 gas per R5 square, 17 R5 squares per corpus draw.
+
+`Proofs/R5/ExecSquare.lean` regenerates columns 4 and 5 (part programs, models,
+run lemmas, column program/model/run); the column outputs `sqCol4_o*`/`sqCol5_o*`
+are unchanged and `sqCol4_eq`/`sqCol5_eq` close with the premise-free lemma
+`fusePair : ((b + a) + (b + a)) + c = (b + b) + ((a + a) + c)`.
+Seed-zero pinned total: 366,566 (44/44) versus 366,770 for the parent.
+
+---
+
 # Current refinement: single-test Fermat join (-181 gas per draw)
 
 Base: promoted `be76a99a-6bdc-433f-9c2e-cc34523f4381` (juanbono, R5 1024-bit kernel).

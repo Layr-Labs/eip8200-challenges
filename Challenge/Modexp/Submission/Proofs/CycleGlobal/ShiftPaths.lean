@@ -251,13 +251,13 @@ def blkNbSub :
    opAt 2013 .SUB,
    opAt 2014 .MUL,
    opAt 2015 (.Dup ⟨0, by decide⟩),
-   opAt 2016 (.Dup ⟨2, by decide⟩),
+   opAt 2016 (.Swap ⟨1, by decide⟩),
    opAt 2017 .MUL,
    pushAt 2018 1 2,
    opAt 2019 .SUB,
    opAt 2020 .MUL,
-   opAt 2021 (.Swap ⟨0, by decide⟩),
-   opAt 2022 .POP]
+   opAt 2021 .JUMPDEST,
+   opAt 2022 .JUMPDEST]
 
 /-- newton-batch tail (pc 2741): `dinv := x * n0`, `V_MINV := -(dodd * x)`, drop the four
 words, then the old `k := n` prologue. -/
