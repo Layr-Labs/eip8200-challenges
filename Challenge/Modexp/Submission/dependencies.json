@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "be76a99a-6bdc-433f-9c2e-cc34523f4381",
+    "rationale": "Direct parent: promoted juanbono tree with the R5 1024-bit kernel and all inherited newjordan/aerugo-ef/fkiene/Th0rgal work. This refinement changes only the 256-bit dispatch join guard (PC 33) and the Fermat recheck block (PC 4839) plus their proofs in FermatNext.lean and FermatGas.lean.",
+    "evidence": "Parent bytecode.hex at promoted commit 3c4266d4; child differs in bytes 34..40 and 4840..4847 only. Seed-zero totals 366951 -> 366770 on the pinned Lean scorer; identical 181-gas saving on 300 random corpus seeds in an independent Python EVM."
+  },
+  {
     "submissionId": "092d45f2-fe9d-4ba7-871e-77fab48f386a",
     "rationale": "Immediate submitted parent #115, supplying the CLZ-result increment and full one-instruction-shorter artifact-bound proof rebasing. The new #116 change is the separate retained loop-tail alias reuse with explicit equality premises. Parent is validating; no official score is claimed.",
     "evidence": "Parent artifact decoded SHA-256 bea8ea1aa6ea98eb602d509b1097075d3212fb89503699c4012f61b123f87573. Child alters only byte PCs4750..4754 relative to that parent, preserving the estimator increment at PCs2504..2506 and all other bytes. R4InlineTailRuns adds hke:k=e5, passed by R4Trace and discharged by rfl in both SquareLoop branches."

@@ -23,11 +23,14 @@ the exponent and modulus words from their fixed offsets 128 and 160. -/
 def fastProgram : List Instr :=
   [.push 1 96, .op .CALLDATALOAD, .push 1 128, .op .CALLDATALOAD, .push 1 160, .op .CALLDATALOAD]
 
-/-- Join point at 31: jump to the window core at 872 unless
-`exponent = modulus - 1`, in which case fall through to the special-prime test at 40. -/
+/-- Join point at 33: jump to the window core at 745 unless
+`exponent = modulus - 1`, in which case fall through to the special-prime test at 45.
+The guard is `modulus XOR (exponent + 1)`, zero exactly when `exponent + 1 = modulus`
+(mod 2^256), so `exponent = modulus - 2` takes the window route directly. The trailing
+`JUMPDEST` pads the guard to the original seven bytes. -/
 def joinProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .push 1 1, .op .LT, .push 2 745, .op .JUMPI]
+  [.op .JUMPDEST, .push 1 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Dup ⟨1, by decide⟩),
+   .op .XOR, .op .JUMPDEST, .push 2 745, .op .JUMPI]
 
 /-- General-width entry at 103 (exponent and modulus sizes 32, base size not 32):
 a base size above 32 leaves for the wide fallback at 238. -/
@@ -84,10 +87,42 @@ theorem fermatDiff_one (modulus exponent : UInt256)
   have he : exponent.toNat < 2 ^ 256 := exponent.val.isLt
   omega
 
+/-- The join guard vanishes exactly when `fermatDiff` does. -/
+theorem joinGuard_zero_iff (modulus exponent : UInt256) :
+    (UInt256.xor modulus (exponent + UInt256.ofNat 1)).toNat = 0 ↔
+      (fermatDiff modulus exponent).toNat = 0 := by
+  have hz : ∀ w : UInt256, w.toNat = 0 ↔ w = 0 := by
+    intro w
+    constructor
+    · intro h; exact Challenge.EvmProof.Word.word_ext (by rw [h]; rfl)
+    · intro h; rw [h]; rfl
+  rw [hz, WindowGuardLogic.wordXor_eq_zero_iff, fermatDiff,
+    Challenge.EvmProof.Word.word_toNat_add]
+  have hl : (UInt256.lnot exponent).toNat = 2 ^ 256 - 1 - exponent.toNat := by
+    have he : exponent.toNat < 2 ^ 256 := exponent.val.isLt
+    rw [UInt256.lnot, Challenge.EvmProof.Word.word_toNat_ofNat]
+    change (2 ^ 256 - 1 - exponent.toNat) % 2 ^ 256 = _
+    exact Nat.mod_eq_of_lt (by omega)
+  rw [hl]
+  have hm : modulus.toNat < 2 ^ 256 := modulus.val.isLt
+  have he : exponent.toNat < 2 ^ 256 := exponent.val.isLt
+  constructor
+  · intro h
+    have h' := congrArg UInt256.toNat h
+    rw [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_ofNat] at h'
+    omega
+  · intro h
+    apply Challenge.EvmProof.Word.word_ext
+    rw [Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_ofNat]
+    omega
+
 def jumpTailProgram : List Instr := [.push 2 745, .op .JUMP]
+/-- The former Fermat recheck at 4839. The join guard already established
+`exponent = modulus - 1`, so the block is an eight-byte no-op of seven instructions
+falling through to the result at 4848. -/
 def tailProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .push 2 745, .op .JUMPI]
+  [.op .JUMPDEST, .push 2 0, .op .POP, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
+   .op .JUMPDEST]
 def inverseGuardProgram : List Instr :=
   [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 32 FermatProgram.bn, .op .XOR,
     .push 2 745, .op .JUMPI]
@@ -138,7 +173,7 @@ theorem run_join (template : State) (modulus exponent : UInt256) (rest : List UI
     runInstructions joinProgram
       (framed template (UInt256.ofNat 33) (modulus :: exponent :: rest)) =
     some (framed template
-      (if (fermatDiff modulus exponent).toNat ≤ 1 then UInt256.ofNat 45 else UInt256.ofNat 745)
+      (if (fermatDiff modulus exponent).toNat = 0 then UInt256.ofNat 45 else UInt256.ofNat 745)
       (modulus :: exponent :: rest)) := by
   have hk0 : rest.length < 1024 := by omega
   have hk1 : rest.length + 1 < 1024 := by omega
@@ -148,18 +183,18 @@ theorem run_join (template : State) (modulus exponent : UInt256) (rest : List UI
   have hk5 : rest.length + 5 < 1024 := by omega
   have hk6 : rest.length + 6 < 1024 := by omega
   have hk7 : rest.length + 7 < 1024 := by omega
-  simp only [fermatDiff]
-  have hcmp : UInt256.lt (UInt256.ofNat 1) (modulus + UInt256.lnot exponent) =
-      (if (modulus + UInt256.lnot exponent).toNat ≤ 1 then UInt256.ofNat 0 else UInt256.ofNat 1) := by
-    unfold UInt256.lt
-    have h1 : (UInt256.ofNat 1).toNat = 1 := by decide
-    rw [h1]
-    split_ifs <;> simp_all <;> omega
-  by_cases hz : (modulus + UInt256.lnot exponent).toNat ≤ 1 <;>
+  have hg := joinGuard_zero_iff modulus exponent
+  by_cases hz : (fermatDiff modulus exponent).toNat = 0
+  · have hx : (UInt256.xor modulus (exponent + UInt256.ofNat 1)).toNat = 0 := hg.mpr hz
     simp (config := { maxSteps := 500000 }) [joinProgram, runInstructions, framed,
-      htarget, hz, UInt256.isTrue, hcmp, Challenge.EvmProof.Stepper.runInstr, hk0, hk1, hk2, hk3, hk4, hk5, hk6, hk7,
+      htarget, hz, hx, UInt256.isTrue, Challenge.EvmProof.Stepper.runInstr, hk0, hk1, hk2, hk3, hk4, hk5, hk6, hk7,
       Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+  · have hx : ¬ (UInt256.xor modulus (exponent + UInt256.ofNat 1)).toNat = 0 :=
+      fun h => hz (hg.mp h)
+    simp (config := { maxSteps := 500000 }) [joinProgram, runInstructions, framed,
+      htarget, hz, hx, UInt256.isTrue, Challenge.EvmProof.Stepper.runInstr, hk0, hk1, hk2, hk3, hk4, hk5, hk6, hk7,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 set_option linter.unusedSimpArgs false in
@@ -264,28 +299,18 @@ theorem run_jumpTail (template : State) (rest : List UInt256) (hrest : rest.leng
     htarget,Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat]
 
 theorem run_tail (template : State) (modulus exponent : UInt256) (rest : List UInt256)
-    (hrest : rest.length ≤ 1000)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 745 = true) :
+    (hrest : rest.length ≤ 1000) :
     runInstructions tailProgram
       (framed template (UInt256.ofNat 4839) (modulus :: exponent :: rest)) =
-    some (framed template
-      (if (fermatDiff modulus exponent).toNat = 0 then UInt256.ofNat 4848 else UInt256.ofNat 745)
-      (modulus :: exponent :: rest)) := by
+    some (framed template (UInt256.ofNat 4848) (modulus :: exponent :: rest)) := by
   have hk0 : rest.length < 1024 := by omega
   have hk1 : rest.length + 1 < 1024 := by omega
   have hk2 : rest.length + 2 < 1024 := by omega
   have hk3 : rest.length + 3 < 1024 := by omega
-  have hk4 : rest.length + 4 < 1024 := by omega
-  have hk5 : rest.length + 5 < 1024 := by omega
-  have hk6 : rest.length + 6 < 1024 := by omega
-  have hk7 : rest.length + 7 < 1024 := by omega
-  simp only [fermatDiff]
-  by_cases hz : (modulus + UInt256.lnot exponent).toNat = 0 <;>
-    simp (config := { maxSteps := 500000 }) [tailProgram, runInstructions, framed,
-      htarget, hz, UInt256.isTrue, Challenge.EvmProof.Stepper.runInstr, hk0, hk1, hk2, hk3, hk4, hk5, hk6, hk7,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+  simp (config := { maxSteps := 500000 }) [tailProgram, runInstructions, framed,
+    Challenge.EvmProof.Stepper.runInstr, hk0, hk1, hk2, hk3,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_inverseGuard (template : State) (modulus : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)

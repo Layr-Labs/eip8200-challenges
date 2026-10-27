@@ -1,3 +1,25 @@
+# Current refinement: single-test Fermat join (-181 gas per draw)
+
+Base: promoted `be76a99a-6bdc-433f-9c2e-cc34523f4381` (juanbono, R5 1024-bit kernel).
+Two dispatch blocks change; byte length (10,698), instruction count (8,543), every
+byte PC and every pre-existing `JUMPDEST` are unchanged.
+
+* Join guard at PC 33 (bytes 34..40): `DUP2 NOT DUP2 ADD PUSH1 1 LT` becomes
+  `PUSH1 1 DUP3 ADD DUP2 XOR JUMPDEST`, i.e. `modulus XOR (exponent + 1)`. It is
+  zero exactly when `exponent = modulus - 1`; the old `1 < modulus + ~exponent`
+  also let `exponent = modulus - 2` (the BN254 inversion vector) detour through
+  the special-prime test and a recheck at 4839 before the window route.
+  `FermatNext.joinGuard_zero_iff` proves the guard equivalence without premises.
+* PC 4839 (bytes 4840..4847): the recheck `DUP2 NOT DUP2 ADD PUSH2 0x02e9 JUMPI`
+  is now `PUSH2 0x0000 POP JUMPDEST JUMPDEST JUMPDEST JUMPDEST`, an exact no-op;
+  `FermatGas.handled` passes the join hypothesis to the unchanged Fermat result.
+
+Seed-zero pinned-EVM total: 366,770 gas (44/44) versus 366,951 for the base;
+the saving is the same 181 gas on every corpus seed (the changed bytes are not on
+any RSA path). Local measurements are not an official score.
+
+---
+
 # Current refinement #115: estimator increment
 
 This version replaces byte PCs2504..2506 `NOT; PUSH0; SUB` with

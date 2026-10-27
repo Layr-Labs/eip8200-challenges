@@ -94,7 +94,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     (by simp; omega) hjump
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
     WindowTwentyOneGasRoute.handled legacy template env hcall input tail htail hmatch
-  by_cases hs : (FermatNext.fermatDiff m e).toNat ≤ 1
+  by_cases hs : (FermatNext.fermatDiff m e).toNat = 0
   · rw [if_pos hs] at hraw
     have joinSteps : GasSteps (joinState template input tail) (withModulus template input tail 45) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
@@ -115,19 +115,12 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       have commonSteps := joinSteps.trans primeSteps
       have htraw := FermatNext.run_tail (context template input) m e (shiftWord input :: tail)
-        (by simp; omega) hjump
-      by_cases he : (FermatNext.fermatDiff m e).toNat = 0
-      · rw [if_pos he] at htraw
-        have tailSteps : GasSteps (withModulus template input tail 4839) (withModulus template input tail 4848) :=
-          paths.tail.steps (ec.transfer rfl rfl) rfl htraw
-        obtain ⟨final, ⟨trace⟩, done, result⟩ :=
-          fermatHandled paths template env hcall input tail htail hmatch hbn hsecp he hp
-        exact ⟨final, ⟨(commonSteps.trans tailSteps).trans trace⟩, done, result⟩
-      · rw [if_neg he] at htraw
-        have tailSteps : GasSteps (withModulus template input tail 4839)
-            (WindowTwentyOneGasRoute.entryState template input tail) :=
-          paths.tail.steps (ec.transfer rfl rfl) rfl htraw
-        exact ⟨oldFinal, ⟨(commonSteps.trans tailSteps).trans oldTrace⟩, oldDone, oldResult⟩
+        (by simp; omega)
+      have tailSteps : GasSteps (withModulus template input tail 4839) (withModulus template input tail 4848) :=
+        paths.tail.steps (ec.transfer rfl rfl) rfl htraw
+      obtain ⟨final, ⟨trace⟩, done, result⟩ :=
+        fermatHandled paths template env hcall input tail htail hmatch hbn hsecp hs hp
+      exact ⟨final, ⟨(commonSteps.trans tailSteps).trans trace⟩, done, result⟩
   · rw [if_neg hs] at hraw
     have joinSteps : GasSteps (joinState template input tail) (WindowTwentyOneGasRoute.entryState template input tail) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
