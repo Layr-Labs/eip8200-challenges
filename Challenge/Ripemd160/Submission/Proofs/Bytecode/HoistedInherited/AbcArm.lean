@@ -48,19 +48,19 @@ abbrev Located := DataStepper.Located HoistedInherited.Artifact.submissionArtifa
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_inlineReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 3418 = 4750 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyDest : HoistedInherited.Artifact.submissionArtifact.instructionPC 4343 = 7019 := by
+@[simp] theorem pc_emptyDest : HoistedInherited.Artifact.submissionArtifact.instructionPC 4245 = 7019 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyPush : HoistedInherited.Artifact.submissionArtifact.instructionPC 4344 = 7020 := by
+@[simp] theorem pc_emptyPush : HoistedInherited.Artifact.submissionArtifact.instructionPC 4246 = 7020 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyZero0 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4345 = 7041 := by
+@[simp] theorem pc_emptyZero0 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4247 = 7041 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyStore : HoistedInherited.Artifact.submissionArtifact.instructionPC 4346 = 7042 := by
+@[simp] theorem pc_emptyStore : HoistedInherited.Artifact.submissionArtifact.instructionPC 4248 = 7042 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyMsize : HoistedInherited.Artifact.submissionArtifact.instructionPC 4347 = 7043 := by
+@[simp] theorem pc_emptyMsize : HoistedInherited.Artifact.submissionArtifact.instructionPC 4249 = 7043 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyZero1 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4348 = 7044 := by
+@[simp] theorem pc_emptyZero1 : HoistedInherited.Artifact.submissionArtifact.instructionPC 4250 = 7044 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 4349 = 7045 := by
+@[simp] theorem pc_emptyReturn : HoistedInherited.Artifact.submissionArtifact.instructionPC 4251 = 7045 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def wordMaskNat : Nat :=
@@ -93,14 +93,14 @@ def finishPath : List Located :=
    ⟨3418, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def emptyStorePath : List Located :=
-  [⟨4343, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨4344, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
-   ⟨4345, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨4346, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨4245, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨4246, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
+   ⟨4247, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4248, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def emptyFinishPath : List Located :=
-  [⟨4348, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨4349, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨4250, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨4251, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def maskedWord (input : ByteArray) : UInt256 :=
   MachineState.readWord input 0
@@ -355,12 +355,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size
 def gasSteps_empty_hit (input : ByteArray) (hz : input.size = 0) :
     GasSteps (emptyEntry input) (emptyReturned input) := by
   have gs := sound emptyStorePath (run_empty_store input hz)
-  have hd := HoistedInherited.Artifact.submissionArtifact.decodeAt_op_index 4347 .MSIZE
+  have hd := HoistedInherited.Artifact.submissionArtifact.decodeAt_op_index 4249 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (emptyStored input).pc.toNat = HoistedInherited.Artifact.submissionArtifact.instructionPC 4347 := by
+  have hp : (emptyStored input).pc.toNat = HoistedInherited.Artifact.submissionArtifact.instructionPC 4249 := by
     rw [pc_emptyMsize]; rfl
   have hop : (emptyStored input).decodedOp = some .MSIZE :=
-    HoistedInherited.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 4347 rfl hp .MSIZE none hd rfl
+    HoistedInherited.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 4249 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (emptyStored input) (emptySized input) := by

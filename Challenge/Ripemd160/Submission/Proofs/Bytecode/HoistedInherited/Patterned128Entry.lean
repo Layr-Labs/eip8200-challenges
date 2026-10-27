@@ -171,7 +171,7 @@ def gasSteps_allowed (input : ByteArray) (hfit : CalldataFits input) (hn : Recog
      exact gs.trans (g1.trans (GasSteps.cast gj rfl he))
 
 private theorem valid_empty : Decode.isValidJumpDest submissionBytecode 7019 = true := by
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 4343 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 4245 (by rfl)
   rw [HoistedInherited.AbcArm.pc_emptyDest] at h
   exact h
 

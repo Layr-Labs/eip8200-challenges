@@ -126,18 +126,18 @@ private theorem code_bound : HoistedInherited.Artifact.submissionArtifact.code.s
 /- Standalone certificates: no dependency on the old, late-copy return sites. -/
 
 def storeIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4790
+ | ⟨0, _⟩ => 4655
  | ⟨1, _⟩ => 3472
- | ⟨2, _⟩ => 4207
+ | ⟨2, _⟩ => 4109
  | ⟨3, _⟩ => 3700
- | ⟨4, _⟩ => 4252
+ | ⟨4, _⟩ => 4154
  | ⟨5, _⟩ => 3578
- | ⟨6, _⟩ => 4234
- | ⟨7, _⟩ => 4693
+ | ⟨6, _⟩ => 4136
+ | ⟨7, _⟩ => 4558
  | ⟨8, _⟩ => 3760
- | ⟨9, _⟩ => 4315
+ | ⟨9, _⟩ => 4217
  | ⟨10, _⟩ => 3732
- | ⟨11, _⟩ => 4936
+ | ⟨11, _⟩ => 4801
  | ⟨12, _⟩ => 3788
 
 namespace storeSite
@@ -199,18 +199,18 @@ def gasSteps_prepare_loaded (input : ByteArray) (rho : List UInt256) (hcap : rho
   exact gj
 
 def returnIndex : Fin 13 → Nat
- | ⟨0, _⟩ => 4800
+ | ⟨0, _⟩ => 4665
  | ⟨1, _⟩ => 3482
- | ⟨2, _⟩ => 4217
+ | ⟨2, _⟩ => 4119
  | ⟨3, _⟩ => 3715
- | ⟨4, _⟩ => 4267
+ | ⟨4, _⟩ => 4169
  | ⟨5, _⟩ => 3593
- | ⟨6, _⟩ => 4249
- | ⟨7, _⟩ => 4713
+ | ⟨6, _⟩ => 4151
+ | ⟨7, _⟩ => 4578
  | ⟨8, _⟩ => 3785
- | ⟨9, _⟩ => 4340
+ | ⟨9, _⟩ => 4242
  | ⟨10, _⟩ => 3757
- | ⟨11, _⟩ => 4981
+ | ⟨11, _⟩ => 4846
  | ⟨12, _⟩ => 3853
 
 def finishIndex (i : Fin 13) : Nat := returnIndex i + 1

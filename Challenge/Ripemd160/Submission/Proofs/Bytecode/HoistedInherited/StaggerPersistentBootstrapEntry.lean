@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentBootstrapSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentBootstrapRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerPersistentFrame
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentCoreRight
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRepresentation
@@ -6,6 +6,7 @@ set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
+set_option linter.unusedVariables false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentBootstrapBridge
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon
@@ -52,6 +53,10 @@ theorem output_eq (memory : ByteArray) (h : Compression.HashState) (off limit : 
   simp [StaggerPersistentBootstrapRaw.outputStack, StaggerPersistentBootstrapRaw.inputStack, input, stack, StaggerCoreCommon.word,
     initial_eq, StaggerPersistentFrame.coreRest, hf, hm, h140, h190, h310, h350]
 
+/-- The generic compressor starts directly at 824: its former entry marker was
+removed (only the fast pad-only block jumped there, and it now runs the
+specialised prefix).  Entering is therefore the identity on the machine state;
+only the stack's presentation changes. -/
 def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 900) (hr : s.halt = .Running)
     (ha : 34 ≤ s.activeWords.toNat)
@@ -61,9 +66,15 @@ def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256)
     GasSteps (entry s h off limit rho)
       (HoistedInherited.StaggerPersistentCoreRight.initialState s (Word.ofUInt32 h.h4) (initial h)
         (StaggerPersistentFrame.coreRest h off limit rho)) := by
-  have g := HoistedInherited.StaggerPersistentBootstrapSite.gasSteps s (input h off limit) rho hs hr ha hcode hfork hnp
-  rw [input_eq, output_eq] at g
-  exact g
+  have e : StaggerPersistentFrame.frame h off limit rho =
+      stack s.memory (Word.ofUInt32 h.h4)
+        [.factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e]
+        (initial h) (initial h) (UInt256.ofNat 1352829926)
+        (StaggerPersistentFrame.coreRest h off limit rho) := by
+    rw [← input_eq h off limit rho, ← output_eq s.memory h off limit rho]
+    rfl
+  exact GasSteps.cast (GasSteps.refl _) rfl
+    (by simp only [entry, HoistedInherited.StaggerPersistentCoreRight.initialState, e])
 
 #print axioms initial_eq
 #print axioms output_eq

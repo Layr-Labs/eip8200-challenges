@@ -38,7 +38,7 @@ def template : Piece → List Instr
   | .result => resultTemplate
   | .success => successTemplate
 
-def index : Piece → Nat | .data => 5004 | .result => 5165 | .success => 5167
+def index : Piece → Nat | .data => 4869 | .result => 5030 | .success => 5032
 def pc : Piece → Nat | .data => 8157 | .result => 9416 | .success => 9420
 
 theorem actual_slice (p : Piece) :

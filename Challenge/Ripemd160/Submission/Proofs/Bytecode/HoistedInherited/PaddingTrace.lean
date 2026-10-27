@@ -10,28 +10,28 @@ Continues `HoistedInherited.PaddingTraceCore` (split for memory: one module peak
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.PaddingTrace
-@[simp] private theorem inherited_tail_pc_5417 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5381 = 9725 := by
+@[simp] private theorem inherited_tail_pc_5417 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5246 = 9725 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5418 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5382 = 9726 := by
+@[simp] private theorem inherited_tail_pc_5418 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5247 = 9726 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5419 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5383 = 9728 := by
+@[simp] private theorem inherited_tail_pc_5419 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5248 = 9728 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5420 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5384 = 9729 := by
+@[simp] private theorem inherited_tail_pc_5420 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5249 = 9729 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5421 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5385 = 9730 := by
+@[simp] private theorem inherited_tail_pc_5421 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5250 = 9730 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5422 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5386 = 9733 := by
+@[simp] private theorem inherited_tail_pc_5422 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5251 = 9733 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5423 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5387 = 9734 := by
+@[simp] private theorem inherited_tail_pc_5423 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5252 = 9734 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5424 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5388 = 9736 := by
+@[simp] private theorem inherited_tail_pc_5424 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5253 = 9736 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 
@@ -435,12 +435,12 @@ private theorem run_footJump (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock (footerB.drop 3) (footerPreJump input) =
       some (footerEntered input) := by
   obtain ⟨loc, hloc, hidx, hins⟩ :
-      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 5392 ∧ loc.instruction = .op .JUMP :=
+      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 5257 ∧ loc.instruction = .op .JUMP :=
     ⟨_, rfl, rfl, rfl⟩
   have hpc : (footerPreJump input).pc.toNat =
       HoistedInherited.Artifact.submissionArtifact.instructionPC loc.index := by
     rw [hidx]
-    change 9741 = HoistedInherited.Artifact.submissionArtifact.instructionPC 5392
+    change 9741 = HoistedInherited.Artifact.submissionArtifact.instructionPC 5257
     rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (footerPreJump input) =
       some (footerEntered input) := by

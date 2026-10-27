@@ -1,5 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.ColdOrdinaryPrepare
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.PersistentStaggerTailBridge
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Body
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Zero
 set_option warningAsError true
 set_option maxRecDepth 30000
 set_option maxHeartbeats 3000000
@@ -33,10 +35,34 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
   have hfq : q.fork = .Osaka := by change q.executionEnv.fork = _; rw [henv]; exact hfork
   have hnq : Precompile.isPrecompileWithConfig q.executionEnv.precompileConfig
       q.executionEnv.fork q.executionEnv.codeAddr = false := by rw [henv]; exact hnp
-  have gb := HoistedInherited.StaggerPersistentBootstrapBridge.gasSteps_body q h off cont rho (by omega) hrq
-    (by change 35 ≤ (scheduledState s i).activeWords.toNat
-        have ha := scheduled_active s input i hfit hi ctx
-        omega) hcq hfq hnq
+  have hqa : 35 ≤ q.activeWords.toNat := by
+    change 35 ≤ (scheduledState s i).activeWords.toNat
+    have ha := scheduled_active s input i hfit hi ctx
+    omega
+  have gb : GasSteps {q with pc := HoistedInherited.ColdOrdinaryPrepare.corePC input i, stack := frame h off cont rho}
+      (HoistedInherited.StaggerCore.suffixState q (Word.ofUInt32 h.h4)
+        (StaggerCoreModel.paired q.memory (HoistedInherited.StaggerPersistentBootstrapBridge.initial h))
+        (StaggerPersistentFrame.coreRest h off cont rho)) := by
+    by_cases hh : input.size = i * 64 ∧ input.size < 256
+    · have hhs : s.executionEnv.calldata.size = DriverTrace.blockOffset i ∧
+          s.executionEnv.calldata.size < 256 := by rw [ctx.calldata]; exact hh
+      have hzq : PadCopy.PadZero q.memory := by
+        change PadCopy.PadZero (scheduledState s i).memory
+        rw [scheduledState_hit s i hhs]
+        refine PadCopy.padZero _ _ ?_
+        rw [Word.word_toNat_ofNat, ctx.calldata]
+        have h256 : input.size < 256 := hh.2
+        rw [Nat.mod_eq_of_lt (by omega)]
+        omega
+      have hpc : HoistedInherited.ColdOrdinaryPrepare.corePC input i = UInt256.ofNat 6154 := by
+        simp only [HoistedInherited.ColdOrdinaryPrepare.corePC, if_pos hh]
+      rw [hpc]
+      exact PadCopy.Body.gasSteps_body q h off cont rho (by omega) hrq hqa hcq hfq hnq hzq
+    · have hpc : HoistedInherited.ColdOrdinaryPrepare.corePC input i = UInt256.ofNat 824 := by
+        simp only [HoistedInherited.ColdOrdinaryPrepare.corePC, if_neg hh]
+      rw [hpc]
+      exact HoistedInherited.StaggerPersistentBootstrapBridge.gasSteps_body q h off cont rho (by omega) hrq
+        hqa hcq hfq hnq
   have gt := HoistedInherited.PersistentStaggerTailBridge.gasSteps q h
     (StaggerCoreModel.paired q.memory (initial h)) off cont rho (by omega) hrq hcq hfq hnq
   have hrest : HoistedInherited.StaggerPersistentPackBridge.suffix (initial h) off cont rho = coreRest h off cont rho := by

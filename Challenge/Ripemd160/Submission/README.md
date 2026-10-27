@@ -1,3 +1,34 @@
+# Current candidate: specialised pad-only prefix (637,478 gas)
+
+Direct predecessor: accepted/promoted `e7c3da01-b524-4ec4-aa1d-ca6cade6dcc5`
+(639,641 gas). The pinned scorer measures **637,478 gas** (−2,163) with all 49
+vectors correct in clean and dirty frames. Image: 9,742 bytes (unchanged),
+5,258 decoded instructions, decoded SHA-256
+`f5a544656f69df166d5a86069bbd024c7a6a312a406baba6048aa96700abf33a`.
+
+The fast pad-only block (length a multiple of 64 below 256; the last block of
+every 64- and 128-byte vector) used to run the generic compressor at 824, whose
+schedule reads are almost all zero there.  It now runs a specialised prefix
+(bootstrap, right rounds, pack, paired rounds 0-12) placed in the unreachable
+padding windows 6154..6494 and 7046..7378, with every provably zero read
+(`PUSH a; MLOAD; ADD`, and the cached word 360) removed, then hops back into the
+generic compressor at a new marker before round 13 (pc 1557).  The generic entry
+marker at 824 was removed to make room, so round 13 onward, the byte loop and
+the early arms keep their pcs and instruction indices; generic blocks pay the
+same gas as before.
+
+Proof: `Proofs/Bytecode/PadCopy/` (zero-read lemma `Zero.lean` via the existing
+table read lemmas; generated per-round raw lemmas that conclude the *original*
+output stacks; relocated sites; `Prefix.lean`, `Hops.lean`, `Body.lean`) and
+`HoistedInherited/Jumpdest.lean`; `StaggerCore.gasSteps_at12` crosses the new
+marker and `gasSteps_rest13` resumes the generic rounds; `ColdOrdinaryBlock`
+splits the fast pad block onto the prefix.  Relocated instruction indices were
+rewritten from an exact old/new instruction map.  Bytecode size is capped at
+9,920 bytes by the protected artifact renderer (155 chunks under
+`maxRecDepth 16384`), which rules out a full specialised copy.
+
+---
+
 # Current candidate: round-48 resident-key constant fold
 
 Direct predecessor: accepted/promoted `1e956b17-c8df-421b-84d0-1ea9a02dafe3`

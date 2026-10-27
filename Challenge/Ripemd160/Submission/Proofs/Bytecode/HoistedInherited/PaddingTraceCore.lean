@@ -90,19 +90,19 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Paddin
 @[simp] private theorem inherited_pc_3375 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3375 = 4591 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5411 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5375 = 9716 := by
+@[simp] private theorem inherited_pc_5411 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5240 = 9716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5412 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5376 = 9718 := by
+@[simp] private theorem inherited_pc_5412 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5241 = 9718 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5413 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5377 = 9719 := by
+@[simp] private theorem inherited_pc_5413 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5242 = 9719 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5414 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5378 = 9720 := by
+@[simp] private theorem inherited_pc_5414 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5243 = 9720 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5415 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5379 = 9721 := by
+@[simp] private theorem inherited_pc_5415 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5244 = 9721 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 
@@ -144,39 +144,39 @@ def padEntry (input : ByteArray) : State :=
 (116..123) and the footer loop tail (3412..3416) in this layout. -/
 
 @[simp] private theorem padPc99 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5380 = 9722 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 5245 = 9722 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci99 :
-    HoistedInherited.Artifact.instructionPC 5380 = 9722 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5380 = 9722
+    HoistedInherited.Artifact.instructionPC 5245 = 9722 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5245 = 9722
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc108 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5389 = 9737 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 5254 = 9737 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci108 :
-    HoistedInherited.Artifact.instructionPC 5389 = 9737 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5389 = 9737
+    HoistedInherited.Artifact.instructionPC 5254 = 9737 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5254 = 9737
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc109 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5390 = 9739 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 5255 = 9739 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci109 :
-    HoistedInherited.Artifact.instructionPC 5390 = 9739 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5390 = 9739
+    HoistedInherited.Artifact.instructionPC 5255 = 9739 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5255 = 9739
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc110 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5391 = 9740 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 5256 = 9740 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci110 :
-    HoistedInherited.Artifact.instructionPC 5391 = 9740 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5391 = 9740
+    HoistedInherited.Artifact.instructionPC 5256 = 9740 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5256 = 9740
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc114 :
