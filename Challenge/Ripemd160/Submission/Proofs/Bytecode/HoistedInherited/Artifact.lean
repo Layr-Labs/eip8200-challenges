@@ -17,7 +17,7 @@ def op (opcode : UInt8) : Instr :=
 abbrev submissionInstructions := FoldedCandidateArtifact.instructions
 abbrev submissionArtifact := FoldedCandidateArtifact.artifact
 
-theorem referenceInstructions_count : submissionInstructions.length = 5258 :=
+theorem referenceInstructions_count : submissionInstructions.length = 6932 :=
   FoldedCandidateArtifact.instruction_count
 
 def instructionPC (index : Nat) : Nat := submissionArtifact.instructionPC index
@@ -62,27 +62,27 @@ def padGuardPath : List
 
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨5240, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨5241, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5242, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5243, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5244, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨6914, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨6915, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6916, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6917, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6918, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨5245, .push ⟨2, by decide⟩ (UInt256.ofNat 4583), by rfl, by decide⟩,
-   ⟨5246, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5247, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨5248, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5249, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5250, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
-   ⟨5251, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5252, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨5253, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5254, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
-   ⟨5255, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5256, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨5257, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨6919, .push ⟨2, by decide⟩ (UInt256.ofNat 4583), by rfl, by decide⟩,
+   ⟨6920, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6921, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨6922, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6923, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6924, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
+   ⟨6925, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6926, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨6927, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6928, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
+   ⟨6929, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6930, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6931, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
@@ -100,11 +100,11 @@ def padExitPath : List
 
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4601 :
-    Decode.isValidJumpDest submissionBytecode 4601 = true := by
-  have hp : submissionArtifact.instructionPC 3383 = 4601 := by
+    Decode.isValidJumpDest submissionBytecode 8247 = true := by
+  have hp : submissionArtifact.instructionPC 6284 = 8247 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3383 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 6284 (by rfl)
   rw [hp] at h
   exact h
 

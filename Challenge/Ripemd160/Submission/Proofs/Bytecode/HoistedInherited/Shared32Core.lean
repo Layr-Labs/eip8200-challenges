@@ -45,7 +45,7 @@ def entryState (s : State) : State :=
   {s with
     pc := UInt256.ofNat 824
     stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState
-      (UInt256.ofNat 1056) (UInt256.ofNat 9667) maskRho}
+      (UInt256.ofNat 1056) (UInt256.ofNat 9949) maskRho}
 
 def resultHash (s : State) : Compression.HashState :=
   Functional.result s.memory StackRunBridge.initialHashState
@@ -62,14 +62,14 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray)
     (hactive : s.activeWords = UInt256.ofNat 35) :
     GasSteps (entryState s) (resultState s) := by
   have gb := gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 9667) maskRho (by decide)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9949) maskRho (by decide)
     (by rw [hactive]; decide)
   have ge := HoistedInherited.StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 9667) resultCont maskRho (by decide) e.run
+    (UInt256.ofNat 1056) (UInt256.ofNat 9949) resultCont maskRho (by decide) e.run
     (by
-        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 5203 = 9667 := by
+        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 6877 = 9949 := by
           rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 5203 (by rfl)
+        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6877 (by rfl)
         rw [hpc] at h
         rw [e.code]; exact h)
     e.code e.fork e.np

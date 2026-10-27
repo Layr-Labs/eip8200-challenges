@@ -16,7 +16,7 @@ def value (h : Compression.HashState) : UInt256 :=
 /-- The finish path leaves the exit offset word below the result. -/
 def result (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  HoistedInherited.Return32Finish.terminalResult (HoistedInherited.Return32Output.prepared s h) (UInt256.ofNat 9709)
+  HoistedInherited.Return32Finish.terminalResult (HoistedInherited.Return32Output.prepared s h) (UInt256.ofNat 9991)
     (HoistedInherited.Return32Finish.finish DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16
       (HoistedInherited.Return32Output.packedHash h))
     (off :: limit :: rho)
@@ -24,7 +24,7 @@ def result (s : State) (h : Compression.HashState) (off limit : UInt256)
 theorem result_hReturn (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) :
     (result s h off limit rho).hReturn = Data.Bytes.natToBytesPadded (value h).toNat 32 :=
-  HoistedInherited.Return32Finish.hReturn_eq s h (UInt256.ofNat 9709) (off :: limit :: rho)
+  HoistedInherited.Return32Finish.hReturn_eq s h (UInt256.ofNat 9991) (off :: limit :: rho)
 
 def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 980) (hrun : s.halt = .Running)
@@ -32,7 +32,7 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps {s with pc := UInt256.ofNat 9667, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 9949, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
       (result s h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)) := by
   have gp := HoistedInherited.Return32Output.gasSteps s off limit h
     (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho) (by simp; omega) hrun hcode hfork hnp

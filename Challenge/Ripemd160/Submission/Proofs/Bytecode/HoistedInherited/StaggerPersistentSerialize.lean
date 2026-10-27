@@ -16,7 +16,7 @@ def value (h : Compression.HashState) : UInt256 :=
 /-- The finish path leaves the exit offset word below the result. -/
 def result (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) : State :=
-  HoistedInherited.StaggerPersistentFinish.terminalResult (HoistedInherited.StaggerPersistentOutput.prepared s h) (UInt256.ofNat 4793)
+  HoistedInherited.StaggerPersistentFinish.terminalResult (HoistedInherited.StaggerPersistentOutput.prepared s h) (UInt256.ofNat 8439)
     (HoistedInherited.StaggerPersistentFinish.finish DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16
       (HoistedInherited.StaggerPersistentOutput.packedHash h))
     (off :: limit :: rho)
@@ -24,14 +24,14 @@ def result (s : State) (h : Compression.HashState) (off limit : UInt256)
 theorem result_hReturn (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) :
     (result s h off limit rho).hReturn = Data.Bytes.natToBytesPadded (value h).toNat 32 :=
-  HoistedInherited.StaggerPersistentFinish.hReturn_eq s h (UInt256.ofNat 4793) (off :: limit :: rho)
+  HoistedInherited.StaggerPersistentFinish.hReturn_eq s h (UInt256.ofNat 8439) (off :: limit :: rho)
 
 def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (rho : List UInt256) (hstack : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4751, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
+    GasSteps {s with pc := UInt256.ofNat 8397, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)}
       (result s h off limit (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho)) := by
   have gp := HoistedInherited.StaggerPersistentOutput.gasSteps s off limit h
     (DenseScheduleTemplate.mask8 :: DenseScheduleTemplate.mask16 :: rho) (by simp; omega) hrun hcode hfork hnp

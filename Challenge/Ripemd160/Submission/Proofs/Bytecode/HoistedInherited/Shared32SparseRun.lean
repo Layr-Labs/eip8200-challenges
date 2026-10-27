@@ -15,10 +15,10 @@ open HoistedInherited.Shared32Scratch
 
 private theorem add_eq_hAdd (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-/-- `PUSH2 9667 SWAP13 PUSH1 32 EQ` at144: the continuation slot becomes the output entry 9667 (the
+/-- `PUSH2 9949 SWAP13 PUSH1 32 EQ` at144: the continuation slot becomes the output entry 9949 (the
 single block then jumps straight to the output). The displaced length is retained as the 32-byte predicate. -/
 def headTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 9667),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 9949),
     .op (.Swap ⟨12, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 32),
     .op .EQ ]
@@ -31,7 +31,7 @@ theorem run_head (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 lim : UInt25
         stack := stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) lim rho} =
       some {s with
         pc := pcAfter pc headTemplate
-        stack := UInt256.eq (UInt256.ofNat 32) lim :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 9667) rho} := by
+        stack := UInt256.eq (UInt256.ofNat 32) lim :: stk ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 (UInt256.ofNat 1056) (UInt256.ofNat 9949) rho} := by
   have hcap (n : Nat) (hn : n ≤ 27) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [headTemplate, runInstrSeq, DataStepper.runInstr, pcAfter,
     hrun, hcap, Instr.size, UInt256.succ, stk, Nat.add_assoc,
@@ -136,20 +136,20 @@ theorem run_combined_miss (s : State) (F : List UInt256)
     UInt256.isTrue, PairedScheduleMemory.writeWord, Word.literal_eq_ofNat,
     e1, e2, e3, e4, e5]
 
-/-- The miss fall-through: `PUSH2 9715 JUMP` into the relocated cold path. -/
-def missJumpTemplate : List Instr := PadJump.template 9715
+/-- The miss fall-through: `PUSH2 9997 JUMP` into the relocated cold path. -/
+def missJumpTemplate : List Instr := PadJump.template 9997
 
 theorem run_missJump (s : State) (F : List UInt256)
     (hstack : F.length ≤ 900) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 9715 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 9997 = true) :
     runInstrSeq missJumpTemplate
       {s with pc := UInt256.ofNat 188, stack := F} =
-      some {s with pc := UInt256.ofNat 9715, stack := F} := by
-  have hmod : (9715 : Nat) % 2 ^ 256 = 9715 := by norm_num
-  have hv' : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 9715).toNat = true := by
+      some {s with pc := UInt256.ofNat 9997, stack := F} := by
+  have hmod : (9997 : Nat) % 2 ^ 256 = 9997 := by norm_num
+  have hv' : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 9997).toNat = true := by
     simpa only [Word.word_toNat_ofNat, hmod] using hv
   simpa only [missJumpTemplate, Word.word_toNat_ofNat, hmod] using
-    PadJump.run_template s (UInt256.ofNat 188) F 9715 (by omega) hrun hv'
+    PadJump.run_template s (UInt256.ofNat 188) F 9997 (by omega) hrun hv'
 
 theorem sparse_read_input (input : ByteArray) (hn : 0 < input.size) :
     MachineState.readWord (sparseMemory (copiedMemory input)) 1056 =

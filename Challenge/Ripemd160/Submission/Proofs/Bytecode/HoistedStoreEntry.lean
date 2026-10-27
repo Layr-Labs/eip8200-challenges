@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreEntryRaw
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreAnchorRaw
 
 set_option warningAsError true
 set_option maxRecDepth 100000
@@ -17,7 +18,7 @@ inductive Piece | filter | size | anchor
 def template : Piece → List Instr
   | .filter => filterTemplate
   | .size => sizeTemplate
-  | .anchor => RetainedIntegration105.anchorTemplate
+  | .anchor => HoistedStoreAnchorRaw.anchorTemplate
 
 def index : Piece → Nat | .filter => 0 | .size => 6 | .anchor => 11
 def pc : Piece → Nat | .filter => 0 | .size => 12 | .anchor => 21
@@ -64,7 +65,7 @@ def to_seed (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env s)
   have hf := lift .filter s _ e rho (run_filter_fall s rho hs e.run hfilter)
   have hz := lift .size s _ e rho (run_size_fall s rho hs e.run hsize)
   have ha := lift .anchor s _ e rho
-    (RetainedIntegration105.run_anchor_low_fall s rho (by omega) e.run hanchor)
+    (HoistedStoreAnchorRaw.run_anchor_low_fall s rho (by omega) e.run hanchor)
   exact hf.trans (hz.trans ha)
 
 def success (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env s)
@@ -74,7 +75,7 @@ def success (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env s)
     (hanchor : Low64RepeatMath.condition s.executionEnv.calldata = 0)
     (hm : PcSeedRaw.mismatch s.executionEnv.calldata = 0) :
     GasSteps {s with pc := UInt256.ofNat 0, stack := rho}
-      {(HoistedStoreResearch.stored s) with pc := UInt256.ofNat 9658, stack := rho, halt := .Returned, hReturn := spec s.executionEnv.calldata} :=
+      {(HoistedStoreResearch.stored s) with pc := UInt256.ofNat 9940, stack := rho, halt := .Returned, hReturn := spec s.executionEnv.calldata} :=
   (to_seed s rho e hs hfilter hsize hanchor).trans
     (HoistedStoreComposed.success s rho e hs ha hsize hanchor hm)
 

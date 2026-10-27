@@ -190,20 +190,20 @@ end missJump
 
 namespace missTail
 abbrev template : List Instr := [ .op .JUMPDEST ]
-theorem actual_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5239).take template.length = template := by rfl
+theorem actual_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6913).take template.length = template := by rfl
 def site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 5239 actual_slice
-    (by change 5239 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 6913 actual_slice
+    (by change 6913 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 9715 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5239) = UInt256.ofNat 9715
+theorem site_pc : site.startPC = UInt256.ofNat 9997 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6913) = UInt256.ofNat 9997
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 def lift (s t : State) (e : Env s) (stack : List UInt256)
-    (h : runInstrSeq template (atState s 9715 stack) = some t) :
-    GasSteps (atState s 9715 stack) t := by
-  apply PadLift.gasSteps_of_raw site (atState s 9715 stack) t e.code e.fork e.run e.np site_pc.symm
+    (h : runInstrSeq template (atState s 9997 stack) = some t) :
+    GasSteps (atState s 9997 stack) t := by
+  apply PadLift.gasSteps_of_raw site (atState s 9997 stack) t e.code e.fork e.run e.np site_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · exact h
 end missTail

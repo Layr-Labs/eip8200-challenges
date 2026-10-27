@@ -90,19 +90,19 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Paddin
 @[simp] private theorem inherited_pc_3375 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3375 = 4591 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5411 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5240 = 9716 := by
+@[simp] private theorem inherited_pc_5411 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6914 = 9998 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5412 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5241 = 9718 := by
+@[simp] private theorem inherited_pc_5412 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6915 = 10000 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5413 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5242 = 9719 := by
+@[simp] private theorem inherited_pc_5413 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6916 = 10001 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5414 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5243 = 9720 := by
+@[simp] private theorem inherited_pc_5414 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6917 = 10002 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_pc_5415 : HoistedInherited.Artifact.submissionArtifact.instructionPC 5244 = 9721 := by
+@[simp] private theorem inherited_pc_5415 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6918 = 10003 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 
@@ -144,39 +144,39 @@ def padEntry (input : ByteArray) : State :=
 (116..123) and the footer loop tail (3412..3416) in this layout. -/
 
 @[simp] private theorem padPc99 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5245 = 9722 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 6919 = 10004 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci99 :
-    HoistedInherited.Artifact.instructionPC 5245 = 9722 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5245 = 9722
+    HoistedInherited.Artifact.instructionPC 6919 = 10004 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 6919 = 10004
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc108 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5254 = 9737 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 6928 = 10019 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci108 :
-    HoistedInherited.Artifact.instructionPC 5254 = 9737 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5254 = 9737
+    HoistedInherited.Artifact.instructionPC 6928 = 10019 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 6928 = 10019
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc109 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5255 = 9739 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 6929 = 10021 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci109 :
-    HoistedInherited.Artifact.instructionPC 5255 = 9739 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5255 = 9739
+    HoistedInherited.Artifact.instructionPC 6929 = 10021 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 6929 = 10021
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc110 :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC 5256 = 9740 := by
+    HoistedInherited.Artifact.submissionArtifact.instructionPC 6930 = 10022 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPci110 :
-    HoistedInherited.Artifact.instructionPC 5256 = 9740 := by
-  change HoistedInherited.Artifact.submissionArtifact.instructionPC 5256 = 9740
+    HoistedInherited.Artifact.instructionPC 6930 = 10022 := by
+  change HoistedInherited.Artifact.submissionArtifact.instructionPC 6930 = 10022
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] private theorem padPc114 :
@@ -468,10 +468,10 @@ def initialFrame (input : ByteArray) : List UInt256 :=
 @[simp] theorem initialFrame_length (input : ByteArray) : (initialFrame input).length = 15 := by
   simp [initialFrame, StaggerPersistentFrame.frame]
 
-/-- The frame of the cold padding code: the cold block installed the output entry 9667 in slot 12. -/
+/-- The frame of the cold padding code: the cold block installed the output entry 9949 in slot 12. -/
 def padFrame (_input : ByteArray) : List UInt256 :=
   StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056)
-    (UInt256.ofNat 9667) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+    (UInt256.ofNat 9949) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 
 @[simp] theorem padFrame_length (input : ByteArray) : (padFrame input).length = 15 := by
   simp [padFrame, StaggerPersistentFrame.frame]
@@ -504,7 +504,7 @@ def padSkip (input : ByteArray) : State :=
 run, which writes its two scratch bytes on the way). -/
 def padGuardMiss (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 9716
+    pc := UInt256.ofNat 9998
     stack := padFrame input }
 
 /-- The state the 32-byte block leaves at the sentinel store 166: scratch bytes 165 and 188 are
@@ -516,7 +516,7 @@ def padDirty (input : ByteArray) : State :=
 
 def padSentinel (input : ByteArray) : State :=
   { padDirty input with
-    pc := UInt256.ofNat 9722
+    pc := UInt256.ofNat 10004
     stack := padFrame input
     memory := MachineState.writeBytes (padDirty input).memory
       (ByteArray.mk #[0x80]) (Padding.messageOffset + input.size)
@@ -559,7 +559,7 @@ def padSentinel (input : ByteArray) : State :=
     (padGuardMiss input).halt = .Running := by rfl
 
 @[simp] private theorem padGuardMiss_pc (input : ByteArray) :
-    (padGuardMiss input).pc = UInt256.ofNat 9716 := by rfl
+    (padGuardMiss input).pc = UInt256.ofNat 9998 := by rfl
 
 @[simp] private theorem padGuardMiss_code (input : ByteArray) :
     (padGuardMiss input).executionEnv.code = submissionBytecode := by rfl
@@ -571,7 +571,7 @@ def padSentinel (input : ByteArray) : State :=
     (padDirty input).halt = .Running := by rfl
 
 @[simp] private theorem padDirty_pc (input : ByteArray) :
-    (padDirty input).pc = UInt256.ofNat 9716 := by rfl
+    (padDirty input).pc = UInt256.ofNat 9998 := by rfl
 
 @[simp] private theorem padDirty_code (input : ByteArray) :
     (padDirty input).executionEnv.code = submissionBytecode := by rfl
@@ -583,13 +583,13 @@ def padSentinel (input : ByteArray) : State :=
     (padSentinel input).halt = .Running := by rfl
 
 @[simp] private theorem padSentinel_pcToNat (input : ByteArray) :
-    (padSentinel input).pc.toNat = 9722 := by rfl
+    (padSentinel input).pc.toNat = 10004 := by rfl
 
 @[simp] private theorem padSentinel_pc (input : ByteArray) :
-    (padSentinel input).pc = UInt256.ofNat 9722 := by rfl
+    (padSentinel input).pc = UInt256.ofNat 10004 := by rfl
 
 @[simp] private theorem padSentinel_pcSucc (input : ByteArray) :
-    (padSentinel input).pc.succ = UInt256.ofNat 9723 := by
+    (padSentinel input).pc.succ = UInt256.ofNat 10005 := by
   rw [padSentinel_pc, Challenge.EvmProof.Word.succ_ofNat (by norm_num)]
 
 @[simp] private theorem padSentinel_stack (input : ByteArray) :
@@ -616,13 +616,13 @@ def lengthSentinelStorePath := lengthSentinelPath.drop 4
 
 def padSentinelAddressReady (input : ByteArray) : State :=
   { padDirty input with
-    pc := UInt256.ofNat 9721
+    pc := UInt256.ofNat 10003
     stack := [UInt256.ofNat Padding.messageOffset + UInt256.ofNat input.size,
       UInt256.ofNat 128] ++ padFrame input }
 
 def padSentinelStored (input : ByteArray) : State :=
   { padSentinelAddressReady input with
-    pc := UInt256.ofNat 9722
+    pc := UInt256.ofNat 10004
     stack := padFrame input
     memory := MachineState.writeBytes (padSentinelAddressReady input).memory
       (ByteArray.mk #[0x80])
@@ -634,7 +634,7 @@ def padSentinelStored (input : ByteArray) : State :=
     (padSentinelAddressReady input).halt = .Running := by rfl
 
 @[simp] private theorem padSentinelAddressReady_pc (input : ByteArray) :
-    (padSentinelAddressReady input).pc = UInt256.ofNat 9721 := by rfl
+    (padSentinelAddressReady input).pc = UInt256.ofNat 10003 := by rfl
 
 @[simp] private theorem padSentinelAddressReady_stack (input : ByteArray) :
     (padSentinelAddressReady input).stack =

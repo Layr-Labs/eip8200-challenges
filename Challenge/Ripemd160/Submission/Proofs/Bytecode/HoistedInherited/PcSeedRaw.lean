@@ -13,7 +13,7 @@ def seed (input : ByteArray) : UInt256 :=
   UInt256.eq (MachineState.readWord input 0) (MachineState.readWord input 48)
 def seedTemplate : List Instr :=
   [.op .PC, .op .CALLDATALOAD, .op (.Dup ⟨1, by decide⟩), .op .EQ,
-   .push ⟨2, by decide⟩ 9429, .op .JUMP]
+   .push ⟨2, by decide⟩ 9711, .op .JUMP]
 def scanPrefix : List Instr :=
   HoistedInherited.CounterFreeScanBodyRaw.entry ++ HoistedInherited.UnrolledRepeatRaw.scanTemplate offsets.dropLast
 def terminalTemplate : List Instr :=
@@ -26,12 +26,12 @@ def mismatch (input : ByteArray) : UInt256 :=
 
 theorem run_seed (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 9429 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 9711 = true) :
     runInstrSeq seedTemplate {s with
       pc := UInt256.ofNat 48
       stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} =
     some {s with
-      pc := UInt256.ofNat 9429
+      pc := UInt256.ofNat 9711
       stack := [seed s.executionEnv.calldata,
         MachineState.readWord s.executionEnv.calldata 0] ++ rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
@@ -70,19 +70,19 @@ theorem run_terminal (s : State) (pc a r : UInt256) (rho : List UInt256)
 theorem run (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq template {s with
-      pc := UInt256.ofNat 9429
+      pc := UInt256.ofNat 9711
       stack :=       [seed s.executionEnv.calldata, MachineState.readWord s.executionEnv.calldata 0] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9632
+        pc := UInt256.ofNat 9914
         stack := [mismatch s.executionEnv.calldata] ++ rho} := by
-  have hp := run_prefix s (UInt256.ofNat 9429) (seed s.executionEnv.calldata)
+  have hp := run_prefix s (UInt256.ofNat 9711) (seed s.executionEnv.calldata)
     (MachineState.readWord s.executionEnv.calldata 0) rho hs hrun
-  have ht := run_terminal s (pcAfter (UInt256.ofNat 9429) scanPrefix)
+  have ht := run_terminal s (pcAfter (UInt256.ofNat 9711) scanPrefix)
     (HoistedInherited.UnrolledRepeatRaw.foldAcc s.executionEnv.calldata
       (MachineState.readWord s.executionEnv.calldata 0) (seed s.executionEnv.calldata)
       offsets.dropLast) (MachineState.readWord s.executionEnv.calldata 0) rho hs hrun
-  have hpc : pcAfter (pcAfter (UInt256.ofNat 9429) scanPrefix) terminalTemplate =
-    UInt256.ofNat 9632 := by decide
+  have hpc : pcAfter (pcAfter (UInt256.ofNat 9711) scanPrefix) terminalTemplate =
+    UInt256.ofNat 9914 := by decide
   simpa only [template, hpc, mismatch] using runInstrSeq_append_running hp hrun ht
 #print axioms run_seed
 #print axioms run

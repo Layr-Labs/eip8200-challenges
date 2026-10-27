@@ -1,5 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentLoopSites
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.LoopCompletionControl
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullTail
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 4000000
@@ -58,7 +59,8 @@ def loopState (input : ByteArray) (s : State) (previous h : Compression.HashStat
 def postState (input : ByteArray) (s : State) (oldh h : Compression.HashState)
     (i _count : Nat) (rho : List UInt256) : State :=
   { s with
-    pc := UInt256.ofNat 4581
+    pc := if input.size = i * 64 ∧ input.size < 256 then UInt256.ofNat PadCopy.FullTail.exitPC
+      else UInt256.ofNat 4581
     stack := Word.ofUInt32 oldh.h2 :: StaggerPersistentFrame.frame h (blockOff input i)
       (blockCont input i (LoopCompletionControl.cont input i)) rho }
 
@@ -126,16 +128,16 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
     · -- The pad-only block installs outPC; dispatch leaves this block's old h2.
       have he : i + 1 = count := LoopCompletionControl.pad_last input i hp
       have hi1 : count - 1 = i := by omega
-      have gd := HoistedInherited.StaggerPersistentLoopSites.gasSteps_dispatch s' h'
+      have gd := PadCopy.FullTail.gasSteps_dispatch s' h'
         (blockOff input i) (blockCont input i (LoopCompletionControl.cont input i)) (Word.ofUInt32 (hashes i).h2) rho (by omega) a.running
         (by rw [blockCont_pad input i _ hp]; exact HoistedInherited.StaggerPersistentLoopSites.valid_out s' a.code)
         a.code a.fork a.notPrecompile
       rw [blockCont_pad input i _ hp] at gd
       have hpost : postState input s' (hashes i) h' i count rho =
           { s' with
-            pc := UInt256.ofNat 4581
+            pc := UInt256.ofNat PadCopy.FullTail.exitPC
             stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame h' (blockOff input i) (UInt256.ofNat outPC) rho } := by
-        simp only [postState, blockCont_pad input i _ hp]
+        simp only [postState, blockCont_pad input i _ hp, if_pos hp]
       have hexit : exitState input s' (hashes i) h' count rho =
           { s' with
             pc := UInt256.ofNat outPC
@@ -150,7 +152,7 @@ def run_blocks (input : ByteArray) (states : Nat → State) (hashes : Nat → Co
     · have hoff := blockOff_msg input i hp
       have hcm := blockCont_msg input i (LoopCompletionControl.cont input i) hp
       rw [show I i = loopState input (states i) (hashes (i - 1)) (hashes i) i count rho by simp only [I, if_pos hi]]
-      simp only [postState, hoff, hcm] at gb
+      simp only [postState, hoff, hcm, if_neg hp] at gb
       by_cases hal : input.size % 64 = 0 ∧ input.size < 256
       · have hc := LoopCompletionControl.cont_aligned input hal i hp
         have hcases := LoopCompletionControl.aligned_cases input hal i hp hi

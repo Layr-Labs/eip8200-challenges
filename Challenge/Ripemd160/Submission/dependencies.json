@@ -1,7 +1,7 @@
 [
   {
-    "submissionId": "e7c3da01-b524-4ec4-aa1d-ca6cade6dcc5",
-    "rationale": "Direct accepted/promoted 639641 predecessor (round-48 resident-key fold). Supplies the entire image, generic compressor, entry filters, fixed-input arms and universal exact-byte proof tree. This candidate adds a specialised pad-only prefix in padding windows, removes the generic 824 entry marker, inserts a rejoin marker before round 13, and relocates the affected proof sites.",
-    "evidence": "Predecessor decoded SHA-256 65deca6d363c1a6d5964c1679c394fdc9e557e8c3fd83e06d05d54f1c75d33a4 (639641). Candidate decoded SHA-256 f5a544656f69df166d5a86069bbd024c7a6a312a406baba6048aa96700abf33a, 9742 bytes, 5258 instructions, pinned scorer 637478, Solution builds with axioms propext/Classical.choice/Quot.sound."
+    "submissionId": "258fcb22-0b2d-40d9-871f-98afdcc44f26",
+    "rationale": "Direct promoted 637478 predecessor. Supplies bytes [0,4601) of the image (entry filters, size guard, hoisted 'a' recognizer, generic 2-lane compressor and serializer), the compressor proof tree, and the specialised pad-only prefix proofs that this candidate extends into a full pad-only compressor copy. The fixed-input arms are rewritten as compact arms over a shared descending word chain, with 376/1000-byte arms using calldata window equalities.",
+    "evidence": "Predecessor decoded SHA-256 f5a544656f69df166d5a86069bbd024c7a6a312a406baba6048aa96700abf33a, 9742 bytes, 5258 instructions, 637478. Candidate decoded SHA-256 29a0b8826403c5e56e4727dd6f03d0d1996596638a5dc4fbd82007feb4c475c7, 10024 bytes, 6932 instructions."
   }
 ]

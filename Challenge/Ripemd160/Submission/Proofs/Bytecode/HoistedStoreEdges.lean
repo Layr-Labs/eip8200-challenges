@@ -9,8 +9,8 @@ open StackRoundTrace StackRoundTemplate HoistedStoreResearch HoistedStoreSites
 
 def gasSteps_branch_zero (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) :
-    GasSteps {s with pc := UInt256.ofNat 9652, stack := (0 : UInt256) :: rho}
-      {s with pc := UInt256.ofNat 9656, stack := rho} := by
+    GasSteps {s with pc := UInt256.ofNat 9934, stack := (0 : UInt256) :: rho}
+      {s with pc := UInt256.ofNat 9938, stack := rho} := by
   apply lift .branch s _ e _
   simpa only [template, pc, show (0 : UInt256).toNat = 0 by decide,
     ne_eq, not_true_eq_false, if_false] using
@@ -20,8 +20,8 @@ def gasSteps_branch_zero (s : State) (rho : List UInt256) (e : Env s)
 
 def gasSteps_branch_nonzero (s : State) (c : UInt256) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) (hn : c.toNat ≠ 0) :
-    GasSteps {s with pc := UInt256.ofNat 9652, stack := c :: rho}
-      {s with pc := UInt256.ofNat 9659, stack := rho} := by
+    GasSteps {s with pc := UInt256.ofNat 9934, stack := c :: rho}
+      {s with pc := UInt256.ofNat 9941, stack := rho} := by
   apply lift .branch s _ e _
   simpa only [template, pc, if_pos hn] using
     run_terminalBranch s c rho (by omega) e.run (by rw [e.code]; exact valid_miss)
@@ -30,23 +30,23 @@ def gasSteps_branch_nonzero (s : State) (c : UInt256) (rho : List UInt256) (e : 
 
 def gasSteps_return (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) (ha : s.activeWords = UInt256.ofNat 1) :
-    GasSteps {s with pc := UInt256.ofNat 9656, stack := rho}
-      {s with pc := UInt256.ofNat 9658, stack := rho, halt := .Returned, hReturn := MachineState.readPadded s.memory 0 32} :=
+    GasSteps {s with pc := UInt256.ofNat 9938, stack := rho}
+      {s with pc := UInt256.ofNat 9940, stack := rho, halt := .Returned, hReturn := MachineState.readPadded s.memory 0 32} :=
   lift .success s _ e _ (run_success s rho (by omega) e.run ha)
 
 #print axioms gasSteps_return
 
 def gasSteps_miss_jump (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) :
-    GasSteps {s with pc := UInt256.ofNat 9659, stack := rho}
-      {s with pc := UInt256.ofNat 4803, stack := (0 : UInt256) :: rho} :=
+    GasSteps {s with pc := UInt256.ofNat 9941, stack := rho}
+      {s with pc := UInt256.ofNat 8078, stack := (0 : UInt256) :: rho} :=
   lift .miss s _ e _ (run_miss s rho (by omega) e.run (by rw [e.code]; exact valid_cleanup))
 
 #print axioms gasSteps_miss_jump
 
 def gasSteps_cleanup (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) (ha : s.activeWords = UInt256.ofNat 1) :
-    GasSteps {s with pc := UInt256.ofNat 4803, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 8078, stack := rho}
       (RetainedResultEdge112.cleared s rho) :=
   lift .cleanup s _ e _ (HoistedStoreResearch.run_cleanup_relocated s rho (by omega)
     e.run ha (by rw [e.code]; exact valid_generic))

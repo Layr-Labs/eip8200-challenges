@@ -51,10 +51,10 @@ def sizePrefix : List Located :=
   [opAt 6 .CALLDATASIZE,
    pushAt 7 2 1000,
    opAt 8 .SUB,
-   pushAt 9 2 4601]
+   pushAt 9 2 8247]
 
 /-- Anchor gate: low 64 bits of calldata[0] other than `0x61` jump straight to
-the recogniser's private 1000-byte row at 8157 (the size is already 1000). -/
+the recogniser's private 1000-byte arm at 9394 (the size is already 1000). -/
 def anchorPrefix : List Located :=
   [pushAt 11 0 0,
    opAt 12 .CALLDATALOAD,
@@ -63,7 +63,7 @@ def anchorPrefix : List Located :=
    opAt 15 .XOR,
    pushAt 16 1 192,
    opAt 17 .SHL,
-   pushAt 18 2 8157]
+   pushAt 18 2 9394]
 
 def entryDest : Located := opAt 125 .JUMPDEST
 
@@ -117,20 +117,20 @@ def fallbackState (input : ByteArray) : State :=
 /-- Counter-free scanner entry; terminal MUL consumes both the accumulator and reference. -/
 def loopState (input : ByteArray) (_n : Nat) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9429
+    pc := UInt256.ofNat 9711
     activeWords := UInt256.ofNat 0
     stack := [HoistedInherited.PcSeedRaw.seed input, referenceWord input] }
 
 def loopExitState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9632
+    pc := UInt256.ofNat 9914
     activeWords := UInt256.ofNat 0
     stack := [HoistedInherited.PcSeedRaw.mismatch input] }
 
 /-- The equality-accumulator branch at PC9636 jumps to answer `JUMPDEST` 4706. -/
 def returnHopState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9636
+    pc := UInt256.ofNat 9918
     activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
@@ -138,13 +138,13 @@ def returnHopPath : List Located := []
 
 def returnEntry (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9636
+    pc := UInt256.ofNat 9918
     activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
 def tailDivertState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9662
+    pc := UInt256.ofNat 9944
     activeWords := UInt256.ofNat 0
     stack := returnCells input }
 
@@ -156,7 +156,7 @@ def answerMemory : ByteArray :=
 
 def returnedState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9661
+    pc := UInt256.ofNat 9943
     stack := returnCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1
@@ -165,14 +165,14 @@ def returnedState (input : ByteArray) : State :=
 
 def storedReturnState (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 9659
+    pc := UInt256.ofNat 9941
     stack := returnCells input
     memory := answerMemory
     activeWords := UInt256.ofNat 1 }
 
 def sizedReturnState (input : ByteArray) : State :=
   { storedReturnState input with
-    pc := UInt256.ofNat 9660
+    pc := UInt256.ofNat 9942
     stack := UInt256.ofNat 32 :: returnCells input }
 
 abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
@@ -275,19 +275,19 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_53 : HoistedInherited.Artifact.submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_54 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3423 = 4755 := by
+@[simp] theorem pc_direct_54 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6324 = 8401 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_55 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3423 = 4755 := by
+@[simp] theorem pc_direct_55 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6324 = 8401 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_56 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3424 = 4756 := by
+@[simp] theorem pc_direct_56 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6325 = 8402 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_57 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3425 = 4757 := by
+@[simp] theorem pc_direct_57 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6326 = 8403 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_58 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3426 = 4758 := by
+@[simp] theorem pc_direct_58 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6327 = 8404 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_59 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3427 = 4760 := by
+@[simp] theorem pc_direct_59 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6328 = 8406 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_60 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3428 = 4761 := by
+@[simp] theorem pc_direct_60 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6329 = 8407 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_61 : HoistedInherited.Artifact.submissionArtifact.instructionPC 52 = 93 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -322,7 +322,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_77 : HoistedInherited.Artifact.submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_78 : HoistedInherited.Artifact.submissionArtifact.instructionPC 3422 = 4754 := by
+@[simp] theorem pc_direct_78 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6323 = 8400 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.DirectGuard

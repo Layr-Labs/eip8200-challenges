@@ -15,7 +15,7 @@ def success (s : State) (rho : List UInt256) (e : Env s)
     (hcond : Low64RepeatMath.condition s.executionEnv.calldata = 0)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata = 0) :
     GasSteps {s with pc := UInt256.ofNat 48, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho}
-      {(stored s) with pc := UInt256.ofNat 9658, stack := rho, halt := .Returned, hReturn := Challenge.Ripemd160.spec s.executionEnv.calldata} := by
+      {(stored s) with pc := UInt256.ofNat 9940, stack := rho, halt := .Returned, hReturn := Challenge.Ripemd160.spec s.executionEnv.calldata} := by
   have ew : Env (stored s) := ⟨e.code, e.fork, e.run, e.np⟩
   have hz' : newMismatch s.executionEnv.calldata (PcSeedRaw.seed s.executionEnv.calldata) (MachineState.readWord s.executionEnv.calldata 0) = 0 :=
     (scanner_zero_iff s.executionEnv.calldata).mp hz

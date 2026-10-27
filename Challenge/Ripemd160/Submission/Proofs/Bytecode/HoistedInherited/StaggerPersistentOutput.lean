@@ -49,30 +49,30 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
   all_goals repeat first | apply And.intro | rfl
 
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3420).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6321).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3420 actual_slice
-    (by change 3420 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 6321 actual_slice
+    (by change 6321 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 4752 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3420) = UInt256.ofNat 4752
+theorem site_pc : site.startPC = UInt256.ofNat 8398 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6321) = UInt256.ofNat 8398
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   HoistedInherited.Table80SiteCommon.coreAdvancesAll_sound template (by decide)
 
 def entryTemplate : List Instr := [.op .JUMPDEST]
 theorem entry_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3419).take entryTemplate.length = entryTemplate := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6320).take entryTemplate.length = entryTemplate := by rfl
 def entrySite : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka entryTemplate :=
-  StackSiteBuilder.ofSlice entryTemplate 3419 entry_slice
-    (by change 3419 + entryTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice entryTemplate 6320 entry_slice
+    (by change 6320 + entryTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := entryTemplate) (by decide)) (by decide)
-theorem entry_pc : entrySite.startPC = UInt256.ofNat 4751 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3419) = UInt256.ofNat 4751
+theorem entry_pc : entrySite.startPC = UInt256.ofNat 8397 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6320) = UInt256.ofNat 8397
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_entry (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
@@ -80,9 +80,9 @@ def gasSteps_entry (s : State) (rho : List UInt256) (hstack : rho.length < 1024)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4751, stack := rho}
-      {s with pc := UInt256.ofNat 4752, stack := rho} := by
-  apply PadLift.gasSteps_of_raw entrySite {s with pc := UInt256.ofNat 4751, stack := rho} _
+    GasSteps {s with pc := UInt256.ofNat 8397, stack := rho}
+      {s with pc := UInt256.ofNat 8398, stack := rho} := by
+  apply PadLift.gasSteps_of_raw entrySite {s with pc := UInt256.ofNat 8397, stack := rho} _
     hcode hfork hrun hnp entry_pc.symm
   · apply PadLift.advancesAll_sound
     decide
@@ -94,17 +94,17 @@ def gasSteps (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4751, stack := StaggerPersistentFrame.frame h off limit rho}
-      {prepared s h with pc := UInt256.ofNat 4775, stack := packedHash h :: off :: limit :: rho} := by
+    GasSteps {s with pc := UInt256.ofNat 8397, stack := StaggerPersistentFrame.frame h off limit rho}
+      {prepared s h with pc := UInt256.ofNat 8421, stack := packedHash h :: off :: limit :: rho} := by
   have ge := gasSteps_entry s (StaggerPersistentFrame.frame h off limit rho)
     (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp
   refine ge.trans ?_
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 4752, stack := StaggerPersistentFrame.frame h off limit rho}
-    {prepared s h with pc := UInt256.ofNat 4775, stack := packedHash h :: off :: limit :: rho}
+    {s with pc := UInt256.ofNat 8398, stack := StaggerPersistentFrame.frame h off limit rho}
+    {prepared s h with pc := UInt256.ofNat 8421, stack := packedHash h :: off :: limit :: rho}
     hcode hfork hrun hnp site_pc.symm advances
-  have hraw := run_template s (UInt256.ofNat 4752) off limit h rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 4752) template = UInt256.ofNat 4775 := by decide
+  have hraw := run_template s (UInt256.ofNat 8398) off limit h rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 8398) template = UInt256.ofNat 8421 := by decide
   rw [hend] at hraw
   exact hraw
 

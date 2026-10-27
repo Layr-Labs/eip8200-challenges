@@ -34,7 +34,7 @@ theorem stepS_lt (input : ByteArray) (pc : Nat) (a b : UInt256) (rest : List UIn
   rw [if_pos (by simpa using hlen)]
   simp only [PatternedScan.stS, Challenge.EvmProof.Word.succ_ofNat hpc]
 
-theorem guard_dest : Decode.isValidJumpDest submissionBytecode 4601 = true := by
+theorem guard_dest : Decode.isValidJumpDest submissionBytecode 8247 = true := by
   exact HoistedInherited.Artifact.validJumpDest_4601
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.DirectGuard

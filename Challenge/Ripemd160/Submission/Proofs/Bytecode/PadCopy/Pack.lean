@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentPackBridge
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.RawPack
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Prefix
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullPrefix
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -16,20 +16,20 @@ abbrev template := PadCopy.RawPack.template
 
 /-- The pad-only copy of the right-line pack, at its relocated address. -/
 def entry (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 6227, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
+  {s with pc := UInt256.ofNat 4674, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)}
 
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3912).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 3439).take template.length = template := by rfl
 
 def site : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 3912 actual_slice
-    (by change 3912 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 3439 actual_slice
+    (by change 3439 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 6227 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3912) = UInt256.ofNat 6227
+theorem site_pc : site.startPC = UInt256.ofNat 4674 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 3439) = UInt256.ofNat 4674
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction := by
   apply HoistedInherited.Table80SiteCommon.coreAdvancesAll_sound
@@ -41,14 +41,14 @@ def gasSteps (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
     GasSteps (entry s h q off limit rho)
-      (PadCopy.Prefix.atRound s h.e 0 (StaggerCoreModel.pair h (StaggerCoreModel.right2 s.memory q)) h (suffix h off limit rho)) := by
-  have raw := PadCopy.RawPack.run_actual s (UInt256.ofNat 6227)
+      (PadCopy.FullPrefix.atRound s h.e 0 (StaggerCoreModel.pair h (StaggerCoreModel.right2 s.memory q)) h (suffix h off limit rho)) := by
+  have raw := PadCopy.RawPack.run_actual s (UInt256.ofNat 4674)
     (input s.memory h q off limit) rho hs hr ha (by rfl) (hz 14 (by decide))
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 6227) template = UInt256.ofNat 6327 := by decide
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4674) template = UInt256.ofNat 4774 := by decide
   rw [hend] at raw
   have g := DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 6227, stack := JointRightPackRaw.inputStack (input s.memory h q off limit) rho}
-    {s with pc := UInt256.ofNat 6327, stack := JointRightPackRaw.outputStack s.memory (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 4674, stack := JointRightPackRaw.inputStack (input s.memory h q off limit) rho}
+    {s with pc := UInt256.ofNat 4774, stack := JointRightPackRaw.outputStack s.memory (input s.memory h q off limit) rho}
     hcode hfork hr hnp site_pc.symm advances raw
   rw [input_eq, output_eq] at g
   exact g

@@ -37,7 +37,7 @@ def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
     (fusedCoefficientWord 0 2)
     (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
     (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
-    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 9667) rho (by omega) hactive
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 9949) rho (by omega) hactive
   have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
     rw [show s.memory = copiedMemory input from copied_memory input]
     exact copiedMemory_sparse input (by omega)
@@ -64,14 +64,14 @@ def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
   let masks := HoistedInherited.Shared32Core.maskRho ++ rho
   have hm : masks.length ≤ 880 := by simp only [masks, HoistedInherited.Shared32Core.maskRho, List.length_append, List.length_cons, List.length_nil]; omega
   have gb := HoistedInherited.Shared32Core.gasSteps_body s e StackRunBridge.initialHashState
-    (UInt256.ofNat 1056) (UInt256.ofNat 9667) masks (by omega)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9949) masks (by omega)
     (by rw [hactive]; decide)
   have ge := HoistedInherited.StaggerPersistentLoopSites.gasSteps_dispatch s (HoistedInherited.Shared32Core.resultHash s)
-    (UInt256.ofNat 1056) (UInt256.ofNat 9667) HoistedInherited.Shared32Core.resultCont masks (by omega) e.run
+    (UInt256.ofNat 1056) (UInt256.ofNat 9949) HoistedInherited.Shared32Core.resultCont masks (by omega) e.run
     (by
-        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 5203 = 9667 := by
+        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 6877 = 9949 := by
           rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 5203 (by rfl)
+        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6877 (by rfl)
         rw [hpc] at h
         rw [e.code]; exact h)
     e.code e.fork e.np

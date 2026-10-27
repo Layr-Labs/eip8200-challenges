@@ -22,7 +22,7 @@ def filterTemplate : List Instr :=
 
 def sizeTemplate : List Instr :=
   [.op .CALLDATASIZE, .push ⟨2, by decide⟩ 1000, .op .SUB,
-   .push ⟨2, by decide⟩ 4601, .op .JUMPI]
+   .push ⟨2, by decide⟩ 8247, .op .JUMPI]
 
 theorem run_filter_fall (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)

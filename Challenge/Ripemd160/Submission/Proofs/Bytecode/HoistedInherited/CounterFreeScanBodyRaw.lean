@@ -40,25 +40,25 @@ theorem run_template (s : State) (pc a r : UInt256) (rho : List UInt256)
   rw [HoistedInherited.UnrolledRepeatRaw.foldAcc_offsets] at hb
   simpa only [template, pcAfter_append] using hb
 
-theorem endPC : pcAfter (UInt256.ofNat 9429) template = UInt256.ofNat 9633 := by decide
+theorem endPC : pcAfter (UInt256.ofNat 9711) template = UInt256.ofNat 9915 := by decide
 
 theorem run (s : State) (a r : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
-    runInstrSeq template {s with pc := UInt256.ofNat 9429, stack := [a,r] ++ rho} =
+    runInstrSeq template {s with pc := UInt256.ofNat 9711, stack := [a,r] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9633
+        pc := UInt256.ofNat 9915
         stack := [HoistedInherited.UnrolledRepeatRaw.acc s.executionEnv.calldata r a 10,r] ++ rho} := by
-  simpa only [endPC] using run_template s (UInt256.ofNat 9429) a r rho hs hrun
+  simpa only [endPC] using run_template s (UInt256.ofNat 9711) a r rho hs hrun
 
 theorem run_equalityAcc (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq template
       {s with
-        pc := UInt256.ofNat 9429
+        pc := UInt256.ofNat 9711
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0,
           HoistedInherited.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9633
+        pc := UInt256.ofNat 9915
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 10,
           HoistedInherited.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} := by
   simpa only [HoistedInherited.UnrolledRepeatRaw.acc_equalityAcc] using

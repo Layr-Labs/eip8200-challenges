@@ -1,6 +1,6 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreCopyJoin
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreBinding
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.RecognitionCorrect
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Arms.Dispatch
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Patterned128Entry
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.DirectGuardSize
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.EntryPrefilter
@@ -11,7 +11,6 @@ set_option maxHeartbeats 5000000
 set_option linter.unusedSimpArgs false
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreCorrect
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
-open RetainedIntegration105 RetainedResultEdge112
 
 private def initialEnv (input : ByteArray) :
     HoistedStoreSites.Env (initialState HoistedInherited.submissionBytecode input 0) :=
@@ -32,23 +31,9 @@ private theorem generic_after_copy (input : ByteArray) (hfit : CalldataFits inpu
   exact HoistedInherited.GenericFramedCorrect.correct input hfit hpos rho hcap
     (g.trans (HoistedInherited.PaddingTail.gasSteps_push input rho hcap))
 
-private theorem from_retained (input : ByteArray) (hfit : CalldataFits input)
-    (hsize : input.size = 1000)
-    (g : GasSteps (initialState HoistedInherited.submissionBytecode input 0)
-      {HoistedInherited.PatternedScan.stS input 8157 [] with stack := [MachineState.readWord input 0]}) :
-    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
-      Eval (initialState HoistedInherited.submissionBytecode input gas) (.returned (spec input)) := by
-  let s := initialState HoistedInherited.submissionBytecode input 0
-  by_cases hz : retainedResult input = 0
-  · have gs := HoistedStoreRetained.gasSteps_return s [] (initialEnv input) (by decide) rfl hz
-    exact HoistedInherited.J2Correct.of_returned input _ (g.trans gs) rfl rfl
-      (returned_spec s [] hsize hz)
-  · have gm := HoistedStoreRetained.gasSteps_miss_copy s [] (initialEnv input) (by decide)
-      rfl rfl (Nat.lt_trans hfit (by norm_num)) (by change 0 < input.size; omega) hz
-    exact generic_after_copy input hfit (by omega) [] (by decide) (g.trans gm)
-
-/-- Universal correctness for the exact hoisted-store candidate, including the
-unchanged alternate recognizers, ordinary compressor, and shared-32 path. -/
+/-- Universal correctness for the exact candidate: compact patterned arms behind
+the size dispatcher, the window-checked 1000-byte arm, the hoisted `a` arm, the
+full pad-only copy, ordinary compressor, and shared-32 path. -/
 theorem correct : Correct HoistedInherited.submissionBytecode := by
   intro input hfit
   by_cases hpass : HoistedInherited.EntryPrefilter.condition input = 0
@@ -62,11 +47,10 @@ theorem correct : Correct HoistedInherited.submissionBytecode := by
         Eval (initialState HoistedInherited.submissionBytecode input gas) (.returned (spec input)) := by
     intro h1000 hguard
     by_cases hallowed : RecognitionAccumulator.Allowed input.size
-    · exact HoistedInherited.RecognitionCorrect.from_entry input hfit hallowed h1000
-        (hguard.trans (HoistedInherited.Patterned128Entry.gasSteps_allowed input hfit hallowed h1000))
+    · exact Arms.Dispatch.from_entry input hfit hallowed h1000 hguard
     by_cases hempty : input.size = 0
     · exact HoistedInherited.AbcArm.correct_empty input hfit (TinyGuardLogic.input_eq_empty input hempty)
-        (hguard.trans (HoistedInherited.Patterned128Entry.gasSteps_to_empty input hempty))
+        (hguard.trans (Arms.Dispatch.gasSteps_to_empty input hempty))
     have harm : GasSteps (initialState HoistedInherited.submissionBytecode input 0) (HoistedInherited.AbcArm.armEntry input) :=
       hguard.trans (HoistedInherited.Patterned128Entry.gasSteps_to_arm input hfit hallowed h1000 hempty)
     by_cases hw : HoistedInherited.AbcArm.wordCond input = 0
@@ -89,7 +73,7 @@ theorem correct : Correct HoistedInherited.submissionBytecode := by
       rfl deployAddress_not_precompile
     have ga := HoistedStoreAnchor.taken (initialState HoistedInherited.submissionBytecode input 0) []
       (initialEnv input) (by decide) href
-    exact from_retained input hfit h1000
+    exact Arms.Long.correct1000 input hfit h1000
       ((HoistedInherited.EntryPrefilter.gasSteps_fall input hpass).trans (gs.trans ga))
   by_cases hm : PcSeedRaw.mismatch input = 0
   · rw [HoistedStoreBinding.inherited_exact]

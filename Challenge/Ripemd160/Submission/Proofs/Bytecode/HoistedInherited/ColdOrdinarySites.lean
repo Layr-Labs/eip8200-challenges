@@ -122,9 +122,9 @@ theorem low_advances : ∀ instruction ∈ StaggerPad.lowTemplate.dropLast, PadL
 theorem low_end : pcAfter (UInt256.ofNat 65) StaggerPad.lowTemplate = UInt256.ofNat 117 := by decide
 
 def branchTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 4751),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 8397),
     .op (.Swap ⟨12, by decide⟩), .op .POP,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 6154), .op .JUMP ]
+    .push ⟨2, by decide⟩ (UInt256.ofNat 4601), .op .JUMP ]
 
 theorem branch_slice :
     (HoistedInherited.Artifact.submissionArtifact.instructions.drop 56).take branchTemplate.length = branchTemplate := by rfl
@@ -145,12 +145,12 @@ theorem branch_advances : ∀ instruction ∈ branchTemplate.dropLast, PadLift.A
   decide
 
 theorem valid_rounds (s : State) (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 6154).toNat = true := by
-  have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 3856 = 6154 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 4601).toNat = true := by
+  have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 3383 = 4601 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3856 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 3383 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 6154 = true
+  change Decode.isValidJumpDest s.executionEnv.code 4601 = true
   rw [hcode]
   exact h
 
@@ -197,7 +197,7 @@ def gasSteps_branch_taken (s : State)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 117, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho}
-      {s with pc := UInt256.ofNat 6154, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 4751 :: rho} := by
+      {s with pc := UInt256.ofNat 4601, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: UInt256.ofNat 8397 :: rho} := by
   apply PadLift.gasSteps_of_raw branchSite {s with pc := UInt256.ofNat 117, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: off :: c :: rho} _ hcode hfork hrun hnp branch_pc.symm branch_advances
   have hcap (n : Nat) (hn : n ≤ 16) : rho.length + n < 1024 := by omega
   have hv := valid_rounds s hcode

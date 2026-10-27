@@ -7,7 +7,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited
 /-- The exact byte array certified by `FoldedCandidateArtifact`. -/
 abbrev submissionBytes : ByteArray := FoldedCandidateArtifact.code
 
-@[simp] theorem referenceBytes_size : submissionBytes.size = 9742 :=
+@[simp] theorem referenceBytes_size : submissionBytes.size = 10024 :=
   FoldedCandidateArtifact.code_size
 
 @[simp] theorem referenceBytes_get_zero : submissionBytes[0] = 0x64 := by
