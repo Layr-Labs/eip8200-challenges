@@ -1,3 +1,15 @@
+# Current refinement: cheaper Fermat join guard (-70 gas per draw)
+
+Parent: promoted `9f05043a-a55d-4eec-8c07-38b999262e54`. The join guard at PC 33
+(`JUMPDEST PUSH1 1 DUP3 ADD DUP2 XOR JUMPDEST PUSH2 0x02e9 JUMPI`, 30 gas) becomes
+`JUMPDEST DUP2 NOT DUP2 ADD JUMPDEST JUMPDEST PUSH3 0x0002e9 JUMPI` (28 gas). The guard value is
+`modulus + ~exponent`, i.e. `FermatNext.fermatDiff` itself, zero exactly when
+`exponent = modulus - 1`. Twelve bytes and nine instructions are preserved, so every byte PC and
+instruction index is unchanged. `FermatNext.run_join` keeps its statement. Executed once per
+32/32/32 tuple (35 per corpus draw): seed-zero total 366,530 -> 366,460 (44/44).
+
+---
+
 # Current refinement: setup-path stack cleanups (-24 gas per draw, on top of R5 fusion)
 
 * `setupPathA` (PCs 649..689): drop a `DUP1` copy that was only popped at the end;
