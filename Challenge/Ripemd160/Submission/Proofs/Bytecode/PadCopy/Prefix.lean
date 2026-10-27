@@ -13,6 +13,9 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired9
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired10
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired11
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired12
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired13
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired14
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.CorePaired15
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 10000000
@@ -24,7 +27,7 @@ open StaggerModeSeven (physicalKey)
 open StaggerModeSeven (step fold)
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy (PadZero)
 set_option linter.unusedVariables false
-def pcs : Array Nat := #[6327, 6392, 6424, 6460, 7047, 7083, 7114, 7150, 7181, 7216, 7261, 7296, 7341, 7375]
+def pcs : Array Nat := #[6327, 6392, 6424, 6460, 7047, 7083, 7114, 7150, 7181, 7216, 7261, 7296, 7341, 9743, 9802, 9857, 9905]
 def atRound (s : State) (h4 : UInt256) (i : Nat) (q right : WordLane) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat pcs[i]!, stack := stack s.memory h4 HoistedInherited.StaggerCore.shapes[i]! q right (physicalKey (i-1)) rho}
 
@@ -164,9 +167,40 @@ private def gasSteps_at12 (s : State) (h4 : UInt256) (q right : WordLane) (rho :
     GasSteps (atRound s h4 12 q right rho)
       (atRound s h4 (12+1) (step 12 (message s.memory 12) q) right rho) := by
   rw [step_ordinary 12 _ _ (by decide) (by decide)]
-  exact PadCopy.CorePaired12.gasSteps s h4 q right rho hs hr ha hcode hfork hnp hz
+  exact (PadCopy.CorePaired12.gasSteps s h4 q right rho hs hr ha hcode hfork hnp hz).trans
+    (PadCopy.Hops.gasSteps_extension s _
+      (by simp only [StaggerCoreCommon.stack, List.length_append, List.length_map,
+            List.length_cons, List.length_nil]; omega) hr hcode hfork hnp)
 
-def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 13) (q right : WordLane) (rho : List UInt256)
+private def gasSteps_at13 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
+    GasSteps (atRound s h4 13 q right rho)
+      (atRound s h4 (13+1) (step 13 (message s.memory 13) q) right rho) := by
+  rw [step_ordinary 13 _ _ (by decide) (by decide)]
+  exact PadCopy.CorePaired13.gasSteps s h4 q right rho hs hr ha hcode hfork hnp hz
+private def gasSteps_at14 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
+    GasSteps (atRound s h4 14 q right rho)
+      (atRound s h4 (14+1) (step 14 (message s.memory 14) q) right rho) := by
+  rw [step_ordinary 14 _ _ (by decide) (by decide)]
+  exact PadCopy.CorePaired14.gasSteps s h4 q right rho hs hr ha hcode hfork hnp hz
+private def gasSteps_at15 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
+    GasSteps (atRound s h4 15 q right rho)
+      (atRound s h4 (15+1) (step 15 (message s.memory 15) q) right rho) := by
+  rw [step_ordinary 15 _ _ (by decide) (by decide)]
+  exact PadCopy.CorePaired15.gasSteps s h4 q right rho hs hr ha hcode hfork hnp hz
+
+def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 16) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -187,9 +221,12 @@ def gasSteps_step (s : State) (h4 : UInt256) (i : Fin 13) (q right : WordLane) (
   | ⟨10, _⟩ => exact gasSteps_at10 s h4 q right rho hs hr ha hcode hfork hnp hz
   | ⟨11, _⟩ => exact gasSteps_at11 s h4 q right rho hs hr ha hcode hfork hnp hz
   | ⟨12, _⟩ => exact gasSteps_at12 s h4 q right rho hs hr ha hcode hfork hnp hz
-  | ⟨n+13, hi⟩ => exact False.elim (by omega)
+  | ⟨13, _⟩ => exact gasSteps_at13 s h4 q right rho hs hr ha hcode hfork hnp hz
+  | ⟨14, _⟩ => exact gasSteps_at14 s h4 q right rho hs hr ha hcode hfork hnp hz
+  | ⟨15, _⟩ => exact gasSteps_at15 s h4 q right rho hs hr ha hcode hfork hnp hz
+  | ⟨n+16, hi⟩ => exact False.elim (by omega)
 
-def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 13) (q right : WordLane) (rho : List UInt256)
+def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 16) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
@@ -202,18 +239,18 @@ def gasSteps_prefix (s : State) (h4 : UInt256) (n : Nat) (hn : n ≤ 13) (q righ
     exact (ih (by omega)).trans
       (gasSteps_step s h4 ⟨n, by omega⟩ (fold (message s.memory) n q) right rho hs hr ha hcode hfork hnp hz)
 
-/-- The specialised prefix ends in the second window; the hop and the generic
-marker leave exactly the generic state at round 13. -/
+/-- The specialised prefix ends in the appended block; the hop and the generic
+marker leave exactly the generic state at round16. -/
 def gasSteps_toGeneric (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
     GasSteps (atRound s h4 0 q right rho)
-      (HoistedInherited.StaggerCore.atRound s h4 13 (fold (message s.memory) 13 q) right rho) :=
-  (gasSteps_prefix s h4 13 (by decide) q right rho hs hr ha hcode hfork hnp hz).trans
+      (HoistedInherited.StaggerCore.atRound s h4 16 (fold (message s.memory) 16 q) right rho) :=
+  (gasSteps_prefix s h4 16 (by decide) q right rho hs hr ha hcode hfork hnp hz).trans
     (PadCopy.Hops.gasSteps_rejoin s _
-      (by have h13 : HoistedInherited.StaggerCore.shapes[13]!.length ≤ 20 := by decide
+      (by have h16 : HoistedInherited.StaggerCore.shapes[16]!.length ≤ 20 := by decide
           simp only [StaggerCoreCommon.stack, List.length_append, List.length_map]; omega) hr hcode hfork hnp)
 
 #print axioms gasSteps_toGeneric

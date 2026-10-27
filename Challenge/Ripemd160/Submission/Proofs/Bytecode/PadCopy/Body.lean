@@ -79,7 +79,7 @@ def gasSteps_coreBody (s : State) (h : WordLane) (off limit : UInt256) (rho : Li
   have gc := PadCopy.Prefix.gasSteps_toGeneric s h.e
     (StaggerCoreModel.pair h (StaggerCoreModel.prologue s.memory h)) h (suffix h off limit rho)
     hstack hr ha hcode hfork hnp hz
-  have gt := HoistedInherited.StaggerCore.gasSteps_rest13 s h.e
+  have gt := HoistedInherited.StaggerCore.gasSteps_rest16 s h.e
     (StaggerCoreModel.pair h (StaggerCoreModel.prologue s.memory h)) h (suffix h off limit rho)
     hstack hr ha hcode hfork hnp
   exact gr.trans (gp.trans (gc.trans gt))

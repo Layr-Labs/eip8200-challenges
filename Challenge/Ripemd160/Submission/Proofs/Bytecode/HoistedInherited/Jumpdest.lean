@@ -11,7 +11,7 @@ set_option linter.unusedVariables false
 # Join markers and hops
 
 The specialised pad-only prefix lives in two padding windows and rejoins the
-generic compressor at the marker inserted before round 13.  A marker is a lone
+generic compressor at the marker inserted before round 16.  A marker is a lone
 `JUMPDEST`; a hop is `PUSH2 target; JUMP`.  Both leave the stack unchanged.
 -/
 
@@ -43,16 +43,16 @@ theorem mark_advances : ∀ instruction ∈ markTemplate, DenseScheduleLift.Adva
   apply HoistedInherited.Table80SiteCommon.coreAdvancesAll_sound
   decide
 
-/-- The marker inserted before generic round 13 (instruction 946, byte 1557). -/
+/-- The marker inserted before generic round 16 (instruction 1063, byte 1729). -/
 theorem core_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 946).take markTemplate.length = markTemplate := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 1063).take markTemplate.length = markTemplate := by rfl
 
 def coreSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka markTemplate :=
-  markSite 946 core_slice
+  markSite 1063 core_slice
     (by rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
 
-theorem core_pc : coreSite.startPC = UInt256.ofNat 1557 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 946) = UInt256.ofNat 1557
+theorem core_pc : coreSite.startPC = UInt256.ofNat 1729 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 1063) = UInt256.ofNat 1729
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_core (s : State) (st : List UInt256) (hstack : st.length ≤ 1000)
@@ -61,20 +61,20 @@ def gasSteps_core (s : State) (st : List UInt256) (hstack : st.length ≤ 1000)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 1557, stack := st}
-      {s with pc := UInt256.ofNat 1558, stack := st} := by
-  have hraw := run_mark s (UInt256.ofNat 1557) st hstack hrun
-  have hend : pcAfter (UInt256.ofNat 1557) markTemplate = UInt256.ofNat 1558 := by decide
+    GasSteps {s with pc := UInt256.ofNat 1729, stack := st}
+      {s with pc := UInt256.ofNat 1730, stack := st} := by
+  have hraw := run_mark s (UInt256.ofNat 1729) st hstack hrun
+  have hend : pcAfter (UInt256.ofNat 1729) markTemplate = UInt256.ofNat 1730 := by decide
   rw [hend] at hraw
   exact DenseScheduleLift.gasSteps_of_raw coreSite _ _ hcode hfork hrun hnp core_pc.symm mark_advances hraw
 
 theorem valid_core (s : State) (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) :
-    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1557).toNat = true := by
-  have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 946 = 1557 := by
+    Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 1729).toNat = true := by
+  have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 1063 = 1729 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 946 (by rfl)
+  have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 1063 (by rfl)
   rw [hpc] at h
-  change Decode.isValidJumpDest s.executionEnv.code 1557 = true
+  change Decode.isValidJumpDest s.executionEnv.code 1729 = true
   rw [hcode]
   exact h
 

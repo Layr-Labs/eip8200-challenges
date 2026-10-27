@@ -10,7 +10,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Paired144WordRound StaggerCoreCommon StaggerCoreModel
 open StaggerModeSeven (physicalKey)
 open StaggerModeSeven (step fold)
-def pcs : Array Nat := #[1005, 1073, 1110, 1148, 1184, 1225, 1261, 1302, 1338, 1378, 1428, 1468, 1518, 1558, 1622, 1677, 1730, 1794, 1846, 1887, 1938, 1980, 2032, 2074, 2126, 2168, 2219, 2259, 2315, 2375, 2414, 2468, 2509, 2569, 2615, 2647, 2678, 2714, 2744, 2779, 2825, 2857, 2901, 2933, 2983, 3038, 3077, 3134, 3172, 3237, 3279, 3321, 3374, 3415, 3468, 3510, 3562, 3603, 3655, 3696, 3749, 3787, 3832, 3872, 3917, 3957, 4007, 4048, 4084, 4121, 4159, 4194, 4246, 4282, 4322, 4359, 4410, 4445]
+def pcs : Array Nat := #[1005, 1073, 1110, 1148, 1184, 1225, 1261, 1302, 1338, 1378, 1428, 1468, 1518, 1557, 1621, 1676, 1730, 1794, 1846, 1887, 1938, 1980, 2032, 2074, 2126, 2168, 2219, 2259, 2315, 2375, 2414, 2468, 2509, 2569, 2615, 2647, 2678, 2714, 2744, 2779, 2825, 2857, 2901, 2933, 2983, 3038, 3077, 3134, 3172, 3237, 3279, 3321, 3374, 3415, 3468, 3510, 3562, 3603, 3655, 3696, 3749, 3787, 3832, 3872, 3917, 3957, 4007, 4048, 4084, 4121, 4159, 4194, 4246, 4282, 4322, 4359, 4410, 4445]
 def shapes : Array (List Reg) := #[
   [ .pair,
     .upper,
@@ -1353,10 +1353,7 @@ private def gasSteps_at12 (s : State) (h4 : UInt256) (q right : WordLane) (rho :
     GasSteps (atRound s h4 12 q right rho)
       (atRound s h4 (12+1) (step 12 (message s.memory 12) q) right rho) := by
   rw [step_ordinary 12 _ _ (by decide) (by decide)]
-  exact (HoistedInherited.StaggerCorePaired12.gasSteps s h4 q right rho hs hr ha hcode hfork hnp).trans
-    (HoistedInherited.Jumpdest.gasSteps_core s _
-      (by simp only [StaggerCoreCommon.stack, List.length_append, List.length_map, List.length_cons,
-            List.length_nil]; omega) hr hcode hfork hnp)
+  exact HoistedInherited.StaggerCorePaired12.gasSteps s h4 q right rho hs hr ha hcode hfork hnp
 
 private def gasSteps_at13 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
@@ -1386,7 +1383,10 @@ private def gasSteps_at15 (s : State) (h4 : UInt256) (q right : WordLane) (rho :
     GasSteps (atRound s h4 15 q right rho)
       (atRound s h4 (15+1) (step 15 (message s.memory 15) q) right rho) := by
   rw [step_ordinary 15 _ _ (by decide) (by decide)]
-  exact HoistedInherited.StaggerCorePaired15.gasSteps s h4 q right rho hs hr ha hcode hfork hnp
+  exact (HoistedInherited.StaggerCorePaired15.gasSteps s h4 q right rho hs hr ha hcode hfork hnp).trans
+    (HoistedInherited.Jumpdest.gasSteps_core s _
+      (by simp only [StaggerCoreCommon.stack, List.length_append, List.length_map, List.length_cons,
+            List.length_nil]; omega) hr hcode hfork hnp)
 
 private def gasSteps_at16 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
@@ -2132,19 +2132,19 @@ def gasSteps_from (s : State) (h4 : UInt256) (m : Nat) (q right : WordLane) (rho
   | k + 1, hk => (gasSteps_from s h4 m q right rho hs hr ha hcode hfork hnp k (by omega)).trans
       (gasSteps_step s h4 ⟨m + k, by omega⟩ (fold (message s.memory) (m + k) q) right rho hs hr ha hcode hfork hnp)
 
-/-- Generic rounds 13..76 and the left-line tail, entered past the round-13 marker. -/
-def gasSteps_rest13 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
+/-- Generic rounds 16..76 and the left-line tail, entered past the round-16 marker. -/
+def gasSteps_rest16 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps (atRound s h4 13 (fold (message s.memory) 13 q) right rho)
+    GasSteps (atRound s h4 16 (fold (message s.memory) 16 q) right rho)
       (suffixState s h4 (fold (message s.memory) 77 q) rho) :=
-  (gasSteps_from s h4 13 q right rho hs hr ha hcode hfork hnp 64 (by decide)).trans
+  (gasSteps_from s h4 16 q right rho hs hr ha hcode hfork hnp 61 (by decide)).trans
     (gasSteps_suffix s h4 (fold (message s.memory) 77 q) right rho hs hr ha hcode hfork hnp)
 
 #print axioms gasSteps_step
-#print axioms gasSteps_rest13
+#print axioms gasSteps_rest16
 #print axioms gasSteps_prefix
 #print axioms gasSteps_suffix
 #print axioms gasSteps_pairedSuffix

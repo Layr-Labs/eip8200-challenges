@@ -1,4 +1,26 @@
-# Current candidate: specialised pad-only prefix (637,478 gas)
+# Current candidate: pad-only prefix through round15 (proof in progress)
+
+Direct predecessor: promoted source6186109, public submission258fcb2
+(637,478 gas). The independent Anvil/revm runner reproduces that predecessor's
+49-vector total exactly and measures **637,352 gas** for this image. All49
+outputs match RIPEMD-160, including dirty-frame tests. The pinned scorer also
+confirms637,352 gas, with all49 vectors passing in both frames. Complete local
+theorem/comparator replay is still in progress; server verification is pending.
+
+The appended rounds13..15 remove two zero schedule reads. Their18-gas saving
+exceeds the extra12-gas hop by6 gas per aligned pad-only block, or126 gas over
+the21 affected scored blocks. The generic rejoin marker moves from1557 to1729.
+Other existing loop and serializer sites retain their positions.
+
+Image:9,909 bytes,5,372 decoded instructions. Decoded SHA-256:
+`6eb386e046706e667a1c95a78154905844c35b29d796d1163622a3a52f87bb4d`.
+Both specialized raw execution lemmas have passed Lean with only `propext`
+and `Quot.sound`. All new sites, round wrappers, jumps and the16-round prefix
+have passed. The complete correctness/comparator checks are pending.
+
+---
+
+## Previous promoted candidate: specialised pad-only prefix (637,478 gas)
 
 Direct predecessor: accepted/promoted `e7c3da01-b524-4ec4-aa1d-ca6cade6dcc5`
 (639,641 gas). The pinned scorer measures **637,478 gas** (−2,163) with all 49

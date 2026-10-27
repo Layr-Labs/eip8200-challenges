@@ -14,7 +14,7 @@ private theorem bytecode_eq_submission :
   rfl
 
 /-- Exact-byte universal RIPEMD-160 correctness, including the specialised
-pad-only prefix, the round-48 resident-key fold, both outcomes of both 1000-byte
+pad-only prefix through paired round15, the round-48 resident-key fold, both outcomes of both 1000-byte
 recognizers, and every inherited compressor/serialization path. -/
 theorem candidate : Challenge.Ripemd160.Correct bytecode :=
   bytecode_eq_submission.symm ▸ Submission.Proofs.Bytecode.HoistedStoreCorrect.correct
@@ -22,6 +22,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode :=
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Decoded SHA-256: f5a544656f69df166d5a86069bbd024c7a6a312a406baba6048aa96700abf33a.
--- 9742 bytes, 5258 instructions. Specialised pad-only prefix.
+-- Decoded SHA-256: 6eb386e046706e667a1c95a78154905844c35b29d796d1163622a3a52f87bb4d.
+-- 9909 bytes, 5372 instructions. Specialised pad-only prefix through round15.
 -- Only the protected benchmark is authoritative for correctness and gas.
