@@ -1356,33 +1356,31 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 459 (.Dup ⟨1, by decide⟩),
-   pushAt 460 2 2688,
-   opAt 461 .MSTORE,
-   opAt 462 (.Dup ⟨3, by decide⟩),
-   pushAt 463 1 96,
-   opAt 464 .ADD,
-   pushAt 465 2 2656,
-   opAt 466 .MSTORE,
-   pushAt 467 1 32,
-   opAt 468 (.Dup ⟨2, by decide⟩),
-   opAt 469 .SUB,
-   opAt 470 .JUMPDEST,
-   pushAt 471 2 2752,
-   opAt 472 .MSTORE,
-   opAt 473 (.Dup ⟨1, by decide⟩),
-   pushAt 474 2 2080,
-   opAt 475 .ADD,
-   pushAt 476 2 2784,
-   opAt 477 .MSTORE,
-   opAt 478 (.Dup ⟨5, by decide⟩),
-   opAt 479 (.Dup ⟨1, by decide⟩),
-   pushAt 480 0 0,
-   opAt 481 .CALLDATACOPY,
-   opAt 482 .POP,
-   opAt 483 .JUMPDEST,
-   pushAt 484 2 2390,
-   opAt 485 .JUMP]
+  [opAt 457 (.Dup ⟨1, by decide⟩),
+   pushAt 458 2 2688,
+   opAt 459 .MSTORE,
+   opAt 460 (.Dup ⟨3, by decide⟩),
+   pushAt 461 1 96,
+   opAt 462 .ADD,
+   pushAt 463 2 2656,
+   opAt 464 .MSTORE,
+   pushAt 465 1 32,
+   opAt 466 (.Dup ⟨2, by decide⟩),
+   opAt 467 .SUB,
+   pushAt 468 3 2752,
+   opAt 469 .MSTORE,
+   opAt 470 (.Dup ⟨1, by decide⟩),
+   pushAt 471 2 2080,
+   opAt 472 .ADD,
+   pushAt 473 2 2784,
+   opAt 474 .MSTORE,
+   opAt 475 (.Dup ⟨5, by decide⟩),
+   opAt 476 (.Dup ⟨1, by decide⟩),
+   pushAt 477 0 0,
+   opAt 478 .CALLDATACOPY,
+   opAt 479 .POP,
+   pushAt 480 3 2390,
+   opAt 481 .JUMP]
 
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
@@ -1396,7 +1394,7 @@ def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
 here directly instead of calling the Montgomery-form conversion first. -/
 private theorem jumpDest3296 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1877 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 1873 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)

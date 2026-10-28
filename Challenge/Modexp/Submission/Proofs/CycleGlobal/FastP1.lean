@@ -30,16 +30,14 @@ def blk1028 :
    opAt 445 (.Dup ⟨0, by decide⟩),
    opAt 446 .ISZERO,
    opAt 447 (.Swap ⟨0, by decide⟩),
-   opAt 448 .JUMPDEST,
-   pushAt 449 1 1,
-   opAt 450 .AND,
-   opAt 451 .OR,
-   opAt 452 .JUMPDEST,
-   opAt 453 (.Dup ⟨6, by decide⟩),
-   pushAt 454 1 127,
-   opAt 455 .AND,
-   opAt 456 .OR,
-   pushAt 457 1 219,
-   opAt 458 .JUMPI]
+   pushAt 448 2 1,
+   opAt 449 .AND,
+   opAt 450 .OR,
+   opAt 451 (.Dup ⟨6, by decide⟩),
+   pushAt 452 2 127,
+   opAt 453 .AND,
+   opAt 454 .OR,
+   pushAt 455 1 219,
+   opAt 456 .JUMPI]
 
 end CycleSubmission.Global.Fast

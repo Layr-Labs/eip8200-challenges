@@ -1,3 +1,13 @@
+# Current refinement: executed padding removal in the shift-reduce conversion and the RSA setup
+
+* Shift-reduce base conversion: the padding `JUMPDEST`s in the dispatcher guard, the estimator precomputation, the end of the inline Newton chain, the Newton-batch tail and the shift-loop body are removed. In each block one push is widened (`PUSHn` → `PUSH(n+k)` with the same value), so every block keeps its byte length and every block-start PC is unchanged.
+* RSA fast-path setup block: its padding `JUMPDEST`s are removed the same way.
+* The unreachable bytes after the first R5 product segment are re-split into more instructions, so the total instruction count and every instruction index after them are unchanged; the indices in between decrease.
+* `PrefixPC` relates program counters to the accepted proof base on one width segment per index offset. The per-index PC lemmas, the range PC tables, the located instruction lists and the block bindings of the shifted span follow the new indices; the located entries and per-index PC lemmas of the removed pads are dropped. Every other theorem statement is unchanged except index and PC literals.
+* `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
 # Current refinement: PUSH0 limb loads in R5 product columns 2-4
 
 * R5 product columns 2, 3 and 4 (`prCol2`, `prCol3`, `prCol4`): every limb load from offset zero uses `PUSH0`. Each freed byte widens a later push of the same column (`PUSHn` → `PUSH(n+1)` with the same value), so every column keeps its byte length, its start and end PCs and its instruction count.

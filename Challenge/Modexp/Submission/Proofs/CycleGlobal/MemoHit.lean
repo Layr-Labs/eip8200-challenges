@@ -53,7 +53,7 @@ theorem exp_decodes (s : State)
     (hpc : s.pc.toNat = 738) :
     s.decodedOp = some .EXP := by
   have hdec := Challenge.EvmProof.Stepper.decodes_of_artifact
-    CycleSubmission.Artifact.artifact s 515 (.op .EXP) hcode
+    CycleSubmission.Artifact.artifact s 511 (.op .EXP) hcode
     (by rw [hpc]; rfl) (by rfl) expAt.wellFormed
   change s.decodedOp = some .EXP at hdec
   exact hdec

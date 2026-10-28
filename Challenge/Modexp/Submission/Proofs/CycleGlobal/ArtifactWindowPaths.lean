@@ -52,56 +52,56 @@ private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base
 
 private def nine_base :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 745 WindowTwentyOneEntry.baseProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 521 1 745 WindowTwentyOneEntry.baseProgram
-    (by exact Nat.le_trans (by decide : 521+1 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 517 1 745 WindowTwentyOneEntry.baseProgram
+    (by exact Nat.le_trans (by decide : 517+1 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_modulus :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 746 WindowTwentyOneEntry.modulusProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 522 2 746 WindowTwentyOneEntry.modulusProgram
-    (by exact Nat.le_trans (by decide : 522+2 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 518 2 746 WindowTwentyOneEntry.modulusProgram
+    (by exact Nat.le_trans (by decide : 518+2 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_table :
   WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 748 WindowTwentyOneTableBuild.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 524 88 748 WindowTwentyOneTableBuild.program
-    (by exact Nat.le_trans (by decide : 524+88 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 520 88 748 WindowTwentyOneTableBuild.program
+    (by exact Nat.le_trans (by decide : 520+88 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_setup :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 837 WindowPrecopyRoute.setupProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 612 3 837 WindowPrecopyRoute.setupProgram
-    (by exact Nat.le_trans (by decide : 612+3 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 608 3 837 WindowPrecopyRoute.setupProgram
+    (by exact Nat.le_trans (by decide : 608+3 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_copy :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 841 WindowPrecopyRoute.copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 615 7 841 WindowPrecopyRoute.copyProgram
-    (by exact Nat.le_trans (by decide : 615+7 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 611 7 841 WindowPrecopyRoute.copyProgram
+    (by exact Nat.le_trans (by decide : 611+7 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_pool :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 849 WindowPrecopyRoute.poolProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 622 314 849 WindowPrecopyRoute.poolProgram
-    (by exact Nat.le_trans (by decide : 622+314 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 618 314 849 WindowPrecopyRoute.poolProgram
+    (by exact Nat.le_trans (by decide : 618+314 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_first :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 1163 WindowPrecopyRoute.firstProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 936 5 1163 WindowPrecopyRoute.firstProgram
-    (by exact Nat.le_trans (by decide : 936+5 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 932 5 1163 WindowPrecopyRoute.firstProgram
+    (by exact Nat.le_trans (by decide : 932+5 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_head :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 1172 (WindowPrecopyRoute.routeWindows 0 60) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 941 840 1172 (WindowPrecopyRoute.routeWindows 0 60)
-    (by exact Nat.le_trans (by decide : 941 + 840 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 937 840 1172 (WindowPrecopyRoute.routeWindows 0 60)
+    (by exact Nat.le_trans (by decide : 937 + 840 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def nine_tail :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2252 WindowPrecopyRoute.tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1781 49 2252 WindowPrecopyRoute.tailProgram
-    (by exact Nat.le_trans (by decide : 1781+49 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1777 49 2252 WindowPrecopyRoute.tailProgram
+    (by exact Nat.le_trans (by decide : 1777+49 ≤ 8543) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_fast :
@@ -161,7 +161,7 @@ def fermatPaths : FermatNext.Paths CycleSubmission.Artifact.artifact .Osaka wher
   result := fermat_result
   genCheck := fermat_genCheck
   genLoad := fermat_genLoad
-  routeJump := by exact CycleSubmission.Global.Binding.jumpDest 521 (by rfl)
+  routeJump := by exact CycleSubmission.Global.Binding.jumpDest 517 (by rfl)
   joinJump := by exact CycleSubmission.Global.Binding.jumpDest 23 (by rfl)
   tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3748 (by rfl)
   bigJump := by exact CycleSubmission.Global.Binding.jumpDest 146 (by rfl)

@@ -131,7 +131,7 @@ private theorem run_width_prefix (input : ByteArray) :
 
 set_option linter.unusedSimpArgs false in
 private theorem run_width_jump (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock [opAt 498 .JUMPI] (widthMidState input) =
+    Challenge.EvmProof.Stepper.runLocatedBlock [opAt 494 .JUMPI] (widthMidState input) =
       some (if MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
         then tailState input else legacyState input) := by
   obtain ⟨c0, c32, c68, c100, c1, c2, cK⟩ := lits
@@ -171,7 +171,7 @@ private theorem run_width_generic (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock widthPath (entryState input) =
       some (if MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
         then tailState input else legacyState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_append (widthPath.take 5) [opAt 498 .JUMPI]
+  Challenge.EvmProof.Stepper.runLocatedBlock_append (widthPath.take 5) [opAt 494 .JUMPI]
     (entryState input) (widthMidState input) _ (run_width_prefix input) rfl
     (run_width_jump input)
 
