@@ -1,3 +1,30 @@
+# Current refinement: direct Fermat join guard
+
+* Join point at 33: the guard is computed as `modulus + ~exponent` (`DUP2 NOT DUP2 ADD`), which is exactly `FermatNext.fermatDiff`, and the jump to the window core uses a widened push. The former padding `JUMPDEST` inside the guard is removed.
+* The special-prime test and its jump tail follow two bytes earlier; the unreachable bytes before the general-width entry absorb the two bytes and the two instruction slots, so every byte PC and every instruction index from the general-width entry on is unchanged.
+* `FermatNext.run_join` now reads the guard directly as `fermatDiff`; `run_prime`, `run_jumpTail`, `FermatGas` and the three bindings in `ArtifactWindowPaths` follow the new positions. Every other theorem statement is unchanged.
+
+---
+
+# Current refinement: R5 padding removal and a direct Fermat landing
+
+* R5 square columns 0, 4 and 5 and R5 product column 0: every executed `JUMPDEST` pad inside the columns is removed. The freed bytes are absorbed by widening one push per column (`PUSHn` → `PUSH(n+k)` with the same value), so every column keeps its byte length and every byte PC outside the columns is unchanged.
+* The unreachable bytes after the R5 product's first segment are re-split so that the total instruction count, and every instruction index after them, is unchanged. Only the R5 square block length and the indices of the loop-control and first product segment blocks are rebound in `Proofs/R5/Blocks.lean`.
+* The special-prime branch of the Fermat dispatcher jumps directly to the `JUMPDEST` immediately before the result block, instead of entering the former no-op recheck. `FermatNext.tailProgram` is now that single `JUMPDEST`; `FermatNext`, `FermatGas` and `ArtifactWindowPaths` follow the new landing.
+
+Every theorem statement outside those bindings is unchanged. `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
+# Current refinement: column-0 operand order in the R5 kernels
+
+* R5 square column 0 (`sqCol0`): the modulus copy for the closing `MULMOD` is placed on the stack before the column's mod-`P` products, so the trailing `SWAP1` is dropped. The freed byte is `JUMPDEST` padding at the end of the column.
+* R5 product column 0 (`prCol0`): same operand order, and both limb loads from offset zero use `PUSH0`. Two neighbouring pushes are widened to keep the column's byte length, with one `JUMPDEST` pad at the end of the column.
+
+Byte length, instruction count, every byte PC outside the two columns, every `JUMPDEST` that is a jump target and every theorem statement are unchanged. `Proofs/R5/ExecSquare.lean` and `Proofs/R5/ExecProduct.lean` regenerate the column-0 part programs, part models and run lemmas. `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
 # Current refinement: setup-path stack cleanups (-24 gas per draw, on top of R5 fusion)
 
 * `setupPathA` (PCs 649..689): drop a `DUP1` copy that was only popped at the end;
