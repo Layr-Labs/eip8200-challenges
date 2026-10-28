@@ -18,8 +18,11 @@ private theorem hadd_zero (a : UInt256) : UInt256.add a (UInt256.ofNat 0) = a :=
   apply Word.word_ext; cases a; simp [UInt256.add, UInt256.ofNat, UInt256.toNat]
 private theorem zero_hadd' (a : UInt256) : UInt256.add {val := 0} a = a := zero_hadd a
 private theorem hadd_zero' (a : UInt256) : UInt256.add a {val := 0} = a := hadd_zero a
+/-- The zero-word placeholder `PUSH0` and the `ADD` that consumed it are
+`JUMPDEST`s; the four `DUP`s between them each reach one slot less deep. -/
 def template : List Instr :=
-  [ .op (.Dup ⟨10, by decide⟩),
+  [ .op .JUMPDEST,
+    .op (.Dup ⟨10, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Dup ⟨13, by decide⟩),
     .op (.Dup ⟨4, by decide⟩),
@@ -27,13 +30,14 @@ def template : List Instr :=
     .op .OR,
     .op .XOR,
     .op .ADD,
+    .op .JUMPDEST,
     .op (.Dup ⟨8, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨14, by decide⟩),
     .op .AND,
     .op (.Dup ⟨13, by decide⟩),
     .op .MUL,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 28),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
     .op .SHR,
     .op (.Dup ⟨3, by decide⟩),
     .op .ADD,
@@ -44,7 +48,7 @@ def template : List Instr :=
     .op .SHR ]
 def padActual (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.shiftRight (UInt256.mul x.v12 x.v11) (UInt256.ofNat 23)),
-    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land x.v13 (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (UInt256.ofNat 0))))) (UInt256.ofNat 28))),
+    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land x.v13 (UInt256.add x.v7 (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10)))) (UInt256.ofNat 28))),
     x.v0,
     x.v1,
     x.v2,

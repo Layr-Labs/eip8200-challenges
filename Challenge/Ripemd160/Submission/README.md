@@ -1,9 +1,62 @@
-# Current refinement: pad left round 78 without the zero add
+# Current candidate: zero cached-word adds dropped from the pad-only copy (626,656 gas)
 
-* Left round 78 of the pad-only compressor copy: the remaining `PUSH0` and the `ADD` of that zero are removed, and the four following `DUP`s are re-indexed; one later push of the same site is widened, so the site keeps its byte length and its start and end PCs.
-* `Proofs/Bytecode/PadCopy/FullRawLeft78.lean` carries the new template with the same `padActual` and the same generic `StaggerRawLeft78.outputStack`; `FullSiteLeft79.lean` and `FullTail.lean` follow the shifted instruction indices; the artifact mirrors (`FoldedCandidateArtifact.lean` and the instruction counts in `HoistedStoreArtifact.lean` and `HoistedInherited/Artifact.lean`) and the image comment in `Solution.lean` are regenerated from `bytecode.hex`. Every theorem statement is unchanged.
+Direct predecessor: promoted `1ab7033a-a3c3-4770-9d2f-9993f553161f` (626,803 gas).
+Image: 10,264 bytes, 7,045 decoded instructions (both unchanged), decoded SHA-256
+`d4ba4d7bd02543dd85e8dbe5f937ab0aa0dd7d40cbf6620a698720a5f7f2d3ae`.
+
+Two byte-neutral edits in the pad-only compressor copy, which runs once on every pad-only
+block (the last block of each 64- and 128-byte vector; 21 scored blocks). No byte pc and no
+instruction index changes.
+
+* **Paired round 70, pc 7755.** The copy still ran the generic round-70 template, which adds
+  the cached message word at 360 (`DUP4 DUP11 ADD`). That word is zero on a pad-only block
+  (`PadZero`, slot 20), so the three instructions become `DUP10 JUMPDEST JUMPDEST`: 9 gas
+  becomes 5.
+* **Left round 78, pc 10162.** A `PUSH0` stood in for the same zero word and was consumed by
+  the `ADD` at 10171. Both become `JUMPDEST`, and the four `DUP`s between them each reach one
+  slot less deep (`DUP12 DUP3 DUP15 DUP6` to `DUP11 DUP2 DUP14 DUP5`): 5 gas becomes 2.
+
+Net: 7 gas per pad-only block, 147 over the corpus (each 64- and 128-byte vector −7; all
+other vectors unchanged).
+
+How it was found: a value trace of every executed instruction over the scored corpus and
+about 1,000 random inputs, flagging pushes whose value is always zero and arithmetic with an
+always-identity operand. Outside the fixed-input arms these two sites were the only hits.
+
+## What it costs the proof
+
+* `PadCopy/FullRawPaired70.lean` (new): the edited round-70 template and its raw run under
+  `x.v2 = 0`, concluding the generic `StaggerRawPaired70.outputStack` through `out_eq`, in the
+  form of the existing `FullRawLeft78`.
+* `PadCopy/FullSitePaired70.lean` binds that template at instruction 5814 and takes the zero
+  premise; `PadCopy/FullCorePaired70.lean` discharges it from `PadZero` (`hz 20`), as
+  `FullCoreLeft78` already did. The core statement is unchanged.
+* `PadCopy/FullRawLeft78.lean`: the edited template, and `padActual` without the `+ 0`;
+  `out_eq`, the site and the core are unchanged.
+* `FoldedCandidateArtifact.lean`: instruction rows 5826–5828, 6950–6954 and 6959 and byte
+  lists 24 and 28 regenerated from the hex; chunk sizes and counts are unchanged.
+
+## Verification
+
+- `lake build Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedStoreCorrect` passes all
+  4,110 jobs; `HoistedStoreCorrect.correct` depends only on `propext`, `Classical.choice` and
+  `Quot.sound`; no `sorry`, `native_decide` or `bv_decide` in the change.
+- Pinned Lean scorer (`lake exe ripemd160challenge --hex=Challenge/Ripemd160/Submission/bytecode.hex`):
+  626,656 gas, 49/49, clean and dirty totals equal, Tier 1 PASS.
+- A Python replica of the scorer's gas model reproduces 626,803 for the base and 626,656 here, and
+  the candidate returns the correct digest on 2,100 extra inputs (every size 0..299 plus 400 sizes
+  up to 3,000 bytes; random, all-zero and all-`0xff` data).
+- The rendered protected `Benchmark/Artifact.lean` literal elaborates.
+- The full local comparator gate (`./benchmark.sh ripemd160`) had not finished when this was
+  submitted; the official run is authoritative.
+- Overlap: promoted `aeebceb3-168a-4381-992f-c18ff50eaf62`, which landed while this candidate was
+  being verified, independently removes the same left-round-78 zero add with a different encoding.
+  The round-70 edit is not in it.
+- Model: Claude Opus 5.5, harness Claude Code.
 
 ---
+
+**The text below was inherited with the base tree and describes EARLIER artifacts.**
 
 # Current candidate: word-0 key folds in the pad-only copy (626,803 gas)
 

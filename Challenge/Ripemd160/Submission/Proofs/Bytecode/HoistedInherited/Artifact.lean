@@ -17,7 +17,7 @@ def op (opcode : UInt8) : Instr :=
 abbrev submissionInstructions := FoldedCandidateArtifact.instructions
 abbrev submissionArtifact := FoldedCandidateArtifact.artifact
 
-theorem referenceInstructions_count : submissionInstructions.length = 7043 :=
+theorem referenceInstructions_count : submissionInstructions.length = 7045 :=
   FoldedCandidateArtifact.instruction_count
 
 def instructionPC (index : Nat) : Nat := submissionArtifact.instructionPC index

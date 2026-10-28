@@ -25,17 +25,17 @@ def exitPC : Nat := 10262
 
 abbrev template := ScheduledTailRaw.template
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6991).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6993).take template.length = template := by rfl
 
 def site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 6991 actual_slice
-    (by change 6991 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 6993 actual_slice
+    (by change 6993 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
 theorem site_pc : site.startPC = UInt256.ofNat 10207 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6991) = UInt256.ofNat 10207
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6993) = UInt256.ofNat 10207
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_site (s : State) (off limit : UInt256) (h : Compression.HashState)
@@ -91,18 +91,18 @@ def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
 def dispatchCode : List Instr := StaggerPersistentLoopRaw.dispatchTemplate
 
 theorem dispatch_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 7041).take dispatchCode.length = dispatchCode := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 7043).take dispatchCode.length = dispatchCode := by rfl
 
 def dispatchSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 7041 dispatch_slice
-    (by change 7041 + dispatchCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 7043 dispatch_slice
+    (by change 7043 + dispatchCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide))
     (by decide)
 
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat exitPC := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 7041) = UInt256.ofNat 10262
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 7043) = UInt256.ofNat 10262
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- Copied block exit: jump to the continuation in slot 12 with the frame unchanged. -/
