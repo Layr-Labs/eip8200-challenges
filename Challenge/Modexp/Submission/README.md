@@ -1,3 +1,10 @@
+# Current refinement: PUSH0 limb loads in R5 product columns 2-4
+
+* R5 product columns 2, 3 and 4 (`prCol2`, `prCol3`, `prCol4`): every limb load from offset zero uses `PUSH0`. Each freed byte widens a later push of the same column (`PUSHn` → `PUSH(n+1)` with the same value), so every column keeps its byte length, its start and end PCs and its instruction count.
+* `Proofs/R5/ExecProduct.lean` updates the three columns' part programs, column programs and the internal part-boundary PCs; every model value, column statement and binding is unchanged.
+
+---
+
 # Current refinement: direct Fermat join guard
 
 * Join point at 33: the guard is computed as `modulus + ~exponent` (`DUP2 NOT DUP2 ADD`), which is exactly `FermatNext.fermatDiff`, and the jump to the window core uses a widened push. The former padding `JUMPDEST` inside the guard is removed.

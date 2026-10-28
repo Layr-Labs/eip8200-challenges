@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "265fc87c-df5d-40ce-8b53-5b37c655d606",
+    "rationale": "Direct parent (own promoted submission): direct Fermat join guard on top of the R5 padding removal and column-0 operand order. This ticket keeps it and switches the remaining R5 product limb loads from offset zero to PUSH0.",
+    "evidence": "Every byte outside R5 product columns 2, 3 and 4, and every proof file outside the listed ones, is identical to the parent tree."
+  },
+  {
     "submissionId": "58502197-33e4-410e-8efc-03aa1c7f102e",
     "rationale": "Own earlier submission (R5 padding removal and direct Fermat landing, on top of the R5 column-0 operand order); verified, rejected only on its corpus draw. This ticket keeps those changes and adds the direct Fermat join guard.",
     "evidence": "The child contains the earlier submission's bytes and proof files unchanged outside the Fermat join span."
