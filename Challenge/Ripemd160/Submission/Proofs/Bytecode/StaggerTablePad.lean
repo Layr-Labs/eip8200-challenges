@@ -34,10 +34,13 @@ def resultMemoryOver (base : ByteArray) (n : UInt256) : ByteArray :=
   storeSelected base (tableWords (padWordsDirty n)) keepPad 0 61
 
 /-- The pad table the machine really builds: the same selected stores over the base the
-calldata copy actually leaves (`zeroSuffix`, which clears only from byte 28 up), not over the
-model's fully cleared `zeroMemory`.  The two agree from byte 14 (`padRealResult_agree`). -/
+calldata copy actually leaves.  The copy clears all of `[0,1112)`, which is exactly the model's
+`zeroMemory`, so the real table is `resultMemory` itself (`padRealResult_eq`). -/
 def padRealResult (memory : ByteArray) (n : UInt256) : ByteArray :=
-  resultMemoryOver (StaggerTableSparse.zeroSuffix memory) n
+  resultMemoryOver (zeroMemory memory) n
+
+theorem padRealResult_eq (memory : ByteArray) (n : UInt256) :
+    padRealResult memory n = resultMemory memory n := rfl
 
 /-- Every selected store writes the SAME value at the SAME address on both sides, so the
 whole table transports `AgreeFrom14` -- at any address, including the ones below 14. -/
@@ -81,31 +84,25 @@ theorem getD_storeSelected_skip (memory : ByteArray) (words : Nat → UInt256)
       exact hrest
     · exact hrest
 
-/-- The pad-only block leaves byte 0 exactly as it found it: slot 0 is never selected and
-`zeroSuffix` clears only from byte 28 up. -/
+/-- The pad-only block leaves byte 0 zero: slot 0 is never selected and the calldata copy
+clears it. -/
 theorem padRealResult_zero0 (memory : ByteArray) (n : UInt256) :
-    (padRealResult memory n)[0]?.getD 0 = memory[0]?.getD 0 := by
+    (padRealResult memory n)[0]?.getD 0 = 0 := by
   rw [padRealResult, resultMemoryOver,
     getD_storeSelected_skip _ _ _ 0 61 0 (fun k _ hk => by
       by_cases hk0 : k = 0
       · subst hk0; exact Or.inl (by decide)
       · exact Or.inr (Or.inl (by omega))),
-    StaggerTableSparse.zeroSuffix_getD, if_neg (by omega)]
-
-/-- Reality versus model for the whole pad table, at EVERY calldata size. -/
-theorem padRealResult_agree (memory : ByteArray) (n : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
-    StaggerTableLayout.AgreeFrom14 (padRealResult memory n) (resultMemory memory n) :=
-  resultMemoryOver_agree (StaggerTableSparse.zeroSuffix_agree memory hlow) n
+    StaggerTableSparse.zeroMemory_getD, if_pos (by omega)]
 
 /-- Reads at or above the table see the original memory, at every calldata size and with no
-first-word hypothesis: the selected stores stop at 1112 and so does `zeroSuffix`. -/
+first-word hypothesis: the selected stores stop at 1112 and so does the calldata copy. -/
 theorem getD_padRealResult_outside (memory : ByteArray) (n : UInt256) (address : Nat)
     (ha : 1112 ≤ address) :
     (padRealResult memory n)[address]?.getD 0 = memory[address]?.getD 0 := by
   rw [padRealResult, resultMemoryOver,
     StaggerTableSparse.getD_storeSelected_outside _ _ _ _ _ _ (fun k _ hk => by omega),
-    StaggerTableSparse.zeroSuffix_getD, if_neg (by omega)]
+    StaggerTableSparse.zeroMemory_getD, if_neg (by omega)]
 
 theorem read_padRealResult_outside (memory : ByteArray) (n : UInt256)
     (address : Nat) (ha : 1112 ≤ address) :
@@ -294,9 +291,8 @@ def lowChain (memory : ByteArray) (n : UInt256) : ByteArray :=
     36 (UInt256.ofNat 128)
 
 /-- The low block's six stores over an ARBITRARY base.  `lowChain memory = lowChainOver
-(zeroMemory memory)` definitionally; the machine's real base is
-`MachineState.writeBytes memory PadZeroPrefix.zeroBytes 28`, which is only `AgreeFrom14`
-with `zeroMemory memory` once a previous block leaves a dual lane in bytes 10..13. -/
+(zeroMemory memory)` definitionally, and `zeroMemory memory` is exactly the base the machine's
+calldata copy leaves. -/
 def lowChainOver (base : ByteArray) (n : UInt256) : ByteArray :=
   PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
     (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord (PairedScheduleMemory.writeWord
@@ -307,9 +303,9 @@ def lowChainOver (base : ByteArray) (n : UInt256) : ByteArray :=
 theorem lowChain_eq_over (memory : ByteArray) (n : UInt256) :
     lowChain memory n = lowChainOver (zeroMemory memory) n := rfl
 
-/-- The pad block's real table image. -/
+/-- The pad block's real table image (definitionally `lowChain memory n`). -/
 def padRealChain (memory : ByteArray) (n : UInt256) : ByteArray :=
-  lowChainOver (StaggerTableSparse.zeroSuffix memory) n
+  lowChainOver (zeroMemory memory) n
 
 
 /-- All six low-block stores are at addresses ≥ 36, and in any case writing the same value to
@@ -320,13 +316,6 @@ theorem lowChainOver_agree {b b' : ByteArray}
   ((((((h.writeWord 162 (lowDirty n)).writeWord 666 (lowDirty n)).writeWord 144
     (lowDirty n)).writeWord 522 (UInt256.ofNat 128)).writeWord 54
     (UInt256.ofNat 128)).writeWord 36 (UInt256.ofNat 128))
-
-/-- The real pad table agrees with the model from byte 14 up. -/
-theorem padRealChain_agree (memory : ByteArray) (n : UInt256)
-    (hlow : (MachineState.readWord memory 0).toNat % 2 ^ 144 < 2 ^ 32) :
-    StaggerTableLayout.AgreeFrom14 (padRealChain memory n) (lowChain memory n) := by
-  rw [lowChain_eq_over]
-  exact lowChainOver_agree (StaggerTableSparse.zeroSuffix_agree memory hlow) n
 
 /-- The high block's five stores of the unmasked high word (program order). -/
 def highStores (memory : ByteArray) (n : UInt256) : ByteArray :=
@@ -507,14 +496,14 @@ same `padRealResult` by `highChain_eq_over` -- but it is NOT the six low stores.
 theorem padRealChain_eq (memory : ByteArray) (n : UInt256)
     (hz : highDirty n = UInt256.ofNat 0) :
     padRealChain memory n = padRealResult memory n :=
-  lowChainOver_eq_resultMemoryOver (StaggerTableSparse.zeroSuffix memory) n hz
-    (fun a h28 h1112 => by rw [StaggerTableSparse.zeroSuffix_getD, if_pos ⟨h28, h1112⟩])
-    (by rw [StaggerTableSparse.zeroSuffix_size]; omega)
+  lowChainOver_eq_resultMemoryOver (zeroMemory memory) n hz
+    (fun a _ h1112 => by rw [StaggerTableSparse.zeroMemory_getD, if_pos h1112])
+    (by rw [StaggerTableSparse.zeroMemory_size]; omega)
 
 /-- Above `2 ^ 29` the pad block runs the high block too, and lands on the SAME table. -/
 theorem padRealHigh_eq (memory : ByteArray) (n : UInt256) :
     highStores (padRealChain memory n) n = padRealResult memory n :=
-  highChain_eq_over (StaggerTableSparse.zeroSuffix memory) n
+  highChain_eq_over (zeroMemory memory) n
 
 theorem readPadded_end (input : ByteArray) :
     MachineState.readPadded input input.size 1112 = StaggerTableSparse.zeroBytes := by
@@ -531,7 +520,6 @@ theorem readPadded_end (input : ByteArray) :
 #print axioms lowChainOver_eq_resultMemoryOver
 #print axioms padRealChain_eq
 #print axioms padRealHigh_eq
-#print axioms padRealResult_agree
 #print axioms read_zero_mod_of_agree
 #print axioms read_padRealResult_outside
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad

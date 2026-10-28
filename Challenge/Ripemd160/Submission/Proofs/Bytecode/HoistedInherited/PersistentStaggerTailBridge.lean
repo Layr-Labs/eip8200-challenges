@@ -1,0 +1,69 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerCoreLeft79
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PersistentStaggerFunctional
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentTailSite
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerPersistentBootstrapBridge
+set_option warningAsError true
+set_option maxRecDepth 30000
+set_option maxHeartbeats 3000000
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.PersistentStaggerTailBridge
+open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired144WordRound
+open PersistentStaggerFunctional
+
+def tailInput (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
+    (off limit : UInt256) : StaggerPersistentTailRaw.Input :=
+  {ld := l.d, lb := l.b, le := l.e, la := l.a, k := UInt256.ofNat 2840853838,
+   lc := l.c, re := r.e, rc := r.c, ra := r.a, rd := r.d, rb := r.b,
+   factor := factorPlusWord, lower := UInt256.ofNat 4294967295,
+   cache140 := fusedModulusWord 5 7, cache190 := fusedCoefficientWord 0 2,
+   cache310 := fusedCoefficientWord 0 3, cache350 := fusedModulusWord 8 5,
+   literal72 := MachineState.readWord memory 360, literal28 := UInt256.ofNat 28,
+   h4 := Word.ofUInt32 h.h4, h1 := Word.ofUInt32 h.h1, h2 := Word.ofUInt32 h.h2,
+   h3 := Word.ofUInt32 h.h3, h0 := Word.ofUInt32 h.h0, off := off, limit := limit}
+
+theorem combine_eq (memory : ByteArray) (h : Compression.HashState) (q r : WordLane)
+    (off limit : UInt256) :
+    StaggerPersistentFrame.combine h (tailInput memory h (HoistedInherited.StaggerCoreLeft79.epilogueRaw memory q) r off limit) =
+      combine h (StaggerCoreModel.epilogue memory q) r := by
+  simp only [StaggerPersistentFrame.combine, tailInput, combine,
+    PairedCompressionBridge.combineLanes, Paired80Compression.unpackLeft,
+    StaggerFinalMemory.unpackRight, StaggerPersistentFrame.high,
+    StaggerFinalMemory.high32, Paired80Compression.low32, Word.toUInt32, HoistedInherited.StaggerCoreLeft79.epilogueRaw, StaggerCoreModel.epilogue, HoistedInherited.StaggerCoreLeft79.left79Raw_a, HoistedInherited.StaggerCoreLeft79.left79Raw_b, HoistedInherited.StaggerCoreLeft79.left79Raw_c, HoistedInherited.StaggerCoreLeft79.left79Raw_e, HoistedInherited.StaggerCoreLeft79.left79Raw_d_shift]
+  congr 1 <;> apply UInt32.eq_of_toBitVec_eq <;>
+    simp only [UInt32.toBitVec_add] <;> ac_rfl
+
+theorem initial_eq (h : Compression.HashState) :
+    initial h = (⟨Word.ofUInt32 h.h0, Word.ofUInt32 h.h1, Word.ofUInt32 h.h2,
+      Word.ofUInt32 h.h3, Word.ofUInt32 h.h4⟩ : WordLane) := HoistedInherited.StaggerPersistentBootstrapBridge.initial_eq h
+
+theorem suffix_eq (s : State) (h : Compression.HashState) (q : WordLane)
+    (off limit : UInt256) (rho : List UInt256) :
+    HoistedInherited.StaggerCore.suffixState s (initial h).e q
+      (HoistedInherited.StaggerPersistentPackBridge.suffix (initial h) off limit rho) =
+    {s with pc := UInt256.ofNat 4526, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h
+        (tailInput s.memory h (HoistedInherited.StaggerCoreLeft79.epilogueRaw s.memory q) q off limit)) rho} := by
+  rw [initial_eq]
+  rfl
+
+/-- The tail leaves the old hash's `h2` above the combined frame for consumed dispatch. -/
+def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
+    (off limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 980)
+    (hr : s.halt = .Running)
+    (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    GasSteps (HoistedInherited.StaggerCore.suffixState s (initial h).e q
+      (HoistedInherited.StaggerPersistentPackBridge.suffix (initial h) off limit rho))
+      {s with
+        pc := UInt256.ofNat 4581
+        stack := Word.ofUInt32 h.h2 ::
+          StaggerPersistentFrame.frame (combine h (StaggerCoreModel.epilogue s.memory q) q) off limit rho} := by
+  rw [suffix_eq]
+  have g := HoistedInherited.StaggerPersistentTailSite.gasSteps s off limit h
+    (tailInput s.memory h (HoistedInherited.StaggerCoreLeft79.epilogueRaw s.memory q) q off limit)
+    rho hs hr hcode hfork hnp
+  rw [combine_eq] at g
+  exact g
+
+#print axioms combine_eq
+#print axioms gasSteps
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.PersistentStaggerTailBridge

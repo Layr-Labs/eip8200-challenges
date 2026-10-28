@@ -1,0 +1,107 @@
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.PaddingTail
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Shared32Correct
+set_option warningAsError true
+set_option maxRecDepth 30000
+set_option maxHeartbeats 3000000
+set_option linter.unusedSimpArgs false
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Shared32TailCorrect
+open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM Challenge.EvmProof
+open HoistedInherited.Shared32Scratch HoistedInherited.Shared32Sites Paired144WordRound HoistedInherited.Shared32Start
+
+def gasSteps_start (input : ByteArray) (h32 : input.size = 32)
+    (rho : List UInt256) (hcap : rho.length ≤ 20) :
+    GasSteps (StackTail.append (HoistedInherited.Execution.atPC input 246) rho)
+      (atState (tableState input) 824 (bodyFrame ++ rho)) := by
+  have hfit : CalldataFits input := by change input.size < 2 ^ 64; rw [h32]; decide
+  let s := HoistedInherited.PaddingTrace.padCopied input
+  have e : Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
+  have hframe : HoistedInherited.PaddingTrace.initialFrame input ++ rho = entryFrame ++ rho := by rw [entry_frame_eq input h32]
+  have hactive : s.activeWords = UInt256.ofNat 34 := copied_active input h32
+  have g0 := HoistedInherited.PaddingTail.gasSteps_prefix input hfit rho hcap
+  have g1 : GasSteps (StackTail.append (HoistedInherited.PaddingTrace.padFramed input) rho)
+      (atState s 143 (entryFrame ++ rho)) := by
+    have ga := HoistedInherited.Shared32Alignment.gasSteps s e (HoistedInherited.PaddingTrace.initialFrame input ++ rho)
+      (by rw [List.length_append, HoistedInherited.PaddingTrace.initialFrame_length]; omega) h32
+    simpa only [HoistedInherited.PaddingTrace.padFramed, StackTail.append, hframe, atState, s] using ga
+  have g4 := HoistedInherited.Shared32Trace.gasSteps_sparse s e factorPlusWord (UInt256.ofNat 4294967295)
+    (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
+    (fusedCoefficientWord 0 2)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 32) rho (by omega)
+    (by rw [copied_memory]; have hh := HoistedInherited.Shared32Scratch.copiedMemory_size input (by omega); omega)
+    (by rw [copied_memory]; intro a ha hb; exact HoistedInherited.Shared32Scratch.copiedMemory_zero input a (by omega))
+    hactive (by decide) h32 rfl
+  have g5 := HoistedInherited.Shared32Trace.gasSteps_table s e factorPlusWord
+    (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3)
+    (fusedCoefficientWord 0 2)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h4) (Word.ofUInt32 StackRunBridge.initialHashState.h3)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h2) (Word.ofUInt32 StackRunBridge.initialHashState.h1)
+    (Word.ofUInt32 StackRunBridge.initialHashState.h0) (UInt256.ofNat 9949) rho (by omega) hactive
+  have hm : sparseMemory s.memory = PairedScheduleMemory.writeWord s.memory 162 highWord := by
+    rw [show s.memory = copiedMemory input from copied_memory input]
+    exact copiedMemory_sparse input (by omega)
+  rw [hm] at g4
+  have g := g0.trans (g1.trans (g4.trans g5))
+  simpa only [atState, tableState, s, copied_memory, frame, bodyFrame, maskRho,
+    StaggerPersistentFrame.frame, HoistedInherited.Pair13Endian.stk, List.append_assoc, List.cons_append, List.nil_append] using g
+
+
+
+private theorem serialize_append (s : State) (h : Compression.HashState)
+    (off limit : UInt256) (headWords tailWords : List UInt256) :
+    StackTail.append (HoistedInherited.Return32Serialize.result s h off limit headWords) tailWords =
+      HoistedInherited.Return32Serialize.result s h off limit (headWords ++ tailWords) := by
+  rfl
+
+
+def gasSteps_core (s : State) (e : Env s) (input : ByteArray)
+    (_hcal : s.executionEnv.calldata = input) (_h32 : input.size = 32)
+    (hactive : s.activeWords = UInt256.ofNat 35)
+    (rho : List UInt256) (hcap : rho.length ≤ 20) :
+    GasSteps (StackTail.append (HoistedInherited.Shared32Core.entryState s) rho)
+      (StackTail.append (HoistedInherited.Shared32Core.resultState s) rho) := by
+  let masks := HoistedInherited.Shared32Core.maskRho ++ rho
+  have hm : masks.length ≤ 880 := by simp only [masks, HoistedInherited.Shared32Core.maskRho, List.length_append, List.length_cons, List.length_nil]; omega
+  have gb := HoistedInherited.Shared32Core.gasSteps_body s e StackRunBridge.initialHashState
+    (UInt256.ofNat 1056) (UInt256.ofNat 9949) masks (by omega)
+    (by rw [hactive]; decide)
+  have ge := HoistedInherited.StaggerPersistentLoopSites.gasSteps_dispatch s (HoistedInherited.Shared32Core.resultHash s)
+    (UInt256.ofNat 1056) (UInt256.ofNat 9949) HoistedInherited.Shared32Core.resultCont masks (by omega) e.run
+    (by
+        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 6769 = 9949 := by
+          rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
+        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6769 (by rfl)
+        rw [hpc] at h
+        rw [e.code]; exact h)
+    e.code e.fork e.np
+  have go := HoistedInherited.Return32Serialize.gasSteps s (UInt256.ofNat 1056) HoistedInherited.Shared32Core.resultCont
+    (HoistedInherited.Shared32Core.resultHash s) rho (by omega) e.run e.code e.fork e.np (by rw [_hcal]; exact _h32)
+  have hresult : StackTail.append (HoistedInherited.Shared32Core.resultState s) rho =
+      HoistedInherited.Return32Serialize.result s (HoistedInherited.Shared32Core.resultHash s)
+        (UInt256.ofNat 1056) HoistedInherited.Shared32Core.resultCont masks :=
+    serialize_append s (HoistedInherited.Shared32Core.resultHash s) (UInt256.ofNat 1056)
+      HoistedInherited.Shared32Core.resultCont HoistedInherited.Shared32Core.maskRho rho
+  rw [hresult]
+  simpa only [StackTail.append, HoistedInherited.Shared32Core.entryState,
+    StaggerPersistentFrame.frame, HoistedInherited.Shared32Core.maskRho, masks,
+    List.append_assoc, List.cons_append, List.nil_append] using gb.trans (ge.trans go)
+
+theorem correct (input : ByteArray) (h32 : input.size = 32)
+    (rho : List UInt256) (hcap : rho.length ≤ 20)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0)
+      (StackTail.append (HoistedInherited.Execution.atPC input 246) rho)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  let s := HoistedInherited.Shared32Start.tableState input
+  have e : HoistedInherited.Shared32Sites.Env s := ⟨rfl, rfl, rfl, deployAddress_not_precompile⟩
+  have gs := gasSteps_start input h32 rho hcap
+  have gc := gasSteps_core s e input rfl h32 (HoistedInherited.Shared32Start.table_active input) rho hcap
+  have trace := entryPrefix.trans (gs.trans gc)
+  apply HoistedInherited.Shared32Correct.eval_of_initial_returned input _ trace rfl rfl
+  exact HoistedInherited.Shared32Core.returned_spec s input h32 (HoistedInherited.Shared32Start.table_ready input h32)
+
+#print axioms gasSteps_start
+#print axioms gasSteps_core
+#print axioms correct
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.Shared32TailCorrect
