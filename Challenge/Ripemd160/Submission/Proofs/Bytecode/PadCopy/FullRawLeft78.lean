@@ -19,15 +19,13 @@ private theorem hadd_zero (a : UInt256) : UInt256.add a (UInt256.ofNat 0) = a :=
 private theorem zero_hadd' (a : UInt256) : UInt256.add {val := 0} a = a := zero_hadd a
 private theorem hadd_zero' (a : UInt256) : UInt256.add a {val := 0} = a := hadd_zero a
 def template : List Instr :=
-  [ .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .op (.Dup ⟨11, by decide⟩),
-    .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨14, by decide⟩),
-    .op (.Dup ⟨5, by decide⟩),
+  [ .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨13, by decide⟩),
+    .op (.Dup ⟨4, by decide⟩),
     .op .NOT,
     .op .OR,
     .op .XOR,
-    .op .ADD,
     .op .ADD,
     .op (.Dup ⟨8, by decide⟩),
     .op .ADD,
@@ -35,7 +33,7 @@ def template : List Instr :=
     .op .AND,
     .op (.Dup ⟨13, by decide⟩),
     .op .MUL,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 28),
     .op .SHR,
     .op (.Dup ⟨3, by decide⟩),
     .op .ADD,

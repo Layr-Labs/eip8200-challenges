@@ -1,3 +1,10 @@
+# Current refinement: pad left round 78 without the zero add
+
+* Left round 78 of the pad-only compressor copy: the remaining `PUSH0` and the `ADD` of that zero are removed, and the four following `DUP`s are re-indexed; one later push of the same site is widened, so the site keeps its byte length and its start and end PCs.
+* `Proofs/Bytecode/PadCopy/FullRawLeft78.lean` carries the new template with the same `padActual` and the same generic `StaggerRawLeft78.outputStack`; `FullSiteLeft79.lean` and `FullTail.lean` follow the shifted instruction indices; the artifact mirrors (`FoldedCandidateArtifact.lean` and the instruction counts in `HoistedStoreArtifact.lean` and `HoistedInherited/Artifact.lean`) and the image comment in `Solution.lean` are regenerated from `bytecode.hex`. Every theorem statement is unchanged.
+
+---
+
 # Current candidate: word-0 key folds in the pad-only copy (626,803 gas)
 
 Direct predecessor: promoted `3a5055d3-b39f-4223-b9b8-0977b65ee5ec` (627,874 gas).
