@@ -23,33 +23,33 @@ private def shortTemplate : List Instr := [
 private def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
  .push 2 (UInt256.ofNat target), .op .JUMPI]
-private theorem short_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6284).take shortTemplate.length = shortTemplate := by rfl
-private theorem long256_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6296).take (longTemplate 256 9302).length = longTemplate 256 9302 := by rfl
-private theorem long376_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6301).take (longTemplate 376 9331).length = longTemplate 376 9331 := by rfl
+private theorem short_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6181).take shortTemplate.length = shortTemplate := by rfl
+private theorem long256_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6193).take (longTemplate 256 9302).length = longTemplate 256 9302 := by rfl
+private theorem long376_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6198).take (longTemplate 376 9331).length = longTemplate 376 9331 := by rfl
 private theorem code_bound : HoistedInherited.Artifact.submissionArtifact.code.size < 2^256 := by
  change submissionBytecode.size < 2^256
  rw [referenceBytecode_size]
  decide
 private def shortSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka shortTemplate :=
- StackSiteBuilder.ofSlice shortTemplate 6284 short_slice
-  (by change 6284 + shortTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice shortTemplate 6181 short_slice
+  (by change 6181 + shortTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
 private def long256Site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka (longTemplate 256 9302) :=
- StackSiteBuilder.ofSlice (longTemplate 256 9302) 6296 long256_slice
-  (by change 6296 + (longTemplate 256 9302).length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 256 9302) 6193 long256_slice
+  (by change 6193 + (longTemplate 256 9302).length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 9302) (by decide)) (by decide)
 private def long376Site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka (longTemplate 376 9331) :=
- StackSiteBuilder.ofSlice (longTemplate 376 9331) 6301 long376_slice
-  (by change 6301 + (longTemplate 376 9331).length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 376 9331) 6198 long376_slice
+  (by change 6198 + (longTemplate 376 9331).length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 9331) (by decide)) (by decide)
 private theorem short_pc : shortSite.startPC = UInt256.ofNat 8247 := by
- change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6284) = _
+ change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6181) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem long256_pc : long256Site.startPC = UInt256.ofNat 8311 := by
- change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6296) = _
+ change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6193) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem long376_pc : long376Site.startPC = UInt256.ofNat 8320 := by
- change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6301) = _
+ change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6198) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
@@ -160,18 +160,18 @@ def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ Rec
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6200).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6097).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 125).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 6200 fallback_slice
-  (by change 6200 + fallbackTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 6097 fallback_slice
+  (by change 6097 + fallbackTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka genericTemplate :=
  StackSiteBuilder.ofSlice genericTemplate 125 generic_slice
   (by change 125 + genericTemplate.length ≤ HoistedInherited.Artifact.submissionInstructions.length; rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
   code_bound (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
 private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 8086 := by
- change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6200) = _
+ change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6097) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 125) = _

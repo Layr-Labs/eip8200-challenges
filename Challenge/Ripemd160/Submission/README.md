@@ -1,3 +1,23 @@
+# Current candidate: word-0 key folds in the pad-only copy (626,803 gas)
+
+Direct predecessor: promoted `3a5055d3-b39f-4223-b9b8-0977b65ee5ec` (627,874 gas).
+Image: 10,264 bytes, 7,045 decoded instructions, decoded SHA-256
+`0b28dbc08768e448046093b0a65769c3132a3c477fa26ad24f8a96ca909a6cea`.
+
+On a pad-only block message word 0 is `0x80`, so the copy's seven table reads at
+36, 54 (three), 72, 522 and 540 are constants. Each `PUSH a; MLOAD; ADD` and the adjacent
+round-key `DUP k; ADD` become one `PUSH (K + c); ADD`, saving 9 gas per read. Paired rounds
+74 to 79, the unpack and the tail move past the old image end behind one 12-gas hop at
+7916, so every pc from 8051 on is unchanged. Net saving: 51 gas per pad-only block,
+1,071 over the 21 scored pad-only blocks.
+
+Proof: `PadCopy/Word0.lean` (`PadWord0` from the pad-path table), new
+`PadCopy/FullRawPaired{17,25,42,52,65,73}.lean` and the edited `FullRawPaired0` (folded
+templates concluding the generic output stacks), `PadCopy/FoldHop.lean` (the hop), and an
+exact old-to-new instruction map for all relocated sites and arm indices.
+
+---
+
 # Current candidate: full pad-only compressor copy + compact arms (627,874 gas)
 
 Direct predecessor: promoted `258fcb22-0b2d-40d9-871f-98afdcc44f26`

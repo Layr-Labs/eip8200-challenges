@@ -1,5 +1,5 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired0
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Zero
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Word0
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.ModFoldLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired0
 set_option warningAsError true
@@ -38,11 +38,12 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory)
+    (hm : MachineState.readWord s.memory 54 = UInt256.ofNat 2854495385411919762116571938898990272765493376) :
     GasSteps {s with pc := UInt256.ofNat 4774, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired0.inputStack x rho}
-      {s with pc := UInt256.ofNat 4839, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired0.outputStack s.memory x rho} := by
-  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired0.run_actual s (UInt256.ofNat 4774) x rho hstack hrun hactive (hz 20 (by decide))
-  have hend : pcAfter (UInt256.ofNat 4774) template = UInt256.ofNat 4839 := by decide
+      {s with pc := UInt256.ofNat 4857, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired0.outputStack s.memory x rho} := by
+  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired0.run_actual s (UInt256.ofNat 4774) x rho hstack hrun hactive (hz 20 (by decide)) hm
+  have hend : pcAfter (UInt256.ofNat 4774) template = UInt256.ofNat 4857 := by decide
   rw [hend] at hraw
   exact HoistedInherited.ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 

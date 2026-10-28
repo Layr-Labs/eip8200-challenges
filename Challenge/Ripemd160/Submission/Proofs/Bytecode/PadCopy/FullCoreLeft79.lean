@@ -17,8 +17,8 @@ def gasSteps (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
-    GasSteps {s with pc := UInt256.ofNat 7975, stack := stack s.memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)}
-      {s with pc := UInt256.ofNat 7994, stack := stack s.memory h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
+    GasSteps {s with pc := UInt256.ofNat 10188, stack := stack s.memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)}
+      {s with pc := UInt256.ofNat 10207, stack := stack s.memory h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
   have h := PadCopy.FullSiteLeft79.gasSteps s (input s.memory h4 q right (UInt256.ofNat 2840853838)) (h4 :: rho) (by simp only [List.length_cons]; omega) hr ha hcode hfork hnp hz (by change MachineState.readWord s.memory 360 = _; exact hz 20 (by decide))
   rw [output_eq s.memory h4 q right rho hsame] at h
   exact h

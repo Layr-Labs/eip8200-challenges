@@ -42,8 +42,8 @@ def nval : Fin 12 → Nat
  | ⟨6, _⟩ => 64 | ⟨7, _⟩ => 65 | ⟨8, _⟩ => 119 | ⟨9, _⟩ => 120 | ⟨10, _⟩ => 128 | ⟨11, _⟩ => 256
 
 def armIndex : Fin 12 → Nat
- | ⟨0, _⟩ => 6271 | ⟨1, _⟩ => 6407 | ⟨2, _⟩ => 6420 | ⟨3, _⟩ => 6427 | ⟨4, _⟩ => 6437 | ⟨5, _⟩ => 6447
- | ⟨6, _⟩ => 6457 | ⟨7, _⟩ => 6464 | ⟨8, _⟩ => 6474 | ⟨9, _⟩ => 6484 | ⟨10, _⟩ => 6494 | ⟨11, _⟩ => 6501
+ | ⟨0, _⟩ => 6168 | ⟨1, _⟩ => 6304 | ⟨2, _⟩ => 6317 | ⟨3, _⟩ => 6324 | ⟨4, _⟩ => 6334 | ⟨5, _⟩ => 6344
+ | ⟨6, _⟩ => 6354 | ⟨7, _⟩ => 6361 | ⟨8, _⟩ => 6371 | ⟨9, _⟩ => 6381 | ⟨10, _⟩ => 6391 | ⟨11, _⟩ => 6398
 
 def armPC : Fin 12 → Nat
  | ⟨0, _⟩ => 8180 | ⟨1, _⟩ => 8761 | ⟨2, _⟩ => 8828 | ⟨3, _⟩ => 8857 | ⟨4, _⟩ => 8921 | ⟨5, _⟩ => 8985
@@ -57,10 +57,10 @@ def chainWords : Fin 12 → Nat
 def chainPC : Nat → Nat
   | 8 => 8446 | 4 => 8599 | 3 => 8638 | 2 => 8677 | 1 => 8715 | _ => 0
 def chainIndex : Nat → Nat
-  | 8 => 6356 | 4 => 6377 | 3 => 6383 | 2 => 6389 | 1 => 6395 | _ => 0
+  | 8 => 6253 | 4 => 6274 | 3 => 6280 | 2 => 6286 | 1 => 6292 | _ => 0
 
 /-- Index and PC of the success `MSIZE` after the result branch. -/
-def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 6281 else if i.val = 1 then 6417 else 6404
+def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 6178 else if i.val = 1 then 6314 else 6301
 def returnPC (i : Fin 12) : Nat := if i.val = 0 then 8244 else if i.val = 1 then 8825 else 8758
 
 /-! ## Templates -/
@@ -261,7 +261,7 @@ theorem valid_at (index pc : Nat) (hj : HoistedInherited.Artifact.submissionArti
   exact h
 
 theorem valid_fail : Decode.isValidJumpDest HoistedInherited.Artifact.submissionArtifact.code 8078 = true :=
-  valid_at 6193 8078 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 6090 8078 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 theorem lor_ofNat_zero (a : UInt256) : UInt256.lor a (UInt256.ofNat 0) = a := DirectLiteralRawV4.lor_zero a
 

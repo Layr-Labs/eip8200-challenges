@@ -18,6 +18,7 @@ private theorem hadd_zero (a : UInt256) : UInt256.add a (UInt256.ofNat 0) = a :=
   apply Word.word_ext; cases a; simp [UInt256.add, UInt256.ofNat, UInt256.toNat]
 private theorem zero_hadd' (a : UInt256) : UInt256.add {val := 0} a = a := zero_hadd a
 private theorem hadd_zero' (a : UInt256) : UInt256.add a {val := 0} = a := hadd_zero a
+private theorem fold_split : UInt256.ofNat 30169118331168423625217415393715669619147007500222592 = UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.ofNat 2854495385411919762116571938898990272765493376) := by decide
 def template : List Instr :=
   [ .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .push ⟨1, by decide⟩ (UInt256.ofNat 23),
@@ -37,10 +38,7 @@ def template : List Instr :=
     .op (.Dup ⟨9, by decide⟩),
     .op .XOR,
     .op .ADD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 54),
-    .op .MLOAD,
-    .op .ADD,
-    .op (.Dup ⟨9, by decide⟩),
+    .push ⟨22, by decide⟩ (UInt256.ofNat 30169118331168423625217415393715669619147007500222592),
     .op .ADD,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
@@ -71,7 +69,7 @@ def padActual (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt2
     x.v3,
     (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
     x.v5,
-    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 54) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 22)))),
+    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (UInt256.ofNat 2854495385411919762116571938898990272765493376) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 22)))),
     x.v7,
     x.v8,
     x.v9,
@@ -95,12 +93,13 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
     RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals simp only [zero_hadd, hadd_zero, zero_hadd', hadd_zero', neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.mulMod_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [fold_split, zero_hadd, hadd_zero, zero_hadd', hadd_zero', neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.mulMod_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
   all_goals first | assumption | trivial | (simp only [zero_hadd', hadd_zero', zero_hadd, hadd_zero])
-theorem out_eq (memory : ByteArray) (x : Input) (rho : List UInt256) (hz360 : MachineState.readWord memory 360 = UInt256.ofNat 0)  :
+theorem out_eq (memory : ByteArray) (x : Input) (rho : List UInt256) (hz360 : MachineState.readWord memory 360 = UInt256.ofNat 0)
+    (hm : MachineState.readWord memory 54 = UInt256.ofNat 2854495385411919762116571938898990272765493376) :
     outputStack memory x rho = padActual memory x rho := by
-  simp only [Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired0.outputStack, padActual, hz360, zero_hadd, hadd_zero, RawExpressionAC.add_assoc, RawExpressionAC.add_comm,
+  simp only [Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired0.outputStack, padActual, hz360, hm, zero_hadd, hadd_zero, RawExpressionAC.add_assoc, RawExpressionAC.add_comm,
     RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm,
     RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm,
     RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm,
@@ -108,10 +107,11 @@ theorem out_eq (memory : ByteArray) (x : Input) (rho : List UInt256) (hz360 : Ma
     RawExpressionAC.xor_left_comm, RawExpressionAC.mulMod_comm]
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 35 ≤ s.activeWords.toNat) (hz360 : MachineState.readWord s.memory 360 = UInt256.ofNat 0)  :
+    (hactive : 35 ≤ s.activeWords.toNat) (hz360 : MachineState.readWord s.memory 360 = UInt256.ofNat 0)
+    (hm : MachineState.readWord s.memory 54 = UInt256.ofNat 2854495385411919762116571938898990272765493376) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
-  rw [out_eq s.memory x rho hz360]
+  rw [out_eq s.memory x rho hz360 hm]
   exact run_generated s pc x rho hstack hrun hactive hz360
 #print axioms run_actual
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired0

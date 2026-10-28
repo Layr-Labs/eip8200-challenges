@@ -59,10 +59,18 @@ def gasSteps (s : State) (input : ByteArray) (i : Nat) (h : Compression.HashStat
       have h256 : input.size < 256 := hh.2
       rw [Nat.mod_eq_of_lt (by omega)]
       omega
+    have hwq : PadCopy.PadWord0 q.memory := by
+      change PadCopy.PadWord0 (scheduledState s i).memory
+      rw [scheduledState_hit s i hhs]
+      refine PadCopy.padWord0 _ _ ?_
+      rw [Word.word_toNat_ofNat, ctx.calldata]
+      have h256 : input.size < 256 := hh.2
+      rw [Nat.mod_eq_of_lt (by omega)]
+      omega
     have hpc : HoistedInherited.ColdOrdinaryPrepare.corePC input i = UInt256.ofNat 4601 := by
       simp only [HoistedInherited.ColdOrdinaryPrepare.corePC, if_pos hh]
     rw [hpc] at gp
-    have gb := PadCopy.Body.gasSteps_body q h off cont rho (by omega) hrq hqa hcq hfq hnq hzq
+    have gb := PadCopy.Body.gasSteps_body q h off cont rho (by omega) hrq hqa hcq hfq hnq hzq hwq
     have gt := PadCopy.FullTail.gasSteps q h
       (StaggerCoreModel.paired q.memory (initial h)) off cont rho (by omega) hrq hcq hfq hnq
     rw [he, hrest] at gt

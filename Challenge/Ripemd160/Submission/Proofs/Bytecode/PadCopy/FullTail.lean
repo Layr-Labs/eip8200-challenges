@@ -21,21 +21,21 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof Paired144Wo
 open StackRoundTrace StackRoundTemplate PersistentStaggerFunctional
 
 /-- Program counter of the copied block exit. -/
-def exitPC : Nat := 8049
+def exitPC : Nat := 10262
 
 abbrev template := ScheduledTailRaw.template
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6134).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6993).take template.length = template := by rfl
 
 def site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 6134 actual_slice
-    (by change 6134 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 6993 actual_slice
+    (by change 6993 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide)) (by decide)
 
-theorem site_pc : site.startPC = UInt256.ofNat 7994 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6134) = UInt256.ofNat 7994
+theorem site_pc : site.startPC = UInt256.ofNat 10207 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6993) = UInt256.ofNat 10207
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_site (s : State) (off limit : UInt256) (h : Compression.HashState)
@@ -44,14 +44,14 @@ def gasSteps_site (s : State) (off limit : UInt256) (h : Compression.HashState)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 7994, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
+    GasSteps {s with pc := UInt256.ofNat 10207, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
       {s with pc := UInt256.ofNat exitPC, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho} := by
   apply DenseScheduleLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 7994, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
+    {s with pc := UInt256.ofNat 10207, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h {q with off := off, limit := limit}) rho}
     {s with pc := UInt256.ofNat exitPC, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (StaggerPersistentFrame.combine h q) off limit rho}
     hcode hfork hrun hnp site_pc.symm HoistedInherited.StaggerPersistentTailSite.advances
-  have hraw := HoistedInherited.ScheduledTailBridge.run_current s (UInt256.ofNat 7994) h {q with off := off, limit := limit} rho hstack hrun
-  have hend : pcAfter (UInt256.ofNat 7994) template = UInt256.ofNat exitPC := by decide
+  have hraw := HoistedInherited.ScheduledTailBridge.run_current s (UInt256.ofNat 10207) h {q with off := off, limit := limit} rho hstack hrun
+  have hend : pcAfter (UInt256.ofNat 10207) template = UInt256.ofNat exitPC := by decide
   rw [hend] at hraw
   exact hraw
 
@@ -60,7 +60,7 @@ theorem suffix_eq (s : State) (h : Compression.HashState) (q : WordLane)
     (off limit : UInt256) (rho : List UInt256) :
     PadCopy.FullPrefix.suffixState s (initial h).e q
       (HoistedInherited.StaggerPersistentPackBridge.suffix (initial h) off limit rho) =
-    {s with pc := UInt256.ofNat 7994, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h
+    {s with pc := UInt256.ofNat 10207, stack := StaggerPersistentTailRaw.entryStack (StaggerPersistentFrame.bind h
         (tailInput s.memory h (HoistedInherited.StaggerCoreLeft79.epilogueRaw s.memory q) q off limit)) rho} := by
   rw [initial_eq]
   rfl
@@ -91,18 +91,18 @@ def gasSteps (s : State) (h : Compression.HashState) (q : WordLane)
 def dispatchCode : List Instr := StaggerPersistentLoopRaw.dispatchTemplate
 
 theorem dispatch_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6184).take dispatchCode.length = dispatchCode := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 7043).take dispatchCode.length = dispatchCode := by rfl
 
 def dispatchSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 6184 dispatch_slice
-    (by change 6184 + dispatchCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 7043 dispatch_slice
+    (by change 7043 + dispatchCode.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := dispatchCode) (by decide))
     (by decide)
 
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat exitPC := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6184) = UInt256.ofNat 8049
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 7043) = UInt256.ofNat 10262
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- Copied block exit: jump to the continuation in slot 12 with the frame unchanged. -/

@@ -17,16 +17,16 @@ abbrev template := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRa
 abbrev inputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired40.inputStack
 abbrev outputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired40.outputStack
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 4825).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 4816).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 4825 actual_slice
-    (by change 4825 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 4816 actual_slice
+    (by change 4816 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
-theorem site_pc : site.startPC = UInt256.ofNat 6439 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 4825) = UInt256.ofNat 6439
+theorem site_pc : site.startPC = UInt256.ofNat 6493 := by
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 4816) = UInt256.ofNat 6493
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, HoistedInherited.ModFoldLift.Advances instruction := by
   apply HoistedInherited.ModFoldLift.advancesAll_sound
@@ -39,10 +39,10 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
     (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) (hc2 : x.v2 = UInt256.ofNat 0) :
-    GasSteps {s with pc := UInt256.ofNat 6439, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired40.inputStack x rho}
-      {s with pc := UInt256.ofNat 6469, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired40.outputStack s.memory x rho} := by
-  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired40.run_actual s (UInt256.ofNat 6439) x rho hstack hrun hactive hc2
-  have hend : pcAfter (UInt256.ofNat 6439) template = UInt256.ofNat 6469 := by decide
+    GasSteps {s with pc := UInt256.ofNat 6493, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired40.inputStack x rho}
+      {s with pc := UInt256.ofNat 6523, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired40.outputStack s.memory x rho} := by
+  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired40.run_actual s (UInt256.ofNat 6493) x rho hstack hrun hactive hc2
+  have hend : pcAfter (UInt256.ofNat 6493) template = UInt256.ofNat 6523 := by decide
   rw [hend] at hraw
   exact HoistedInherited.ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw
 

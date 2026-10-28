@@ -41,21 +41,21 @@ def finishSiteAt (idx : Nat)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := finishTemplate) (by decide)) (by decide)
 
-def finishSite0 := finishSiteAt 6281 (by rfl)
+def finishSite0 := finishSiteAt 6178 (by rfl)
   (by rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
-def finishSite1 := finishSiteAt 6417 (by rfl)
+def finishSite1 := finishSiteAt 6314 (by rfl)
   (by rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
-def finishSite2 := finishSiteAt 6404 (by rfl)
+def finishSite2 := finishSiteAt 6301 (by rfl)
   (by rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
 
 theorem finishSite0_pc : finishSite0.startPC = UInt256.ofNat 8244 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6281) = _
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6178) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 8825 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6417) = _
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6314) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem finishSite2_pc : finishSite2.startPC = UInt256.ofNat 8758 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6404) = _
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6301) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-! ## Digest -/

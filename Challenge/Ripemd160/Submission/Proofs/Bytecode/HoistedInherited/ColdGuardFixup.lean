@@ -156,8 +156,8 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
       simp only [HoistedInherited.Shared32Scratch.sparseMemory, wMemory, hb, hc]
     simpa only [combined.template, atState, sW, hm] using hh
   have hvW : Decode.isValidJumpDest sW.executionEnv.code 9997 = true := by
-    have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6913 (by rfl)
-    have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC 6913 = 9997 := by
+    have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6810 (by rfl)
+    have hp : HoistedInherited.Artifact.submissionArtifact.instructionPC 6810 = 9997 := by
       rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
     rw [hp] at h
     rw [eW.code]

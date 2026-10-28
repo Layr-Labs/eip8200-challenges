@@ -23,23 +23,23 @@ def tail : List Instr :=
   .push 0 0,
   op 0xf3
 ]
-theorem tail_eq : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6306).take tail.length = tail := by rfl
+theorem tail_eq : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6203).take tail.length = tail := by rfl
 
-theorem pc_base : HoistedInherited.Artifact.submissionArtifact.instructionPC 6306 = 8329 := by
+theorem pc_base : HoistedInherited.Artifact.submissionArtifact.instructionPC 6203 = 8329 := by
   rw [instructionPC_eq_byteLength]
   rfl
 
 theorem get (index : Nat) (h : index < tail.length := by decide) :
-    HoistedInherited.Artifact.submissionArtifact.instructions[6306 + index]? = tail[index]? := by
+    HoistedInherited.Artifact.submissionArtifact.instructions[6203 + index]? = tail[index]? := by
   have ht := congrArg (fun l : List Instr => l[index]?) tail_eq
   simp only [List.getElem?_take_of_lt h] at ht
   rw [← InstructionWindow.get_drop]
   exact ht
 
 theorem pc (index : Nat) (h : index ≤ tail.length := by decide) :
-    HoistedInherited.Artifact.submissionArtifact.instructionPC (6306 + index) =
+    HoistedInherited.Artifact.submissionArtifact.instructionPC (6203 + index) =
       8329 + byteLength (tail.take index) := by
-  have ht : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6306).take index = tail.take index := by
+  have ht : (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6203).take index = tail.take index := by
     have ht0 := congrArg (List.take index) tail_eq
     rw [List.take_take, Nat.min_eq_left h] at ht0
     exact ht0

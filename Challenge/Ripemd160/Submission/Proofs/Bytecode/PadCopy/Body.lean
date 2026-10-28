@@ -24,7 +24,7 @@ counter relocated, so the block ends in the generic suffix state.
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Body
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired144WordRound Paired144WordRotation StaggerCoreCommon StaggerCoreModel
-open Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy (PadZero)
+open Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy (PadZero PadWord0)
 open HoistedInherited.StaggerPersistentBootstrapBridge (initial initial_eq input input_eq output_eq)
 
 def rightInitial (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
@@ -67,7 +67,7 @@ def gasSteps_coreBody (s : State) (h : WordLane) (off limit : UInt256) (rho : Li
     (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) (hw : PadWord0 s.memory) :
     GasSteps (rightInitial s h.e h (suffix h off limit rho))
       (PadCopy.FullPrefix.suffixState s h.e (StaggerCoreModel.paired s.memory h) (suffix h off limit rho)) := by
   have hstack : (suffix h off limit rho).length ≤ 900 := by
@@ -79,7 +79,7 @@ def gasSteps_coreBody (s : State) (h : WordLane) (off limit : UInt256) (rho : Li
     off limit rho (by omega) hr ha hcode hfork hnp hz
   have gc := PadCopy.FullPrefix.gasSteps_pairedSuffix s h.e
     (StaggerCoreModel.pair h (StaggerCoreModel.prologue s.memory h)) h (suffix h off limit rho)
-    hstack hr ha hcode hfork hnp hz
+    hstack hr ha hcode hfork hnp hz hw
   exact gr.trans (gp.trans gc)
 
 def gasSteps_body (s : State) (h : Compression.HashState) (off limit : UInt256)
@@ -87,13 +87,13 @@ def gasSteps_body (s : State) (h : Compression.HashState) (off limit : UInt256)
     (ha : 35 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
+      s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) (hw : PadWord0 s.memory) :
     GasSteps (entry s h off limit rho)
       (PadCopy.FullPrefix.suffixState s (Word.ofUInt32 h.h4)
         (StaggerCoreModel.paired s.memory (initial h))
         (StaggerPersistentFrame.coreRest h off limit rho)) := by
   have gb := gasSteps_bootstrap s h off limit rho (by omega) hr (by omega) hcode hfork hnp hz
-  have gc := gasSteps_coreBody s (initial h) off limit rho hs hr ha hcode hfork hnp hz
+  have gc := gasSteps_coreBody s (initial h) off limit rho hs hr ha hcode hfork hnp hz hw
   have he : (initial h).e = Word.ofUInt32 h.h4 := by rw [initial_eq]
   have hsuf : HoistedInherited.StaggerPersistentPackBridge.suffix (initial h) off limit rho =
       StaggerPersistentFrame.coreRest h off limit rho := by
