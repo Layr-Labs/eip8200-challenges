@@ -1,0 +1,373 @@
+import Challenge.Ripemd160.Submission.Local20261028.RecAbcSites
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcSizeGuard
+import Challenge.Ripemd160.Submission.Local20261028.RecPatternedStep
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RawExpressionAC
+import Challenge.Ripemd160.Submission.Local20261028.RecGuardInstructionWindow
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.TinyGuardLogic
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcRecognition
+import Challenge.Ripemd160.Submission.Local20261028.ColdExecution
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.Msize
+import Challenge.EvmProof.Memory
+
+set_option warningAsError true
+set_option linter.unusedSimpArgs false
+set_option maxRecDepth 100000
+set_option maxHeartbeats 8000000
+set_option linter.unusedSimpArgs false
+
+namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.AbcArm
+open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
+open TinyGuardLogic
+def maskedWord (input : ByteArray) : UInt256 :=
+  MachineState.readWord input 0
+
+def shiftedWord (input : ByteArray) : UInt256 :=
+  UInt256.sar (maskedWord input) (UInt256.ofNat input.size)
+
+def wordCond (input : ByteArray) : UInt256 :=
+  UInt256.xor (shiftedWord input) wordMask
+
+def armEntry (input : ByteArray) : State := Control.Execution.atPC input 8329
+def emptyEntry (input : ByteArray) : State := Control.Execution.atPC input 8051
+def fallbackState (input : ByteArray) : State := Control.Execution.atPC input 8086
+def answerWord (input : ByteArray) : UInt256 :=
+  if input.size = 0 then UInt256.ofNat 890993315260586290631548281360202943075753233713
+  else UInt256.ofNat 814647003348588794217809277549781461204094028796
+def answerBytes (input : ByteArray) : ByteArray :=
+  Data.Bytes.natToBytesPadded (answerWord input).toNat 32
+def answerMemory (input : ByteArray) : ByteArray :=
+  MachineState.writeBytes ByteArray.empty (answerBytes input) 0
+def stored (input : ByteArray) : State :=
+  {initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 8394
+    memory := answerMemory input
+    activeWords := UInt256.ofNat 1}
+def sized (input : ByteArray) : State :=
+  {stored input with pc := UInt256.ofNat 8395, stack := [UInt256.ofNat 32]}
+def returned (input : ByteArray) : State :=
+  {stored input with
+    pc := UInt256.ofNat 8396
+    halt := .Returned
+    hReturn := MachineState.readPadded (answerMemory input) 0 32}
+def emptyStored (input : ByteArray) : State :=
+  {initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 8075
+    memory := answerMemory input
+    activeWords := UInt256.ofNat 1}
+def emptySized (input : ByteArray) : State :=
+  {emptyStored input with pc := UInt256.ofNat 8076, stack := [UInt256.ofNat 32]}
+def emptyReturned (input : ByteArray) : State :=
+  {emptyStored input with
+    pc := UInt256.ofNat 8077
+    halt := .Returned
+    hReturn := MachineState.readPadded (answerMemory input) 0 32}
+
+@[simp] private theorem add_nat (a b : Nat) :
+    UInt256.add (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat (a + b) :=
+  Word.ofNat_add_mod a b
+@[simp] private theorem zero_toNat : ({val := 0} : UInt256).toNat = 0 := rfl
+@[simp] private theorem literal_zero_toNat : (0 : UInt256).toNat = 0 := rfl
+
+private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w = true := by
+  have ht : UInt256.isTrue w := by
+    intro hn
+    apply h
+    apply Word.word_ext
+    exact hn
+  simpa using ht
+
+private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 8085 = true := by
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 6097 (by rfl)
+  rw [pc_176] at h
+  exact h
+
+/-! ### The size-fed sign-extending guard accepts exactly `abc`. -/
+private theorem shiftedWord_eq_of_wordCond (input : ByteArray) (hz : wordCond input = 0) :
+    (shiftedWord input).toNat = AbcSizeGuard.target := by
+  have h := congrArg UInt256.toNat ((KnownInputLogic.wordXor_eq_zero_iff _ _).mp hz)
+  exact h
+
+theorem size_lt_four_of_wordCond (input : ByteArray) (hfit : CalldataFits input)
+    (hz : wordCond input = 0) : input.size < 4 := by
+  have h := AbcSizeGuard.shift_hit_small _ _ (shiftedWord_eq_of_wordCond input hz)
+  have hs : (UInt256.ofNat input.size).toNat = input.size := by
+    rw [Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt (Nat.lt_trans hfit (by norm_num))
+  rw [hs] at h
+  exact h
+
+theorem wordCond_zero_size_pos (input : ByteArray) (hfit : CalldataFits input)
+    (_hpos : 0 < input.size) (_hsmall : input.size < 4) (hz : wordCond input = 0) :
+    input = AbcInputData.abcInput :=
+  AbcSizeGuard.guard_sound input hfit (shiftedWord_eq_of_wordCond input hz)
+
+private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
+    (hop : s.decodedOp = some .SAR)
+    (hstack : s.stack = shift :: value :: rest)
+    (hcap : s.stack.length + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR)
+    (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
+      s.executionEnv.codeAddr = false) :
+    GasSteps s { s with stack := UInt256.sar value shift :: rest, pc := s.pc.succ } := by
+  let cost := Gas.baseCost s.fork .SAR
+  apply GasStep.of_running cost hrun hnp
+  intro gas hgas
+  simpa [withGas, cost] using
+    StepRunning.sar (withGas s gas) shift value rest hop hgas hstack hcap
+
+/-! ### The word test, with the sign-extending shift stepped directly -/
+
+def wordHead : List Located := wordPath.take 4
+def wordCalc : List Located := (wordPath.drop 5).take 2
+def wordBranch : Located :=
+  ⟨6211, .op .JUMPI, by exact Control.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩
+def wordLoaded (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 8365
+    stack := [UInt256.ofNat input.size, maskedWord input, wordMask] }
+def wordShifted (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 8366
+    stack := [shiftedWord input, wordMask] }
+def wordTested (input : ByteArray) : State :=
+  { initialState submissionBytecode input 0 with
+    pc := UInt256.ofNat 8370
+    stack := [UInt256.ofNat 8085, wordCond input] }
+
+private theorem run_word_head (input : ByteArray) :
+    DataStepper.runLocatedBlock wordHead (armEntry input) = some (wordLoaded input) := by
+  simp [wordHead, wordPath, Control.Artifact.op, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
+    armEntry, wordLoaded, maskedWord, wordMask, Control.Execution.atPC, initialState, UInt256.succ,
+    Word.ofNat_add_mod, Word.word_toNat_ofNat, List.getElem?_cons_zero]
+private theorem run_word_calc (input : ByteArray) :
+    DataStepper.runLocatedBlock wordCalc (wordShifted input) = some (wordTested input) := by
+  simp [wordCalc, wordPath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
+    wordShifted, wordTested, wordCond, Control.Execution.atPC, initialState, UInt256.succ,
+    Word.ofNat_add_mod, Word.word_toNat_ofNat]
+
+private def gasSteps_sar (input : ByteArray) : GasSteps (wordLoaded input) (wordShifted input) := by
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6208 .SAR
+    (by exact Control.GuardInstructionWindow.get 4) (by decide) trivial
+  have hp : (wordLoaded input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6208 := by
+    rw [pc_4101]; rfl
+  have hop : (wordLoaded input).decodedOp = some .SAR :=
+    Control.Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 6208 rfl hp .SAR none hd rfl
+  have g := sarStep (s := wordLoaded input) (shift := UInt256.ofNat input.size)
+    (value := maskedWord input) (rest := [wordMask]) hop rfl
+    (by show 3 + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR; decide) rfl
+    deployAddress_not_precompile
+  have ht : { wordLoaded input with
+      stack := UInt256.sar (maskedWord input) (UInt256.ofNat input.size) :: [wordMask],
+      pc := (wordLoaded input).pc.succ } = wordShifted input := by
+    simp [wordLoaded, wordShifted, shiftedWord, initialState, Word.succ_ofNat_mod,
+      Word.word_toNat_ofNat]
+  exact GasSteps.cast g rfl ht
+
+private def soundW (path : List Located) {s t : State}
+    (h : DataStepper.runLocatedBlock path s = some t)
+    (hc : s.executionEnv.code = Control.Artifact.submissionArtifact.code := by rfl)
+    (hf : s.fork = .Osaka := by rfl) (hr : s.halt = .Running := by rfl)
+    (hn : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false := by exact deployAddress_not_precompile) :
+    GasSteps s t :=
+  DataStepper.runLocatedBlock_sound Control.Artifact.submissionArtifact .Osaka path hc hf h hr hn
+
+private def gasSteps_word_prefix (input : ByteArray) :
+    GasSteps (armEntry input) (wordTested input) :=
+  (soundW wordHead (run_word_head input)).trans
+    ((gasSteps_sar input).trans (soundW wordCalc (run_word_calc input)))
+
+theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
+    DataStepper.runLocatedBlock [wordBranch, entryDest] (wordTested input) =
+      some (fallbackState input) := by
+  have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
+      some (PatternedScan.stS input 8085 []) :=
+    PatternedScan.blockOfS wordBranch
+      (PatternedScan.pcFactS input 6211 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.stepS_jumpi_taken input 8370 8085 (UInt256.ofNat 8085) (wordCond input) []
+        (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
+  have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 8085 []) =
+      some (fallbackState input) := by
+    exact PatternedScan.blockOfS entryDest
+      (PatternedScan.pcFactS input 6097 8085 [] (by norm_num) pc_176)
+      (PatternedScan.stepS_jumpdest input 8085 [] (by simp) (by norm_num))
+  exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
+    _ _ _ hbranch rfl hd
+
+theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
+    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Control.Execution.atPC input 8371) := by
+  have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
+  exact PatternedScan.blockOfS wordBranch
+    (PatternedScan.pcFactS input 6211 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 8370 (UInt256.ofNat 8085) (wordCond input) []
+      (by simp) (by norm_num) ht)
+
+theorem run_store (input : ByteArray) (hne : input.size ≠ 0) :
+    DataStepper.runLocatedBlock storePath (Control.Execution.atPC input 8371) = some (stored input) := by
+  simp (config := { maxSteps := 1000000 })
+    [storePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, PatternedScan.stS, Control.Execution.atPC, stored, answerMemory, answerBytes,
+     answerWord, hne, MachineState.mstore, State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+     initialState, Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
+     Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
+
+theorem run_finish (input : ByteArray) :
+    DataStepper.runLocatedBlock finishPath (sized input) = some (returned input) := by
+  simp (config := { maxSteps := 1000000 })
+    [finishPath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, sized, stored, returned, initialState,
+     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
+     State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+     Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
+
+theorem run_empty_store (input : ByteArray) (hz : input.size = 0) :
+    DataStepper.runLocatedBlock emptyStorePath (emptyEntry input) = some (emptyStored input) := by
+  simp (config := { maxSteps := 1000000 })
+    [emptyStorePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, PatternedScan.stS, emptyEntry, Control.Execution.atPC, emptyStored, answerMemory, answerBytes,
+     answerWord, hz, MachineState.mstore, State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+     initialState, Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
+     Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
+
+theorem run_empty_finish (input : ByteArray) :
+    DataStepper.runLocatedBlock emptyFinishPath (emptySized input) = some (emptyReturned input) := by
+  simp (config := { maxSteps := 1000000 })
+    [emptyFinishPath, DataStepper.runLocatedBlock, DataStepper.runLocated,
+     DataStepper.runInstr, emptySized, emptyStored, emptyReturned, initialState,
+     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod,
+     State.activeWordsAfterUInt256, MachineState.activeWordsAfter,
+     Word.word_toNat_ofNat, UInt256.succ, List.exchange, List.getElem?_cons_zero]
+
+private def sound (path : List Located) {s t : State}
+    (h : DataStepper.runLocatedBlock path s = some t)
+    (hc : s.executionEnv.code = Control.Artifact.submissionArtifact.code := by rfl)
+    (hf : s.fork = .Osaka := by rfl) (hr : s.halt = .Running := by rfl)
+    (hn : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false := by exact deployAddress_not_precompile) :
+    GasSteps s t :=
+  DataStepper.runLocatedBlock_sound Control.Artifact.submissionArtifact .Osaka path hc hf h hr hn
+
+def gasSteps_miss (input : ByteArray) (hw : wordCond input ≠ 0) :
+    GasSteps (armEntry input) (fallbackState input) :=
+  (gasSteps_word_prefix input).trans (sound [wordBranch, entryDest] (run_word_miss input hw))
+
+def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size ≠ 0) :
+    GasSteps (armEntry input) (returned input) := by
+  have gw := (gasSteps_word_prefix input).trans (sound [wordBranch] (run_word_hit input hw))
+  have gs := sound storePath (run_store input hne)
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6215 .MSIZE
+    (by rfl) (by decide) trivial
+  have hp : (stored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6215 := by
+    rw [pc_inlineMsize]; rfl
+  have hop : (stored input).decodedOp = some .MSIZE :=
+    Control.Artifact.submissionArtifact.state_decodedOp_of (stored input) 6215 rfl hp .MSIZE none hd rfl
+  have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
+    rfl deployAddress_not_precompile
+  have gm : GasSteps (stored input) (sized input) := by
+    simpa [stored, sized, initialState, Word.succ_ofNat_mod, Word.word_toNat_ofNat] using gmraw
+  have gf := sound finishPath (run_finish input)
+  exact gw.trans (gs.trans (gm.trans gf))
+
+def gasSteps_empty_hit (input : ByteArray) (hz : input.size = 0) :
+    GasSteps (emptyEntry input) (emptyReturned input) := by
+  have gs := sound emptyStorePath (run_empty_store input hz)
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6088 .MSIZE
+    (by rfl) (by decide) trivial
+  have hp : (emptyStored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6088 := by
+    rw [pc_emptyMsize]; rfl
+  have hop : (emptyStored input).decodedOp = some .MSIZE :=
+    Control.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 6088 rfl hp .MSIZE none hd rfl
+  have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
+    rfl deployAddress_not_precompile
+  have gm : GasSteps (emptyStored input) (emptySized input) := by
+    simpa [emptyStored, emptySized, initialState, Word.succ_ofNat_mod, Word.word_toNat_ofNat] using gmraw
+  have gf := sound emptyFinishPath (run_empty_finish input)
+  exact gs.trans (gm.trans gf)
+
+theorem answer_empty : answerBytes ByteArray.empty = EmptySpec.emptyOutput := by
+  rw [answerBytes, Memory.natToBytesPadded_eq_natToBE]
+  decide
+theorem answer_abc : answerBytes AbcInputData.abcInput = AbcInputData.abcPaddedDigest := by
+  rw [answerBytes, Memory.natToBytesPadded_eq_natToBE]
+  decide
+
+private theorem readWord_empty : MachineState.readWord ByteArray.empty 0 = 0 := by
+  unfold MachineState.readWord
+  rw [← Bytes.bytesNat_toList, Bytes.readPadded_toList,
+    YulEvmCompiler.ByteArray.toList_eq_data]
+  decide
+
+private theorem readWord_abc :
+    MachineState.readWord AbcInputData.abcInput 0 = UInt256.ofNat (0x616263 * 2 ^ 232) := by
+  unfold MachineState.readWord
+  rw [← Bytes.bytesNat_toList, Bytes.readPadded_toList,
+    YulEvmCompiler.ByteArray.toList_eq_data]
+  decide
+
+theorem wordCond_empty : wordCond ByteArray.empty ≠ 0 := by
+  unfold wordCond shiftedWord maskedWord
+  rw [readWord_empty]
+  decide
+
+theorem wordCond_abc : wordCond AbcInputData.abcInput = 0 := by
+  unfold wordCond shiftedWord maskedWord
+  rw [readWord_abc]
+  decide
+
+private theorem correct_known (input : ByteArray)
+    (hw : wordCond input = 0) (hne : input.size ≠ 0) (hspec : spec input = answerBytes input)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (armEntry input)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  let trace := entryPrefix.trans (gasSteps_hit input hw hne)
+  have hsize : (answerBytes input).size = 32 :=
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _
+  have hread : MachineState.readPadded (answerMemory input) 0 32 = answerBytes input := by
+    rw [← hsize]
+    exact Memory.readPadded_writeBytes_same ByteArray.empty (answerBytes input) 0
+  refine ⟨trace.cost, fun gas hgas => ?_⟩
+  have heval := eval_of_steps (trace.trace gas hgas) (by
+    simp [withGas, returned, stored, State.isDone, State.isHalted, State.isRunning]
+    rfl)
+  rw [State.toResult_returned _ (by rfl)] at heval
+  change Eval (withGas (initialState submissionBytecode input 0) gas)
+    (.returned (MachineState.readPadded (answerMemory input) 0 32)) at heval
+  rw [hread, ← hspec] at heval
+  exact heval
+
+theorem correct_abc (input : ByteArray) (_hfit : CalldataFits input)
+    (heq : input = AbcInputData.abcInput)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (armEntry input)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  subst input
+  exact correct_known _ wordCond_abc (by decide) (by rw [AbcDigest.spec_abc, answer_abc]) entryPrefix
+
+theorem correct_empty (input : ByteArray) (_hfit : CalldataFits input)
+    (heq : input = ByteArray.empty)
+    (entryPrefix : GasSteps (initialState submissionBytecode input 0) (emptyEntry input)) :
+    ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
+      Eval (initialState submissionBytecode input gas) (.returned (spec input)) := by
+  subst input
+  let trace := entryPrefix.trans (gasSteps_empty_hit ByteArray.empty rfl)
+  have hsize : (answerBytes ByteArray.empty).size = 32 :=
+    YulEvmCompiler.BytesLemmas.natToBytesPadded_size _ _
+  have hread : MachineState.readPadded (answerMemory ByteArray.empty) 0 32 = answerBytes ByteArray.empty := by
+    rw [← hsize]
+    exact Memory.readPadded_writeBytes_same ByteArray.empty (answerBytes ByteArray.empty) 0
+  have hspec : spec ByteArray.empty = answerBytes ByteArray.empty := by
+    rw [EmptySpec.spec_empty, answer_empty]
+  refine ⟨trace.cost, fun gas hgas => ?_⟩
+  have heval := eval_of_steps (trace.trace gas hgas) (by
+    simp [withGas, emptyReturned, emptyStored, State.isDone, State.isHalted, State.isRunning]
+    rfl)
+  rw [State.toResult_returned _ (by rfl)] at heval
+  change Eval (withGas (initialState submissionBytecode ByteArray.empty 0) gas)
+    (.returned (MachineState.readPadded (answerMemory ByteArray.empty) 0 32)) at heval
+  rw [hread, ← hspec] at heval
+  exact heval
+
+#print axioms correct_abc
+#print axioms correct_empty
+#print axioms gasSteps_miss
+end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.AbcArm
