@@ -1,3 +1,12 @@
+# Current refinement: column-0 operand order in the R5 kernels
+
+* R5 square column 0 (`sqCol0`): the modulus copy for the closing `MULMOD` is placed on the stack before the column's mod-`P` products, so the trailing `SWAP1` is dropped. The freed byte is `JUMPDEST` padding at the end of the column.
+* R5 product column 0 (`prCol0`): same operand order, and both limb loads from offset zero use `PUSH0`. Two neighbouring pushes are widened to keep the column's byte length, with one `JUMPDEST` pad at the end of the column.
+
+Byte length, instruction count, every byte PC outside the two columns, every `JUMPDEST` that is a jump target and every theorem statement are unchanged. `Proofs/R5/ExecSquare.lean` and `Proofs/R5/ExecProduct.lean` regenerate the column-0 part programs, part models and run lemmas. `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
 # Current refinement: setup-path stack cleanups (-24 gas per draw, on top of R5 fusion)
 
 * `setupPathA` (PCs 649..689): drop a `DUP1` copy that was only popped at the end;

@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "9f05043a-a55d-4eec-8c07-38b999262e54",
+    "rationale": "Direct parent: the promoted tree with all of its inherited lineage. This ticket changes only column 0 of the R5 square and product kernels and the matching proof files.",
+    "evidence": "The child differs from the parent only in the column-0 bytes of the two R5 kernels, in Proofs/R5/ExecSquare.lean and Proofs/R5/ExecProduct.lean, in the regenerated Proofs/Cycle/Artifact.lean and Proofs/Cycle/Bytes.lean, and in README.md and dependencies.json."
+  },
+  {
     "submissionId": "d363d598-afc4-47a9-a786-26bd04436ecc",
     "rationale": "Own earlier submission with the identical R5 square-column fusion (rejected only on a tail corpus draw, 367076, despite verification). Its ExecSquare/Artifact changes are included unchanged.",
     "evidence": "Same bytes 4235..4372 changes and same Proofs/R5/ExecSquare.lean; local gate for that image: 366566 seed 0, Comparator accepted."
