@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "aeebceb3-168a-4381-992f-c18ff50eaf62",
+    "rationale": "Direct parent (own promoted submission): pad left round 78 without the zero add, on top of the promoted lineage. This ticket keeps it and clears the pad-only table from byte 0, removing the two remaining schedule reads.",
+    "evidence": "Every byte outside the pad-only low block and pad-copy rounds 35 and 77, and every proof file outside the listed ones and the mechanical index renumbering, is identical to the parent tree."
+  },
+  {
     "submissionId": "1ab7033a-a3c3-4770-9d2f-9993f553161f",
     "rationale": "Direct parent: the promoted tree with all of its inherited lineage. This ticket changes only pad left round 78 and the matching proof and artifact-mirror files.",
     "evidence": "Every byte outside left round 78 of the pad-only copy, and every proof file outside the listed ones, is identical to this promoted tree."

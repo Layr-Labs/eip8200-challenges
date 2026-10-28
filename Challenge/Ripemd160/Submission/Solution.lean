@@ -23,6 +23,6 @@ theorem candidate : Challenge.Ripemd160.Correct bytecode :=
 end Challenge.Ripemd160.Benchmark
 
 #print axioms Challenge.Ripemd160.Benchmark.candidate
--- Decoded SHA-256: ef553188566f8fc20ac74f709159b1ea1f450dc38a780335543ef4e9ea973c79.
--- 10264 bytes, 7043 instructions. Full pad-only compressor copy with word-0 key folds, compact arms.
+-- Decoded SHA-256: 4b6cc04e20e9f6ef12e7b217d1b59d6edc6873f60abd2d00a4d245b6fad37250.
+-- 10264 bytes, 7037 instructions. Full pad-only compressor copy with word-0 key folds, compact arms.
 -- Only the protected benchmark is authoritative for correctness and gas.

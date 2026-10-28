@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired35
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Zero
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.ModFoldLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired35
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -12,7 +13,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullSitePaired3
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy (PadZero)
-abbrev template := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired35.template
+abbrev template := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired35.template
 abbrev inputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired35.inputStack
 abbrev outputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired35.outputStack
 theorem actual_slice :
@@ -40,7 +41,7 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
     GasSteps {s with pc := UInt256.ofNat 6335, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawPaired35.inputStack x rho}
       {s with pc := UInt256.ofNat 6366, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired35.outputStack s.memory x rho} := by
-  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerRawPaired35.run_actual s (UInt256.ofNat 6335) x rho hstack hrun hactive
+  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawPaired35.run_actual s (UInt256.ofNat 6335) x rho hstack hrun hactive (hz 1 (by decide))
   have hend : pcAfter (UInt256.ofNat 6335) template = UInt256.ofNat 6366 := by decide
   rw [hend] at hraw
   exact HoistedInherited.ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw

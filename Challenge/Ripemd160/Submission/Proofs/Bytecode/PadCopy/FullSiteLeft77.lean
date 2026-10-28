@@ -1,6 +1,7 @@
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.Zero
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.ModFoldLift
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawLeft77
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -12,20 +13,20 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullSiteLeft77
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy (PadZero)
-abbrev template := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77.template
+abbrev template := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawLeft77.template
 abbrev inputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77.inputStack
 abbrev outputStack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77.outputStack
 theorem actual_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6923).take template.length = template := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6920).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 6923 actual_slice
-    (by change 6923 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 6920 actual_slice
+    (by change 6920 + template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := template) (by decide))
     (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 10134 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6923) = UInt256.ofNat 10134
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6920) = UInt256.ofNat 10134
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, HoistedInherited.ModFoldLift.Advances instruction := by
   apply HoistedInherited.ModFoldLift.advancesAll_sound
@@ -40,7 +41,7 @@ def gasSteps (s : State) (x : Input) (rho : List UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) (hz : PadZero s.memory) :
     GasSteps {s with pc := UInt256.ofNat 10134, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77.inputStack x rho}
       {s with pc := UInt256.ofNat 10162, stack := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77.outputStack s.memory x rho} := by
-  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.StaggerRawLeft77.run_actual s (UInt256.ofNat 10134) x rho hstack hrun hactive
+  have hraw := Challenge.Ripemd160.Submission.Proofs.Bytecode.PadCopy.FullRawLeft77.run_actual s (UInt256.ofNat 10134) x rho hstack hrun hactive (hz 0 (by decide))
   have hend : pcAfter (UInt256.ofNat 10134) template = UInt256.ofNat 10162 := by decide
   rw [hend] at hraw
   exact HoistedInherited.ModFoldLift.gasSteps_of_raw site _ _ hcode hfork hrun hnp site_pc.symm advances hraw

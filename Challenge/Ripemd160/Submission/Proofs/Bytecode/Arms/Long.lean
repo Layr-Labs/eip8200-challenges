@@ -190,23 +190,23 @@ theorem run_store1 (input : ByteArray) (pc : UInt256) (n : Nat) (w : UInt256) :
   rfl
 
 def a376Site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka a376Template :=
-  StackSiteBuilder.ofSlice a376Template 6405 (by rfl)
-    (by change 6405 + a376Template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice a376Template 6402 (by rfl)
+    (by change 6402 + a376Template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := a376Template) (by decide)) (by decide)
 theorem a376_pc : a376Site.startPC = UInt256.ofNat 9331 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6405) = _
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6402) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def a1000Site : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka a1000Template :=
-  StackSiteBuilder.ofSlice a1000Template 6434 (by rfl)
-    (by change 6434 + a1000Template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice a1000Template 6431 (by rfl)
+    (by change 6431 + a1000Template.length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := a1000Template) (by decide)) (by decide)
 theorem a1000_pc : a1000Site.startPC = UInt256.ofNat 9394 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6434) = _
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6431) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def val376 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 256 111)) items376

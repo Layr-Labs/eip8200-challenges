@@ -29,36 +29,36 @@ private theorem valid_at (s : State) (hcode : s.executionEnv.code = HoistedInher
 
 theorem valid_10024 (s : State) (hcode : s.executionEnv.code = HoistedInherited.Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code 10024 = true :=
-  valid_at s hcode 6829 10024 (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide) (by rfl)
+  valid_at s hcode 6826 10024 (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide) (by rfl)
 
 theorem hop_advances (target : Nat) (h : (hopTemplate target).dropLast.all PadLift.advancesCheck = true) :
     ∀ instruction ∈ (hopTemplate target).dropLast, PadLift.Advances instruction :=
   PadLift.advancesAll_sound _ h
 
 theorem hop_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5950).take (hopTemplate 10024).length = hopTemplate 10024 := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 5947).take (hopTemplate 10024).length = hopTemplate 10024 := by rfl
 
 def hopSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka (hopTemplate 10024) :=
-  StackSiteBuilder.ofSlice (hopTemplate 10024) 5950 hop_slice
-    (by change 5950 + (hopTemplate 10024).length ≤ HoistedInherited.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (hopTemplate 10024) 5947 hop_slice
+    (by change 5947 + (hopTemplate 10024).length ≤ HoistedInherited.Artifact.submissionInstructions.length
         rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
     HoistedInherited.StackRoundData.artifact_code_bound
     (HoistedInherited.StackRoundData.templateWellFormed_mem (instructions := hopTemplate 10024) (by decide))
     (by decide)
 
 theorem hop_pc : hopSite.startPC = UInt256.ofNat 7916 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5950) = UInt256.ofNat 7916
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 5947) = UInt256.ofNat 7916
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem mark_slice :
-    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6829).take markTemplate.length = markTemplate := by rfl
+    (HoistedInherited.Artifact.submissionArtifact.instructions.drop 6826).take markTemplate.length = markTemplate := by rfl
 
 def markResumeSite : GenericRoundSite HoistedInherited.Artifact.submissionArtifact .Osaka markTemplate :=
-  markSite 6829 mark_slice
+  markSite 6826 mark_slice
     (by rw [HoistedInherited.Artifact.referenceInstructions_count]; decide)
 
 theorem mark_pc : markResumeSite.startPC = UInt256.ofNat 10024 := by
-  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6829) = UInt256.ofNat 10024
+  change UInt256.ofNat (HoistedInherited.Artifact.submissionArtifact.instructionPC 6826) = UInt256.ofNat 10024
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- Leave paired round 73 at 7916 and resume the copy past the marker at 10024. -/

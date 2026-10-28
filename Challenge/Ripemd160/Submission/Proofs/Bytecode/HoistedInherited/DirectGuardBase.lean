@@ -275,19 +275,19 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_53 : HoistedInherited.Artifact.submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_54 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6221 = 8401 := by
+@[simp] theorem pc_direct_54 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6218 = 8401 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_55 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6221 = 8401 := by
+@[simp] theorem pc_direct_55 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6218 = 8401 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_56 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6222 = 8402 := by
+@[simp] theorem pc_direct_56 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6219 = 8402 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_57 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6223 = 8403 := by
+@[simp] theorem pc_direct_57 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6220 = 8403 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_58 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6224 = 8404 := by
+@[simp] theorem pc_direct_58 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6221 = 8404 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_59 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6225 = 8406 := by
+@[simp] theorem pc_direct_59 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6222 = 8406 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_60 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6226 = 8407 := by
+@[simp] theorem pc_direct_60 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6223 = 8407 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_61 : HoistedInherited.Artifact.submissionArtifact.instructionPC 52 = 93 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -322,7 +322,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_77 : HoistedInherited.Artifact.submissionArtifact.instructionPC 124 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_78 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6220 = 8400 := by
+@[simp] theorem pc_direct_78 : HoistedInherited.Artifact.submissionArtifact.instructionPC 6217 = 8400 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.HoistedInherited.DirectGuard

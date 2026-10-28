@@ -67,9 +67,9 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray)
   have ge := HoistedInherited.StaggerPersistentLoopSites.gasSteps_dispatch s (resultHash s)
     (UInt256.ofNat 1056) (UInt256.ofNat 9949) resultCont maskRho (by decide) e.run
     (by
-        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 6774 = 9949 := by
+        have hpc : HoistedInherited.Artifact.submissionArtifact.instructionPC 6771 = 9949 := by
           rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6774 (by rfl)
+        have h := HoistedInherited.Artifact.submissionArtifact.isValidJumpDest_index 6771 (by rfl)
         rw [hpc] at h
         rw [e.code]; exact h)
     e.code e.fork e.np

@@ -11,9 +11,9 @@ open StaggerTableSparse
 
 /-! ### The pad-only table against its model, from byte 28
 
-The machine builds the pad table over `zeroSuffix m`, which keeps bytes [0,28) of the incoming
-memory; the model builds it over `zeroMemory m`.  Every selected store writes the same value to
-both, so they agree from byte 28 -- with no hypothesis on the incoming first word. -/
+The machine's calldata copy clears `[0,1112)`, so it builds the pad table over `zeroMemory m`,
+exactly as the model does; in particular the two agree from byte 28 -- with no hypothesis on
+the incoming first word. -/
 
 theorem storeSelected_from28 {b b' : ByteArray}
     (h : ∀ j, 28 ≤ j → b[j]?.getD 0 = b'[j]?.getD 0)
@@ -37,14 +37,10 @@ theorem padRealResult_from28 (m : ByteArray) (n : UInt256) :
     ∀ j, 28 ≤ j → (StaggerTablePad.padRealResult m n)[j]?.getD 0 =
       (StaggerTablePad.resultMemory m n)[j]?.getD 0 := by
   unfold StaggerTablePad.padRealResult StaggerTablePad.resultMemoryOver StaggerTablePad.resultMemory
-  refine storeSelected_from28 (fun j hj => ?_) _ _ 0 61
-  rw [zeroSuffix_getD, zeroMemory_getD]
-  by_cases hj' : j < 1112
-  · rw [if_pos ⟨hj, hj'⟩, if_pos hj']
-  · rw [if_neg (by omega), if_neg hj']
+  exact storeSelected_from28 (fun _ _ => rfl) _ _ 0 61
 
 /-- Byte 32 (slot 1's slack byte 14) is zero in the real pad table: neither slot 0 nor slot 1
-is selected, and `zeroSuffix` clears it. -/
+is selected, and the calldata copy clears it. -/
 theorem padRealResult_byte32 (m : ByteArray) (n : UInt256) :
     (StaggerTablePad.padRealResult m n)[32]?.getD 0 = 0 := by
   rw [StaggerTablePad.padRealResult, StaggerTablePad.resultMemoryOver,
@@ -54,7 +50,7 @@ theorem padRealResult_byte32 (m : ByteArray) (n : UInt256) :
       by_cases hk1 : k = 1
       · subst hk1; exact Or.inl (by decide)
       exact Or.inr (Or.inl (by omega))),
-    zeroSuffix_getD, if_pos (by decide)]
+    zeroMemory_getD, if_pos (by decide)]
 
 theorem pad_ready (m : ByteArray) (n : UInt256) (words : Nat → UInt32)
     (h : StaggerMessage.Ready (StaggerTablePad.resultMemory m n) words) :
@@ -82,7 +78,7 @@ theorem padRealResult_clear (m : ByteArray) (n : UInt256) (hn : n.toNat < 2 ^ 64
   unfold StaggerTablePad.padRealResult StaggerTablePad.resultMemoryOver
   apply storeSelected_band _ _
     (fun j => StaggerTablePad.padWordsDirty_bound n hn _) _ 0 61 a hk
-  rw [zeroSuffix_getD, if_pos (by omega)]
+  rw [zeroMemory_getD, if_pos (by omega)]
 
 theorem padRealChain_clear (m : ByteArray) (n : UInt256) (hn : n.toNat < 2 ^ 64) :
     HoistedInherited.PoolShapeV2.ClearV2 (StaggerTablePad.padRealChain m n) := by
@@ -97,7 +93,7 @@ theorem padRealChain_clear (m : ByteArray) (n : UInt256) (hn : n.toNat < 2 ^ 64)
   refine PairStoreGap.writeWord_band _ _ _ (by decide) hl a hk ?_
   refine PairStoreGap.writeWord_band _ _ _ (by decide) hl a hk ?_
   refine PairStoreGap.writeWord_band _ _ _ (by decide) hl a hk ?_
-  rw [zeroSuffix_getD, if_pos (by omega)]
+  rw [zeroMemory_getD, if_pos (by omega)]
 
 #print axioms pad_ready
 #print axioms padRealResult_clear

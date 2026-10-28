@@ -51,8 +51,8 @@ theorem pack_two_128 (memory : ByteArray)
       · simp only [if_neg h36, if_neg h54]
 
 /-- The same merge over an ARBITRARY base: all the merge needs is that bytes `[36,54)` of
-the base are zero.  The pad block's real base is `writeBytes memory zeroBytes 28`, which
-clears `[28,1112)` and so satisfies this just as `zeroMemory` does. -/
+the base are zero.  The pad block's real base is its calldata copy's clear of `[0,1112)`,
+`writeBytes memory zeroBytes 0`, which is `zeroMemory memory`. -/
 theorem after_length_stores_gen (base : ByteArray) (low : UInt256)
     (hz : ∀ i, 36 ≤ i → i < 54 → base[i]?.getD 0 = 0) :
     let preMemory := writeWord (writeWord (writeWord (writeWord

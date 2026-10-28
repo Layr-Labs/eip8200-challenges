@@ -1,3 +1,12 @@
+# Current refinement: pad-only table cleared from byte 0
+
+* Pad-only low block: the zero calldata copy now starts at byte 0 (`PUSH0` destination, longer copy length) and so clears the whole schedule table; one later push of the block is widened, so the block keeps its byte length.
+* Pad-only compressor copy: the two remaining schedule reads of table slots 1 and 0 are removed (`PUSH1 18; MLOAD; ADD` in paired round 35; `PUSH0; MLOAD` and one `ADD` in left round 77, whose following `DUP` is re-indexed); one later push of each site is widened, so both sites keep their byte lengths and their start and end PCs.
+* `StaggerTablePad.padRealResult` and `padRealChain` are now built over `zeroMemory` (new `padRealResult_eq : padRealResult m n = resultMemory m n`; `padRealResult_zero0` now states that byte 0 is zero); `StaggerPadSetup.lowTemplate` and `run_low` follow the new copy; `PadCopy/Zero.lean` adds slots 0 and 1 to `zeroSlots`; `PoolPadInvariant.lean` and `SecondSnapshotCertificates.lean` (both copies) and `PackedPadStore.lean` follow; the now unused `zeroSuffix` lemmas, `padRealResult_agree`, `padRealChain_agree` and `PadZeroPrefix.lean` are removed.
+* New `Proofs/Bytecode/PadCopy/FullRawPaired35.lean` and `FullRawLeft77.lean` carry the shortened templates and conclude the same generic `StaggerRawPaired35.outputStack` / `StaggerRawLeft77.outputStack`; `FullSitePaired35.lean` and `FullSiteLeft77.lean` use them; every later pad-copy site, the fold hop, the arm, chain and return index tables, the located paths and the output/tail sites follow the shifted instruction indices; the artifact mirrors (`FoldedCandidateArtifact.lean` and the instruction counts in `HoistedStoreArtifact.lean` and `HoistedInherited/Artifact.lean`) and the image comment in `Solution.lean` are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+
+---
+
 # Current refinement: pad left round 78 without the zero add
 
 * Left round 78 of the pad-only compressor copy: the remaining `PUSH0` and the `ADD` of that zero are removed, and the four following `DUP`s are re-indexed; one later push of the same site is widened, so the site keeps its byte length and its start and end PCs.

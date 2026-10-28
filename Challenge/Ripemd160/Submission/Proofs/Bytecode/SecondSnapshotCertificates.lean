@@ -119,7 +119,7 @@ theorem pad_repeat (m : ByteArray) (n : UInt256) :
       (fun j _ hj => pad_skip1 ⟨k,hk⟩ ⟨j,hj⟩),
     StaggerTablePad.getD_storeSelected_skip _ _ _ 0 61 (224+k)
       (fun j _ hj => pad_skip2 ⟨k,hk⟩ ⟨j,hj⟩),
-    StaggerTableSparse.zeroSuffix_getD, StaggerTableSparse.zeroSuffix_getD,
+    StaggerTableSparse.zeroMemory_getD, StaggerTableSparse.zeroMemory_getD,
     if_pos (by omega), if_pos (by omega)]
 
 theorem scratch_repeat (m : ByteArray) (lo hi : UInt256) (hr : Repeat4 m) :

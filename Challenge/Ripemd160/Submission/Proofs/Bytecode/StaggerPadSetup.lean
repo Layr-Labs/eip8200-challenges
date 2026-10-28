@@ -1,4 +1,3 @@
-import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadZeroPrefix
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PackedPadStore
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.Stagger144Active
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTablePad
@@ -13,19 +12,19 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace DenseScheduleTemplate PairedScheduleMemory
 open PairTableActive StaggerTableSparse StaggerTableLayout
 
-/-- Pad-only low block (pc 65..116): copy zero calldata over the table (the copy offset is
-CALLDATASIZE, exactly the first byte past the input), store the unmasked low
+/-- Pad-only low block (pc 65..116): copy zero calldata over the whole table `[0,1112)` (the
+copy offset is CALLDATASIZE, exactly the first byte past the input), store the unmasked low
 bit-length word `n <<< 3` three times, `0x80` at 522, and one packed `PUSH19` word at 54 that puts
 `0x80` at 67 and at 85 (the table's word stores of 128 at 36 and 54 merged; bytes 36..53 are
 already zero).  Only the fast entry (lengths 64, 128, 192) reaches this block, so the high length
 words are always zero. -/
 def lowTemplate : List Instr :=
-  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1084),
+  [ .push ⟨2, by decide⟩ (UInt256.ofNat 1112),
     .op .CALLDATASIZE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 28),
+    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .CALLDATACOPY,
     .op .CALLDATASIZE,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 3),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 3),
     .op .SHL,
     .op (.Dup ⟨0, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 162),
@@ -161,9 +160,9 @@ theorem run_low (s : State) (pc : UInt256) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 of
   have hactiveAt (address : Nat) (ha : address ≤ 1088) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved _ _ hactive ha
-  have hcopyActive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 28 1084) = s.activeWords := by
-    have he : MachineState.activeWordsAfter s.activeWords.toNat 28 1084 = s.activeWords.toNat := by
-      simp only [MachineState.activeWordsAfter, if_neg (by decide : (1084 : Nat) ≠ 0)]
+  have hcopyActive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 1112) = s.activeWords := by
+    have he : MachineState.activeWordsAfter s.activeWords.toNat 0 1112 = s.activeWords.toNat := by
+      simp only [MachineState.activeWordsAfter, if_neg (by decide : (1112 : Nat) ≠ 0)]
       apply Nat.max_eq_left
       omega
     rw [he]
@@ -171,14 +170,14 @@ theorem run_low (s : State) (pc : UInt256) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 of
   have hsize : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
     rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hfit]
   have hz : ∀ i, 36 ≤ i → i < 54 →
-      (MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28)[i]?.getD 0 = 0 := by
+      (MachineState.writeBytes s.memory StaggerTableSparse.zeroBytes 0)[i]?.getD 0 = 0 := by
     intro i hlo hhi
-    rw [MachineState.writeBytes_getElem?_getD, PadZeroPrefix.zeroBytes_size,
-      if_pos (by omega), PadZeroPrefix.zeroBytes_getD]
-  have hzero : MachineState.readPadded s.executionEnv.calldata s.executionEnv.calldata.size 1084 = PadZeroPrefix.zeroBytes :=
-    PadZeroPrefix.readPadded_ge _ _ (by omega)
+    rw [MachineState.writeBytes_getElem?_getD, StaggerTableSparse.zeroBytes_size,
+      if_pos (by omega), StaggerTableSparse.zeroBytes_getD]
+  have hzero : MachineState.readPadded s.executionEnv.calldata s.executionEnv.calldata.size 1112 = StaggerTableSparse.zeroBytes :=
+    StaggerTablePad.readPadded_end _
   have hpacked := PackedPadStore.after_length_stores_gen
-    (MachineState.writeBytes s.memory PadZeroPrefix.zeroBytes 28)
+    (MachineState.writeBytes s.memory StaggerTableSparse.zeroBytes 0)
     (StaggerTablePad.lowDirty (UInt256.ofNat s.executionEnv.calldata.size)) hz
   change StaggerTablePad.padRealChain s.memory
     (UInt256.ofNat s.executionEnv.calldata.size) = _ at hpacked
