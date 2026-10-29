@@ -31,9 +31,9 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to 2811). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2445 2 3146 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 5 3148 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2452 14 3157 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
+  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2444 2 3177 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2446 5 3179 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2451 14 3188 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest2811 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2704 = true :=
   CycleSubmission.Global.Binding.jumpDest 2082 (by rfl)
@@ -50,7 +50,7 @@ is pure delta-reduction: no `CycleSubmission.Global.Fast.Shift.entrySlots`/`read
 theorem shiftDone_eq_exitStart (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) :
     CycleSubmission.Global.Fast.Shift.shiftDoneState z s mem n bsize esize msize =
-      RootE3PhaseRun.frame s mem 3146
+      RootE3PhaseRun.frame s mem 3177
         (UInt256.ofNat 0 :: CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize ++
           Exp.outer n bsize esize msize) :=
   rfl

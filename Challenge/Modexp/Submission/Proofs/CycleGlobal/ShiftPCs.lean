@@ -23,6 +23,11 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open EvmSemantics
 open EvmSemantics.EVM
 
+/-- Instruction indices from 2135 on follow the `PUSH32` all-ones constant at 2134; their
+program counters are computed from this anchor. -/
+private theorem shiftAnchor : CycleSubmission.Artifact.artifact.instructionPC 2135 = 2807 := by
+  rw [PCFast.instructionPC_eq_byteLength]; rfl
+
 @[simp] theorem pc2545 : CycleSubmission.Artifact.artifact.instructionPC 1873 = 2390 := by
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail5 1873 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc2545
@@ -275,25 +280,25 @@ open EvmSemantics.EVM
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail11 2028 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc2713
 
-@[simp] theorem pc3009 : CycleSubmission.Artifact.artifact.instructionPC 2228 = 2878 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2228 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3009
+@[simp] theorem pc3009 : CycleSubmission.Artifact.artifact.instructionPC 2227 = 2909 := by
+  rw [show (2227:Nat)=2135+(2227-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3010 : CycleSubmission.Artifact.artifact.instructionPC 2229 = 2879 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2229 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3010
+@[simp] theorem pc3010 : CycleSubmission.Artifact.artifact.instructionPC 2228 = 2910 := by
+  rw [show (2228:Nat)=2135+(2228-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3011 : CycleSubmission.Artifact.artifact.instructionPC 2230 = 2880 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2230 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3011
+@[simp] theorem pc3011 : CycleSubmission.Artifact.artifact.instructionPC 2229 = 2911 := by
+  rw [show (2229:Nat)=2135+(2229-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3012 : CycleSubmission.Artifact.artifact.instructionPC 2231 = 2881 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2231 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3012
+@[simp] theorem pc3012 : CycleSubmission.Artifact.artifact.instructionPC 2230 = 2912 := by
+  rw [show (2230:Nat)=2135+(2230-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3013 : CycleSubmission.Artifact.artifact.instructionPC 2232 = 2882 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2232 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3013
+@[simp] theorem pc3013 : CycleSubmission.Artifact.artifact.instructionPC 2231 = 2913 := by
+  rw [show (2231:Nat)=2135+(2231-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pc2707 : CycleSubmission.Artifact.artifact.instructionPC 2025 = 2609 := by
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail11 2025 (by decide) (by decide)]
@@ -431,13 +436,13 @@ open EvmSemantics.EVM
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail11 2118 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc2865
 
-@[simp] theorem pc2888 : CycleSubmission.Artifact.artifact.instructionPC 2136 = 2776 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2136 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2319
+@[simp] theorem pc2888 : CycleSubmission.Artifact.artifact.instructionPC 2135 = 2807 := by
+  rw [show (2135:Nat)=2135+(2135-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3125 : CycleSubmission.Artifact.artifact.instructionPC 2325 = 2991 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2325 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3125
+@[simp] theorem pc3125 : CycleSubmission.Artifact.artifact.instructionPC 2324 = 3022 := by
+  rw [show (2324:Nat)=2135+(2324-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 
 
@@ -445,336 +450,336 @@ open EvmSemantics.EVM
 
 
 
-@[simp] theorem pc3171 : CycleSubmission.Artifact.artifact.instructionPC 2362 = 3034 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2362 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3171
+@[simp] theorem pc3171 : CycleSubmission.Artifact.artifact.instructionPC 2361 = 3065 := by
+  rw [show (2361:Nat)=2135+(2361-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3174 : CycleSubmission.Artifact.artifact.instructionPC 2363 = 3037 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2363 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3174
+@[simp] theorem pc3174 : CycleSubmission.Artifact.artifact.instructionPC 2362 = 3068 := by
+  rw [show (2362:Nat)=2135+(2362-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3175 : CycleSubmission.Artifact.artifact.instructionPC 2364 = 3038 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2364 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3175
+@[simp] theorem pc3175 : CycleSubmission.Artifact.artifact.instructionPC 2363 = 3069 := by
+  rw [show (2363:Nat)=2135+(2363-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3176 : CycleSubmission.Artifact.artifact.instructionPC 2365 = 3039 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2365 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3176
+@[simp] theorem pc3176 : CycleSubmission.Artifact.artifact.instructionPC 2364 = 3070 := by
+  rw [show (2364:Nat)=2135+(2364-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3177 : CycleSubmission.Artifact.artifact.instructionPC 2366 = 3040 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2366 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3177
+@[simp] theorem pc3177 : CycleSubmission.Artifact.artifact.instructionPC 2365 = 3071 := by
+  rw [show (2365:Nat)=2135+(2365-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3178 : CycleSubmission.Artifact.artifact.instructionPC 2367 = 3041 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2367 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3178
+@[simp] theorem pc3178 : CycleSubmission.Artifact.artifact.instructionPC 2366 = 3072 := by
+  rw [show (2366:Nat)=2135+(2366-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3179 : CycleSubmission.Artifact.artifact.instructionPC 2368 = 3042 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2368 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3179
+@[simp] theorem pc3179 : CycleSubmission.Artifact.artifact.instructionPC 2367 = 3073 := by
+  rw [show (2367:Nat)=2135+(2367-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3180 : CycleSubmission.Artifact.artifact.instructionPC 2369 = 3043 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2369 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3180
+@[simp] theorem pc3180 : CycleSubmission.Artifact.artifact.instructionPC 2368 = 3074 := by
+  rw [show (2368:Nat)=2135+(2368-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3181 : CycleSubmission.Artifact.artifact.instructionPC 2370 = 3044 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2370 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3181
+@[simp] theorem pc3181 : CycleSubmission.Artifact.artifact.instructionPC 2369 = 3075 := by
+  rw [show (2369:Nat)=2135+(2369-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3182 : CycleSubmission.Artifact.artifact.instructionPC 2371 = 3045 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2371 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3182
+@[simp] theorem pc3182 : CycleSubmission.Artifact.artifact.instructionPC 2370 = 3076 := by
+  rw [show (2370:Nat)=2135+(2370-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3183 : CycleSubmission.Artifact.artifact.instructionPC 2372 = 3046 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2372 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3183
+@[simp] theorem pc3183 : CycleSubmission.Artifact.artifact.instructionPC 2371 = 3077 := by
+  rw [show (2371:Nat)=2135+(2371-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3184 : CycleSubmission.Artifact.artifact.instructionPC 2373 = 3047 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2373 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3184
+@[simp] theorem pc3184 : CycleSubmission.Artifact.artifact.instructionPC 2372 = 3078 := by
+  rw [show (2372:Nat)=2135+(2372-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3185 : CycleSubmission.Artifact.artifact.instructionPC 2374 = 3048 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2374 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3185
+@[simp] theorem pc3185 : CycleSubmission.Artifact.artifact.instructionPC 2373 = 3079 := by
+  rw [show (2373:Nat)=2135+(2373-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3186 : CycleSubmission.Artifact.artifact.instructionPC 2375 = 3049 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2375 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3186
+@[simp] theorem pc3186 : CycleSubmission.Artifact.artifact.instructionPC 2374 = 3080 := by
+  rw [show (2374:Nat)=2135+(2374-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3187 : CycleSubmission.Artifact.artifact.instructionPC 2376 = 3050 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2376 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3187
+@[simp] theorem pc3187 : CycleSubmission.Artifact.artifact.instructionPC 2375 = 3081 := by
+  rw [show (2375:Nat)=2135+(2375-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3188 : CycleSubmission.Artifact.artifact.instructionPC 2377 = 3051 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2377 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3188
+@[simp] theorem pc3188 : CycleSubmission.Artifact.artifact.instructionPC 2376 = 3082 := by
+  rw [show (2376:Nat)=2135+(2376-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3191 : CycleSubmission.Artifact.artifact.instructionPC 2378 = 3054 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2378 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3191
+@[simp] theorem pc3191 : CycleSubmission.Artifact.artifact.instructionPC 2377 = 3085 := by
+  rw [show (2377:Nat)=2135+(2377-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3192 : CycleSubmission.Artifact.artifact.instructionPC 2379 = 3055 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2379 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3192
+@[simp] theorem pc3192 : CycleSubmission.Artifact.artifact.instructionPC 2378 = 3086 := by
+  rw [show (2378:Nat)=2135+(2378-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3214 : CycleSubmission.Artifact.artifact.instructionPC 2393 = 3075 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2393 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3214
+@[simp] theorem pc3214 : CycleSubmission.Artifact.artifact.instructionPC 2392 = 3106 := by
+  rw [show (2392:Nat)=2135+(2392-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3215 : CycleSubmission.Artifact.artifact.instructionPC 2394 = 3076 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2394 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3215
+@[simp] theorem pc3215 : CycleSubmission.Artifact.artifact.instructionPC 2393 = 3107 := by
+  rw [show (2393:Nat)=2135+(2393-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3216 : CycleSubmission.Artifact.artifact.instructionPC 2395 = 3077 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2395 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3216
+@[simp] theorem pc3216 : CycleSubmission.Artifact.artifact.instructionPC 2394 = 3108 := by
+  rw [show (2394:Nat)=2135+(2394-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3219 : CycleSubmission.Artifact.artifact.instructionPC 2396 = 3080 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2396 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3219
+@[simp] theorem pc3219 : CycleSubmission.Artifact.artifact.instructionPC 2395 = 3111 := by
+  rw [show (2395:Nat)=2135+(2395-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3220 : CycleSubmission.Artifact.artifact.instructionPC 2397 = 3081 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2397 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3220
+@[simp] theorem pc3220 : CycleSubmission.Artifact.artifact.instructionPC 2396 = 3112 := by
+  rw [show (2396:Nat)=2135+(2396-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3221 : CycleSubmission.Artifact.artifact.instructionPC 2398 = 3082 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2398 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3221
+@[simp] theorem pc3221 : CycleSubmission.Artifact.artifact.instructionPC 2397 = 3113 := by
+  rw [show (2397:Nat)=2135+(2397-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3222 : CycleSubmission.Artifact.artifact.instructionPC 2399 = 3083 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2399 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3222
+@[simp] theorem pc3222 : CycleSubmission.Artifact.artifact.instructionPC 2398 = 3114 := by
+  rw [show (2398:Nat)=2135+(2398-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3223 : CycleSubmission.Artifact.artifact.instructionPC 2400 = 3084 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2400 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3223
+@[simp] theorem pc3223 : CycleSubmission.Artifact.artifact.instructionPC 2399 = 3115 := by
+  rw [show (2399:Nat)=2135+(2399-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3226 : CycleSubmission.Artifact.artifact.instructionPC 2401 = 3087 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2401 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3226
+@[simp] theorem pc3226 : CycleSubmission.Artifact.artifact.instructionPC 2400 = 3118 := by
+  rw [show (2400:Nat)=2135+(2400-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3227 : CycleSubmission.Artifact.artifact.instructionPC 2402 = 3088 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2402 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3227
+@[simp] theorem pc3227 : CycleSubmission.Artifact.artifact.instructionPC 2401 = 3119 := by
+  rw [show (2401:Nat)=2135+(2401-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 
-@[simp] theorem pc3228 : CycleSubmission.Artifact.artifact.instructionPC 2403 = 3089 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2403 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3228
+@[simp] theorem pc3228 : CycleSubmission.Artifact.artifact.instructionPC 2402 = 3120 := by
+  rw [show (2402:Nat)=2135+(2402-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3229 : CycleSubmission.Artifact.artifact.instructionPC 2404 = 3090 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2404 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3229
+@[simp] theorem pc3229 : CycleSubmission.Artifact.artifact.instructionPC 2403 = 3121 := by
+  rw [show (2403:Nat)=2135+(2403-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3230 : CycleSubmission.Artifact.artifact.instructionPC 2405 = 3091 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2405 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3230
+@[simp] theorem pc3230 : CycleSubmission.Artifact.artifact.instructionPC 2404 = 3122 := by
+  rw [show (2404:Nat)=2135+(2404-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3231 : CycleSubmission.Artifact.artifact.instructionPC 2406 = 3092 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2406 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3231
+@[simp] theorem pc3231 : CycleSubmission.Artifact.artifact.instructionPC 2405 = 3123 := by
+  rw [show (2405:Nat)=2135+(2405-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3232 : CycleSubmission.Artifact.artifact.instructionPC 2407 = 3093 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2407 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3232
+@[simp] theorem pc3232 : CycleSubmission.Artifact.artifact.instructionPC 2406 = 3124 := by
+  rw [show (2406:Nat)=2135+(2406-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3233 : CycleSubmission.Artifact.artifact.instructionPC 2408 = 3094 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2408 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3233
+@[simp] theorem pc3233 : CycleSubmission.Artifact.artifact.instructionPC 2407 = 3125 := by
+  rw [show (2407:Nat)=2135+(2407-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3234 : CycleSubmission.Artifact.artifact.instructionPC 2409 = 3095 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2409 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3234
+@[simp] theorem pc3234 : CycleSubmission.Artifact.artifact.instructionPC 2408 = 3126 := by
+  rw [show (2408:Nat)=2135+(2408-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3235 : CycleSubmission.Artifact.artifact.instructionPC 2410 = 3096 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2410 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3235
+@[simp] theorem pc3235 : CycleSubmission.Artifact.artifact.instructionPC 2409 = 3127 := by
+  rw [show (2409:Nat)=2135+(2409-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3236 : CycleSubmission.Artifact.artifact.instructionPC 2411 = 3097 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2411 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3236
+@[simp] theorem pc3236 : CycleSubmission.Artifact.artifact.instructionPC 2410 = 3128 := by
+  rw [show (2410:Nat)=2135+(2410-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3237 : CycleSubmission.Artifact.artifact.instructionPC 2412 = 3098 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2412 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3237
+@[simp] theorem pc3237 : CycleSubmission.Artifact.artifact.instructionPC 2411 = 3129 := by
+  rw [show (2411:Nat)=2135+(2411-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3238 : CycleSubmission.Artifact.artifact.instructionPC 2413 = 3099 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2413 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3238
+@[simp] theorem pc3238 : CycleSubmission.Artifact.artifact.instructionPC 2412 = 3130 := by
+  rw [show (2412:Nat)=2135+(2412-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3239 : CycleSubmission.Artifact.artifact.instructionPC 2414 = 3100 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2414 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3239
+@[simp] theorem pc3239 : CycleSubmission.Artifact.artifact.instructionPC 2413 = 3131 := by
+  rw [show (2413:Nat)=2135+(2413-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3240 : CycleSubmission.Artifact.artifact.instructionPC 2415 = 3101 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2415 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3240
+@[simp] theorem pc3240 : CycleSubmission.Artifact.artifact.instructionPC 2414 = 3132 := by
+  rw [show (2414:Nat)=2135+(2414-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3241 : CycleSubmission.Artifact.artifact.instructionPC 2416 = 3102 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2416 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3241
+@[simp] theorem pc3241 : CycleSubmission.Artifact.artifact.instructionPC 2415 = 3133 := by
+  rw [show (2415:Nat)=2135+(2415-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3242 : CycleSubmission.Artifact.artifact.instructionPC 2417 = 3103 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2417 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3242
+@[simp] theorem pc3242 : CycleSubmission.Artifact.artifact.instructionPC 2416 = 3134 := by
+  rw [show (2416:Nat)=2135+(2416-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3243 : CycleSubmission.Artifact.artifact.instructionPC 2418 = 3104 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2418 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3243
+@[simp] theorem pc3243 : CycleSubmission.Artifact.artifact.instructionPC 2417 = 3135 := by
+  rw [show (2417:Nat)=2135+(2417-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3244 : CycleSubmission.Artifact.artifact.instructionPC 2419 = 3105 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2419 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3244
+@[simp] theorem pc3244 : CycleSubmission.Artifact.artifact.instructionPC 2418 = 3136 := by
+  rw [show (2418:Nat)=2135+(2418-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3246 : CycleSubmission.Artifact.artifact.instructionPC 2420 = 3107 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2420 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3246
+@[simp] theorem pc3246 : CycleSubmission.Artifact.artifact.instructionPC 2419 = 3138 := by
+  rw [show (2419:Nat)=2135+(2419-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3247 : CycleSubmission.Artifact.artifact.instructionPC 2421 = 3108 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2421 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3247
+@[simp] theorem pc3247 : CycleSubmission.Artifact.artifact.instructionPC 2420 = 3139 := by
+  rw [show (2420:Nat)=2135+(2420-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3248 : CycleSubmission.Artifact.artifact.instructionPC 2422 = 3109 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2422 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3248
+@[simp] theorem pc3248 : CycleSubmission.Artifact.artifact.instructionPC 2421 = 3140 := by
+  rw [show (2421:Nat)=2135+(2421-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3251 : CycleSubmission.Artifact.artifact.instructionPC 2423 = 3112 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2423 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3251
+@[simp] theorem pc3251 : CycleSubmission.Artifact.artifact.instructionPC 2422 = 3143 := by
+  rw [show (2422:Nat)=2135+(2422-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3252 : CycleSubmission.Artifact.artifact.instructionPC 2424 = 3113 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2424 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3252
+@[simp] theorem pc3252 : CycleSubmission.Artifact.artifact.instructionPC 2423 = 3144 := by
+  rw [show (2423:Nat)=2135+(2423-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3185_compact : CycleSubmission.Artifact.artifact.instructionPC 2412 = 3098 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2412 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3237
+@[simp] theorem pc3185_compact : CycleSubmission.Artifact.artifact.instructionPC 2411 = 3129 := by
+  rw [show (2411:Nat)=2135+(2411-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3256 : CycleSubmission.Artifact.artifact.instructionPC 2426 = 3117 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2426 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3256
+@[simp] theorem pc3256 : CycleSubmission.Artifact.artifact.instructionPC 2425 = 3148 := by
+  rw [show (2425:Nat)=2135+(2425-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3257 : CycleSubmission.Artifact.artifact.instructionPC 2427 = 3118 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2427 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3257
+@[simp] theorem pc3257 : CycleSubmission.Artifact.artifact.instructionPC 2426 = 3149 := by
+  rw [show (2426:Nat)=2135+(2426-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3258 : CycleSubmission.Artifact.artifact.instructionPC 2428 = 3119 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2428 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3258
+@[simp] theorem pc3258 : CycleSubmission.Artifact.artifact.instructionPC 2427 = 3150 := by
+  rw [show (2427:Nat)=2135+(2427-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3261 : CycleSubmission.Artifact.artifact.instructionPC 2429 = 3122 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2429 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3261
+@[simp] theorem pc3261 : CycleSubmission.Artifact.artifact.instructionPC 2428 = 3153 := by
+  rw [show (2428:Nat)=2135+(2428-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3262 : CycleSubmission.Artifact.artifact.instructionPC 2430 = 3123 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2430 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3262
+@[simp] theorem pc3262 : CycleSubmission.Artifact.artifact.instructionPC 2429 = 3154 := by
+  rw [show (2429:Nat)=2135+(2429-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3263 : CycleSubmission.Artifact.artifact.instructionPC 2431 = 3124 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2431 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3263
+@[simp] theorem pc3263 : CycleSubmission.Artifact.artifact.instructionPC 2430 = 3155 := by
+  rw [show (2430:Nat)=2135+(2430-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3264 : CycleSubmission.Artifact.artifact.instructionPC 2432 = 3125 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2432 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3264
+@[simp] theorem pc3264 : CycleSubmission.Artifact.artifact.instructionPC 2431 = 3156 := by
+  rw [show (2431:Nat)=2135+(2431-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3265 : CycleSubmission.Artifact.artifact.instructionPC 2433 = 3126 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2433 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3265
+@[simp] theorem pc3265 : CycleSubmission.Artifact.artifact.instructionPC 2432 = 3157 := by
+  rw [show (2432:Nat)=2135+(2432-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3268 : CycleSubmission.Artifact.artifact.instructionPC 2434 = 3129 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2434 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3268
+@[simp] theorem pc3268 : CycleSubmission.Artifact.artifact.instructionPC 2433 = 3160 := by
+  rw [show (2433:Nat)=2135+(2433-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3269 : CycleSubmission.Artifact.artifact.instructionPC 2435 = 3130 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2435 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3269
+@[simp] theorem pc3269 : CycleSubmission.Artifact.artifact.instructionPC 2434 = 3161 := by
+  rw [show (2434:Nat)=2135+(2434-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3270 : CycleSubmission.Artifact.artifact.instructionPC 2436 = 3131 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2436 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3270
+@[simp] theorem pc3270 : CycleSubmission.Artifact.artifact.instructionPC 2435 = 3162 := by
+  rw [show (2435:Nat)=2135+(2435-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3271 : CycleSubmission.Artifact.artifact.instructionPC 2437 = 3132 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2437 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3271
+@[simp] theorem pc3271 : CycleSubmission.Artifact.artifact.instructionPC 2436 = 3163 := by
+  rw [show (2436:Nat)=2135+(2436-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3274 : CycleSubmission.Artifact.artifact.instructionPC 2438 = 3135 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2438 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3274
+@[simp] theorem pc3274 : CycleSubmission.Artifact.artifact.instructionPC 2437 = 3166 := by
+  rw [show (2437:Nat)=2135+(2437-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3276 : CycleSubmission.Artifact.artifact.instructionPC 2439 = 3136 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2439 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3276
+@[simp] theorem pc3276 : CycleSubmission.Artifact.artifact.instructionPC 2438 = 3167 := by
+  rw [show (2438:Nat)=2135+(2438-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3279 : CycleSubmission.Artifact.artifact.instructionPC 2440 = 3139 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2440 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3279
+@[simp] theorem pc3279 : CycleSubmission.Artifact.artifact.instructionPC 2439 = 3170 := by
+  rw [show (2439:Nat)=2135+(2439-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3281 : CycleSubmission.Artifact.artifact.instructionPC 2442 = 3141 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2442 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3281
+@[simp] theorem pc3281 : CycleSubmission.Artifact.artifact.instructionPC 2441 = 3172 := by
+  rw [show (2441:Nat)=2135+(2441-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3282 : CycleSubmission.Artifact.artifact.instructionPC 2443 = 3142 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2443 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3282
+@[simp] theorem pc3282 : CycleSubmission.Artifact.artifact.instructionPC 2442 = 3173 := by
+  rw [show (2442:Nat)=2135+(2442-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3285 : CycleSubmission.Artifact.artifact.instructionPC 2444 = 3145 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2444 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3285
+@[simp] theorem pc3285 : CycleSubmission.Artifact.artifact.instructionPC 2443 = 3176 := by
+  rw [show (2443:Nat)=2135+(2443-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3198 : CycleSubmission.Artifact.artifact.instructionPC 2383 = 3061 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2383 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3198
+@[simp] theorem pc3198 : CycleSubmission.Artifact.artifact.instructionPC 2382 = 3092 := by
+  rw [show (2382:Nat)=2135+(2382-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2525 : CycleSubmission.Artifact.artifact.instructionPC 2384 = 3062 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2384 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2525
+@[simp] theorem pcM9b2525 : CycleSubmission.Artifact.artifact.instructionPC 2383 = 3093 := by
+  rw [show (2383:Nat)=2135+(2383-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2526 : CycleSubmission.Artifact.artifact.instructionPC 2385 = 3063 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2385 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2526
+@[simp] theorem pcM9b2526 : CycleSubmission.Artifact.artifact.instructionPC 2384 = 3094 := by
+  rw [show (2384:Nat)=2135+(2384-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2527 : CycleSubmission.Artifact.artifact.instructionPC 2386 = 3064 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2386 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2527
+@[simp] theorem pcM9b2527 : CycleSubmission.Artifact.artifact.instructionPC 2385 = 3095 := by
+  rw [show (2385:Nat)=2135+(2385-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2528 : CycleSubmission.Artifact.artifact.instructionPC 2387 = 3065 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2387 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2528
+@[simp] theorem pcM9b2528 : CycleSubmission.Artifact.artifact.instructionPC 2386 = 3096 := by
+  rw [show (2386:Nat)=2135+(2386-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2529 : CycleSubmission.Artifact.artifact.instructionPC 2388 = 3068 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2388 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2529
+@[simp] theorem pcM9b2529 : CycleSubmission.Artifact.artifact.instructionPC 2387 = 3099 := by
+  rw [show (2387:Nat)=2135+(2387-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2530 : CycleSubmission.Artifact.artifact.instructionPC 2389 = 3069 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2389 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2530
+@[simp] theorem pcM9b2530 : CycleSubmission.Artifact.artifact.instructionPC 2388 = 3100 := by
+  rw [show (2388:Nat)=2135+(2388-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcM9b2531 : CycleSubmission.Artifact.artifact.instructionPC 2390 = 3072 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2390 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcM9b2531
+@[simp] theorem pcM9b2531 : CycleSubmission.Artifact.artifact.instructionPC 2389 = 3103 := by
+  rw [show (2389:Nat)=2135+(2389-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3346 : CycleSubmission.Artifact.artifact.instructionPC 2445 = 3146 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2445 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3346
+@[simp] theorem pc3346 : CycleSubmission.Artifact.artifact.instructionPC 2444 = 3177 := by
+  rw [show (2444:Nat)=2135+(2444-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3347 : CycleSubmission.Artifact.artifact.instructionPC 2446 = 3147 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2446 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3347
+@[simp] theorem pc3347 : CycleSubmission.Artifact.artifact.instructionPC 2445 = 3178 := by
+  rw [show (2445:Nat)=2135+(2445-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pc3265a : CycleSubmission.Artifact.artifact.instructionPC 2453 = 3158 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2453 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3265a
+@[simp] theorem pc3265a : CycleSubmission.Artifact.artifact.instructionPC 2452 = 3189 := by
+  rw [show (2452:Nat)=2135+(2452-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 
-@[simp] theorem pc3265c : CycleSubmission.Artifact.artifact.instructionPC 2457 = 3165 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2457 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3265c
+@[simp] theorem pc3265c : CycleSubmission.Artifact.artifact.instructionPC 2456 = 3196 := by
+  rw [show (2456:Nat)=2135+(2456-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 
-@[simp] theorem pc3265e : CycleSubmission.Artifact.artifact.instructionPC 2459 = 3169 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2459 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3265e
+@[simp] theorem pc3265e : CycleSubmission.Artifact.artifact.instructionPC 2458 = 3200 := by
+  rw [show (2458:Nat)=2135+(2458-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcSaturate2987 : CycleSubmission.Artifact.artifact.instructionPC 2116 = 2750 := by
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail11 2116 (by decide) (by decide)]
@@ -792,132 +797,114 @@ open EvmSemantics.EVM
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail11 2119 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcSaturate2991
 
-@[simp] theorem pcSaturate2992 : CycleSubmission.Artifact.artifact.instructionPC 2310 = 2972 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2310 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcSaturate2992
+@[simp] theorem pcSaturate2992 : CycleSubmission.Artifact.artifact.instructionPC 2309 = 3003 := by
+  rw [show (2309:Nat)=2135+(2309-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcSaturate2993 : CycleSubmission.Artifact.artifact.instructionPC 2311 = 2973 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2311 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcSaturate2993
+@[simp] theorem pcSaturate2993 : CycleSubmission.Artifact.artifact.instructionPC 2310 = 3004 := by
+  rw [show (2310:Nat)=2135+(2310-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem earlyExtraPC2883 : CycleSubmission.Artifact.artifact.instructionPC 2668 = 3423 := by
+@[simp] theorem earlyExtraPC2883 : CycleSubmission.Artifact.artifact.instructionPC 2667 = 3454 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2884 : CycleSubmission.Artifact.artifact.instructionPC 2669 = 3424 := by
+@[simp] theorem earlyExtraPC2884 : CycleSubmission.Artifact.artifact.instructionPC 2668 = 3455 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2885 : CycleSubmission.Artifact.artifact.instructionPC 2670 = 3425 := by
+@[simp] theorem earlyExtraPC2885 : CycleSubmission.Artifact.artifact.instructionPC 2669 = 3456 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2886 : CycleSubmission.Artifact.artifact.instructionPC 2671 = 3426 := by
+@[simp] theorem earlyExtraPC2886 : CycleSubmission.Artifact.artifact.instructionPC 2670 = 3457 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2888 : CycleSubmission.Artifact.artifact.instructionPC 2672 = 3427 := by
+@[simp] theorem earlyExtraPC2888 : CycleSubmission.Artifact.artifact.instructionPC 2671 = 3458 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2889 : CycleSubmission.Artifact.artifact.instructionPC 2673 = 3428 := by
+@[simp] theorem earlyExtraPC2889 : CycleSubmission.Artifact.artifact.instructionPC 2672 = 3459 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2890 : CycleSubmission.Artifact.artifact.instructionPC 2674 = 3429 := by
+@[simp] theorem earlyExtraPC2890 : CycleSubmission.Artifact.artifact.instructionPC 2673 = 3460 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2891 : CycleSubmission.Artifact.artifact.instructionPC 2675 = 3432 := by
+@[simp] theorem earlyExtraPC2891 : CycleSubmission.Artifact.artifact.instructionPC 2674 = 3463 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2892 : CycleSubmission.Artifact.artifact.instructionPC 2676 = 3433 := by
+@[simp] theorem earlyExtraPC2892 : CycleSubmission.Artifact.artifact.instructionPC 2675 = 3464 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2893 : CycleSubmission.Artifact.artifact.instructionPC 2676 = 3433 := by
+@[simp] theorem earlyExtraPC2893 : CycleSubmission.Artifact.artifact.instructionPC 2675 = 3464 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2894 : CycleSubmission.Artifact.artifact.instructionPC 2677 = 3436 := by
+@[simp] theorem earlyExtraPC2894 : CycleSubmission.Artifact.artifact.instructionPC 2676 = 3467 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2895 : CycleSubmission.Artifact.artifact.instructionPC 2678 = 3437 := by
+@[simp] theorem earlyExtraPC2934 : CycleSubmission.Artifact.artifact.instructionPC 2677 = 3468 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2896 : CycleSubmission.Artifact.artifact.instructionPC 2689 = 3457 := by
+@[simp] theorem earlyExtraPC2935 : CycleSubmission.Artifact.artifact.instructionPC 2678 = 3469 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2930 : CycleSubmission.Artifact.artifact.instructionPC 2690 = 3458 := by
+@[simp] theorem earlyExtraPC2936 : CycleSubmission.Artifact.artifact.instructionPC 2679 = 3472 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2931 : CycleSubmission.Artifact.artifact.instructionPC 2691 = 3459 := by
+@[simp] theorem earlyExtraPC2937 : CycleSubmission.Artifact.artifact.instructionPC 2680 = 3473 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2932 : CycleSubmission.Artifact.artifact.instructionPC 2692 = 3460 := by
+@[simp] theorem earlyExtraPC2938 : CycleSubmission.Artifact.artifact.instructionPC 2681 = 3475 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2933 : CycleSubmission.Artifact.artifact.instructionPC 2693 = 3461 := by
+@[simp] theorem earlyExtraPC2939 : CycleSubmission.Artifact.artifact.instructionPC 2682 = 3476 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2934 : CycleSubmission.Artifact.artifact.instructionPC 2694 = 3462 := by
+@[simp] theorem earlyExtraPC2940 : CycleSubmission.Artifact.artifact.instructionPC 2683 = 3477 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2935 : CycleSubmission.Artifact.artifact.instructionPC 2695 = 3463 := by
+@[simp] theorem earlyExtraPC2941 : CycleSubmission.Artifact.artifact.instructionPC 2684 = 3478 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2936 : CycleSubmission.Artifact.artifact.instructionPC 2696 = 3466 := by
+@[simp] theorem earlyExtraPC2942 : CycleSubmission.Artifact.artifact.instructionPC 2685 = 3479 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem earlyExtraPC2937 : CycleSubmission.Artifact.artifact.instructionPC 2697 = 3467 := by
-  rw [PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem earlyExtraPC2938 : CycleSubmission.Artifact.artifact.instructionPC 2698 = 3469 := by
-  rw [PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem earlyExtraPC2939 : CycleSubmission.Artifact.artifact.instructionPC 2699 = 3470 := by
-  rw [PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem earlyExtraPC2940 : CycleSubmission.Artifact.artifact.instructionPC 2700 = 3471 := by
-  rw [PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem earlyExtraPC2941 : CycleSubmission.Artifact.artifact.instructionPC 2701 = 3472 := by
-  rw [PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem earlyExtraPC2942 : CycleSubmission.Artifact.artifact.instructionPC 2702 = 3473 := by
-  rw [PCFast.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem earlyExtraPC2943 : CycleSubmission.Artifact.artifact.instructionPC 2703 = 3476 := by
+@[simp] theorem earlyExtraPC2943 : CycleSubmission.Artifact.artifact.instructionPC 2686 = 3482 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
 
-@[simp] theorem pcC3009 : CycleSubmission.Artifact.artifact.instructionPC 2367 = 3041 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2367 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3178
+@[simp] theorem pcC3009 : CycleSubmission.Artifact.artifact.instructionPC 2366 = 3072 := by
+  rw [show (2366:Nat)=2135+(2366-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3010 : CycleSubmission.Artifact.artifact.instructionPC 2368 = 3042 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2368 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3179
+@[simp] theorem pcC3010 : CycleSubmission.Artifact.artifact.instructionPC 2367 = 3073 := by
+  rw [show (2367:Nat)=2135+(2367-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3011 : CycleSubmission.Artifact.artifact.instructionPC 2369 = 3043 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2369 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3180
+@[simp] theorem pcC3011 : CycleSubmission.Artifact.artifact.instructionPC 2368 = 3074 := by
+  rw [show (2368:Nat)=2135+(2368-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3019 : CycleSubmission.Artifact.artifact.instructionPC 2376 = 3050 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2376 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3187
+@[simp] theorem pcC3019 : CycleSubmission.Artifact.artifact.instructionPC 2375 = 3081 := by
+  rw [show (2375:Nat)=2135+(2375-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3020 : CycleSubmission.Artifact.artifact.instructionPC 2377 = 3051 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2377 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3188
+@[simp] theorem pcC3020 : CycleSubmission.Artifact.artifact.instructionPC 2376 = 3082 := by
+  rw [show (2376:Nat)=2135+(2376-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3021 : CycleSubmission.Artifact.artifact.instructionPC 2378 = 3054 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2378 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3191
+@[simp] theorem pcC3021 : CycleSubmission.Artifact.artifact.instructionPC 2377 = 3085 := by
+  rw [show (2377:Nat)=2135+(2377-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 
-@[simp] theorem pcC3078 : CycleSubmission.Artifact.artifact.instructionPC 2429 = 3122 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2429 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3261
+@[simp] theorem pcC3078 : CycleSubmission.Artifact.artifact.instructionPC 2428 = 3153 := by
+  rw [show (2428:Nat)=2135+(2428-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3082 : CycleSubmission.Artifact.artifact.instructionPC 2433 = 3126 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2433 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3265
+@[simp] theorem pcC3082 : CycleSubmission.Artifact.artifact.instructionPC 2432 = 3157 := by
+  rw [show (2432:Nat)=2135+(2432-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcC3083 : CycleSubmission.Artifact.artifact.instructionPC 2434 = 3129 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2434 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3268
+@[simp] theorem pcC3083 : CycleSubmission.Artifact.artifact.instructionPC 2433 = 3160 := by
+  rw [show (2433:Nat)=2135+(2433-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 
 /-! Program counters of the retained-T blocks the head-start table did not carry (generated from the artifact). -/
@@ -998,189 +985,189 @@ open EvmSemantics.EVM
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail11 2113 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc2860
 
-@[simp] theorem pcT2329 : CycleSubmission.Artifact.artifact.instructionPC 2313 = 2975 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2313 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2329
+@[simp] theorem pcT2329 : CycleSubmission.Artifact.artifact.instructionPC 2312 = 3006 := by
+  rw [show (2312:Nat)=2135+(2312-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2330 : CycleSubmission.Artifact.artifact.instructionPC 2314 = 2976 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2314 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2330
+@[simp] theorem pcT2330 : CycleSubmission.Artifact.artifact.instructionPC 2313 = 3007 := by
+  rw [show (2313:Nat)=2135+(2313-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2331 : CycleSubmission.Artifact.artifact.instructionPC 2315 = 2977 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2315 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2331
+@[simp] theorem pcT2331 : CycleSubmission.Artifact.artifact.instructionPC 2314 = 3008 := by
+  rw [show (2314:Nat)=2135+(2314-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2332 : CycleSubmission.Artifact.artifact.instructionPC 2316 = 2978 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2316 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2332
+@[simp] theorem pcT2332 : CycleSubmission.Artifact.artifact.instructionPC 2315 = 3009 := by
+  rw [show (2315:Nat)=2135+(2315-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2336 : CycleSubmission.Artifact.artifact.instructionPC 2320 = 2984 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2320 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2336
+@[simp] theorem pcT2336 : CycleSubmission.Artifact.artifact.instructionPC 2319 = 3015 := by
+  rw [show (2319:Nat)=2135+(2319-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2337 : CycleSubmission.Artifact.artifact.instructionPC 2321 = 2985 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2321 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2337
+@[simp] theorem pcT2337 : CycleSubmission.Artifact.artifact.instructionPC 2320 = 3016 := by
+  rw [show (2320:Nat)=2135+(2320-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2338 : CycleSubmission.Artifact.artifact.instructionPC 2322 = 2986 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2322 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2338
+@[simp] theorem pcT2338 : CycleSubmission.Artifact.artifact.instructionPC 2321 = 3017 := by
+  rw [show (2321:Nat)=2135+(2321-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2339 : CycleSubmission.Artifact.artifact.instructionPC 2323 = 2987 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2323 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2339
+@[simp] theorem pcT2339 : CycleSubmission.Artifact.artifact.instructionPC 2322 = 3018 := by
+  rw [show (2322:Nat)=2135+(2322-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2340 : CycleSubmission.Artifact.artifact.instructionPC 2324 = 2990 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2324 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2340
+@[simp] theorem pcT2340 : CycleSubmission.Artifact.artifact.instructionPC 2323 = 3021 := by
+  rw [show (2323:Nat)=2135+(2323-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2341 : CycleSubmission.Artifact.artifact.instructionPC 2325 = 2991 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2325 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3125
+@[simp] theorem pcT2341 : CycleSubmission.Artifact.artifact.instructionPC 2324 = 3022 := by
+  rw [show (2324:Nat)=2135+(2324-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2342 : CycleSubmission.Artifact.artifact.instructionPC 2326 = 2992 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2326 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2342
+@[simp] theorem pcT2342 : CycleSubmission.Artifact.artifact.instructionPC 2325 = 3023 := by
+  rw [show (2325:Nat)=2135+(2325-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2343 : CycleSubmission.Artifact.artifact.instructionPC 2327 = 2993 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2327 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2343
+@[simp] theorem pcT2343 : CycleSubmission.Artifact.artifact.instructionPC 2326 = 3024 := by
+  rw [show (2326:Nat)=2135+(2326-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2344 : CycleSubmission.Artifact.artifact.instructionPC 2328 = 2994 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2328 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2344
+@[simp] theorem pcT2344 : CycleSubmission.Artifact.artifact.instructionPC 2327 = 3025 := by
+  rw [show (2327:Nat)=2135+(2327-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2345 : CycleSubmission.Artifact.artifact.instructionPC 2329 = 2995 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2329 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2345
+@[simp] theorem pcT2345 : CycleSubmission.Artifact.artifact.instructionPC 2328 = 3026 := by
+  rw [show (2328:Nat)=2135+(2328-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2346 : CycleSubmission.Artifact.artifact.instructionPC 2330 = 2996 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2330 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2346
+@[simp] theorem pcT2346 : CycleSubmission.Artifact.artifact.instructionPC 2329 = 3027 := by
+  rw [show (2329:Nat)=2135+(2329-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2347 : CycleSubmission.Artifact.artifact.instructionPC 2331 = 2997 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2331 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2347
+@[simp] theorem pcT2347 : CycleSubmission.Artifact.artifact.instructionPC 2330 = 3028 := by
+  rw [show (2330:Nat)=2135+(2330-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2348 : CycleSubmission.Artifact.artifact.instructionPC 2332 = 2998 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2332 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2348
+@[simp] theorem pcT2348 : CycleSubmission.Artifact.artifact.instructionPC 2331 = 3029 := by
+  rw [show (2331:Nat)=2135+(2331-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2349 : CycleSubmission.Artifact.artifact.instructionPC 2333 = 3001 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2333 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2349
+@[simp] theorem pcT2349 : CycleSubmission.Artifact.artifact.instructionPC 2332 = 3032 := by
+  rw [show (2332:Nat)=2135+(2332-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2350 : CycleSubmission.Artifact.artifact.instructionPC 2334 = 3002 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2334 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2350
+@[simp] theorem pcT2350 : CycleSubmission.Artifact.artifact.instructionPC 2333 = 3033 := by
+  rw [show (2333:Nat)=2135+(2333-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2351 : CycleSubmission.Artifact.artifact.instructionPC 2335 = 3003 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2335 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2351
+@[simp] theorem pcT2351 : CycleSubmission.Artifact.artifact.instructionPC 2334 = 3034 := by
+  rw [show (2334:Nat)=2135+(2334-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2352 : CycleSubmission.Artifact.artifact.instructionPC 2336 = 3004 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2336 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2352
+@[simp] theorem pcT2352 : CycleSubmission.Artifact.artifact.instructionPC 2335 = 3035 := by
+  rw [show (2335:Nat)=2135+(2335-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2353 : CycleSubmission.Artifact.artifact.instructionPC 2337 = 3005 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2337 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2353
+@[simp] theorem pcT2353 : CycleSubmission.Artifact.artifact.instructionPC 2336 = 3036 := by
+  rw [show (2336:Nat)=2135+(2336-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2354 : CycleSubmission.Artifact.artifact.instructionPC 2338 = 3006 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2338 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2354
+@[simp] theorem pcT2354 : CycleSubmission.Artifact.artifact.instructionPC 2337 = 3037 := by
+  rw [show (2337:Nat)=2135+(2337-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2355 : CycleSubmission.Artifact.artifact.instructionPC 2339 = 3007 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2339 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2355
+@[simp] theorem pcT2355 : CycleSubmission.Artifact.artifact.instructionPC 2338 = 3038 := by
+  rw [show (2338:Nat)=2135+(2338-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2356 : CycleSubmission.Artifact.artifact.instructionPC 2340 = 3008 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2340 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2356
+@[simp] theorem pcT2356 : CycleSubmission.Artifact.artifact.instructionPC 2339 = 3039 := by
+  rw [show (2339:Nat)=2135+(2339-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2357 : CycleSubmission.Artifact.artifact.instructionPC 2341 = 3009 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2341 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2357
+@[simp] theorem pcT2357 : CycleSubmission.Artifact.artifact.instructionPC 2340 = 3040 := by
+  rw [show (2340:Nat)=2135+(2340-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2358 : CycleSubmission.Artifact.artifact.instructionPC 2342 = 3010 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2342 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2358
+@[simp] theorem pcT2358 : CycleSubmission.Artifact.artifact.instructionPC 2341 = 3041 := by
+  rw [show (2341:Nat)=2135+(2341-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2359 : CycleSubmission.Artifact.artifact.instructionPC 2343 = 3011 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2343 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2359
+@[simp] theorem pcT2359 : CycleSubmission.Artifact.artifact.instructionPC 2342 = 3042 := by
+  rw [show (2342:Nat)=2135+(2342-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2360 : CycleSubmission.Artifact.artifact.instructionPC 2344 = 3012 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2344 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2360
+@[simp] theorem pcT2360 : CycleSubmission.Artifact.artifact.instructionPC 2343 = 3043 := by
+  rw [show (2343:Nat)=2135+(2343-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2361 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3013 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2345 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2361
+@[simp] theorem pcT2361 : CycleSubmission.Artifact.artifact.instructionPC 2344 = 3044 := by
+  rw [show (2344:Nat)=2135+(2344-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2362 : CycleSubmission.Artifact.artifact.instructionPC 2346 = 3014 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2346 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2362
+@[simp] theorem pcT2362 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3045 := by
+  rw [show (2345:Nat)=2135+(2345-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2363 : CycleSubmission.Artifact.artifact.instructionPC 2347 = 3015 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2347 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2363
+@[simp] theorem pcT2363 : CycleSubmission.Artifact.artifact.instructionPC 2346 = 3046 := by
+  rw [show (2346:Nat)=2135+(2346-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2364 : CycleSubmission.Artifact.artifact.instructionPC 2348 = 3016 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2348 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2364
+@[simp] theorem pcT2364 : CycleSubmission.Artifact.artifact.instructionPC 2347 = 3047 := by
+  rw [show (2347:Nat)=2135+(2347-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2365 : CycleSubmission.Artifact.artifact.instructionPC 2349 = 3019 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2349 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2365
+@[simp] theorem pcT2365 : CycleSubmission.Artifact.artifact.instructionPC 2348 = 3050 := by
+  rw [show (2348:Nat)=2135+(2348-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2366 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3020 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2350 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2366
+@[simp] theorem pcT2366 : CycleSubmission.Artifact.artifact.instructionPC 2349 = 3051 := by
+  rw [show (2349:Nat)=2135+(2349-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2367 : CycleSubmission.Artifact.artifact.instructionPC 2351 = 3021 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2351 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2367
+@[simp] theorem pcT2367 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3052 := by
+  rw [show (2350:Nat)=2135+(2350-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2368 : CycleSubmission.Artifact.artifact.instructionPC 2352 = 3022 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2352 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2368
+@[simp] theorem pcT2368 : CycleSubmission.Artifact.artifact.instructionPC 2351 = 3053 := by
+  rw [show (2351:Nat)=2135+(2351-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2369 : CycleSubmission.Artifact.artifact.instructionPC 2353 = 3023 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2353 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2369
+@[simp] theorem pcT2369 : CycleSubmission.Artifact.artifact.instructionPC 2352 = 3054 := by
+  rw [show (2352:Nat)=2135+(2352-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2370 : CycleSubmission.Artifact.artifact.instructionPC 2354 = 3026 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2354 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2370
+@[simp] theorem pcT2370 : CycleSubmission.Artifact.artifact.instructionPC 2353 = 3057 := by
+  rw [show (2353:Nat)=2135+(2353-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2371 : CycleSubmission.Artifact.artifact.instructionPC 2355 = 3027 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2355 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2371
+@[simp] theorem pcT2371 : CycleSubmission.Artifact.artifact.instructionPC 2354 = 3058 := by
+  rw [show (2354:Nat)=2135+(2354-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2372 : CycleSubmission.Artifact.artifact.instructionPC 2356 = 3028 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2356 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2372
+@[simp] theorem pcT2372 : CycleSubmission.Artifact.artifact.instructionPC 2355 = 3059 := by
+  rw [show (2355:Nat)=2135+(2355-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2522 : CycleSubmission.Artifact.artifact.instructionPC 2379 = 3055 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2379 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3192
+@[simp] theorem pcT2522 : CycleSubmission.Artifact.artifact.instructionPC 2378 = 3086 := by
+  rw [show (2378:Nat)=2135+(2378-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2647 : CycleSubmission.Artifact.artifact.instructionPC 2452 = 3157 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2452 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2647
+@[simp] theorem pcT2647 : CycleSubmission.Artifact.artifact.instructionPC 2451 = 3188 := by
+  rw [show (2451:Nat)=2135+(2451-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2649 : CycleSubmission.Artifact.artifact.instructionPC 2454 = 3161 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2454 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2649
+@[simp] theorem pcT2649 : CycleSubmission.Artifact.artifact.instructionPC 2453 = 3192 := by
+  rw [show (2453:Nat)=2135+(2453-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2651 : CycleSubmission.Artifact.artifact.instructionPC 2456 = 3164 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2456 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2651
+@[simp] theorem pcT2651 : CycleSubmission.Artifact.artifact.instructionPC 2455 = 3195 := by
+  rw [show (2455:Nat)=2135+(2455-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcT2653 : CycleSubmission.Artifact.artifact.instructionPC 2458 = 3166 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2458 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcT2653
+@[simp] theorem pcT2653 : CycleSubmission.Artifact.artifact.instructionPC 2457 = 3197 := by
+  rw [show (2457:Nat)=2135+(2457-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2013 : CycleSubmission.Artifact.artifact.instructionPC 1831 = 2317 := by
   rw [CycleSubmission.Global.PrefixPC.eq_old4 1831 (by decide) (by decide)]
@@ -1610,116 +1597,112 @@ open EvmSemantics.EVM
   rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2134 (by decide) (by decide)]
   exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2317
 
-@[simp] theorem pcI2317 : CycleSubmission.Artifact.artifact.instructionPC 2135 = 2775 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2135 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc2888
+@[simp] theorem pcI2319 : CycleSubmission.Artifact.artifact.instructionPC 2136 = 2808 := by
+  rw [show (2136:Nat)=2135+(2136-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2319 : CycleSubmission.Artifact.artifact.instructionPC 2137 = 2777 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2137 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2320
+@[simp] theorem pcI2320 : CycleSubmission.Artifact.artifact.instructionPC 2137 = 2809 := by
+  rw [show (2137:Nat)=2135+(2137-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2320 : CycleSubmission.Artifact.artifact.instructionPC 2138 = 2778 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2138 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2321
+@[simp] theorem pcI2321 : CycleSubmission.Artifact.artifact.instructionPC 2138 = 2810 := by
+  rw [show (2138:Nat)=2135+(2138-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2321 : CycleSubmission.Artifact.artifact.instructionPC 2139 = 2779 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2139 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2322
+@[simp] theorem pcI2322 : CycleSubmission.Artifact.artifact.instructionPC 2139 = 2811 := by
+  rw [show (2139:Nat)=2135+(2139-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2322 : CycleSubmission.Artifact.artifact.instructionPC 2140 = 2780 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2140 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2323
+@[simp] theorem pcI2323 : CycleSubmission.Artifact.artifact.instructionPC 2140 = 2812 := by
+  rw [show (2140:Nat)=2135+(2140-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2323 : CycleSubmission.Artifact.artifact.instructionPC 2141 = 2781 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2141 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2324
+@[simp] theorem pcI2326 : CycleSubmission.Artifact.artifact.instructionPC 2141 = 2813 := by
+  rw [show (2141:Nat)=2135+(2141-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2326 : CycleSubmission.Artifact.artifact.instructionPC 2142 = 2782 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2142 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2326
+@[simp] theorem pcI2327 : CycleSubmission.Artifact.artifact.instructionPC 2142 = 2814 := by
+  rw [show (2142:Nat)=2135+(2142-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2327 : CycleSubmission.Artifact.artifact.instructionPC 2143 = 2783 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2143 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2327
+@[simp] theorem pcI2328 : CycleSubmission.Artifact.artifact.instructionPC 2143 = 2815 := by
+  rw [show (2143:Nat)=2135+(2143-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2328 : CycleSubmission.Artifact.artifact.instructionPC 2144 = 2784 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2144 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2328
-
-@[simp] theorem pcI2329 : CycleSubmission.Artifact.artifact.instructionPC 2145 = 2785 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2145 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2329
+@[simp] theorem pcI2329 : CycleSubmission.Artifact.artifact.instructionPC 2144 = 2816 := by
+  rw [show (2144:Nat)=2135+(2144-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2330 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2331 : CycleSubmission.Artifact.artifact.instructionPC 2146 = 2786 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2146 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2331
+@[simp] theorem pcI2331 : CycleSubmission.Artifact.artifact.instructionPC 2145 = 2817 := by
+  rw [show (2145:Nat)=2135+(2145-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2332 : CycleSubmission.Artifact.artifact.instructionPC 2147 = 2787 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2147 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2332
+@[simp] theorem pcI2332 : CycleSubmission.Artifact.artifact.instructionPC 2146 = 2818 := by
+  rw [show (2146:Nat)=2135+(2146-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2333 : CycleSubmission.Artifact.artifact.instructionPC 2148 = 2788 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2148 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2333
+@[simp] theorem pcI2333 : CycleSubmission.Artifact.artifact.instructionPC 2147 = 2819 := by
+  rw [show (2147:Nat)=2135+(2147-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2334 : CycleSubmission.Artifact.artifact.instructionPC 2149 = 2789 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2149 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2334
+@[simp] theorem pcI2334 : CycleSubmission.Artifact.artifact.instructionPC 2148 = 2820 := by
+  rw [show (2148:Nat)=2135+(2148-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2335 : CycleSubmission.Artifact.artifact.instructionPC 2150 = 2790 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2150 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2335
+@[simp] theorem pcI2335 : CycleSubmission.Artifact.artifact.instructionPC 2149 = 2821 := by
+  rw [show (2149:Nat)=2135+(2149-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2336 : CycleSubmission.Artifact.artifact.instructionPC 2151 = 2791 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2151 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2336
+@[simp] theorem pcI2336 : CycleSubmission.Artifact.artifact.instructionPC 2150 = 2822 := by
+  rw [show (2150:Nat)=2135+(2150-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2337 : CycleSubmission.Artifact.artifact.instructionPC 2152 = 2792 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2152 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2337
+@[simp] theorem pcI2337 : CycleSubmission.Artifact.artifact.instructionPC 2151 = 2823 := by
+  rw [show (2151:Nat)=2135+(2151-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2338 : CycleSubmission.Artifact.artifact.instructionPC 2153 = 2793 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2153 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2338
+@[simp] theorem pcI2338 : CycleSubmission.Artifact.artifact.instructionPC 2152 = 2824 := by
+  rw [show (2152:Nat)=2135+(2152-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2339 : CycleSubmission.Artifact.artifact.instructionPC 2154 = 2794 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2154 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2339
+@[simp] theorem pcI2339 : CycleSubmission.Artifact.artifact.instructionPC 2153 = 2825 := by
+  rw [show (2153:Nat)=2135+(2153-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2340 : CycleSubmission.Artifact.artifact.instructionPC 2155 = 2795 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2155 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2340
+@[simp] theorem pcI2340 : CycleSubmission.Artifact.artifact.instructionPC 2154 = 2826 := by
+  rw [show (2154:Nat)=2135+(2154-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2341 : CycleSubmission.Artifact.artifact.instructionPC 2156 = 2798 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2156 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2341
+@[simp] theorem pcI2341 : CycleSubmission.Artifact.artifact.instructionPC 2155 = 2829 := by
+  rw [show (2155:Nat)=2135+(2155-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2342 : CycleSubmission.Artifact.artifact.instructionPC 2157 = 2799 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2157 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2342
+@[simp] theorem pcI2342 : CycleSubmission.Artifact.artifact.instructionPC 2156 = 2830 := by
+  rw [show (2156:Nat)=2135+(2156-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2343 : CycleSubmission.Artifact.artifact.instructionPC 2158 = 2800 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2158 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2343
+@[simp] theorem pcI2343 : CycleSubmission.Artifact.artifact.instructionPC 2157 = 2831 := by
+  rw [show (2157:Nat)=2135+(2157-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2344 : CycleSubmission.Artifact.artifact.instructionPC 2159 = 2801 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2159 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2344
+@[simp] theorem pcI2344 : CycleSubmission.Artifact.artifact.instructionPC 2158 = 2832 := by
+  rw [show (2158:Nat)=2135+(2158-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2345 : CycleSubmission.Artifact.artifact.instructionPC 2160 = 2802 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2160 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2345
+@[simp] theorem pcI2345 : CycleSubmission.Artifact.artifact.instructionPC 2159 = 2833 := by
+  rw [show (2159:Nat)=2135+(2159-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2346 : CycleSubmission.Artifact.artifact.instructionPC 2161 = 2803 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2161 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2346
+@[simp] theorem pcI2346 : CycleSubmission.Artifact.artifact.instructionPC 2160 = 2834 := by
+  rw [show (2160:Nat)=2135+(2160-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2347 : CycleSubmission.Artifact.artifact.instructionPC 2162 = 2804 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2162 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2347
+@[simp] theorem pcI2347 : CycleSubmission.Artifact.artifact.instructionPC 2161 = 2835 := by
+  rw [show (2161:Nat)=2135+(2161-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2348 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
@@ -1757,667 +1740,667 @@ open EvmSemantics.EVM
 @[simp] theorem pcI2359 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2360 : CycleSubmission.Artifact.artifact.instructionPC 2163 = 2805 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2163 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2360
+@[simp] theorem pcI2360 : CycleSubmission.Artifact.artifact.instructionPC 2162 = 2836 := by
+  rw [show (2162:Nat)=2135+(2162-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2361 : CycleSubmission.Artifact.artifact.instructionPC 2164 = 2806 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2164 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2361
+@[simp] theorem pcI2361 : CycleSubmission.Artifact.artifact.instructionPC 2163 = 2837 := by
+  rw [show (2163:Nat)=2135+(2163-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2362 : CycleSubmission.Artifact.artifact.instructionPC 2165 = 2807 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2165 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2362
+@[simp] theorem pcI2362 : CycleSubmission.Artifact.artifact.instructionPC 2164 = 2838 := by
+  rw [show (2164:Nat)=2135+(2164-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2363 : CycleSubmission.Artifact.artifact.instructionPC 2166 = 2808 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2166 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2363
+@[simp] theorem pcI2363 : CycleSubmission.Artifact.artifact.instructionPC 2165 = 2839 := by
+  rw [show (2165:Nat)=2135+(2165-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2364 : CycleSubmission.Artifact.artifact.instructionPC 2167 = 2809 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2167 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2364
+@[simp] theorem pcI2364 : CycleSubmission.Artifact.artifact.instructionPC 2166 = 2840 := by
+  rw [show (2166:Nat)=2135+(2166-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2365 : CycleSubmission.Artifact.artifact.instructionPC 2168 = 2810 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2168 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2365
+@[simp] theorem pcI2365 : CycleSubmission.Artifact.artifact.instructionPC 2167 = 2841 := by
+  rw [show (2167:Nat)=2135+(2167-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2366 : CycleSubmission.Artifact.artifact.instructionPC 2169 = 2811 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2169 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2366
+@[simp] theorem pcI2366 : CycleSubmission.Artifact.artifact.instructionPC 2168 = 2842 := by
+  rw [show (2168:Nat)=2135+(2168-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2367 : CycleSubmission.Artifact.artifact.instructionPC 2170 = 2812 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2170 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2367
+@[simp] theorem pcI2367 : CycleSubmission.Artifact.artifact.instructionPC 2169 = 2843 := by
+  rw [show (2169:Nat)=2135+(2169-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2368 : CycleSubmission.Artifact.artifact.instructionPC 2171 = 2813 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2171 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2368
+@[simp] theorem pcI2368 : CycleSubmission.Artifact.artifact.instructionPC 2170 = 2844 := by
+  rw [show (2170:Nat)=2135+(2170-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2369 : CycleSubmission.Artifact.artifact.instructionPC 2172 = 2814 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2172 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2369
+@[simp] theorem pcI2369 : CycleSubmission.Artifact.artifact.instructionPC 2171 = 2845 := by
+  rw [show (2171:Nat)=2135+(2171-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2370 : CycleSubmission.Artifact.artifact.instructionPC 2173 = 2815 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2173 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2370
+@[simp] theorem pcI2370 : CycleSubmission.Artifact.artifact.instructionPC 2172 = 2846 := by
+  rw [show (2172:Nat)=2135+(2172-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2371 : CycleSubmission.Artifact.artifact.instructionPC 2174 = 2816 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2174 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2371
+@[simp] theorem pcI2371 : CycleSubmission.Artifact.artifact.instructionPC 2173 = 2847 := by
+  rw [show (2173:Nat)=2135+(2173-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2372 : CycleSubmission.Artifact.artifact.instructionPC 2175 = 2817 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2175 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2372
+@[simp] theorem pcI2372 : CycleSubmission.Artifact.artifact.instructionPC 2174 = 2848 := by
+  rw [show (2174:Nat)=2135+(2174-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2373 : CycleSubmission.Artifact.artifact.instructionPC 2176 = 2818 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2176 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2373
+@[simp] theorem pcI2373 : CycleSubmission.Artifact.artifact.instructionPC 2175 = 2849 := by
+  rw [show (2175:Nat)=2135+(2175-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2374 : CycleSubmission.Artifact.artifact.instructionPC 2177 = 2819 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2177 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2374
+@[simp] theorem pcI2374 : CycleSubmission.Artifact.artifact.instructionPC 2176 = 2850 := by
+  rw [show (2176:Nat)=2135+(2176-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2375 : CycleSubmission.Artifact.artifact.instructionPC 2178 = 2822 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2178 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2375
+@[simp] theorem pcI2375 : CycleSubmission.Artifact.artifact.instructionPC 2177 = 2853 := by
+  rw [show (2177:Nat)=2135+(2177-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2376 : CycleSubmission.Artifact.artifact.instructionPC 2179 = 2823 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2179 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2376
+@[simp] theorem pcI2376 : CycleSubmission.Artifact.artifact.instructionPC 2178 = 2854 := by
+  rw [show (2178:Nat)=2135+(2178-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2377 : CycleSubmission.Artifact.artifact.instructionPC 2180 = 2824 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2180 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2377
+@[simp] theorem pcI2377 : CycleSubmission.Artifact.artifact.instructionPC 2179 = 2855 := by
+  rw [show (2179:Nat)=2135+(2179-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2378 : CycleSubmission.Artifact.artifact.instructionPC 2181 = 2825 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2181 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2378
+@[simp] theorem pcI2378 : CycleSubmission.Artifact.artifact.instructionPC 2180 = 2856 := by
+  rw [show (2180:Nat)=2135+(2180-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2379 : CycleSubmission.Artifact.artifact.instructionPC 2182 = 2826 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2182 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2379
+@[simp] theorem pcI2379 : CycleSubmission.Artifact.artifact.instructionPC 2181 = 2857 := by
+  rw [show (2181:Nat)=2135+(2181-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2380 : CycleSubmission.Artifact.artifact.instructionPC 2183 = 2829 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2183 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2380
+@[simp] theorem pcI2380 : CycleSubmission.Artifact.artifact.instructionPC 2182 = 2860 := by
+  rw [show (2182:Nat)=2135+(2182-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2381 : CycleSubmission.Artifact.artifact.instructionPC 2184 = 2830 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2184 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2381
+@[simp] theorem pcI2381 : CycleSubmission.Artifact.artifact.instructionPC 2183 = 2861 := by
+  rw [show (2183:Nat)=2135+(2183-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2382 : CycleSubmission.Artifact.artifact.instructionPC 2185 = 2831 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2185 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2382
+@[simp] theorem pcI2382 : CycleSubmission.Artifact.artifact.instructionPC 2184 = 2862 := by
+  rw [show (2184:Nat)=2135+(2184-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2383 : CycleSubmission.Artifact.artifact.instructionPC 2186 = 2832 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2186 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2383
+@[simp] theorem pcI2383 : CycleSubmission.Artifact.artifact.instructionPC 2185 = 2863 := by
+  rw [show (2185:Nat)=2135+(2185-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2384 : CycleSubmission.Artifact.artifact.instructionPC 2187 = 2833 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2187 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2384
+@[simp] theorem pcI2384 : CycleSubmission.Artifact.artifact.instructionPC 2186 = 2864 := by
+  rw [show (2186:Nat)=2135+(2186-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2385 : CycleSubmission.Artifact.artifact.instructionPC 2188 = 2834 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2188 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2385
+@[simp] theorem pcI2385 : CycleSubmission.Artifact.artifact.instructionPC 2187 = 2865 := by
+  rw [show (2187:Nat)=2135+(2187-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2386 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2835 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2189 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2386
+@[simp] theorem pcI2386 : CycleSubmission.Artifact.artifact.instructionPC 2188 = 2866 := by
+  rw [show (2188:Nat)=2135+(2188-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2387 : CycleSubmission.Artifact.artifact.instructionPC 2190 = 2836 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2190 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2387
+@[simp] theorem pcI2387 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2867 := by
+  rw [show (2189:Nat)=2135+(2189-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2388 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2389 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2837 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2191 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2389
+@[simp] theorem pcI2389 : CycleSubmission.Artifact.artifact.instructionPC 2190 = 2868 := by
+  rw [show (2190:Nat)=2135+(2190-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2390 : CycleSubmission.Artifact.artifact.instructionPC 2192 = 2838 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2192 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2390
+@[simp] theorem pcI2390 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2869 := by
+  rw [show (2191:Nat)=2135+(2191-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2391 : CycleSubmission.Artifact.artifact.instructionPC 2193 = 2839 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2193 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2391
+@[simp] theorem pcI2391 : CycleSubmission.Artifact.artifact.instructionPC 2192 = 2870 := by
+  rw [show (2192:Nat)=2135+(2192-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2392 : CycleSubmission.Artifact.artifact.instructionPC 2194 = 2840 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2194 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2392
+@[simp] theorem pcI2392 : CycleSubmission.Artifact.artifact.instructionPC 2193 = 2871 := by
+  rw [show (2193:Nat)=2135+(2193-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2393 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2841 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2195 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2393
+@[simp] theorem pcI2393 : CycleSubmission.Artifact.artifact.instructionPC 2194 = 2872 := by
+  rw [show (2194:Nat)=2135+(2194-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2394 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2842 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2196 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2394
+@[simp] theorem pcI2394 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2873 := by
+  rw [show (2195:Nat)=2135+(2195-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2395 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2843 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2197 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2395
+@[simp] theorem pcI2395 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2874 := by
+  rw [show (2196:Nat)=2135+(2196-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2396 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2844 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2198 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2396
+@[simp] theorem pcI2396 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2875 := by
+  rw [show (2197:Nat)=2135+(2197-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2397 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2845 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2199 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2397
+@[simp] theorem pcI2397 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2876 := by
+  rw [show (2198:Nat)=2135+(2198-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2398 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2846 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2200 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2398
+@[simp] theorem pcI2398 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2877 := by
+  rw [show (2199:Nat)=2135+(2199-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2399 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2847 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2201 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2399
+@[simp] theorem pcI2399 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2878 := by
+  rw [show (2200:Nat)=2135+(2200-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2400 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2848 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2202 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2400
+@[simp] theorem pcI2400 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2879 := by
+  rw [show (2201:Nat)=2135+(2201-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2401 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2849 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2203 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2401
+@[simp] theorem pcI2401 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2880 := by
+  rw [show (2202:Nat)=2135+(2202-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2402 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2850 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2204 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2402
+@[simp] theorem pcI2402 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2881 := by
+  rw [show (2203:Nat)=2135+(2203-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2403 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2851 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2205 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2403
+@[simp] theorem pcI2403 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2882 := by
+  rw [show (2204:Nat)=2135+(2204-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2404 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2854 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2206 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2404
+@[simp] theorem pcI2404 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2885 := by
+  rw [show (2205:Nat)=2135+(2205-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2405 : CycleSubmission.Artifact.artifact.instructionPC 2207 = 2855 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2207 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2405
+@[simp] theorem pcI2405 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2886 := by
+  rw [show (2206:Nat)=2135+(2206-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2406 : CycleSubmission.Artifact.artifact.instructionPC 2208 = 2856 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2208 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2406
+@[simp] theorem pcI2406 : CycleSubmission.Artifact.artifact.instructionPC 2207 = 2887 := by
+  rw [show (2207:Nat)=2135+(2207-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2407 : CycleSubmission.Artifact.artifact.instructionPC 2209 = 2857 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2209 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2407
+@[simp] theorem pcI2407 : CycleSubmission.Artifact.artifact.instructionPC 2208 = 2888 := by
+  rw [show (2208:Nat)=2135+(2208-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2408 : CycleSubmission.Artifact.artifact.instructionPC 2210 = 2858 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2210 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2408
+@[simp] theorem pcI2408 : CycleSubmission.Artifact.artifact.instructionPC 2209 = 2889 := by
+  rw [show (2209:Nat)=2135+(2209-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2409 : CycleSubmission.Artifact.artifact.instructionPC 2211 = 2861 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2211 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2409
+@[simp] theorem pcI2409 : CycleSubmission.Artifact.artifact.instructionPC 2210 = 2892 := by
+  rw [show (2210:Nat)=2135+(2210-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2410 : CycleSubmission.Artifact.artifact.instructionPC 2212 = 2862 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2212 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2410
+@[simp] theorem pcI2410 : CycleSubmission.Artifact.artifact.instructionPC 2211 = 2893 := by
+  rw [show (2211:Nat)=2135+(2211-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2411 : CycleSubmission.Artifact.artifact.instructionPC 2213 = 2863 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2213 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2411
+@[simp] theorem pcI2411 : CycleSubmission.Artifact.artifact.instructionPC 2212 = 2894 := by
+  rw [show (2212:Nat)=2135+(2212-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2412 : CycleSubmission.Artifact.artifact.instructionPC 2214 = 2864 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2214 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2412
+@[simp] theorem pcI2412 : CycleSubmission.Artifact.artifact.instructionPC 2213 = 2895 := by
+  rw [show (2213:Nat)=2135+(2213-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2413 : CycleSubmission.Artifact.artifact.instructionPC 2215 = 2865 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2215 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2413
+@[simp] theorem pcI2413 : CycleSubmission.Artifact.artifact.instructionPC 2214 = 2896 := by
+  rw [show (2214:Nat)=2135+(2214-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2414 : CycleSubmission.Artifact.artifact.instructionPC 2216 = 2866 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2216 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2414
+@[simp] theorem pcI2414 : CycleSubmission.Artifact.artifact.instructionPC 2215 = 2897 := by
+  rw [show (2215:Nat)=2135+(2215-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2415 : CycleSubmission.Artifact.artifact.instructionPC 2217 = 2867 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2217 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2415
+@[simp] theorem pcI2415 : CycleSubmission.Artifact.artifact.instructionPC 2216 = 2898 := by
+  rw [show (2216:Nat)=2135+(2216-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2416 : CycleSubmission.Artifact.artifact.instructionPC 2218 = 2868 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2218 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2416
+@[simp] theorem pcI2416 : CycleSubmission.Artifact.artifact.instructionPC 2217 = 2899 := by
+  rw [show (2217:Nat)=2135+(2217-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2417 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2418 : CycleSubmission.Artifact.artifact.instructionPC 2219 = 2869 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2219 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2418
+@[simp] theorem pcI2418 : CycleSubmission.Artifact.artifact.instructionPC 2218 = 2900 := by
+  rw [show (2218:Nat)=2135+(2218-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2419 : CycleSubmission.Artifact.artifact.instructionPC 2220 = 2870 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2220 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2419
+@[simp] theorem pcI2419 : CycleSubmission.Artifact.artifact.instructionPC 2219 = 2901 := by
+  rw [show (2219:Nat)=2135+(2219-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2420 : CycleSubmission.Artifact.artifact.instructionPC 2221 = 2871 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2221 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2420
+@[simp] theorem pcI2420 : CycleSubmission.Artifact.artifact.instructionPC 2220 = 2902 := by
+  rw [show (2220:Nat)=2135+(2220-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2421 : CycleSubmission.Artifact.artifact.instructionPC 2222 = 2872 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2222 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2421
+@[simp] theorem pcI2421 : CycleSubmission.Artifact.artifact.instructionPC 2221 = 2903 := by
+  rw [show (2221:Nat)=2135+(2221-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2422 : CycleSubmission.Artifact.artifact.instructionPC 2223 = 2873 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2223 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2422
+@[simp] theorem pcI2422 : CycleSubmission.Artifact.artifact.instructionPC 2222 = 2904 := by
+  rw [show (2222:Nat)=2135+(2222-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2423 : CycleSubmission.Artifact.artifact.instructionPC 2224 = 2874 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2224 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2423
+@[simp] theorem pcI2423 : CycleSubmission.Artifact.artifact.instructionPC 2223 = 2905 := by
+  rw [show (2223:Nat)=2135+(2223-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2424 : CycleSubmission.Artifact.artifact.instructionPC 2225 = 2875 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2225 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2424
+@[simp] theorem pcI2424 : CycleSubmission.Artifact.artifact.instructionPC 2224 = 2906 := by
+  rw [show (2224:Nat)=2135+(2224-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2425 : CycleSubmission.Artifact.artifact.instructionPC 2226 = 2876 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2226 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2425
+@[simp] theorem pcI2425 : CycleSubmission.Artifact.artifact.instructionPC 2225 = 2907 := by
+  rw [show (2225:Nat)=2135+(2225-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2426 : CycleSubmission.Artifact.artifact.instructionPC 2227 = 2877 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2227 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2426
+@[simp] theorem pcI2426 : CycleSubmission.Artifact.artifact.instructionPC 2226 = 2908 := by
+  rw [show (2226:Nat)=2135+(2226-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2432 : CycleSubmission.Artifact.artifact.instructionPC 2233 = 2883 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2233 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2432
+@[simp] theorem pcI2432 : CycleSubmission.Artifact.artifact.instructionPC 2232 = 2914 := by
+  rw [show (2232:Nat)=2135+(2232-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2433 : CycleSubmission.Artifact.artifact.instructionPC 2234 = 2886 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2234 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2433
+@[simp] theorem pcI2433 : CycleSubmission.Artifact.artifact.instructionPC 2233 = 2917 := by
+  rw [show (2233:Nat)=2135+(2233-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2434 : CycleSubmission.Artifact.artifact.instructionPC 2235 = 2887 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2235 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2434
+@[simp] theorem pcI2434 : CycleSubmission.Artifact.artifact.instructionPC 2234 = 2918 := by
+  rw [show (2234:Nat)=2135+(2234-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2435 : CycleSubmission.Artifact.artifact.instructionPC 2236 = 2888 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2236 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2435
+@[simp] theorem pcI2435 : CycleSubmission.Artifact.artifact.instructionPC 2235 = 2919 := by
+  rw [show (2235:Nat)=2135+(2235-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2436 : CycleSubmission.Artifact.artifact.instructionPC 2237 = 2889 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2237 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2436
+@[simp] theorem pcI2436 : CycleSubmission.Artifact.artifact.instructionPC 2236 = 2920 := by
+  rw [show (2236:Nat)=2135+(2236-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2437 : CycleSubmission.Artifact.artifact.instructionPC 2238 = 2890 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2238 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2437
+@[simp] theorem pcI2437 : CycleSubmission.Artifact.artifact.instructionPC 2237 = 2921 := by
+  rw [show (2237:Nat)=2135+(2237-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2438 : CycleSubmission.Artifact.artifact.instructionPC 2239 = 2893 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2239 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2438
+@[simp] theorem pcI2438 : CycleSubmission.Artifact.artifact.instructionPC 2238 = 2924 := by
+  rw [show (2238:Nat)=2135+(2238-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2439 : CycleSubmission.Artifact.artifact.instructionPC 2240 = 2894 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2240 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2439
+@[simp] theorem pcI2439 : CycleSubmission.Artifact.artifact.instructionPC 2239 = 2925 := by
+  rw [show (2239:Nat)=2135+(2239-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2440 : CycleSubmission.Artifact.artifact.instructionPC 2241 = 2895 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2241 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2440
+@[simp] theorem pcI2440 : CycleSubmission.Artifact.artifact.instructionPC 2240 = 2926 := by
+  rw [show (2240:Nat)=2135+(2240-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2441 : CycleSubmission.Artifact.artifact.instructionPC 2242 = 2896 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2242 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2441
+@[simp] theorem pcI2441 : CycleSubmission.Artifact.artifact.instructionPC 2241 = 2927 := by
+  rw [show (2241:Nat)=2135+(2241-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2442 : CycleSubmission.Artifact.artifact.instructionPC 2243 = 2897 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2243 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2442
+@[simp] theorem pcI2442 : CycleSubmission.Artifact.artifact.instructionPC 2242 = 2928 := by
+  rw [show (2242:Nat)=2135+(2242-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2443 : CycleSubmission.Artifact.artifact.instructionPC 2244 = 2898 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2244 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2443
+@[simp] theorem pcI2443 : CycleSubmission.Artifact.artifact.instructionPC 2243 = 2929 := by
+  rw [show (2243:Nat)=2135+(2243-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2444 : CycleSubmission.Artifact.artifact.instructionPC 2245 = 2899 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2245 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2444
+@[simp] theorem pcI2444 : CycleSubmission.Artifact.artifact.instructionPC 2244 = 2930 := by
+  rw [show (2244:Nat)=2135+(2244-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2445 : CycleSubmission.Artifact.artifact.instructionPC 2246 = 2900 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2246 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2445
+@[simp] theorem pcI2445 : CycleSubmission.Artifact.artifact.instructionPC 2245 = 2931 := by
+  rw [show (2245:Nat)=2135+(2245-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2446 : CycleSubmission.Artifact.artifact.instructionPC 2247 = 2901 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2247 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2446
+@[simp] theorem pcI2446 : CycleSubmission.Artifact.artifact.instructionPC 2246 = 2932 := by
+  rw [show (2246:Nat)=2135+(2246-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2447 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2448 : CycleSubmission.Artifact.artifact.instructionPC 2248 = 2902 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2248 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2448
+@[simp] theorem pcI2448 : CycleSubmission.Artifact.artifact.instructionPC 2247 = 2933 := by
+  rw [show (2247:Nat)=2135+(2247-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2449 : CycleSubmission.Artifact.artifact.instructionPC 2249 = 2903 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2249 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2449
+@[simp] theorem pcI2449 : CycleSubmission.Artifact.artifact.instructionPC 2248 = 2934 := by
+  rw [show (2248:Nat)=2135+(2248-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2450 : CycleSubmission.Artifact.artifact.instructionPC 2250 = 2904 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2250 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2450
+@[simp] theorem pcI2450 : CycleSubmission.Artifact.artifact.instructionPC 2249 = 2935 := by
+  rw [show (2249:Nat)=2135+(2249-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2451 : CycleSubmission.Artifact.artifact.instructionPC 2251 = 2905 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2251 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2451
+@[simp] theorem pcI2451 : CycleSubmission.Artifact.artifact.instructionPC 2250 = 2936 := by
+  rw [show (2250:Nat)=2135+(2250-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2452 : CycleSubmission.Artifact.artifact.instructionPC 2252 = 2906 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2252 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2452
+@[simp] theorem pcI2452 : CycleSubmission.Artifact.artifact.instructionPC 2251 = 2937 := by
+  rw [show (2251:Nat)=2135+(2251-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2453 : CycleSubmission.Artifact.artifact.instructionPC 2253 = 2907 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2253 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2453
+@[simp] theorem pcI2453 : CycleSubmission.Artifact.artifact.instructionPC 2252 = 2938 := by
+  rw [show (2252:Nat)=2135+(2252-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2454 : CycleSubmission.Artifact.artifact.instructionPC 2254 = 2908 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2254 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2454
+@[simp] theorem pcI2454 : CycleSubmission.Artifact.artifact.instructionPC 2253 = 2939 := by
+  rw [show (2253:Nat)=2135+(2253-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2455 : CycleSubmission.Artifact.artifact.instructionPC 2255 = 2909 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2255 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2455
+@[simp] theorem pcI2455 : CycleSubmission.Artifact.artifact.instructionPC 2254 = 2940 := by
+  rw [show (2254:Nat)=2135+(2254-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2456 : CycleSubmission.Artifact.artifact.instructionPC 2256 = 2910 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2256 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2456
+@[simp] theorem pcI2456 : CycleSubmission.Artifact.artifact.instructionPC 2255 = 2941 := by
+  rw [show (2255:Nat)=2135+(2255-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2457 : CycleSubmission.Artifact.artifact.instructionPC 2257 = 2911 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2257 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2457
+@[simp] theorem pcI2457 : CycleSubmission.Artifact.artifact.instructionPC 2256 = 2942 := by
+  rw [show (2256:Nat)=2135+(2256-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2458 : CycleSubmission.Artifact.artifact.instructionPC 2258 = 2912 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2258 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2458
+@[simp] theorem pcI2458 : CycleSubmission.Artifact.artifact.instructionPC 2257 = 2943 := by
+  rw [show (2257:Nat)=2135+(2257-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2459 : CycleSubmission.Artifact.artifact.instructionPC 2259 = 2913 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2259 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2459
+@[simp] theorem pcI2459 : CycleSubmission.Artifact.artifact.instructionPC 2258 = 2944 := by
+  rw [show (2258:Nat)=2135+(2258-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2460 : CycleSubmission.Artifact.artifact.instructionPC 2260 = 2914 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2260 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2460
+@[simp] theorem pcI2460 : CycleSubmission.Artifact.artifact.instructionPC 2259 = 2945 := by
+  rw [show (2259:Nat)=2135+(2259-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2461 : CycleSubmission.Artifact.artifact.instructionPC 2261 = 2915 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2261 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2461
+@[simp] theorem pcI2461 : CycleSubmission.Artifact.artifact.instructionPC 2260 = 2946 := by
+  rw [show (2260:Nat)=2135+(2260-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2462 : CycleSubmission.Artifact.artifact.instructionPC 2262 = 2916 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2262 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2462
+@[simp] theorem pcI2462 : CycleSubmission.Artifact.artifact.instructionPC 2261 = 2947 := by
+  rw [show (2261:Nat)=2135+(2261-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2463 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2919 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2263 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2463
+@[simp] theorem pcI2463 : CycleSubmission.Artifact.artifact.instructionPC 2262 = 2950 := by
+  rw [show (2262:Nat)=2135+(2262-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2464 : CycleSubmission.Artifact.artifact.instructionPC 2264 = 2920 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2264 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2464
+@[simp] theorem pcI2464 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2951 := by
+  rw [show (2263:Nat)=2135+(2263-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2465 : CycleSubmission.Artifact.artifact.instructionPC 2265 = 2921 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2265 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2465
+@[simp] theorem pcI2465 : CycleSubmission.Artifact.artifact.instructionPC 2264 = 2952 := by
+  rw [show (2264:Nat)=2135+(2264-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2466 : CycleSubmission.Artifact.artifact.instructionPC 2266 = 2922 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2266 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2466
+@[simp] theorem pcI2466 : CycleSubmission.Artifact.artifact.instructionPC 2265 = 2953 := by
+  rw [show (2265:Nat)=2135+(2265-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2467 : CycleSubmission.Artifact.artifact.instructionPC 2267 = 2923 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2267 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2467
+@[simp] theorem pcI2467 : CycleSubmission.Artifact.artifact.instructionPC 2266 = 2954 := by
+  rw [show (2266:Nat)=2135+(2266-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2468 : CycleSubmission.Artifact.artifact.instructionPC 2268 = 2926 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2268 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2468
+@[simp] theorem pcI2468 : CycleSubmission.Artifact.artifact.instructionPC 2267 = 2957 := by
+  rw [show (2267:Nat)=2135+(2267-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2469 : CycleSubmission.Artifact.artifact.instructionPC 2269 = 2927 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2269 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2469
+@[simp] theorem pcI2469 : CycleSubmission.Artifact.artifact.instructionPC 2268 = 2958 := by
+  rw [show (2268:Nat)=2135+(2268-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2470 : CycleSubmission.Artifact.artifact.instructionPC 2270 = 2928 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2270 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2470
+@[simp] theorem pcI2470 : CycleSubmission.Artifact.artifact.instructionPC 2269 = 2959 := by
+  rw [show (2269:Nat)=2135+(2269-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2471 : CycleSubmission.Artifact.artifact.instructionPC 2271 = 2929 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2271 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2471
+@[simp] theorem pcI2471 : CycleSubmission.Artifact.artifact.instructionPC 2270 = 2960 := by
+  rw [show (2270:Nat)=2135+(2270-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2472 : CycleSubmission.Artifact.artifact.instructionPC 2272 = 2930 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2272 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2472
+@[simp] theorem pcI2472 : CycleSubmission.Artifact.artifact.instructionPC 2271 = 2961 := by
+  rw [show (2271:Nat)=2135+(2271-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2473 : CycleSubmission.Artifact.artifact.instructionPC 2273 = 2931 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2273 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2473
+@[simp] theorem pcI2473 : CycleSubmission.Artifact.artifact.instructionPC 2272 = 2962 := by
+  rw [show (2272:Nat)=2135+(2272-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2474 : CycleSubmission.Artifact.artifact.instructionPC 2274 = 2932 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2274 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2474
+@[simp] theorem pcI2474 : CycleSubmission.Artifact.artifact.instructionPC 2273 = 2963 := by
+  rw [show (2273:Nat)=2135+(2273-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2475 : CycleSubmission.Artifact.artifact.instructionPC 2275 = 2933 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2275 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2475
+@[simp] theorem pcI2475 : CycleSubmission.Artifact.artifact.instructionPC 2274 = 2964 := by
+  rw [show (2274:Nat)=2135+(2274-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2476 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2477 : CycleSubmission.Artifact.artifact.instructionPC 2276 = 2934 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2276 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2477
+@[simp] theorem pcI2477 : CycleSubmission.Artifact.artifact.instructionPC 2275 = 2965 := by
+  rw [show (2275:Nat)=2135+(2275-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2478 : CycleSubmission.Artifact.artifact.instructionPC 2277 = 2935 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2277 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2478
+@[simp] theorem pcI2478 : CycleSubmission.Artifact.artifact.instructionPC 2276 = 2966 := by
+  rw [show (2276:Nat)=2135+(2276-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2479 : CycleSubmission.Artifact.artifact.instructionPC 2278 = 2936 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2278 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2479
+@[simp] theorem pcI2479 : CycleSubmission.Artifact.artifact.instructionPC 2277 = 2967 := by
+  rw [show (2277:Nat)=2135+(2277-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2480 : CycleSubmission.Artifact.artifact.instructionPC 2279 = 2937 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2279 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2480
+@[simp] theorem pcI2480 : CycleSubmission.Artifact.artifact.instructionPC 2278 = 2968 := by
+  rw [show (2278:Nat)=2135+(2278-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2481 : CycleSubmission.Artifact.artifact.instructionPC 2280 = 2938 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2280 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2481
+@[simp] theorem pcI2481 : CycleSubmission.Artifact.artifact.instructionPC 2279 = 2969 := by
+  rw [show (2279:Nat)=2135+(2279-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2482 : CycleSubmission.Artifact.artifact.instructionPC 2281 = 2939 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2281 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2482
+@[simp] theorem pcI2482 : CycleSubmission.Artifact.artifact.instructionPC 2280 = 2970 := by
+  rw [show (2280:Nat)=2135+(2280-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2483 : CycleSubmission.Artifact.artifact.instructionPC 2282 = 2940 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2282 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2483
+@[simp] theorem pcI2483 : CycleSubmission.Artifact.artifact.instructionPC 2281 = 2971 := by
+  rw [show (2281:Nat)=2135+(2281-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2484 : CycleSubmission.Artifact.artifact.instructionPC 2283 = 2941 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2283 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2484
+@[simp] theorem pcI2484 : CycleSubmission.Artifact.artifact.instructionPC 2282 = 2972 := by
+  rw [show (2282:Nat)=2135+(2282-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2485 : CycleSubmission.Artifact.artifact.instructionPC 2284 = 2942 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2284 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2485
+@[simp] theorem pcI2485 : CycleSubmission.Artifact.artifact.instructionPC 2283 = 2973 := by
+  rw [show (2283:Nat)=2135+(2283-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2486 : CycleSubmission.Artifact.artifact.instructionPC 2285 = 2943 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2285 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2486
+@[simp] theorem pcI2486 : CycleSubmission.Artifact.artifact.instructionPC 2284 = 2974 := by
+  rw [show (2284:Nat)=2135+(2284-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2487 : CycleSubmission.Artifact.artifact.instructionPC 2286 = 2944 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2286 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2487
+@[simp] theorem pcI2487 : CycleSubmission.Artifact.artifact.instructionPC 2285 = 2975 := by
+  rw [show (2285:Nat)=2135+(2285-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2488 : CycleSubmission.Artifact.artifact.instructionPC 2287 = 2945 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2287 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2488
+@[simp] theorem pcI2488 : CycleSubmission.Artifact.artifact.instructionPC 2286 = 2976 := by
+  rw [show (2286:Nat)=2135+(2286-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2489 : CycleSubmission.Artifact.artifact.instructionPC 2288 = 2946 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2288 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2489
+@[simp] theorem pcI2489 : CycleSubmission.Artifact.artifact.instructionPC 2287 = 2977 := by
+  rw [show (2287:Nat)=2135+(2287-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2490 : CycleSubmission.Artifact.artifact.instructionPC 2289 = 2947 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2289 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2490
+@[simp] theorem pcI2490 : CycleSubmission.Artifact.artifact.instructionPC 2288 = 2978 := by
+  rw [show (2288:Nat)=2135+(2288-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2491 : CycleSubmission.Artifact.artifact.instructionPC 2290 = 2948 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2290 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2491
+@[simp] theorem pcI2491 : CycleSubmission.Artifact.artifact.instructionPC 2289 = 2979 := by
+  rw [show (2289:Nat)=2135+(2289-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2492 : CycleSubmission.Artifact.artifact.instructionPC 2291 = 2951 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2291 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2492
+@[simp] theorem pcI2492 : CycleSubmission.Artifact.artifact.instructionPC 2290 = 2982 := by
+  rw [show (2290:Nat)=2135+(2290-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2493 : CycleSubmission.Artifact.artifact.instructionPC 2292 = 2952 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2292 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2493
+@[simp] theorem pcI2493 : CycleSubmission.Artifact.artifact.instructionPC 2291 = 2983 := by
+  rw [show (2291:Nat)=2135+(2291-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2494 : CycleSubmission.Artifact.artifact.instructionPC 2293 = 2953 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2293 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2494
+@[simp] theorem pcI2494 : CycleSubmission.Artifact.artifact.instructionPC 2292 = 2984 := by
+  rw [show (2292:Nat)=2135+(2292-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2495 : CycleSubmission.Artifact.artifact.instructionPC 2294 = 2954 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2294 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2495
+@[simp] theorem pcI2495 : CycleSubmission.Artifact.artifact.instructionPC 2293 = 2985 := by
+  rw [show (2293:Nat)=2135+(2293-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2496 : CycleSubmission.Artifact.artifact.instructionPC 2295 = 2955 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2295 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2496
+@[simp] theorem pcI2496 : CycleSubmission.Artifact.artifact.instructionPC 2294 = 2986 := by
+  rw [show (2294:Nat)=2135+(2294-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2497 : CycleSubmission.Artifact.artifact.instructionPC 2296 = 2958 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2296 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2497
+@[simp] theorem pcI2497 : CycleSubmission.Artifact.artifact.instructionPC 2295 = 2989 := by
+  rw [show (2295:Nat)=2135+(2295-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2498 : CycleSubmission.Artifact.artifact.instructionPC 2297 = 2959 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2297 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2498
+@[simp] theorem pcI2498 : CycleSubmission.Artifact.artifact.instructionPC 2296 = 2990 := by
+  rw [show (2296:Nat)=2135+(2296-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2499 : CycleSubmission.Artifact.artifact.instructionPC 2298 = 2960 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2298 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2499
+@[simp] theorem pcI2499 : CycleSubmission.Artifact.artifact.instructionPC 2297 = 2991 := by
+  rw [show (2297:Nat)=2135+(2297-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2500 : CycleSubmission.Artifact.artifact.instructionPC 2299 = 2961 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2299 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2500
+@[simp] theorem pcI2500 : CycleSubmission.Artifact.artifact.instructionPC 2298 = 2992 := by
+  rw [show (2298:Nat)=2135+(2298-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2501 : CycleSubmission.Artifact.artifact.instructionPC 2300 = 2962 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2300 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2501
+@[simp] theorem pcI2501 : CycleSubmission.Artifact.artifact.instructionPC 2299 = 2993 := by
+  rw [show (2299:Nat)=2135+(2299-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2502 : CycleSubmission.Artifact.artifact.instructionPC 2301 = 2963 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2301 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2502
+@[simp] theorem pcI2502 : CycleSubmission.Artifact.artifact.instructionPC 2300 = 2994 := by
+  rw [show (2300:Nat)=2135+(2300-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2503 : CycleSubmission.Artifact.artifact.instructionPC 2302 = 2964 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2302 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2503
+@[simp] theorem pcI2503 : CycleSubmission.Artifact.artifact.instructionPC 2301 = 2995 := by
+  rw [show (2301:Nat)=2135+(2301-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2504 : CycleSubmission.Artifact.artifact.instructionPC 2303 = 2965 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2303 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2504
+@[simp] theorem pcI2504 : CycleSubmission.Artifact.artifact.instructionPC 2302 = 2996 := by
+  rw [show (2302:Nat)=2135+(2302-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2505 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2506 : CycleSubmission.Artifact.artifact.instructionPC 2304 = 2966 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2304 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2506
+@[simp] theorem pcI2506 : CycleSubmission.Artifact.artifact.instructionPC 2303 = 2997 := by
+  rw [show (2303:Nat)=2135+(2303-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2507 : CycleSubmission.Artifact.artifact.instructionPC 2305 = 2967 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2305 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2507
+@[simp] theorem pcI2507 : CycleSubmission.Artifact.artifact.instructionPC 2304 = 2998 := by
+  rw [show (2304:Nat)=2135+(2304-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2508 : CycleSubmission.Artifact.artifact.instructionPC 2306 = 2968 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2306 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2508
+@[simp] theorem pcI2508 : CycleSubmission.Artifact.artifact.instructionPC 2305 = 2999 := by
+  rw [show (2305:Nat)=2135+(2305-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2509 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2969 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2307 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2509
+@[simp] theorem pcI2509 : CycleSubmission.Artifact.artifact.instructionPC 2306 = 3000 := by
+  rw [show (2306:Nat)=2135+(2306-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2510 : CycleSubmission.Artifact.artifact.instructionPC 2308 = 2970 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2308 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2510
+@[simp] theorem pcI2510 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 3001 := by
+  rw [show (2307:Nat)=2135+(2307-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2511 : CycleSubmission.Artifact.artifact.instructionPC 2309 = 2971 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2309 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2511
+@[simp] theorem pcI2511 : CycleSubmission.Artifact.artifact.instructionPC 2308 = 3002 := by
+  rw [show (2308:Nat)=2135+(2308-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2514 : CycleSubmission.Artifact.artifact.instructionPC 2312 = 2974 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2312 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2514
+@[simp] theorem pcI2514 : CycleSubmission.Artifact.artifact.instructionPC 2311 = 3005 := by
+  rw [show (2311:Nat)=2135+(2311-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2519 : CycleSubmission.Artifact.artifact.instructionPC 2317 = 2979 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2317 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2519
+@[simp] theorem pcI2519 : CycleSubmission.Artifact.artifact.instructionPC 2316 = 3010 := by
+  rw [show (2316:Nat)=2135+(2316-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2520 : CycleSubmission.Artifact.artifact.instructionPC 2318 = 2980 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2318 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2520
+@[simp] theorem pcI2520 : CycleSubmission.Artifact.artifact.instructionPC 2317 = 3011 := by
+  rw [show (2317:Nat)=2135+(2317-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2521 : CycleSubmission.Artifact.artifact.instructionPC 2319 = 2983 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2319 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2521
+@[simp] theorem pcI2521 : CycleSubmission.Artifact.artifact.instructionPC 2318 = 3014 := by
+  rw [show (2318:Nat)=2135+(2318-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2559 : CycleSubmission.Artifact.artifact.instructionPC 2357 = 3029 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2357 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2559
+@[simp] theorem pcI2559 : CycleSubmission.Artifact.artifact.instructionPC 2356 = 3060 := by
+  rw [show (2356:Nat)=2135+(2356-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2560 : CycleSubmission.Artifact.artifact.instructionPC 2358 = 3030 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2358 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2560
+@[simp] theorem pcI2560 : CycleSubmission.Artifact.artifact.instructionPC 2357 = 3061 := by
+  rw [show (2357:Nat)=2135+(2357-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2561 : CycleSubmission.Artifact.artifact.instructionPC 2359 = 3031 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2359 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2561
+@[simp] theorem pcI2561 : CycleSubmission.Artifact.artifact.instructionPC 2358 = 3062 := by
+  rw [show (2358:Nat)=2135+(2358-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2562 : CycleSubmission.Artifact.artifact.instructionPC 2360 = 3032 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2360 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2562
+@[simp] theorem pcI2562 : CycleSubmission.Artifact.artifact.instructionPC 2359 = 3063 := by
+  rw [show (2359:Nat)=2135+(2359-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2563 : CycleSubmission.Artifact.artifact.instructionPC 2361 = 3033 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2361 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2563
+@[simp] theorem pcI2563 : CycleSubmission.Artifact.artifact.instructionPC 2360 = 3064 := by
+  rw [show (2360:Nat)=2135+(2360-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 @[simp] theorem pcI2564 : CycleSubmission.Artifact.artifact.instructionPC 0 = 0 := by
   rw [PCFast.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem pcI2565 : CycleSubmission.Artifact.artifact.instructionPC 2362 = 3034 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2362 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3171
+@[simp] theorem pcI2565 : CycleSubmission.Artifact.artifact.instructionPC 2361 = 3065 := by
+  rw [show (2361:Nat)=2135+(2361-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2566 : CycleSubmission.Artifact.artifact.instructionPC 2363 = 3037 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2363 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pc3174
+@[simp] theorem pcI2566 : CycleSubmission.Artifact.artifact.instructionPC 2362 = 3068 := by
+  rw [show (2362:Nat)=2135+(2362-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2585 : CycleSubmission.Artifact.artifact.instructionPC 2380 = 3056 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2380 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2585
+@[simp] theorem pcI2585 : CycleSubmission.Artifact.artifact.instructionPC 2379 = 3087 := by
+  rw [show (2379:Nat)=2135+(2379-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2586 : CycleSubmission.Artifact.artifact.instructionPC 2381 = 3057 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2381 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2586
+@[simp] theorem pcI2586 : CycleSubmission.Artifact.artifact.instructionPC 2380 = 3088 := by
+  rw [show (2380:Nat)=2135+(2380-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2587 : CycleSubmission.Artifact.artifact.instructionPC 2382 = 3060 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2382 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2587
+@[simp] theorem pcI2587 : CycleSubmission.Artifact.artifact.instructionPC 2381 = 3091 := by
+  rw [show (2381:Nat)=2135+(2381-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2594 : CycleSubmission.Artifact.artifact.instructionPC 2391 = 3073 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2391 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2594
+@[simp] theorem pcI2594 : CycleSubmission.Artifact.artifact.instructionPC 2390 = 3104 := by
+  rw [show (2390:Nat)=2135+(2390-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2630 : CycleSubmission.Artifact.artifact.instructionPC 2425 = 3114 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2425 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2630
+@[simp] theorem pcI2630 : CycleSubmission.Artifact.artifact.instructionPC 2424 = 3145 := by
+  rw [show (2424:Nat)=2135+(2424-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2647 : CycleSubmission.Artifact.artifact.instructionPC 2441 = 3140 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2441 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2647
+@[simp] theorem pcI2647 : CycleSubmission.Artifact.artifact.instructionPC 2440 = 3171 := by
+  rw [show (2440:Nat)=2135+(2440-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2698 : CycleSubmission.Artifact.artifact.instructionPC 2447 = 3148 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2447 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2698
+@[simp] theorem pcI2698 : CycleSubmission.Artifact.artifact.instructionPC 2446 = 3179 := by
+  rw [show (2446:Nat)=2135+(2446-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
-@[simp] theorem pcI2699 : CycleSubmission.Artifact.artifact.instructionPC 2448 = 3151 := by
-  rw [CycleSubmission.Global.PrefixPC.eq_old_tail12 2448 (by decide) (by decide)]
-  exact Challenge.Modexp.Submission.Proofs.Bytecode.ShiftPCs.pcI2699
+@[simp] theorem pcI2699 : CycleSubmission.Artifact.artifact.instructionPC 2447 = 3182 := by
+  rw [show (2447:Nat)=2135+(2447-2135) from rfl, CycleSubmission.Global.PrefixPC.pc_add, shiftAnchor]
+  rfl
 
 /-! ## The straight-line negation and the inline Newton chain (negun, inl693) -/
 

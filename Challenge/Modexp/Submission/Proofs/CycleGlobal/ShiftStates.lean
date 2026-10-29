@@ -58,25 +58,25 @@ def pcPreNewton : Nat := 2535
 def pcShiftLoop : Nat := 2704
 def pcShiftBody : Nat := 2705
 def pcEstimate : Nat := 2719
-def pcMacSetup : Nat := 2782   -- E6, the conversion entry JUMPDEST (mask already built)
-def pcMid : Nat := 3034   -- the fall-through after the eight straight blocks
-def pcAddLoop : Nat := 3075
-def pcAddInner : Nat := 3081
-def pcAddTail : Nat := 3118
+def pcMacSetup : Nat := 2813   -- E6, the conversion entry JUMPDEST (mask already built)
+def pcMid : Nat := 3065   -- the fall-through after the eight straight blocks
+def pcAddLoop : Nat := 3106
+def pcAddInner : Nat := 3112
+def pcAddTail : Nat := 3149
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3105
+def pcAddMid : Nat := 3136
 /-- The fall-through padding after the add-round exit test. -/
-def pcAddPad : Nat := 3118
-def pcSubCheck : Nat := 3136
-def pcCsubCall : Nat := 3061
+def pcAddPad : Nat := 3149
+def pcSubCheck : Nat := 3167
+def pcCsubCall : Nat := 3092
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3073
+def pcUnc : Nat := 3104
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
 def pcAfterCsub : Nat := 2704
 /-- The loop exit after the last step (`PUSH2 3366 JUMP`, the `JUMPI` fall-through). -/
-def pcCsubExit : Nat := 3069
-def pcShiftDone : Nat := 3146
+def pcCsubExit : Nat := 3100
+def pcShiftDone : Nat := 3177
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
@@ -102,7 +102,7 @@ def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : U
 
 /-- The unrolled-conversion entry the cache block stores at `0x6a2` and parks in
 the scratch slot for the rest of the window: `2940 + 116 · [n = 4]`. -/
-def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2785 + if n = 4 then 116 else 0)
+def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2816 + if n = 4 then 116 else 0)
 
 /-- The window's riding slots with the scratch slot holding the conversion entry. -/
 def entrySlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) : List UInt256 :=

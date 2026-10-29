@@ -51,7 +51,7 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 5506, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2889 5 3743 h1Program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2876 5 3743 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem cond_four : ¬ UInt256.isTrue (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) := by decide
@@ -89,7 +89,7 @@ def gasSteps_h1 (s : State) (mem : ByteArray)
 
 theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3181 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3212 = true) :
     runInstructions CycleSubmission.CallerBlocks.fixedProgram
         (FixedDirectStates.special s mem 4 bsize esize 128 k) =
       some (CycleSubmission.Global.Fast.Cios2Dispatch.commonState s mem

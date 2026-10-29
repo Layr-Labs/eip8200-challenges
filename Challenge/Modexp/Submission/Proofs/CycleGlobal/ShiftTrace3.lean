@@ -156,7 +156,7 @@ theorem run_mid_zero (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2392 = 3074 := by
+theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2391 = 3105 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -550,12 +550,12 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3048 -
       (UInt256.ofNat 29 * UInt256.ofNat 4).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by decide
-  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2932 := by decide
+  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3048 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2816 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -571,17 +571,17 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hback3032 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2901 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2901 := by
+      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2932 32) 1698)
+        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2932 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2901 (by decide)]
+      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2932 (by decide)]
   have hback2899 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2785 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2785 := by
+      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2816 32) 1698)
+        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2816 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2785 (by decide)]
+      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2816 (by decide)]
   have hz1 : (if 1 = esize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 then
         UInt256.ofNat 1 else UInt256.ofNat 0) = UInt256.ofNat 0 := by
@@ -662,12 +662,12 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [show (115792089237316195423570985008687907853269984665640564039457584007913129639936 :
         Nat) = 2 ^ 256 from rfl, hmod]
     rfl
-  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3048 -
       (UInt256.ofNat 29 * UInt256.ofNat 4).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by decide
-  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2932 := by decide
+  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3048 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2816 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -689,17 +689,17 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hback3032 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2901 32) 1698)
-        (Data.Bytes.natToBytesPadded 1 32) 1760) 1698 = UInt256.ofNat 2901 := by
+      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2932 32) 1698)
+        (Data.Bytes.natToBytesPadded 1 32) 1760) 1698 = UInt256.ofNat 2932 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2901 (by decide)]
+      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2932 (by decide)]
   have hback2899 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2785 32) 1698)
-        (Data.Bytes.natToBytesPadded 1 32) 1760) 1698 = UInt256.ofNat 2785 := by
+      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2816 32) 1698)
+        (Data.Bytes.natToBytesPadded 1 32) 1760) 1698 = UInt256.ofNat 2816 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2785 (by decide)]
+      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2816 (by decide)]
   rcases hfast with h | h <;> subst h <;>
     simp (config := { maxSteps := 3000000 })
     [blk2764, opAt, pushAt, wfOp, he1, hb3,
@@ -793,12 +793,12 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     refine Challenge.EvmProof.Word.word_ext ?_
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, hthree256]
     exact h.symm
-  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+  have hv4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3048 -
       (UInt256.ofNat 29 * UInt256.ofNat 4).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2901 := by decide
-  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2932 := by decide
+  have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3048 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2816 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -820,17 +820,17 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hback3032 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2901 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2901 := by
+      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2932 32) 1698)
+        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2932 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2901 (by decide)]
+      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2932 (by decide)]
   have hback2899 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2785 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2785 := by
+      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2816 32) 1698)
+        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2816 := by
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2785 (by decide)]
+      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2816 (by decide)]
   rcases hfast with h | h <;> subst h <;>
     simp (config := { maxSteps := 3000000 })
     [blk2764, opAt, pushAt, wfOp, he1, hb3tne, hb3mne, hbnT, hbn, hbn2,
@@ -854,8 +854,8 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       hb3mne])
   all_goals (first | rfl | decide)
 @[simp] private theorem pcFact2700 :
-    CycleSubmission.Artifact.artifact.instructionPC 2449 = 3152 := by
-  rw [show (2449:Nat)=2392+(2449-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+    CycleSubmission.Artifact.artifact.instructionPC 2448 = 3183 := by
+  rw [show (2448:Nat)=2391+(2448-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
 
 @[simp] private theorem pcFact4392 :
@@ -864,50 +864,50 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rfl
 
 /-- Followup-PC facts for the shift-done, cleanup and stub blocks. -/
-@[simp] private theorem pc2701 : CycleSubmission.Artifact.artifact.instructionPC 2450 = 3153 := by
-  rw [show (2450:Nat)=2392+(2450-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2701 : CycleSubmission.Artifact.artifact.instructionPC 2449 = 3184 := by
+  rw [show (2449:Nat)=2391+(2449-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2702 : CycleSubmission.Artifact.artifact.instructionPC 2451 = 3156 := by
-  rw [show (2451:Nat)=2392+(2451-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2702 : CycleSubmission.Artifact.artifact.instructionPC 2450 = 3187 := by
+  rw [show (2450:Nat)=2391+(2450-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2703 : CycleSubmission.Artifact.artifact.instructionPC 2452 = 3157 := by
-  rw [show (2452:Nat)=2392+(2452-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2703 : CycleSubmission.Artifact.artifact.instructionPC 2451 = 3188 := by
+  rw [show (2451:Nat)=2391+(2451-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2704 : CycleSubmission.Artifact.artifact.instructionPC 2453 = 3158 := by
-  rw [show (2453:Nat)=2392+(2453-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2704 : CycleSubmission.Artifact.artifact.instructionPC 2452 = 3189 := by
+  rw [show (2452:Nat)=2391+(2452-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2705 : CycleSubmission.Artifact.artifact.instructionPC 2454 = 3161 := by
-  rw [show (2454:Nat)=2392+(2454-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2705 : CycleSubmission.Artifact.artifact.instructionPC 2453 = 3192 := by
+  rw [show (2453:Nat)=2391+(2453-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2467 = 3182 := by
-  rw [show (2467:Nat)=2392+(2467-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2466 = 3213 := by
+  rw [show (2466:Nat)=2391+(2466-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2707 : CycleSubmission.Artifact.artifact.instructionPC 2456 = 3164 := by
-  rw [show (2456:Nat)=2392+(2456-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2707 : CycleSubmission.Artifact.artifact.instructionPC 2455 = 3195 := by
+  rw [show (2455:Nat)=2391+(2455-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2708 : CycleSubmission.Artifact.artifact.instructionPC 2457 = 3165 := by
-  rw [show (2457:Nat)=2392+(2457-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2708 : CycleSubmission.Artifact.artifact.instructionPC 2456 = 3196 := by
+  rw [show (2456:Nat)=2391+(2456-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2709 : CycleSubmission.Artifact.artifact.instructionPC 2458 = 3166 := by
-  rw [show (2458:Nat)=2392+(2458-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2709 : CycleSubmission.Artifact.artifact.instructionPC 2457 = 3197 := by
+  rw [show (2457:Nat)=2391+(2457-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2710 : CycleSubmission.Artifact.artifact.instructionPC 2459 = 3169 := by
-  rw [show (2459:Nat)=2392+(2459-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2710 : CycleSubmission.Artifact.artifact.instructionPC 2458 = 3200 := by
+  rw [show (2458:Nat)=2391+(2458-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2711 : CycleSubmission.Artifact.artifact.instructionPC 2460 = 3172 := by
-  rw [show (2460:Nat)=2392+(2460-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2711 : CycleSubmission.Artifact.artifact.instructionPC 2459 = 3203 := by
+  rw [show (2459:Nat)=2391+(2459-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2712 : CycleSubmission.Artifact.artifact.instructionPC 2461 = 3173 := by
-  rw [show (2461:Nat)=2392+(2461-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2712 : CycleSubmission.Artifact.artifact.instructionPC 2460 = 3204 := by
+  rw [show (2460:Nat)=2391+(2460-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2713 : CycleSubmission.Artifact.artifact.instructionPC 2462 = 3174 := by
-  rw [show (2462:Nat)=2392+(2462-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2713 : CycleSubmission.Artifact.artifact.instructionPC 2461 = 3205 := by
+  rw [show (2461:Nat)=2391+(2461-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2714 : CycleSubmission.Artifact.artifact.instructionPC 2463 = 3176 := by
-  rw [show (2463:Nat)=2392+(2463-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2714 : CycleSubmission.Artifact.artifact.instructionPC 2462 = 3207 := by
+  rw [show (2462:Nat)=2391+(2462-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
-@[simp] private theorem pc2715 : CycleSubmission.Artifact.artifact.instructionPC 2464 = 3177 := by
-  rw [show (2464:Nat)=2392+(2464-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2715 : CycleSubmission.Artifact.artifact.instructionPC 2463 = 3208 := by
+  rw [show (2463:Nat)=2391+(2463-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
 @[simp] private theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3053 = 3945 := by
   rw [show (3053:Nat)=3052+(3053-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]

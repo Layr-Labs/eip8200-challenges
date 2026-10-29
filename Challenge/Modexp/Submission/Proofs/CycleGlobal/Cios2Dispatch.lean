@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.TnShiftEntry
 import Challenge.Modexp.Submission.Proofs.CycleCaller.Blocks
 import Challenge.Modexp.Submission.Proofs.Fast.Cios2Paths.Dispatch
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
@@ -37,7 +38,7 @@ abbrev commonGuard := CycleSubmission.CallerBlocks.commonBlock
 
 def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3181
+  { s with pc := UInt256.ofNat 3212
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -53,17 +54,17 @@ theorem run_commonGuard (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Na
     (_hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
     (_hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     runInstructions commonGuardProgram (commonState s mem hd pa pb pdst ret rest) =
-      some (CiosCached.setupState s mem hd pa pb pdst ret rest) := by
+      some (CycleSubmission.Global.TnShift.setupState s mem hd pa pb pdst ret rest) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   simp [commonGuardProgram, CycleSubmission.CallerBlocks.commonProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    commonState, CiosCached.setupState, hc5, Challenge.EvmProof.Word.succ_ofNat_mod]
+    commonState, CycleSubmission.Global.TnShift.setupState, hc5, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 set_option linter.unusedSimpArgs false in
 
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
-def setup : Block CycleSubmission.Artifact.artifact .Osaka 3182 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2467 54 3182 TnM128Setup.fullEntryProgram
+def setup : Block CycleSubmission.Artifact.artifact .Osaka 3213 CycleSubmission.Global.TnShift.fullEntryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2466 54 3213 CycleSubmission.Global.TnShift.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -90,7 +91,7 @@ opaque gasSteps_common (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (commonState s mem hd pa pb pdst ret rest)
-      (CiosCached.setupState s mem hd pa pb pdst ret rest) :=
+      (CycleSubmission.Global.TnShift.setupState s mem hd pa pb pdst ret rest) :=
   commonGuard.steps (environment (commonState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp) rfl
     (run_commonGuard s mem hd pa pb pdst ret rest hcap hcode hact hs32 hguard hzero)
 
@@ -116,16 +117,16 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
     (hslotn : rest[2]? = some (UInt256.ofNat n))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
-      (CiosCached.setupState s mem hd pa pb pdst ret rest)
+      (CycleSubmission.Global.TnShift.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stageW mem pa n)) pb n 0 hd
         (UInt256.ofNat 3347)
         (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
         (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
           MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
-  setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
+  setup.steps (environment (CycleSubmission.Global.TnShift.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
-    (TnM128Setup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
+    (CycleSubmission.Global.TnShift.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
       hcds hs32 hml hw hslotn (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` with the square-loop frame's width slot (the limb count). -/

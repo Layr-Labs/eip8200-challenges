@@ -96,7 +96,7 @@ def squareCall : List Located :=
    CycleSubmission.Global.Fast.pushAt 1868 2 512,
    CycleSubmission.Global.Fast.pushAt 1869 2 2112,
    CycleSubmission.Global.Fast.pushAt 1870 2 3728,
-   CycleSubmission.Global.Fast.pushAt 1871 2 3181,
+   CycleSubmission.Global.Fast.pushAt 1871 2 3212,
    CycleSubmission.Global.Fast.opAt 1872 .JUMP]
 
 theorem jumpDest3892 :
@@ -123,8 +123,8 @@ theorem jumpDestBigC :
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3181 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2466 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3212 = true :=
+  CycleSubmission.Global.Binding.jumpDest 2465 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

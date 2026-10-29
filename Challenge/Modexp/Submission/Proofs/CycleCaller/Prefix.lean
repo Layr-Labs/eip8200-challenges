@@ -1,4 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.CycleCaller.Blocks
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.TnShiftEntry
 import Challenge.Modexp.Submission.Proofs.CycleCaller.Memory
 import Challenge.Modexp.Submission.Proofs.Cycle.EntryMeaning
 import Challenge.Modexp.Submission.Proofs.CRT.CRTControlBase
@@ -35,7 +36,7 @@ def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Ca
 
 def call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 3181
+    pc := UInt256.ofNat 3212
     memory := mem
     stack := [UInt256.ofNat 3728, UInt256.ofNat 2112, UInt256.ofNat 512,
       UInt256.ofNat (k-1), ret] ++ tail}
@@ -98,9 +99,9 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (env.transfer rfl rfl) rfl (jumpDest_run _ (by
       simp only [call, List.length_append, List.length_cons, List.length_nil]; omega))
   have hsetup := setupBlock.steps
-    (s := CiosCached.setupState s mem (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) ret tail)
+    (s := CycleSubmission.Global.TnShift.setupState s mem (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) ret tail)
     (env.transfer rfl rfl) rfl
-    (TnM128Setup.run_entry_sq s mem (UInt256.ofNat 3728) 2112 512 8
+    (CycleSubmission.Global.TnShift.run_entry_sq s mem (UInt256.ofNat 3728) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)
       (Or.inr rfl) (by decide) (by decide) (by decide) hcds hs32 hml hw hn
       (by rw [env.code]; exact valid3728))

@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "7c46640e-b235-4840-8810-ced561aa9c20",
+    "rationale": "Direct parent (own submission): this ticket keeps it and pushes the all-ones constant at byte 2774 directly with PUSH32 instead of PUSH0 NOT.",
+    "evidence": "Every byte before 2774 and from 3493 on is identical to the parent; the shifted range 2776-3492 is the parent's bytes moved by the added length into the filler region."
+  },
+  {
     "submissionId": "0dd36d93-ebaa-46a1-9457-3131f46378ff",
     "rationale": "Direct parent (own submission): direct square-loop entry from the width test, on top of the executed padding removal in the shift-reduce conversion and the RSA setup. This ticket keeps it and removes the final dead store, removes the remaining executed padding JUMPDESTs and switches the R5 product column 1 limb loads from offset zero to PUSH0.",
     "evidence": "Every byte outside the one-word base guard, the unreachable bytes after the RSA setup block, R5 product column 1, the final unpack block, the first canonical compare block, the final packing block and the RETURN block is identical to the parent. The child differs from the parent only in those bytes, in the regenerated Proofs/Cycle/Artifact.lean and Proofs/Cycle/Bytes.lean, in the index, PC and instruction-count literals of the CycleGlobal, CycleCaller, Cycle and R5 binding files (with PrefixPC re-split by index offset), in the programs and run proofs of the edited blocks, and in README.md and dependencies.json."

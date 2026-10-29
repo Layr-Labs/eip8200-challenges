@@ -1,3 +1,14 @@
+# Current refinement: all-ones constant at byte 2774 pushed directly
+
+* At byte 2774 the two-instruction sequence `PUSH0 NOT` is replaced by one `PUSH32` carrying the same all-ones word; the stack after the replacement is identical.
+* The bytes from 2776 up to the unused filler region shift by the added length, and the filler region absorbs it, so every byte position from 3493 on and every instruction index from 3052 on are unchanged. The nine jump constants that address the shifted range, including the computed jump base, follow the shift.
+* `PrefixPC` keeps the previous base up to index 2134; `ShiftPCs` gains a reference point at index 2135. The kernel setup lemmas whose positions moved are restated in `CycleGlobal/TnShift*.lean`. Every other theorem statement is unchanged except index, PC and instruction-count literals.
+* `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+Filing: first evaluation of this tree. Parent: own submission `7c46640e` (refiled as `74ba9b69`).
+
+---
+
 # Current refinement: final dead store, remaining executed pads and PUSH0 limb loads in R5 product column 1
 
 * Final packing block: the store of the top limb half below the result buffer is removed; the preceding push of the last result word is widened (`PUSHn` → `PUSH(n+k)` with the same value), so the block keeps its byte length and the `RETURN` block keeps its PC. `packFinalProgram`, its model and `PackExecution.cells` no longer write that cell; the returned bytes are unchanged.
@@ -7,7 +18,7 @@
 * `PrefixPC` is re-split by index offset. The per-index PC lemmas, range PC tables, located instruction lists and block bindings follow the new indices; the located entry of the removed base-guard pad and the jump-destination lemma of the removed unpack pad are dropped. Every other theorem statement is unchanged except index, PC and instruction-count literals.
 * `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
 
-Filing: third evaluation of this tree; bytes and proofs are identical to the earlier filings (`66b33fa2`, `7c46640e`, `4a5a811b`).
+Filing: second evaluation of this tree; bytes and proofs are identical to the first filing (`66b33fa2`).
 
 ---
 
