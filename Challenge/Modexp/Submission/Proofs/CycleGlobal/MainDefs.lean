@@ -55,17 +55,17 @@ def trampoline1Path :
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 370 .JUMPDEST]
+  [opAt 369 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 371 0 0,
-   opAt 372 .CALLDATALOAD,
-   pushAt 373 1 32,
-   opAt 374 .CALLDATALOAD,
-   pushAt 375 1 64,
-   opAt 376 .CALLDATALOAD]
+  [pushAt 370 0 0,
+   opAt 371 .CALLDATALOAD,
+   pushAt 372 1 32,
+   opAt 373 .CALLDATALOAD,
+   pushAt 374 1 64,
+   opAt 375 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
@@ -81,7 +81,7 @@ def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
 def tramp0Path : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) := []
-def tramp7DestPath := [opAt 370 .JUMPDEST]
+def tramp7DestPath := [opAt 369 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat pc }
@@ -143,15 +143,15 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
   interval_cases i <;> decide
 
 @[simp] theorem headerPCs899 (i : Nat)
-    (hi : 370 ≤ i) (hii : i ≤ 377) :
+    (hi : 369 ≤ i) (hii : i ≤ 376) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([533,534,535,536,538,539,541,542] : List Nat)[i - 370]! := by
+      ([533,534,535,536,538,539,541,542] : List Nat)[i - 369]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump1196 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 533 = true :=
-  CycleSubmission.Global.Binding.jumpDest 370 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 369 (by rfl)
 
 
 

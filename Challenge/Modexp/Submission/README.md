@@ -1,3 +1,24 @@
+# Current refinement: final dead store, remaining executed pads and PUSH0 limb loads in R5 product column 1
+
+* Final packing block: the store of the top limb half below the result buffer is removed; the preceding push of the last result word is widened (`PUSHn` → `PUSH(n+k)` with the same value), so the block keeps its byte length and the `RETURN` block keeps its PC. `packFinalProgram`, its model and `PackExecution.cells` no longer write that cell; the returned bytes are unchanged.
+* Executed padding `JUMPDEST`s are removed from the one-word base guard, the final unpack block, the first canonical compare block and the `RETURN` block. In each block one push is widened, so every block-start PC is unchanged.
+* The unreachable bytes after the RSA setup block are re-split into one more instruction, so every instruction index from the following block up to the final unpack block is unchanged; the indices between the base guard and those bytes decrease by one, and the indices from the final unpack block on follow the removed instructions.
+* R5 product column 1 (`prCol1`): both limb loads from offset zero use `PUSH0`, and a later push of the column is widened, so the column keeps its byte length and its start and end PCs; its internal part-boundary PCs follow.
+* `PrefixPC` is re-split by index offset. The per-index PC lemmas, range PC tables, located instruction lists and block bindings follow the new indices; the located entry of the removed base-guard pad and the jump-destination lemma of the removed unpack pad are dropped. Every other theorem statement is unchanged except index, PC and instruction-count literals.
+* `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+Filing: second evaluation of this tree; bytes and proofs are identical to the first filing (`66b33fa2`).
+
+---
+
+# Current refinement: direct square-loop entry
+
+* Square-loop caller: the conditional jump of the width test targets the square-loop entry directly instead of the trampoline in front of it. Only the two immediate bytes of that push change; every byte PC and every instruction index is unchanged.
+* `CycleCaller/Blocks.testProgram` and `R5Head.h1Program` carry the new jump target, and `CycleCaller/Prefix` takes the jump straight to the entry; the trampoline bytes and block stay in place, unused. Every other theorem statement is unchanged.
+* `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
 # Current refinement: executed padding removal in the shift-reduce conversion and the RSA setup
 
 * Shift-reduce base conversion: the padding `JUMPDEST`s in the dispatcher guard, the estimator precomputation, the end of the inline Newton chain, the Newton-batch tail and the shift-loop body are removed. In each block one push is widened (`PUSHn` → `PUSH(n+k)` with the same value), so every block keeps its byte length and every block-start PC is unchanged.

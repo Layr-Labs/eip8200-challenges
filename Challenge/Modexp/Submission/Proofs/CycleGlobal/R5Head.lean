@@ -48,7 +48,7 @@ def pcH1 : Nat := 3743
 def pcEntry : Nat := 3751
 
 def h1Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 3768, .op .JUMPI]
+  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 5506, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2889 5 3743 h1Program

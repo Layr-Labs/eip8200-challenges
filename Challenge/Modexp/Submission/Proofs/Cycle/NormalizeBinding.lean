@@ -13,18 +13,18 @@ open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
 
 def normalizerBlock : Block Artifact.artifact .Osaka 10556 normalizeProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 8421 121 10556 normalizeProgram
-    (by change 8421+121 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8421+121 ≤ 8543)
+  WindowTwentyOneSlice.block Artifact.wellFormed 8413 121 10556 normalizeProgram
+    (by change 8413+121 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 8413+121 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 def returnBlock : Block Artifact.artifact .Osaka 10697 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 8542 1 10697 jumpProgram
-    (by change 8542+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8542+1 ≤ 8543)
+  WindowTwentyOneSlice.block Artifact.wellFormed 8534 1 10697 jumpProgram
+    (by change 8534+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 8534+1 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -39,9 +39,9 @@ theorem validJump8085 : Decode.isValidJumpDest Artifact.bytecode 7627 = true := 
   exact h
 
 theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 10409 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8326
-    (show Artifact.instructions[8326]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8326 = 10409 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8324
+    (show Artifact.instructions[8324]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8324 = 10409 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

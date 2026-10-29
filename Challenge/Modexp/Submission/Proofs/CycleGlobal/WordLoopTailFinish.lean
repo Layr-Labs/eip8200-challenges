@@ -27,7 +27,7 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
 
 @[simp] private theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 194 = true :=
-  CycleSubmission.Global.Binding.jumpDest 125 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 124 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
