@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "00c62922-d938-4573-a9e7-9f518a163c6b",
+    "rationale": "Direct parent (own promoted submission): direct final stores in the final-padding output, on top of the promoted tree 5b5782e2. This ticket keeps it and removes the constant store from the 32-byte table builder.",
+    "evidence": "Every byte outside the 32-byte table builder, and every proof file outside the listed ones, is identical to the parent tree."
+  },
+  {
     "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
     "rationale": "Direct parent: the promoted tree with all of its inherited lineage. This ticket changes only the final-padding output stores and the matching proof and artifact-mirror files.",
     "evidence": "Every byte outside the final-padding output block is identical to the parent. The child differs from the parent only in those bytes, in PadOutput.lean and PadSites.lean, in the regenerated CandidateBytes.lean and CandidateArtifact.lean, and in README.md and dependencies.json."

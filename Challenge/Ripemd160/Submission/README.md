@@ -1,3 +1,10 @@
+# Current refinement: constant store removed from the 32-byte table builder
+
+* 32-byte table builder: the constant store `PUSH22 ...; PUSH1 196; MSTORE` is removed; the rest of the builder moves 26 bytes down and its final jump is three instructions earlier.
+* Proofs: `FirstExecution.First0` drops the store and its memory write; `First1`-`First7`, `FirstTable` and `FirstMemory` follow the shifted PCs and byte offsets; `FirstMemory.memory2`/`symbols2` are now `memory1`/`symbols1`; `FirstCore` has the new jump index and PC. The artifact mirrors (`CandidateBytes.lean`, `CandidateArtifact.lean` and the count and size literals in `ColdArtifact.lean`, `ColdBytecode.lean` and `RecArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+
+---
+
 # Current refinement: direct final stores in the final-padding output
 
 * Final-padding output: the five final sums are stored directly at 16, 12, 8, 4 and 0 (`PUSH1 16 MSTORE`, `DUP11 ADD ADD PUSH1 12 MSTORE`, `DUP10 ADD ADD PUSH1 8 MSTORE`, `SWAP9 PUSH1 4 MSTORE`, `SWAP9 PUSH0 MSTORE`) instead of rearranging the frame and popping it; the following byte-swap stages read the two masks with `DUP15` and `DUP14`; seven `STOP` bytes after the `RETURN` keep the block's byte length and instruction count, so every later PC and instruction index is unchanged.

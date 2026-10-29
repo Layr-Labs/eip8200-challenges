@@ -18,7 +18,7 @@ theorem frame_eq (continuation : UInt256) (rho : List UInt256) :
 theorem table_run (s : State) (continuation : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
     runInstrSeq FirstTable.template {s with pc := UInt256.ofNat 10141, stack := frame continuation rho} =
-      some {prepared s with pc := UInt256.ofNat 10463, stack := frame continuation rho} := by
+      some {prepared s with pc := UInt256.ofNat 10437, stack := frame continuation rho} := by
   have h := FirstTable.run s (FirstMemory.frame continuation) rho (by omega) hr ha
   rw [frame_eq, FirstMemory.eq7] at h
   exact h
@@ -37,23 +37,23 @@ def table_gas (s : State) (continuation : UInt256) (rho : List UInt256)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 10141, stack := frame continuation rho}
-      {prepared s with pc := UInt256.ofNat 10463, stack := frame continuation rho} := by
+      {prepared s with pc := UInt256.ofNat 10437, stack := frame continuation rho} := by
   apply PadLift.gasSteps_of_raw tableSite
     {s with pc := UInt256.ofNat 10141, stack := frame continuation rho}
-    {prepared s with pc := UInt256.ofNat 10463, stack := frame continuation rho}
+    {prepared s with pc := UInt256.ofNat 10437, stack := frame continuation rho}
     hc hf hr hnp table_pc.symm
   · apply PadLift.advancesAll_sound
     decide +kernel
   · exact table_run s continuation rho hs hr ha
 def jumpTemplate : List Instr := [.push ⟨2,by decide⟩ (UInt256.ofNat 823), .op .JUMP]
 def jumpSite : GenericRoundSite CandidateArtifact.artifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 7031 (by rfl)
-    (by change 7031 + jumpTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 7028 (by rfl)
+    (by change 7028 + jumpTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
-theorem jump_pc : jumpSite.startPC = UInt256.ofNat 10463 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7031) = UInt256.ofNat 10463
+theorem jump_pc : jumpSite.startPC = UInt256.ofNat 10437 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7028) = UInt256.ofNat 10437
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid_join : Decode.isValidJumpDest CandidateArtifact.artifact.code 823 = true := by
@@ -66,8 +66,8 @@ def jump_gas (s : State) (rho : List UInt256) (hs : rho.length ≤ 990)
     (hr : s.halt = .Running) (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode)
     (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 10463, stack := rho} {s with pc := UInt256.ofNat 823, stack := rho} := by
-  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 10463, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 10437, stack := rho} {s with pc := UInt256.ofNat 823, stack := rho} := by
+  apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 10437, stack := rho}
     {s with pc := UInt256.ofNat 823, stack := rho} hc hf hr hnp jump_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have hv : Decode.isValidJumpDest s.executionEnv.code 823 = true := by rw [hc]; exact valid_join
