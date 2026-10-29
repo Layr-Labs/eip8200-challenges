@@ -15,8 +15,7 @@ open HistoricalSearch.CRTMemoryCells Challenge.EvmProof.Memory
 def cells (a : Nat → UInt256) : List (Nat × UInt256) :=
   [(2336,outputWord a 0),(2304,outputWord a 1),(2272,outputWord a 2),
    (2240,outputWord a 3),(2208,outputWord a 4),(2176,outputWord a 5),
-   (2144,outputWord a 6),(2112,outputWord a 7),
-   (2080,UInt256.shiftRight (a 8) (UInt256.ofNat 128))]
+   (2144,outputWord a 6),(2112,outputWord a 7)]
 
 def result (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) : State :=
   {s with

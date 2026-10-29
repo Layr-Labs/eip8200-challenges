@@ -11,8 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def unpackFinalpart0Program : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 480,
+  [.push 3 480,
    .op .MLOAD,
    .op (.Dup ⟨11, by decide⟩),
    .op .AND,
@@ -234,8 +233,7 @@ theorem unpackFinalpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 
 
 
 def unpackFinalProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 480,
+  [.push 3 480,
    .op .MLOAD,
    .op (.Dup ⟨11, by decide⟩),
    .op .AND,

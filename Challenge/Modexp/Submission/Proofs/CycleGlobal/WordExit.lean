@@ -75,7 +75,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3976 = true := Word.jump669
 
 def expFinishGuardBlock : Block CycleSubmission.Artifact.artifact .Osaka 194 WordExitGuard.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 125 6 194 WordExitGuard.program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 124 6 194 WordExitGuard.program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
 
 theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)

@@ -503,7 +503,7 @@ theorem jumpDest4608 :
 /-- `modexpBig`, where the trampoline lands. -/
 theorem jumpDestBigC :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 145 (by rfl)
 
 theorem jumpDest4657 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2412 = true :=

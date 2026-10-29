@@ -648,7 +648,7 @@ def bigBailState (s : State) (input : ByteArray) : State :=
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 theorem jumpDestBig : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 145 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_topCheck_pass (s : State) (input : ByteArray)
@@ -1356,31 +1356,31 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 `MLOAD` of its least significant limb. -/
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 457 (.Dup ⟨1, by decide⟩),
-   pushAt 458 2 2688,
-   opAt 459 .MSTORE,
-   opAt 460 (.Dup ⟨3, by decide⟩),
-   pushAt 461 1 96,
-   opAt 462 .ADD,
-   pushAt 463 2 2656,
-   opAt 464 .MSTORE,
-   pushAt 465 1 32,
-   opAt 466 (.Dup ⟨2, by decide⟩),
-   opAt 467 .SUB,
-   pushAt 468 3 2752,
-   opAt 469 .MSTORE,
-   opAt 470 (.Dup ⟨1, by decide⟩),
-   pushAt 471 2 2080,
-   opAt 472 .ADD,
-   pushAt 473 2 2784,
-   opAt 474 .MSTORE,
-   opAt 475 (.Dup ⟨5, by decide⟩),
-   opAt 476 (.Dup ⟨1, by decide⟩),
-   pushAt 477 0 0,
-   opAt 478 .CALLDATACOPY,
-   opAt 479 .POP,
-   pushAt 480 3 2390,
-   opAt 481 .JUMP]
+  [opAt 456 (.Dup ⟨1, by decide⟩),
+   pushAt 457 2 2688,
+   opAt 458 .MSTORE,
+   opAt 459 (.Dup ⟨3, by decide⟩),
+   pushAt 460 1 96,
+   opAt 461 .ADD,
+   pushAt 462 2 2656,
+   opAt 463 .MSTORE,
+   pushAt 464 1 32,
+   opAt 465 (.Dup ⟨2, by decide⟩),
+   opAt 466 .SUB,
+   pushAt 467 3 2752,
+   opAt 468 .MSTORE,
+   opAt 469 (.Dup ⟨1, by decide⟩),
+   pushAt 470 2 2080,
+   opAt 471 .ADD,
+   pushAt 472 2 2784,
+   opAt 473 .MSTORE,
+   opAt 474 (.Dup ⟨5, by decide⟩),
+   opAt 475 (.Dup ⟨1, by decide⟩),
+   pushAt 476 0 0,
+   opAt 477 .CALLDATACOPY,
+   opAt 478 .POP,
+   pushAt 479 3 2390,
+   opAt 480 .JUMP]
 
 /-- State at the `R1B` guard entry `JUMPDEST` (pc 2674).  The guard dispatches
 to `DOUBLE256` itself when the modulus's top bit is clear. -/
