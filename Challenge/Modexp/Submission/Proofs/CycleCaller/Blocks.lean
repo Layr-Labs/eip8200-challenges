@@ -46,7 +46,7 @@ def entryBlock : Block Artifact.artifact .Osaka 3728 entryProgram :=
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def testProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 3768]
+  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 5506]
 def testBlock : Block Artifact.artifact .Osaka 3743 testProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2889 4 3743 testProgram
     (by change 2889+4 ≤ Artifact.instructions.length

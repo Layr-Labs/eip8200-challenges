@@ -1,3 +1,11 @@
+# Current refinement: direct square-loop entry
+
+* Square-loop caller: the conditional jump of the width test targets the square-loop entry directly instead of the trampoline in front of it. Only the two immediate bytes of that push change; every byte PC and every instruction index is unchanged.
+* `CycleCaller/Blocks.testProgram` and `R5Head.h1Program` carry the new jump target, and `CycleCaller/Prefix` takes the jump straight to the entry; the trampoline bytes and block stay in place, unused. Every other theorem statement is unchanged.
+* `Proofs/Cycle/Artifact.lean` and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
 # Current refinement: executed padding removal in the shift-reduce conversion and the RSA setup
 
 * Shift-reduce base conversion: the padding `JUMPDEST`s in the dispatcher guard, the estimator precomputation, the end of the inline Newton chain, the Newton-batch tail and the shift-loop body are removed. In each block one push is widened (`PUSHn` → `PUSH(n+k)` with the same value), so every block keeps its byte length and every block-start PC is unchanged.

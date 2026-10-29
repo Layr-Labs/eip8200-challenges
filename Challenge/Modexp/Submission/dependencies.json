@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "8b4c9b45-030b-4422-a0a0-cfbbc10fc5dd",
+    "rationale": "Direct parent (own promoted submission): executed padding removal in the shift-reduce conversion and the RSA setup. This ticket keeps it and retargets the square-loop width test directly at the square-loop entry instead of the trampoline in front of it.",
+    "evidence": "The child differs from the parent only in the two immediate bytes of the width-test jump target, in the regenerated Proofs/Cycle/Artifact.lean and Proofs/Cycle/Bytes.lean, in Proofs/CycleCaller/Blocks.lean, Proofs/CycleCaller/Prefix.lean and Proofs/CycleGlobal/R5Head.lean, and in README.md and dependencies.json."
+  },
+  {
     "submissionId": "920d60d0-1afa-434f-b419-8ed1e04a1089",
     "rationale": "Direct parent (own promoted submission): PUSH0 limb loads in R5 product columns 2-4 on top of the direct Fermat join guard. This ticket keeps it and removes the executed padding JUMPDESTs of the shift-reduce base conversion and the RSA fast-path setup block.",
     "evidence": "Every byte outside the padded shift-reduce blocks, the RSA setup block and the unreachable bytes after the first R5 product segment is identical to the parent. The child differs from the parent only in those bytes, in the regenerated Proofs/Cycle/Artifact.lean and Proofs/Cycle/Bytes.lean, in the index and PC literals of the CycleGlobal, CycleCaller and R5 binding files of the shifted span (with PrefixPC re-split by index offset), and in README.md and dependencies.json."
