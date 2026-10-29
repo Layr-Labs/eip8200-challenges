@@ -4095,6 +4095,8 @@ def part21 : List Instr := [
 .push ⟨2, by decide⟩ (UInt256.ofNat 396),
 .op .MSTORE,
 .op (.Dup ⟨4, by decide⟩),
+.push ⟨18, by decide⟩ (UInt256.ofNat 22300745198530623141535718272648361505980415),
+.op .AND,
 .push ⟨2, by decide⟩ (UInt256.ofNat 468),
 .op .MSTORE,
 .op (.Dup ⟨1, by decide⟩),
@@ -4104,21 +4106,25 @@ def part21 : List Instr := [
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 558),
 .op .MSTORE,
+.push ⟨18, by decide⟩ (UInt256.ofNat 22300745198530623141535718272648361505980415),
+.op .AND]
+theorem count21 : part21.length = 192 := by rfl
+private def bytes21 : List UInt8 := [97, 255, 255, 2, 1, 96, 3, 82, 54, 95, 243, 91, 96, 128, 140, 54, 1, 83, 97, 17, 231, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 28, 1, 148, 96, 144, 28, 146, 80, 96, 144, 28, 151, 96, 144, 28, 149, 28, 1, 143, 1, 159, 1, 135, 22, 159, 1, 96, 16, 82, 138, 1, 1, 96, 12, 82, 137, 1, 1, 96, 8, 82, 152, 96, 4, 82, 152, 95, 82, 96, 16, 81, 128, 142, 22, 99, 255, 255, 255, 255, 2, 1, 128, 141, 22, 97, 255, 255, 2, 1, 96, 3, 82, 96, 32, 95, 243, 0, 0, 0, 0, 0, 0, 0, 91, 139, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 252, 82, 108, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 96, 128, 82, 96, 236, 81, 96, 218, 82, 97, 1, 12, 81, 97, 1, 30, 82, 114, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 236, 81, 119, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 115, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 114, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 1, 6, 81, 133, 97, 1, 10, 81, 96, 228, 81, 96, 224, 81, 97, 1, 2, 81, 96, 232, 81, 111, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 134, 96, 18, 82, 131, 96, 108, 82, 132, 96, 90, 82, 131, 96, 72, 82, 96, 54, 82, 96, 216, 82, 97, 1, 68, 82, 128, 97, 1, 104, 82, 97, 1, 158, 82, 130, 97, 1, 140, 82, 132, 113, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 22, 97, 1, 212, 82, 129, 97, 2, 10, 82, 97, 2, 28, 82, 97, 2, 46, 82, 113, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 22]
+theorem assembly21 : PcEncoding.assembleBytes part21 = bytes21 := by decide +kernel
+theorem size21 : bytes21.length = 425 := by rfl
+def part22 : List Instr := [
 .push ⟨2, by decide⟩ (UInt256.ofNat 684),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 756),
-.op .MSTORE]
-theorem count21 : part21.length = 192 := by rfl
-private def bytes21 : List UInt8 := [97, 255, 255, 2, 1, 96, 3, 82, 54, 95, 243, 91, 96, 128, 140, 54, 1, 83, 97, 17, 231, 54, 96, 3, 27, 54, 97, 3, 200, 1, 96, 63, 23, 96, 89, 1, 130, 86, 91, 28, 1, 148, 96, 144, 28, 146, 80, 96, 144, 28, 151, 96, 144, 28, 149, 28, 1, 143, 1, 159, 1, 135, 22, 159, 1, 96, 16, 82, 138, 1, 1, 96, 12, 82, 137, 1, 1, 96, 8, 82, 152, 96, 4, 82, 152, 95, 82, 96, 16, 81, 128, 142, 22, 99, 255, 255, 255, 255, 2, 1, 128, 141, 22, 97, 255, 255, 2, 1, 96, 3, 82, 96, 32, 95, 243, 0, 0, 0, 0, 0, 0, 0, 91, 139, 81, 128, 96, 8, 28, 129, 24, 143, 22, 97, 1, 1, 2, 24, 143, 129, 128, 96, 16, 28, 24, 22, 98, 1, 0, 1, 2, 24, 96, 252, 82, 108, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 96, 128, 82, 96, 236, 81, 96, 218, 82, 97, 1, 12, 81, 97, 1, 30, 82, 114, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 128, 96, 236, 81, 119, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 115, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 114, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 1, 6, 81, 133, 97, 1, 10, 81, 96, 228, 81, 96, 224, 81, 97, 1, 2, 81, 96, 232, 81, 111, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 107, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 134, 96, 18, 82, 131, 96, 108, 82, 132, 96, 90, 82, 131, 96, 72, 82, 96, 54, 82, 96, 216, 82, 97, 1, 68, 82, 128, 97, 1, 104, 82, 97, 1, 158, 82, 130, 97, 1, 140, 82, 132, 97, 1, 212, 82, 129, 97, 2, 10, 82, 97, 2, 28, 82, 97, 2, 46, 82, 97, 2, 172, 82, 97, 2, 244, 82]
-theorem assembly21 : PcEncoding.assembleBytes part21 = bytes21 := by decide +kernel
-theorem size21 : bytes21.length = 393 := by rfl
-def part22 : List Instr := [
+.op .MSTORE,
 .op (.Dup ⟨0, by decide⟩),
 .push ⟨2, by decide⟩ (UInt256.ofNat 738),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 720),
 .op .MSTORE,
 .op (.Dup ⟨3, by decide⟩),
+.push ⟨32, by decide⟩ (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840),
+.op .AND,
 .push ⟨2, by decide⟩ (UInt256.ofNat 828),
 .op .MSTORE,
 .op (.Dup ⟨3, by decide⟩),
@@ -4127,20 +4133,11 @@ def part22 : List Instr := [
 .push ⟨0, by decide⟩ (UInt256.ofNat 0),
 .push ⟨1, by decide⟩ (UInt256.ofNat 252),
 .op .MSTORE,
-.push ⟨0, by decide⟩ (UInt256.ofNat 0),
-.push ⟨2, by decide⟩ (UInt256.ofNat 450),
-.op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 576),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 630),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 612),
-.op .MSTORE,
-.push ⟨0, by decide⟩ (UInt256.ofNat 0),
-.push ⟨2, by decide⟩ (UInt256.ofNat 666),
-.op .MSTORE,
-.push ⟨0, by decide⟩ (UInt256.ofNat 0),
-.push ⟨2, by decide⟩ (UInt256.ofNat 846),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 864),
 .op .MSTORE,
@@ -4148,10 +4145,10 @@ def part22 : List Instr := [
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 823),
 .op .JUMP]
-theorem count22 : part22.length = 35 := by rfl
-private def bytes22 : List UInt8 := [128, 97, 2, 226, 82, 97, 2, 208, 82, 131, 97, 3, 60, 82, 131, 97, 3, 204, 82, 95, 96, 252, 82, 95, 97, 1, 194, 82, 97, 2, 64, 82, 97, 2, 118, 82, 97, 2, 100, 82, 95, 97, 2, 154, 82, 95, 97, 3, 78, 82, 97, 3, 96, 82, 97, 3, 168, 82, 97, 3, 55, 86]
+theorem count22 : part22.length = 32 := by rfl
+private def bytes22 : List UInt8 := [97, 2, 172, 82, 97, 2, 244, 82, 128, 97, 2, 226, 82, 97, 2, 208, 82, 131, 127, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 97, 3, 60, 82, 131, 97, 3, 204, 82, 95, 96, 252, 82, 97, 2, 64, 82, 97, 2, 118, 82, 97, 2, 100, 82, 97, 3, 96, 82, 97, 3, 168, 82, 97, 3, 55, 86]
 theorem assembly22 : PcEncoding.assembleBytes part22 = bytes22 := by decide +kernel
-theorem size22 : bytes22.length = 62 := by rfl
+theorem size22 : bytes22.length = 89 := by rfl
 def instructions : List Instr := part0 ++ part1 ++ CoreBody.template ++ part3 ++ part4 ++ part5 ++ part6 ++ part7 ++ part8 ++ part9 ++ part10 ++ part11 ++ part12 ++ part13 ++ part14 ++ part15 ++ part16 ++ part17 ++ part18 ++ part19 ++ part20 ++ part21 ++ part22
 def bytes : List UInt8 := bytes0 ++ bytes1 ++ bytes2 ++ bytes3 ++ bytes4 ++ bytes5 ++ bytes6 ++ bytes7 ++ bytes8 ++ bytes9 ++ bytes10 ++ bytes11 ++ bytes12 ++ bytes13 ++ bytes14 ++ bytes15 ++ bytes16 ++ bytes17 ++ bytes18 ++ bytes19 ++ bytes20 ++ bytes21 ++ bytes22
 theorem assembly : PcEncoding.assembleBytes instructions = bytes := by
@@ -4165,10 +4162,10 @@ def artifact : DataProgramArtifact where
     apply ByteArray.ext
     change (PcEncoding.assembleBytes instructions ++ []).toArray = Challenge.Ripemd160.Benchmark.bytecode.data
     rw [List.append_nil, assembly, bytes_exact, ← RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-theorem instruction_count : instructions.length = 7028 := by
+theorem instruction_count : instructions.length = 7025 := by
   simp only [instructions, List.length_append, count0, count1, count2, count3, count4, count5, count6, count7, count8, count9, count10, count11, count12, count13, count14, count15, count16, count17, count18, count19, count20, count21, count22]
-theorem code_size : artifact.code.size = 10441 := by
-  change Challenge.Ripemd160.Benchmark.bytecode.data.size = 10441
+theorem code_size : artifact.code.size = 10500 := by
+  change Challenge.Ripemd160.Benchmark.bytecode.data.size = 10500
   rw [← Array.length_toList, RipemdSubmissionTables20261028.CandidateBytes.exact_list]
   decide +kernel
 #print axioms artifact

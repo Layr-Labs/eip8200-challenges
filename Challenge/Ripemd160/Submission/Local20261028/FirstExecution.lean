@@ -207,19 +207,21 @@ def template : List Instr := [
     .push ⟨2, by decide⟩ (UInt256.ofNat 396),
     .op .MSTORE,
     .op (.Dup ⟨4, by decide⟩),
+    .push ⟨18, by decide⟩ (UInt256.ofNat 22300745198530623141535718272648361505980415),
+    .op .AND,
     .push ⟨2, by decide⟩ (UInt256.ofNat 468),
     .op .MSTORE ]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24, x 25, x 26] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24, x 25, x 26] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 324 (x 0))) 360 (x 1))) 414 (x 1))) 396 (x 4))) 468 (x 6))
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 324 (x 0))) 360 (x 1))) 414 (x 1))) 396 (x 4))) 468 (UInt256.land (UInt256.ofNat 22300745198530623141535718272648361505980415) (x 6)))
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10335).take 23 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10335).take 43 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (10304+31)).take 23 = _
+  change (CandidateBytes.bytes.drop (10304+31)).take 43 = _
   rw [← List.drop_drop, CandidateBytes.drop161]
   decide +kernel
 
@@ -227,7 +229,7 @@ theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := (UInt256.ofNat 10335), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 10358), stack := outputs x rho s, memory := memory x s} := by
+      some {s with pc := (UInt256.ofNat 10378), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address : Nat) (ha : address ≤ 1056) :
@@ -251,6 +253,8 @@ def template : List Instr := [
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 558),
     .op .MSTORE,
+    .push ⟨18, by decide⟩ (UInt256.ofNat 22300745198530623141535718272648361505980415),
+    .op .AND,
     .push ⟨2, by decide⟩ (UInt256.ofNat 684),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 756),
@@ -262,21 +266,21 @@ def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 522 (x 1))) 540 (x 0))) 558 (x 1))) 684 (x 2))) 756 (x 3))) 738 (x 4))
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 522 (x 1))) 540 (x 0))) 558 (x 1))) 684 (UInt256.land (UInt256.ofNat 22300745198530623141535718272648361505980415) (x 2)))) 756 (x 3))) 738 (x 4))
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10358).take 26 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10378).take 46 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (10304+54)).take 26 = _
-  rw [← List.drop_drop, CandidateBytes.drop161]
+  change (CandidateBytes.bytes.drop (10368+10)).take 46 = _
+  rw [← List.drop_drop, CandidateBytes.drop162]
   decide +kernel
 
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := (UInt256.ofNat 10358), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 10384), stack := outputs x rho s, memory := memory x s} := by
+    runInstrSeq template {s with pc := (UInt256.ofNat 10378), stack := inputs x rho} =
+      some {s with pc := (UInt256.ofNat 10424), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address : Nat) (ha : address ≤ 1056) :
@@ -296,6 +300,8 @@ def template : List Instr := [
     .push ⟨2, by decide⟩ (UInt256.ofNat 720),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
+    .push ⟨32, by decide⟩ (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840),
+    .op .AND,
     .push ⟨2, by decide⟩ (UInt256.ofNat 828),
     .op .MSTORE,
     .op (.Dup ⟨3, by decide⟩),
@@ -303,29 +309,26 @@ def template : List Instr := [
     .op .MSTORE,
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .push ⟨1, by decide⟩ (UInt256.ofNat 252),
-    .op .MSTORE,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 450),
     .op .MSTORE ]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 720 (x 0))) 828 (x 4))) 972 (x 4))) 252 ((UInt256.ofNat 0)))) 450 ((UInt256.ofNat 0)))
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 720 (x 0))) 828 (UInt256.land (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840) (x 4)))) 972 (x 4))) 252 ((UInt256.ofNat 0)))
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10384).take 23 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10424).take 52 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (10368+16)).take 23 = _
+  change (CandidateBytes.bytes.drop (10368+56)).take 52 = _
   rw [← List.drop_drop, CandidateBytes.drop162]
   decide +kernel
 
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := (UInt256.ofNat 10384), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 10407), stack := outputs x rho s, memory := memory x s} := by
+    runInstrSeq template {s with pc := (UInt256.ofNat 10424), stack := inputs x rho} =
+      some {s with pc := (UInt256.ofNat 10476), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address : Nat) (ha : address ≤ 1056) :
@@ -347,32 +350,26 @@ def template : List Instr := [
     .push ⟨2, by decide⟩ (UInt256.ofNat 630),
     .op .MSTORE,
     .push ⟨2, by decide⟩ (UInt256.ofNat 612),
-    .op .MSTORE,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 666),
-    .op .MSTORE,
-    .push ⟨0, by decide⟩ (UInt256.ofNat 0),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 846),
     .op .MSTORE ]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 576 (x 0))) 630 (x 1))) 612 (x 2))) 666 ((UInt256.ofNat 0)))) 846 ((UInt256.ofNat 0)))
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 576 (x 0))) 630 (x 1))) 612 (x 2))
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10407).take 22 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10476).take 12 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (10368+39)).take 22 = _
-  rw [← List.drop_drop, CandidateBytes.drop162]
+  change (CandidateBytes.bytes.drop (10432+44)).take 12 = _
+  rw [← List.drop_drop, CandidateBytes.drop163]
   decide +kernel
 
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := (UInt256.ofNat 10407), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 10429), stack := outputs x rho s, memory := memory x s} := by
+    runInstrSeq template {s with pc := (UInt256.ofNat 10476), stack := inputs x rho} =
+      some {s with pc := (UInt256.ofNat 10488), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address : Nat) (ha : address ≤ 1056) :
@@ -400,18 +397,18 @@ def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt25
 def memory (x : Nat → UInt256) (s : State) : ByteArray := (PairedScheduleMemory.writeWord ((PairedScheduleMemory.writeWord (s.memory) 864 (x 0))) 936 (x 1))
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10429).take 8 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10488).take 8 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (10368+61)).take 8 = _
-  rw [← List.drop_drop, CandidateBytes.drop162]
+  change (CandidateBytes.bytes.drop (10432+56)).take 8 = _
+  rw [← List.drop_drop, CandidateBytes.drop163]
   decide +kernel
 
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := (UInt256.ofNat 10429), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 10437), stack := outputs x rho s, memory := memory x s} := by
+    runInstrSeq template {s with pc := (UInt256.ofNat 10488), stack := inputs x rho} =
+      some {s with pc := (UInt256.ofNat 10496), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address : Nat) (ha : address ≤ 1056) :

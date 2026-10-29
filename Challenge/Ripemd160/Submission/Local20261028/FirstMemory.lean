@@ -104,6 +104,33 @@ theorem literal54_bytes (m : ByteArray) (j : Nat) (hj : j < 32) :
     fin_cases j <;> rfl
   exact h ⟨j,hj⟩
 
+theorem low18_byte (j : Nat) (hj : j < 32) :
+    PoolByte.byte (UInt256.ofNat 22300745198530623141535718272648361505980415) j = if 14 ≤ j then 255 else 0 := by
+  have h : ∀ j : Fin 32, PoolByte.byte (UInt256.ofNat 22300745198530623141535718272648361505980415) j.val = if 14 ≤ j.val then 255 else 0 := by
+    intro j
+    fin_cases j <;> rfl
+  exact h ⟨j,hj⟩
+theorem high18_byte (j : Nat) (hj : j < 32) :
+    PoolByte.byte (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840) j = if j < 18 then 255 else 0 := by
+  have h : ∀ j : Fin 32, PoolByte.byte (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840) j.val = if j.val < 18 then 255 else 0 := by
+    intro j
+    fin_cases j <;> rfl
+  exact h ⟨j,hj⟩
+/-- Bytes of `mask AND w` for a mask whose bytes are all-ones (kept) or zero (cleared). -/
+theorem masked_bytes (m : ByteArray) (mask w : UInt256) (keep : Nat → Prop) [DecidablePred keep]
+    (src : Nat → Nat)
+    (hmask : ∀ j, j < 32 → PoolByte.byte mask j = if keep j then 255 else 0)
+    (hw : ∀ j, j < 32 → PoolByte.byte w j = value m (src j)) (j : Nat) (hj : j < 32) :
+    PoolByte.byte (UInt256.land mask w) j = value m (if keep j then src j else 0) := by
+  rw [PoolByte.land, hmask j hj]
+  by_cases hk : keep j
+  · rw [if_pos hk, if_pos hk, ← hw j hj]
+    apply UInt8.eq_of_toBitVec_eq
+    exact BitVec.allOnes_and
+  · rw [if_neg hk, if_neg hk, show value m 0 = 0 from rfl]
+    apply UInt8.eq_of_toBitVec_eq
+    exact BitVec.zero_and
+
 def frame (continuation : UInt256) : Nat → UInt256 :=
   fun i => #[(UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)][i]!
 def memory0 (s : State) : ByteArray := s.memory
@@ -197,13 +224,15 @@ def symbols14 : Nat → Nat := written symbols13 396 (fun j => symbols4 (266+j))
 theorem matches14 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory14 s) symbols14 (value s.memory) :=
   write_matches _ _ _ (matches13 s h) 396 _ _ (fun j hj => (PoolByte.read (memory4 s) 266 j hj).trans (matches4 s h _))
-def memory15 (s : State) : ByteArray := writeWord (memory14 s) 468 (MachineState.readWord (memory4 s) 262)
-def symbols15 : Nat → Nat := written symbols14 468 (fun j => symbols4 (262+j))
+def memory15 (s : State) : ByteArray := writeWord (memory14 s) 468 (UInt256.land (UInt256.ofNat 22300745198530623141535718272648361505980415) (MachineState.readWord (memory4 s) 262))
+def symbols15 : Nat → Nat := written symbols14 468 (fun j => if 14 ≤ j then symbols4 (262+j) else 0)
 theorem matches15 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory15 s) symbols15 (value s.memory) :=
-  write_matches _ _ _ (matches14 s h) 468 _ _ (fun j hj => (PoolByte.read (memory4 s) 262 j hj).trans (matches4 s h _))
+  write_matches _ _ _ (matches14 s h) 468 _ _
+    (masked_bytes s.memory _ _ (fun j => 14 ≤ j) (fun j => symbols4 (262+j)) low18_byte
+      (fun j hj => (PoolByte.read (memory4 s) 262 j hj).trans (matches4 s h _)))
 def state3 (s : State) (continuation : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10358, stack := [(MachineState.readWord (memory4 s) 224), (MachineState.readWord (memory4 s) 228), (MachineState.readWord (memory4 s) 266), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (MachineState.readWord (memory4 s) 262), (UInt256.ofNat 2854495385411919762116571938898990272765493248), (UInt256.ofNat 5708990770823839524233143877797980545530986752), (UInt256.ofNat 24519928653854221733733552434404946937899827054449262592), (MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory15 s}
+  {s with pc := UInt256.ofNat 10378, stack := [(MachineState.readWord (memory4 s) 224), (MachineState.readWord (memory4 s) 228), (MachineState.readWord (memory4 s) 266), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (MachineState.readWord (memory4 s) 262), (UInt256.ofNat 2854495385411919762116571938898990272765493248), (UInt256.ofNat 5708990770823839524233143877797980545530986752), (UInt256.ofNat 24519928653854221733733552434404946937899827054449262592), (MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory15 s}
 theorem eq3 (s : State) (continuation : UInt256) (rho : List UInt256) :
     FirstTable.result3 s (frame continuation) rho = state3 s continuation rho := by
   simp only [FirstTable.result3, eq2]
@@ -223,11 +252,13 @@ def symbols18 : Nat → Nat := written symbols17 558 (fun j => symbols4 (228+j))
 theorem matches18 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory18 s) symbols18 (value s.memory) :=
   write_matches _ _ _ (matches17 s h) 558 _ _ (fun j hj => (PoolByte.read (memory4 s) 228 j hj).trans (matches4 s h _))
-def memory19 (s : State) : ByteArray := writeWord (memory18 s) 684 (MachineState.readWord (memory4 s) 266)
-def symbols19 : Nat → Nat := written symbols18 684 (fun j => symbols4 (266+j))
+def memory19 (s : State) : ByteArray := writeWord (memory18 s) 684 (UInt256.land (UInt256.ofNat 22300745198530623141535718272648361505980415) (MachineState.readWord (memory4 s) 266))
+def symbols19 : Nat → Nat := written symbols18 684 (fun j => if 14 ≤ j then symbols4 (266+j) else 0)
 theorem matches19 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory19 s) symbols19 (value s.memory) :=
-  write_matches _ _ _ (matches18 s h) 684 _ _ (fun j hj => (PoolByte.read (memory4 s) 266 j hj).trans (matches4 s h _))
+  write_matches _ _ _ (matches18 s h) 684 _ _
+    (masked_bytes s.memory _ _ (fun j => 14 ≤ j) (fun j => symbols4 (266+j)) low18_byte
+      (fun j hj => (PoolByte.read (memory4 s) 266 j hj).trans (matches4 s h _)))
 def memory20 (s : State) : ByteArray := writeWord (memory19 s) 756 (UInt256.ofNat 2854495385411919762116571938898990272765493376)
 def symbols20 : Nat → Nat := written symbols19 756 (fun j => literal22[j]!)
 theorem matches20 (s : State) (h : Matches s.memory initial (value s.memory)) :
@@ -239,7 +270,7 @@ theorem matches21 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory21 s) symbols21 (value s.memory) :=
   write_matches _ _ _ (matches20 s h) 738 _ _ (fun j hj => (PoolByte.read (memory4 s) 262 j hj).trans (matches4 s h _))
 def state4 (s : State) (continuation : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10384, stack := [(MachineState.readWord (memory4 s) 262), (UInt256.ofNat 2854495385411919762116571938898990272765493248), (UInt256.ofNat 5708990770823839524233143877797980545530986752), (UInt256.ofNat 24519928653854221733733552434404946937899827054449262592), (MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory21 s}
+  {s with pc := UInt256.ofNat 10424, stack := [(MachineState.readWord (memory4 s) 262), (UInt256.ofNat 2854495385411919762116571938898990272765493248), (UInt256.ofNat 5708990770823839524233143877797980545530986752), (UInt256.ofNat 24519928653854221733733552434404946937899827054449262592), (MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory21 s}
 theorem eq4 (s : State) (continuation : UInt256) (rho : List UInt256) :
     FirstTable.result4 s (frame continuation) rho = state4 s continuation rho := by
   simp only [FirstTable.result4, eq3]
@@ -249,11 +280,13 @@ def symbols22 : Nat → Nat := written symbols21 720 (fun j => symbols4 (262+j))
 theorem matches22 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory22 s) symbols22 (value s.memory) :=
   write_matches _ _ _ (matches21 s h) 720 _ _ (fun j hj => (PoolByte.read (memory4 s) 262 j hj).trans (matches4 s h _))
-def memory23 (s : State) : ByteArray := writeWord (memory22 s) 828 (MachineState.readWord (memory4 s) 236)
-def symbols23 : Nat → Nat := written symbols22 828 (fun j => symbols4 (236+j))
+def memory23 (s : State) : ByteArray := writeWord (memory22 s) 828 (UInt256.land (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840) (MachineState.readWord (memory4 s) 236))
+def symbols23 : Nat → Nat := written symbols22 828 (fun j => if j < 18 then symbols4 (236+j) else 0)
 theorem matches23 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory23 s) symbols23 (value s.memory) :=
-  write_matches _ _ _ (matches22 s h) 828 _ _ (fun j hj => (PoolByte.read (memory4 s) 236 j hj).trans (matches4 s h _))
+  write_matches _ _ _ (matches22 s h) 828 _ _
+    (masked_bytes s.memory _ _ (fun j => j < 18) (fun j => symbols4 (236+j)) high18_byte
+      (fun j hj => (PoolByte.read (memory4 s) 236 j hj).trans (matches4 s h _)))
 def memory24 (s : State) : ByteArray := writeWord (memory23 s) 972 (MachineState.readWord (memory4 s) 236)
 def symbols24 : Nat → Nat := written symbols23 972 (fun j => symbols4 (236+j))
 theorem matches24 (s : State) (h : Matches s.memory initial (value s.memory)) :
@@ -264,13 +297,13 @@ def symbols25 : Nat → Nat := written symbols24 252 (fun j => literal54[j]!)
 theorem matches25 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory25 s) symbols25 (value s.memory) :=
   write_matches _ _ _ (matches24 s h) 252 _ _ (literal54_bytes s.memory)
-def memory26 (s : State) : ByteArray := writeWord (memory25 s) 450 (UInt256.ofNat 0)
-def symbols26 : Nat → Nat := written symbols25 450 (fun j => literal54[j]!)
+def memory26 (s : State) : ByteArray := memory25 s
+def symbols26 : Nat → Nat := symbols25
 theorem matches26 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory26 s) symbols26 (value s.memory) :=
-  write_matches _ _ _ (matches25 s h) 450 _ _ (literal54_bytes s.memory)
+  matches25 s h
 def state5 (s : State) (continuation : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10407, stack := [(UInt256.ofNat 2854495385411919762116571938898990272765493248), (UInt256.ofNat 5708990770823839524233143877797980545530986752), (UInt256.ofNat 24519928653854221733733552434404946937899827054449262592), (MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory26 s}
+  {s with pc := UInt256.ofNat 10476, stack := [(UInt256.ofNat 2854495385411919762116571938898990272765493248), (UInt256.ofNat 5708990770823839524233143877797980545530986752), (UInt256.ofNat 24519928653854221733733552434404946937899827054449262592), (MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory26 s}
 theorem eq5 (s : State) (continuation : UInt256) (rho : List UInt256) :
     FirstTable.result5 s (frame continuation) rho = state5 s continuation rho := by
   simp only [FirstTable.result5, eq4]
@@ -290,18 +323,18 @@ def symbols29 : Nat → Nat := written symbols28 612 (fun j => literal23[j]!)
 theorem matches29 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory29 s) symbols29 (value s.memory) :=
   write_matches _ _ _ (matches28 s h) 612 _ _ (literal23_bytes s.memory)
-def memory30 (s : State) : ByteArray := writeWord (memory29 s) 666 (UInt256.ofNat 0)
-def symbols30 : Nat → Nat := written symbols29 666 (fun j => literal54[j]!)
+def memory30 (s : State) : ByteArray := memory29 s
+def symbols30 : Nat → Nat := symbols29
 theorem matches30 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory30 s) symbols30 (value s.memory) :=
-  write_matches _ _ _ (matches29 s h) 666 _ _ (literal54_bytes s.memory)
-def memory31 (s : State) : ByteArray := writeWord (memory30 s) 846 (UInt256.ofNat 0)
-def symbols31 : Nat → Nat := written symbols30 846 (fun j => literal54[j]!)
+  matches29 s h
+def memory31 (s : State) : ByteArray := memory30 s
+def symbols31 : Nat → Nat := symbols30
 theorem matches31 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory31 s) symbols31 (value s.memory) :=
-  write_matches _ _ _ (matches30 s h) 846 _ _ (literal54_bytes s.memory)
+  matches30 s h
 def state6 (s : State) (continuation : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10429, stack := [(MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory31 s}
+  {s with pc := UInt256.ofNat 10488, stack := [(MachineState.readWord (memory4 s) 236), (UInt256.ofNat 2854495385411919762116571938898990272765493376), (UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory31 s}
 theorem eq6 (s : State) (continuation : UInt256) (rho : List UInt256) :
     FirstTable.result6 s (frame continuation) rho = state6 s continuation rho := by
   simp only [FirstTable.result6, eq5]
@@ -317,7 +350,7 @@ theorem matches33 (s : State) (h : Matches s.memory initial (value s.memory)) :
     Matches (memory33 s) symbols33 (value s.memory) :=
   write_matches _ _ _ (matches32 s h) 936 _ _ (literal22_bytes s.memory)
 def state7 (s : State) (continuation : UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10437, stack := [(UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory33 s}
+  {s with pc := UInt256.ofNat 10496, stack := [(UInt256.ofNat 158456325065422163343096938498), (UInt256.ofNat 4294967295), (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), (UInt256.ofNat 1109194275457955143345843994625), (UInt256.ofNat 475368975196266490007815979009), (UInt256.ofNat 3285377520), (UInt256.ofNat 271733878), (UInt256.ofNat 2562383102), (UInt256.ofNat 4023233417), (UInt256.ofNat 1732584193), (UInt256.ofNat 1056), continuation, (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255)] ++ rho, memory := memory33 s}
 theorem eq7 (s : State) (continuation : UInt256) (rho : List UInt256) :
     FirstTable.result7 s (frame continuation) rho = state7 s continuation rho := by
   simp only [FirstTable.result7, eq6]

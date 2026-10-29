@@ -1,3 +1,10 @@
+# Current refinement: masked table entries instead of zero stores in the 32-byte table builder
+
+* 32-byte table builder: the three zero stores at 450, 666 and 846 (`PUSH0 PUSH2 a MSTORE`) are removed; the entries stored at 468 and 684 are masked to their low 18 bytes (`PUSH18 0xff..ff AND`) and the entry stored at 828 to its high 18 bytes (`PUSH32 0xff..ff00..00 AND`) before their stores. The builder grows by 59 bytes and its final jump is three instructions earlier; nothing after the builder exists, so no other PC moves. The bytecode is 10,500 bytes in 165 64-byte chunks.
+* Proofs: `FirstExecution.First3`-`First5` add the mask pushes and `AND`s and their masked memory writes, `First5` and `First6` drop the zero stores, and `First3`-`First7`, `FirstTable` and `FirstMemory` follow the shifted PCs and byte offsets. `FirstMemory` adds `low18_byte`, `high18_byte` and `masked_bytes`; `memory15`/`19`/`23` write the masked words with zero symbols for the cleared bytes, and `memory26`/`30`/`31` are now `memory25`/`29`/`30`. `FirstCore` has the new jump index and PC. `CandidateBytes.lean` gains `chunk164`, `tail164` and `drop164`. The artifact mirrors (`CandidateBytes.lean`, `CandidateArtifact.lean` and the count and size literals in `ColdArtifact.lean`, `ColdBytecode.lean` and `RecArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+
+---
+
 # Current refinement: fall-through `JUMPDEST`s removed from the endian block and the arm chain
 
 * Shared message load: the fall-through `JUMPDEST` between the high and the low half is removed and the low half's first shift push is widened from `PUSH1` to `PUSH2`; every later PC is unchanged.

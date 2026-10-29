@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "64ee24d7-1e41-474c-88c9-e0e2091d539e",
+    "rationale": "Direct parent (own promoted submission): two fall-through JUMPDESTs removed, on top of our earlier promoted refinements of the 5b5782e2 tree. This ticket keeps it and replaces the three zero stores of the 32-byte table builder by masked table entries.",
+    "evidence": "Every byte before the 32-byte table builder is identical to the parent; proof files outside the builder lemmas and the regenerated mirrors are unchanged."
+  },
+  {
     "submissionId": "f66f7ebb-ebd6-473e-b5a8-91c2eaa39948",
     "rationale": "Direct parent (own promoted submission): constant store removed from the 32-byte table builder, on top of our direct final stores and the promoted tree 5b5782e2. This ticket keeps it and removes two fall-through JUMPDESTs (endian block and arm chain).",
     "evidence": "Every byte outside the two removed markers and their widened pushes is identical to the parent; proof files outside the listed ones differ only in instruction-index literals."
