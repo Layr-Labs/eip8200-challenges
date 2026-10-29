@@ -300,16 +300,15 @@ def packFinalpart9Program : List Instr :=
    .push 1 128,
    .op .SHL,
    .op .OR,
-   .push 2 2112,
-   .op .MSTORE,
-   .op (.Dup ⟨13, by decide⟩)]
+   .push 10 2112,
+   .op .MSTORE]
 
 def packFinalpart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftRight x1 x0
   let v1 : UInt256 := UInt256.shiftLeft x15 (UInt256.ofNat 128)
   let v2 : UInt256 := UInt256.lor v1 v0
   let v3 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v2.toNat 32) 2112
-  {s with pc := UInt256.ofNat 10535, memory := v3, stack := x15 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := UInt256.ofNat 10542, memory := v3, stack := x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem packFinalpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -321,29 +320,6 @@ theorem packFinalpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x1
   have ha2112 : (2112 : UInt256).toNat = 2112 := rfl
   have hf2112 := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
   simp [hz, hzn, packFinalpart9Program, packFinalpart9Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha2112, hf2112]
-
-
-def packFinalpart10Program : List Instr :=
-  [.push 1 128,
-   .op .SHR,
-   .push 2 2080,
-   .op .MSTORE]
-
-def packFinalpart10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.shiftRight x0 (UInt256.ofNat 128)
-  let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 2080
-  {s with pc := UInt256.ofNat 10542, memory := v1, stack := x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
-
-theorem packFinalpart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions packFinalpart10Program {s with pc := UInt256.ofNat 10535, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
-      some (packFinalpart10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
-  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
-  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
-  have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
-  have ha2080 : (2080 : UInt256).toNat = 2080 := rfl
-  have hf2080 := Monpro.activeWords_fix s 2080 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, packFinalpart10Program, packFinalpart10Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha2080, hf2080]
 
 
 def packFinalProgram : List Instr :=
@@ -427,12 +403,7 @@ def packFinalProgram : List Instr :=
    .push 1 128,
    .op .SHL,
    .op .OR,
-   .push 2 2112,
-   .op .MSTORE,
-   .op (.Dup ⟨13, by decide⟩),
-   .push 1 128,
-   .op .SHR,
-   .push 2 2080,
+   .push 10 2112,
    .op .MSTORE]
 
 def packFinalModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
@@ -478,9 +449,7 @@ def packFinalModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UIn
   let v39 : UInt256 := UInt256.shiftLeft a8 (UInt256.ofNat 128)
   let v40 : UInt256 := UInt256.lor v39 v38
   let v41 : ByteArray := MachineState.writeBytes v36 (Data.Bytes.natToBytesPadded v40.toNat 32) 2112
-  let v42 : UInt256 := UInt256.shiftRight a8 (UInt256.ofNat 128)
-  let v43 : ByteArray := MachineState.writeBytes v41 (Data.Bytes.natToBytesPadded v42.toNat 32) 2080
-  {s with pc := UInt256.ofNat 10542, memory := v43, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
+  {s with pc := UInt256.ofNat 10542, memory := v41, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
 
 theorem packFinal_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -528,8 +497,6 @@ theorem packFinal_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : 
   let v39 : UInt256 := UInt256.shiftLeft a8 (UInt256.ofNat 128)
   let v40 : UInt256 := UInt256.lor v39 v38
   let v41 : ByteArray := MachineState.writeBytes v36 (Data.Bytes.natToBytesPadded v40.toNat 32) 2112
-  let v42 : UInt256 := UInt256.shiftRight a8 (UInt256.ofNat 128)
-  let v43 : ByteArray := MachineState.writeBytes v41 (Data.Bytes.natToBytesPadded v42.toNat 32) 2080
   have h0 : runInstructions packFinalpart0Program {s with pc := UInt256.ofNat 10409, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10423, memory := v3, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
     simpa only [packFinalpart0Model, v0, v1, v2, v3] using packFinalpart0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   have h1 : runInstructions packFinalpart1Program {s with pc := UInt256.ofNat 10423, memory := v3, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10436, memory := v7, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
@@ -548,11 +515,9 @@ theorem packFinal_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : 
     simpa only [packFinalpart7Model, v29, v30, v31, v32, v33] using packFinalpart7_run ({s with memory := v24}) (v28) (v26) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   have h8 : runInstructions packFinalpart8Program {s with pc := UInt256.ofNat 10511, memory := v30, stack := v33 :: v32 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10524, memory := v36, stack := (UInt256.ofNat 112) :: v37 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
     simpa only [packFinalpart8Model, v34, v35, v36, v37] using packFinalpart8_run ({s with memory := v30}) (v33) (v32) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h9 : runInstructions packFinalpart9Program {s with pc := UInt256.ofNat 10524, memory := v36, stack := (UInt256.ofNat 112) :: v37 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10535, memory := v41, stack := a8 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
+  have h9 : runInstructions packFinalpart9Program {s with pc := UInt256.ofNat 10524, memory := v36, stack := (UInt256.ofNat 112) :: v37 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10542, memory := v41, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
     simpa only [packFinalpart9Model, v38, v39, v40, v41] using packFinalpart9_run ({s with memory := v36}) ((UInt256.ofNat 112)) (v37) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h10 : runInstructions packFinalpart10Program {s with pc := UInt256.ofNat 10535, memory := v41, stack := a8 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10542, memory := v43, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [packFinalpart10Model, v42, v43] using packFinalpart10_run ({s with memory := v41}) (a8) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 h10))))))))))
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 h9)))))))))
 
 
 end CycleSubmission.Execution

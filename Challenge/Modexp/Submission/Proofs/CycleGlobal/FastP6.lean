@@ -16,11 +16,12 @@ open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
 
-/-- Instructions 556..559, pc 774..779. -/
+/-- Instructions 483..486, pc 692..696. -/
 def blk1333 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 484 (.Dup ⟨4, by decide⟩),
-   pushAt 485 2 256,
+  [opAt 483 (.Dup ⟨4, by decide⟩),
+   pushAt 484 1 1,
+   pushAt 485 0 0,
    opAt 486 .RETURN]
 
 /-- Instructions 1471..1344, pc 2016..2016. -/

@@ -14,7 +14,7 @@ open HistoricalSearch.CRTControl
 def entryBlock : Block Artifact.artifact .Osaka 5506 entryProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4285 107 5506 entryProgram
     (by change 4285+107 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4285+107 ≤ 8543)
+        exact Nat.le_trans (by decide : 4285+107 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -22,7 +22,7 @@ def entryBlock : Block Artifact.artifact .Osaka 5506 entryProgram :=
 def headBlock : Block Artifact.artifact .Osaka 5694 jumpDestProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4392 1 5694 jumpDestProgram
     (by change 4392+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4392+1 ≤ 8543)
+        exact Nat.le_trans (by decide : 4392+1 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

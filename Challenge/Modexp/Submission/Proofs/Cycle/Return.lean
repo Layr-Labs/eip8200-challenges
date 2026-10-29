@@ -10,7 +10,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def program : List Instr := [.op .JUMPDEST, .push 2 256, .push 2 2112, .op .RETURN]
+def program : List Instr := [.push 3 256, .push 2 2112, .op .RETURN]
 
 def result (s : State) (stack : List UInt256) : State :=
   {s with
@@ -35,13 +35,8 @@ theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
   have h1 : stack.length+1 < 1024 := by omega
   have h2 : stack.length+2 < 1024 := by omega
   have hf := Monpro.activeWords_fix s 2112 256 (by decide) (by norm_num) hact
-  have hJ : Challenge.EvmProof.Stepper.runInstr (.op .JUMPDEST)
+  have hP1 : Challenge.EvmProof.Stepper.runInstr (.push 3 256)
       {s with pc := UInt256.ofNat 10542, stack := stack} =
-      some {s with pc := UInt256.ofNat 10543, stack := stack} := by
-    simp only [Challenge.EvmProof.Stepper.runInstr, h0, ite_true]
-    rfl
-  have hP1 : Challenge.EvmProof.Stepper.runInstr (.push 2 256)
-      {s with pc := UInt256.ofNat 10543, stack := stack} =
       some {s with pc := UInt256.ofNat 10546, stack := UInt256.ofNat 256 :: stack} := by
     simp only [Challenge.EvmProof.Stepper.runInstr, h0, ite_true]
     rfl
@@ -63,15 +58,15 @@ theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
       activeWords := UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 256)} = _
     rw [hf]
     rfl
-  exact cons_run _ _ _ _ _ hJ (cons_run _ _ _ _ _ hP1
-    (cons_run _ _ _ _ _ hP2 (cons_run _ _ _ _ _ hRet rfl)))
+  exact cons_run _ _ _ _ _ hP1
+    (cons_run _ _ _ _ _ hP2 (cons_run _ _ _ _ _ hRet rfl))
 
 
 
 def block : Block Artifact.artifact .Osaka 10542 program :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 8413 4 10542 program
-    (by change 8413+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8413+4 ≤ 8543)
+  WindowTwentyOneSlice.block Artifact.wellFormed 8406 3 10542 program
+    (by change 8406+3 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 8406+3 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

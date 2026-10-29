@@ -20,86 +20,86 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 
 def unsignedBlocks : BigC.Unsigned.Blocks CycleSubmission.Artifact.artifact where
-  entry := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 315 2 464 BigC.Unsigned.entryProgram
+  entry := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 314 2 464 BigC.Unsigned.entryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  init := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 317 4 468 BigC.Unsigned.initProgram
+  init := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 316 4 468 BigC.Unsigned.initProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  cell := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 321 33 474 BigC.Unsigned.cellProgram
+  cell := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 320 33 474 BigC.Unsigned.cellProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  guard := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 354 3 509 BigC.Unsigned.guardProgram
+  guard := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 353 3 509 BigC.Unsigned.guardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  decide := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 357 3 514 BigC.Unsigned.decideProgram
+  decide := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 356 3 514 BigC.Unsigned.decideProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  retry := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 360 5 519 BigC.Unsigned.retryProgram
+  retry := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 359 5 519 BigC.Unsigned.retryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  finish := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 365 5 528 BigC.Unsigned.finishProgram
+  finish := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 364 5 528 BigC.Unsigned.finishProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  jumpInit := CycleSubmission.Global.Binding.jumpDest 317 (by rfl)
-  jumpLoop := CycleSubmission.Global.Binding.jumpDest 321 (by rfl)
-  jumpDone := CycleSubmission.Global.Binding.jumpDest 365 (by rfl)
+  jumpInit := CycleSubmission.Global.Binding.jumpDest 316 (by rfl)
+  jumpLoop := CycleSubmission.Global.Binding.jumpDest 320 (by rfl)
+  jumpDone := CycleSubmission.Global.Binding.jumpDest 364 (by rfl)
 
 def mulBlocks : BigC.U.MulBlocks CycleSubmission.Artifact.artifact where
-  mEntry := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 264 7 393 BigC.U.mEntryProgram
+  mEntry := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 263 7 393 BigC.U.mEntryProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  mGuard := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 271 8 401 BigC.U.mGuardProgram
+  mGuard := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 270 8 401 BigC.U.mGuardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  mDouble := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 279 4 412 BigC.U.mDoubleProgram
+  mDouble := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 278 4 412 BigC.U.mDoubleProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  m2 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 283 16 420 BigC.U.m2Program
+  m2 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 282 16 420 BigC.U.m2Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  mAdd := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 299 4 441 BigC.U.mAddProgram
+  mAdd := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 298 4 441 BigC.U.mAddProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  m3 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 303 5 449 BigC.U.m3Program
+  m3 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 302 5 449 BigC.U.m3Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  m9 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 308 7 457 BigC.U.m9Program
+  m9 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 307 7 457 BigC.U.m9Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumps :=
-    { j419 := CycleSubmission.Global.Binding.jumpDest 271 (by rfl)
-      j438 := CycleSubmission.Global.Binding.jumpDest 283 (by rfl)
-      j467 := CycleSubmission.Global.Binding.jumpDest 303 (by rfl)
-      j475 := CycleSubmission.Global.Binding.jumpDest 308 (by rfl)
-      j482 := CycleSubmission.Global.Binding.jumpDest 315 (by rfl) }
+    { j419 := CycleSubmission.Global.Binding.jumpDest 270 (by rfl)
+      j438 := CycleSubmission.Global.Binding.jumpDest 282 (by rfl)
+      j467 := CycleSubmission.Global.Binding.jumpDest 302 (by rfl)
+      j475 := CycleSubmission.Global.Binding.jumpDest 307 (by rfl)
+      j482 := CycleSubmission.Global.Binding.jumpDest 314 (by rfl) }
 
 def expBlocks : BigC.U.ExpBlocks CycleSubmission.Artifact.artifact where
-  eGuard := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 201 8 292 BigC.U.eGuardProgram
+  eGuard := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 200 8 292 BigC.U.eGuardProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  eSquare := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 209 6 303 BigC.U.eSquareProgram
+  eSquare := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 208 6 303 BigC.U.eSquareProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e2 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 215 23 315 BigC.U.e2Program
+  e2 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 214 23 315 BigC.U.e2Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  eMul := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 238 7 346 BigC.U.eMulProgram
+  eMul := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 237 7 346 BigC.U.eMulProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e4 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 245 5 361 BigC.U.e4Program
+  e4 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 244 5 361 BigC.U.e4Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e3 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 250 5 368 BigC.U.e3Program
+  e3 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 249 5 368 BigC.U.e3Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  e9 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 255 9 376 BigC.U.e9Program
+  e9 := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 254 9 376 BigC.U.e9Program
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumps :=
-    { j295 := CycleSubmission.Global.Binding.jumpDest 189 (by rfl)
-      j310 := CycleSubmission.Global.Binding.jumpDest 201 (by rfl)
-      j333 := CycleSubmission.Global.Binding.jumpDest 215 (by rfl)
-      j379 := CycleSubmission.Global.Binding.jumpDest 245 (by rfl)
-      j386 := CycleSubmission.Global.Binding.jumpDest 250 (by rfl)
-      j394 := CycleSubmission.Global.Binding.jumpDest 255 (by rfl)
-      j411 := CycleSubmission.Global.Binding.jumpDest 264 (by rfl)
-      j482 := CycleSubmission.Global.Binding.jumpDest 315 (by rfl) }
+    { j295 := CycleSubmission.Global.Binding.jumpDest 188 (by rfl)
+      j310 := CycleSubmission.Global.Binding.jumpDest 200 (by rfl)
+      j333 := CycleSubmission.Global.Binding.jumpDest 214 (by rfl)
+      j379 := CycleSubmission.Global.Binding.jumpDest 244 (by rfl)
+      j386 := CycleSubmission.Global.Binding.jumpDest 249 (by rfl)
+      j394 := CycleSubmission.Global.Binding.jumpDest 254 (by rfl)
+      j411 := CycleSubmission.Global.Binding.jumpDest 263 (by rfl)
+      j482 := CycleSubmission.Global.Binding.jumpDest 314 (by rfl) }
 
 def setupBlocks : BigC.U.SetupBlocks CycleSubmission.Artifact.artifact where
-  setup := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 146 25 219 BigC.U.setupProgram
+  setup := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 145 25 219 BigC.U.setupProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zLoop := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 171 15 254 BigC.U.zLoopProgram
+  zLoop := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 170 15 254 BigC.U.zLoopProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zExit := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 186 3 272 BigC.U.zExitProgram
+  zExit := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 185 3 272 BigC.U.zExitProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  zeroRet := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 189 4 277 BigC.U.zeroRetProgram
+  zeroRet := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 188 4 277 BigC.U.zeroRetProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
-  nz := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 193 8 281 BigC.U.nzProgram
+  nz := CycleSubmission.Global.Binding.block CycleSubmission.Artifact.wellFormed 192 8 281 BigC.U.nzProgram
     (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
   jumps :=
-    { j236 := CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
-      j271 := CycleSubmission.Global.Binding.jumpDest 171 (by rfl)
-      j295 := CycleSubmission.Global.Binding.jumpDest 189 (by rfl)
-      j299 := CycleSubmission.Global.Binding.jumpDest 193 (by rfl) }
+    { j236 := CycleSubmission.Global.Binding.jumpDest 145 (by rfl)
+      j271 := CycleSubmission.Global.Binding.jumpDest 170 (by rfl)
+      j295 := CycleSubmission.Global.Binding.jumpDest 188 (by rfl)
+      j299 := CycleSubmission.Global.Binding.jumpDest 192 (by rfl) }
 
 end CycleSubmission.Global.BigC.UBlocks
