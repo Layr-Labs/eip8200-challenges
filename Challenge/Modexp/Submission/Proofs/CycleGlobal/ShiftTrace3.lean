@@ -20,6 +20,7 @@ attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old1
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old2
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old3
+attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old3b
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old4
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail5
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail6

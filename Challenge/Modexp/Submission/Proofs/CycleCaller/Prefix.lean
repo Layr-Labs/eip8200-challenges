@@ -71,7 +71,7 @@ theorem entry_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail 
 
 def tested (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
   {stateAt s mem k ret tail 3750 with
-    stack := UInt256.ofNat 3768 :: UInt256.ofNat (2^256-128) :: saved (frame mem k ret tail)}
+    stack := UInt256.ofNat 5506 :: UInt256.ofNat (2^256-128) :: saved (frame mem k ret tail)}
 
 theorem test_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (hcap : tail.length ≤ 943) :
@@ -116,32 +116,15 @@ noncomputable opaque suffixTrace (s : State) (mem : ByteArray) (k : Nat) (ret : 
     (env.transfer rfl rfl) rfl (test_run s mem k ret tail hcap)
   have hc : (tested s mem k ret tail).stack.length < 1024 := by
     simp only [tested, stateAt, saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  have hr := jumpi_run (tested s mem k ret tail) (UInt256.ofNat 3768)
+  have hr := jumpi_run (tested s mem k ret tail) (UInt256.ofNat 5506)
     (UInt256.ofNat (2^256-128)) (saved (frame mem k ret tail)) rfl hc
-    (by rw [show (tested s mem k ret tail).executionEnv.code = Artifact.bytecode from env.code]; exact valid3768)
+    (by rw [show (tested s mem k ret tail).executionEnv.code = Artifact.bytecode from env.code]; exact valid5964)
   have hj := branchBlock.steps (s := tested s mem k ret tail) (env.transfer rfl rfl) rfl hr
-  have chosen : conditionalModel (tested s mem k ret tail) = stateAt s mem k ret tail 3768 := by
+  have chosen : conditionalModel (tested s mem k ret tail) = stateAt s mem k ret tail 5506 := by
     simp only [conditionalModel, tested, List.drop_succ_cons, List.drop_zero, List.headD_cons]
     rfl
   rw [chosen] at hj
-  have hc16 : (saved (frame mem k ret tail)).length < 1024 := by
-    simp only [saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  have hc17 : (saved (frame mem k ret tail)).length + 1 < 1024 := by
-    simp only [saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  let pushed : State := {stateAt s mem k ret tail 3772 with stack := UInt256.ofNat 5506 :: saved (frame mem k ret tail)}
-  have htr : runInstructions trampolineProgram (stateAt s mem k ret tail 3768) = some pushed := by
-    simp [trampolineProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-      stateAt, pushed, hc16, hc17, Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-  have hg := trampolineBlock.steps (s := stateAt s mem k ret tail 3768)
-    (env.transfer rfl rfl) rfl htr
-  have hjr := jump_run pushed (UInt256.ofNat 5506) (saved (frame mem k ret tail)) rfl
-    (by simpa only [pushed, List.length_cons] using hc17)
-    (by rw [show pushed.executionEnv.code = Artifact.bytecode from env.code]; exact valid5964)
-  have hj2 := jumpBlock.steps (s := pushed) (env.transfer rfl rfl) rfl hjr
-  change GasSteps pushed (stateAt s mem k ret tail 5506) at hj2
-  have tailTrace : GasSteps (stateAt s mem k ret tail 3768) (stateAt s mem k ret tail 5506) := hg.trans hj2
-  have branchTrace : GasSteps (tested s mem k ret tail) (stateAt s mem k ret tail 5506) := hj.trans tailTrace
+  have branchTrace : GasSteps (tested s mem k ret tail) (stateAt s mem k ret tail 5506) := hj
   have testTrace : GasSteps (stateAt s mem k ret tail 3743) (stateAt s mem k ret tail 5506) := ht.trans branchTrace
   have entryTrace : GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5506) := he2.trans testTrace
   exact entryTrace

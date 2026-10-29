@@ -24,11 +24,11 @@ open EvmSemantics.EVM
 
 open YulEvmCompiler
 
-@[simp] theorem pc485 : CycleSubmission.Artifact.artifact.instructionPC 139 = 210 := by
+@[simp] theorem pc485 : CycleSubmission.Artifact.artifact.instructionPC 138 = 210 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc486 : CycleSubmission.Artifact.artifact.instructionPC 140 = 213 := by
+@[simp] theorem pc486 : CycleSubmission.Artifact.artifact.instructionPC 139 = 213 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

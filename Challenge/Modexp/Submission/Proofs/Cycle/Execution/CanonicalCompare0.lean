@@ -11,11 +11,10 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def canonicalCompare0part0Program : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
+  [.op (.Dup ⟨8, by decide⟩),
    .op (.Dup ⟨14, by decide⟩),
    .op .LT,
-   .push 2 10409]
+   .push 3 10409]
 
 def canonicalCompare0part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.lt x13 x8
@@ -32,11 +31,10 @@ theorem canonicalCompare0part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x1
 
 
 def canonicalCompare0Program : List Instr :=
-  [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
+  [.op (.Dup ⟨8, by decide⟩),
    .op (.Dup ⟨14, by decide⟩),
    .op .LT,
-   .push 2 10409]
+   .push 3 10409]
 
 def canonicalCompare0Model (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.lt a8 n8
