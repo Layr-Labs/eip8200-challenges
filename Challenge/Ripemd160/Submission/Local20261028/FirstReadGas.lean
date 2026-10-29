@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Local20261028.FirstRead
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.RecognitionLift
 set_option warningAsError true
 set_option autoImplicit false
 set_option maxRecDepth 100000
@@ -19,22 +20,24 @@ theorem site_pc : site.startPC = UInt256.ofNat 10108 := by
 def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
     GasSteps {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
       {FirstRead.result s with pc := UInt256.ofNat 10141, stack := FirstCore.frame cont rho} := by
-  apply PadLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
+  apply RecognitionLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
     {FirstRead.result s with pc := UInt256.ofNat 10141, stack := FirstCore.frame cont rho}
     hc hf hr hnp site_pc.symm
-  · apply PadLift.advancesAll_sound
+  · apply RecognitionLift.advancesAll_sound
     decide +kernel
-  · exact FirstRead.run s cont rho hs hr ha
+  · exact FirstRead.run s cont rho hs hr ha hcd
 def complete (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
     GasSteps {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
       {FirstCore.prepared (FirstRead.result s) with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 FirstCore.initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (FirstCore.prepared (FirstRead.result s)).memory FirstCore.initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} :=
-  (gasSteps s cont rho hs hr ha hc hf hnp).trans
+  (gasSteps s cont rho hs hr ha hc hf hnp hcd).trans
     (FirstCore.gasSteps (FirstRead.result s) cont rho hs hr ha hc hf hnp)
 theorem ready (s : State) (m : ByteArray)
     (hm : s.memory = PairedScheduleMemory.writeWord m 162 FirstInitial.highWord)

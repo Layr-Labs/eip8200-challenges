@@ -38,6 +38,9 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32) (rho : List UInt256) (h
   have gp := special s e rho (by omega) ha
   have gc := FirstReadGas.complete (high s) (UInt256.ofNat 9949) rho (by omega)
     e.running ha e.code e.fork e.noPrecompile
+    (by change MachineState.readWord input 0 = MachineState.readWord
+          (PairedScheduleMemory.writeWord (padCopied input).memory 162 FirstInitial.highWord) 1056
+        rw [copied_memory]; exact FirstComplete.load_eq input h32)
   have ep : Env (prepared input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
   have gd := dispatch (prepared input) ep (resultHash input) (UInt256.ofNat 1056)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho) (by simp [NormalPrepare.masks]; omega)

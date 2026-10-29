@@ -1,3 +1,10 @@
+# Current refinement: calldata read of the first 32-byte input word
+
+* 32-byte entry: the first input word is read with `PUSH0 CALLDATALOAD` instead of `DUP12 MLOAD` (same length).
+* Proofs: `FirstRead.template` uses `loadCalldata`; `FirstRead.run`, `FirstReadGas.gasSteps` and `FirstReadGas.complete` take the hypothesis that calldata word 0 equals the memory word at 1056, discharged in `FirstComplete` (new `load_eq`) and `ColdFramed32`; `FirstReadGas` lifts its site with `RecognitionLift`. The artifact mirrors (`CandidateBytes.lean` and `CandidateArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+
+---
+
 # Current refinement: constant store removed from the 32-byte table builder
 
 * 32-byte table builder: the constant store `PUSH22 ...; PUSH1 196; MSTORE` is removed; the rest of the builder moves 26 bytes down and its final jump is three instructions earlier.

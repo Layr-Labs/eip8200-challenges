@@ -17,6 +17,14 @@ def result (s : State) (input : ByteArray) (rho : List UInt256) : State :=
   Return32Serialize.result (prepared s input) (resultHash s input) (UInt256.ofNat 1056)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho)
 
+theorem load_eq (input : ByteArray) (h32 : input.size = 32) :
+    MachineState.readWord input 0 =
+      MachineState.readWord (PairedScheduleMemory.writeWord (FirstSpec.copiedMemory input) 162
+        FirstInitial.highWord) 1056 := by
+  rw [PairedScheduleMemory.read_writeWord_disjoint _ _ _ _ (Or.inr (by decide : 162+32 ≤ 1056))]
+  unfold MachineState.readWord FirstSpec.copiedMemory
+  rw [← h32, Memory.readPadded_zero_size, Memory.readPadded_writeBytes_same]
+
 def gasSteps (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
     (hs : rho.length ≤ 880) (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
     (hm : MachineState.writeBytes s.memory input 1056 = FirstSpec.copiedMemory input)
@@ -25,6 +33,9 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
   have ge := FirstCopy.entry s e input rho hs hcal h32 hm ha
   have gc := FirstReadGas.complete (high (FirstCopy.copied s input)) (UInt256.ofNat 9949) rho
     (by omega) e.running (by change (34 : Nat) ≤ 34; decide) e.code e.fork e.noPrecompile
+    (by change MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord
+          (PairedScheduleMemory.writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord) 1056
+        rw [hcal]; exact load_eq input h32)
   have ep : Env (prepared s input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
   have gd := dispatch (prepared s input) ep (resultHash s input) (UInt256.ofNat 1056)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho)
@@ -64,6 +75,7 @@ theorem correct_from_entry (input : ByteArray) (rho : List UInt256) (hs : rho.le
   obtain ⟨g₀,hg⟩ := eval_of_returned_trace (initialState Benchmark.bytecode input 0)
     (result s input rho) (spec input) gt rfl rfl (returned_spec s input rho h32)
   exact ⟨g₀,fun gas hgas => hg gas hgas⟩
+#print axioms load_eq
 #print axioms gasSteps
 #print axioms returned_spec
 #print axioms correct_from_entry
