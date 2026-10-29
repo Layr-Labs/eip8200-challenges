@@ -1,3 +1,10 @@
+# Current refinement: direct final stores in the final-padding output
+
+* Final-padding output: the five final sums are stored directly at 16, 12, 8, 4 and 0 (`PUSH1 16 MSTORE`, `DUP11 ADD ADD PUSH1 12 MSTORE`, `DUP10 ADD ADD PUSH1 8 MSTORE`, `SWAP9 PUSH1 4 MSTORE`, `SWAP9 PUSH0 MSTORE`) instead of rearranging the frame and popping it; the following byte-swap stages read the two masks with `DUP15` and `DUP14`; seven `STOP` bytes after the `RETURN` keep the block's byte length and instruction count, so every later PC and instruction index is unchanged.
+* Proofs: `PadOutput.lean` has the new store sequence (`direct`, `direct_run`), the deep-mask stages (`stagesCode`, `run_stages`) and the new terminal PCs; `PadSites.output` is the new literal. The artifact mirrors (`CandidateBytes.lean` and `CandidateArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+
+---
+
 # RIPEMD-160 candidate
 
 The entry point is `Solution.lean`. Its `candidate` theorem states universal
