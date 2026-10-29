@@ -109,12 +109,12 @@ private def wfOp {op : Operation}
 
 /-- Include the destination JUMPDEST, so the result is precisely PC 246. -/
 private def cleanupPath : List (DataStepper.Located Control.Artifact.submissionArtifact .Osaka) :=
-  [⟨6091, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨6090, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6091, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
    ⟨6092, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨6093, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨6094, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨6095, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
-   ⟨6096, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6093, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨6094, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
+   ⟨6095, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨133, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def cleared (input : ByteArray) : State :=
@@ -129,12 +129,12 @@ def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
     pc := UInt256.ofNat 8078, stack := rho }
 
 private theorem cleanup_pcs :
-    Control.Artifact.submissionArtifact.instructionPC 6091 = 8078 ∧
-    Control.Artifact.submissionArtifact.instructionPC 6092 = 8079 ∧
-    Control.Artifact.submissionArtifact.instructionPC 6093 = 8080 ∧
-    Control.Artifact.submissionArtifact.instructionPC 6094 = 8081 ∧
-    Control.Artifact.submissionArtifact.instructionPC 6095 = 8082 ∧
-    Control.Artifact.submissionArtifact.instructionPC 6096 = 8084 ∧
+    Control.Artifact.submissionArtifact.instructionPC 6090 = 8078 ∧
+    Control.Artifact.submissionArtifact.instructionPC 6091 = 8079 ∧
+    Control.Artifact.submissionArtifact.instructionPC 6092 = 8080 ∧
+    Control.Artifact.submissionArtifact.instructionPC 6093 = 8081 ∧
+    Control.Artifact.submissionArtifact.instructionPC 6094 = 8082 ∧
+    Control.Artifact.submissionArtifact.instructionPC 6095 = 8084 ∧
     Control.Artifact.submissionArtifact.instructionPC 133 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl

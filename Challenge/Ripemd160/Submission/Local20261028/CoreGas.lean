@@ -28,16 +28,16 @@ theorem wellFormed_of_check (code : List Instr) (h : code.all wellFormedCheck = 
   letI := instructionWellFormedDecidable i
   exact of_decide_eq_true ((List.all_eq_true.mp h) i hi)
 theorem actual_slice :
-    (CandidateArtifact.artifact.instructions.drop 350).take CoreBody.template.length = CoreBody.template := by
+    (CandidateArtifact.artifact.instructions.drop 349).take CoreBody.template.length = CoreBody.template := by
   rfl
 def site : GenericRoundSite CandidateArtifact.artifact .Osaka CoreBody.template :=
-  StackSiteBuilder.ofSlice CoreBody.template 350 actual_slice
-    (by change 350 + CoreBody.template.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice CoreBody.template 349 actual_slice
+    (by change 349 + CoreBody.template.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count, CandidateArtifact.count2]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem site_pc : site.startPC = UInt256.ofNat 824 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 350) = UInt256.ofNat 824
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 349) = UInt256.ofNat 824
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)

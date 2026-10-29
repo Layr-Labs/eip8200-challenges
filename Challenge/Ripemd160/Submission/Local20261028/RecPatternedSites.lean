@@ -24,33 +24,33 @@ def shortTemplate : List Instr := [
 def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
  .push 2 (UInt256.ofNat target), .op .JUMPI]
-theorem short_slice : (Control.Artifact.submissionArtifact.instructions.drop 6182).take shortTemplate.length = shortTemplate := by rfl
-theorem long256_slice : (Control.Artifact.submissionArtifact.instructions.drop 6194).take (longTemplate 256 9302).length = longTemplate 256 9302 := by rfl
-theorem long376_slice : (Control.Artifact.submissionArtifact.instructions.drop 6199).take (longTemplate 376 9331).length = longTemplate 376 9331 := by rfl
+theorem short_slice : (Control.Artifact.submissionArtifact.instructions.drop 6181).take shortTemplate.length = shortTemplate := by rfl
+theorem long256_slice : (Control.Artifact.submissionArtifact.instructions.drop 6193).take (longTemplate 256 9302).length = longTemplate 256 9302 := by rfl
+theorem long376_slice : (Control.Artifact.submissionArtifact.instructions.drop 6198).take (longTemplate 376 9331).length = longTemplate 376 9331 := by rfl
 theorem code_bound : Control.Artifact.submissionArtifact.code.size < 2^256 := by
  change submissionBytecode.size < 2^256
  rw [referenceBytecode_size]
  decide
 def shortSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka shortTemplate :=
- StackSiteBuilder.ofSlice shortTemplate 6182 short_slice
-  (by change 6182 + shortTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+ StackSiteBuilder.ofSlice shortTemplate 6181 short_slice
+  (by change 6181 + shortTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
 def long256Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (longTemplate 256 9302) :=
- StackSiteBuilder.ofSlice (longTemplate 256 9302) 6194 long256_slice
-  (by change 6194 + (longTemplate 256 9302).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 256 9302) 6193 long256_slice
+  (by change 6193 + (longTemplate 256 9302).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 9302) (by decide)) (by decide)
 def long376Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (longTemplate 376 9331) :=
- StackSiteBuilder.ofSlice (longTemplate 376 9331) 6199 long376_slice
-  (by change 6199 + (longTemplate 376 9331).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+ StackSiteBuilder.ofSlice (longTemplate 376 9331) 6198 long376_slice
+  (by change 6198 + (longTemplate 376 9331).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 9331) (by decide)) (by decide)
 theorem short_pc : shortSite.startPC = UInt256.ofNat 8247 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6182) = _
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6181) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem long256_pc : long256Site.startPC = UInt256.ofNat 8311 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6194) = _
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6193) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem long376_pc : long376Site.startPC = UInt256.ofNat 8320 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6199) = _
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6198) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0

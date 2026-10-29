@@ -51,30 +51,30 @@ theorem run_template (s : State) (pc off limit : UInt256) (h : Compression.HashS
   all_goals repeat first | apply And.intro | rfl
 
 theorem actual_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 6219).take template.length = template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 6218).take template.length = template := by rfl
 def site : StackRoundTemplate.GenericRoundSite Control.Artifact.submissionArtifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 6219 actual_slice
-    (by change 6219 + template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice template 6218 actual_slice
+    (by change 6218 + template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (CoreGas.wellFormed_of_check template (by decide)) (by decide)
 theorem site_pc : site.startPC = UInt256.ofNat 8398 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6219) = UInt256.ofNat 8398
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6218) = UInt256.ofNat 8398
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem advances : ∀ instruction ∈ template, DenseScheduleLift.Advances instruction :=
   PairedHelperBooleanTrace.coreAdvancesAll_sound template (by decide)
 
 def entryTemplate : List Instr := [.op .JUMPDEST]
 theorem entry_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 6218).take entryTemplate.length = entryTemplate := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 6217).take entryTemplate.length = entryTemplate := by rfl
 def entrySite : StackRoundTemplate.GenericRoundSite Control.Artifact.submissionArtifact .Osaka entryTemplate :=
-  StackSiteBuilder.ofSlice entryTemplate 6218 entry_slice
-    (by change 6218 + entryTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice entryTemplate 6217 entry_slice
+    (by change 6217 + entryTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by change submissionBytecode.size < 2^256; rw [referenceBytecode_size]; decide)
     (CoreGas.wellFormed_of_check entryTemplate (by decide)) (by decide)
 theorem entry_pc : entrySite.startPC = UInt256.ofNat 8397 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6218) = UInt256.ofNat 8397
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6217) = UInt256.ofNat 8397
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def gasSteps_entry (s : State) (rho : List UInt256) (hstack : rho.length < 1024)

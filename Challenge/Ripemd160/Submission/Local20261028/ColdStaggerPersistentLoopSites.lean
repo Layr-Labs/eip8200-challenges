@@ -19,18 +19,18 @@ open StackRoundTrace StackRoundTemplate Control.LoopRaw
 def dispatchCode : List Instr := Control.LoopRaw.dispatchTemplate
 
 theorem dispatch_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3346).take dispatchCode.length = dispatchCode := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3345).take dispatchCode.length = dispatchCode := by rfl
 
 def dispatchSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3346 dispatch_slice
-    (by change 3346 + dispatchCode.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3345 dispatch_slice
+    (by change 3345 + dispatchCode.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check dispatchCode (by decide))
     (by decide)
 
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4578 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3346) = UInt256.ofNat 4578
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3345) = UInt256.ofNat 4578
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def incTemplate : List Instr := Control.LoopRaw.incTemplate

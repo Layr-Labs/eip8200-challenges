@@ -43,8 +43,8 @@ def nval : Fin 12 → Nat
  | ⟨6, _⟩ => 64 | ⟨7, _⟩ => 65 | ⟨8, _⟩ => 119 | ⟨9, _⟩ => 120 | ⟨10, _⟩ => 128 | ⟨11, _⟩ => 256
 
 def armIndex : Fin 12 → Nat
- | ⟨0, _⟩ => 6169 | ⟨1, _⟩ => 6305 | ⟨2, _⟩ => 6318 | ⟨3, _⟩ => 6325 | ⟨4, _⟩ => 6335 | ⟨5, _⟩ => 6345
- | ⟨6, _⟩ => 6355 | ⟨7, _⟩ => 6362 | ⟨8, _⟩ => 6372 | ⟨9, _⟩ => 6382 | ⟨10, _⟩ => 6392 | ⟨11, _⟩ => 6399
+ | ⟨0, _⟩ => 6168 | ⟨1, _⟩ => 6303 | ⟨2, _⟩ => 6316 | ⟨3, _⟩ => 6323 | ⟨4, _⟩ => 6333 | ⟨5, _⟩ => 6343
+ | ⟨6, _⟩ => 6353 | ⟨7, _⟩ => 6360 | ⟨8, _⟩ => 6370 | ⟨9, _⟩ => 6380 | ⟨10, _⟩ => 6390 | ⟨11, _⟩ => 6397
 
 def armPC : Fin 12 → Nat
  | ⟨0, _⟩ => 8180 | ⟨1, _⟩ => 8761 | ⟨2, _⟩ => 8828 | ⟨3, _⟩ => 8857 | ⟨4, _⟩ => 8921 | ⟨5, _⟩ => 8985
@@ -58,10 +58,10 @@ def chainWords : Fin 12 → Nat
 def chainPC : Nat → Nat
   | 8 => 8446 | 4 => 8599 | 3 => 8638 | 2 => 8677 | 1 => 8715 | _ => 0
 def chainIndex : Nat → Nat
-  | 8 => 6254 | 4 => 6275 | 3 => 6281 | 2 => 6287 | 1 => 6293 | _ => 0
+  | 8 => 6253 | 4 => 6274 | 3 => 6280 | 2 => 6286 | 1 => 6292 | _ => 0
 
 /-- Index and PC of the success `MSIZE` after the result branch. -/
-def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 6179 else if i.val = 1 then 6315 else 6302
+def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 6178 else if i.val = 1 then 6313 else 6300
 def returnPC (i : Fin 12) : Nat := if i.val = 0 then 8244 else if i.val = 1 then 8825 else 8758
 
 /-! ## Templates -/
@@ -87,12 +87,16 @@ def startTemplate (n : Nat) : List Instr :=
 def resultTemplate : List Instr :=
   [.push ⟨2, by decide⟩ (UInt256.ofNat 8078), .op .JUMPI]
 
+/-- The shared chain's own result branch: a three-byte push of the failure PC. -/
+def chainResultTemplate : List Instr :=
+  [.push ⟨3, by decide⟩ (UInt256.ofNat 8078), .op .JUMPI]
+
 def revE : Nat → List Instr
   | 0 => []
   | k+1 => (if chainEntry k then [.op .JUMPDEST] else []) ++
       (cmpTemplate k ++ orTemplate) ++ revE k
 
-def chainTemplate (k : Nat) : List Instr := revE k ++ [.op .JUMPDEST] ++ resultTemplate
+def chainTemplate (k : Nat) : List Instr := revE k ++ chainResultTemplate
 
 def armTemplate (i : Fin 12) : List Instr :=
   if chainWords i = 0 then
@@ -159,6 +163,20 @@ theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     Nat.add_assoc, hv, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue]
   all_goals rfl
 
+theorem run_chainResult (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 8078 = true) :
+    runInstrSeq chainResultTemplate {s with pc := pc, stack := a :: rho} =
+      some {s with
+        pc := if a.toNat = 0 then pcAfter pc chainResultTemplate else UInt256.ofNat 8078
+        stack := rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  by_cases hz : a.toNat = 0
+  all_goals simp (discharger := omega) [chainResultTemplate, hz, runInstrSeq, DataStepper.runInstr,
+    pcAfter, hrun, show rho.length < 1024 by omega, hcap, UInt256.succ, Instr.size,
+    Nat.add_assoc, hv, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue]
+  all_goals rfl
+
 theorem run_chain (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1) (k : Nat) (hk : k ≤ 32)
@@ -169,10 +187,8 @@ theorem run_chain (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
           else UInt256.ofNat 8078
         stack := rho} := by
   have h1 := run_revE s pc a rho hs hrun ha k hk
-  have h2 := run_jd s (pcAfter pc (revE k)) (rev s.executionEnv.calldata a k :: rho) (by simp; omega) hrun
-  have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
-  have h3 := run_result s (pcAfter (pcAfter pc (revE k)) [.op .JUMPDEST]) (rev s.executionEnv.calldata a k) rho hs hrun hv
-  have hall := DenseScheduleTrace.runInstrSeq_append_running h12 hrun h3
+  have h3 := run_chainResult s (pcAfter pc (revE k)) (rev s.executionEnv.calldata a k) rho hs hrun hv
+  have hall := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h3
   simpa only [chainTemplate, DenseScheduleTrace.pcAfter_append, List.append_assoc] using hall
 
 theorem run_prefix (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
@@ -262,7 +278,7 @@ theorem valid_at (index pc : Nat) (hj : Control.Artifact.submissionArtifact.inst
   exact h
 
 theorem valid_fail : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 8078 = true :=
-  valid_at 6091 8078 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 6090 8078 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 theorem lor_ofNat_zero (a : UInt256) : UInt256.lor a (UInt256.ofNat 0) = a := DirectLiteralRawV4.lor_zero a
 

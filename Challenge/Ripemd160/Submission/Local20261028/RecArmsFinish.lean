@@ -42,21 +42,21 @@ def finishSiteAt (idx : Nat)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := finishTemplate) (by decide)) (by decide)
 
-def finishSite0 := finishSiteAt 6179 (by rfl)
+def finishSite0 := finishSiteAt 6178 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
-def finishSite1 := finishSiteAt 6315 (by rfl)
+def finishSite1 := finishSiteAt 6313 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
-def finishSite2 := finishSiteAt 6302 (by rfl)
+def finishSite2 := finishSiteAt 6300 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
 
 theorem finishSite0_pc : finishSite0.startPC = UInt256.ofNat 8244 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6179) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6178) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 8825 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6315) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6313) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem finishSite2_pc : finishSite2.startPC = UInt256.ofNat 8758 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6302) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6300) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-! ## Digest -/

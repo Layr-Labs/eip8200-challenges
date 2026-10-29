@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "f66f7ebb-ebd6-473e-b5a8-91c2eaa39948",
+    "rationale": "Direct parent (own promoted submission): constant store removed from the 32-byte table builder, on top of our direct final stores and the promoted tree 5b5782e2. This ticket keeps it and removes two fall-through JUMPDESTs (endian block and arm chain).",
+    "evidence": "Every byte outside the two removed markers and their widened pushes is identical to the parent; proof files outside the listed ones differ only in instruction-index literals."
+  },
+  {
     "submissionId": "00c62922-d938-4573-a9e7-9f518a163c6b",
     "rationale": "Direct parent (own promoted submission): direct final stores in the final-padding output, on top of the promoted tree 5b5782e2. This ticket keeps it and removes the constant store from the 32-byte table builder.",
     "evidence": "Every byte outside the 32-byte table builder, and every proof file outside the listed ones, is identical to the parent tree."

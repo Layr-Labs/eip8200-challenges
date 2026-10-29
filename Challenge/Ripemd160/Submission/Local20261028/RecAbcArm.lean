@@ -77,7 +77,7 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
   simpa using ht
 
 private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 8085 = true := by
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 6097 (by rfl)
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 6096 (by rfl)
   rw [pc_176] at h
   exact h
 
@@ -120,7 +120,7 @@ private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
 def wordHead : List Located := wordPath.take 4
 def wordCalc : List Located := (wordPath.drop 5).take 2
 def wordBranch : Located :=
-  ⟨6211, .op .JUMPI, by exact Control.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩
+  ⟨6210, .op .JUMPI, by exact Control.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩
 def wordLoaded (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 8365
@@ -146,12 +146,12 @@ private theorem run_word_calc (input : ByteArray) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 private def gasSteps_sar (input : ByteArray) : GasSteps (wordLoaded input) (wordShifted input) := by
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6208 .SAR
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6207 .SAR
     (by exact Control.GuardInstructionWindow.get 4) (by decide) trivial
-  have hp : (wordLoaded input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6208 := by
+  have hp : (wordLoaded input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6207 := by
     rw [pc_4101]; rfl
   have hop : (wordLoaded input).decodedOp = some .SAR :=
-    Control.Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 6208 rfl hp .SAR none hd rfl
+    Control.Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 6207 rfl hp .SAR none hd rfl
   have g := sarStep (s := wordLoaded input) (shift := UInt256.ofNat input.size)
     (value := maskedWord input) (rest := [wordMask]) hop rfl
     (by show 3 + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR; decide) rfl
@@ -183,13 +183,13 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
       some (PatternedScan.stS input 8085 []) :=
     PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 6211 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.pcFactS input 6210 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
       (PatternedScan.stepS_jumpi_taken input 8370 8085 (UInt256.ofNat 8085) (wordCond input) []
         (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
   have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 8085 []) =
       some (fallbackState input) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 6097 8085 [] (by norm_num) pc_176)
+      (PatternedScan.pcFactS input 6096 8085 [] (by norm_num) pc_176)
       (PatternedScan.stepS_jumpdest input 8085 [] (by simp) (by norm_num))
   exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd
@@ -198,7 +198,7 @@ theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
     DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Control.Execution.atPC input 8371) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   exact PatternedScan.blockOfS wordBranch
-    (PatternedScan.pcFactS input 6211 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.pcFactS input 6210 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
     (PatternedScan.stepS_jumpi_fall input 8370 (UInt256.ofNat 8085) (wordCond input) []
       (by simp) (by norm_num) ht)
 
@@ -255,12 +255,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size
     GasSteps (armEntry input) (returned input) := by
   have gw := (gasSteps_word_prefix input).trans (sound [wordBranch] (run_word_hit input hw))
   have gs := sound storePath (run_store input hne)
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6215 .MSIZE
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6214 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (stored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6215 := by
+  have hp : (stored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6214 := by
     rw [pc_inlineMsize]; rfl
   have hop : (stored input).decodedOp = some .MSIZE :=
-    Control.Artifact.submissionArtifact.state_decodedOp_of (stored input) 6215 rfl hp .MSIZE none hd rfl
+    Control.Artifact.submissionArtifact.state_decodedOp_of (stored input) 6214 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (stored input) (sized input) := by
@@ -271,12 +271,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size
 def gasSteps_empty_hit (input : ByteArray) (hz : input.size = 0) :
     GasSteps (emptyEntry input) (emptyReturned input) := by
   have gs := sound emptyStorePath (run_empty_store input hz)
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6088 .MSIZE
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6087 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (emptyStored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6088 := by
+  have hp : (emptyStored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6087 := by
     rw [pc_emptyMsize]; rfl
   have hop : (emptyStored input).decodedOp = some .MSIZE :=
-    Control.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 6088 rfl hp .MSIZE none hd rfl
+    Control.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 6087 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (emptyStored input) (emptySized input) := by

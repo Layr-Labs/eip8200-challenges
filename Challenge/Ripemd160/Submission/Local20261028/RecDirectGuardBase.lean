@@ -276,19 +276,19 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_53 : Control.Artifact.submissionArtifact.instructionPC 132 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_54 : Control.Artifact.submissionArtifact.instructionPC 6222 = 8401 := by
+@[simp] theorem pc_direct_54 : Control.Artifact.submissionArtifact.instructionPC 6221 = 8401 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_55 : Control.Artifact.submissionArtifact.instructionPC 6222 = 8401 := by
+@[simp] theorem pc_direct_55 : Control.Artifact.submissionArtifact.instructionPC 6221 = 8401 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_56 : Control.Artifact.submissionArtifact.instructionPC 6223 = 8402 := by
+@[simp] theorem pc_direct_56 : Control.Artifact.submissionArtifact.instructionPC 6222 = 8402 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_57 : Control.Artifact.submissionArtifact.instructionPC 6224 = 8403 := by
+@[simp] theorem pc_direct_57 : Control.Artifact.submissionArtifact.instructionPC 6223 = 8403 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_58 : Control.Artifact.submissionArtifact.instructionPC 6225 = 8404 := by
+@[simp] theorem pc_direct_58 : Control.Artifact.submissionArtifact.instructionPC 6224 = 8404 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_59 : Control.Artifact.submissionArtifact.instructionPC 6226 = 8406 := by
+@[simp] theorem pc_direct_59 : Control.Artifact.submissionArtifact.instructionPC 6225 = 8406 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_60 : Control.Artifact.submissionArtifact.instructionPC 6227 = 8407 := by
+@[simp] theorem pc_direct_60 : Control.Artifact.submissionArtifact.instructionPC 6226 = 8407 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem pc_direct_75 : Control.Artifact.submissionArtifact.instructionPC 128 = 240 := by
@@ -297,7 +297,7 @@ abbrev run := Challenge.EvmProof.DataStepper.runLocatedBlock
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_direct_77 : Control.Artifact.submissionArtifact.instructionPC 132 = 244 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_direct_78 : Control.Artifact.submissionArtifact.instructionPC 6221 = 8400 := by
+@[simp] theorem pc_direct_78 : Control.Artifact.submissionArtifact.instructionPC 6220 = 8400 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.DirectGuard

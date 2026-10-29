@@ -27,8 +27,8 @@ def template : Piece → List Instr
   | .copy => RetainedFallback114.copyTemplate
 
 def index : Piece → Nat
-  | .seed => 20 | .scanner => 6611 | .branch => 6764
-  | .success => 6766 | .miss => 6769 | .cleanup => 6091 | .copy => 133
+  | .seed => 20 | .scanner => 6609 | .branch => 6762
+  | .success => 6764 | .miss => 6767 | .cleanup => 6090 | .copy => 133
 
 def pc : Piece → Nat
   | .seed => 48 | .scanner => 9709 | .branch => 9934
@@ -85,23 +85,23 @@ def lift (p : Piece) (s t : State) (e : Env s) (rho : List UInt256)
 
 #eval IO.println "elaborating valid_scanner"
 theorem valid_scanner : Decode.isValidJumpDest HoistedStoreArtifact.code 9709 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 6611 = 9709 := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 6609 = 9709 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 6611 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 6609 (by rfl)
   rw [hp] at h; exact h
 
 #eval IO.println "elaborating valid_miss"
 theorem valid_miss : Decode.isValidJumpDest HoistedStoreArtifact.code 9941 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 6769 = 9941 := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 6767 = 9941 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 6769 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 6767 (by rfl)
   rw [hp] at h; exact h
 
 #eval IO.println "elaborating valid_cleanup"
 theorem valid_cleanup : Decode.isValidJumpDest HoistedStoreArtifact.code 8078 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 6091 = 8078 := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 6090 = 8078 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 6091 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 6090 (by rfl)
   rw [hp] at h; exact h
 
 #eval IO.println "elaborating valid_generic"

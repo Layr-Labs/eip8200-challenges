@@ -499,10 +499,11 @@ theorem run_loadSwapNarrow (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 of
   exact ⟨rfl, rfl, rfl⟩
 
 /-- Endian path of the current candidate, PC 462 through PC 530.
-Both 16-bit shifts and the 32-byte address increment use one-byte immediates. -/
+Both 16-bit shifts and the 32-byte address increment use one-byte immediates; the low
+half follows the high store directly and its 8-bit shift uses a two-byte immediate. -/
 def candidateTemplate : List Instr :=
   loadSwapNarrowTemplate 32 ++ (stage8 true ++ stage16 true) ++ highStoreV2 ++
-    [.op .JUMPDEST] ++ loadDirectTemplate ++ (stage8 true ++ stage16 true) ++
+    loadDirectTemplate ++ (stage8 false ++ stage16 true) ++
     lowStoreV2
 
 theorem run_candidate (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim : UInt256)
@@ -533,26 +534,18 @@ theorem run_candidate (s : State) (pc ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim
   have h3 := run_highStoreV2 s1 (pcAfter (pcAfter (pcAfter pc (loadSwapNarrowTemplate 32)) (stage8 true)) (stage16 true)) high F
     (by omega) hrun (by change 35 ≤ a1.toNat; omega)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 (by exact hrun) h3
-  let pcJ := pcAfter (pcAfter (pcAfter (pcAfter pc (loadSwapNarrowTemplate 32)) (stage8 true)) (stage16 true)) highStoreV2
-  let pc3 := pcAfter pcJ [.op .JUMPDEST]
-  have hj : runInstrSeq [.op .JUMPDEST] {s2 with pc := pcJ, stack := F} =
-      some {s2 with pc := pc3, stack := F} := by
-    have hcap : F.length < 1024 := by omega
-    simp [runInstrSeq, DataStepper.runInstr, pcAfter, pc3, Instr.size,
-      UInt256.succ, hrun, hcap, s2, s1]
-    rfl
-  have h123j := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) hj
+  let pc3 := pcAfter (pcAfter (pcAfter (pcAfter pc (loadSwapNarrowTemplate 32)) (stage8 true)) (stage16 true)) highStoreV2
   have h4 := run_loadDirect s2 pc3 ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho p hstack hrun hq0 (by omega)
   have hread : MachineState.readWord s2.memory p = MachineState.readWord s.memory p :=
     read_writeWord_disjoint _ _ _ _ (Or.inr (by omega))
   have hact : activeAfterWord s2.activeWords (UInt256.ofNat p) = a1 := active_reload s.activeWords p hbound
   rw [hread, hact] at h4
-  have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123j (by exact hrun) h4
+  have h1234 := DenseScheduleTrace.runInstrSeq_append_running h123 (by exact hrun) h4
   let pc4 := pcAfter pc3 loadDirectTemplate
   have h5 := run_reverse_mixed s2 pc4 (MachineState.readWord s.memory p)
-    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho true true hstack hrun
+    ret mw a2 a3 a4 a5 a6 a7 a8 a9 a10 off lim rho false true hstack hrun
   have h12345 := DenseScheduleTrace.runInstrSeq_append_running h1234 (by exact hrun) h5
-  have h6 := run_lowStoreV2 s2 (pcAfter (pcAfter pc4 (stage8 true)) (stage16 true)) low F (by omega) hrun
+  have h6 := run_lowStoreV2 s2 (pcAfter (pcAfter pc4 (stage8 false)) (stage16 true)) low F (by omega) hrun
     (by change 35 ≤ a1.toNat; omega)
   have h := DenseScheduleTrace.runInstrSeq_append_running h12345 (by exact hrun) h6
   have hloaded : loadedActiveWords s (UInt256.ofNat p) = a1 := active_swap s.activeWords p hbound

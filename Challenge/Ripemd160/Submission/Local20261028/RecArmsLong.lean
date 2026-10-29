@@ -191,23 +191,23 @@ theorem run_store1 (input : ByteArray) (pc : UInt256) (n : Nat) (w : UInt256) :
   rfl
 
 def a376Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka a376Template :=
-  StackSiteBuilder.ofSlice a376Template 6406 (by rfl)
-    (by change 6406 + a376Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice a376Template 6404 (by rfl)
+    (by change 6404 + a376Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := a376Template) (by decide)) (by decide)
 theorem a376_pc : a376Site.startPC = UInt256.ofNat 9331 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6406) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6404) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def a1000Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka a1000Template :=
-  StackSiteBuilder.ofSlice a1000Template 6435 (by rfl)
-    (by change 6435 + a1000Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice a1000Template 6433 (by rfl)
+    (by change 6433 + a1000Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := a1000Template) (by decide)) (by decide)
 theorem a1000_pc : a1000Site.startPC = UInt256.ofNat 9394 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6435) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6433) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def val376 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 256 111)) items376

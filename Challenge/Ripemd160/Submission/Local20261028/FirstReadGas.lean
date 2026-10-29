@@ -7,13 +7,13 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.FirstRead
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate RipemdMemoryBridge20261028
 def site : GenericRoundSite CandidateArtifact.artifact .Osaka FirstRead.template :=
-  StackSiteBuilder.ofSlice FirstRead.template 6898 (by rfl)
-    (by change 6898 + FirstRead.template.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice FirstRead.template 6896 (by rfl)
+    (by change 6896 + FirstRead.template.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem site_pc : site.startPC = UInt256.ofNat 10108 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6898) = UInt256.ofNat 10108
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6896) = UInt256.ofNat 10108
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)

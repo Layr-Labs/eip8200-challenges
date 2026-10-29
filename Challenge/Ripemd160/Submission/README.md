@@ -1,3 +1,11 @@
+# Current refinement: fall-through `JUMPDEST`s removed from the endian block and the arm chain
+
+* Shared message load: the fall-through `JUMPDEST` between the high and the low half is removed and the low half's first shift push is widened from `PUSH1` to `PUSH2`; every later PC is unchanged.
+* Patterned arms: the fall-through `JUMPDEST` before the shared chain's result branch is removed and its failure-PC push is widened from `PUSH2` to `PUSH3`; every later PC is unchanged.
+* Proofs: `CoreEndian.candidateTemplate` drops the `JUMPDEST` and uses `stage8 false` for the low half (`run_candidate` follows); `Arms.Scan.chainTemplate` ends with the new `chainResultTemplate` (`run_chainResult`, `run_chain`). The instruction-index literals after each removed `JUMPDEST` (site indices and bounds, `instructionPC` facts, located paths, the arm, chain, return and hoisted-store index tables) are renumbered. The artifact mirrors (`CandidateBytes.lean`, `CandidateArtifact.lean` and the count literals in `ColdArtifact.lean` and `RecArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+
+---
+
 # Current refinement: constant store removed from the 32-byte table builder
 
 * 32-byte table builder: the constant store `PUSH22 ...; PUSH1 196; MSTORE` is removed; the rest of the builder moves 26 bytes down and its final jump is three instructions earlier.

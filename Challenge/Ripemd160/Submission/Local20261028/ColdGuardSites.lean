@@ -18,17 +18,17 @@ theorem jump_pc : jumpSite.startPC = UInt256.ofNat 188 := by
 
 def joinCode : List Instr := [.op .JUMPDEST]
 def joinSite : GenericRoundSite CandidateArtifact.artifact .Osaka joinCode :=
-  StackSiteBuilder.ofSlice joinCode 6811 (by rfl)
-    (by change 6811 + joinCode.length ≤ CandidateArtifact.instructions.length; rw [CandidateArtifact.instruction_count]; decide)
+  StackSiteBuilder.ofSlice joinCode 6809 (by rfl)
+    (by change 6809 + joinCode.length ≤ CandidateArtifact.instructions.length; rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide)) (by decide)
 theorem join_pc : joinSite.startPC = UInt256.ofNat 9997 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6811) = _
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6809) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
 theorem valid9997 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9997 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 6811 = 9997 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 6809 = 9997 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 6811 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 6809 (by rfl)
   rw [hpc] at h; exact h
 
 #print axioms jumpSite

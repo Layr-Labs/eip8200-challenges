@@ -20,22 +20,22 @@ open StackRoundTrace StackRoundTemplate J2Moves ReverseLiteralRaw
 open Arms.Scan
 
 def tramp0Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (trampTemplate 8051) :=
-  StackSiteBuilder.ofSlice (trampTemplate 8051) 6162 (by rfl)
-    (by change 6162 + (trampTemplate 8051).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (trampTemplate 8051) 6161 (by rfl)
+    (by change 6161 + (trampTemplate 8051).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := trampTemplate 8051) (by decide)) (by decide)
 theorem tramp0_pc : tramp0Site.startPC = UInt256.ofNat 8169 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6162) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6161) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem valid_tramp0 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 8169 = true :=
-  valid_at 6162 8169 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 6161 8169 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 def gasSteps_tramp0 (input : ByteArray) :
     GasSteps (atState (base input) 8169 []) (atState (base input) 8051 []) :=
   RecognitionLift.gasSteps_of_raw tramp0Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using tramp0_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide))
     (run_tramp input 8169 8051 (by decide)
-      (valid_at 6084 8051 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
+      (valid_at 6083 8051 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
 def gasSteps_short0 (input : ByteArray) (h : input.size = 0) :
     GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 8169 []) := by
   have hs := Control.Patterned128Entry.shortSource_eq input 0 8169 h (by decide)
