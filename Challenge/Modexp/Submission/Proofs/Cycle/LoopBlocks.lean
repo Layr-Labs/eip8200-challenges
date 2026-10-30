@@ -13,34 +13,26 @@ open HistoricalSearch.CRTControl
 open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
-def overflowBlock : Block Artifact.artifact .Osaka 7619 overflowHeadProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6048 4 7619 overflowHeadProgram
-    (by change 6048+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6048+4 ≤ 8535)
+def counterBlock : Block Artifact.artifact .Osaka 7619 counterHeadProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 6048 5 7619 counterHeadProgram
+    (by change 6048+5 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6048+5 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def overflowJumpBlock : Block Artifact.artifact .Osaka 7626 jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6052 1 7626 jumpiProgram
-    (by change 6052+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6052+1 ≤ 8535)
+def counterJumpBlock : Block Artifact.artifact .Osaka 7627 jumpiProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 6053 1 7627 jumpiProgram
+    (by change 6053+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6053+1 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def counterBlock : Block Artifact.artifact .Osaka 7627 counterHeadProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6053 6 7627 counterHeadProgram
-    (by change 6053+6 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6053+6 ≤ 8535)
-          (Nat.le_of_eq Artifact.instructionCount.symm))
-    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def counterJumpBlock : Block Artifact.artifact .Osaka 7651 jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6059 1 7651 jumpiProgram
-    (by change 6059+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6059+1 ≤ 8535)
+def counterExitBlock : Block Artifact.artifact .Osaka 7628 counterExitProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 6054 6 7628 counterExitProgram
+    (by change 6054+6 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6054+6 ≤ 8535)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

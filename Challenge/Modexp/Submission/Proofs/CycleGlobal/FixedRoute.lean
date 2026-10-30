@@ -44,11 +44,27 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     exact FourTerminal.handled input s mem bsize esize k N A B mi hk hk16 env hact hactLe hcds
       hcalls hdata hvalid hf hmi hmi1 hinv hmod ha hb hodd hA hB hout (by omega)
   · have h8 : n = 8 := by omega
-    have out := Terminal.run s mem n bsize esize k N A B mi h8 hk hk16 env hact hcds
-      hf hmi hinv hmod ha hb hN hodd hB
-    rw [hout] at out
-    rw [← hfull] at out
-    exact Terminal.handled out hcalls
+    by_cases hg : (CycleSubmission.CallerPrefix.guardWord mem).toNat ≠ 0
+    · have out := Terminal.run s mem n bsize esize k N A B mi h8 hk hk16 env hact hcds
+        hf hmi hinv hmod ha hb hN hodd hB hg
+      rw [hout] at out
+      rw [← hfull] at out
+      exact Terminal.handled out hcalls
+    · subst h8
+      have hms8 : msize = 256 := by omega
+      subst hms8
+      have head := CycleSubmission.CallerFixed.bail s mem bsize esize k mi hk hk16 env hact hcds hf (by omega)
+      obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
+        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat 2519)
+          (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 219)
+        (env.transfer rfl rfl) rfl
+        (by simp [CycleSubmission.CallerPrefix.stateAt, CycleSubmission.EntryMeaning.saved,
+          CycleSubmission.CallerPrefix.frame, Exp.outer])
+        hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
+        (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
+      exact ⟨done, ⟨head.trans tail⟩, hd, by
+        change done.toResult = .returned (Challenge.Modexp.spec s.executionEnv.calldata) at hr
+        simpa only [hdata] using hr⟩
 
 theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize N A B mi : Nat)

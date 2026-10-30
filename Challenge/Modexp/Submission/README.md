@@ -1,3 +1,37 @@
+# Current refinement: no overflow test in the radix-240 square loop (operand guard at the width test, -327 gas per draw)
+
+* **Square loop tail (pc 7619).** The per-square test `DUP14 PUSH1 0xf0 SHR PUSH2 0x2936 JUMPI`
+  (top digit of the raw Montgomery square at or above `2^240` → normalization at 10550) and the
+  `JUMPDEST` it returned to are gone. The loop control is `PUSH1 1 DUP16 SUB SWAP15 PUSH2 0x163e
+  JUMPI` (the `PUSH17` padding is no longer needed); the bytes up to 7651 are a filler
+  (`PUSH18 0; POP; JUMPDEST x4`) executed once, on loop exit. 23 gas per square.
+* **Why it is safe.** `KernelContract.exact_product` gives `T·R = A·A + Q·N` with `Q < R`,
+  `R = 2^2160`. With `4N ≤ R` and `A + 2N ≤ R`, `T + 2N ≤ R` (`SquareStep.bound_step`), so
+  `T < R`, the top digit stays below `2^240` (`overflow_zero`), `normalized T = T`, and the
+  invariant `value a + 2N ≤ R` is carried through `SquareLoop` (`Outcome.small`). The entry
+  value is `A·2^112`; `A < 2^2048 - 2^1938` gives `A·2^112 + 2N ≤ R` (`Core.run`).
+* **Operand guard (pc 3739..3774).** The width test is now `... ADD ISZERO PUSH2 0x14d6 JUMPI`:
+  width 4 jumps straight to the r5 prologue at 5334 (the 3751 `PUSH2 0x14d6 JUMP` patch is
+  gone, 8 gas less per RSA-1024 call); width 8 falls through to
+  `PUSH2 0x0940 MLOAD NOT PUSH1 0x92 SHR PUSH2 0x1582 JUMPI`, which enters the cycle at 5506
+  unless the top 110 bits of the staged operand's leading word are all ones; in that case
+  `PUSH1 0xdb JUMP` hands the call to the general route at 219, as the r5 prologue already does
+  for its own guard. The remaining dead bytes are eight `JUMPDEST`s, so the span keeps its
+  length and 25 instructions.
+* Every byte PC and every instruction index outside 3739..3774 and 7619..7651 is unchanged.
+* Proofs: `CycleCaller/Blocks` (test, branch, guard, guard jump and bail jump blocks),
+  `CycleCaller/Prefix` (`guardWord`, `suffixTrace` for the passing guard, `bailTrace`/`bail` to
+  219, `guard_bound : A < 2^2048 - 2^1938`), `CycleCaller/Terminal`, `OpaqueCore`, `Fixed`
+  (`bail`), `CycleGlobal/Terminal`, `CycleGlobal/FixedRoute` (the width-8 branch either runs the
+  cycle route or hands the call to `Fallback.correct`), `CycleGlobal/R5Head` (the test jumps to
+  5334) and `R5Route` (entry at 5334), `R5/Blocks` (patch block removed),
+  `Cycle/Execution/counterHead` (new counter and exit programs), `Cycle/LoopBlocks`,
+  `Cycle/CounterControl`, `Cycle/SquareNormalize` (no branch: `gasSteps` needs the zero flag),
+  `Cycle/SquareStep` (`bound_step`, `no_overflow`), `Cycle/Round`, `Cycle/SquareLoop`,
+  `Cycle/EntryContract`, `Cycle/Core`; `Cycle/Artifact.lean` and `Cycle/Bytes.lean` regenerated.
+
+---
+
 # Current refinement: direct conditional return from the retained-accumulator compare
 
 * The retained-accumulator entry of `CSUB` (pc 3493, called once per RSA route from `blk2874`

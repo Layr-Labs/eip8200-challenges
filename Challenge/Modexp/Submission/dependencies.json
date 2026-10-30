@@ -1,8 +1,18 @@
 [
   {
+    "submissionId": "50b9deb7-ddbd-4659-aa5e-7789fdc30cad",
+    "rationale": "Direct parent (own promoted submission, 365,621): direct conditional return from the retained-accumulator CSUB compare. This submission keeps it and removes the per-square overflow test of the radix-240 square loop behind a new operand guard at the width test.",
+    "evidence": "bytecode.hex differs from the parent only in bytes 3739..3774 (width test, guard, fallback jump, filler) and 7619..7651 (loop control and exit filler); proof edits are in the Cycle loop files, CycleCaller Blocks/Prefix/Terminal/OpaqueCore/Fixed, CycleGlobal Terminal/FixedRoute/R5Head/R5Route/RetainedTEntry, R5/Blocks, plus regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "74ba9b69-9b0e-44c9-b754-87e8d4dd4075",
-    "rationale": "Direct parent: the promoted frontier (i34-9) at 365,657. This submission keeps its bytecode and proof tree and only rewrites the return path of the retained-accumulator CSUB compare (bytes 3501..3508) with the matching proof edits.",
-    "evidence": "bytecode.hex differs from the parent only in bytes 3501..3508; all other edits are in RetainedTEntry, CsubFixed, CsubCore, FastDefs, EarlyCsubInstructions, ShiftTrace4, the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean, README.md and dependencies.json."
+    "rationale": "Previous promoted frontier (i34-9) on which the parent was built; its bytecode and proof tree are kept everywhere outside the edited spans.",
+    "evidence": "All bytes outside 3501..3508, 3739..3774 and 7619..7651 are identical to that tree."
+  },
+  {
+    "submissionId": "be76a99a-6bdc-433f-9c2e-cc34523f4381",
+    "rationale": "juanbono's r5 route: its prologue operand guard with a fallback to the general route at 219 is the pattern reused for the new width-8 guard, and its R5Head/R5Route proofs are adapted (entry now at 5334).",
+    "evidence": "CycleGlobal/R5Head.lean and R5Route.lean are edited only in the width test program and the entry pc; FixedRoute's new fallback branch mirrors FourTerminal.handled."
   },
   {
     "submissionId": "0dd36d93-ebaa-46a1-9457-3131f46378ff",
@@ -48,11 +58,6 @@
     "submissionId": "d052f5da-65fe-4de8-8cf9-6fecac1693a6",
     "rationale": "Direct parent (own earlier submission): single-test Fermat join guard and no-op recheck on top of be76a99a. This submission keeps it unchanged and adds only the R5 square-kernel pair fusion.",
     "evidence": "Parent local gate: Comparator accepted, verified score 366770 (seed 0). Child differs from the parent only in bytes 4235..4248, 4275..4286, 4329..4344, 4359..4372 and in Proofs/R5/ExecSquare.lean, Proofs/Cycle/Artifact.lean, Proofs/Cycle/Bytes.lean."
-  },
-  {
-    "submissionId": "be76a99a-6bdc-433f-9c2e-cc34523f4381",
-    "rationale": "Direct parent: promoted juanbono tree with the R5 1024-bit kernel and all inherited newjordan/aerugo-ef/fkiene/Th0rgal work. This refinement changes only the 256-bit dispatch join guard (PC 33) and the Fermat recheck block (PC 4839) plus their proofs in FermatNext.lean and FermatGas.lean.",
-    "evidence": "Parent bytecode.hex at promoted commit 3c4266d4; child differs in bytes 34..40 and 4840..4847 only. Seed-zero totals 366951 -> 366770 on the pinned Lean scorer; identical 181-gas saving on 300 random corpus seeds in an independent Python EVM."
   },
   {
     "submissionId": "092d45f2-fe9d-4ba7-871e-77fab48f386a",

@@ -23,13 +23,12 @@ def result (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt
 noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hz : (overflowFlag (squared inv a zeroWords n)).toNat = 0) :
     GasSteps {s with pc := UInt256.ofNat 5695, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
   have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact
-  have hm := SquareExecution.normalizer_input s inv a zeroWords n rest h
-  have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest
-    (env.transfer rfl rfl) hm hcap hact
+  have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest hz
   have he : SquareNormalize.initial (middle s inv a n rest) (squared inv a zeroWords n) n rest =
       middle s inv a n rest :=
     SquareExecution.reset_self _ _ _ rfl (SquareExecution.output_frame s inv a zeroWords n rest)
@@ -49,7 +48,7 @@ theorem frame_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
   SquareNormalize.frame_output _ _ _ _
 
 theorem pc_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a n rest).pc = UInt256.ofNat 7627 := by
+    (result s inv a n rest).pc = UInt256.ofNat 7619 := by
   unfold result SquareNormalize.completed
   split_ifs <;> rfl
 
@@ -77,6 +76,54 @@ theorem arithmetic (inv : UInt256) (a n : Nat → UInt256)
     exact hc.2.1
   · rw [digits, normalized_value (squared inv a zeroWords n) n hlow hn hnr, hNvalue]
     exact hc.2.2
+
+/-- The Montgomery bound step: `T·R = A² + Q·N` with `Q < R`, `4N ≤ R` and `A + 2N ≤ R`
+give `T + 2N ≤ R`. -/
+theorem bound_step (A T Q N R : Nat) (he : T * R = A*A + Q*N) (hQ : Q < R)
+    (hN4 : 4*N ≤ R) (hb : A + 2*N ≤ R) : T + 2*N ≤ R := by
+  have hRpos : 0 < R := by omega
+  obtain ⟨A', hA'⟩ : ∃ A', R = A + 2*N + A' := ⟨R - (A + 2*N), by omega⟩
+  subst hA'
+  have hQ' : Q*N ≤ (A + 2*N + A' - 1)*N := Nat.mul_le_mul_right _ (by omega)
+  have hk : 2*N ≤ A + A' := by omega
+  have hm : N*(2*N) ≤ N*(A + A') := Nat.mul_le_mul_left _ hk
+  have hsub : (A + 2*N + A' - 1)*N + N = (A + 2*N + A')*N := by
+    have : 1 ≤ A + 2*N + A' := by omega
+    rw [← Nat.succ_mul, Nat.succ_eq_add_one, Nat.sub_add_cancel this]
+  have hbig : (T + 2*N) * (A + 2*N + A') ≤ (A + 2*N + A') * (A + 2*N + A') := by
+    have h1 : (T + 2*N) * (A + 2*N + A') = A*A + Q*N + 2*N*(A + 2*N + A') := by
+      rw [Nat.add_mul, he]
+    rw [h1]
+    nlinarith [hQ', hm, hsub]
+  exact Nat.le_of_mul_le_mul_right hbig hRpos
+
+/-- **No overflow below `R - 2N`.** If the input value plus `2N` fits in `R = radix^9` (and
+`4N ≤ R`), the raw square `T = (A² + QN)/R` keeps that bound, so its top digit stays below
+`2^240` and the normalization branch is never taken. -/
+theorem no_overflow (inv : UInt256) (a n : Nat → UInt256)
+    (ha : ∀ i < 9, (a i).toNat < radix) (hn : ∀ i < 9, (n i).toNat < radix)
+    (N : Nat) (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
+    (hinv : (N*inv.toNat+1) % 2^256 = 0)
+    (hN : 0 < N) (hN4 : 4*N ≤ radix^9) (hbound : value a + 2*N ≤ radix^9) :
+    (overflowFlag (squared inv a zeroWords n)).toNat = 0 ∧
+      value (squared inv a zeroWords n) + 2*N ≤ radix^9 := by
+  have hz : ∀ i < 9, (zeroWords i).toNat < radix := by
+    intro i hi
+    exact Nat.two_pow_pos _
+  have hlow := (squareTrace inv a zeroWords n).output_low_bound ha hz hn N hn0 hinv
+  have he := (squareTrace inv a zeroWords n).exact_product ha hz hn N hn0 hinv
+  have hQ := weightedBound radix 9 (fun i => ((squareTrace inv a zeroWords n).q i).toNat)
+    (Nat.two_pow_pos _) (squareTrace inv a zeroWords n).q_bound
+  have hNv : weighted radix 9 (fun i => (n i).toNat) = N := hNvalue
+  rw [hNv] at he
+  have hTR := bound_step (value a) (value (squared inv a zeroWords n))
+    (weighted radix 9 (fun i => ((squareTrace inv a zeroWords n).q i).toNat)) N (radix^9)
+    he hQ hN4 hbound
+  refine ⟨?_, hTR⟩
+  have hlt : value (squared inv a zeroWords n) < (2^240)^9 := by
+    change value (squared inv a zeroWords n) < radix^9
+    omega
+  exact (overflow_zero _ hlow).mpr hlt
 
 theorem executionEnv_eq (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
     (result s inv a n rest).executionEnv = s.executionEnv := by

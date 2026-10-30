@@ -28,9 +28,10 @@ noncomputable opaque run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (ha : Model.FastRepresents mem 2112 8 A)
     (hb : Model.FastRepresents mem 256 8 B)
     (hinv : (N*(MachineState.readWord mem 2720).toNat+1) % 2^256 = 0)
-    (hN : 0 < N) (hodd : Odd N) (hB : B < N) :
+    (hN : 0 < N) (hodd : Odd N) (hB : B < N)
+    (hg : (CallerPrefix.guardWord mem).toNat ≠ 0) :
     Finish.Outcome (call s mem k ret tail) (Precompile.natToBytes (result N A B k) 256) := by
-  have lead := CallerPrefix.run s mem k ret tail env hcap hact hcds hs32 hml hw hn
+  have lead := CallerPrefix.run s mem k ret tail env hcap hact hcds hs32 hml hw hn hg
   let entry := stateAt s mem k ret tail 5506
   have hmod' : Model.FastRepresents entry.memory 0 8 N :=
     CallerMemory.keep mem 0 8 N (Or.inl (by decide)) hmod
@@ -44,6 +45,7 @@ noncomputable opaque run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
   obtain ⟨done, tr, halt, bytes, calls⟩ := CallerCore.run entry (frame mem k ret tail) k N A B
     (decode N A) hk hk16 (env.transfer rfl rfl) hcap hact rfl
     hmod' ha' hb' hinv' hN hodd hB (decode_form N A hN hodd)
+    (CallerPrefix.guard_bound mem A ha' hg)
   change GasSteps entry done at tr
   refine ⟨done, lead.trans tr, halt, ?_, calls⟩
   rw [result, product_eq N A B k hN hodd]
@@ -62,9 +64,10 @@ theorem correct_from_call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256
     (ha : Model.FastRepresents mem 2112 8 A)
     (hb : Model.FastRepresents mem 256 8 B)
     (hinv : (N*(MachineState.readWord mem 2720).toNat+1) % 2^256 = 0)
-    (hN : 0 < N) (hodd : Odd N) (hB : B < N) (hcalls : s.callStack = []) :
+    (hN : 0 < N) (hodd : Odd N) (hB : B < N)
+    (hg : (CallerPrefix.guardWord mem).toNat ≠ 0) (hcalls : s.callStack = []) :
     ∃ gas0, ∀ gas, gas0 ≤ gas → Eval (withGas (call s mem k ret tail) gas)
       (.returned (Precompile.natToBytes (result N A B k) 256)) :=
-  (run s mem k ret tail N A B hk hk16 env hcap hact hcds hs32 hml hw hn hmod ha hb hinv hN hodd hB).eventually hcalls
+  (run s mem k ret tail N A B hk hk16 env hcap hact hcds hs32 hml hw hn hmod ha hb hinv hN hodd hB hg).eventually hcalls
 
 end CycleSubmission.CallerTerminal

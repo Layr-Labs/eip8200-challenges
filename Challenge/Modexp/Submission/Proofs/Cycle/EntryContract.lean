@@ -47,6 +47,7 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   base : FastRepresents state.memory 256 8 B
   form : value a ≡ x*radix^9 [MOD N]
   calls : state.callStack = s.callStack
+  small : value a + 2*N ≤ radix^9
 
 noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (env : Environment Artifact.artifact .Osaka s)
@@ -55,13 +56,13 @@ noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
     (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
-    (hform : A ≡ x*2^2048 [MOD N]) : Outcome s f k N B x := by
+    (hform : A ≡ x*2^2048 [MOD N]) (hsmall : A*2^112 + 2*N ≤ radix^9) : Outcome s f k N B x := by
   have hA := scaled_represents ha
   have hN := ordinary_represents hn
   refine ⟨EntryBinding.entered s f, MachineState.readWord s.memory 2720,
     scaled s.memory 2368, ordinary s.memory 0,
     EntryBinding.gasSteps s f env hcap hact, rfl, rfl, memory_output s f,
-    rfl, rfl, rfl, ?_, hA.1, hN.1, ?_, hN.2, hinv, ?_, ?_, rfl⟩
+    rfl, rfl, rfl, ?_, hA.1, hN.1, ?_, hN.2, hinv, ?_, ?_, rfl, ?_⟩
   · rw [counter, hcounter]
   · have h := low_value hn 0 (by decide)
     simpa only [radix, ordinary, show (0:Nat)<8 by decide, if_true, Nat.mul_zero, Nat.pow_zero, Nat.div_one] using h
@@ -78,5 +79,9 @@ noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     calc
       A*2^112%N = ((x*2^2048)*2^112)%N := h
       _ = (x*radix^9)%N := by rw [Nat.mul_assoc, hr]
+
+  · change (HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (scaled s.memory 2368 i).toNat)) + 2*N ≤ radix^9
+    rw [hA.2]
+    exact hsmall
 
 end CycleSubmission.EntryContract

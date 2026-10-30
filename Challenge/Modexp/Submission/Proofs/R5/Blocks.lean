@@ -19,17 +19,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open CycleSubmission
 
-def patchProgram : List Instr := [.push 2 5334, .op .JUMP]
-
-def patchBlock : Block Artifact.artifact .Osaka 3751 patchProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2894 2 3751 patchProgram
-    (by change 2894+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2894+2 ≤ 8535)
-          (Nat.le_of_eq Artifact.instructionCount.symm))
-    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-
 def squareBlock : Block Artifact.artifact .Osaka 4037 SquareRun.sqProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3129 514 4037 SquareRun.sqProgram
     (by change 3129+514 ≤ Artifact.instructions.length
@@ -355,22 +344,6 @@ theorem jumpDest5285 : Decode.isValidJumpDest Artifact.bytecode 5285 = true :=
 
 theorem jumpDest5334 : Decode.isValidJumpDest Artifact.bytecode 5334 = true :=
   CycleSubmission.Global.Binding.jumpDest 4172 (by rfl)
-
-theorem patch_run (s : State) (rest : List UInt256) (hcap : rest.length < 1000)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5334 = true) :
-    runInstructions patchProgram {s with pc := UInt256.ofNat 3751, stack := rest} =
-      some {s with pc := UInt256.ofNat 5334, stack := rest} := by
-  have h0 : rest.length < 1024 := by omega
-  have h1 : rest.length + 1 < 1024 := by omega
-  simp [patchProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr, h0, h1, hvalid,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
-noncomputable def patch_steps (s : State) (rest : List UInt256)
-    (env : Environment Artifact.artifact .Osaka s) (hcap : rest.length < 1000) :
-    GasSteps {s with pc := UInt256.ofNat 3751, stack := rest} {s with pc := UInt256.ofNat 5334, stack := rest} :=
-  patchBlock.steps (s := {s with pc := UInt256.ofNat 3751, stack := rest}) (env.transfer rfl rfl) rfl
-    (patch_run s rest hcap (by rw [env.code]; exact jumpDest5334))
 
 theorem ctl4712_run (s : State) (c : UInt256) (rest : List UInt256) (hcap : rest.length < 1000)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 4037 = true) :

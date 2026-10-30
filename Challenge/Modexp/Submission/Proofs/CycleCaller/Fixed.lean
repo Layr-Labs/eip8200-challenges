@@ -39,7 +39,8 @@ noncomputable opaque run (s : State) (mem : ByteArray) (bsize esize k N A B mi :
     (hmod : Model.FastRepresents mem 0 8 N)
     (ha : Model.FastRepresents mem 2112 8 A)
     (hb : Model.FastRepresents mem 256 8 B)
-    (hN : 0 < N) (hodd : Odd N) (hB : B < N) :
+    (hN : 0 < N) (hodd : Odd N) (hB : B < N)
+    (hg : (CallerPrefix.guardWord mem).toNat ≠ 0) :
     Finish.Outcome (FixedDirectStates.special s mem 8 bsize esize 256 k)
       (Precompile.natToBytes (CallerTerminal.result N A B k) 256) := by
   have head := fixedBlock.steps (s := FixedDirectStates.special s mem 8 bsize esize 256 k)
@@ -49,7 +50,23 @@ noncomputable opaque run (s : State) (mem : ByteArray) (bsize esize k N A B mi :
     (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) N A B hk hk16 env
     (by simp [Exp.outer]) hact hcds hf.s32 hf.ml
     (by simp [Exp.outer]) (by simp [Exp.outer]) hmod ha hb
-    (inverse_from_frame mem bsize N mi hf hmi hinv) hN hodd hB
+    (inverse_from_frame mem bsize N mi hf hmi hinv) hN hodd hB hg
   exact ⟨done, head.trans tr, halt, bytes, calls⟩
+
+/-- When the operand guard fires, the width-8 call reaches the general route at 219. -/
+noncomputable def bail (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
+    (hk : 1 ≤ k) (hk16 : k ≤ 16)
+    (env : Environment Artifact.artifact .Osaka s)
+    (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
+    (hf : Exp.Frame mem 8 bsize mi)
+    (hg : (CallerPrefix.guardWord mem).toNat = 0) :
+    GasSteps (FixedDirectStates.special s mem 8 bsize esize 256 k)
+      (stateAt s mem k (UInt256.ofNat 2519) (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 219) := by
+  have head := fixedBlock.steps (s := FixedDirectStates.special s mem 8 bsize esize 256 k)
+    (env.transfer rfl rfl) rfl (call_run s mem bsize esize k hk hk16
+      (by rw [env.code]; exact valid3181))
+  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat 2519)
+    (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) env (by simp [Exp.outer]) hact hcds hf.s32 hf.ml
+    (by simp [Exp.outer]) (by simp [Exp.outer]) hg)
 
 end CycleSubmission.CallerFixed

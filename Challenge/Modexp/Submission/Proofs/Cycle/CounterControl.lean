@@ -16,11 +16,11 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 def counter (s : State) : UInt256 := s.stack.getD 14 (UInt256.ofNat 0)
 def dec (c : UInt256) : UInt256 := c - UInt256.ofNat 1
 def initial (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 7627, stack := frame a n (n 0) (n 1) (counter s :: rest)}
+  {s with pc := UInt256.ofNat 7619, stack := frame a n (n 0) (n 1) (counter s :: rest)}
 def tested (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 7651, stack := UInt256.ofNat 5694 :: counter s :: frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := UInt256.ofNat 7627, stack := UInt256.ofNat 5694 :: counter s :: frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def branched (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := if (counter s).toNat = 0 then UInt256.ofNat 7652 else UInt256.ofNat 5694, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := if (counter s).toNat = 0 then UInt256.ofNat 7628 else UInt256.ofNat 5694, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def looped (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 5694, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def repeated (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
@@ -74,7 +74,17 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (rest : List UInt
     GasSteps (initial s a n rest) (completed s a n rest) := by
   have h := decision s a n rest env hcap hact
   by_cases hz : (counter s).toNat = 0
-  · simpa only [completed, branched, if_pos hz] using h
+  · have hb : branched s a n rest =
+        {s with pc := UInt256.ofNat 7628, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)} := by
+      simp only [branched, if_pos hz]
+    rw [hb] at h
+    have hx := LoopBlocks.counterExitBlock.steps
+      (s := {s with pc := UInt256.ofNat 7628, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)})
+      (env.transfer rfl rfl) rfl
+      (counterExit_run s (frame a n (n 0) (n 1) (dec (counter s) :: rest)) (by
+        simp only [frame, List.length_cons, List.length_append, List.length_nil]; omega))
+    simp only [completed, if_pos hz]
+    exact h.trans hx
   · have hb : branched s a n rest = looped s a n rest := by
       simp only [branched, looped, if_neg hz]
     rw [hb] at h

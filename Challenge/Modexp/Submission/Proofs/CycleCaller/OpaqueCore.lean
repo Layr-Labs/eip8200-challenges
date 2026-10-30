@@ -23,9 +23,9 @@ noncomputable opaque run (s : State) (f : Caller) (k N A B x : Nat)
     (hb : FastRepresents s.memory 256 8 B)
     (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
-    (hform : A ≡ x*2^2048 [MOD N]) :
+    (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938) :
     Finish.Outcome {s with pc := UInt256.ofNat 5506, stack := saved f}
       (Precompile.natToBytes (B*x^(2^k)%N) 256) :=
-  Core.run s f k N A B x hk hk16 env hcap hact hcounter hn ha hb hinv hN hodd hB hform
+  Core.run s f k N A B x hk hk16 env hcap hact hcounter hn ha hb hinv hN hodd hB hform hAtop
 
 end CycleSubmission.CallerCore

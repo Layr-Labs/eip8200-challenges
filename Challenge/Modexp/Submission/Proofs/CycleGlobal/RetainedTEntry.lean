@@ -13,7 +13,7 @@ set_option maxHeartbeats 2000000
 The retained-accumulator entry of `CSUB`: a caller that keeps its canonical
 accumulator at 2112 jumps here with only the return address on the stack.  The
 block compares the leading limbs; a strictly smaller accumulator returns at once
-through the tail `JUMPDEST; JUMP`, otherwise the destination 2112 is pushed and
+directly through `SWAP1; JUMPI`, otherwise the return address and the destination 2112 are pushed and
 the existing subtraction entry at 4529 runs in place.
 -/
 
@@ -35,7 +35,6 @@ def entryProgram : List Instr :=
 `blk2874`, which returns to 2412) and of the retained destination, ahead of the subtraction
 entry at 3509. -/
 def pushProgram : List Instr := [.push 2 2412, .push 2 2112]
-def tailProgram : List Instr := [.op .JUMPDEST, .op .JUMP]
 
 def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3493 entryProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2712 8 3493 entryProgram
@@ -43,15 +42,8 @@ def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3493 entryProgra
 def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 3503 pushProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2720 2 3503 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def tailBlock : Block CycleSubmission.Artifact.artifact .Osaka 3773 tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2910 2 3773 tailProgram
-    (by decide) (by rfl) (by rfl) (by decide)
-
 theorem jumpDest4486 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3493 = true :=
   CycleSubmission.Global.Binding.jumpDest 2712 (by rfl)
-theorem jumpDest5326 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3773 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2910 (by rfl)
-
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=
   UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)
@@ -69,8 +61,6 @@ theorem skipWord_toNat (mem : ByteArray) :
 
 def entryState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3493, stack := ret :: rest, memory := mem }
-def tailState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3773, stack := ret :: rest, memory := mem }
 def pushState (s : State) (mem : ByteArray) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3503, stack := rest, memory := mem }
 def returnedState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
@@ -119,17 +109,6 @@ theorem run_push (s : State) (mem : ByteArray) (rest : List UInt256)
   simp [pushProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     pushState, Csub.subEntryState, hc0, hc1, hc2, hc3, Nat.add_assoc,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, heq2112, heq2412]
-
-theorem run_tail (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
-    (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true) :
-    runInstructions tailProgram (tailState s mem ret rest) =
-      some (returnedState s mem ret rest) := by
-  have hc1 : rest.length+1 < 1024 := by omega
-  simp [tailProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    tailState, returnedState, hc1, Nat.add_assoc, hcode, hjump,
-    Challenge.EvmProof.Word.succ_ofNat_mod]
 
 /-- Every outcome of the leading-limb test reaches the caller with the
 retained accumulator holding `resultMemory`. -/

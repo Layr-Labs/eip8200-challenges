@@ -45,34 +45,32 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray)
     stack := frameStack mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest}
 
 def pcH1 : Nat := 3743
-def pcEntry : Nat := 3751
+def pcEntry : Nat := 5334
 
 def h1Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .push 2 5506, .op .JUMPI]
+  [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5334, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2889 5 3743 h1Program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2889 6 3743 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
-theorem cond_four : ¬ UInt256.isTrue (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) := by decide
-
-theorem cond_four_lit : ¬ UInt256.isTrue (UInt256.ofNat
-    115792089237316195423570985008687907853269984665640564039457584007913129639936) := by decide
+theorem cond_four : UInt256.isZero (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) = UInt256.ofNat 1 := by
+  decide
 
 theorem run_h1Four (s : State) (mem : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1004) (hq : pbi = UInt256.ofNat (2^256 - 128)) :
+    (hcap : rest.length ≤ 1004) (hq : pbi = UInt256.ofNat (2^256 - 128))
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 5334 = true) :
     runInstructions h1Program (frameAt pcH1 s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) =
     some (frameAt pcEntry s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) := by
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have hcond := cond_four
-  have hcondL := cond_four_lit
   simp [h1Program, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, hq, pcH1, pcEntry, capacity, Nat.add_assoc, hcond, hcondL, List.exchange,
+    frameAt, frameStack, hq, pcH1, pcEntry, capacity, Nat.add_assoc, hcond, hvalid, UInt256.isTrue, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- Width 4: `q + 0x80 = 0`, the test falls through to 3751. -/
+/-- Width 4: `q + 0x80 = 0`, the test jumps straight to the r5 prologue at 5334. -/
 def gasSteps_h1 (s : State) (mem : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1004) (hrun : s.halt = .Running)
@@ -84,7 +82,8 @@ def gasSteps_h1 (s : State) (mem : ByteArray)
     GasSteps (frameAt pcH1 s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       (frameAt pcEntry s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest) :=
   CycleSubmission.Global.Fast.SquareRow.stepsOf h1Block
-    (run_h1Four s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hq) rfl
+    (run_h1Four s mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hq
+      (by rw [hcode]; exact CycleSubmission.CallerBlocks.valid5334)) rfl
     hcode hfork hrun hnp
 
 theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
