@@ -1,3 +1,34 @@
+# Current refinement: one merged test for the 256-bit route (base size and Fermat guard, -93 gas per draw)
+
+* **Before:** exponent/modulus size test (0..15), base size test `PUSH0 CALLDATALOAD PUSH1 0x20
+  XOR PUSH1 0x65 JUMPI` (16..23), loads (24..32), join `JUMPDEST DUP2 NOT DUP2 ADD PUSH3 0x2e9
+  JUMPI` (33..42), special-prime test (43..95).
+* **Now:** after the unchanged size test, the three operand words are loaded at 16 and a single
+  test at 25 computes `(baseSize = 32) * (modulus + ~exponent)` (`DUP2 NOT DUP2 ADD PUSH0
+  CALLDATALOAD PUSH1 0x20 EQ MUL PUSH2 0x02e9 JUMPI`): a 32-byte base with
+  `exponent != modulus - 1` (every generic 256-bit vector and the BN254 inversion) enters the
+  window core at 745 after one conditional jump instead of two. 9 gas per such vector.
+* The rare cases fall through: 39 re-tests the base size and goes to the general-width entry at
+  101 (whose loads now rejoin at 47 instead of 33); 47 is the old join (`JUMPDEST DUP2 NOT DUP2
+  ADD PUSH2 0x02e9 JUMPI`); a Fermat input (`exponent = modulus - 1`) then jumps from 56 to the
+  special-prime test, which moved unchanged to the end of the image (10698..10751) and still
+  ends in the Fermat result at 4847 or the window core. The words loaded at 16 for a base size
+  other than 32 are garbage the merged test never trusts (the base-size factor is zero); they
+  stay below the general-width frame.
+* Bytes 0..100 keep their 47 instructions (the tail 60..100 is a dead filler); every PC from
+  101 on is unchanged. The image grows by the 54-byte prime test to 10,752 bytes (168 chunks,
+  renderer metric 16,021) and 8,548 instructions.
+* Proofs: `CycleGlobal/FermatNext` (`mergeProgram`, `recheckProgram`, `joinProgram` at 47,
+  `toPrimeProgram`, `primeProgram` at 10698 with its `JUMPDEST`, `mergeWord`), `FermatGas`
+  (`fastSteps` to 25, `wideHandled`, `missSteps`, `handled` from the join at 47 through the
+  relocated prime test), `EarlyWordCorrect` (both base-size branches and `genBig`),
+  `ArtifactWindowPaths`, `ArtifactEarlyWordPaths`, `EarlyWordProgram`/`EarlyWordGas` (the old
+  width block is gone); `Cycle/Artifact.lean` / `Cycle/Bytes.lean` regenerated and the
+  instruction count bound `8535` → `8548` in the binding files.
+
+---
+
+
 # Current refinement: no overflow test in the radix-240 square loop (operand guard at the width test, -327 gas per draw)
 
 * **Square loop tail (pc 7619).** The per-square test `DUP14 PUSH1 0xf0 SHR PUSH2 0x2936 JUMPI`

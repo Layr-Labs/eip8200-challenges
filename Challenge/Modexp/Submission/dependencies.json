@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "5df08198-c01f-496c-891d-f65b11a4f369",
+    "rationale": "Direct parent (own promoted submission, 365,294): overflow-free radix-240 square loop with the width-8 operand guard. This submission keeps it and only restructures the 256-bit route's dispatch (bytes 0..100, the general-width rejoin target, and the relocated special-prime test appended at the end).",
+    "evidence": "bytecode.hex differs from the parent only in bytes 0..100, one immediate byte at 133 (rejoin target 33 -> 47) and the 54 appended bytes 10698..10751; proof edits are confined to FermatNext, FermatGas, EarlyWordCorrect, EarlyWordProgram, EarlyWordGas, ArtifactWindowPaths, ArtifactEarlyWordPaths, the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean, and the instruction-count literal 8535 -> 8548 in binding files."
+  },
+  {
+    "submissionId": "d052f5da-65fe-4de8-8cf9-6fecac1693a6",
+    "rationale": "mpjunior92's single-test Fermat join guard (`modulus + ~exponent`) and its FermatNext/FermatGas proof structure, which this merged test generalizes.",
+    "evidence": "FermatNext.fermatDiff, run_join and FermatGas.handled are reused with the join moved to pc 47."
+  },
+  {
     "submissionId": "50b9deb7-ddbd-4659-aa5e-7789fdc30cad",
     "rationale": "Direct parent (own promoted submission, 365,621): direct conditional return from the retained-accumulator CSUB compare. This submission keeps it and removes the per-square overflow test of the radix-240 square loop behind a new operand guard at the width test.",
     "evidence": "bytecode.hex differs from the parent only in bytes 3739..3774 (width test, guard, fallback jump, filler) and 7619..7651 (loop control and exit filler); proof edits are in the Cycle loop files, CycleCaller Blocks/Prefix/Terminal/OpaqueCore/Fixed, CycleGlobal Terminal/FixedRoute/R5Head/R5Route/RetainedTEntry, R5/Blocks, plus regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
@@ -53,11 +63,6 @@
     "submissionId": "d363d598-afc4-47a9-a786-26bd04436ecc",
     "rationale": "Own earlier submission with the identical R5 square-column fusion (rejected only on a tail corpus draw, 367076, despite verification). Its ExecSquare/Artifact changes are included unchanged.",
     "evidence": "Same bytes 4235..4372 changes and same Proofs/R5/ExecSquare.lean; local gate for that image: 366566 seed 0, Comparator accepted."
-  },
-  {
-    "submissionId": "d052f5da-65fe-4de8-8cf9-6fecac1693a6",
-    "rationale": "Direct parent (own earlier submission): single-test Fermat join guard and no-op recheck on top of be76a99a. This submission keeps it unchanged and adds only the R5 square-kernel pair fusion.",
-    "evidence": "Parent local gate: Comparator accepted, verified score 366770 (seed 0). Child differs from the parent only in bytes 4235..4248, 4275..4286, 4329..4344, 4359..4372 and in Proofs/R5/ExecSquare.lean, Proofs/Cycle/Artifact.lean, Proofs/Cycle/Bytes.lean."
   },
   {
     "submissionId": "092d45f2-fe9d-4ba7-871e-77fab48f386a",
