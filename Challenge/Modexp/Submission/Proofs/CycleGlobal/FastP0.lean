@@ -42,7 +42,8 @@ def blk986 :
    pushAt 415 0 0,
    opAt 416 .CALLDATALOAD]
 
-/-- Instructions 1003..1027, pc 1353..1384. -/
+/-- Instructions 417..455, pc 598..648: the top-limb, parity, width and Montgomery-inverse
+checks, ORed into one `JUMPI` (the `JUMPDEST` at 645 is padding that keeps the layout). -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [pushAt 417 1 31,
@@ -63,7 +64,26 @@ def blk1003 :
    pushAt 432 1 255,
    opAt 433 .SHR,
    opAt 434 .ISZERO,
-   pushAt 435 1 219,
-   opAt 436 .JUMPI]
+   pushAt 435 2 32,
+   opAt 436 (.Dup ⟨7, by decide⟩),
+   opAt 437 (.Dup ⟨3, by decide⟩),
+   opAt 438 .ADD,
+   opAt 439 .SUB,
+   opAt 440 .CALLDATALOAD,
+   opAt 441 .NOT,
+   opAt 442 (.Dup ⟨0, by decide⟩),
+   opAt 443 .ISZERO,
+   opAt 444 (.Swap ⟨0, by decide⟩),
+   pushAt 445 2 1,
+   opAt 446 .AND,
+   opAt 447 .OR,
+   opAt 448 (.Dup ⟨7, by decide⟩),
+   pushAt 449 2 127,
+   opAt 450 .AND,
+   opAt 451 .OR,
+   opAt 452 .OR,
+   opAt 453 .JUMPDEST,
+   pushAt 454 1 219,
+   opAt 455 .JUMPI]
 
 end CycleSubmission.Global.Fast

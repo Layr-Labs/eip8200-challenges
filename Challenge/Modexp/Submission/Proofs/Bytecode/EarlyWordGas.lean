@@ -36,25 +36,4 @@ def steps_size_hit {artifact : ProgramArtifact} {fork : Fork}
   rw [if_pos ((sizeDiff_zero_iff input).mpr hsize)] at hs
   exact paths.size.steps (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hs
 
-/-- Base size 32 falls through to the fast entry at 24. -/
-def steps_width_hit {artifact : ProgramArtifact} {fork : Fork}
-    (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (input : ByteArray) (hdata : template.executionEnv.calldata = input)
-    (hb : baseSize input = 32) :
-    GasSteps (framed template (UInt256.ofNat 16) []) (framed template (UInt256.ofNat 24) []) := by
-  have hw := run_width template input hdata (jump_env env paths.genJump)
-  rw [if_pos ((baseDiff_zero_iff input).mpr hb)] at hw
-  exact paths.width.steps (env.transfer (t := framed template (UInt256.ofNat 16) []) rfl rfl) rfl hw
-
-/-- Any other base size enters the general-width entry at 103. -/
-def steps_width_miss {artifact : ProgramArtifact} {fork : Fork}
-    (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
-    (input : ByteArray) (hdata : template.executionEnv.calldata = input)
-    (hb : baseSize input ≠ 32) :
-    GasSteps (framed template (UInt256.ofNat 16) []) (framed template (UInt256.ofNat 101) []) := by
-  have hw := run_width template input hdata (jump_env env paths.genJump)
-  have hn : (baseDiff input).toNat ≠ 0 := fun hz => hb ((baseDiff_zero_iff input).mp hz)
-  rw [if_neg hn] at hw
-  exact paths.width.steps (env.transfer (t := framed template (UInt256.ofNat 16) []) rfl rfl) rfl hw
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordGas

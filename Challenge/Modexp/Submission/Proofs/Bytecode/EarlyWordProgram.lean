@@ -38,7 +38,6 @@ def baseDiff (input : ByteArray) : UInt256 :=
 /-- Abstract location and jump facts; this module does not depend on the artifact. -/
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   size : WindowTwentyOneBinding.Block artifact fork 0 sizeProgram
-  width : WindowTwentyOneBinding.Block artifact fork 16 widthTestProgram
   /-- The fixed-vector recogniser's entry, where a size miss lands. -/
   legacyJump : Decode.isValidJumpDest artifact.code 578 = true
   /-- The general-width entry. -/

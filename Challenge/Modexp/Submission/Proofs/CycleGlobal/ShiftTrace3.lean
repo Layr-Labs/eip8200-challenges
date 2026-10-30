@@ -17,7 +17,6 @@ The middle block, the two repair loops, the `CSUB` call and the loop exits.
 -/
 
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old
-attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old1
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old2
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old3
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old3b

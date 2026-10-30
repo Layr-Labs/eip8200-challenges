@@ -115,7 +115,7 @@ private theorem fastPCAnchor15 :
 
 @[simp] theorem fastPC1 (i : Nat) (hi : 431 ≤ i) (hii : i ≤ 468) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      [616,617,619,620,621,623,624,626,627,628,629,630,631,632,633,634,635,638,639,640,641,644,645,646,648,649,650,653,654,655,657,658,661,662,664,665,666,670][i - 431]! := by
+      [616,617,619,620,621,624,625,626,627,628,629,630,631,632,633,636,637,638,639,642,643,644,645,646,648,649,650,653,654,655,657,658,661,662,664,665,666,670][i - 431]! := by
   have hsplit : i = 431 + (i - 431) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor1]
   rw [← PCFast.byteLength_eq_assemble]

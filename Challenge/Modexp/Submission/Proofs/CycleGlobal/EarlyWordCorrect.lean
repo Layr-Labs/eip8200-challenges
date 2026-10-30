@@ -57,54 +57,58 @@ def legacy (input : ByteArray)
     (Main.trampolineState input 578) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
+/-- The three words the loads at 16 read for any header; garbage unless the base size is 32. -/
+def loaded (input : ByteArray) : List UInt256 :=
+  [MachineState.readWord input 160, MachineState.readWord input 128, MachineState.readWord input 96]
+
 /-- Every matching header has a complete initial-state correctness trace: a 32-byte
-base through the fast entry at 24, a shorter base through the general-width entry. -/
+base through the merged test at 25, a shorter base through the general-width entry. -/
 def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     Handled input := by
   have hsize : exponentSize input = 32 ∧ modulusSize input = 32 := ⟨hmatch.2.1, hmatch.2.2⟩
   have s1 := EarlyWordGas.steps_size_hit CycleSubmission.Global.Paths.earlyWordPaths
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl hsize
   by_cases hb : baseSize input = 32
-  · have s2 := EarlyWordGas.steps_width_hit CycleSubmission.Global.Paths.earlyWordPaths
-      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl hb
-    have s3 := FermatGas.fastSteps CycleSubmission.Global.Paths.fermatPaths
+  · have s2 := FermatGas.fastSteps CycleSubmission.Global.Paths.fermatPaths
       (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input hb
-    obtain ⟨final, ⟨tail⟩, done, result⟩ := FermatGas.handled
+    obtain ⟨final, ⟨tail⟩, done, result⟩ := FermatGas.wideHandled
       CycleSubmission.Global.Paths.fermatPaths CycleSubmission.Global.Paths.twentyOnePaths
-      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) rfl input [] (by simp) hmatch
+      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) rfl input hmatch hb
       (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
-    exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans ((s1.trans s2).trans (s3.trans tail))⟩,
+    exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans ((s1.trans s2).trans tail)⟩,
       done, result⟩
-  · have s2 := EarlyWordGas.steps_width_miss CycleSubmission.Global.Paths.earlyWordPaths
-      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl hb
+  · have s2 := FermatGas.missSteps CycleSubmission.Global.Paths.fermatPaths
+      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input hb
     have s3 := FermatGas.genSteps CycleSubmission.Global.Paths.fermatPaths
-      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input hmatch.1 [] (by simp)
+      (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input hmatch.1
+      (loaded input) (by simp [loaded])
     obtain ⟨final, ⟨tail⟩, done, result⟩ := FermatGas.handled
       CycleSubmission.Global.Paths.fermatPaths CycleSubmission.Global.Paths.twentyOnePaths
       (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) rfl input
-      [UInt256.ofNat (32 - baseSize input)] (by simp) hmatch
+      (UInt256.ofNat (32 - baseSize input) :: loaded input) (by simp [loaded]) hmatch
       (by exact PrimeCertificates.bn254P_prime) (by exact PrimeCertificates.secpP_prime)
-    exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans ((s1.trans s2).trans (s3.trans tail))⟩,
+    exact ⟨final, ⟨(Main.gasSteps_entryHop input).trans ((s1.trans (s2.trans s3)).trans tail)⟩,
       done, result⟩
 
 /-- Where a base size above 32 (exponent and modulus sizes 32) leaves the general-width
-entry: the wide fallback at 238 with the base size and 32 on the stack. -/
+entry: the wide fallback at 219 with the base size, 32 and the three loaded words on the stack. -/
 def genBigState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
     pc := UInt256.ofNat 219
-    stack := [UInt256.ofNat (baseSize input), UInt256.ofNat 32] }
+    stack := [UInt256.ofNat (baseSize input), UInt256.ofNat 32] ++ loaded input }
 
 def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
     (hb : 32 < baseSize input) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0) (genBigState input) := by
   have s1 := EarlyWordGas.steps_size_hit CycleSubmission.Global.Paths.earlyWordPaths
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl hsize
-  have s2 := EarlyWordGas.steps_width_miss CycleSubmission.Global.Paths.earlyWordPaths
-    (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl (by omega)
+  have s2 := FermatGas.missSteps CycleSubmission.Global.Paths.fermatPaths
+    (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input (by omega)
   have hjump : Decode.isValidJumpDest
       (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.code 219 = true :=
     CycleSubmission.Global.Paths.fermatPaths.bigJump
-  have hc := FermatNext.run_gen_check (initialState CycleSubmission.Artifact.bytecode input 0) [] (by simp) hjump
+  have hc := FermatNext.run_gen_check (initialState CycleSubmission.Artifact.bytecode input 0)
+    (loaded input) (by simp [loaded]) hjump
   have hword : MachineState.readWord
       (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.calldata 0 =
       UInt256.ofNat (baseSize input) := rfl
@@ -117,7 +121,7 @@ def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize 
   rw [hword, if_neg hgt] at hc
   have s3 := CycleSubmission.Global.Paths.fermatPaths.genCheck.steps
     ((environment input).transfer (t := WindowTwentyOneEntry.framed
-      (initialState CycleSubmission.Artifact.bytecode input 0) (UInt256.ofNat 101) []) rfl rfl) rfl hc
+      (initialState CycleSubmission.Artifact.bytecode input 0) (UInt256.ofNat 101) (loaded input)) rfl rfl) rfl hc
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0) _ at s1
   exact (Main.gasSteps_entryHop input).trans ((s1.trans s2).trans s3)
 
@@ -140,7 +144,7 @@ def big (input : ByteArray) (hvalid : ValidInput input)
   obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
     BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
       BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks _ env rfl
-      (by simp [genBigState])
+      (by simp [genBigState, loaded])
       (by simp [genBigState, initialState]; decide)
       rfl hvalid (by show 0 < modulusSize input; omega)
   exact ⟨final, ⟨steps.trans tail⟩, hdone, hres⟩
