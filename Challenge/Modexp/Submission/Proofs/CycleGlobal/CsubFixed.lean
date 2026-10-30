@@ -24,8 +24,7 @@ private theorem instructionPC_succ
     assembleBytes_cons, assembleBytes_nil, List.append_nil, List.length_append]
 
 def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2721 .JUMPDEST,
-   pushAt 2722 2 2688,
+  [pushAt 2722 2 2688,
    opAt 2723 .MLOAD,
    pushAt 2724 1 128,
    opAt 2725 .EQ,
@@ -33,8 +32,7 @@ def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Art
    opAt 2727 .JUMPI]
 
 def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2721 .JUMPDEST,
-   pushAt 2722 2 2688,
+  [pushAt 2722 2 2688,
    opAt 2723 .MLOAD,
    pushAt 2724 1 128,
    opAt 2725 .EQ,
@@ -296,12 +294,6 @@ private theorem cycleAnchor : CycleSubmission.Artifact.artifact.instructionPC 26
   rw [show (2717:Nat)=2672+(2717-2672) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedJump4975 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3508 = true := by
-  have h : CycleSubmission.Artifact.artifact.instructionPC 2721 = 3508 := by
-    rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-    rfl
-  simpa only [h] using CycleSubmission.Global.Binding.jumpDest 2721 (by rfl)
-
 @[simp] theorem fixedPC3778 : CycleSubmission.Artifact.artifact.instructionPC 2858 = 3693 := by
   rw [show (2858:Nat)=2672+(2858-2672) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
@@ -384,15 +376,15 @@ no pc certificates, so the block could not step. -/
   rw [show (2718:Nat)=2672+(2718-2672) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC3115 : CycleSubmission.Artifact.artifact.instructionPC 2719 = 3504 := by
+@[simp] theorem fixedPC3115 : CycleSubmission.Artifact.artifact.instructionPC 2719 = 3502 := by
   rw [show (2719:Nat)=2672+(2719-2672) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC3116 : CycleSubmission.Artifact.artifact.instructionPC 2720 = 3505 := by
+@[simp] theorem fixedPC3116 : CycleSubmission.Artifact.artifact.instructionPC 2720 = 3503 := by
   rw [show (2720:Nat)=2672+(2720-2672) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 
-@[simp] theorem fixedPC3117 : CycleSubmission.Artifact.artifact.instructionPC 2721 = 3508 := by
+@[simp] theorem fixedPC3117 : CycleSubmission.Artifact.artifact.instructionPC 2721 = 3506 := by
   rw [show (2721:Nat)=2672+(2721-2672) from rfl, CycleSubmission.Global.PrefixPC.pc_add, cycleAnchor]
   rfl
 

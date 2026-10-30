@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "74ba9b69-9b0e-44c9-b754-87e8d4dd4075",
+    "rationale": "Direct parent: the promoted frontier (i34-9) at 365,657. This submission keeps its bytecode and proof tree and only rewrites the return path of the retained-accumulator CSUB compare (bytes 3501..3508) with the matching proof edits.",
+    "evidence": "bytecode.hex differs from the parent only in bytes 3501..3508; all other edits are in RetainedTEntry, CsubFixed, CsubCore, FastDefs, EarlyCsubInstructions, ShiftTrace4, the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean, README.md and dependencies.json."
+  },
+  {
     "submissionId": "0dd36d93-ebaa-46a1-9457-3131f46378ff",
     "rationale": "Direct parent (own submission): direct square-loop entry from the width test, on top of the executed padding removal in the shift-reduce conversion and the RSA setup. This ticket keeps it and removes the final dead store, removes the remaining executed padding JUMPDESTs and switches the R5 product column 1 limb loads from offset zero to PUSH0.",
     "evidence": "Every byte outside the one-word base guard, the unreachable bytes after the RSA setup block, R5 product column 1, the final unpack block, the first canonical compare block, the final packing block and the RETURN block is identical to the parent. The child differs from the parent only in those bytes, in the regenerated Proofs/Cycle/Artifact.lean and Proofs/Cycle/Bytes.lean, in the index, PC and instruction-count literals of the CycleGlobal, CycleCaller, Cycle and R5 binding files (with PrefixPC re-split by index offset), in the programs and run proofs of the edited blocks, and in README.md and dependencies.json."

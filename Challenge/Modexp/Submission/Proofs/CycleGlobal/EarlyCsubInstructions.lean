@@ -39,7 +39,6 @@ def checkProgram : List Instr :=
   [.push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD,
    .op .LT, .push 2 2080, .op .MLOAD, .op .LT,
    .push 2 3706, .op .JUMPI]
-def jumpProgram : List Instr := [.push 2 3508, .op .JUMP]
 def copyProgram : List Instr :=
   [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD,
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
@@ -87,19 +86,6 @@ theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List
     simp [checkProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
       atState,State.activeWordsAfterUInt256,h0,h8256,h8224,h5165,
       ha0,haT,haN,Nat.add_assoc,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,hc2,hc3,hc4,hc5,←jumpWord_lt,UInt256.isTrue,hskip,hz]
-
-theorem run_jump (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 1008)
-    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) :
-    runInstructions jumpProgram (atState s mem 3458 dst ret rest) =
-      some (atState s mem 3508 dst ret rest) := by
-  have hc1 : rest.length+1 < 1024 := by omega
-  have hc2 : rest.length+2 < 1024 := by omega
-  have hc3 : rest.length+3 < 1024 := by omega
-  have heq4925 : (3508 : UInt256) = UInt256.ofNat 3508 := by decide
-  have h4925 : (3508 : UInt256).toNat = 3508 := by decide
-  simp [jumpProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
-    atState,hc2,hc3,Nat.add_assoc,hcode,h4925,jumpDestSub,heq4925]
 
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)

@@ -1,3 +1,28 @@
+# Current refinement: direct conditional return from the retained-accumulator compare
+
+* The retained-accumulator entry of `CSUB` (pc 3493, called once per RSA route from `blk2874`
+  with return address 2412) used to leave through `PUSH2 0x0ebd; JUMPI` into a two-byte
+  trampoline `JUMPDEST; JUMP` at pc 3773. Its last two instructions are now `SWAP1; JUMPI`:
+  the comparison flag and the return address already on the stack are swapped and the
+  conditional jump returns to the caller directly. 9 gas per RSA vector (4 per corpus draw,
+  -36 per draw), on every seed.
+* Fall-through (accumulator not smaller than the modulus, never taken by the public corpus):
+  the return address is no longer on the stack, so the following block pushes the constant
+  `2412` before the retained destination `2112` (`PUSH2 0x096c; PUSH2 0x0840`). The two freed
+  bytes of the old `PUSH2 0x0ebd` and the former `JUMPDEST` at pc 3508 absorb that push, so the
+  span 3501..3508 keeps its length and its four instructions; every other byte PC and every
+  instruction index of the image is unchanged.
+* The `CSUB` subtraction entry therefore starts at pc 3509 (instruction 2722) instead of the
+  removed `JUMPDEST` at 3508. Nothing jumps to 3508: its only entry was the fall-through.
+* Proofs: `CycleGlobal/RetainedTEntry.lean` (new entry/push programs; the skip branch now ends
+  in `returnedState` directly; `gasSteps_retained` takes `ret = 2412`, supplied by
+  `ShiftTrace4` with `rfl`), `CycleGlobal/CsubFixed.lean` / `CsubCore.lean` (entry blocks without
+  the `JUMPDEST`, entry pc 3509, PC literals of instructions 2719..2721), and the unused
+  `jumpDestSub` / stale `run_jump` lemmas about pc 3508 are removed. `Proofs/Cycle/Artifact.lean`
+  and `Proofs/Cycle/Bytes.lean` are regenerated from `bytecode.hex`.
+
+---
+
 # Current refinement: final dead store, remaining executed pads and PUSH0 limb loads in R5 product column 1
 
 * Final packing block: the store of the top limb half below the result buffer is removed; the preceding push of the last result word is widened (`PUSHn` → `PUSH(n+k)` with the same value), so the block keeps its byte length and the `RETURN` block keeps its PC. `packFinalProgram`, its model and `PackExecution.cells` no longer write that cell; the returned bytes are unchanged.

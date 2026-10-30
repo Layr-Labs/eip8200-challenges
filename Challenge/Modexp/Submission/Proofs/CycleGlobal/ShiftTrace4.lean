@@ -428,7 +428,7 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
           (run_hit s mem input n bsize esize msize (by omega) hn32 e.act hdata e.code e.run)).trans
         (RetainedT.gasSteps_retained s (hitMem mem input n) n
           (UInt256.ofNat pcCsubReturn) (outer n bsize esize msize) hlen e.code e.fork e.run
-          e.np e.act296 hn (by omega) jumpD4692
+          e.np e.act296 hn (by omega) jumpD4692 rfl
           (by rw [hhigh 2752 (by omega)]; exact hml)
           (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn' hfast))
       rfl rfl

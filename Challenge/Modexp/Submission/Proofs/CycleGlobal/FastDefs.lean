@@ -181,9 +181,6 @@ theorem jumpDest1812 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 697 = true :=
   CycleSubmission.Global.Binding.jumpDest 487 (by rfl)
 
-theorem jumpDestSub : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3508 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2721 (by rfl)
-
 theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3717 = true :=
   CycleSubmission.Global.Binding.jumpDest 2872 (by rfl)
 
