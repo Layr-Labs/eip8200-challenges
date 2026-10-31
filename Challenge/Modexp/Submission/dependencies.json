@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "0ba914af-148a-42e1-9ad1-ae083be02776",
+    "rationale": "Direct parent (promoted frontier, 365,165 on the common draw). Every byte and proof module is inherited unchanged except the square-loop counter/exit span 7619..7651 and its four proof files.",
+    "evidence": "bytecode.hex differs from the parent only in bytes 7619..7651 (PUSH1 1 -> PUSH19 1; PUSH18 0, POP, 4x JUMPDEST -> 6x JUMPDEST); Proofs/Cycle/{Artifact,Bytes,CounterControl,LoopBlocks}.lean and Proofs/Cycle/Execution/counterHead.lean are the only changed proof files."
+  },
+  {
     "submissionId": "5df08198-c01f-496c-891d-f65b11a4f369",
     "rationale": "Direct parent (own promoted frontier, 365,294): overflow-free radix-240 square loop with the width-8 operand guard. Kept unchanged; this tree adds two layout-preserving dispatch merges on top.",
     "evidence": "bytecode.hex differs from that tree only in bytes 0..100, byte 133, bytes 615..648 and the appended 10698..10751."

@@ -21,16 +21,16 @@ def counterBlock : Block Artifact.artifact .Osaka 7619 counterHeadProgram :=
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def counterJumpBlock : Block Artifact.artifact .Osaka 7627 jumpiProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6053 1 7627 jumpiProgram
+def counterJumpBlock : Block Artifact.artifact .Osaka 7645 jumpiProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 6053 1 7645 jumpiProgram
     (by change 6053+1 ≤ Artifact.instructions.length
         exact Nat.le_trans (by decide : 6053+1 ≤ 8548)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def counterExitBlock : Block Artifact.artifact .Osaka 7628 counterExitProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6054 6 7628 counterExitProgram
+def counterExitBlock : Block Artifact.artifact .Osaka 7646 counterExitProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 6054 6 7646 counterExitProgram
     (by change 6054+6 ≤ Artifact.instructions.length
         exact Nat.le_trans (by decide : 6054+6 ≤ 8548)
           (Nat.le_of_eq Artifact.instructionCount.symm))
