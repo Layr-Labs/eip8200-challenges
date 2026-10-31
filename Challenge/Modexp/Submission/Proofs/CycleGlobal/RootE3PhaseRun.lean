@@ -41,12 +41,13 @@ def phaseGuardProgram : List Instr :=
 stores it at `0x6e0`, clearing the flag; `PUSH1 28 SWAP16` sets the exit slot to `28` and puts
 the scratch slot back.  Then publish the retained accumulator into `ACC` (`MCOPY 256 <- 2112`,
 length the `bsize` ride slot via `DUP15`), take the loop counter from the `n` ride slot
-(`DUP14`) shifted down two bits and jump back to the shift loop head at 2811. -/
+(`DUP14`) shifted down two bits and jump back to the loop head of the width, which the
+scratch slot (`DUP2`) holds. -/
 def phaseSwitchProgram : List Instr :=
-  [.op (.Swap ⟨15, by decide⟩), .push 2 1760, .op .MSTORE, .push 1 12,
+  [.op (.Swap ⟨15, by decide⟩), .push 2 1760, .op .MSTORE, .push 3 12,
    .op (.Swap ⟨15, by decide⟩),
    .op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY,
-   .op (.Dup ⟨13, by decide⟩), .push 1 2, .op .SHR, .push 2 2704, .op .JUMP]
+   .op (.Dup ⟨13, by decide⟩), .push 1 2, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
 /-- The flag is cleared before MCOPY reads the retained accumulator at 2112. -/
 def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray :=
@@ -100,10 +101,10 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hstack : rest =
       Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++ Exp.outer n bsize esize msize)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 2704 = true) :
+    (hdest : Decode.isValidJumpDest s.executionEnv.code (Shift.headPC n) = true) :
     runInstructions phaseSwitchProgram
       (frame s mem 3080 rest) =
-      some (frame s (phaseSwitchMemory mem n) 2704
+      some (frame s (phaseSwitchMemory mem n) (Shift.headPC n)
         (UInt256.ofNat (n / 4) :: Shift.entrySlots (UInt256.ofNat 12) mem n bsize esize ++
           Exp.outer n bsize esize msize)) := by
   have hn1 : 1 ≤ n := by omega
@@ -122,7 +123,11 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
   have ha3 : 256 + 32 * n ≤ 2816 := by omega
   have ha4 : 2112 + 32 * n ≤ 2816 := by omega
   have hactive2 := Exp.activeWords_fix2 s 256 (32 * n) 2112 (32 * n) ha2 ha2 ha3 ha4 hact
-  simp [runInstructions, phaseSwitchProgram, phaseSwitchMemory, frame,
+  have hhead : Shift.headPC n %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+      Shift.headPC n :=
+    Nat.mod_eq_of_lt (by unfold Shift.headPC; split_ifs <;> norm_num)
+  simp [runInstructions, phaseSwitchProgram, phaseSwitchMemory, frame, Shift.headWord, hhead,
     Challenge.EvmProof.Stepper.runInstr, Exp.storeWord, Exp.mcopyMem,
     hstack, hbs, Shift.entrySlots, Shift.rideSlots, Exp.outer, List.exchange,
     hcap2, hcap3, hcap4, hcap5, hs32, hquarter, hdest, Exp.push0_word,
@@ -168,10 +173,10 @@ def PhaseBlocks.switchSteps {artifact : ProgramArtifact} {fork : Fork}
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hstack : rest =
       Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++ Exp.outer n bsize esize msize)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 2704 = true)
+    (hdest : Decode.isValidJumpDest s.executionEnv.code (Shift.headPC n) = true)
     (env : Environment artifact fork (frame s mem 3080 rest)) :
     GasSteps (frame s mem 3080 rest)
-      (frame s (phaseSwitchMemory mem n) 2704
+      (frame s (phaseSwitchMemory mem n) (Shift.headPC n)
         (UInt256.ofNat (n / 4) :: Shift.entrySlots (UInt256.ofNat 12) mem n bsize esize ++
           Exp.outer n bsize esize msize)) :=
   blocks.switch.steps env rfl (run_phaseSwitch s mem n bsize esize msize rest hn hbs hrest hact hstack hdest)

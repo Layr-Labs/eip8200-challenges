@@ -539,5 +539,134 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
   simpa only [entryProgram, setupState, chainState, framed, st, List.cons_append,
     List.nil_append] using hall
 
-end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
+/-! ## Block 0 without its `JUMPDEST POP` head (the eight-limb loop head falls straight into it)
 
+`rideTopHeadNP d` is `rideTopHead d` without the leading `POP` of the zero carry; it runs on
+`[bi, 2^256-1] ++ rest` instead of `[0, bi, 2^256-1] ++ rest`. -/
+
+def rideTopHeadNP (d : Fin 16) : List Instr :=
+  if h : d.val ≤ 13 then
+    [.op (.Dup ⟨0, by decide⟩),
+     .op (.Dup ⟨d.val + 1, by omega⟩),
+     .op .MUL,
+     .op (.Dup ⟨2, by decide⟩),
+     .op (.Dup ⟨d.val + 2, by omega⟩),
+     .op (.Dup ⟨3, by decide⟩),
+     .op .MULMOD]
+  else []
+
+def rideTopProgramNP (d : Fin 16) (t : UInt256) : List Instr :=
+  rideTopHeadNP d ++ ((rideTopStore t ++ rideTopCarry) ++ rideTopFill)
+
+theorem run_rideTopHeadNP_state (template : State) (pc : UInt256) (d : Fin 16) (bi x : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hd2 : 2 ≤ d.val) (_hin : d.val < 2 + rest.length)
+    (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13) :
+    runInstructions (rideTopHeadNP d)
+      (framed template pc ([bi, maxWord] ++ rest)) =
+    some (framed template (pc + UInt256.ofNat 7)
+      ([UInt256.mulMod bi x maxWord, x * bi, bi, maxWord] ++ rest)) := by
+  have capacity (j : Nat) (hj : j ≤ 8) : rest.length + j < 1024 := by omega
+  have hframe0 : (bi :: maxWord :: rest)[d.val]? = some x := by
+    rw [show d.val = (d.val - 2) + 2 from by omega,
+      List.getElem?_cons_succ, List.getElem?_cons_succ]
+    exact hx
+  have hframe2 : (maxWord :: (x * bi) :: bi :: maxWord :: rest)[d.val + 2]? = some x := by
+    rw [show d.val + 2 = (d.val + 1) + 1 from rfl,
+      List.getElem?_cons_succ, List.getElem?_cons_succ]
+    exact hframe0
+  unfold rideTopHeadNP
+  rw [dif_pos hd13]
+  dsimp only [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
+    List.cons_append, List.nil_append]
+  simp [List.getElem?_cons_zero, List.getElem?_cons_succ,
+    List.exchange, hframe0, hframe2, capacity, Nat.add_assoc, Nat.add_assoc,
+    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+
+/-- Block 0 on the zero carry, entered without the carry on the stack: from `[bi, 2^256-1] ++ rest`
+over `m.memory` (with `m.carry = 0`) to the chain frame after limb `j`, 18 bytes later. -/
+theorem run_ride_top_np (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
+    (n j : Nat) (t : UInt256) (d : Fin 16)
+    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (x : UInt256) (hval : x = MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)))
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hd2 : 2 ≤ d.val) (hin : d.val < 2 + rest.length)
+    (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13)
+    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n)
+    (hcarry : m.carry = UInt256.ofNat 0)
+    (htop : MachineState.readWord m.memory (2112 + 32 * (n - 1 - j)) = UInt256.ofNat 0) :
+    runInstructions (rideTopProgramNP d t)
+      (setupState template pc m.memory bi (maxWord :: rest)) =
+    some (chainState template (pc + UInt256.ofNat 18) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
+  subst hval
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112 + 32 * (n - 1 - j)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  let st : State := { template with memory := m.memory }
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
+      st.activeWords := by simpa only [st, ht] using hactT
+  have hth := run_rideTopHeadNP_state st pc d bi
+    (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) rest hrest hd2 hin hx hd13
+  have htp := run_rideTopPost st (pc + UInt256.ofNat 7)
+    (UInt256.mulMod bi (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) maxWord)
+    (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)) * bi) bi t
+    (maxWord :: rest) (by simp only [List.length_cons]; omega) hT
+  have hall := runInstructions_append_some _ _ _ _ _ hth htp
+  rw [top_carry_eq, top_sum_eq] at hall
+  have hpc : pc + UInt256.ofNat 7 + UInt256.ofNat 11 = pc + UInt256.ofNat 18 := by
+    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  have hstep : SquareModel.l1StepOn m bi 1280 n j =
+      { memory := MachineState.writeBytes m.memory
+          (Data.Bytes.natToBytesPadded
+            (macSum (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) bi
+              (UInt256.ofNat 0) (UInt256.ofNat 0)).toNat 32) (2112 + 32 * (n - 1 - j))
+        carry := macCarry (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) bi
+          (UInt256.ofNat 0) (UInt256.ofNat 0) } := by
+    simp only [SquareModel.l1StepOn, htop, hcarry]
+  rw [hstep]
+  simpa only [rideTopProgramNP, st, chainState, setupState, framed, ht, hpc,
+    List.cons_append, List.nil_append] using hall
+
+/-- The four-limb loop head's tail: `PUSH0 PUSH2 2901 JUMP` (no scratch slot involved). -/
+def entry4Program : List Instr :=
+  [.push 0 0, .push 2 2901, .op .JUMP]
+
+theorem run_entry4 (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2901 = true) :
+    runInstructions entry4Program (setupState template pc um bi (maxWord :: rest)) =
+    some (chainState template (UInt256.ofNat 2901) ⟨um, UInt256.ofNat 0⟩ bi rest) := by
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have h2901 : (UInt256.ofNat 2901).toNat = 2901 := by decide
+  simp (disch := omega) [entry4Program, runInstructions, setupState, chainState,
+    Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4, hz, h2901, hjump,
+    List.exchange, List.getElem?_cons_zero, List.getElem?_cons_succ,
+    List.cons_append, List.nil_append, succ_eq_add, word_add_assoc,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+/-- The four-limb loop head's jump into block 5 after its own zero-carry first product. -/
+def jump4Program : List Instr :=
+  [.push 2 2933, .op .JUMP]
+
+theorem run_jump4 (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 2933 = true) :
+    runInstructions jump4Program (chainState template pc m bi rest) =
+    some (chainState template (UInt256.ofNat 2933) m bi rest) := by
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc3' : rest.length + 1 + 1 + 1 < 1024 := by omega
+  have hc4' : rest.length + 1 + 1 + 1 + 1 < 1024 := by omega
+  have h2933 : (UInt256.ofNat 2933).toNat = 2933 := by decide
+  simp (disch := omega) [jump4Program, runInstructions, chainState,
+    Challenge.EvmProof.Stepper.runInstr, hc3, hc4, hc3', hc4', h2933, hjump,
+    List.cons_append, List.nil_append, succ_eq_add, word_add_assoc,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.ofNat_add_mod]
+
+end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.M9MacPrograms
+import Challenge.Modexp.Submission.Proofs.Fast.M9MacRun
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 
@@ -50,8 +51,8 @@ that reaches it, so its incoming carry is the literal zero `entryProgram` pushes
 accumulator word it reads (`0x920`) is the limb the shift just zeroed.  It pops the carry, so
 the limb rides in `Dup 10`.  Block 4 keeps the fused schedule — pc 3032 is both jumped to
 (four limbs, carry zero) and fallen into from block 3 (carry nonzero). -/
-def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2785 ([.op .JUMPDEST] ++ rideTopProgram 10 2336) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2145 18 2785 ([.op .JUMPDEST] ++ rideTopProgram 10 2336)
+def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2787 (rideTopProgramNP 10 2336) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2147 16 2787 (rideTopProgramNP 10 2336)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 1: instructions 2347..2374, pc 2933..2965,
@@ -72,16 +73,16 @@ def block3 : Block CycleSubmission.Artifact.artifact .Osaka 2869 (rideProgram 8 
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2219 28 2869 (rideProgram 8 2240)
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- Block 4: instructions 2431..2459, pc 3032..3065 (JUMPDEST included),
-`-N` limb riding in slot 3 (`Dup 8`, address 1376 = 0x560), `t` limb at 2208. -/
-def block4 : Block CycleSubmission.Artifact.artifact .Osaka 2901 ([.op .JUMPDEST] ++ rideProgram 7 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2247 29 2901 ([.op .JUMPDEST] ++ rideProgram 7 2208)
+/-- Block 4: instructions 2247..2274, pc 2901..2932 (eight limbs only; the four-limb head runs
+its own zero-carry copy), `-N` limb riding in slot 3 (`Dup 8`, address 1376 = 0x560), `t` limb at 2208. -/
+def block4 : Block CycleSubmission.Artifact.artifact .Osaka 2901 (rideProgram 7 2208) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2247 28 2901 (rideProgram 7 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 5: instructions 2460..2487, pc 3066..3098,
 `-N` limb riding in slot 2 (`Dup 7`, address 1344 = 0x540), `t` limb at 2176. -/
-def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2934 (rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2276 28 2934 (rideProgram 6 2176)
+def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2933 ([.op .JUMPDEST] ++ rideProgram 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2275 29 2933 ([.op .JUMPDEST] ++ rideProgram 6 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 6: instructions 2488..2515, pc 3099..3131,
@@ -102,17 +103,18 @@ def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3034 exitProgram 
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- E6, the section entry: instructions 2325..2328, pc 2895..2898 (`Dup 5` = the scratch slot). -/
-def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 2782 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2142 3 2782 entryProgram
+def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10827 (rideTopProgramNP 6 2208) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8606 16 10827 (rideTopProgramNP 6 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- The eight-limb entry (block 0's `JUMPDEST`, instruction 2329). -/
-theorem jumpDest2899 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2785 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2145 (by rfl)
+/-- The four-limb head's jump into block 5 (instructions 8622..8623, pc 10845). -/
+def jump4Block : Block CycleSubmission.Artifact.artifact .Osaka 10845 jump4Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8622 2 10845 jump4Program
+    (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The four-limb entry (block 4's `JUMPDEST`, instruction 2431, = 2946 + 116). -/
-theorem jumpDest3032 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2901 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2247 (by rfl)
+theorem jumpDest3032 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2933 = true :=
+  CycleSubmission.Global.Binding.jumpDest 2275 (by rfl)
 
 end CycleSubmission.Global.Fast.M9Mac
 
