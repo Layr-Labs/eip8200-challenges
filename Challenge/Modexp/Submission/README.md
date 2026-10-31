@@ -1,3 +1,31 @@
+# Current refinement: shift-reduce loop exit block moved behind the bottom test (-66 gas per draw)
+
+* **Before:** the counter block at 3061 (`JUMPDEST NOT ADD DUP1 PUSH2 0x0a90 JUMPI`) fell through on
+  loop exit into `PUSH2 0x0c4a JUMP` (3069), which jumped over the repair add loop (3073..3145) to
+  the exit / E3 phase block at 3146.
+* **After:** the exit block (35 bytes) sits at 3069 directly behind the bottom test, the repair add
+  loop follows at 3104..3176, and the old fall-through of `SUB_CHECK` (unreachable, `TN = 0` always)
+  becomes `PUSH2 0x0bfd JUMP` at 3177. 3069..3180 keeps 112 bytes / 77 instructions.
+* -11 gas per loop exit, 6 exits per draw: -66 per draw on every seed.
+* Proofs: `CycleGlobal/ShiftStates` (repair and exit pcs), `ShiftPaths`/`ShiftBlocks` (located blocks
+  re-indexed, new push immediates, `blk3253x` empty), `PrefixPC` (`eq_old_tail12` ends at 2388),
+  `ShiftPCs` (`pcSwap2389..2465`), `ShiftTrace3`, `RootE3Bindings`/`RootE3PhaseRun` (E3 phase blocks
+  at 3069/3071/3080); `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
+# Current refinement: square-loop exit filler moved into the counter push (-6 gas per draw)
+
+* **Before:** the RSA-2048 square-loop counter block at 7619 was `PUSH1 0x01 DUP16 SUB SWAP15
+  PUSH2 0x163e JUMPI`, followed by the byte filler `PUSH18 0; POP; JUMPDEST x4` (7628..7651),
+  executed once on loop exit (9 gas).
+* **After:** `PUSH19 0x00..01 DUP16 SUB SWAP15 PUSH2 0x163e JUMPI` (the push carries the 18 filler
+  bytes at the same 3 gas) and six `JUMPDEST`s at 7646..7651 (6 gas). The span keeps 33 bytes and
+  12 instructions; every pc and instruction index outside it is unchanged.
+* -3 gas per RSA-2048 vector, -6 per corpus draw on every seed.
+* Proofs: `Cycle/Execution/counterHead` (`counterHeadProgram` with `.push 19 1`, model pc 7645;
+  `counterExitProgram` = six `JUMPDEST`s from 7646 to 7652), `Cycle/CounterControl` (pcs 7645/7646),
+  `Cycle/LoopBlocks` (`counterJumpBlock` at 7645, `counterExitBlock` at 7646); `Cycle/Artifact.lean`
+  and `Cycle/Bytes.lean` regenerated from `bytecode.hex`.
+
 # Current refinement: one JUMPI for the four RSA fast-path entry checks (-36 gas per draw)
 
 * **Before:** `... PUSH1 0xff SHR ISZERO PUSH1 0xdb JUMPI` (zero top bit → 219) at 615..623, then
