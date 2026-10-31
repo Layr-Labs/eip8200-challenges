@@ -118,10 +118,10 @@ theorem entryMemory_represents (mem : ByteArray) (a : Nat)
 /-- The state at 3751 for exponent count `k`. -/
 def entryState (s : State) (mem : ByteArray) (bsize esize k : Nat) : State :=
   frameAt pcEntry s (entryMemory mem) (CycleSubmission.Global.Fast.SquareStagedEntry.qWord 4) (UInt256.ofNat 3347)
-    (MachineState.readWord mem 224) (MachineState.readWord mem 2720)
-    (MachineState.readWord mem 96) (MachineState.readWord mem 96)
-    (MachineState.readWord mem 64) (MachineState.readWord mem 32)
-    (UInt256.ofNat (2112 + 32 * 4 - 32)) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
+    (UInt256.ofNat 0) (MachineState.readWord mem 2720)
+    (UInt256.ofNat 0) (UInt256.ofNat 0)
+    (UInt256.ofNat 0) (UInt256.ofNat 0)
+    (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
     (UInt256.ofNat k :: Exp.outer 4 bsize esize 128)
 
 /-- From the width-4 special state to the r5 entry at 3751. -/
@@ -157,18 +157,18 @@ def gasSteps_head (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (CiosInverseGuard.inverse_ne_zero _ _ hinvW)
   have g2 := CycleSubmission.Global.Fast.SquareStagedEntry.gasSteps_entry s
     (SquarePartialClear.memory (stageW mem 2112 (2 + 2))) (2 + 2)
-    (UInt256.ofNat 3347) (MachineState.readWord mem 32) (MachineState.readWord mem 64)
-    (MachineState.readWord mem (16 * (2 + 2) + 32))
-    (MachineState.readWord mem 224 :: MachineState.readWord mem 96 :: MachineState.readWord mem 2720 ::
-      UInt256.ofNat 0 :: UInt256.ofNat (2112 + 32 * (2 + 2) - 32) ::
+    (UInt256.ofNat 3347) (UInt256.ofNat 0) (UInt256.ofNat 0)
+    (UInt256.ofNat 0)
+    (UInt256.ofNat 0 :: UInt256.ofNat 0 :: MachineState.readWord mem 2720 ::
+      UInt256.ofNat 0 :: UInt256.ofNat 0 ::
       UInt256.ofNat (k - 1) :: UInt256.ofNat 2519 :: UInt256.ofNat k :: Exp.outer 4 bsize esize 128)
     (by simp [Exp.outer]) env.running env.code env.forkEq env.noPrecompile hact
   have g3 := gasSteps_h1 s (SquarePartialClear.memory (stageW mem 2112 (2 + 2)))
     (CycleSubmission.Global.Fast.SquareStagedEntry.qWord (2 + 2)) (UInt256.ofNat 3347)
-    (MachineState.readWord mem 224) (MachineState.readWord mem 2720)
-    (MachineState.readWord mem (16 * (2 + 2) + 32)) (MachineState.readWord mem 96)
-    (MachineState.readWord mem 64) (MachineState.readWord mem 32)
-    (UInt256.ofNat (2112 + 32 * (2 + 2) - 32)) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
+    (UInt256.ofNat 0) (MachineState.readWord mem 2720)
+    (UInt256.ofNat 0) (UInt256.ofNat 0)
+    (UInt256.ofNat 0) (UInt256.ofNat 0)
+    (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
     (UInt256.ofNat k :: Exp.outer 4 bsize esize 128) (by simp [Exp.outer])
     env.running env.code env.forkEq env.noPrecompile CycleSubmission.Global.Fast.SquareStagedEntry.qWord_four
   exact ((head.trans g1).trans g2).trans g3

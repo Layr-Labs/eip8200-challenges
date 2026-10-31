@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Cycle.Artifact
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SetupEntry
+import Challenge.Modexp.Submission.Proofs.CycleCaller.DeadSetup
 set_option warningAsError true
 set_option maxRecDepth 50000
 set_option maxHeartbeats 12000000
@@ -27,8 +28,8 @@ def commonBlock : Block Artifact.artifact .Osaka 3181 commonProgram :=
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def setupBlock : Block Artifact.artifact .Osaka 3182 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2467 54 3182 TnM128Setup.fullEntryProgram
+def setupBlock : Block Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 2467 54 3182 CycleSubmission.DeadSetup.fullEntryProgram
     (by change 2467+54 ≤ Artifact.instructions.length
         exact Nat.le_trans (by decide : 2467+54 ≤ 8548)
           (Nat.le_of_eq Artifact.instructionCount.symm))

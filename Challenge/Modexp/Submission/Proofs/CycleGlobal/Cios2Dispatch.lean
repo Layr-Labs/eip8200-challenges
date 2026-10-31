@@ -62,8 +62,8 @@ set_option linter.unusedSimpArgs false in
 
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
-def setup : Block CycleSubmission.Artifact.artifact .Osaka 3182 TnM128Setup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2467 54 3182 TnM128Setup.fullEntryProgram
+def setup : Block CycleSubmission.Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2467 54 3182 CycleSubmission.DeadSetup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)
@@ -106,27 +106,27 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
-    (hn4 : n = 4 ∨ n = 8)
+    (_hn4 : n = 4 ∨ n = 8)
     (hpaFit : pa + 32 * n ≤ 2816)
     (hpb : 32 ≤ pb) (hpbFit : pb + 32 * n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (hw : rest[1]? = some (UInt256.ofNat (32 * n)))
-    (hslotn : rest[2]? = some (UInt256.ofNat n))
+    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
+    (_hw : rest[1]? = some (UInt256.ofNat (32 * n)))
+    (_hslotn : rest[2]? = some (UInt256.ofNat n))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (CiosCached.setupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stageW mem pa n)) pb n 0 hd
         (UInt256.ofNat 3347)
-        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
-        (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
+        (UInt256.ofNat 0) (UInt256.ofNat 0) (UInt256.ofNat 0)
+        (UInt256.ofNat 0 :: UInt256.ofNat 0 ::
           MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
-          UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) :=
+          UInt256.ofNat 0 :: pdst :: ret :: rest)) :=
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
-    (TnM128Setup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hn4 hpaFit hpb hpbFit
-      hcds hs32 hml hw hslotn (by rw [hcode]; exact hjump))
+    (CycleSubmission.DeadSetup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hpaFit hpb hpbFit
+      hcds hs32 (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` with the square-loop frame's width slot (the limb count). -/
 opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -151,10 +151,10 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
       (commonState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stageW mem pa n)) pb n 0 hd
         (UInt256.ofNat 3347)
-        (MachineState.readWord mem 32) (MachineState.readWord mem 64) (MachineState.readWord mem (16 * n + 32))
-        (MachineState.readWord mem 224 :: MachineState.readWord mem 96 ::
+        (UInt256.ofNat 0) (UInt256.ofNat 0) (UInt256.ofNat 0)
+        (UInt256.ofNat 0 :: UInt256.ofNat 0 ::
           MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
-          UInt256.ofNat (pa + 32 * n - 32) :: pdst :: ret :: rest)) := by
+          UInt256.ofNat 0 :: pdst :: ret :: rest)) := by
   have hwidth : MachineState.readWord mem 2688 = UInt256.ofNat 128 ∨
       MachineState.readWord mem 2688 = UInt256.ofNat 256 := by
     rcases hn with rfl | rfl

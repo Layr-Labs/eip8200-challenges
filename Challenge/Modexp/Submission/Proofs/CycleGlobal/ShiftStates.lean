@@ -60,23 +60,23 @@ def pcShiftBody : Nat := 2705
 def pcEstimate : Nat := 2719
 def pcMacSetup : Nat := 2782   -- E6, the conversion entry JUMPDEST (mask already built)
 def pcMid : Nat := 3034   -- the fall-through after the eight straight blocks
-def pcAddLoop : Nat := 3075
-def pcAddInner : Nat := 3081
-def pcAddTail : Nat := 3118
+def pcAddLoop : Nat := 3106
+def pcAddInner : Nat := 3112
+def pcAddTail : Nat := 3149
 /-- The add body after `OR`, before the pointer step and exit test. -/
-def pcAddMid : Nat := 3105
+def pcAddMid : Nat := 3136
 /-- The fall-through padding after the add-round exit test. -/
-def pcAddPad : Nat := 3118
-def pcSubCheck : Nat := 3136
+def pcAddPad : Nat := 3149
+def pcSubCheck : Nat := 3167
 def pcCsubCall : Nat := 3061
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
-def pcUnc : Nat := 3073
+def pcUnc : Nat := 3104
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
 def pcAfterCsub : Nat := 2704
 /-- The loop exit after the last step (`PUSH2 3366 JUMP`, the `JUMPI` fall-through). -/
 def pcCsubExit : Nat := 3069
-def pcShiftDone : Nat := 3146
+def pcShiftDone : Nat := 3069
 
 /-- A state with the outer frame only. -/
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=

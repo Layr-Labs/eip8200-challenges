@@ -20,15 +20,15 @@ def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Ca
   hd := UInt256.ofNat 5297
   w3 := MachineState.readWord mem 192
   ent := UInt256.ofNat 3347
-  m32 := MachineState.readWord mem 32
+  m32 := UInt256.ofNat 0
   m128 := MachineState.readWord mem 128
-  m64 := MachineState.readWord mem 64
-  m0 := MachineState.readWord mem 160
-  tl := MachineState.readWord mem 224
-  m96 := MachineState.readWord mem 96
+  m64 := UInt256.ofNat 0
+  m0 := UInt256.ofNat 0
+  tl := UInt256.ofNat 0
+  m96 := UInt256.ofNat 0
   inv := MachineState.readWord mem 2720
   tn := UInt256.ofNat 0
-  aprev := UInt256.ofNat 2336
+  aprev := UInt256.ofNat 0
   counter := UInt256.ofNat (k-1)
   ret := ret
   tail := tail
@@ -42,10 +42,10 @@ def call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UI
 
 def staged (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
   CiosCached.outState s (CallerMemory.memory mem) 512 8 0 (UInt256.ofNat 3728)
-    (UInt256.ofNat 3347) (MachineState.readWord mem 32) (MachineState.readWord mem 64)
-    (MachineState.readWord mem 160)
-    ([MachineState.readWord mem 224, MachineState.readWord mem 96,
-      MachineState.readWord mem 2720, UInt256.ofNat 0, UInt256.ofNat 2336,
+    (UInt256.ofNat 3347) (UInt256.ofNat 0) (UInt256.ofNat 0)
+    (UInt256.ofNat 0)
+    ([UInt256.ofNat 0, UInt256.ofNat 0,
+      MachineState.readWord mem 2720, UInt256.ofNat 0, UInt256.ofNat 0,
       UInt256.ofNat (k-1), ret] ++ tail)
 
 def stateAt (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
@@ -123,9 +123,9 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
-    (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (hw : tail[1]? = some (UInt256.ofNat 256))
-    (hn : tail[2]? = some (UInt256.ofNat 8)) :
+    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
+    (_hw : tail[1]? = some (UInt256.ofNat 256))
+    (_hn : tail[2]? = some (UInt256.ofNat 8)) :
     GasSteps (call s mem k ret tail) (staged s mem k ret tail) := by
   have hcommon := commonBlock.steps (s := call s mem k ret tail)
     (env.transfer rfl rfl) rfl (jumpDest_run _ (by
@@ -133,9 +133,9 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
   have hsetup := setupBlock.steps
     (s := CiosCached.setupState s mem (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) ret tail)
     (env.transfer rfl rfl) rfl
-    (TnM128Setup.run_entry_sq s mem (UInt256.ofNat 3728) 2112 512 8
+    (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3728) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)
-      (Or.inr rfl) (by decide) (by decide) (by decide) hcds hs32 hml hw hn
+      (by decide) (by decide) (by decide) hcds hs32
       (by rw [env.code]; exact valid3728))
   exact hcommon.trans hsetup
 

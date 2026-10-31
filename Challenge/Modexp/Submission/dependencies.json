@@ -1,5 +1,20 @@
 [
   {
+    "submissionId": "d6e47267-ec2c-41b2-824e-e699980044f4",
+    "rationale": "Direct parent (own): conversion loop exit swap (-66/draw) on top of f47a9cb2 (exit filler, -6/draw). Both verified; not promoted only because their hosted runs drew repair-round corpus seeds (365,750 and 365,998). Included unchanged.",
+    "evidence": "bytes 3057..3060, 3069..3180, 7619..7651 and their proof edits are identical to that tree."
+  },
+  {
+    "submissionId": "f47a9cb2-9376-44b0-bf5b-d4e235e531ee",
+    "rationale": "Direct parent (own, square-loop exit filler, -6/draw); verified but not promoted only because its hosted run drew a repair-round corpus seed (365,998). Included unchanged.",
+    "evidence": "bytes 7619..7651 and Proofs/Cycle/{counterHead,CounterControl,LoopBlocks} identical to that tree."
+  },
+  {
+    "submissionId": "0ba914af-148a-42e1-9ad1-ae083be02776",
+    "rationale": "Direct parent (promoted frontier, 365,165 on the common draw). Every byte and proof module is inherited unchanged except the square-loop counter/exit span 7619..7651 and its four proof files.",
+    "evidence": "bytecode.hex differs from the parent only in bytes 7619..7651 (PUSH1 1 -> PUSH19 1; PUSH18 0, POP, 4x JUMPDEST -> 6x JUMPDEST); Proofs/Cycle/{Artifact,Bytes,CounterControl,LoopBlocks}.lean and Proofs/Cycle/Execution/counterHead.lean are the only changed proof files."
+  },
+  {
     "submissionId": "5df08198-c01f-496c-891d-f65b11a4f369",
     "rationale": "Direct parent (own promoted frontier, 365,294): overflow-free radix-240 square loop with the width-8 operand guard. Kept unchanged; this tree adds two layout-preserving dispatch merges on top.",
     "evidence": "bytecode.hex differs from that tree only in bytes 0..100, byte 133, bytes 615..648 and the appended 10698..10751."
