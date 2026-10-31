@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "6fdfda77-c1b1-4e3a-9ab7-e87f6538e8ac",
+    "rationale": "Direct parent (own, promoted frontier at 364,961): the staged kernel entry's unread w3 frame word pushed as zero, on top of 5187d3a5. Included unchanged.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2662..2786, 3057..3068, 3085..3103, 3173..3176 and the appended 10752..10835; proof edits in CycleGlobal Shift*/M9Mac*/RootE3*/PrefixPC/ShiftPCs, Fast/M9MacRun (appended lemmas), regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "5187d3a5-34d0-4817-8dc8-d72ffb8402d3",
     "rationale": "Direct parent (own): seven never-read kernel frame words zeroed, on top of d6e47267 (loop exit swap) and f47a9cb2 (exit filler). Included unchanged.",
     "evidence": "bytecode.hex differs from that tree only in bytes 3734..3742; proof edits only in CycleCaller/Blocks, CycleCaller/Prefix, CycleGlobal/SquareStagedEntry, CycleGlobal/R5Head."

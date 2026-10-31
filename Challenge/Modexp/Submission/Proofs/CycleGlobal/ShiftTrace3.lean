@@ -458,13 +458,16 @@ theorem run_csubCall (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     show (UInt256.ofNat (k - 1)).toNat ≠ 0
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
     omega
+  have headPC_mod : headPC n %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = headPC n :=
+    Nat.mod_eq_of_lt (by unfold headPC; split_ifs <;> norm_num)
   simp (config := { maxSteps := 200000 })
     [blk3253, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       csubCallState, slotKState, rideSlots, entrySlots, shiftEntry, pcCsubCall, pcAfterCsub, afterCsubState,
-      outer, Exp.outer, hcode, hrun, hdec, hdec', htrue, jumpDest4839,
+      outer, Exp.outer, hcode, hrun, hdec, hdec', htrue, headWord, headPC_mod, jumpDestHead,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -555,6 +558,12 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
+  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18796 -
+      (UInt256.ofNat 2011 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10752 := by decide
+  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18796 -
+      (UInt256.ofNat 2011 * UInt256.ofNat 8).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2708 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -592,15 +601,15 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       cacheSetupState, slotState, slotKState, shiftLoopState, rideSlots, entrySlots,
-      shiftEntry, Exp.storeWord, outer, Exp.outer, hcode, hrun, pcShiftLoop,
+      shiftEntry, Exp.storeWord, outer, Exp.outer, hcode, hrun, headPC, headWord, jumpDestHead4, jumpDest4839,
       UInt256.eq, UInt256.isTrue, UInt256.land,
-      haw1698, haw1760, haw2816, hv4, hv8, hslot1698, hslot1760, hback3032, hback2899,
+      haw1698, haw1760, haw2816, hv4, hv8, hw4, hw8, hslot1698, hslot1760, hback3032, hback2899,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
   all_goals (simp only [State.activeWordsAfterUInt256, haw1698, haw1760, haw2816,
-      hslot1698, hslot1760, hback3032, hback2899, hv4, hv8,
+      hslot1698, hslot1760, hback3032, hback2899, hv4, hv8, hw4, hw8, hv8,
       Fin.land, Nat.and_zero, Nat.zero_and])
   all_goals (first | rfl | simp [UInt256.ofNat, UInt256.size, Fin.ofNat, Fin.land,
       Nat.and_zero, Nat.zero_and, UInt256.toNat, hback3032, hback2899])
@@ -667,6 +676,12 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
+  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18796 -
+      (UInt256.ofNat 2011 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10752 := by decide
+  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18796 -
+      (UInt256.ofNat 2011 * UInt256.ofNat 8).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2708 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -706,16 +721,16 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       cacheSetupState, slotState, slotKState, shiftLoopState, rideSlots, entrySlots,
-      shiftEntry, Exp.storeWord, outer, Exp.outer, hcode, hrun, pcShiftLoop,
+      shiftEntry, Exp.storeWord, outer, Exp.outer, hcode, hrun, headPC, headWord, jumpDestHead4, jumpDest4839,
       UInt256.eq, UInt256.isTrue, UInt256.land, UInt256.isZero,
-      haw1698, haw1760, haw2816, hv4, hv8, hslot1698, hhi1698, hslot1760, hback3032, hback2899,
+      haw1698, haw1760, haw2816, hv4, hv8, hw4, hw8, hslot1698, hhi1698, hslot1760, hback3032, hback2899,
       hmodif, hb3t, hb3m, hmodl,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
   all_goals (simp only [State.activeWordsAfterUInt256, haw1698, haw1760, haw2816,
-      hslot1698, hhi1698, hslot1760, hback3032, hback2899, hv4, hmodif, hmodl, hb3m,
+      hslot1698, hhi1698, hslot1760, hback3032, hback2899, hv4, hv8, hw4, hw8, hmodif, hmodl, hb3m,
       Fin.land, Nat.and_zero, Nat.zero_and])
   all_goals (first | rfl | simp [UInt256.ofNat, UInt256.size, Fin.ofNat, Fin.land,
       Nat.and_zero, Nat.zero_and, UInt256.toNat, hback3032, hback2899, hmodif, hmodl, hb3m])
@@ -798,6 +813,12 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
+  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18796 -
+      (UInt256.ofNat 2011 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10752 := by decide
+  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18796 -
+      (UInt256.ofNat 2011 * UInt256.ofNat 8).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2708 := by decide
   have hslot1698 : ∀ (v a : Nat), a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -837,16 +858,16 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       cacheSetupState, slotState, slotKState, shiftLoopState, rideSlots, entrySlots,
-      shiftEntry, Exp.storeWord, outer, Exp.outer, hcode, hrun, pcShiftLoop,
+      shiftEntry, Exp.storeWord, outer, Exp.outer, hcode, hrun, headPC, headWord, jumpDestHead4, jumpDest4839,
       UInt256.eq, UInt256.isTrue, UInt256.land, UInt256.isZero,
-      haw1698, haw1760, haw2816, hv4, hv8, hslot1698, hhi1698, hslot1760, hback3032, hback2899,
+      haw1698, haw1760, haw2816, hv4, hv8, hw4, hw8, hslot1698, hhi1698, hslot1760, hback3032, hback2899,
       hmodif, hmodl,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, Nat.mod_eq_of_lt, List.exchange]
   all_goals (simp only [State.activeWordsAfterUInt256, haw1698, haw1760, haw2816,
-      hslot1698, hhi1698, hslot1760, hback3032, hback2899, hv4, hmodif, hmodl, hbn, hbn2,
+      hslot1698, hhi1698, hslot1760, hback3032, hback2899, hv4, hv8, hw4, hw8, hmodif, hmodl, hbn, hbn2,
       Fin.land, Nat.and_zero, Nat.zero_and])
   all_goals (first | rfl | simp [UInt256.ofNat, UInt256.size, Fin.ofNat, Fin.land,
       Nat.and_zero, Nat.zero_and, UInt256.toNat, hback3032, hback2899, hmodif, hmodl, hbn, hbn2,

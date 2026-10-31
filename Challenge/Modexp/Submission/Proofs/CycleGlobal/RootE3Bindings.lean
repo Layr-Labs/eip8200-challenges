@@ -29,14 +29,12 @@ open WindowTwentyOneBinding Shift
 
 /-- The phase exit is split where the conditional branch changes control flow:
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
-cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to 2811). -/
+cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to the loop head). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
   exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2389 2 3069 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
   guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2391 5 3071 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
   switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2396 14 3080 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
-theorem jumpDest2811 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2704 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2082 (by rfl)
 
 /-! ## Junction lemmas
 
@@ -78,13 +76,13 @@ theorem phaseSwitch_entrySlots (z : UInt256) (mem : ByteArray) (n bsize esize : 
 (`phaseSwitchMemory` and `RootE3Phase.phaseSwitch` are the same function). -/
 theorem switchEnd_eq (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) :
-    RootE3PhaseRun.frame s (RootE3PhaseRun.phaseSwitchMemory mem n) 2704
+    RootE3PhaseRun.frame s (RootE3PhaseRun.phaseSwitchMemory mem n) (CycleSubmission.Global.Fast.Shift.headPC n)
         (UInt256.ofNat (n / 4) :: CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 12) mem n bsize esize ++
           Exp.outer n bsize esize msize) =
       CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
         (n / 4) := by
   have hslots := phaseSwitch_entrySlots (UInt256.ofNat 12) mem n bsize esize hn8
-  unfold CycleSubmission.Global.Fast.Shift.shiftLoopState CycleSubmission.Global.Fast.Shift.slotKState RootE3PhaseRun.frame CycleSubmission.Global.Fast.Shift.pcShiftLoop
+  unfold CycleSubmission.Global.Fast.Shift.shiftLoopState CycleSubmission.Global.Fast.Shift.slotKState RootE3PhaseRun.frame
   rw [hslots]
   rfl
 
@@ -140,8 +138,9 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : C
         (n / 4)) := by
   have hd5444 : Decode.isValidJumpDest s.executionEnv.code 3944 = true := by
     rw [e.code]; exact CycleSubmission.Global.Fast.jumpDest5444
-  have hd2811 : Decode.isValidJumpDest s.executionEnv.code 2704 = true := by
-    rw [e.code]; exact jumpDest2811
+  have hd2811 : Decode.isValidJumpDest s.executionEnv.code
+      (CycleSubmission.Global.Fast.Shift.headPC n) = true := by
+    rw [e.code]; exact CycleSubmission.Global.Fast.Shift.jumpDestHead n
   have hslots : (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++
       Exp.outer n bsize esize msize).length ≤ 1000 := by
     simp [CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.rideSlots, Exp.outer]

@@ -254,17 +254,17 @@ private theorem widths_eq_eq_old_tail10 :
   rw [length_eq, length_eq, h]
 
 private theorem widths_eq_eq_old_tail11 :
-    (((CycleSubmission.Artifact.instructions.drop 2025).take (2128-2025)).map width) =
-    (((Artifact.submissionInstructions.drop 2036).take (2139-2036)).map width) := by rfl
+    (((CycleSubmission.Artifact.instructions.drop 2025).take (2060-2025)).map width) =
+    (((Artifact.submissionInstructions.drop 2036).take (2071-2036)).map width) := by rfl
 
-@[simp] theorem eq_old_tail11 (i : Nat) (hlo : 2025 ≤ i) (hhi : i ≤ 2128) :
+@[simp] theorem eq_old_tail11 (i : Nat) (hlo : 2025 ≤ i) (hhi : i ≤ 2060) :
     CycleSubmission.Artifact.artifact.instructionPC i =
       Artifact.submissionArtifact.instructionPC (i+11) := by
   have h : (((CycleSubmission.Artifact.instructions.drop 2025).take (i-2025)).map width) =
       (((Artifact.submissionInstructions.drop 2036).take (i-2025)).map width) := by
     have h := congrArg (List.take (i-2025)) widths_eq_eq_old_tail11
     simpa only [← List.map_take, List.take_take,
-      Nat.min_eq_left (show i-2025 ≤ 2128-2025 by omega)] using h
+      Nat.min_eq_left (show i-2025 ≤ 2060-2025 by omega)] using h
   have ha : CycleSubmission.Artifact.artifact.instructionPC 2025 = 2609 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   have hb : Artifact.submissionArtifact.instructionPC 2036 = 2609 := by
@@ -277,26 +277,26 @@ private theorem widths_eq_eq_old_tail11 :
   rw [length_eq, length_eq, h]
 
 private theorem widths_eq_eq_old_tail12 :
-    (((CycleSubmission.Artifact.instructions.drop 2129).take (2388-2129)).map width) =
-    (((Artifact.submissionInstructions.drop 2141).take (2400-2141)).map width) := by rfl
+    (((CycleSubmission.Artifact.instructions.drop 2147).take (2380-2147)).map width) =
+    (((Artifact.submissionInstructions.drop 2159).take (2392-2159)).map width) := by rfl
 
-@[simp] theorem eq_old_tail12 (i : Nat) (hlo : 2129 ≤ i) (hhi : i ≤ 2388) :
+@[simp] theorem eq_old_tail12 (i : Nat) (hlo : 2147 ≤ i) (hhi : i ≤ 2380) :
     CycleSubmission.Artifact.artifact.instructionPC i =
       Artifact.submissionArtifact.instructionPC (i+12) := by
-  have h : (((CycleSubmission.Artifact.instructions.drop 2129).take (i-2129)).map width) =
-      (((Artifact.submissionInstructions.drop 2141).take (i-2129)).map width) := by
-    have h := congrArg (List.take (i-2129)) widths_eq_eq_old_tail12
+  have h : (((CycleSubmission.Artifact.instructions.drop 2147).take (i-2147)).map width) =
+      (((Artifact.submissionInstructions.drop 2159).take (i-2147)).map width) := by
+    have h := congrArg (List.take (i-2147)) widths_eq_eq_old_tail12
     simpa only [← List.map_take, List.take_take,
-      Nat.min_eq_left (show i-2129 ≤ 2388-2129 by omega)] using h
-  have ha : CycleSubmission.Artifact.artifact.instructionPC 2129 = 2769 := by
+      Nat.min_eq_left (show i-2147 ≤ 2380-2147 by omega)] using h
+  have ha : CycleSubmission.Artifact.artifact.instructionPC 2147 = 2787 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
-  have hb : Artifact.submissionArtifact.instructionPC 2141 = 2769 := by
+  have hb : Artifact.submissionArtifact.instructionPC 2159 = 2787 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
-  have hi : 2129+(i-2129)=i := by omega
+  have hi : 2147+(i-2147)=i := by omega
   rw [← hi, pc_add, ha]
-  rw [show 2129+(i-2129)+12 = 2141+(i-2129) by omega, pc_add, hb]
-  change 2769 + PCFast.byteLength ((CycleSubmission.Artifact.instructions.drop 2129).take (i-2129)) =
-    2769 + PCFast.byteLength ((Artifact.submissionInstructions.drop 2141).take (i-2129))
+  rw [show 2147+(i-2147)+12 = 2159+(i-2147) by omega, pc_add, hb]
+  change 2787 + PCFast.byteLength ((CycleSubmission.Artifact.instructions.drop 2147).take (i-2147)) =
+    2787 + PCFast.byteLength ((Artifact.submissionInstructions.drop 2159).take (i-2147))
   rw [length_eq, length_eq, h]
 
 end CycleSubmission.Global.PrefixPC
