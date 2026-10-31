@@ -66,6 +66,8 @@ def headPC (n : Nat) : Nat := if n = 4 then 10754 else 2714
 E3 phase switch. -/
 def headWord (n : Nat) : UInt256 := UInt256.ofNat (headPC n)
 def pcMid : Nat := 3034   -- the fall-through after the eight straight blocks
+/-- The middle block of the width: the four-limb loop runs a private copy appended at 10945. -/
+def midPC (n : Nat) : Nat := if n = 4 then 10945 else 3034
 def pcAddLoop : Nat := 3106
 def pcAddInner : Nat := 3112
 def pcAddTail : Nat := 3149
@@ -259,7 +261,7 @@ by `SWAP3 POP` at pc 3184..3185, so it is still in its slot here; every state fr
 has the `[carry, q]` shape the block used to start from. -/
 def midState (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat pcMid
+  { s with pc := UInt256.ofNat (midPC n)
            stack := (Monpro.l1Step um q NEG n n).carry :: q :: Monpro.maxWord :: UInt256.ofNat k ::
              entrySlots z um n bsize esize ++ outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
@@ -297,6 +299,15 @@ def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 
+
+/-- The four-limb private counter block (pc 10974, no `JUMPDEST`). -/
+def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
+    State :=
+  { s with pc := UInt256.ofNat 10974
+           stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
+             entrySlots z mem n bsize esize ++ outer n bsize esize msize
+           memory := mem }
+
 /-- `UNC` with the sign flag `f` above the counter. -/
 def uncState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (f : UInt256) : State :=
@@ -314,6 +325,12 @@ def afterCsubState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
 def csubExitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   slotKState z s mem pcCsubExit 0 n bsize esize msize
+
+
+/-- The four-limb counter fell through (pc 10979, `PUSH2 3069 JUMP`). -/
+def csubExit4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
+    State :=
+  slotKState z s mem 10979 0 n bsize esize msize
 
 /-- The loop exit with the spent counter still on top of the slots. -/
 def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :

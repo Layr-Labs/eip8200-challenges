@@ -72,13 +72,15 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
                stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
-      { s with pc := UInt256.ofNat 3034,
+      { s with pc := UInt256.ofNat (Shift.midPC n),
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
                  UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } := by
   have hpc : Shift.headPC n + 73 = sectionPC n := by
     unfold Shift.headPC sectionPC; split_ifs <;> rfl
-  rw [hpc]
+  have hpc2 : Shift.midPC n = sectionEndPC n := by
+    unfold Shift.midPC sectionEndPC; split_ifs <;> rfl
+  rw [hpc, hpc2]
   exact gasSteps_macChain n hn s um q
     (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize)
     (by rw [rest_length z um n bsize esize msize k]; omega)

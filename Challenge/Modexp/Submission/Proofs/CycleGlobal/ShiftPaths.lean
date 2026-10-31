@@ -561,6 +561,46 @@ def blk3253x :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   []
 
+/-- The four-limb private middle block (pc 10945). -/
+def blk3125h :
+    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
+  [pushAt 8708 2 2080,
+   opAt 8709 .MLOAD,
+   opAt 8710 (.Dup ⟨1, by decide⟩),
+   opAt 8711 .ADD,
+   opAt 8712 (.Dup ⟨0, by decide⟩),
+   opAt 8713 (.Swap ⟨1, by decide⟩),
+   opAt 8714 .GT,
+   opAt 8715 (.Dup ⟨1, by decide⟩),
+   opAt 8716 (.Dup ⟨3, by decide⟩),
+   opAt 8717 .GT,
+   opAt 8718 .GT,
+   opAt 8719 (.Swap ⟨2, by decide⟩),
+   opAt 8720 .POP,
+   opAt 8721 .SUB,
+   opAt 8722 (.Dup ⟨0, by decide⟩),
+   pushAt 8723 2 2080,
+   opAt 8724 .MSTORE,
+   opAt 8725 (.Dup ⟨1, by decide⟩),
+   opAt 8726 .OR,
+   pushAt 8727 4 3104,
+   opAt 8728 .JUMPI]
+
+/-- The four-limb private counter (pc 10974; nothing jumps here, so no `JUMPDEST`). -/
+def blk3253h :
+    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
+  [opAt 8729 .NOT,
+   opAt 8730 .ADD,
+   opAt 8731 (.Dup ⟨0, by decide⟩),
+   opAt 8732 (.Dup ⟨2, by decide⟩),
+   opAt 8733 .JUMPI]
+
+/-- The four-limb loop exit: `PUSH2 3069 JUMP` (pc 10979) to the shared exit block. -/
+def blkExit4 :
+    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
+  [pushAt 8734 2 3069,
+   opAt 8735 .JUMP]
+
 theorem jumpDest4608 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
   CycleSubmission.Global.Binding.jumpDest 1873 (by rfl)

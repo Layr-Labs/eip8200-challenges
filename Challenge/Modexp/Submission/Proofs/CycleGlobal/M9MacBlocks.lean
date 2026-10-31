@@ -107,9 +107,20 @@ def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10827 (rideTopPr
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8606 16 10827 (rideTopProgramNP 6 2208)
     (by decide) (by rfl) (by rfl) (by decide)
 
-/-- The four-limb head's jump into block 5 (instructions 8622..8623, pc 10845). -/
-def jump4Block : Block CycleSubmission.Artifact.artifact .Osaka 10845 jump4Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8622 2 10845 jump4Program
+set_option maxHeartbeats 4000000 in
+/-- The four-limb private copies of blocks 5..7 (instructions 8622.., pc 10845..10944). -/
+def block5c : Block CycleSubmission.Artifact.artifact .Osaka 10845 (rideProgram 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8622 28 10845 (rideProgram 6 2176)
+    (by decide) (by rfl) (by rfl) (by decide)
+
+set_option maxHeartbeats 4000000 in
+def block6c : Block CycleSubmission.Artifact.artifact .Osaka 10877 (rideProgram 5 2144) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8650 28 10877 (rideProgram 5 2144)
+    (by decide) (by rfl) (by rfl) (by decide)
+
+set_option maxHeartbeats 4000000 in
+def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10909 (blockProgram 1280 2112) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8678 30 10909 (blockProgram 1280 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The four-limb entry (block 4's `JUMPDEST`, instruction 2431, = 2946 + 116). -/

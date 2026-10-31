@@ -1,7 +1,12 @@
 [
   {
+    "submissionId": "089eb2f9-9bbe-4e41-940a-3d24945b848e",
+    "rationale": "Direct parent (own, promoted frontier at 364,355). Included unchanged apart from the edits listed.",
+    "evidence": "bytecode.hex differs from that tree only in the appended bytes from 10845 on (private four-limb copies of chain blocks 5..7, the middle block, the counter and an exit jump); proof edits in CycleGlobal ShiftStates/ShiftPaths/ShiftTrace3/ShiftTrace4/M9MacBlocks/M9MacChain/M9MacShift/ShiftPCs, instruction-count bound 8736, regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "6fdfda77-c1b1-4e3a-9ab7-e87f6538e8ac",
-    "rationale": "Direct parent (own, promoted frontier at 364,961). This tree adds four conversion-loop changes on top (dual loop head, literal t-top store, N1>>128 riding slot, four-limb zero-carry first block); the first three were in my verified-but-unpromoted c8518739 and d398120b.",
+    "rationale": "Promoted ancestor (364,961), contained unchanged through 089eb2f9.",
     "evidence": "bytecode.hex differs from that tree only in bytes 2662..2786, 3057..3068, 3085..3103, 3173..3176 and the appended 10752..10835; proof edits in CycleGlobal Shift*/M9Mac*/RootE3*/PrefixPC/ShiftPCs, Fast/M9MacRun (appended lemmas), regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
   },
   {

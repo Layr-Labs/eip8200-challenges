@@ -1,3 +1,14 @@
+# Current refinement: the four-limb conversion loop runs private copies of blocks 5..7, the middle block and the counter (-58 gas per draw)
+
+* After its zero-carry first product the four-limb head no longer jumps back into the shared chain
+  (`PUSH2 2933 JUMP` + `JUMPDEST`) or through the shared counter `JUMPDEST`: it falls through private
+  copies (pc 10845..10978) and leaves the loop with `PUSH2 3069 JUMP`. Repair rounds still use the
+  shared add loop and counter. Image 10,983 bytes / 8,736 instructions.
+* Proofs: `ShiftStates.midPC`, `csubCall4State`, `csubExit4State`; `ShiftPaths` copies
+  (`blk3125h`, `blk3253h`, `blkExit4`); `ShiftTrace3` `_h4` lemmas and `run_exit4`; `M9MacChain`
+  (`startPCC`, `gasSteps_blockC`, `gasSteps_runC`, `sectionEndPC`); `ShiftTrace4.gasSteps_stepPre`
+  returns which counter the step ends in (a `Sum`).
+
 # Current refinement: the four-limb loop head runs its own zero-carry first product (-266 gas per draw)
 
 * The four-limb head ended in `PUSH0 PUSH2 2901 JUMP` into the generic chain block 4 (carry-in and

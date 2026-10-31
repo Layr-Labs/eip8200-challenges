@@ -479,7 +479,9 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
-      (csubCallState z s (stepMem mem n mm) n bsize esize msize k) := by
+      (csubCallState z s (stepMem mem n mm) n bsize esize msize k) ⊕
+    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
+      (csubCall4State z s (stepMem mem n mm) n bsize esize msize k) := by
   have rf' : RepairFacts (stepMid mem n) n mm (stepNeg mem n) := rf
   -- frame words along the way
   have htl0 : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n) := inv.frame.tl
@@ -597,7 +599,10 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       rfl (by rw [hfixEq])
   have g3 : Challenge.EvmProof.GasSteps
       (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
-      (csubCallState z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) := by
+      (csubCallState z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) ⊕
+    Challenge.EvmProof.GasSteps
+      (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+      (csubCall4State z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) := by
     by_cases h0 : stepNeg mem n = UInt256.ofNat 0
     · -- `neg = 0`: the top-limb word is zero (`ShiftModel.mid_neg_tn_zero`), so the
       -- middle block falls straight into the `CSUB` call; `fixMem` is the identity.
@@ -607,30 +612,46 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
           inv.pre h0
       have hfix : fixMem (stepMid mem n) n mm (stepNeg mem n) = stepMid mem n := by
         rw [hfixEq, rf'.posCount h0, addRounds_zero]
-      have start : Challenge.EvmProof.GasSteps
-          (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
-          (csubCallState z s (stepMid mem n) n bsize esize msize k) :=
-        soundEnv blk3125 e
-          (run_mid_zero z s (stepU mem n) (stepQ mem n) n bsize esize msize k hn32 e.act296 h0 htz
-            e.code e.run)
-      exact Challenge.EvmProof.GasSteps.cast start rfl (by rw [hfix])
+      by_cases hw : n = 4
+      · have start : Challenge.EvmProof.GasSteps
+            (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+            (csubCall4State z s (stepMid mem n) n bsize esize msize k) :=
+          soundEnv blk3125h e
+            (run_mid_zero_h4 z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296 h0 htz
+              e.code e.run)
+        exact .inr (Challenge.EvmProof.GasSteps.cast start rfl (by rw [hfix]))
+      · have start : Challenge.EvmProof.GasSteps
+            (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+            (csubCallState z s (stepMid mem n) n bsize esize msize k) :=
+          soundEnv blk3125 e
+            (run_mid_zero z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296 h0 htz
+              e.code e.run)
+        exact .inl (Challenge.EvmProof.GasSteps.cast start rfl (by rw [hfix]))
     · have h1 : stepNeg mem n = UInt256.ofNat 1 :=
         (negOf_cases (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)).resolve_left h0
       have hc1 : 1 ≤ addCount (stepMid mem n) n mm (stepNeg mem n) := rf'.negCount h1
       have hnz : (stepNeg mem n).toNat ≠ 0 := by rw [h1] <;> decide
       have start : Challenge.EvmProof.GasSteps
           (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
-          (addLoopState z s (stepMid mem n) n bsize esize msize k) :=
-        (soundEnv blk3125 e
-          (run_mid_unc z s (stepU mem n) (stepQ mem n) n bsize esize msize k hn32 e.act296
-            (Or.inl hnz) e.code e.run)).trans
-        (soundEnv blkUnc e
-          (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
+          (addLoopState z s (stepMid mem n) n bsize esize msize k) := by
+        by_cases hw : n = 4
+        · exact (soundEnv blk3125h e
+            (run_mid_unc_h4 z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296
+              (Or.inl hnz) e.code e.run)).trans
+            (soundEnv blkUnc e
+              (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
+        · exact (soundEnv blk3125 e
+            (run_mid_unc z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296
+              (Or.inl hnz) e.code e.run)).trans
+            (soundEnv blkUnc e
+              (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
       have adds := gasSteps_addRounds z s (stepMid mem n) n bsize esize msize k
         (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)
-      exact (start.trans adds).trans tail
-  exact Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans g3) rfl rfl
+      exact .inl ((start.trans adds).trans tail)
+  exact match g3 with
+    | .inl h => .inl (Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans h) rfl rfl)
+    | .inr h => .inr (Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans h) rfl rfl)
 
 /-- One shift step with `k ≥ 2`: the bottom test jumps back to the loop head with `k - 1`. -/
 def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k mm minv : Nat)
@@ -650,12 +671,16 @@ def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (shiftLoopState z s (stepMem mem n mm) n bsize esize msize (k - 1)) :=
-  Challenge.EvmProof.GasSteps.cast
-    ((gasSteps_stepPre z s mem n bsize esize msize k mm minv (by omega) hk32 hn hn32 hbs hmpos hmm
-        htop e inv hbase hr rf hfast).trans
-      (soundEnv blk3253 e
+  match gasSteps_stepPre z s mem n bsize esize msize k mm minv (by omega) hk32 hn hn32 hbs hmpos hmm
+      htop e inv hbase hr rf hfast with
+  | .inl h => Challenge.EvmProof.GasSteps.cast
+      (h.trans (soundEnv blk3253 e
         (run_csubCall z s (stepMem mem n mm) n bsize esize msize k hk hk32 e.code e.run)))
-    rfl rfl
+      rfl rfl
+  | .inr h => Challenge.EvmProof.GasSteps.cast
+      (h.trans (soundEnv blk3253h e
+        (run_csubCall_h4 z s (stepMem mem n mm) n bsize esize msize k hk hk32 e.code e.run)))
+      rfl rfl
 
 /-- The last shift step (`k = 1`): the bottom test falls through to `SHIFT_DONE`. -/
 def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize mm minv : Nat)
@@ -675,9 +700,16 @@ def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize 1)
       (shiftDoneState z s (stepMem mem n mm) n bsize esize msize) :=
-  ((gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
-      htop e inv hbase hr rf hfast).trans
-    (soundEnv blk3253 e (run_csubCall_last z s (stepMem mem n mm) n bsize esize msize e.run))).trans
-  (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))
+  match gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
+      htop e inv hbase hr rf hfast with
+  | .inl h =>
+    (h.trans
+      (soundEnv blk3253 e (run_csubCall_last z s (stepMem mem n mm) n bsize esize msize e.run))).trans
+    (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))
+  | .inr h =>
+    ((h.trans
+      (soundEnv blk3253h e (run_csubCall_last_h4 z s (stepMem mem n mm) n bsize esize msize e.run))).trans
+      (soundEnv blkExit4 e (run_exit4 z s (stepMem mem n mm) n bsize esize msize e.code e.run))).trans
+    (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))
 
 end CycleSubmission.Global.Fast.Shift
