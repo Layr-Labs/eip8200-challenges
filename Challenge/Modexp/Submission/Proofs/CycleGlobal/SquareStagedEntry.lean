@@ -45,7 +45,7 @@ def h1State (s : State) (mem : ByteArray) (n : Nat) (ent w5 inv m0 : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3743
            stack := [qWord n, UInt256.ofNat 5297, UInt256.ofNat 0, ent, w5, allOnes,
-             MachineState.readWord mem 128, inv, m0] ++ rest
+             UInt256.ofNat 0, inv, m0] ++ rest
            memory := mem }
 
 theorem run_entry (s : State) (mem : ByteArray) (n : Nat)

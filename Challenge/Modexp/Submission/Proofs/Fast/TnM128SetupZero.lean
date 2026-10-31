@@ -27,21 +27,21 @@ def cachedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3226
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
-             l1Target n, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             l1Target n, w5, allOnes, UInt256.ofNat 0, dst, ret] ++ rest
            memory := mem }
 
 def stagedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (ent w5 dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3240
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
-             ent, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             ent, w5, allOnes, UInt256.ofNat 0, dst, ret] ++ rest
            memory := mem }
 
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3245
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
-             l1Target n, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             l1Target n, w5, allOnes, UInt256.ofNat 0, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
 
 theorem run_stageGen (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -51,7 +51,7 @@ theorem run_stageGen (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     runInstructions stageProgram
       { s with pc := UInt256.ofNat 3226
                stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
-                 ent, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+                 ent, w5, allOnes, UInt256.ofNat 0, dst, ret] ++ rest
                memory := mem } =
       some (stagedSetupState s (stageW mem pa n) hd pb n ent w5 dst ret rest) := by
   have hc9 : rest.length+9 < 1024 := by omega
@@ -72,8 +72,7 @@ theorem run_stageGen (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   have hactA := activeWordsAfter_fix s.activeWords.toNat pa (32*n) (by omega) (by omega) hact
   have h2688 : (2688 : UInt256).toNat = 2688 := by decide
   have h1856 : (1856 : UInt256) = UInt256.ofNat 1856 := by decide
-  simp only [stagedSetupState,
-    read_stageW_outside mem pa n 128 (Or.inl (by omega))]
+  simp only [stagedSetupState]
   simp [stageProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     stageW, hs32, State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
     hactS, hactD, hactA, h2688, h1856, hdst, hdstN,
@@ -97,8 +96,9 @@ theorem run_clearGen (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     Challenge.EvmProof.Stepper.runInstr, State.activeWordsAfterUInt256, ha, h2048,
     hc9, hc10, hc11, Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-  refine ⟨by rfl, ?_⟩
-  exact (SquarePartialClear.readWord_outside mem 128 (Or.inl (by decide))).symm
+  -- The carried frame slot is now literal zero, not readWord mem 128.
+  -- Handle only reflexive residual equalities; no new proof assumptions.
+  all_goals rfl
 
 theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
@@ -110,21 +110,20 @@ theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   have h1 := run_stageGen s mem hd pa pb n (l1Target n) w5 dst ret rest hcap hact hnpos hn hpa hs32
   have h2 := run_clearGen s (stageW mem pa n) hd pb n (l1Target n) w5 dst ret rest hcap hact
   have h := runInstructions_append_some _ _ _ _ _ h1 h2
-  simpa only [zeroProgram, cachedSetupState, stagedSetupState, clearedSetupState,
-    SquarePartialClear.readWord_outside _ 128 (Or.inl (by decide))] using h
+  simpa only [zeroProgram, cachedSetupState, stagedSetupState, clearedSetupState] using h
 
 def cachedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb _n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3226
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb,
-             UInt256.ofNat 3347, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             UInt256.ofNat 3347, w5, allOnes, UInt256.ofNat 0, dst, ret] ++ rest
            memory := mem }
 
 def clearedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3245
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
-             UInt256.ofNat 3347, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
+             UInt256.ofNat 3347, w5, allOnes, UInt256.ofNat 0, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
 
 theorem run_zero_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)

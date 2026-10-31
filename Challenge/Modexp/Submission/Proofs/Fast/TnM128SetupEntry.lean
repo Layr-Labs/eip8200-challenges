@@ -65,7 +65,7 @@ theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
     (UInt256.ofNat 3347)
-    (MachineState.readWord mem 128)
+    (UInt256.ofNat 0)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
@@ -131,7 +131,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
     (UInt256.ofNat 3347)
-    (MachineState.readWord mem 128)
+    (UInt256.ofNat 0)
     dst ret m0 m64 aEnd tl m96 zeroTn m32 rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow

@@ -23,5 +23,5 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
     pc := hd
     memory := mem
     stack := [UInt256.ofNat (ptrAt (pb+32*n-32) i), hd, UInt256.ofNat (pb-32),
-      ent, w5, allOnes, MachineState.readWord mem 128, inv, m0] ++ rest}
+      ent, w5, allOnes, UInt256.ofNat 0, inv, m0] ++ rest}
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128Setup

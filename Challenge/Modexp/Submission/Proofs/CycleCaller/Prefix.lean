@@ -21,7 +21,7 @@ def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Ca
   w3 := UInt256.ofNat 0
   ent := UInt256.ofNat 3347
   m32 := UInt256.ofNat 0
-  m128 := MachineState.readWord mem 128
+  m128 := UInt256.ofNat 0
   m64 := UInt256.ofNat 0
   m0 := UInt256.ofNat 0
   tl := UInt256.ofNat 0

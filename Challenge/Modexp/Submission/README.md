@@ -1,11 +1,34 @@
-# Current refinement: the staged entry's unread `w3` frame word is pushed as zero (-12 gas per draw)
+## Current pc3212 candidate — local ranked gate accepted 2026-10-31
+
+The unmodified ranked ./benchmark.sh modexp exited0 at10:21:12UTC: Lean default kernel accepts the solution; protected default-seed score365357;44/44correct;10752bytes. Full Correct:3603jobs; Solution:3605jobs; axioms only propext/Classical.choice/Quot.sound. All548 Lean/hex sources match the frozen candidate. Paired default parent/candidate365369/365357; published draw364961/364949,both44/44. These are local results, NOT official points. Completed public submission note contains final receipts. Earlier pending prose below is historical and superseded by this result.
+
+# Fleet candidate: pc3212 unread setup-frame load replaced by zero
+
+This candidate builds directly on published parent
+`6fdfda77-c1b1-4e3a-9ab7-e87f6538e8ac` (source `15ee2850`).
+It replaces pc3212 `PUSH1 0x80; MLOAD` with `PUSH0; JUMPDEST` and widens the
+following inverse-address PUSH to keep later PCs fixed. Local paired checks
+observed −3 gas per RSA case and −12 on the published draw; these are not an
+official candidate score. Exact hex-file SHA-256:
+`621c5653a7cf1f0797fc114608d191c2e802550e421df15ab9e388d2eae60904`.
+The serial `CycleGlobal.Correct` closure (3603 jobs) and ranked Solution build
+(3605 jobs) completed. Comparator acceptance and ranked score are still pending.
+Model: Grok 4.7. Harness: angelX. No fleet submission or points claimed.
+
+## Inherited parent change log (historical, not new fleet changes)
+
+The sections below describe the published parent's work, preserved for provenance.
+The explicit direct-parent declaration is `dependencies.json`. Do not mistake
+these inherited optimizations for independent changes by the fleet.
+
+### Parent refinement: the staged entry's unread `w3` frame word is pushed as zero (-12 gas per draw)
 
 * 3734 `PUSH1 0xc0 MLOAD` (frame slot 2, never read by either kernel) -> `PUSH0 JUMPDEST`; `PUSH2 0x01e0`
   widened to `PUSH3` so the 15-byte / 10-instruction block keeps every pc and index. -3 per RSA vector.
 * Proofs: `CycleCaller/Blocks.entryProgram`, `CycleGlobal/SquareStagedEntry.program`/`h1State`,
   `CycleCaller/Prefix.frame.w3`, `CycleGlobal/R5Head.frameStack`.
 
-# Current refinement: seven never-read kernel frame words are no longer loaded (-120 gas per draw)
+### Parent refinement: seven never-read kernel frame words are no longer loaded (-120 gas per draw)
 
 * The common kernel setup at 3182 loaded `m96`, `tl`, `m0` (via `DUP9 PUSH1 1 SHR PUSH1 0x20 ADD`),
   `m64`, the row-end pointer `aprev` (`PUSH2 0x0ac0 MLOAD DUP7 ADD`) and `m32` into the caller frame;
@@ -16,7 +39,7 @@
   and `CycleGlobal/Cios2Dispatch` bind it; `CycleCaller/Prefix.frame` and `CycleGlobal/R5Head` carry
   `0` for those `Caller` fields (all kernel lemmas are generic in the frame).
 
-# Current refinement: shift-reduce loop exit block moved behind the bottom test (-66 gas per draw)
+### Parent refinement: shift-reduce loop exit block moved behind the bottom test (-66 gas per draw)
 
 * **Before:** the counter block at 3061 (`JUMPDEST NOT ADD DUP1 PUSH2 0x0a90 JUMPI`) fell through on
   loop exit into `PUSH2 0x0c4a JUMP` (3069), which jumped over the repair add loop (3073..3145) to
@@ -30,7 +53,7 @@
   `ShiftPCs` (`pcSwap2389..2465`), `ShiftTrace3`, `RootE3Bindings`/`RootE3PhaseRun` (E3 phase blocks
   at 3069/3071/3080); `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
 
-# Current refinement: square-loop exit filler moved into the counter push (-6 gas per draw)
+### Parent refinement: square-loop exit filler moved into the counter push (-6 gas per draw)
 
 * **Before:** the RSA-2048 square-loop counter block at 7619 was `PUSH1 0x01 DUP16 SUB SWAP15
   PUSH2 0x163e JUMPI`, followed by the byte filler `PUSH18 0; POP; JUMPDEST x4` (7628..7651),
@@ -44,7 +67,7 @@
   `Cycle/LoopBlocks` (`counterJumpBlock` at 7645, `counterExitBlock` at 7646); `Cycle/Artifact.lean`
   and `Cycle/Bytes.lean` regenerated from `bytecode.hex`.
 
-# Current refinement: one JUMPI for the four RSA fast-path entry checks (-36 gas per draw)
+### Parent refinement: one JUMPI for the four RSA fast-path entry checks (-36 gas per draw)
 
 * **Before:** `... PUSH1 0xff SHR ISZERO PUSH1 0xdb JUMPI` (zero top bit → 219) at 615..623, then
   the parity / width / all-ones test ORed into `PUSH1 0xdb JUMPI` at 646..648.
@@ -58,7 +81,7 @@
   (four-way disjunction for the bail) and `gasSteps_check_pass/bail` replace the separate top-limb
   and odd-check lemmas.
 
-# Current refinement: one merged test for the 256-bit route (base size and Fermat guard, -93 gas per draw)
+### Parent refinement: one merged test for the 256-bit route (base size and Fermat guard, -93 gas per draw)
 
 * **Before:** exponent/modulus size test (0..15), base size test `PUSH0 CALLDATALOAD PUSH1 0x20
   XOR PUSH1 0x65 JUMPI` (16..23), loads (24..32), join `JUMPDEST DUP2 NOT DUP2 ADD PUSH3 0x2e9
@@ -89,7 +112,7 @@
 ---
 
 
-# Current refinement: no overflow test in the radix-240 square loop (operand guard at the width test, -327 gas per draw)
+### Parent refinement: no overflow test in the radix-240 square loop (operand guard at the width test, -327 gas per draw)
 
 * **Square loop tail (pc 7619).** The per-square test `DUP14 PUSH1 0xf0 SHR PUSH2 0x2936 JUMPI`
   (top digit of the raw Montgomery square at or above `2^240` → normalization at 10550) and the
@@ -123,7 +146,7 @@
 
 ---
 
-# Current refinement: direct conditional return from the retained-accumulator compare
+### Parent refinement: direct conditional return from the retained-accumulator compare
 
 * The retained-accumulator entry of `CSUB` (pc 3493, called once per RSA route from `blk2874`
   with return address 2412) used to leave through `PUSH2 0x0ebd; JUMPI` into a two-byte
@@ -148,7 +171,7 @@
 
 ---
 
-# Current refinement: final dead store, remaining executed pads and PUSH0 limb loads in R5 product column 1
+### Parent refinement: final dead store, remaining executed pads and PUSH0 limb loads in R5 product column 1
 
 * Final packing block: the store of the top limb half below the result buffer is removed; the preceding push of the last result word is widened (`PUSHn` → `PUSH(n+k)` with the same value), so the block keeps its byte length and the `RETURN` block keeps its PC. `packFinalProgram`, its model and `PackExecution.cells` no longer write that cell; the returned bytes are unchanged.
 * Executed padding `JUMPDEST`s are removed from the one-word base guard, the final unpack block, the first canonical compare block and the `RETURN` block. In each block one push is widened, so every block-start PC is unchanged.
@@ -161,7 +184,7 @@ Filing: third evaluation of this tree; bytes and proofs are identical to the ear
 
 ---
 
-# Current refinement: direct square-loop entry
+### Parent refinement: direct square-loop entry
 
 * Square-loop caller: the conditional jump of the width test targets the square-loop entry directly instead of the trampoline in front of it. Only the two immediate bytes of that push change; every byte PC and every instruction index is unchanged.
 * `CycleCaller/Blocks.testProgram` and `R5Head.h1Program` carry the new jump target, and `CycleCaller/Prefix` takes the jump straight to the entry; the trampoline bytes and block stay in place, unused. Every other theorem statement is unchanged.
@@ -169,7 +192,7 @@ Filing: third evaluation of this tree; bytes and proofs are identical to the ear
 
 ---
 
-# Current refinement: executed padding removal in the shift-reduce conversion and the RSA setup
+### Parent refinement: executed padding removal in the shift-reduce conversion and the RSA setup
 
 * Shift-reduce base conversion: the padding `JUMPDEST`s in the dispatcher guard, the estimator precomputation, the end of the inline Newton chain, the Newton-batch tail and the shift-loop body are removed. In each block one push is widened (`PUSHn` → `PUSH(n+k)` with the same value), so every block keeps its byte length and every block-start PC is unchanged.
 * RSA fast-path setup block: its padding `JUMPDEST`s are removed the same way.
@@ -179,14 +202,14 @@ Filing: third evaluation of this tree; bytes and proofs are identical to the ear
 
 ---
 
-# Current refinement: PUSH0 limb loads in R5 product columns 2-4
+### Parent refinement: PUSH0 limb loads in R5 product columns 2-4
 
 * R5 product columns 2, 3 and 4 (`prCol2`, `prCol3`, `prCol4`): every limb load from offset zero uses `PUSH0`. Each freed byte widens a later push of the same column (`PUSHn` → `PUSH(n+1)` with the same value), so every column keeps its byte length, its start and end PCs and its instruction count.
 * `Proofs/R5/ExecProduct.lean` updates the three columns' part programs, column programs and the internal part-boundary PCs; every model value, column statement and binding is unchanged.
 
 ---
 
-# Current refinement: direct Fermat join guard
+### Parent refinement: direct Fermat join guard
 
 * Join point at 33: the guard is computed as `modulus + ~exponent` (`DUP2 NOT DUP2 ADD`), which is exactly `FermatNext.fermatDiff`, and the jump to the window core uses a widened push. The former padding `JUMPDEST` inside the guard is removed.
 * The special-prime test and its jump tail follow two bytes earlier; the unreachable bytes before the general-width entry absorb the two bytes and the two instruction slots, so every byte PC and every instruction index from the general-width entry on is unchanged.
@@ -194,7 +217,7 @@ Filing: third evaluation of this tree; bytes and proofs are identical to the ear
 
 ---
 
-# Current refinement: R5 padding removal and a direct Fermat landing
+### Parent refinement: R5 padding removal and a direct Fermat landing
 
 * R5 square columns 0, 4 and 5 and R5 product column 0: every executed `JUMPDEST` pad inside the columns is removed. The freed bytes are absorbed by widening one push per column (`PUSHn` → `PUSH(n+k)` with the same value), so every column keeps its byte length and every byte PC outside the columns is unchanged.
 * The unreachable bytes after the R5 product's first segment are re-split so that the total instruction count, and every instruction index after them, is unchanged. Only the R5 square block length and the indices of the loop-control and first product segment blocks are rebound in `Proofs/R5/Blocks.lean`.
@@ -204,7 +227,7 @@ Every theorem statement outside those bindings is unchanged. `Proofs/Cycle/Artif
 
 ---
 
-# Current refinement: column-0 operand order in the R5 kernels
+### Parent refinement: column-0 operand order in the R5 kernels
 
 * R5 square column 0 (`sqCol0`): the modulus copy for the closing `MULMOD` is placed on the stack before the column's mod-`P` products, so the trailing `SWAP1` is dropped. The freed byte is `JUMPDEST` padding at the end of the column.
 * R5 product column 0 (`prCol0`): same operand order, and both limb loads from offset zero use `PUSH0`. Two neighbouring pushes are widened to keep the column's byte length, with one `JUMPDEST` pad at the end of the column.
@@ -213,7 +236,7 @@ Byte length, instruction count, every byte PC outside the two columns, every `JU
 
 ---
 
-# Current refinement: setup-path stack cleanups (-24 gas per draw, on top of R5 fusion)
+### Parent refinement: setup-path stack cleanups (-24 gas per draw, on top of R5 fusion)
 
 * `setupPathA` (PCs 649..689): drop a `DUP1` copy that was only popped at the end;
   re-index the following `DUP`s and replace one final `POP` by `JUMPDEST`.
@@ -224,7 +247,7 @@ Seed-zero pinned total with the R5 fusion below: 366,542 (44/44).
 
 ---
 
-# Current refinement: fused doubled cross products in the R5 square (-204 gas per draw)
+### Parent refinement: fused doubled cross products in the R5 square (-204 gas per draw)
 
 Parent: own submission `d052f5da-65fe-4de8-8cf9-6fecac1693a6` (Fermat join).
 In R5 square columns 4 and 5, two cross products per column were each doubled
@@ -242,7 +265,7 @@ Seed-zero pinned total: 366,566 (44/44) versus 366,770 for the parent.
 
 ---
 
-# Current refinement: single-test Fermat join (-181 gas per draw)
+### Parent refinement: single-test Fermat join (-181 gas per draw)
 
 Base: promoted `be76a99a-6bdc-433f-9c2e-cc34523f4381` (juanbono, R5 1024-bit kernel).
 Two dispatch blocks change; byte length (10,698), instruction count (8,543), every

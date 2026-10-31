@@ -25,8 +25,8 @@ def loadProgram : List Instr :=
 
 def shuffleProgram : List Instr :=
   [
-   .push 1 128,
-   .op .MLOAD,
+   .push 0 0,
+   .op .JUMPDEST,
    .op (.Swap ⟨3, by decide⟩),
    .op (.Swap ⟨10, by decide⟩),
    .push 0 0,
@@ -35,7 +35,7 @@ def shuffleProgram : List Instr :=
    .op (.Swap ⟨10, by decide⟩)]
 
 def lowProgram : List Instr :=
-  [.push 2 2720, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
+  [.push 3 2720, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
 
 def readsProgram : List Instr := loadProgram.take 16
 def setupProgram : List Instr := loadProgram.drop 16
@@ -129,28 +129,26 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
   exact runInstructions_append_some _ _ _ _ _ hr hs
 
 theorem run_shuffle (s : State) (hd pa pb dst ret value inverse aEnd tailPointer low96 low32 z ent : UInt256)
-    (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
+    (rest : List UInt256) (hcap : rest.length ≤ 998) (_hact : 88 ≤ s.activeWords.toNat) :
     runInstructions shuffleProgram
       {s with
         pc := UInt256.ofNat 3212
         stack := [ent, z, low32, aEnd, inverse, value, tailPointer, low96, hd, pa, pb, dst, ret] ++ rest} =
     some {s with
-        pc := UInt256.ofNat 3221
+        pc := UInt256.ofNat 3220
         stack := [pa, pb, ent, z, allOnes,
-        MachineState.readWord s.memory 128, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
+        UInt256.ofNat 0, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} := by
   have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
-  have h128 : (128 : UInt256).toNat = 128 := by decide
-  have hact128 := activeWords_fix s 128 32 (by decide) (by decide) hact
-  simp [shuffleProgram, h128, State.activeWordsAfterUInt256, hact128, runInstructions,
+  simp [shuffleProgram, runInstructions,
     Challenge.EvmProof.Stepper.runInstr, capacity, Nat.add_assoc, ← allOnes_not, List.exchange,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
-  rfl
+  constructor <;> rfl
 
 theorem run_low (s : State) (hd pa pb l1 l2 dst ret value inverse aEnd tailPointer low96 low32 z : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions lowProgram
       {s with
-        pc := UInt256.ofNat 3221
+        pc := UInt256.ofNat 3220
         stack := [pa, pb, l1, z, allOnes, l2, inverse, value, tailPointer, low96, hd, low32, aEnd, dst, ret] ++ rest} =
     some {s with
         pc := UInt256.ofNat 3226

@@ -22,7 +22,7 @@ def outState (s : State) (mem : ByteArray) (pb n i : Nat)
     (hd ent w5 pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := hd
            stack := [UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, w5, allOnes, MachineState.readWord mem 128, pdst, ret] ++ rest
+                     hd, UInt256.ofNat (pb - 32), ent, w5, allOnes, UInt256.ofNat 0, pdst, ret] ++ rest
            memory := mem }
 
 def midState (s : State) (mem : ByteArray) (c bi : UInt256)

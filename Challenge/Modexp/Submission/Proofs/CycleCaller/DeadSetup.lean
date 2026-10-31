@@ -79,7 +79,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   have hlow := EntryPrefix.run_low { s with memory := mem } hd
     (UInt256.ofNat pa) (UInt256.ofNat pb)
     (UInt256.ofNat 3347)
-    (MachineState.readWord mem 128)
+    (UInt256.ofNat 0)
     dst ret z z z z z zeroTn z rest hcap hact
   have hprefix := runInstructions_append_some _ _ _ _ _
     (runInstructions_append_some _ _ _ _ _ hreads hshuffle) hlow
