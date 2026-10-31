@@ -1,3 +1,39 @@
+# Current refinement: `N1 >> 128` rides in the dead `esize` slot of the conversion loop (-162 gas per draw)
+
+* E5's `DUP13` (esize) becomes `PUSH1 0x20 MLOAD PUSH1 0x80 SHR SWAP13`: the riding esize slot (dead
+  after E5) now holds the refinement constant `mem[32] >> 128`, which the estimate of both loop heads
+  reads with `DUP16` instead of reloading it every digit step (12 -> 3 gas); the `JUMPDEST` pad of the
+  t-top store is dropped. Heads at 2714 / 10754, image 10,832 bytes / 8,609 instructions.
+* Proofs: `ShiftStates.entrySlots` (slot 12 is `readWord mem 32 >> 128`), `ShiftPaths` (E5 and head
+  blocks), `ShiftTrace2/3/4`, `M9MacBlocks/Chain/Shift`, `RootE3Bindings`, `ShiftPCs`.
+
+# Housekeeping: `CycleGlobal/ShiftPCs.lean` written with a local `IPC` notation and two tactic macros
+
+* Same 659 statements and names, 92 KB smaller, so the tree stays under the 8 MiB archive limit.
+
+# Current refinement: each conversion loop head stores the t-area top limb at a literal address (-42 gas per draw)
+
+* Both head copies ran `PUSH0 PUSH2 0x0ae0 MLOAD MSTORE` (store zero at the cached pointer
+  `mem[0x0ae0] = 2080 + 32 n`). Each head now pushes its own constant (`0x0920` for eight limbs,
+  `0x08a0` for four) followed by a `JUMPDEST` pad: -2 gas per digit step, same bytes and indices.
+* Proofs: `CycleGlobal/ShiftPaths` (`blk3018`, `blk3018h`), `ShiftTrace2` (`run_shiftBody`,
+  `run_shiftBody_h4` take `2080 + 32 n = 2336` / `2208`), `ShiftTrace4` call sites.
+
+# Current refinement: a second shift-reduce loop head for four limbs (-136 gas per draw)
+
+* The conversion loop head ended in `PUSH0 DUP5 JUMP; JUMPDEST POP` (16 gas per digit step) to
+  enter the multiply-accumulate chain of the width. The eight-limb head (now at 2708) falls straight
+  into chain block 0 at 2787; an appended byte copy of the head at 10752 ends in
+  `PUSH0 PUSH2 2901 JUMP` into chain block 4.
+* The riding scratch slot holds the head of the width (`18796 - 2011 n`, computed by the E5 tail);
+  the bottom test (`DUP3 JUMPI`) and the E3 phase switch (`DUP2 JUMP`) jump through it.
+* Image 10,836 bytes / 8,611 instructions; every pc and index from 2787 on is unchanged.
+* Proofs: `CycleGlobal/ShiftStates` (`headPC`, `headWord`), `ShiftPaths` (head blocks and `_h`
+  copies), `ShiftTrace2/3/4`, `M9MacBlocks/Chain/Shift` (block 0 at 2787, trampoline at 10831,
+  `sectionPC`), `RootE3PhaseRun`/`RootE3Bindings`, `PrefixPC`/`ShiftPCs`, appended
+  `Fast/M9MacRun` lemmas (`run_ride_top_np`, `run_entry4`); `Cycle/Artifact.lean`, `Cycle/Bytes.lean`
+  regenerated.
+
 # Current refinement: the staged entry's unread `w3` frame word is pushed as zero (-12 gas per draw)
 
 * 3734 `PUSH1 0xc0 MLOAD` (frame slot 2, never read by either kernel) -> `PUSH0 JUMPDEST`; `PUSH2 0x01e0`

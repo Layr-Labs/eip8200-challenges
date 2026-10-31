@@ -55,10 +55,16 @@ def pcNegT : Nat := 2470
 /-- `NEG_DONE`: all `n` limbs of `NEG` stored. -/
 def pcNegDone : Nat := 2494
 def pcPreNewton : Nat := 2535
-def pcShiftLoop : Nat := 2704
-def pcShiftBody : Nat := 2705
-def pcEstimate : Nat := 2719
-def pcMacSetup : Nat := 2782   -- E6, the conversion entry JUMPDEST (mask already built)
+def pcShiftLoop : Nat := 2714
+def pcShiftBody : Nat := 2709
+def pcEstimate : Nat := 2723
+def pcMacSetup : Nat := 2787   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
+/-- The loop head of the width: the eight-limb head falls straight into block 0 at 2787; the
+four-limb head is a copy appended at 10754 that ends in `PUSH0 PUSH2 2901 JUMP` (block 4). -/
+def headPC (n : Nat) : Nat := if n = 4 then 10754 else 2714
+/-- The scratch slot: the loop head of the width, the target of the bottom test and of the
+E3 phase switch. -/
+def headWord (n : Nat) : UInt256 := UInt256.ofNat (headPC n)
 def pcMid : Nat := 3034   -- the fall-through after the eight straight blocks
 def pcAddLoop : Nat := 3106
 def pcAddInner : Nat := 3112
@@ -68,12 +74,12 @@ def pcAddMid : Nat := 3136
 /-- The fall-through padding after the add-round exit test. -/
 def pcAddPad : Nat := 3149
 def pcSubCheck : Nat := 3167
-def pcCsubCall : Nat := 3061
+def pcCsubCall : Nat := 3063
 /-- `UNC`: the middle block's jump target when `neg ||| TN ≠ 0`. -/
 def pcUnc : Nat := 3104
 /-- `CSUB(BASE)` returns straight to the shift loop head (`pcShiftLoop`); the call block
 already decremented the counter. -/
-def pcAfterCsub : Nat := 2704
+def pcAfterCsub : Nat := 2714
 /-- The loop exit after the last step (`PUSH2 3366 JUMP`, the `JUMPI` fall-through). -/
 def pcCsubExit : Nat := 3069
 def pcShiftDone : Nat := 3069
@@ -105,8 +111,15 @@ the scratch slot for the rest of the window: `2940 + 116 · [n = 4]`. -/
 def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2785 + if n = 4 then 116 else 0)
 
 /-- The window's riding slots with the scratch slot holding the conversion entry. -/
-def entrySlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) : List UInt256 :=
-  rideSlots z mem n bsize esize (shiftEntry n)
+def entrySlots (z : UInt256) (mem : ByteArray) (n bsize _esize : Nat) : List UInt256 :=
+  headWord n :: MachineState.readWord mem 1312 :: MachineState.readWord mem 1344 ::
+    MachineState.readWord mem 1376 :: MachineState.readWord mem 1408 ::
+    MachineState.readWord mem 1440 :: MachineState.readWord mem 1472 ::
+    MachineState.readWord mem 1504 :: MachineState.readWord mem 1632 ::
+    MachineState.readWord mem 1664 :: MachineState.readWord mem 1568 ::
+    MachineState.readWord mem 1536 ::
+    UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128) :: UInt256.ofNat n ::
+    UInt256.ofNat bsize :: UInt256.ofNat 0 :: z :: []
 
 /-- A state inside the riding window: the slots above the outer frame. -/
 def slotState (z : UInt256) (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat)
@@ -222,20 +235,20 @@ def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : 
 
 /-- The shift loop head with `k` steps to go. -/
 def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState z s mem pcShiftLoop k n bsize esize msize
+  slotKState z s mem (headPC n) k n bsize esize msize
 
 def shiftBodyState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState z s mem pcShiftBody k n bsize esize msize
+  slotKState z s mem (headPC n + 1) k n bsize esize msize
 
 /-- `ESTIMATE`, with `u` already in the `t` area. -/
 def estimateState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  slotKState z s (uMem mem n) pcEstimate k n bsize esize msize
+  slotKState z s (uMem mem n) (headPC n + 14) k n bsize esize msize
 
 /-- `MAC_SETUP`, with the quotient guess on top of the `2^256-1` mask. -/
 def macSetupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat pcMacSetup
+  { s with pc := UInt256.ofNat (headPC n + 73)
            stack := qhatOf (uMem mem n) :: Monpro.maxWord :: UInt256.ofNat k :: entrySlots z (uMem mem n) n bsize esize ++
              outer n bsize esize msize
            memory := uMem mem n }
@@ -295,7 +308,7 @@ def uncState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k 
 /-- `CSUB(BASE)`'s return point: the loop head with the counter already at `k - 1`. -/
 def afterCsubState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  slotKState z s mem pcAfterCsub (k - 1) n bsize esize msize
+  slotKState z s mem (headPC n) (k - 1) n bsize esize msize
 
 /-- The bottom `JUMPI` fell through: the counter reached zero. -/
 def csubExitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
@@ -311,7 +324,9 @@ def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
 riding slots but the exit slot `z`, which picks the jump target `2441 + z`. -/
 def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotState z s mem 3944 n bsize esize msize (shiftEntry n)
+  { s with pc := UInt256.ofNat 3944
+           stack := entrySlots z mem n bsize esize ++ outer n bsize esize msize
+           memory := mem }
 
 /-- The wrapped `-32` the pointer walks add. -/
 theorem negK_literal :

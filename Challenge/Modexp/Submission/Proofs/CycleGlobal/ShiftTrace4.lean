@@ -366,7 +366,7 @@ def gasSteps_addRounds (z : UInt256) (s : State) (mem : ByteArray) (n bsize esiz
 
 theorem jumpD5357 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat pcAfterCsub).toNat = true :=
-  by rw [show (UInt256.ofNat pcAfterCsub).toNat = 2704 from by decide]; exact jumpDest4839
+  by rw [show (UInt256.ofNat pcAfterCsub).toNat = 2714 from by decide]; exact jumpDest4839
 
 theorem jumpD4692 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat pcCsubReturn).toNat = true :=
@@ -512,12 +512,21 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
   -- section lemma over the eight straight blocks.
   have g1 : Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (macSetupState z s mem n bsize esize msize k) :=
+    if hw : n = 4 then
+    ((soundEnv blk3013h e
+        (run_shiftHead_go_h4 z s mem n bsize esize msize k hw (by omega) hk32 e.code e.run)).trans
+      (soundEnv blk3018h e
+        (run_shiftBody_h4 z s mem n bsize esize msize k hw hn hn32 e.act hbs htl0 (by omega) e.code e.run))).trans
+      (soundEnv blk3026h e
+        (run_estimate_h4 z s mem n bsize esize msize k hw e.act296 e.code e.run))
+    else
     ((soundEnv blk3013 e
-        (run_shiftHead_go z s mem n bsize esize msize k (by omega) hk32 e.code e.run)).trans
+        (run_shiftHead_go z s mem n bsize esize msize k hw (by omega) hk32 e.code e.run)).trans
       (soundEnv blk3018 e
-        (run_shiftBody z s mem n bsize esize msize k hn hn32 e.act hbs htl0 e.code e.run))).trans
+        (run_shiftBody z s mem n bsize esize msize k hw hn hn32 e.act hbs htl0
+          (by rcases hfast with h | h <;> omega) e.code e.run))).trans
       (soundEnv blk3026 e
-        (run_estimate z s mem n bsize esize msize k e.act296 e.code e.run))
+        (run_estimate z s mem n bsize esize msize k hw e.act296 e.code e.run))
   have g2 : Challenge.EvmProof.GasSteps
       (macSetupState z s mem n bsize esize msize k)
       (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k) :=
