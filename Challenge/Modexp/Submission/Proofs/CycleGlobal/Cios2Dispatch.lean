@@ -63,7 +63,7 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block CycleSubmission.Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2467 54 3182 CycleSubmission.DeadSetup.fullEntryProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2467 45 3182 CycleSubmission.DeadSetup.fullEntryProgram
     (by decide) (by decide) (by rfl) (by decide)
 
 def environment (s : State)

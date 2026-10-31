@@ -1,3 +1,15 @@
+# Current refinement: nine executed padding `JUMPDEST`s dropped from the dead-frame kernel setup (-36 gas per draw)
+
+* The setup entry at pc 3182 (`CycleCaller/DeadSetup.loadProgram`) pushed its seven zero frame words
+  interleaved with twelve index-preserving `JUMPDEST`s. It now runs `PUSH0 x7, JUMPDEST x3,
+  PUSH19 0x0d13` (same 30 bytes, same output stack): -9 gas per RSA vector.
+* The nine instructions are given back by re-splitting the unreachable `PUSH9 0` at pc 3437 (after
+  the R5 tail `JUMP`) into ten `PUSH0`s, so every instruction index from 2679 (pc 3447) on is
+  unchanged. Image still 10,983 bytes / 8,736 instructions.
+* Proofs: `DeadSetup` (program, length 45), `CycleCaller/Blocks` and `Cios2Dispatch` (block
+  `2467 45 3182`), `R5/Blocks` (indices 2512 / 2667), `ShiftPCs` / `CsubFixed` index lemmas (anchor
+  moved to index 2679), `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
 # Current refinement: the four-limb conversion loop runs private copies of blocks 5..7, the middle block and the counter (-58 gas per draw)
 
 * After its zero-carry first product the four-limb head no longer jumps back into the shared chain
