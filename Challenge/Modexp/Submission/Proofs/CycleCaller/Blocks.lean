@@ -29,9 +29,9 @@ def commonBlock : Block Artifact.artifact .Osaka 3181 commonProgram :=
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def setupBlock : Block Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2467 54 3182 CycleSubmission.DeadSetup.fullEntryProgram
-    (by change 2467+54 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2467+54 ≤ 8736)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2467 42 3182 CycleSubmission.DeadSetup.fullEntryProgram
+    (by change 2467+42 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2467+42 ≤ 8736)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

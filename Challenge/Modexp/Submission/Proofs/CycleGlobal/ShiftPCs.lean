@@ -230,59 +230,59 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pcSaturate2993 : IPC 2311 = 2973 := by pc_by_old eq_old_tail13 2311 pcSaturate2993
 
-@[simp] theorem earlyExtraPC2883 : IPC 2668 = 3423 := by pc_by_len
+@[simp] theorem earlyExtraPC2883 : IPC 2656 = 3423 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2884 : IPC 2669 = 3424 := by pc_by_len
+@[simp] theorem earlyExtraPC2884 : IPC 2657 = 3424 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2885 : IPC 2670 = 3425 := by pc_by_len
+@[simp] theorem earlyExtraPC2885 : IPC 2658 = 3425 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2886 : IPC 2671 = 3426 := by pc_by_len
+@[simp] theorem earlyExtraPC2886 : IPC 2659 = 3426 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2888 : IPC 2672 = 3427 := by pc_by_len
+@[simp] theorem earlyExtraPC2888 : IPC 2660 = 3427 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2889 : IPC 2673 = 3428 := by pc_by_len
+@[simp] theorem earlyExtraPC2889 : IPC 2661 = 3428 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2890 : IPC 2674 = 3429 := by pc_by_len
+@[simp] theorem earlyExtraPC2890 : IPC 2662 = 3429 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2891 : IPC 2675 = 3432 := by pc_by_len
+@[simp] theorem earlyExtraPC2891 : IPC 2663 = 3432 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2892 : IPC 2676 = 3433 := by pc_by_len
+@[simp] theorem earlyExtraPC2892 : IPC 2664 = 3433 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2893 : IPC 2676 = 3433 := by pc_by_len
+@[simp] theorem earlyExtraPC2893 : IPC 2664 = 3433 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2894 : IPC 2677 = 3436 := by pc_by_len
+@[simp] theorem earlyExtraPC2894 : IPC 2665 = 3436 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2895 : IPC 2678 = 3437 := by pc_by_len
+@[simp] theorem earlyExtraPC2895 : IPC 2666 = 3437 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2896 : IPC 2689 = 3457 := by pc_by_len
+@[simp] theorem earlyExtraPC2896 : IPC 2686 = 3457 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2930 : IPC 2690 = 3458 := by pc_by_len
+@[simp] theorem earlyExtraPC2930 : IPC 2687 = 3458 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2931 : IPC 2691 = 3459 := by pc_by_len
+@[simp] theorem earlyExtraPC2931 : IPC 2688 = 3459 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2932 : IPC 2692 = 3460 := by pc_by_len
+@[simp] theorem earlyExtraPC2932 : IPC 2689 = 3460 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2933 : IPC 2693 = 3461 := by pc_by_len
+@[simp] theorem earlyExtraPC2933 : IPC 2690 = 3461 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2934 : IPC 2694 = 3462 := by pc_by_len
+@[simp] theorem earlyExtraPC2934 : IPC 2691 = 3462 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2935 : IPC 2695 = 3463 := by pc_by_len
+@[simp] theorem earlyExtraPC2935 : IPC 2692 = 3463 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2936 : IPC 2696 = 3466 := by pc_by_len
+@[simp] theorem earlyExtraPC2936 : IPC 2693 = 3466 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2937 : IPC 2697 = 3467 := by pc_by_len
+@[simp] theorem earlyExtraPC2937 : IPC 2694 = 3467 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2938 : IPC 2698 = 3469 := by pc_by_len
+@[simp] theorem earlyExtraPC2938 : IPC 2695 = 3469 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2939 : IPC 2699 = 3470 := by pc_by_len
+@[simp] theorem earlyExtraPC2939 : IPC 2696 = 3470 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2940 : IPC 2700 = 3471 := by pc_by_len
+@[simp] theorem earlyExtraPC2940 : IPC 2697 = 3471 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2941 : IPC 2701 = 3472 := by pc_by_len
+@[simp] theorem earlyExtraPC2941 : IPC 2698 = 3472 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2942 : IPC 2702 = 3473 := by pc_by_len
+@[simp] theorem earlyExtraPC2942 : IPC 2699 = 3473 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2943 : IPC 2703 = 3476 := by pc_by_len
+@[simp] theorem earlyExtraPC2943 : IPC 2700 = 3476 := by pc_by_len
 
 
 @[simp] theorem pcC3009 : IPC 2367 = 3041 := by pc_by_old eq_old_tail13 2367 pc3178

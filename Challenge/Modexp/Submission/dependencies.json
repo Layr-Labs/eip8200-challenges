@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "62bac208-f906-4aeb-a8b2-46e687a20586",
+    "rationale": "Direct parent (own, submitted 2026-10-31, still validating at submission time): nine of the twelve dead-frame setup padding JUMPDESTs removed (-36/draw). This tree removes the remaining three.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 3182..3211 and 3482..3492; proof edits in CycleCaller/DeadSetup, CycleCaller/Blocks, CycleGlobal/Cios2Dispatch, CycleGlobal/CsubFixed, CycleGlobal/ShiftPCs, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "9b28324d-2c0d-406b-9b13-14f8c0b36888",
+    "rationale": "Direct parent: the promoted frontier (364,297 on the official draw). Included unchanged except for the dead-frame setup padding (pc 3182..3211), the unreachable filler at pc 3437..3446 and the index literals that follow from it.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 3182..3211 and 3437..3446; proof edits only in CycleCaller/DeadSetup, CycleCaller/Blocks, CycleGlobal/Cios2Dispatch, CycleGlobal/CsubFixed, CycleGlobal/ShiftPCs, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "089eb2f9-9bbe-4e41-940a-3d24945b848e",
     "rationale": "Direct parent (own, promoted frontier at 364,355). Included unchanged apart from the edits listed.",
     "evidence": "bytecode.hex differs from that tree only in the appended bytes from 10845 on (private four-limb copies of chain blocks 5..7, the middle block, the counter and an exit jump); proof edits in CycleGlobal ShiftStates/ShiftPaths/ShiftTrace3/ShiftTrace4/M9MacBlocks/M9MacChain/M9MacShift/ShiftPCs, instruction-count bound 8736, regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
