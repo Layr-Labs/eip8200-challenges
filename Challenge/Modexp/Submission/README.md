@@ -1,3 +1,10 @@
+# Current refinement: the staged entry's unread `w3` frame word is pushed as zero (-12 gas per draw)
+
+* 3734 `PUSH1 0xc0 MLOAD` (frame slot 2, never read by either kernel) -> `PUSH0 JUMPDEST`; `PUSH2 0x01e0`
+  widened to `PUSH3` so the 15-byte / 10-instruction block keeps every pc and index. -3 per RSA vector.
+* Proofs: `CycleCaller/Blocks.entryProgram`, `CycleGlobal/SquareStagedEntry.program`/`h1State`,
+  `CycleCaller/Prefix.frame.w3`, `CycleGlobal/R5Head.frameStack`.
+
 # Current refinement: seven never-read kernel frame words are no longer loaded (-120 gas per draw)
 
 * The common kernel setup at 3182 loaded `m96`, `tl`, `m0` (via `DUP9 PUSH1 1 SHR PUSH1 0x20 ADD`),

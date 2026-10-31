@@ -18,7 +18,7 @@ def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512+32*n-32)
 def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Caller where
   pbi := qWord 8
   hd := UInt256.ofNat 5297
-  w3 := MachineState.readWord mem 192
+  w3 := UInt256.ofNat 0
   ent := UInt256.ofNat 3347
   m32 := UInt256.ofNat 0
   m128 := MachineState.readWord mem 128
@@ -61,7 +61,8 @@ theorem entry_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail 
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
   have hactM := Csub.activeWords_fix s 192 32 (by decide) (by decide) hact
-  simp [entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  have hz0 : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  simp [hz0, entryProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     staged, stateAt, frame, saved, CiosCached.outState, qWord,
     Monpro.ptrAt_zero, h16, h17, hactM, State.activeWordsAfterUInt256, List.exchange,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -37,7 +37,7 @@ def setupBlock : Block Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.f
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def entryProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 5297, .op (.Swap ⟨1, by decide⟩), .op .POP, .push 1 192, .op .MLOAD, .op (.Swap ⟨2, by decide⟩), .op .POP, .push 2 480, .op .SUB]
+  [.op .JUMPDEST, .push 2 5297, .op (.Swap ⟨1, by decide⟩), .op .POP, .push 0 0, .op .JUMPDEST, .op (.Swap ⟨2, by decide⟩), .op .POP, .push 3 480, .op .SUB]
 def entryBlock : Block Artifact.artifact .Osaka 3728 entryProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2879 10 3728 entryProgram
     (by change 2879+10 ≤ Artifact.instructions.length

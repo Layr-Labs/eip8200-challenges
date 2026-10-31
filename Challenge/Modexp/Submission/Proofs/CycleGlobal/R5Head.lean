@@ -34,7 +34,7 @@ open Monpro CiosCached StagedOperand
 /-- The sixteen-word frame the shared setup leaves above `rest`. -/
 def frameStack (mem : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 5297, MachineState.readWord mem 192, ent, m32, allOnes,
+  [pbi, UInt256.ofNat 5297, UInt256.ofNat 0, ent, m32, allOnes,
     MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0, aprev, pdst, ret] ++ rest
 
 def frameAt (pc : Nat) (s : State) (mem : ByteArray)

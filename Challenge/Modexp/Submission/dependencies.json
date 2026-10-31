@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "5187d3a5-34d0-4817-8dc8-d72ffb8402d3",
+    "rationale": "Direct parent (own): seven never-read kernel frame words zeroed, on top of d6e47267 (loop exit swap) and f47a9cb2 (exit filler). Included unchanged.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 3734..3742; proof edits only in CycleCaller/Blocks, CycleCaller/Prefix, CycleGlobal/SquareStagedEntry, CycleGlobal/R5Head."
+  },
+  {
     "submissionId": "d6e47267-ec2c-41b2-824e-e699980044f4",
     "rationale": "Direct parent (own): conversion loop exit swap (-66/draw) on top of f47a9cb2 (exit filler, -6/draw). Both verified; not promoted only because their hosted runs drew repair-round corpus seeds (365,750 and 365,998). Included unchanged.",
     "evidence": "bytes 3057..3060, 3069..3180, 7619..7651 and their proof edits are identical to that tree."
