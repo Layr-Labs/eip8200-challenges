@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "4285f46d-d817-4e7a-b52a-3259d9db1d26",
+    "rationale": "Direct parent (own, promoted frontier at 364,237). Included unchanged apart from the conversion chain block 5 (pc 2933..2965), the staged entry (pc 3734..3742), two unreachable fillers and the index literals that follow.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2933..2965, 3482..3492, 3734..3742 and 3905; proof edits in Fast/M9MacRun (new run_rideW3), CycleGlobal/M9MacBlocks, M9MacChain, PrefixPC (eq_old_tail13 removed), ShiftPCs, ShiftTrace3, SquareStagedEntry, CycleCaller/Blocks plus mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "670bc87a-6afd-4a84-94d0-68407138409e",
     "rationale": "Direct parent (own, promoted frontier at 364,249). Included unchanged apart from the square-loop counter jump push (pc 7642..7651) and the instruction-index literals that follow from removing six instructions.",
     "evidence": "bytecode.hex differs from that tree only in bytes 7642..7651; proof edits in Cycle/Execution/counterHead, Cycle/CounterControl, Cycle/LoopBlocks and mechanical index/count rewrites (8736 -> 8730) in Cycle, CycleCaller, CycleGlobal and R5 files; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."

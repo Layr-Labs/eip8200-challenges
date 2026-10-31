@@ -22,11 +22,11 @@ open Monpro CiosCached
 `q := 0x1e0 - base` (zneg2: `-0x100` for eight limbs, the R4 marker `-0x80` for four). -/
 def program : List Instr :=
   [.op .JUMPDEST, .push 2 5297, .op (.Swap ⟨1, by decide⟩), .op .POP,
-   .push 0 0, .op .JUMPDEST, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 3 480, .op .SUB]
+   .push 0 0, .op (.Swap ⟨2, by decide⟩), .op .POP,
+   .push 4 480, .op .SUB]
 
 def block : Block CycleSubmission.Artifact.artifact .Osaka 3728 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2879 10 3728 program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2879 9 3728 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode

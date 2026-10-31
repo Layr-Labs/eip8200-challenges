@@ -28,7 +28,6 @@ attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail8
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail10
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail11
 attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail12
-attribute [-simp] CycleSubmission.Global.PrefixPC.eq_old_tail13
 
 namespace CycleSubmission.Global.Fast.Shift
 open Challenge.Modexp
@@ -243,7 +242,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2392 = 3074 := by
+theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2391 = 3074 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1046,8 +1045,8 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rfl
 
 /-- Followup-PC facts for the shift-done, cleanup and stub blocks. -/
-@[simp] private theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2467 = 3182 := by
-  rw [show (2467:Nat)=2392+(2467-2392) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
+@[simp] private theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2466 = 3182 := by
+  rw [show (2466:Nat)=2391+(2466-2391) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcUncPop]
   rfl
 @[simp] private theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3053 = 3945 := by
   rw [show (3053:Nat)=3052+(3053-3052) from rfl, CycleSubmission.Global.PrefixPC.pc_add, pcFact4392]

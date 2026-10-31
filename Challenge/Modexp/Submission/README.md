@@ -1,3 +1,23 @@
+# Current refinement: the eight-limb conversion block 5 no longer starts with a `JUMPDEST` (-14 gas per draw)
+
+* Nothing jumps to pc 2933 since the four-limb head got private chain copies, but every eight-limb
+  digit step executed its `JUMPDEST`. Block 5 is now `rideProgramW3 6 2176` (the `t`-limb load pushed as
+  `PUSH3`, the shape of `macFusedPostProgramW3`) at pc 2933; block 6 stays at 2966. The instruction is
+  given back in the unreachable filler at pc 3482 (`PUSH2 0x6161, MLOAD x8`).
+* Proofs: `Fast/M9MacRun.run_rideW3`, `CycleGlobal/M9MacBlocks.block5` (and the obsolete `jumpDest3032`
+  removed), `M9MacChain` (block 5 step), `PrefixPC.eq_old_tail13` removed and its 115 `ShiftPCs` users
+  proved by `pc_by_len`; index literals of pcs 2934..3481 rewritten.
+
+# Current refinement: the staged square entry drops its executed padding `JUMPDEST` (-4 gas per draw)
+
+* pc 3734: `PUSH0 JUMPDEST SWAP3 POP PUSH3 0x0001e0 SUB` -> `PUSH0 SWAP3 POP PUSH4 0x000001e0 SUB`
+  (same 9 bytes, same stack effect), run once by every RSA vector. The removed instruction is given
+  back by re-splitting the unreachable `PUSH12` filler at pc 3905 into `PUSH11` plus one `POP` byte,
+  so instruction indices from 3026 on are unchanged; indices of pcs 3736..3904 move down by one.
+* Proofs: `CycleGlobal/SquareStagedEntry.program` and `CycleCaller/Blocks.entryProgram` (9
+  instructions), `R5Head` (`h1Program` at index 2888), `R5/Blocks` (product segment 2 at 2911,
+  `ctl3901` at 3022); `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
 # Current refinement: the square-loop exit no longer runs six filler `JUMPDEST`s (-12 gas per draw)
 
 * The RSA-2048 square-loop counter block ended in `PUSH2 0x163e JUMPI` followed by six `JUMPDEST`s

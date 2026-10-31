@@ -172,7 +172,7 @@ def gasSteps_block (b : Nat) (hb : b < 8) (s : State) (m : MacState) (bi : UInt2
     rw [← hr, ← hsj] at hs
     have hx : rest[(6 : Fin 16).val - 3]? =
         some (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) := hs
-    have h := run_ride_head s (UInt256.ofNat 2933) m bi n j 2176 6
+    have h := run_rideW3 s (UInt256.ofNat 2933) m bi n j 2176 6
       (by rw [show n - 1 - j = 2 from by omega]; decide)
       (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) rfl
       rest hrest (by decide) (by decide) (by omega) hx hact hn (by omega)

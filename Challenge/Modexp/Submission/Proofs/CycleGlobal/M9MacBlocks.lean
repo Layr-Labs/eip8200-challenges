@@ -81,25 +81,25 @@ def block4 : Block CycleSubmission.Artifact.artifact .Osaka 2901 (rideProgram 7 
 
 /-- Block 5: instructions 2460..2487, pc 3066..3098,
 `-N` limb riding in slot 2 (`Dup 7`, address 1344 = 0x540), `t` limb at 2176. -/
-def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2933 ([.op .JUMPDEST] ++ rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2275 29 2933 ([.op .JUMPDEST] ++ rideProgram 6 2176)
+def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2933 (rideProgramW3 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2275 28 2933 (rideProgramW3 6 2176)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 6: instructions 2488..2515, pc 3099..3131,
 `-N` limb riding in slot 1 (`Dup 6`, address 1312 = 0x520), `t` limb at 2144. -/
 def block6 : Block CycleSubmission.Artifact.artifact .Osaka 2966 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2304 28 2966 (rideProgram 5 2144)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2303 28 2966 (rideProgram 5 2144)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- Block 7: instructions 2516..2545, pc 3132..3167 — the one `MLOAD` block left:
 `0x500 = 1280` is not a riding slot, `t` limb at 2112 (0x840). -/
 def block7 : Block CycleSubmission.Artifact.artifact .Osaka 2998 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2332 30 2998 (blockProgram 1280 2112)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2331 30 2998 (blockProgram 1280 2112)
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- The exit: empty program at pc 3168. -/
 def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3034 exitProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2362 0 3034 exitProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2361 0 3034 exitProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 /-- E6, the section entry: instructions 2325..2328, pc 2895..2898 (`Dup 5` = the scratch slot). -/
@@ -122,10 +122,6 @@ set_option maxHeartbeats 4000000 in
 def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10909 (blockProgram 1280 2112) :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8672 30 10909 (blockProgram 1280 2112)
     (by decide) (by rfl) (by rfl) (by decide)
-
-/-- The four-limb entry (block 4's `JUMPDEST`, instruction 2431, = 2946 + 116). -/
-theorem jumpDest3032 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2933 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2275 (by rfl)
 
 end CycleSubmission.Global.Fast.M9Mac
 
