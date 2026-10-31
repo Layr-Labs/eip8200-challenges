@@ -374,70 +374,70 @@ def blk3026 :
 
 def blk3013h :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8550 .JUMPDEST]
+  [opAt 8544 .JUMPDEST]
 
 /-- The appended four-limb loop head (pc 10754): a byte copy of the eight-limb head. -/
 def blk3018h :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8551 (.Dup ⟨15, by decide⟩),
-   pushAt 8552 2 2112,
-   pushAt 8553 2 2080,
-   opAt 8554 .MCOPY,
-   pushAt 8555 0 0,
-   pushAt 8556 2 2208,
-   opAt 8557 .MSTORE]
+  [opAt 8545 (.Dup ⟨15, by decide⟩),
+   pushAt 8546 2 2112,
+   pushAt 8547 2 2080,
+   opAt 8548 .MCOPY,
+   pushAt 8549 0 0,
+   pushAt 8550 2 2208,
+   opAt 8551 .MSTORE]
 
 /-- The appended four-limb loop head (pc 10754): a byte copy of the eight-limb head. -/
 def blk3026h :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 8558 2 2080,
+  [pushAt 8552 2 2080,
+   opAt 8553 .MLOAD,
+   opAt 8554 (.Dup ⟨0, by decide⟩),
+   opAt 8555 (.Dup ⟨14, by decide⟩),
+   opAt 8556 .SHR,
+   opAt 8557 (.Swap ⟨0, by decide⟩),
+   pushAt 8558 2 1600,
    opAt 8559 .MLOAD,
-   opAt 8560 (.Dup ⟨0, by decide⟩),
-   opAt 8561 (.Dup ⟨14, by decide⟩),
-   opAt 8562 .SHR,
-   opAt 8563 (.Swap ⟨0, by decide⟩),
-   pushAt 8564 2 1600,
-   opAt 8565 .MLOAD,
-   opAt 8566 .SHL,
-   pushAt 8567 2 2112,
-   opAt 8568 .MLOAD,
-   opAt 8569 (.Dup ⟨15, by decide⟩),
-   opAt 8570 .SHR,
-   opAt 8571 .ADD,
-   opAt 8572 (.Dup ⟨13, by decide⟩),
-   opAt 8573 (.Dup ⟨0, by decide⟩),
-   opAt 8574 (.Dup ⟨13, by decide⟩),
-   opAt 8575 (.Dup ⟨4, by decide⟩),
-   opAt 8576 .MULMOD,
-   opAt 8577 (.Dup ⟨2, by decide⟩),
-   opAt 8578 .ADDMOD,
-   opAt 8579 (.Swap ⟨0, by decide⟩),
-   opAt 8580 .SUB,
-   opAt 8581 (.Dup ⟨12, by decide⟩),
-   opAt 8582 .MUL,
-   opAt 8583 (.Dup ⟨15, by decide⟩),
-   opAt 8584 (.Dup ⟨1, by decide⟩),
-   pushAt 8585 3 128,
-   opAt 8586 .SHR,
-   opAt 8587 .MUL,
-   opAt 8588 (.Dup ⟨1, by decide⟩),
-   pushAt 8589 0 0,
-   opAt 8590 .MLOAD,
-   opAt 8591 .MUL,
-   pushAt 8592 2 2112,
-   opAt 8593 .MLOAD,
-   opAt 8594 .SUB,
-   opAt 8595 .LT,
-   opAt 8596 (.Swap ⟨0, by decide⟩),
-   opAt 8597 .SUB,
-   pushAt 8598 0 0,
-   opAt 8599 .NOT,
-   opAt 8600 (.Swap ⟨1, by decide⟩),
-   opAt 8601 (.Dup ⟨14, by decide⟩),
-   opAt 8602 .GT,
-   opAt 8603 (.Dup ⟨2, by decide⟩),
-   opAt 8604 .ADD,
-   opAt 8605 .OR]
+   opAt 8560 .SHL,
+   pushAt 8561 2 2112,
+   opAt 8562 .MLOAD,
+   opAt 8563 (.Dup ⟨15, by decide⟩),
+   opAt 8564 .SHR,
+   opAt 8565 .ADD,
+   opAt 8566 (.Dup ⟨13, by decide⟩),
+   opAt 8567 (.Dup ⟨0, by decide⟩),
+   opAt 8568 (.Dup ⟨13, by decide⟩),
+   opAt 8569 (.Dup ⟨4, by decide⟩),
+   opAt 8570 .MULMOD,
+   opAt 8571 (.Dup ⟨2, by decide⟩),
+   opAt 8572 .ADDMOD,
+   opAt 8573 (.Swap ⟨0, by decide⟩),
+   opAt 8574 .SUB,
+   opAt 8575 (.Dup ⟨12, by decide⟩),
+   opAt 8576 .MUL,
+   opAt 8577 (.Dup ⟨15, by decide⟩),
+   opAt 8578 (.Dup ⟨1, by decide⟩),
+   pushAt 8579 3 128,
+   opAt 8580 .SHR,
+   opAt 8581 .MUL,
+   opAt 8582 (.Dup ⟨1, by decide⟩),
+   pushAt 8583 0 0,
+   opAt 8584 .MLOAD,
+   opAt 8585 .MUL,
+   pushAt 8586 2 2112,
+   opAt 8587 .MLOAD,
+   opAt 8588 .SUB,
+   opAt 8589 .LT,
+   opAt 8590 (.Swap ⟨0, by decide⟩),
+   opAt 8591 .SUB,
+   pushAt 8592 0 0,
+   opAt 8593 .NOT,
+   opAt 8594 (.Swap ⟨1, by decide⟩),
+   opAt 8595 (.Dup ⟨14, by decide⟩),
+   opAt 8596 .GT,
+   opAt 8597 (.Dup ⟨2, by decide⟩),
+   opAt 8598 .ADD,
+   opAt 8599 .OR]
 
 
 
@@ -564,42 +564,42 @@ def blk3253x :
 /-- The four-limb private middle block (pc 10945). -/
 def blk3125h :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 8708 2 2080,
-   opAt 8709 .MLOAD,
-   opAt 8710 (.Dup ⟨1, by decide⟩),
-   opAt 8711 .ADD,
-   opAt 8712 (.Dup ⟨0, by decide⟩),
-   opAt 8713 (.Swap ⟨1, by decide⟩),
-   opAt 8714 .GT,
-   opAt 8715 (.Dup ⟨1, by decide⟩),
-   opAt 8716 (.Dup ⟨3, by decide⟩),
-   opAt 8717 .GT,
-   opAt 8718 .GT,
-   opAt 8719 (.Swap ⟨2, by decide⟩),
-   opAt 8720 .POP,
-   opAt 8721 .SUB,
-   opAt 8722 (.Dup ⟨0, by decide⟩),
-   pushAt 8723 2 2080,
-   opAt 8724 .MSTORE,
-   opAt 8725 (.Dup ⟨1, by decide⟩),
-   opAt 8726 .OR,
-   pushAt 8727 4 3104,
-   opAt 8728 .JUMPI]
+  [pushAt 8702 2 2080,
+   opAt 8703 .MLOAD,
+   opAt 8704 (.Dup ⟨1, by decide⟩),
+   opAt 8705 .ADD,
+   opAt 8706 (.Dup ⟨0, by decide⟩),
+   opAt 8707 (.Swap ⟨1, by decide⟩),
+   opAt 8708 .GT,
+   opAt 8709 (.Dup ⟨1, by decide⟩),
+   opAt 8710 (.Dup ⟨3, by decide⟩),
+   opAt 8711 .GT,
+   opAt 8712 .GT,
+   opAt 8713 (.Swap ⟨2, by decide⟩),
+   opAt 8714 .POP,
+   opAt 8715 .SUB,
+   opAt 8716 (.Dup ⟨0, by decide⟩),
+   pushAt 8717 2 2080,
+   opAt 8718 .MSTORE,
+   opAt 8719 (.Dup ⟨1, by decide⟩),
+   opAt 8720 .OR,
+   pushAt 8721 4 3104,
+   opAt 8722 .JUMPI]
 
 /-- The four-limb private counter (pc 10974; nothing jumps here, so no `JUMPDEST`). -/
 def blk3253h :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8729 .NOT,
-   opAt 8730 .ADD,
-   opAt 8731 (.Dup ⟨0, by decide⟩),
-   opAt 8732 (.Dup ⟨2, by decide⟩),
-   opAt 8733 .JUMPI]
+  [opAt 8723 .NOT,
+   opAt 8724 .ADD,
+   opAt 8725 (.Dup ⟨0, by decide⟩),
+   opAt 8726 (.Dup ⟨2, by decide⟩),
+   opAt 8727 .JUMPI]
 
 /-- The four-limb loop exit: `PUSH2 3069 JUMP` (pc 10979) to the shared exit block. -/
 def blkExit4 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 8734 2 3069,
-   opAt 8735 .JUMP]
+  [pushAt 8728 2 3069,
+   opAt 8729 .JUMP]
 
 theorem jumpDest4608 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
@@ -630,7 +630,7 @@ theorem jumpDest4839 :
 /-- The appended four-limb loop head. -/
 theorem jumpDestHead4 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10754 = true :=
-  CycleSubmission.Global.Binding.jumpDest 8550 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 8544 (by rfl)
 
 theorem jumpDest5115 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3106 = true :=

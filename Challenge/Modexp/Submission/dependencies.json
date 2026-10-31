@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "670bc87a-6afd-4a84-94d0-68407138409e",
+    "rationale": "Direct parent (own, promoted frontier at 364,249). Included unchanged apart from the square-loop counter jump push (pc 7642..7651) and the instruction-index literals that follow from removing six instructions.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 7642..7651; proof edits in Cycle/Execution/counterHead, Cycle/CounterControl, Cycle/LoopBlocks and mechanical index/count rewrites (8736 -> 8730) in Cycle, CycleCaller, CycleGlobal and R5 files; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "62bac208-f906-4aeb-a8b2-46e687a20586",
     "rationale": "Direct parent (own, submitted 2026-10-31, still validating at submission time): nine of the twelve dead-frame setup padding JUMPDESTs removed (-36/draw). This tree removes the remaining three.",
     "evidence": "bytecode.hex differs from that tree only in bytes 3182..3211 and 3482..3492; proof edits in CycleCaller/DeadSetup, CycleCaller/Blocks, CycleGlobal/Cios2Dispatch, CycleGlobal/CsubFixed, CycleGlobal/ShiftPCs, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."

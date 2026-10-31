@@ -1,3 +1,16 @@
+# Current refinement: the square-loop exit no longer runs six filler `JUMPDEST`s (-12 gas per draw)
+
+* The RSA-2048 square-loop counter block ended in `PUSH2 0x163e JUMPI` followed by six `JUMPDEST`s
+  (pc 7646..7651) that every loop exit executed. The jump target is now pushed as `PUSH8 0x163e`
+  (the six filler bytes become leading zero bytes of the push), so `JUMPI` sits at 7651 and the exit
+  falls straight through to the unpack block at 7652. Byte PCs are unchanged; the image now has
+  8,730 instructions (six fewer), so every instruction index after 6053 moves down by six.
+* Proofs: `Cycle/Execution/counterHead` (`.push 8 5694`, model pc 7651, `counterExitProgram` removed),
+  `Cycle/CounterControl` (`tested` at 7651, exit branch goes straight to 7652), `Cycle/LoopBlocks`
+  (`counterJumpBlock` at 7651, `counterExitBlock` removed); index literals after 6053 and the
+  instruction-count bound (8,730) rewritten mechanically in `Cycle/`, `CycleCaller/`, `CycleGlobal/`,
+  `R5/`; `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
 # Current refinement: the last three dead-frame setup padding `JUMPDEST`s are gone too (-12 gas per draw, -48 with the previous one)
 
 * `CycleCaller/DeadSetup.loadProgram` is now `PUSH0 x7, PUSH22 0x0d13` (8 instructions, same 30 bytes,
