@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "f7477d8c-68fa-4bbf-a759-6d6cbb0dcc6e",
+    "rationale": "Direct parent (own, promoted frontier at 364,159): staged-entry dead slot overwrites removed. This tree drops the shift-reduce loop heads' never-read top-limb clears.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2723..2730, 3697..3705 and 10763..10770; proof edits in Fast/M9MacRun (run_ride_top_np_stale), new CycleGlobal/M9MacStale, CycleGlobal/M9MacShift, ShiftStates, ShiftPaths, ShiftTrace2, ShiftTrace4, PrefixPC, ShiftPCs and mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "0e2e44e6-229e-4c5b-9c24-46aca3fc702f",
     "rationale": "Direct parent (own, E+F: conversion block 5 and staged-entry padding). This tree removes the staged entry's two dead frame-slot overwrites.",
     "evidence": "bytecode.hex differs from that tree only in bytes 3728..3742 and 3905; proof edits in CycleGlobal/SquareStagedEntry, CycleCaller/Blocks, CycleCaller/Prefix, CycleGlobal/R5Head, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."

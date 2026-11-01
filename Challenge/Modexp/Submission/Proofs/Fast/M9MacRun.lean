@@ -627,6 +627,46 @@ theorem run_ride_top_np (template : State) (pc : UInt256) (m : MacState) (bi : U
   simpa only [rideTopProgramNP, st, chainState, setupState, framed, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
+/-- `run_ride_top_np` without the zero-`t`-top premise: the block never reads memory, so on any
+memory it writes the zero-top sum.  Used where the loop head no longer clears the top limb. -/
+theorem run_ride_top_np_stale (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
+    (n j : Nat) (t : UInt256) (d : Fin 16)
+    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
+    (x : UInt256) (hval : x = MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)))
+    (rest : List UInt256) (hrest : rest.length ≤ 1014)
+    (hd2 : 2 ≤ d.val) (hin : d.val < 2 + rest.length)
+    (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13)
+    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
+    runInstructions (rideTopProgramNP d t)
+      (setupState template pc m.memory bi (maxWord :: rest)) =
+    some (chainState template (pc + UInt256.ofNat 18)
+      { memory := MachineState.writeBytes m.memory
+          (Data.Bytes.natToBytesPadded
+            (macSum (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) bi
+              (UInt256.ofNat 0) (UInt256.ofNat 0)).toNat 32) (2112 + 32 * (n - 1 - j))
+        carry := macCarry (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) bi
+          (UInt256.ofNat 0) (UInt256.ofNat 0) } bi rest) := by
+  subst hval
+  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
+      (2112 + 32 * (n - 1 - j)) 32) = template.activeWords :=
+    activeWords_fix template _ 32 (by decide) (by omega) hactive
+  let st : State := { template with memory := m.memory }
+  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
+      st.activeWords := by simpa only [st, ht] using hactT
+  have hth := run_rideTopHeadNP_state st pc d bi
+    (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) rest hrest hd2 hin hx hd13
+  have htp := run_rideTopPost st (pc + UInt256.ofNat 7)
+    (UInt256.mulMod bi (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) maxWord)
+    (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)) * bi) bi t
+    (maxWord :: rest) (by simp only [List.length_cons]; omega) hT
+  have hall := runInstructions_append_some _ _ _ _ _ hth htp
+  rw [top_carry_eq, top_sum_eq] at hall
+  have hpc : pc + UInt256.ofNat 7 + UInt256.ofNat 11 = pc + UInt256.ofNat 18 := by
+    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+  simpa only [rideTopProgramNP, st, chainState, setupState, framed, ht, hpc,
+    List.cons_append, List.nil_append] using hall
+
+
 /-- The four-limb loop head's tail: `PUSH0 PUSH2 2901 JUMP` (no scratch slot involved). -/
 def entry4Program : List Instr :=
   [.push 0 0, .push 2 2901, .op .JUMP]

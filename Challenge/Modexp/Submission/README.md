@@ -1,3 +1,16 @@
+# Current refinement: the shift-reduce loop heads no longer clear the `t` top limb (-168 gas per draw)
+
+* Both conversion loop heads (eight limbs at pc 2714, four limbs at 10754) ran
+  `PUSH0 PUSH2 top MSTORE` after the `MCOPY` on every digit step (21 steps per draw). Nothing reads that
+  word before the section's first block (`rideTopProgramNP`) overwrites it, so the store is gone; the
+  next push is widened to `PUSH7 0x0820` so every pc is unchanged.
+* Proofs: the machine runs on `uMem0 = mcopy` while the model keeps `uMem` (top cleared);
+  `Fast/M9MacRun.run_ride_top_np_stale` and the new `CycleGlobal/M9MacStale` (`l1StepOn_stale`,
+  `gasSteps_block0_stale`, `gasSteps_zero4_stale`, `gasSteps_macChain_stale`) show the section reaches
+  the old conclusion from `uMem0`; `M9MacShift.gasSteps_macSection_stale`, `ShiftStates` (`uMem0`,
+  `estimateState` at `headPC + 9`), `ShiftPaths`, `ShiftTrace2`, `ShiftTrace4`; `PrefixPC.eq_old_tail12`
+  offset +15; three instructions given back at pc 3697 (eight limbs), image 8,727 instructions.
+
 # Current refinement: the staged square entry no longer overwrites two never-read frame slots (-60 gas per draw)
 
 * pc 3728: `JUMPDEST PUSH2 0x14b1 SWAP2 POP PUSH0 SWAP3 POP PUSH4 0x1e0 SUB` -> `JUMPDEST PUSH12 0x1e0 SUB`.

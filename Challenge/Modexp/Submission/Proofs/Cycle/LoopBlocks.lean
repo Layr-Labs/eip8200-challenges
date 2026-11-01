@@ -16,7 +16,7 @@ open WindowTwentyOneBinding WindowTwentyOneSlice
 def counterBlock : Block Artifact.artifact .Osaka 7619 counterHeadProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 6048 5 7619 counterHeadProgram
     (by change 6048+5 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6048+5 ≤ 8730)
+        exact Nat.le_trans (by decide : 6048+5 ≤ 8727)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -24,7 +24,7 @@ def counterBlock : Block Artifact.artifact .Osaka 7619 counterHeadProgram :=
 def counterJumpBlock : Block Artifact.artifact .Osaka 7651 jumpiProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 6053 1 7651 jumpiProgram
     (by change 6053+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6053+1 ≤ 8730)
+        exact Nat.le_trans (by decide : 6053+1 ≤ 8727)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -32,7 +32,7 @@ def counterJumpBlock : Block Artifact.artifact .Osaka 7651 jumpiProgram :=
 def normalizesquareBlock : Block Artifact.artifact .Osaka 10550 normalizesquareProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 8403 4 10550 normalizesquareProgram
     (by change 8403+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8403+4 ≤ 8730)
+        exact Nat.le_trans (by decide : 8403+4 ≤ 8727)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

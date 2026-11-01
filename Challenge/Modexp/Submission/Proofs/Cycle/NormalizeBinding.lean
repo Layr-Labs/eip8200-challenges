@@ -15,7 +15,7 @@ open CycleSubmission.NormalizeMeaning
 def normalizerBlock : Block Artifact.artifact .Osaka 10556 normalizeProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 8407 121 10556 normalizeProgram
     (by change 8407+121 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8407+121 ≤ 8730)
+        exact Nat.le_trans (by decide : 8407+121 ≤ 8727)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -24,7 +24,7 @@ def normalizerBlock : Block Artifact.artifact .Osaka 10556 normalizeProgram :=
 def returnBlock : Block Artifact.artifact .Osaka 10697 jumpProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 8528 1 10697 jumpProgram
     (by change 8528+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8528+1 ≤ 8730)
+        exact Nat.le_trans (by decide : 8528+1 ≤ 8727)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

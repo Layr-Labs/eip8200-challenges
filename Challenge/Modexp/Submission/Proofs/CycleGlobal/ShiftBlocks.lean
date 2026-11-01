@@ -21,40 +21,40 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- The add-round body up to its store (`blk3157` instructions 0..22). -/
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2415 .JUMPDEST,
-   opAt 2416 (.Dup ⟨0, by decide⟩),
-   opAt 2417 .MLOAD,
-   pushAt 2418 2 2112,
-   opAt 2419 (.Dup ⟨2, by decide⟩),
-   opAt 2420 .SUB,
-   opAt 2421 .MLOAD,
+  [opAt 2412 .JUMPDEST,
+   opAt 2413 (.Dup ⟨0, by decide⟩),
+   opAt 2414 .MLOAD,
+   pushAt 2415 2 2112,
+   opAt 2416 (.Dup ⟨2, by decide⟩),
+   opAt 2417 .SUB,
+   opAt 2418 .MLOAD,
+   opAt 2419 (.Dup ⟨1, by decide⟩),
+   opAt 2420 .ADD,
+   opAt 2421 (.Swap ⟨0, by decide⟩),
    opAt 2422 (.Dup ⟨1, by decide⟩),
-   opAt 2423 .ADD,
+   opAt 2423 .LT,
    opAt 2424 (.Swap ⟨0, by decide⟩),
-   opAt 2425 (.Dup ⟨1, by decide⟩),
-   opAt 2426 .LT,
-   opAt 2427 (.Swap ⟨0, by decide⟩),
+   opAt 2425 (.Dup ⟨3, by decide⟩),
+   opAt 2426 .ADD,
+   opAt 2427 (.Swap ⟨2, by decide⟩),
    opAt 2428 (.Dup ⟨3, by decide⟩),
-   opAt 2429 .ADD,
-   opAt 2430 (.Swap ⟨2, by decide⟩),
-   opAt 2431 (.Dup ⟨3, by decide⟩),
-   opAt 2432 .LT,
-   opAt 2433 .OR,
-   opAt 2434 (.Swap ⟨1, by decide⟩),
-   opAt 2435 (.Dup ⟨1, by decide⟩),
-   opAt 2436 .MSTORE]
+   opAt 2429 .LT,
+   opAt 2430 .OR,
+   opAt 2431 (.Swap ⟨1, by decide⟩),
+   opAt 2432 (.Dup ⟨1, by decide⟩),
+   opAt 2433 .MSTORE]
 
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 2437 1 31,
-   opAt 2438 .NOT,
-   opAt 2439 .ADD,
-   pushAt 2440 2 2111,
-   opAt 2441 (.Dup ⟨1, by decide⟩),
-   opAt 2442 .GT,
-   pushAt 2443 2 3112,
-   opAt 2444 .JUMPI]
+  [pushAt 2434 1 31,
+   opAt 2435 .NOT,
+   opAt 2436 .ADD,
+   pushAt 2437 2 2111,
+   opAt 2438 (.Dup ⟨1, by decide⟩),
+   opAt 2439 .GT,
+   pushAt 2440 2 3112,
+   opAt 2441 .JUMPI]
 
 /-- The five padding `JUMPDEST`s on the add-round fall-through (indices 2413 to 2417). -/
 def blk3157c :
