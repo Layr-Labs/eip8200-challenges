@@ -70,7 +70,7 @@ def state12 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
 def memory13 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory12 mem inv a b n) (cells12 inv a b n)
 def state13 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9412, memory := memory13 s.memory inv a b n, stack := frame13 inv a b n rest}
 def memory14 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory13 mem inv a b n) (cells13 inv a b n)
-def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9540, memory := memory14 s.memory inv a b n, stack := frame14 inv a b n rest}
+def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9530, memory := memory14 s.memory inv a b n, stack := frame14 inv a b n rest}
 def memory15 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory14 mem inv a b n) (cells14 inv a b n)
 def state15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9668, memory := memory15 s.memory inv a b n, stack := frame15 inv a b n rest}
 def memory16 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory15 mem inv a b n) (cells15 inv a b n)
@@ -80,7 +80,7 @@ def state17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
 def memory18 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory17 mem inv a b n) (cells17 inv a b n)
 def state18 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10052, memory := memory18 s.memory inv a b n, stack := frame18 inv a b n rest}
 def memory19 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory18 mem inv a b n) (cells18 inv a b n)
-def state19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10180, memory := memory19 s.memory inv a b n, stack := frame19 inv a b n rest}
+def state19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10190, memory := memory19 s.memory inv a b n, stack := frame19 inv a b n rest}
 def memory20 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory19 mem inv a b n) (cells19 inv a b n)
 def state20 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10234, memory := memory20 s.memory inv a b n, stack := frame20 inv a b n rest}
 theorem memory0_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
@@ -402,7 +402,7 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
   have m15 := memory14_output (state14 s inv a b n rest) inv a b n rest m14
   have h14 : runInstructions productColumn14Program (state14 s inv a b n rest) = some (state15 s inv a b n rest) := by
     have hx := run14 (state14 s inv a b n rest) inv a b n rest m14 hcap hact
-    rw [reset_self (state14 s inv a b n rest) (UInt256.ofNat 9540) (frame14 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state14 s inv a b n rest) (UInt256.ofNat 9530) (frame14 inv a b n rest) rfl rfl] at hx
     exact hx
   have m16 := memory15_output (state15 s inv a b n rest) inv a b n rest m15
   have h15 : runInstructions productColumn15Program (state15 s inv a b n rest) = some (state16 s inv a b n rest) := by
@@ -427,7 +427,7 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
   have m20 := memory19_output (state19 s inv a b n rest) inv a b n rest m19
   have h19 : runInstructions productColumn19Program (state19 s inv a b n rest) = some (state20 s inv a b n rest) := by
     have hx := run19 (state19 s inv a b n rest) inv a b n rest m19 hcap hact
-    rw [reset_self (state19 s inv a b n rest) (UInt256.ofNat 10180) (frame19 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state19 s inv a b n rest) (UInt256.ofNat 10190) (frame19 inv a b n rest) rfl rfl] at hx
     exact hx
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 (runInstructions_append_some _ _ _ _ _ h17 (runInstructions_append_some _ _ _ _ _ h18 h19)))))))))))))))))))
 
@@ -508,9 +508,9 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 7744 program :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 6108 2098 7744 program
-    (by change 6108+2098 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 6108+2098 ≤ 8727)
+  WindowTwentyOneSlice.block Artifact.wellFormed 6050 2073 7744 program
+    (by change 6050+2073 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 6050+2073 ≤ 8647)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

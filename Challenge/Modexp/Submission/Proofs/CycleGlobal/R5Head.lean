@@ -34,7 +34,7 @@ open Monpro CiosCached StagedOperand
 /-- The sixteen-word frame the shared setup leaves above `rest`. -/
 def frameStack (mem : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 3728, UInt256.ofNat 480, ent, m32, allOnes,
+  [pbi, UInt256.ofNat 5297, UInt256.ofNat 0, ent, m32, allOnes,
     MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0, aprev, pdst, ret] ++ rest
 
 def frameAt (pc : Nat) (s : State) (mem : ByteArray)
@@ -51,7 +51,7 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5334, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2882 6 3743 h1Program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2889 6 3743 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem cond_four : UInt256.isZero (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) = UInt256.ofNat 1 := by

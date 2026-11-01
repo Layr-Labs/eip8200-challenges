@@ -31,9 +31,9 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to the loop head). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2385 2 3069 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2387 5 3071 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2392 14 3080 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
+  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2389 2 3069 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2391 5 3071 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2396 14 3080 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 
 /-! ## Junction lemmas

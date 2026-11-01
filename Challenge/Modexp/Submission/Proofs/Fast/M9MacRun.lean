@@ -627,46 +627,6 @@ theorem run_ride_top_np (template : State) (pc : UInt256) (m : MacState) (bi : U
   simpa only [rideTopProgramNP, st, chainState, setupState, framed, ht, hpc,
     List.cons_append, List.nil_append] using hall
 
-/-- `run_ride_top_np` without the zero-`t`-top premise: the block never reads memory, so on any
-memory it writes the zero-top sum.  Used where the loop head no longer clears the top limb. -/
-theorem run_ride_top_np_stale (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
-    (n j : Nat) (t : UInt256) (d : Fin 16)
-    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
-    (x : UInt256) (hval : x = MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)))
-    (rest : List UInt256) (hrest : rest.length ≤ 1014)
-    (hd2 : 2 ≤ d.val) (hin : d.val < 2 + rest.length)
-    (hx : rest[d.val - 2]? = some x) (hd13 : d.val ≤ 13)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
-    runInstructions (rideTopProgramNP d t)
-      (setupState template pc m.memory bi (maxWord :: rest)) =
-    some (chainState template (pc + UInt256.ofNat 18)
-      { memory := MachineState.writeBytes m.memory
-          (Data.Bytes.natToBytesPadded
-            (macSum (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) bi
-              (UInt256.ofNat 0) (UInt256.ofNat 0)).toNat 32) (2112 + 32 * (n - 1 - j))
-        carry := macCarry (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) bi
-          (UInt256.ofNat 0) (UInt256.ofNat 0) } bi rest) := by
-  subst hval
-  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (2112 + 32 * (n - 1 - j)) 32) = template.activeWords :=
-    activeWords_fix template _ 32 (by decide) (by omega) hactive
-  let st : State := { template with memory := m.memory }
-  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
-      st.activeWords := by simpa only [st, ht] using hactT
-  have hth := run_rideTopHeadNP_state st pc d bi
-    (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) rest hrest hd2 hin hx hd13
-  have htp := run_rideTopPost st (pc + UInt256.ofNat 7)
-    (UInt256.mulMod bi (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) maxWord)
-    (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)) * bi) bi t
-    (maxWord :: rest) (by simp only [List.length_cons]; omega) hT
-  have hall := runInstructions_append_some _ _ _ _ _ hth htp
-  rw [top_carry_eq, top_sum_eq] at hall
-  have hpc : pc + UInt256.ofNat 7 + UInt256.ofNat 11 = pc + UInt256.ofNat 18 := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-  simpa only [rideTopProgramNP, st, chainState, setupState, framed, ht, hpc,
-    List.cons_append, List.nil_append] using hall
-
-
 /-- The four-limb loop head's tail: `PUSH0 PUSH2 2901 JUMP` (no scratch slot involved). -/
 def entry4Program : List Instr :=
   [.push 0 0, .push 2 2901, .op .JUMP]
@@ -708,54 +668,5 @@ theorem run_jump4 (template : State) (pc : UInt256) (m : MacState) (bi : UInt256
     List.cons_append, List.nil_append, succ_eq_add, word_add_assoc,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
-
-/-- `rideProgram` with the `t`-limb load pushed as `PUSH3` (one byte longer, same semantics). -/
-def rideProgramW3 (d : Fin 16) (t : UInt256) : List Instr :=
-  rideHead d ++ CiosCached.macFusedPostProgramW3 t t
-
-theorem run_rideW3 (template : State) (pc : UInt256) (m : MacState) (bi : UInt256)
-    (n j : Nat) (t : UInt256) (d : Fin 16)
-    (ht : t.toNat = 2112 + 32 * (n - 1 - j))
-    (x : UInt256) (hval : x = MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)))
-    (rest : List UInt256) (hrest : rest.length ≤ 1014)
-    (hd3 : 3 ≤ d.val) (hd13 : d.val ≤ 13) (hin : d.val < 3 + rest.length)
-    (hx : rest[d.val - 3]? = some x)
-    (hactive : 88 ≤ template.activeWords.toNat) (hn : n ≤ 8) (hj : j < n) :
-    runInstructions (rideProgramW3 d t) (chainState template pc m bi rest) =
-    some (chainState template (pc + UInt256.ofNat 33) (SquareModel.l1StepOn m bi 1280 n j) bi rest) := by
-  subst hval
-  let x0 := MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))
-  have hactT : UInt256.ofNat (MachineState.activeWordsAfter template.activeWords.toNat
-      (2112 + 32 * (n - 1 - j)) 32) = template.activeWords :=
-    activeWords_fix template _ 32 (by decide) (by omega) hactive
-  let st : State := { template with memory := m.memory }
-  have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
-      st.activeWords := by simpa only [st, ht] using hactT
-  have hm := run_rideHead st pc d m.carry bi x0 rest hrest hd3 hd13 hin hx
-  have hp := CiosCachedFused.run_postW3 st (pc + UInt256.ofNat 7)
-    (UInt256.mulMod bi x0 maxWord) (x0 * bi) m.carry bi t t (maxWord :: rest)
-    (by simp only [List.length_cons]; omega) hT hT
-  have hc : partialCarry x0 bi m.carry +
-      UInt256.lt ((x0 * bi + m.carry) + MachineState.readWord st.memory t.toNat)
-        (x0 * bi + m.carry) =
-      macCarry x0 bi (MachineState.readWord st.memory t.toNat) m.carry := by
-    rw [add_comm_word (partialCarry x0 bi m.carry)]
-    simpa only [UInt256.gt, UInt256.lt,
-      add_comm_word (x0 * bi + m.carry) (MachineState.readWord st.memory t.toNat)] using
-      carry_eq x0 bi (MachineState.readWord st.memory t.toNat) m.carry
-  have hs : (x0 * bi + m.carry) + MachineState.readWord st.memory t.toNat =
-      macSum x0 bi (MachineState.readWord st.memory t.toNat) m.carry := by
-    rw [add_comm_word]
-    exact sum_eq x0 bi (MachineState.readWord st.memory t.toNat) m.carry
-  change runInstructions (CiosCached.macFusedPostProgramW3 t t) _ =
-    some (framed _ _ ([partialCarry x0 bi m.carry + _, bi] ++ (maxWord :: rest))) at hp
-  rw [hc, hs] at hp
-  have both := runInstructions_append_some _ _ _ _ _ hm hp
-  have hpc : (pc + UInt256.ofNat 7) + UInt256.ofNat 26 = pc + UInt256.ofNat 33 := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-  simpa only [rideProgramW3, st, x0, chainState, framed, SquareModel.l1StepOn, ht, hpc,
-    List.cons_append, List.nil_append] using both
-
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

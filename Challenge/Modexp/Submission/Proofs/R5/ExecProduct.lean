@@ -2052,7 +2052,7 @@ theorem prCol4_eq (s : State) (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cn
       {s with pc := UInt256.ofNat 3901, stack := (prCol4_o0 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0) :: q3 :: q2 :: q1 :: (prCol4_o4 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0) :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol4Model, prCol4_o0, prCol4_o4, h_b0, h_b1, h_b2, h_b3, h_b4, h_n0, h_inv]
 
-/-! ## prCol5: pc 4857..4971, 102 instructions -/
+/-! ## prCol5: pc 4857..4971 -/
 
 def prCol5part0Program : List Instr :=
   [.op .JUMPDEST,
@@ -2061,335 +2061,351 @@ def prCol5part0Program : List Instr :=
    .op .MLOAD,
    .op (.Dup ⟨8, by decide⟩),
    .op .MUL,
-   .op .ADD]
+   .op .ADD,
+   .push 1 96,
+   .op .MLOAD]
 
 def prCol5part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
   let v1 : UInt256 := x6 * v0
   let v2 : UInt256 := v1 + x0
-  {s with pc := UInt256.ofNat 4865, memory := s.memory, stack := v2 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  let v3 : UInt256 := MachineState.readWord s.memory 96
+  {s with pc := UInt256.ofNat 4868, memory := s.memory, stack := v3 :: v2 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem prCol5part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol5part0Program {s with pc := UInt256.ofNat 4857, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (prCol5part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
+  have ha96 : (96 : UInt256).toNat = 96 := rfl
+  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part0Program, prCol5part0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
+  simp [hz, hzn, prCol5part0Program, prCol5part0Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha96, hf96, ha128, hf128]
+
+#print axioms prCol5part0_run
 
 def prCol5part1Program : List Instr :=
-  [.push 1 96,
-   .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+  [.op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩)]
+   .op (.Dup ⟨10, by decide⟩),
+   .op .MUL,
+   .op .ADD]
 
-def prCol5part1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := MachineState.readWord s.memory 96
-  let v1 : UInt256 := x8 * v0
-  let v2 : UInt256 := v1 + x0
-  let v3 : UInt256 := MachineState.readWord s.memory 64
-  {s with pc := UInt256.ofNat 4875, memory := s.memory, stack := x9 :: v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+def prCol5part1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := x9 * x0
+  let v1 : UInt256 := v0 + x1
+  let v2 : UInt256 := MachineState.readWord s.memory 64
+  let v3 : UInt256 := x10 * v2
+  let v4 : UInt256 := v3 + v1
+  {s with pc := UInt256.ofNat 4877, memory := s.memory, stack := v4 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
-theorem prCol5part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
+theorem prCol5part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part1Program {s with pc := UInt256.ofNat 4865, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol5part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha96 : (96 : UInt256).toNat = 96 := rfl
-  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
+    runInstructions prCol5part1Program {s with pc := UInt256.ofNat 4868, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (prCol5part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha64 : (64 : UInt256).toNat = 64 := rfl
   have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part1Program, prCol5part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96, ha64, hf64]
+  simp [hz, hzn, prCol5part1Program, prCol5part1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha64, hf64]
+
+#print axioms prCol5part1_run
 
 def prCol5part2Program : List Instr :=
-  [.op .MUL,
-   .op .ADD,
-   .push 1 32,
+  [.push 1 32,
    .op .MLOAD,
    .op (.Dup ⟨11, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op .MUL]
 
-def prCol5part2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x0 * x1
-  let v1 : UInt256 := v0 + x2
-  let v2 : UInt256 := MachineState.readWord s.memory 32
-  let v3 : UInt256 := x12 * v2
-  let v4 : UInt256 := v3 + v1
-  {s with pc := UInt256.ofNat 4884, memory := s.memory, stack := x16 :: v4 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+def prCol5part2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := MachineState.readWord s.memory 32
+  let v1 : UInt256 := x10 * v0
+  let v2 : UInt256 := v1 + x0
+  let v3 : UInt256 := x4 * x14
+  {s with pc := UInt256.ofNat 4886, memory := s.memory, stack := v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
-theorem prCol5part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
+theorem prCol5part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part2Program {s with pc := UInt256.ofNat 4875, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
-      some (prCol5part2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+    runInstructions prCol5part2Program {s with pc := UInt256.ofNat 4877, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+      some (prCol5part2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha32 : (32 : UInt256).toNat = 32 := rfl
   have hf32 := activeWords_fix s 32 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part2Program, prCol5part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha32, hf32]
+  simp [hz, hzn, prCol5part2Program, prCol5part2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha32, hf32]
+
+#print axioms prCol5part2_run
 
 def prCol5part3Program : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
-   .op .MUL,
-   .op .ADD,
+  [.op .ADD,
    .op (.Dup ⟨13, by decide⟩),
    .op (.Dup ⟨4, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩)]
+   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op .MUL]
 
 def prCol5part3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x5 * x0
-  let v1 : UInt256 := v0 + x1
-  let v2 : UInt256 := x4 * x14
-  let v3 : UInt256 := v2 + v1
-  {s with pc := UInt256.ofNat 4892, memory := s.memory, stack := x13 :: v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v0 : UInt256 := x0 + x1
+  let v1 : UInt256 := x4 * x14
+  let v2 : UInt256 := v1 + v0
+  let v3 : UInt256 := x3 * x13
+  {s with pc := UInt256.ofNat 4894, memory := s.memory, stack := v3 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol5part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part3Program {s with pc := UInt256.ofNat 4884, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions prCol5part3Program {s with pc := UInt256.ofNat 4886, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol5part3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol5part3Program, prCol5part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol5part3Program, prCol5part3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol5part3_run
 
 def prCol5part4Program : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩),
-   .op .MUL,
-   .op .ADD,
+  [.op .ADD,
    .op (.Dup ⟨11, by decide⟩),
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨15, by decide⟩),
+   .push 1 128,
+   .op .MLOAD]
 
 def prCol5part4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x3 * x0
-  let v1 : UInt256 := v0 + x1
-  let v2 : UInt256 := x6 * x12
-  let v3 : UInt256 := v2 + v1
-  {s with pc := UInt256.ofNat 4900, memory := s.memory, stack := x2 :: v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v0 : UInt256 := x0 + x1
+  let v1 : UInt256 := x6 * x12
+  let v2 : UInt256 := v1 + v0
+  let v3 : UInt256 := MachineState.readWord s.memory 128
+  {s with pc := UInt256.ofNat 4904, memory := s.memory, stack := v3 :: x16 :: x2 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol5part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part4Program {s with pc := UInt256.ofNat 4892, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions prCol5part4Program {s with pc := UInt256.ofNat 4894, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol5part4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol5part4Program, prCol5part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
+  have ha128 : (128 : UInt256).toNat = 128 := rfl
+  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  simp [hz, hzn, prCol5part4Program, prCol5part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128]
+
+#print axioms prCol5part4_run
 
 def prCol5part5Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .push 1 128,
+  [.op (.Dup ⟨9, by decide⟩),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup ⟨15, by decide⟩),
+   .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup ⟨10, by decide⟩),
+   .op .MULMOD]
+
+def prCol5part5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x9 x0 x1
+  let v1 : UInt256 := v0 + x2
+  let v2 : UInt256 := MachineState.readWord s.memory 96
+  let v3 : UInt256 := UInt256.mulMod x10 v2 x17
+  {s with pc := UInt256.ofNat 4913, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+
+theorem prCol5part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions prCol5part5Program {s with pc := UInt256.ofNat 4904, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
+      some (prCol5part5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  have ha96 : (96 : UInt256).toNat = 96 := rfl
+  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
+  simp [hz, hzn, prCol5part5Program, prCol5part5Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha96, hf96]
+
+#print axioms prCol5part5_run
+
+def prCol5part6Program : List Instr :=
+  [.op .ADD,
+   .op (.Dup ⟨15, by decide⟩),
+   .push 1 64,
+   .op .MLOAD,
+   .op (.Dup ⟨11, by decide⟩),
    .op .MULMOD,
    .op .ADD,
    .op (.Dup ⟨15, by decide⟩)]
 
-def prCol5part5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := MachineState.readWord s.memory 128
-  let v1 : UInt256 := UInt256.mulMod x7 v0 x15
-  let v2 : UInt256 := v1 + x0
-  {s with pc := UInt256.ofNat 4908, memory := s.memory, stack := x15 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
-theorem prCol5part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part5Program {s with pc := UInt256.ofNat 4900, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol5part5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha128 : (128 : UInt256).toNat = 128 := rfl
-  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part5Program, prCol5part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
-
-def prCol5part6Program : List Instr :=
-  [.push 1 96,
-   .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .push 1 64,
-   .op .MLOAD]
-
 def prCol5part6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := MachineState.readWord s.memory 96
-  let v1 : UInt256 := UInt256.mulMod x9 v0 x0
-  let v2 : UInt256 := v1 + x1
-  let v3 : UInt256 := MachineState.readWord s.memory 64
-  {s with pc := UInt256.ofNat 4918, memory := s.memory, stack := v3 :: x16 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v0 : UInt256 := x0 + x1
+  let v1 : UInt256 := MachineState.readWord s.memory 64
+  let v2 : UInt256 := UInt256.mulMod x10 v1 x16
+  let v3 : UInt256 := v2 + v0
+  {s with pc := UInt256.ofNat 4922, memory := s.memory, stack := x16 :: v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol5part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part6Program {s with pc := UInt256.ofNat 4908, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions prCol5part6Program {s with pc := UInt256.ofNat 4913, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol5part6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha96 : (96 : UInt256).toNat = 96 := rfl
-  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha64 : (64 : UInt256).toNat = 64 := rfl
   have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part6Program, prCol5part6Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96, ha64, hf64]
+  simp [hz, hzn, prCol5part6Program, prCol5part6Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha64, hf64]
+
+#print axioms prCol5part6_run
 
 def prCol5part7Program : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩),
+  [.push 1 32,
+   .op .MLOAD,
+   .op (.Dup ⟨12, by decide⟩),
    .op .MULMOD,
    .op .ADD,
    .op (.Dup ⟨15, by decide⟩),
-   .push 1 32,
-   .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op .MULMOD]
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup ⟨6, by decide⟩)]
 
-def prCol5part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.mulMod x11 x0 x1
-  let v1 : UInt256 := v0 + x2
-  let v2 : UInt256 := MachineState.readWord s.memory 32
-  let v3 : UInt256 := UInt256.mulMod x12 v2 x17
-  {s with pc := UInt256.ofNat 4927, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+def prCol5part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := MachineState.readWord s.memory 32
+  let v1 : UInt256 := UInt256.mulMod x11 v0 x0
+  let v2 : UInt256 := v1 + x1
+  {s with pc := UInt256.ofNat 4931, memory := s.memory, stack := x5 :: x15 :: x16 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
-theorem prCol5part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
+theorem prCol5part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part7Program {s with pc := UInt256.ofNat 4918, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
-      some (prCol5part7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+    runInstructions prCol5part7Program {s with pc := UInt256.ofNat 4922, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (prCol5part7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha32 : (32 : UInt256).toNat = 32 := rfl
   have hf32 := activeWords_fix s 32 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part7Program, prCol5part7Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha32, hf32]
+  simp [hz, hzn, prCol5part7Program, prCol5part7Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha32, hf32]
+
+#print axioms prCol5part7_run
 
 def prCol5part8Program : List Instr :=
-  [.op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op .MULMOD,
+  [.op .MULMOD,
    .op .ADD,
    .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup ⟨15, by decide⟩)]
 
-def prCol5part8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x0 + x1
-  let v1 : UInt256 := UInt256.mulMod x5 x15 x16
-  let v2 : UInt256 := v1 + v0
-  {s with pc := UInt256.ofNat 4935, memory := s.memory, stack := x14 :: x16 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+def prCol5part8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x0 x1 x2
+  let v1 : UInt256 := v0 + x3
+  let v2 : UInt256 := UInt256.mulMod x6 x16 x18
+  let v3 : UInt256 := v2 + v1
+  {s with pc := UInt256.ofNat 4939, memory := s.memory, stack := x18 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest}
 
-theorem prCol5part8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
+theorem prCol5part8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part8Program {s with pc := UInt256.ofNat 4927, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
-      some (prCol5part8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol5part8Program, prCol5part8Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+    runInstructions prCol5part8Program {s with pc := UInt256.ofNat 4931, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest} =
+      some (prCol5part8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol5part8Program, prCol5part8Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol5part8_run
 
 def prCol5part9Program : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
+  [.op (.Dup ⟨13, by decide⟩),
    .op (.Dup ⟨4, by decide⟩),
    .op .MULMOD,
-   .op .ADD]
-
-def prCol5part9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.mulMod x5 x0 x1
-  let v1 : UInt256 := v0 + x2
-  let v2 : UInt256 := UInt256.mulMod x4 x14 x17
-  let v3 : UInt256 := v2 + v1
-  {s with pc := UInt256.ofNat 4943, memory := s.memory, stack := v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
-
-theorem prCol5part9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part9Program {s with pc := UInt256.ofNat 4935, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
-      some (prCol5part9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol5part9Program, prCol5part9Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
-
-def prCol5part10Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
-   .op .MULMOD,
    .op .ADD,
    .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩)]
+   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup ⟨7, by decide⟩),
+   .op .MULMOD]
 
-def prCol5part10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.mulMod x5 x11 x15
-  let v1 : UInt256 := v0 + x0
-  {s with pc := UInt256.ofNat 4951, memory := s.memory, stack := x1 :: v1 :: x15 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+def prCol5part9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x3 x13 x0
+  let v1 : UInt256 := v0 + x1
+  let v2 : UInt256 := UInt256.mulMod x6 x12 x16
+  {s with pc := UInt256.ofNat 4947, memory := s.memory, stack := v2 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
-theorem prCol5part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
+theorem prCol5part9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part10Program {s with pc := UInt256.ofNat 4943, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol5part10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol5part10Program, prCol5part10Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+    runInstructions prCol5part9Program {s with pc := UInt256.ofNat 4939, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (prCol5part9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol5part9Program, prCol5part9Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
-def prCol5part11Program : List Instr :=
-  [.op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
+#print axioms prCol5part9_run
+
+def prCol5part10Program : List Instr :=
+  [.op .ADD,
+   .op (.Swap ⟨0, by decide⟩),
    .push 1 224,
    .op .MLOAD,
-   .op .AND]
+   .op .AND,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨6, by decide⟩),
+   .op .POP]
 
-def prCol5part11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.lnot x0
-  let v1 : UInt256 := UInt256.addMod v0 x1 x2
-  let v2 : UInt256 := UInt256.shiftRight v1 (UInt256.ofNat 5)
-  let v3 : UInt256 := MachineState.readWord s.memory 224
-  let v4 : UInt256 := UInt256.land v3 x3
-  {s with pc := UInt256.ofNat 4961, memory := s.memory, stack := v4 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+def prCol5part10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := x0 + x1
+  let v1 : UInt256 := MachineState.readWord s.memory 224
+  let v2 : UInt256 := UInt256.land v1 x2
+  {s with pc := UInt256.ofNat 4956, memory := s.memory, stack := v2 :: v0 :: x3 :: x4 :: x5 :: x6 :: v2 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
-theorem prCol5part11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
+theorem prCol5part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part11Program {s with pc := UInt256.ofNat 4951, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
-      some (prCol5part11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+    runInstructions prCol5part10Program {s with pc := UInt256.ofNat 4947, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (prCol5part10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have ha224 : (224 : UInt256).toNat = 224 := rfl
   have hf224 := activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part11Program, prCol5part11Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha224, hf224]
+  simp [hz, hzn, prCol5part10Program, prCol5part10Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha224, hf224]
 
-def prCol5part12Program : List Instr :=
-  [.op (.Swap ⟨6, by decide⟩),
-   .op .POP,
-   .push 1 16,
-   .op .SHL,
-   .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR,
-   .op .ADD]
+#print axioms prCol5part10_run
 
-def prCol5part12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.shiftLeft x1 (UInt256.ofNat 16)
-  let v1 : UInt256 := UInt256.shiftRight x2 (UInt256.ofNat 240)
-  let v2 : UInt256 := v1 + v0
-  {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := v2 :: x3 :: x4 :: x5 :: x6 :: x0 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+def prCol5part11Program : List Instr :=
+  [.op (.Swap ⟨0, by decide⟩),
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
-theorem prCol5part12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
+def prCol5part11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := x1 - x0
+  let v1 : UInt256 := x15 + v0
+  let v2 : UInt256 := UInt256.mulMod v1 (UInt256.ofNat 2048) x15
+  {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+
+theorem prCol5part11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol5part12Program {s with pc := UInt256.ofNat 4961, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
-      some (prCol5part12Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol5part12Program, prCol5part12Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+    runInstructions prCol5part11Program {s with pc := UInt256.ofNat 4956, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+      some (prCol5part11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol5part11Program, prCol5part11Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol5part11_run
 
 def prCol5Program : List Instr :=
   [.op .JUMPDEST,
@@ -2475,25 +2491,21 @@ def prCol5Program : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
    .push 1 224,
    .op .MLOAD,
    .op .AND,
+   .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨6, by decide⟩),
    .op .POP,
-   .push 1 16,
-   .op .SHL,
    .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR,
-   .op .ADD]
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
 def prCol5Model (s : State) (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -2536,15 +2548,12 @@ def prCol5Model (s : State) (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp
   let v37 : UInt256 := v36 + v35
   let v38 : UInt256 := UInt256.mulMod q4 n1 P
   let v39 : UInt256 := v38 + v37
-  let v40 : UInt256 := UInt256.lnot v19
-  let v41 : UInt256 := UInt256.addMod v40 v39 P
-  let v42 : UInt256 := UInt256.shiftRight v41 (UInt256.ofNat 5)
-  let v43 : UInt256 := MachineState.readWord s.memory 224
-  let v44 : UInt256 := UInt256.land v43 v19
-  let v45 : UInt256 := UInt256.shiftLeft v42 (UInt256.ofNat 16)
-  let v46 : UInt256 := UInt256.shiftRight v19 (UInt256.ofNat 240)
-  let v47 : UInt256 := v46 + v45
-  {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := v47 :: q3 :: q2 :: q1 :: q4 :: v44 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
+  let v40 : UInt256 := MachineState.readWord s.memory 224
+  let v41 : UInt256 := UInt256.land v40 v19
+  let v42 : UInt256 := v39 - v41
+  let v43 : UInt256 := P + v42
+  let v44 : UInt256 := UInt256.mulMod v43 (UInt256.ofNat 2048) P
+  {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := v44 :: q3 :: q2 :: q1 :: q4 :: v41 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
 
 theorem prCol5_run (s : State) (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -2590,44 +2599,41 @@ theorem prCol5_run (s : State) (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv c
   let v37 : UInt256 := v36 + v35
   let v38 : UInt256 := UInt256.mulMod q4 n1 P
   let v39 : UInt256 := v38 + v37
-  let v40 : UInt256 := UInt256.lnot v19
-  let v41 : UInt256 := UInt256.addMod v40 v39 P
-  let v42 : UInt256 := UInt256.shiftRight v41 (UInt256.ofNat 5)
-  let v43 : UInt256 := MachineState.readWord s.memory 224
-  let v44 : UInt256 := UInt256.land v43 v19
-  let v45 : UInt256 := UInt256.shiftLeft v42 (UInt256.ofNat 16)
-  let v46 : UInt256 := UInt256.shiftRight v19 (UInt256.ofNat 240)
-  let v47 : UInt256 := v46 + v45
-  have h0 : runInstructions prCol5part0Program {s with pc := UInt256.ofNat 4857, memory := s.memory, stack := c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4865, memory := s.memory, stack := v2 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part0Model, v0, v1, v2] using prCol5part0_run (s) c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h1 : runInstructions prCol5part1Program {s with pc := UInt256.ofNat 4865, memory := s.memory, stack := v2 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4875, memory := s.memory, stack := x3 :: v6 :: v5 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part1Model, v3, v4, v5, v6] using prCol5part1_run (s) v2 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h2 : runInstructions prCol5part2Program {s with pc := UInt256.ofNat 4875, memory := s.memory, stack := x3 :: v6 :: v5 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4884, memory := s.memory, stack := n4 :: v11 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part2Model, v7, v8, v9, v10, v11] using prCol5part2_run (s) x3 v6 v5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h3 : runInstructions prCol5part3Program {s with pc := UInt256.ofNat 4884, memory := s.memory, stack := n4 :: v11 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4892, memory := s.memory, stack := n2 :: v15 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part3Model, v12, v13, v14, v15] using prCol5part3_run (s) n4 v11 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h4 : runInstructions prCol5part4Program {s with pc := UInt256.ofNat 4892, memory := s.memory, stack := n2 :: v15 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4900, memory := s.memory, stack := c :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part4Model, v16, v17, v18, v19] using prCol5part4_run (s) n2 v15 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h5 : runInstructions prCol5part5Program {s with pc := UInt256.ofNat 4900, memory := s.memory, stack := c :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4908, memory := s.memory, stack := P :: v22 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part5Model, v20, v21, v22] using prCol5part5_run (s) c v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h6 : runInstructions prCol5part6Program {s with pc := UInt256.ofNat 4908, memory := s.memory, stack := P :: v22 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4918, memory := s.memory, stack := v26 :: P :: v25 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part6Model, v23, v24, v25, v26] using prCol5part6_run (s) P v22 v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h7 : runInstructions prCol5part7Program {s with pc := UInt256.ofNat 4918, memory := s.memory, stack := v26 :: P :: v25 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4927, memory := s.memory, stack := v30 :: v28 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part7Model, v27, v28, v29, v30] using prCol5part7_run (s) v26 P v25 v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h8 : runInstructions prCol5part8Program {s with pc := UInt256.ofNat 4927, memory := s.memory, stack := v30 :: v28 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4935, memory := s.memory, stack := n3 :: P :: v33 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part8Model, v31, v32, v33] using prCol5part8_run (s) v30 v28 v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h9 : runInstructions prCol5part9Program {s with pc := UInt256.ofNat 4935, memory := s.memory, stack := n3 :: P :: v33 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4943, memory := s.memory, stack := v37 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part9Model, v34, v35, v36, v37] using prCol5part9_run (s) n3 P v33 v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h10 : runInstructions prCol5part10Program {s with pc := UInt256.ofNat 4943, memory := s.memory, stack := v37 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4951, memory := s.memory, stack := v19 :: v39 :: P :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part10Model, v38, v39] using prCol5part10_run (s) v37 v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h11 : runInstructions prCol5part11Program {s with pc := UInt256.ofNat 4951, memory := s.memory, stack := v19 :: v39 :: P :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4961, memory := s.memory, stack := v44 :: v42 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part11Model, v40, v41, v42, v43, v44] using prCol5part11_run (s) v19 v39 P v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h12 : runInstructions prCol5part12Program {s with pc := UInt256.ofNat 4961, memory := s.memory, stack := v44 :: v42 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := v47 :: q3 :: q2 :: q1 :: q4 :: v44 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol5part12Model, v45, v46, v47] using prCol5part12_run (s) v44 v42 v19 q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 h12))))))))))))
+  let v40 : UInt256 := MachineState.readWord s.memory 224
+  let v41 : UInt256 := UInt256.land v40 v19
+  let v42 : UInt256 := v39 - v41
+  let v43 : UInt256 := P + v42
+  let v44 : UInt256 := UInt256.mulMod v43 (UInt256.ofNat 2048) P
+  have h0 : runInstructions prCol5part0Program {s with pc := UInt256.ofNat 4857, memory := s.memory, stack := c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4868, memory := s.memory, stack := v3 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part0Model, v0, v1, v2, v3] using prCol5part0_run (s) (c) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h1 : runInstructions prCol5part1Program {s with pc := UInt256.ofNat 4868, memory := s.memory, stack := v3 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4877, memory := s.memory, stack := v8 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part1Model, v4, v5, v6, v7, v8] using prCol5part1_run (s) (v3) (v2) (c) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h2 : runInstructions prCol5part2Program {s with pc := UInt256.ofNat 4877, memory := s.memory, stack := v8 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4886, memory := s.memory, stack := v12 :: v11 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part2Model, v9, v10, v11, v12] using prCol5part2_run (s) (v8) (c) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h3 : runInstructions prCol5part3Program {s with pc := UInt256.ofNat 4886, memory := s.memory, stack := v12 :: v11 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4894, memory := s.memory, stack := v16 :: v15 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part3Model, v13, v14, v15, v16] using prCol5part3_run (s) (v12) (v11) (c) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h4 : runInstructions prCol5part4Program {s with pc := UInt256.ofNat 4894, memory := s.memory, stack := v16 :: v15 :: c :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4904, memory := s.memory, stack := v20 :: P :: c :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part4Model, v17, v18, v19, v20] using prCol5part4_run (s) (v16) (v15) (c) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h5 : runInstructions prCol5part5Program {s with pc := UInt256.ofNat 4904, memory := s.memory, stack := v20 :: P :: c :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4913, memory := s.memory, stack := v24 :: v22 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part5Model, v21, v22, v23, v24] using prCol5part5_run (s) (v20) (P) (c) (v19) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h6 : runInstructions prCol5part6Program {s with pc := UInt256.ofNat 4913, memory := s.memory, stack := v24 :: v22 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4922, memory := s.memory, stack := P :: v28 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part6Model, v25, v26, v27, v28] using prCol5part6_run (s) (v24) (v22) (v19) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h7 : runInstructions prCol5part7Program {s with pc := UInt256.ofNat 4922, memory := s.memory, stack := P :: v28 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4931, memory := s.memory, stack := q1 :: n4 :: P :: v31 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part7Model, v29, v30, v31] using prCol5part7_run (s) (P) (v28) (v19) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h8 : runInstructions prCol5part8Program {s with pc := UInt256.ofNat 4931, memory := s.memory, stack := q1 :: n4 :: P :: v31 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4939, memory := s.memory, stack := P :: v35 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part8Model, v32, v33, v34, v35] using prCol5part8_run (s) (q1) (n4) (P) (v31) (v19) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h9 : runInstructions prCol5part9Program {s with pc := UInt256.ofNat 4939, memory := s.memory, stack := P :: v35 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4947, memory := s.memory, stack := v38 :: v37 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part9Model, v36, v37, v38] using prCol5part9_run (s) (P) (v35) (v19) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h10 : runInstructions prCol5part10Program {s with pc := UInt256.ofNat 4947, memory := s.memory, stack := v38 :: v37 :: v19 :: q3 :: q2 :: q1 :: q4 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4956, memory := s.memory, stack := v41 :: v39 :: q3 :: q2 :: q1 :: q4 :: v41 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part10Model, v39, v40, v41] using prCol5part10_run (s) (v38) (v37) (v19) (q3) (q2) (q1) (q4) (x0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h11 : runInstructions prCol5part11Program {s with pc := UInt256.ofNat 4956, memory := s.memory, stack := v41 :: v39 :: q3 :: q2 :: q1 :: q4 :: v41 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := v44 :: q3 :: q2 :: q1 :: q4 :: v41 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol5part11Model, v42, v43, v44] using prCol5part11_run (s) (v41) (v39) (q3) (q2) (q1) (q4) (v41) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 h11)))))))))))
+
+#print axioms prCol5_run
 
 def prCol5_o0 (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b1 b2 b3 b4 M : UInt256) : UInt256 :=
-  ((UInt256.shiftRight ((q4 * n1) + ((q3 * n2) + ((q2 * n3) + ((q1 * n4) + ((x4 * b1) + ((x3 * b2) + ((x2 * b3) + ((x1 * b4) + c)))))))) (UInt256.ofNat 240)) + (UInt256.shiftLeft (UInt256.shiftRight (UInt256.addMod (UInt256.lnot ((q4 * n1) + ((q3 * n2) + ((q2 * n3) + ((q1 * n4) + ((x4 * b1) + ((x3 * b2) + ((x2 * b3) + ((x1 * b4) + c))))))))) ((UInt256.mulMod q4 n1 P) + ((UInt256.mulMod q3 n2 P) + ((UInt256.mulMod q2 n3 P) + ((UInt256.mulMod q1 n4 P) + ((UInt256.mulMod x4 b1 P) + ((UInt256.mulMod x3 b2 P) + ((UInt256.mulMod x2 b3 P) + ((UInt256.mulMod x1 b4 P) + c)))))))) P) (UInt256.ofNat 5)) (UInt256.ofNat 16)))
+  (UInt256.mulMod (P + (((UInt256.mulMod q4 n1 P) + ((UInt256.mulMod q3 n2 P) + ((UInt256.mulMod q2 n3 P) + ((UInt256.mulMod q1 n4 P) + ((UInt256.mulMod x4 b1 P) + ((UInt256.mulMod x3 b2 P) + ((UInt256.mulMod x2 b3 P) + ((UInt256.mulMod x1 b4 P) + c)))))))) - (UInt256.land M ((q4 * n1) + ((q3 * n2) + ((q2 * n3) + ((q1 * n4) + ((x4 * b1) + ((x3 * b2) + ((x2 * b3) + ((x1 * b4) + c))))))))))) (UInt256.ofNat 2048) P)
 
 def prCol5_o5 (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b1 b2 b3 b4 M : UInt256) : UInt256 :=
   (UInt256.land M ((q4 * n1) + ((q3 * n2) + ((q2 * n3) + ((q1 * n4) + ((x4 * b1) + ((x3 * b2) + ((x2 * b3) + ((x1 * b4) + c)))))))))
@@ -2642,7 +2648,7 @@ theorem prCol5_eq (s : State) (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cn
       {s with pc := UInt256.ofNat 4971, stack := (prCol5_o0 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b1 b2 b3 b4 M) :: q3 :: q2 :: q1 :: q4 :: (prCol5_o5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b1 b2 b3 b4 M) :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol5Model, prCol5_o0, prCol5_o5, h_b1, h_b2, h_b3, h_b4, h_M]
 
-/-! ## prCol6: pc 4971..5062, 81 instructions -/
+/-! ## prCol6: pc 4971..5062 -/
 
 def prCol6part0Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -2665,13 +2671,16 @@ theorem prCol6part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part0Program {s with pc := UInt256.ofNat 4971, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (prCol6part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha128 : (128 : UInt256).toNat = 128 := rfl
-  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha96 : (96 : UInt256).toNat = 96 := rfl
   have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol6part0Program, prCol6part0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128, ha96, hf96]
+  have ha128 : (128 : UInt256).toNat = 128 := rfl
+  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  simp [hz, hzn, prCol6part0Program, prCol6part0Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha96, hf96, ha128, hf128]
+
+#print axioms prCol6part0_run
 
 def prCol6part1Program : List Instr :=
   [.op (.Dup ⟨10, by decide⟩),
@@ -2695,11 +2704,14 @@ theorem prCol6part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part1Program {s with pc := UInt256.ofNat 4981, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol6part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha64 : (64 : UInt256).toNat = 64 := rfl
   have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol6part1Program, prCol6part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha64, hf64]
+  simp [hz, hzn, prCol6part1Program, prCol6part1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha64, hf64]
+
+#print axioms prCol6part1_run
 
 def prCol6part2Program : List Instr :=
   [.op (.Dup ⟨14, by decide⟩),
@@ -2722,9 +2734,12 @@ theorem prCol6part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part2Program {s with pc := UInt256.ofNat 4990, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (prCol6part2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol6part2Program, prCol6part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol6part2Program, prCol6part2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol6part2_run
 
 def prCol6part3Program : List Instr :=
   [.op (.Dup ⟨12, by decide⟩),
@@ -2746,11 +2761,14 @@ theorem prCol6part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part3Program {s with pc := UInt256.ofNat 4998, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (prCol6part3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol6part3Program, prCol6part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
+  simp [hz, hzn, prCol6part3Program, prCol6part3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128]
+
+#print axioms prCol6part3_run
 
 def prCol6part4Program : List Instr :=
   [.op (.Dup ⟨10, by decide⟩),
@@ -2773,11 +2791,14 @@ theorem prCol6part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part4Program {s with pc := UInt256.ofNat 5007, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
       some (prCol6part4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha96 : (96 : UInt256).toNat = 96 := rfl
   have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol6part4Program, prCol6part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96]
+  simp [hz, hzn, prCol6part4Program, prCol6part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha96, hf96]
+
+#print axioms prCol6part4_run
 
 def prCol6part5Program : List Instr :=
   [.op .ADD,
@@ -2800,11 +2821,14 @@ theorem prCol6part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part5Program {s with pc := UInt256.ofNat 5016, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol6part5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha64 : (64 : UInt256).toNat = 64 := rfl
   have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol6part5Program, prCol6part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha64, hf64]
+  simp [hz, hzn, prCol6part5Program, prCol6part5Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha64, hf64]
+
+#print axioms prCol6part5_run
 
 def prCol6part6Program : List Instr :=
   [.op (.Dup ⟨15, by decide⟩),
@@ -2826,9 +2850,12 @@ theorem prCol6part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part6Program {s with pc := UInt256.ofNat 5025, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol6part6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol6part6Program, prCol6part6Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol6part6Program, prCol6part6Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol6part6_run
 
 def prCol6part7Program : List Instr :=
   [.op .ADD,
@@ -2837,88 +2864,77 @@ def prCol6part7Program : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Swap ⟨0, by decide⟩),
+   .push 1 224,
+   .op .MLOAD]
 
 def prCol6part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
   let v1 : UInt256 := UInt256.mulMod x6 x13 x16
   let v2 : UInt256 := v1 + v0
-  {s with pc := UInt256.ofNat 5041, memory := s.memory, stack := v2 :: x16 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v3 : UInt256 := MachineState.readWord s.memory 224
+  {s with pc := UInt256.ofNat 5043, memory := s.memory, stack := v3 :: x2 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol6part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol6part7Program {s with pc := UInt256.ofNat 5033, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol6part7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol6part7Program, prCol6part7Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  have ha224 : (224 : UInt256).toNat = 224 := rfl
+  have hf224 := activeWords_fix s 224 32 (by decide) (by norm_num) hact
+  simp [hz, hzn, prCol6part7Program, prCol6part7Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha224, hf224]
+
+#print axioms prCol6part7_run
 
 def prCol6part8Program : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
-   .push 1 224,
-   .op .MLOAD]
+  [.op .AND,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨7, by decide⟩),
+   .op .POP,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD]
 
 def prCol6part8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.lnot x2
-  let v1 : UInt256 := UInt256.addMod v0 x0 x1
-  let v2 : UInt256 := UInt256.shiftRight v1 (UInt256.ofNat 5)
-  let v3 : UInt256 := MachineState.readWord s.memory 224
-  {s with pc := UInt256.ofNat 5051, memory := s.memory, stack := v3 :: x2 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v0 : UInt256 := UInt256.land x0 x1
+  let v1 : UInt256 := x2 - v0
+  let v2 : UInt256 := x16 + v1
+  {s with pc := UInt256.ofNat 5051, memory := s.memory, stack := v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: v0 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol6part8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol6part8Program {s with pc := UInt256.ofNat 5041, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions prCol6part8Program {s with pc := UInt256.ofNat 5043, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol6part8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha224 : (224 : UInt256).toNat = 224 := rfl
-  have hf224 := activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol6part8Program, prCol6part8Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha224, hf224]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol6part8Program, prCol6part8Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol6part8_run
 
 def prCol6part9Program : List Instr :=
-  [.op .AND,
-   .op (.Swap ⟨7, by decide⟩),
-   .op .POP,
-   .push 1 16,
-   .op .SHL,
-   .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR]
+  [.push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
-def prCol6part9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.land x0 x1
-  let v1 : UInt256 := UInt256.shiftLeft x2 (UInt256.ofNat 16)
-  let v2 : UInt256 := UInt256.shiftRight x3 (UInt256.ofNat 240)
-  {s with pc := UInt256.ofNat 5061, memory := s.memory, stack := v2 :: v1 :: x4 :: x5 :: x6 :: x7 :: x8 :: v0 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+def prCol6part9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x0 (UInt256.ofNat 2048) x14
+  {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
-theorem prCol6part9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
+theorem prCol6part9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol6part9Program {s with pc := UInt256.ofNat 5051, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
-      some (prCol6part9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol6part9Program, prCol6part9Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+    runInstructions prCol6part9Program {s with pc := UInt256.ofNat 5051, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+      some (prCol6part9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol6part9Program, prCol6part9Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
-def prCol6part10Program : List Instr :=
-  [.op .ADD]
-
-def prCol6part10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x0 + x1
-  {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := v0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
-theorem prCol6part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol6part10Program {s with pc := UInt256.ofNat 5061, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol6part10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol6part10Program, prCol6part10Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+#print axioms prCol6part9_run
 
 def prCol6Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -2983,25 +2999,21 @@ def prCol6Program : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
    .push 1 224,
    .op .MLOAD,
    .op .AND,
+   .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨7, by decide⟩),
    .op .POP,
-   .push 1 16,
-   .op .SHL,
    .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR,
-   .op .ADD]
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
 def prCol6Model (s : State) (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -3034,15 +3046,12 @@ def prCol6Model (s : State) (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp
   let v27 : UInt256 := v26 + v25
   let v28 : UInt256 := UInt256.mulMod q4 n2 P
   let v29 : UInt256 := v28 + v27
-  let v30 : UInt256 := UInt256.lnot v14
-  let v31 : UInt256 := UInt256.addMod v30 v29 P
-  let v32 : UInt256 := UInt256.shiftRight v31 (UInt256.ofNat 5)
-  let v33 : UInt256 := MachineState.readWord s.memory 224
-  let v34 : UInt256 := UInt256.land v33 v14
-  let v35 : UInt256 := UInt256.shiftLeft v32 (UInt256.ofNat 16)
-  let v36 : UInt256 := UInt256.shiftRight v14 (UInt256.ofNat 240)
-  let v37 : UInt256 := v36 + v35
-  {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := v37 :: q3 :: q2 :: q1 :: q4 :: z0 :: v34 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
+  let v30 : UInt256 := MachineState.readWord s.memory 224
+  let v31 : UInt256 := UInt256.land v30 v14
+  let v32 : UInt256 := v29 - v31
+  let v33 : UInt256 := P + v32
+  let v34 : UInt256 := UInt256.mulMod v33 (UInt256.ofNat 2048) P
+  {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := v34 :: q3 :: q2 :: q1 :: q4 :: z0 :: v31 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
 
 theorem prCol6_run (s : State) (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -3078,40 +3087,37 @@ theorem prCol6_run (s : State) (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv c
   let v27 : UInt256 := v26 + v25
   let v28 : UInt256 := UInt256.mulMod q4 n2 P
   let v29 : UInt256 := v28 + v27
-  let v30 : UInt256 := UInt256.lnot v14
-  let v31 : UInt256 := UInt256.addMod v30 v29 P
-  let v32 : UInt256 := UInt256.shiftRight v31 (UInt256.ofNat 5)
-  let v33 : UInt256 := MachineState.readWord s.memory 224
-  let v34 : UInt256 := UInt256.land v33 v14
-  let v35 : UInt256 := UInt256.shiftLeft v32 (UInt256.ofNat 16)
-  let v36 : UInt256 := UInt256.shiftRight v14 (UInt256.ofNat 240)
-  let v37 : UInt256 := v36 + v35
+  let v30 : UInt256 := MachineState.readWord s.memory 224
+  let v31 : UInt256 := UInt256.land v30 v14
+  let v32 : UInt256 := v29 - v31
+  let v33 : UInt256 := P + v32
+  let v34 : UInt256 := UInt256.mulMod v33 (UInt256.ofNat 2048) P
   have h0 : runInstructions prCol6part0Program {s with pc := UInt256.ofNat 4971, memory := s.memory, stack := c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4981, memory := s.memory, stack := v3 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part0Model, v0, v1, v2, v3] using prCol6part0_run (s) c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol6part0Model, v0, v1, v2, v3] using prCol6part0_run (s) (c) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h1 : runInstructions prCol6part1Program {s with pc := UInt256.ofNat 4981, memory := s.memory, stack := v3 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4990, memory := s.memory, stack := v8 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part1Model, v4, v5, v6, v7, v8] using prCol6part1_run (s) v3 v2 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol6part1Model, v4, v5, v6, v7, v8] using prCol6part1_run (s) (v3) (v2) (c) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h2 : runInstructions prCol6part2Program {s with pc := UInt256.ofNat 4990, memory := s.memory, stack := v8 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 4998, memory := s.memory, stack := v12 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part2Model, v9, v10, v11, v12] using prCol6part2_run (s) v8 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol6part2Model, v9, v10, v11, v12] using prCol6part2_run (s) (v8) (c) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h3 : runInstructions prCol6part3Program {s with pc := UInt256.ofNat 4998, memory := s.memory, stack := v12 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5007, memory := s.memory, stack := v15 :: P :: c :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part3Model, v13, v14, v15] using prCol6part3_run (s) v12 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol6part3Model, v13, v14, v15] using prCol6part3_run (s) (v12) (c) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h4 : runInstructions prCol6part4Program {s with pc := UInt256.ofNat 5007, memory := s.memory, stack := v15 :: P :: c :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5016, memory := s.memory, stack := v19 :: v17 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part4Model, v16, v17, v18, v19] using prCol6part4_run (s) v15 P c v14 q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol6part4Model, v16, v17, v18, v19] using prCol6part4_run (s) (v15) (P) (c) (v14) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h5 : runInstructions prCol6part5Program {s with pc := UInt256.ofNat 5016, memory := s.memory, stack := v19 :: v17 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5025, memory := s.memory, stack := P :: v23 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part5Model, v20, v21, v22, v23] using prCol6part5_run (s) v19 v17 v14 q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol6part5Model, v20, v21, v22, v23] using prCol6part5_run (s) (v19) (v17) (v14) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h6 : runInstructions prCol6part6Program {s with pc := UInt256.ofNat 5025, memory := s.memory, stack := P :: v23 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5033, memory := s.memory, stack := v26 :: v25 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part6Model, v24, v25, v26] using prCol6part6_run (s) P v23 v14 q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h7 : runInstructions prCol6part7Program {s with pc := UInt256.ofNat 5033, memory := s.memory, stack := v26 :: v25 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5041, memory := s.memory, stack := v29 :: P :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part7Model, v27, v28, v29] using prCol6part7_run (s) v26 v25 v14 q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h8 : runInstructions prCol6part8Program {s with pc := UInt256.ofNat 5041, memory := s.memory, stack := v29 :: P :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5051, memory := s.memory, stack := v33 :: v14 :: v32 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part8Model, v30, v31, v32, v33] using prCol6part8_run (s) v29 P v14 q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h9 : runInstructions prCol6part9Program {s with pc := UInt256.ofNat 5051, memory := s.memory, stack := v33 :: v14 :: v32 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5061, memory := s.memory, stack := v36 :: v35 :: q3 :: q2 :: q1 :: q4 :: z0 :: v34 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part9Model, v34, v35, v36] using prCol6part9_run (s) v33 v14 v32 v14 q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h10 : runInstructions prCol6part10Program {s with pc := UInt256.ofNat 5061, memory := s.memory, stack := v36 :: v35 :: q3 :: q2 :: q1 :: q4 :: z0 :: v34 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := v37 :: q3 :: q2 :: q1 :: q4 :: z0 :: v34 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol6part10Model, v37] using prCol6part10_run (s) v36 v35 q3 q2 q1 q4 z0 v34 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 h10))))))))))
+    simpa only [prCol6part6Model, v24, v25, v26] using prCol6part6_run (s) (P) (v23) (v14) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h7 : runInstructions prCol6part7Program {s with pc := UInt256.ofNat 5033, memory := s.memory, stack := v26 :: v25 :: v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5043, memory := s.memory, stack := v30 :: v14 :: v29 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol6part7Model, v27, v28, v29, v30] using prCol6part7_run (s) (v26) (v25) (v14) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h8 : runInstructions prCol6part8Program {s with pc := UInt256.ofNat 5043, memory := s.memory, stack := v30 :: v14 :: v29 :: q3 :: q2 :: q1 :: q4 :: z0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5051, memory := s.memory, stack := v33 :: q3 :: q2 :: q1 :: q4 :: z0 :: v31 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol6part8Model, v31, v32, v33] using prCol6part8_run (s) (v30) (v14) (v29) (q3) (q2) (q1) (q4) (z0) (x1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h9 : runInstructions prCol6part9Program {s with pc := UInt256.ofNat 5051, memory := s.memory, stack := v33 :: q3 :: q2 :: q1 :: q4 :: z0 :: v31 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := v34 :: q3 :: q2 :: q1 :: q4 :: z0 :: v31 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol6part9Model, v34] using prCol6part9_run (s) (v33) (q3) (q2) (q1) (q4) (z0) (v31) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 h9)))))))))
+
+#print axioms prCol6_run
 
 def prCol6_o0 (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b2 b3 b4 M : UInt256) : UInt256 :=
-  ((UInt256.shiftRight ((q4 * n2) + ((q3 * n3) + ((q2 * n4) + ((x4 * b2) + ((x3 * b3) + ((x2 * b4) + c)))))) (UInt256.ofNat 240)) + (UInt256.shiftLeft (UInt256.shiftRight (UInt256.addMod (UInt256.lnot ((q4 * n2) + ((q3 * n3) + ((q2 * n4) + ((x4 * b2) + ((x3 * b3) + ((x2 * b4) + c))))))) ((UInt256.mulMod q4 n2 P) + ((UInt256.mulMod q3 n3 P) + ((UInt256.mulMod q2 n4 P) + ((UInt256.mulMod x4 b2 P) + ((UInt256.mulMod x3 b3 P) + ((UInt256.mulMod x2 b4 P) + c)))))) P) (UInt256.ofNat 5)) (UInt256.ofNat 16)))
+  (UInt256.mulMod (P + (((UInt256.mulMod q4 n2 P) + ((UInt256.mulMod q3 n3 P) + ((UInt256.mulMod q2 n4 P) + ((UInt256.mulMod x4 b2 P) + ((UInt256.mulMod x3 b3 P) + ((UInt256.mulMod x2 b4 P) + c)))))) - (UInt256.land M ((q4 * n2) + ((q3 * n3) + ((q2 * n4) + ((x4 * b2) + ((x3 * b3) + ((x2 * b4) + c))))))))) (UInt256.ofNat 2048) P)
 
 def prCol6_o6 (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b2 b3 b4 M : UInt256) : UInt256 :=
   (UInt256.land M ((q4 * n2) + ((q3 * n3) + ((q2 * n4) + ((x4 * b2) + ((x3 * b3) + ((x2 * b4) + c)))))))
@@ -3125,7 +3131,7 @@ theorem prCol6_eq (s : State) (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cn
       {s with pc := UInt256.ofNat 5062, stack := (prCol6_o0 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b2 b3 b4 M) :: q3 :: q2 :: q1 :: q4 :: z0 :: (prCol6_o6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b2 b3 b4 M) :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol6Model, prCol6_o0, prCol6_o6, h_b2, h_b3, h_b4, h_M]
 
-/-! ## prCol7: pc 5062..5131, 61 instructions -/
+/-! ## prCol7: pc 5062..5131 -/
 
 def prCol7part0Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -3148,13 +3154,16 @@ theorem prCol7part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol7part0Program {s with pc := UInt256.ofNat 5062, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (prCol7part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha128 : (128 : UInt256).toNat = 128 := rfl
-  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha96 : (96 : UInt256).toNat = 96 := rfl
   have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol7part0Program, prCol7part0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128, ha96, hf96]
+  have ha128 : (128 : UInt256).toNat = 128 := rfl
+  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  simp [hz, hzn, prCol7part0Program, prCol7part0Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha96, hf96, ha128, hf128]
+
+#print axioms prCol7part0_run
 
 def prCol7part1Program : List Instr :=
   [.op (.Dup ⟨11, by decide⟩),
@@ -3177,9 +3186,12 @@ theorem prCol7part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol7part1Program {s with pc := UInt256.ofNat 5072, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol7part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol7part1Program, prCol7part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol7part1Program, prCol7part1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol7part1_run
 
 def prCol7part2Program : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
@@ -3201,11 +3213,14 @@ theorem prCol7part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol7part2Program {s with pc := UInt256.ofNat 5080, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol7part2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol7part2Program, prCol7part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
+  simp [hz, hzn, prCol7part2Program, prCol7part2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128]
+
+#print axioms prCol7part2_run
 
 def prCol7part3Program : List Instr :=
   [.op .MULMOD,
@@ -3229,11 +3244,14 @@ theorem prCol7part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol7part3Program {s with pc := UInt256.ofNat 5089, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest} =
       some (prCol7part3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha96 : (96 : UInt256).toNat = 96 := rfl
   have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol7part3Program, prCol7part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96]
+  simp [hz, hzn, prCol7part3Program, prCol7part3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha96, hf96]
+
+#print axioms prCol7part3_run
 
 def prCol7part4Program : List Instr :=
   [.op (.Dup ⟨15, by decide⟩),
@@ -3254,81 +3272,86 @@ theorem prCol7part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol7part4Program {s with pc := UInt256.ofNat 5098, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (prCol7part4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol7part4Program, prCol7part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol7part4Program, prCol7part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol7part4_run
 
 def prCol7part5Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD]
+   .push 1 224,
+   .op .MLOAD,
+   .op .AND,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨8, by decide⟩)]
 
 def prCol7part5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.mulMod x0 x1 x2
   let v1 : UInt256 := v0 + x3
-  let v2 : UInt256 := UInt256.lnot x4
-  let v3 : UInt256 := UInt256.addMod v2 v1 x18
-  {s with pc := UInt256.ofNat 5113, memory := s.memory, stack := v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest}
+  let v2 : UInt256 := MachineState.readWord s.memory 224
+  let v3 : UInt256 := UInt256.land v2 x4
+  {s with pc := UInt256.ofNat 5115, memory := s.memory, stack := x11 :: v3 :: v1 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: v3 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest}
 
 theorem prCol7part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol7part5Program {s with pc := UInt256.ofNat 5106, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest} =
       some (prCol7part5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol7part5Program, prCol7part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
-
-def prCol7part6Program : List Instr :=
-  [.push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
-   .push 1 224,
-   .op .MLOAD,
-   .op .AND,
-   .op (.Swap ⟨8, by decide⟩),
-   .op .POP]
-
-def prCol7part6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.shiftRight x0 (UInt256.ofNat 5)
-  let v1 : UInt256 := MachineState.readWord s.memory 224
-  let v2 : UInt256 := UInt256.land v1 x1
-  {s with pc := UInt256.ofNat 5123, memory := s.memory, stack := v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: v2 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
-theorem prCol7part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol7part6Program {s with pc := UInt256.ofNat 5113, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol7part6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha224 : (224 : UInt256).toNat = 224 := rfl
   have hf224 := activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol7part6Program, prCol7part6Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha224, hf224]
+  simp [hz, hzn, prCol7part5Program, prCol7part5Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha224, hf224]
+
+#print axioms prCol7part5_run
+
+def prCol7part6Program : List Instr :=
+  [.op .POP,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩)]
+
+def prCol7part6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := x2 - x1
+  let v1 : UInt256 := x16 + v0
+  {s with pc := UInt256.ofNat 5130, memory := s.memory, stack := v1 :: (UInt256.ofNat 2048) :: x16 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+
+theorem prCol7part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions prCol7part6Program {s with pc := UInt256.ofNat 5115, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (prCol7part6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol7part6Program, prCol7part6Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol7part6_run
 
 def prCol7part7Program : List Instr :=
-  [.push 1 16,
-   .op .SHL,
-   .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR,
-   .op .ADD]
+  [.op .MULMOD]
 
-def prCol7part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.shiftLeft x0 (UInt256.ofNat 16)
-  let v1 : UInt256 := UInt256.shiftRight x1 (UInt256.ofNat 240)
-  let v2 : UInt256 := v1 + v0
-  {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+def prCol7part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x0 x1 x2
+  {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := v0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
-theorem prCol7part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
+theorem prCol7part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol7part7Program {s with pc := UInt256.ofNat 5123, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol7part7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol7part7Program, prCol7part7Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+    runInstructions prCol7part7Program {s with pc := UInt256.ofNat 5130, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (prCol7part7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol7part7Program, prCol7part7Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol7part7_run
 
 def prCol7Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -3373,25 +3396,21 @@ def prCol7Program : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
    .push 1 224,
    .op .MLOAD,
    .op .AND,
+   .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨8, by decide⟩),
    .op .POP,
-   .push 1 16,
-   .op .SHL,
    .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR,
-   .op .ADD]
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
 def prCol7Model (s : State) (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -3414,15 +3433,12 @@ def prCol7Model (s : State) (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp
   let v17 : UInt256 := v16 + v15
   let v18 : UInt256 := UInt256.mulMod q4 n3 P
   let v19 : UInt256 := v18 + v17
-  let v20 : UInt256 := UInt256.lnot v9
-  let v21 : UInt256 := UInt256.addMod v20 v19 P
-  let v22 : UInt256 := UInt256.shiftRight v21 (UInt256.ofNat 5)
-  let v23 : UInt256 := MachineState.readWord s.memory 224
-  let v24 : UInt256 := UInt256.land v23 v9
-  let v25 : UInt256 := UInt256.shiftLeft v22 (UInt256.ofNat 16)
-  let v26 : UInt256 := UInt256.shiftRight v9 (UInt256.ofNat 240)
-  let v27 : UInt256 := v26 + v25
-  {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := v27 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v24 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
+  let v20 : UInt256 := MachineState.readWord s.memory 224
+  let v21 : UInt256 := UInt256.land v20 v9
+  let v22 : UInt256 := v19 - v21
+  let v23 : UInt256 := P + v22
+  let v24 : UInt256 := UInt256.mulMod v23 (UInt256.ofNat 2048) P
+  {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := v24 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v21 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
 
 theorem prCol7_run (s : State) (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -3448,34 +3464,33 @@ theorem prCol7_run (s : State) (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv c
   let v17 : UInt256 := v16 + v15
   let v18 : UInt256 := UInt256.mulMod q4 n3 P
   let v19 : UInt256 := v18 + v17
-  let v20 : UInt256 := UInt256.lnot v9
-  let v21 : UInt256 := UInt256.addMod v20 v19 P
-  let v22 : UInt256 := UInt256.shiftRight v21 (UInt256.ofNat 5)
-  let v23 : UInt256 := MachineState.readWord s.memory 224
-  let v24 : UInt256 := UInt256.land v23 v9
-  let v25 : UInt256 := UInt256.shiftLeft v22 (UInt256.ofNat 16)
-  let v26 : UInt256 := UInt256.shiftRight v9 (UInt256.ofNat 240)
-  let v27 : UInt256 := v26 + v25
+  let v20 : UInt256 := MachineState.readWord s.memory 224
+  let v21 : UInt256 := UInt256.land v20 v9
+  let v22 : UInt256 := v19 - v21
+  let v23 : UInt256 := P + v22
+  let v24 : UInt256 := UInt256.mulMod v23 (UInt256.ofNat 2048) P
   have h0 : runInstructions prCol7part0Program {s with pc := UInt256.ofNat 5062, memory := s.memory, stack := c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5072, memory := s.memory, stack := v3 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part0Model, v0, v1, v2, v3] using prCol7part0_run (s) c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol7part0Model, v0, v1, v2, v3] using prCol7part0_run (s) (c) (q3) (q2) (q1) (q4) (z0) (z1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h1 : runInstructions prCol7part1Program {s with pc := UInt256.ofNat 5072, memory := s.memory, stack := v3 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5080, memory := s.memory, stack := n3 :: v7 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part1Model, v4, v5, v6, v7] using prCol7part1_run (s) v3 v2 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol7part1Model, v4, v5, v6, v7] using prCol7part1_run (s) (v3) (v2) (c) (q3) (q2) (q1) (q4) (z0) (z1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h2 : runInstructions prCol7part2Program {s with pc := UInt256.ofNat 5080, memory := s.memory, stack := n3 :: v7 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5089, memory := s.memory, stack := x3 :: v10 :: P :: c :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part2Model, v8, v9, v10] using prCol7part2_run (s) n3 v7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol7part2Model, v8, v9, v10] using prCol7part2_run (s) (n3) (v7) (c) (q3) (q2) (q1) (q4) (z0) (z1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h3 : runInstructions prCol7part3Program {s with pc := UInt256.ofNat 5089, memory := s.memory, stack := x3 :: v10 :: P :: c :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5098, memory := s.memory, stack := v15 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part3Model, v11, v12, v13, v14, v15] using prCol7part3_run (s) x3 v10 P c v9 q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol7part3Model, v11, v12, v13, v14, v15] using prCol7part3_run (s) (x3) (v10) (P) (c) (v9) (q3) (q2) (q1) (q4) (z0) (z1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h4 : runInstructions prCol7part4Program {s with pc := UInt256.ofNat 5098, memory := s.memory, stack := v15 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5106, memory := s.memory, stack := q4 :: n3 :: P :: v17 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part4Model, v16, v17] using prCol7part4_run (s) v15 v9 q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h5 : runInstructions prCol7part5Program {s with pc := UInt256.ofNat 5106, memory := s.memory, stack := q4 :: n3 :: P :: v17 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5113, memory := s.memory, stack := v21 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part5Model, v18, v19, v20, v21] using prCol7part5_run (s) q4 n3 P v17 v9 q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h6 : runInstructions prCol7part6Program {s with pc := UInt256.ofNat 5113, memory := s.memory, stack := v21 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5123, memory := s.memory, stack := v22 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v24 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part6Model, v22, v23, v24] using prCol7part6_run (s) v21 v9 q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h7 : runInstructions prCol7part7Program {s with pc := UInt256.ofNat 5123, memory := s.memory, stack := v22 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v24 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := v27 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v24 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol7part7Model, v25, v26, v27] using prCol7part7_run (s) v22 v9 q3 q2 q1 q4 z0 z1 v24 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol7part4Model, v16, v17] using prCol7part4_run (s) (v15) (v9) (q3) (q2) (q1) (q4) (z0) (z1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h5 : runInstructions prCol7part5Program {s with pc := UInt256.ofNat 5106, memory := s.memory, stack := q4 :: n3 :: P :: v17 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5115, memory := s.memory, stack := x2 :: v21 :: v19 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v21 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol7part5Model, v18, v19, v20, v21] using prCol7part5_run (s) (q4) (n3) (P) (v17) (v9) (q3) (q2) (q1) (q4) (z0) (z1) (x2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h6 : runInstructions prCol7part6Program {s with pc := UInt256.ofNat 5115, memory := s.memory, stack := x2 :: v21 :: v19 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v21 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5130, memory := s.memory, stack := v23 :: (UInt256.ofNat 2048) :: P :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v21 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol7part6Model, v22, v23] using prCol7part6_run (s) (x2) (v21) (v19) (q3) (q2) (q1) (q4) (z0) (z1) (v21) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h7 : runInstructions prCol7part7Program {s with pc := UInt256.ofNat 5130, memory := s.memory, stack := v23 :: (UInt256.ofNat 2048) :: P :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v21 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := v24 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: v21 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol7part7Model, v24] using prCol7part7_run (s) (v23) ((UInt256.ofNat 2048)) (P) (q3) (q2) (q1) (q4) (z0) (z1) (v21) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 h7)))))))
 
+#print axioms prCol7_run
+
 def prCol7_o0 (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b3 b4 M : UInt256) : UInt256 :=
-  ((UInt256.shiftRight ((q4 * n3) + ((q3 * n4) + ((x4 * b3) + ((x3 * b4) + c)))) (UInt256.ofNat 240)) + (UInt256.shiftLeft (UInt256.shiftRight (UInt256.addMod (UInt256.lnot ((q4 * n3) + ((q3 * n4) + ((x4 * b3) + ((x3 * b4) + c))))) ((UInt256.mulMod q4 n3 P) + ((UInt256.mulMod q3 n4 P) + ((UInt256.mulMod x4 b3 P) + ((UInt256.mulMod x3 b4 P) + c)))) P) (UInt256.ofNat 5)) (UInt256.ofNat 16)))
+  (UInt256.mulMod (P + (((UInt256.mulMod q4 n3 P) + ((UInt256.mulMod q3 n4 P) + ((UInt256.mulMod x4 b3 P) + ((UInt256.mulMod x3 b4 P) + c)))) - (UInt256.land M ((q4 * n3) + ((q3 * n4) + ((x4 * b3) + ((x3 * b4) + c))))))) (UInt256.ofNat 2048) P)
 
 def prCol7_o7 (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b3 b4 M : UInt256) : UInt256 :=
   (UInt256.land M ((q4 * n3) + ((q3 * n4) + ((x4 * b3) + ((x3 * b4) + c)))))
@@ -3488,7 +3503,7 @@ theorem prCol7_eq (s : State) (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cn
       {s with pc := UInt256.ofNat 5131, stack := (prCol7_o0 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b3 b4 M) :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: (prCol7_o7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b3 b4 M) :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol7Model, prCol7_o0, prCol7_o7, h_b3, h_b4, h_M]
 
-/-! ## prCol8: pc 5131..5178, 41 instructions -/
+/-! ## prCol8: pc 5131..5178 -/
 
 def prCol8part0Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -3510,11 +3525,14 @@ theorem prCol8part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol8part0Program {s with pc := UInt256.ofNat 5131, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (prCol8part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol8part0Program, prCol8part0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
+  simp [hz, hzn, prCol8part0Program, prCol8part0Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128]
+
+#print axioms prCol8part0_run
 
 def prCol8part1Program : List Instr :=
   [.op .MUL,
@@ -3537,11 +3555,14 @@ theorem prCol8part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol8part1Program {s with pc := UInt256.ofNat 5140, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
       some (prCol8part1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol8part1Program, prCol8part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
+  simp [hz, hzn, prCol8part1Program, prCol8part1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128]
+
+#print axioms prCol8part1_run
 
 def prCol8part2Program : List Instr :=
   [.op .ADD,
@@ -3550,88 +3571,77 @@ def prCol8part2Program : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Swap ⟨0, by decide⟩),
+   .push 1 224,
+   .op .MLOAD]
 
 def prCol8part2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
   let v1 : UInt256 := UInt256.mulMod x6 x15 x16
   let v2 : UInt256 := v1 + v0
-  {s with pc := UInt256.ofNat 5157, memory := s.memory, stack := v2 :: x16 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v3 : UInt256 := MachineState.readWord s.memory 224
+  {s with pc := UInt256.ofNat 5159, memory := s.memory, stack := v3 :: x2 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol8part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol8part2Program {s with pc := UInt256.ofNat 5149, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol8part2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol8part2Program, prCol8part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
+  have ha224 : (224 : UInt256).toNat = 224 := rfl
+  have hf224 := activeWords_fix s 224 32 (by decide) (by norm_num) hact
+  simp [hz, hzn, prCol8part2Program, prCol8part2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha224, hf224]
+
+#print axioms prCol8part2_run
 
 def prCol8part3Program : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
-   .push 1 224,
-   .op .MLOAD]
+  [.op .AND,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨9, by decide⟩),
+   .op .POP,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD]
 
 def prCol8part3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.lnot x2
-  let v1 : UInt256 := UInt256.addMod v0 x0 x1
-  let v2 : UInt256 := UInt256.shiftRight v1 (UInt256.ofNat 5)
-  let v3 : UInt256 := MachineState.readWord s.memory 224
-  {s with pc := UInt256.ofNat 5167, memory := s.memory, stack := v3 :: x2 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  let v0 : UInt256 := UInt256.land x0 x1
+  let v1 : UInt256 := x2 - v0
+  let v2 : UInt256 := x16 + v1
+  {s with pc := UInt256.ofNat 5167, memory := s.memory, stack := v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: v0 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem prCol8part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol8part3Program {s with pc := UInt256.ofNat 5157, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions prCol8part3Program {s with pc := UInt256.ofNat 5159, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (prCol8part3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha224 : (224 : UInt256).toNat = 224 := rfl
-  have hf224 := activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol8part3Program, prCol8part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha224, hf224]
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol8part3Program, prCol8part3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+
+#print axioms prCol8part3_run
 
 def prCol8part4Program : List Instr :=
-  [.op .AND,
-   .op (.Swap ⟨9, by decide⟩),
-   .op .POP,
-   .push 1 16,
-   .op .SHL,
-   .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR]
+  [.push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
-def prCol8part4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := UInt256.land x0 x1
-  let v1 : UInt256 := UInt256.shiftLeft x2 (UInt256.ofNat 16)
-  let v2 : UInt256 := UInt256.shiftRight x3 (UInt256.ofNat 240)
-  {s with pc := UInt256.ofNat 5177, memory := s.memory, stack := v2 :: v1 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: v0 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
+def prCol8part4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x0 (UInt256.ofNat 2048) x14
+  {s with pc := UInt256.ofNat 5178, memory := s.memory, stack := v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
-theorem prCol8part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256)
+theorem prCol8part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol8part4Program {s with pc := UInt256.ofNat 5167, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
-      some (prCol8part4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol8part4Program, prCol8part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+    runInstructions prCol8part4Program {s with pc := UInt256.ofNat 5167, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+      some (prCol8part4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
+  have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
+  simp [hz, hzn, prCol8part4Program, prCol8part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
-def prCol8part5Program : List Instr :=
-  [.op .ADD]
-
-def prCol8part5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x0 + x1
-  {s with pc := UInt256.ofNat 5178, memory := s.memory, stack := v0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
-theorem prCol8part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol8part5Program {s with pc := UInt256.ofNat 5177, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
-      some (prCol8part5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol8part5Program, prCol8part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+#print axioms prCol8part4_run
 
 def prCol8Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
@@ -3656,25 +3666,21 @@ def prCol8Program : List Instr :=
    .op (.Dup ⟨7, by decide⟩),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op .NOT,
-   .op .ADDMOD,
-   .push 1 5,
-   .op .SHR,
-   .op (.Dup ⟨1, by decide⟩),
    .push 1 224,
    .op .MLOAD,
    .op .AND,
+   .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨9, by decide⟩),
    .op .POP,
-   .push 1 16,
-   .op .SHL,
    .op (.Swap ⟨0, by decide⟩),
-   .push 1 240,
-   .op .SHR,
-   .op .ADD]
+   .op .SUB,
+   .op (.Dup ⟨14, by decide⟩),
+   .op .ADD,
+   .push 7 2048,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MULMOD]
 
 def prCol8Model (s : State) (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -3687,15 +3693,12 @@ def prCol8Model (s : State) (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp
   let v7 : UInt256 := v6 + c
   let v8 : UInt256 := UInt256.mulMod q4 n4 P
   let v9 : UInt256 := v8 + v7
-  let v10 : UInt256 := UInt256.lnot v4
-  let v11 : UInt256 := UInt256.addMod v10 v9 P
-  let v12 : UInt256 := UInt256.shiftRight v11 (UInt256.ofNat 5)
-  let v13 : UInt256 := MachineState.readWord s.memory 224
-  let v14 : UInt256 := UInt256.land v13 v4
-  let v15 : UInt256 := UInt256.shiftLeft v12 (UInt256.ofNat 16)
-  let v16 : UInt256 := UInt256.shiftRight v4 (UInt256.ofNat 240)
-  let v17 : UInt256 := v16 + v15
-  {s with pc := UInt256.ofNat 5178, memory := s.memory, stack := v17 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v14 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
+  let v10 : UInt256 := MachineState.readWord s.memory 224
+  let v11 : UInt256 := UInt256.land v10 v4
+  let v12 : UInt256 := v9 - v11
+  let v13 : UInt256 := P + v12
+  let v14 : UInt256 := UInt256.mulMod v13 (UInt256.ofNat 2048) P
+  {s with pc := UInt256.ofNat 5178, memory := s.memory, stack := v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v11 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
 
 theorem prCol8_run (s : State) (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -3711,30 +3714,27 @@ theorem prCol8_run (s : State) (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv c
   let v7 : UInt256 := v6 + c
   let v8 : UInt256 := UInt256.mulMod q4 n4 P
   let v9 : UInt256 := v8 + v7
-  let v10 : UInt256 := UInt256.lnot v4
-  let v11 : UInt256 := UInt256.addMod v10 v9 P
-  let v12 : UInt256 := UInt256.shiftRight v11 (UInt256.ofNat 5)
-  let v13 : UInt256 := MachineState.readWord s.memory 224
-  let v14 : UInt256 := UInt256.land v13 v4
-  let v15 : UInt256 := UInt256.shiftLeft v12 (UInt256.ofNat 16)
-  let v16 : UInt256 := UInt256.shiftRight v4 (UInt256.ofNat 240)
-  let v17 : UInt256 := v16 + v15
+  let v10 : UInt256 := MachineState.readWord s.memory 224
+  let v11 : UInt256 := UInt256.land v10 v4
+  let v12 : UInt256 := v9 - v11
+  let v13 : UInt256 := P + v12
+  let v14 : UInt256 := UInt256.mulMod v13 (UInt256.ofNat 2048) P
   have h0 : runInstructions prCol8part0Program {s with pc := UInt256.ofNat 5131, memory := s.memory, stack := c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5140, memory := s.memory, stack := q4 :: n4 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol8part0Model, v0, v1, v2] using prCol8part0_run (s) c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+    simpa only [prCol8part0Model, v0, v1, v2] using prCol8part0_run (s) (c) (q3) (q2) (q1) (q4) (z0) (z1) (z2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
   have h1 : runInstructions prCol8part1Program {s with pc := UInt256.ofNat 5140, memory := s.memory, stack := q4 :: n4 :: v2 :: c :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5149, memory := s.memory, stack := v6 :: c :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol8part1Model, v3, v4, v5, v6] using prCol8part1_run (s) q4 n4 v2 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h2 : runInstructions prCol8part2Program {s with pc := UInt256.ofNat 5149, memory := s.memory, stack := v6 :: c :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5157, memory := s.memory, stack := v9 :: P :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol8part2Model, v7, v8, v9] using prCol8part2_run (s) v6 c v4 q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h3 : runInstructions prCol8part3Program {s with pc := UInt256.ofNat 5157, memory := s.memory, stack := v9 :: P :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5167, memory := s.memory, stack := v13 :: v4 :: v12 :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol8part3Model, v10, v11, v12, v13] using prCol8part3_run (s) v9 P v4 q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h4 : runInstructions prCol8part4Program {s with pc := UInt256.ofNat 5167, memory := s.memory, stack := v13 :: v4 :: v12 :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5177, memory := s.memory, stack := v16 :: v15 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v14 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol8part4Model, v14, v15, v16] using prCol8part4_run (s) v13 v4 v12 v4 q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h5 : runInstructions prCol8part5Program {s with pc := UInt256.ofNat 5177, memory := s.memory, stack := v16 :: v15 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v14 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5178, memory := s.memory, stack := v17 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v14 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
-    simpa only [prCol8part5Model, v17] using prCol8part5_run (s) v16 v15 q3 q2 q1 q4 z0 z1 z2 v14 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 h5)))))
+    simpa only [prCol8part1Model, v3, v4, v5, v6] using prCol8part1_run (s) (q4) (n4) (v2) (c) (q3) (q2) (q1) (q4) (z0) (z1) (z2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h2 : runInstructions prCol8part2Program {s with pc := UInt256.ofNat 5149, memory := s.memory, stack := v6 :: c :: v4 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5159, memory := s.memory, stack := v10 :: v4 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol8part2Model, v7, v8, v9, v10] using prCol8part2_run (s) (v6) (c) (v4) (q3) (q2) (q1) (q4) (z0) (z1) (z2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h3 : runInstructions prCol8part3Program {s with pc := UInt256.ofNat 5159, memory := s.memory, stack := v10 :: v4 :: v9 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5167, memory := s.memory, stack := v13 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v11 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol8part3Model, v11, v12, v13] using prCol8part3_run (s) (v10) (v4) (v9) (q3) (q2) (q1) (q4) (z0) (z1) (z2) (x3) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  have h4 : runInstructions prCol8part4Program {s with pc := UInt256.ofNat 5167, memory := s.memory, stack := v13 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v11 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := UInt256.ofNat 5178, memory := s.memory, stack := v14 :: q3 :: q2 :: q1 :: q4 :: z0 :: z1 :: z2 :: v11 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+    simpa only [prCol8part4Model, v14] using prCol8part4_run (s) (v13) (q3) (q2) (q1) (q4) (z0) (z1) (z2) (v11) (x4) (n1) (n2) (n3) (n4) (P) (inv) (cntp) rest hcap hact
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 h4))))
+
+#print axioms prCol8_run
 
 def prCol8_o0 (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp b4 M : UInt256) : UInt256 :=
-  ((UInt256.shiftRight ((q4 * n4) + ((x4 * b4) + c)) (UInt256.ofNat 240)) + (UInt256.shiftLeft (UInt256.shiftRight (UInt256.addMod (UInt256.lnot ((q4 * n4) + ((x4 * b4) + c))) ((UInt256.mulMod q4 n4 P) + ((UInt256.mulMod x4 b4 P) + c)) P) (UInt256.ofNat 5)) (UInt256.ofNat 16)))
+  (UInt256.mulMod (P + (((UInt256.mulMod q4 n4 P) + ((UInt256.mulMod x4 b4 P) + c)) - (UInt256.land M ((q4 * n4) + ((x4 * b4) + c))))) (UInt256.ofNat 2048) P)
 
 def prCol8_o8 (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cntp b4 M : UInt256) : UInt256 :=
   (UInt256.land M ((q4 * n4) + ((x4 * b4) + c)))

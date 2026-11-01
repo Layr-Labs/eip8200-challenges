@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Cycle.DirectRecovery
 import Challenge.Modexp.Submission.Proofs.R5.Words
 import Challenge.Modexp.Submission.Proofs.R5.ExecSquare
 set_option warningAsError true
@@ -207,12 +208,10 @@ theorem sqE5_digit (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256
 theorem sqE5_contract (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256) (C : Nat) (hP : P = CycleSubmission.WordArithmetic.P)
     (h_q4 : q4.toNat < radix) (h_n1 : n1.toNat < radix) (h_q3 : q3.toNat < radix) (h_n2 : n2.toNat < radix) (h_q2 : q2.toNat < radix) (h_n3 : n3.toNat < radix) (h_q1 : q1.toNat < radix) (h_n4 : n4.toNat < radix) (h_x2 : x2.toNat < radix) (h_x3 : x3.toNat < radix) (h_x1 : x1.toNat < radix) (h_x4 : x4.toNat < radix) (hc : c.toNat ≤ C) (hC : C ≤ 18*(radix-1)) :
     (sqCol5_o0 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat = (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).value / radix ∧ (sqCol5_o0 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat ≤ 18*(radix-1) := by
-  have hcar : (sqCol5_o0 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) = HistoricalSearch.RoundedWordBridge.carryWord ((sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P)
-      (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low CycleSubmission.WordArithmetic.P (UInt256.ofNat 240) (UInt256.ofNat 16) := by
-    show UInt256.shiftRight (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low (UInt256.ofNat 240) + UInt256.shiftLeft (UInt256.shiftRight
-      (UInt256.addMod (UInt256.lnot (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low) ((sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high P) P) (UInt256.ofNat 5)) (UInt256.ofNat 16) = _
+  have hcar : (sqCol5_o0 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) = CycleSubmission.DirectRecovery.carry ((sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low := by
+    show UInt256.mulMod (P + ((sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high P - UInt256.land (UInt256.ofNat 1766847064778384329583297500742918515827483896875618958121606201292619775) (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low)) (UInt256.ofNat 2048) P = _
     rw [hP]
-    exact Words.high_carry _ _
+    rfl
   have hp : (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).productsBounded ((radix-1)^2) := ⟨productBound q4 n1 radix h_q4 h_n1, ⟨productBound q3 n2 radix h_q3 h_n2, ⟨productBound q2 n3 radix h_q2 h_n3, ⟨productBound q1 n4 radix h_q1 h_n4, ⟨⟨productBound x2 x3 radix h_x2 h_x3, productBound x2 x3 radix h_x2 h_x3⟩, ⟨⟨productBound x1 x4 radix h_x1 h_x4, productBound x1 x4 radix h_x1 h_x4⟩, True.intro⟩⟩⟩⟩⟩⟩
   have hl : (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded C := by simp [sqE5, Expr.literalsBounded, hc]
   have hv := valueBound (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) ((radix-1)^2) C hp hl
@@ -226,9 +225,8 @@ theorem sqE5_contract (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt
     norm_num [radix, residueModulus] at hC ⊢
     omega
   have hlP : (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded (residueModulus-1) := by simp [sqE5, Expr.literalsBounded, le_trans hc hCP]
-  have hh := highInvariant CycleSubmission.WordArithmetic.P pValue (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) (by norm_num [sqE5, Expr.count]) hlP
-  have hr := rounded_contract ((sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).value C hC hs
-    (lowValue _) hh.2
+  have hr := CycleSubmission.DirectRecovery.expression_contract (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) (sqE5 c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) C
+    (by norm_num [sqE5, Expr.count]) hlP rfl hC hs
   rw [hcar]
   refine ⟨hr, ?_⟩
   rw [hr]
@@ -248,12 +246,10 @@ theorem sqE6_digit (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256
 theorem sqE6_contract (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256) (C : Nat) (hP : P = CycleSubmission.WordArithmetic.P)
     (h_q4 : q4.toNat < radix) (h_n2 : n2.toNat < radix) (h_q3 : q3.toNat < radix) (h_n3 : n3.toNat < radix) (h_q2 : q2.toNat < radix) (h_n4 : n4.toNat < radix) (h_x3 : x3.toNat < radix) (h_x2 : x2.toNat < radix) (h_x4 : x4.toNat < radix) (hc : c.toNat ≤ C) (hC : C ≤ 18*(radix-1)) :
     (sqCol6_o0 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat = (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).value / radix ∧ (sqCol6_o0 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat ≤ 18*(radix-1) := by
-  have hcar : (sqCol6_o0 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) = HistoricalSearch.RoundedWordBridge.carryWord ((sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P)
-      (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low CycleSubmission.WordArithmetic.P (UInt256.ofNat 240) (UInt256.ofNat 16) := by
-    show UInt256.shiftRight (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low (UInt256.ofNat 240) + UInt256.shiftLeft (UInt256.shiftRight
-      (UInt256.addMod (UInt256.lnot (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low) ((sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high P) P) (UInt256.ofNat 5)) (UInt256.ofNat 16) = _
+  have hcar : (sqCol6_o0 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) = CycleSubmission.DirectRecovery.carry ((sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low := by
+    show UInt256.mulMod (P + ((sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high P - UInt256.land (UInt256.ofNat 1766847064778384329583297500742918515827483896875618958121606201292619775) (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low)) (UInt256.ofNat 2048) P = _
     rw [hP]
-    exact Words.high_carry _ _
+    rfl
   have hp : (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).productsBounded ((radix-1)^2) := ⟨productBound q4 n2 radix h_q4 h_n2, ⟨productBound q3 n3 radix h_q3 h_n3, ⟨productBound q2 n4 radix h_q2 h_n4, ⟨productBound x3 x3 radix h_x3 h_x3, ⟨⟨productBound x2 x4 radix h_x2 h_x4, productBound x2 x4 radix h_x2 h_x4⟩, True.intro⟩⟩⟩⟩⟩
   have hl : (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded C := by simp [sqE6, Expr.literalsBounded, hc]
   have hv := valueBound (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) ((radix-1)^2) C hp hl
@@ -267,9 +263,8 @@ theorem sqE6_contract (c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt
     norm_num [radix, residueModulus] at hC ⊢
     omega
   have hlP : (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded (residueModulus-1) := by simp [sqE6, Expr.literalsBounded, le_trans hc hCP]
-  have hh := highInvariant CycleSubmission.WordArithmetic.P pValue (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) (by norm_num [sqE6, Expr.count]) hlP
-  have hr := rounded_contract ((sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).value C hC hs
-    (lowValue _) hh.2
+  have hr := CycleSubmission.DirectRecovery.expression_contract (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) (sqE6 c q3 q2 q1 q4 z0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) C
+    (by norm_num [sqE6, Expr.count]) hlP rfl hC hs
   rw [hcar]
   refine ⟨hr, ?_⟩
   rw [hr]
@@ -289,12 +284,10 @@ theorem sqE7_digit (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256
 theorem sqE7_contract (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256) (C : Nat) (hP : P = CycleSubmission.WordArithmetic.P)
     (h_q4 : q4.toNat < radix) (h_n3 : n3.toNat < radix) (h_q3 : q3.toNat < radix) (h_n4 : n4.toNat < radix) (h_x3 : x3.toNat < radix) (h_x4 : x4.toNat < radix) (hc : c.toNat ≤ C) (hC : C ≤ 18*(radix-1)) :
     (sqCol7_o0 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat = (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).value / radix ∧ (sqCol7_o0 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat ≤ 18*(radix-1) := by
-  have hcar : (sqCol7_o0 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) = HistoricalSearch.RoundedWordBridge.carryWord ((sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P)
-      (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low CycleSubmission.WordArithmetic.P (UInt256.ofNat 240) (UInt256.ofNat 16) := by
-    show UInt256.shiftRight (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low (UInt256.ofNat 240) + UInt256.shiftLeft (UInt256.shiftRight
-      (UInt256.addMod (UInt256.lnot (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low) ((sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high P) P) (UInt256.ofNat 5)) (UInt256.ofNat 16) = _
+  have hcar : (sqCol7_o0 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) = CycleSubmission.DirectRecovery.carry ((sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low := by
+    show UInt256.mulMod (P + ((sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high P - UInt256.land (UInt256.ofNat 1766847064778384329583297500742918515827483896875618958121606201292619775) (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low)) (UInt256.ofNat 2048) P = _
     rw [hP]
-    exact Words.high_carry _ _
+    rfl
   have hp : (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).productsBounded ((radix-1)^2) := ⟨productBound q4 n3 radix h_q4 h_n3, ⟨productBound q3 n4 radix h_q3 h_n4, ⟨⟨productBound x3 x4 radix h_x3 h_x4, productBound x3 x4 radix h_x3 h_x4⟩, True.intro⟩⟩⟩
   have hl : (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded C := by simp [sqE7, Expr.literalsBounded, hc]
   have hv := valueBound (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) ((radix-1)^2) C hp hl
@@ -308,9 +301,8 @@ theorem sqE7_contract (c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt
     norm_num [radix, residueModulus] at hC ⊢
     omega
   have hlP : (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded (residueModulus-1) := by simp [sqE7, Expr.literalsBounded, le_trans hc hCP]
-  have hh := highInvariant CycleSubmission.WordArithmetic.P pValue (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) (by norm_num [sqE7, Expr.count]) hlP
-  have hr := rounded_contract ((sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).low (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt).value C hC hs
-    (lowValue _) hh.2
+  have hr := CycleSubmission.DirectRecovery.expression_contract (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) (sqE7 c q3 q2 q1 q4 z0 z1 x2 x3 x4 n1 n2 n3 n4 P inv cnt) C
+    (by norm_num [sqE7, Expr.count]) hlP rfl hC hs
   rw [hcar]
   refine ⟨hr, ?_⟩
   rw [hr]
@@ -330,12 +322,10 @@ theorem sqE8_digit (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256
 theorem sqE8_contract (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt256) (C : Nat) (hP : P = CycleSubmission.WordArithmetic.P)
     (h_q4 : q4.toNat < radix) (h_n4 : n4.toNat < radix) (h_x4 : x4.toNat < radix) (hc : c.toNat ≤ C) (hC : C ≤ 18*(radix-1)) :
     (sqCol8_o0 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat = (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).value / radix ∧ (sqCol8_o0 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).toNat ≤ 18*(radix-1) := by
-  have hcar : (sqCol8_o0 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt) = HistoricalSearch.RoundedWordBridge.carryWord ((sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P)
-      (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).low CycleSubmission.WordArithmetic.P (UInt256.ofNat 240) (UInt256.ofNat 16) := by
-    show UInt256.shiftRight (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).low (UInt256.ofNat 240) + UInt256.shiftLeft (UInt256.shiftRight
-      (UInt256.addMod (UInt256.lnot (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).low) ((sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).high P) P) (UInt256.ofNat 5)) (UInt256.ofNat 16) = _
+  have hcar : (sqCol8_o0 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt) = CycleSubmission.DirectRecovery.carry ((sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).low := by
+    show UInt256.mulMod (P + ((sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).high P - UInt256.land (UInt256.ofNat 1766847064778384329583297500742918515827483896875618958121606201292619775) (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).low)) (UInt256.ofNat 2048) P = _
     rw [hP]
-    exact Words.high_carry _ _
+    rfl
   have hp : (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).productsBounded ((radix-1)^2) := ⟨productBound q4 n4 radix h_q4 h_n4, ⟨productBound x4 x4 radix h_x4 h_x4, True.intro⟩⟩
   have hl : (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded C := by simp [sqE8, Expr.literalsBounded, hc]
   have hv := valueBound (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt) ((radix-1)^2) C hp hl
@@ -349,9 +339,8 @@ theorem sqE8_contract (c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt : UInt
     norm_num [radix, residueModulus] at hC ⊢
     omega
   have hlP : (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).literalsBounded (residueModulus-1) := by simp [sqE8, Expr.literalsBounded, le_trans hc hCP]
-  have hh := highInvariant CycleSubmission.WordArithmetic.P pValue (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt) (by norm_num [sqE8, Expr.count]) hlP
-  have hr := rounded_contract ((sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).high CycleSubmission.WordArithmetic.P) (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).low (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt).value C hC hs
-    (lowValue _) hh.2
+  have hr := CycleSubmission.DirectRecovery.expression_contract (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt) (sqE8 c q3 q2 q1 q4 z0 z1 z2 x3 x4 n1 n2 n3 n4 P inv cnt) C
+    (by norm_num [sqE8, Expr.count]) hlP rfl hC hs
   rw [hcar]
   refine ⟨hr, ?_⟩
   rw [hr]

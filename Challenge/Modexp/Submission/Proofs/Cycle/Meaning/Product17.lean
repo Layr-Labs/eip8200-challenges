@@ -15,6 +15,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 
 open CycleSubmission.Execution
 
+attribute [local irreducible] productC0 productQ0 productC1 productQ1 productC2 productQ2 productC3 productQ3 productC4 productQ4 productC5 productQ5 productC6 productQ6 productC7 productQ7 productC8 productQ8 productC9 productD0 productC10 productC11 productD1 productC12 productD2 productC13 productD3
+
 def cells17 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
   [(64, (productD4 inv a b n))]
 
@@ -28,6 +30,8 @@ theorem model17_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
     (h : Memory17 s.memory inv a b n) :
     productColumn17Model s ((((b 7) * (a 6)) + (((b 8) * (a 5)) + (productC13 inv a b n)))) ((a 7)) (P) (((UInt256.mulMod (b 7) (a 6) P) + ((UInt256.mulMod (b 8) (a 5) P) + (productC13 inv a b n)))) ((b 6)) ((a 8)) ((n 6)) ((n 4)) ((productQ6 inv a b n)) ((productQ5 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((productQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((productQ8 inv a b n)) ((n 3)) ((n 2)) rest = result17 s inv a b n rest := by
   simp (disch := decide) only [productColumn17Model, readStore, readWord_writeWord, h.at768, h.at1344, h.at1376, h.at2720, h.at1568, h.at1600, h.at32, h.at64, h.at96, h.at128, h.at160, h.at1792, h.at1824, h.at1856, h.at1888, h.at1920, h.at1952, h.at1984, h.at2016, h.at2048, h.at192, h.at0, h.at224, h.at1216, h.at1248, h.at1088, h.at1280, h.at800, h.at832]
+  dsimp only [result17, cells17, frame18, productC14, productD4, CycleSubmission.DirectRecovery.carry, storeCells, writeCell]
+  simp only [HistoricalSearch.WordCancellation.land_comm]
   rfl
 
 theorem run17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)

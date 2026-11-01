@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Cycle.DirectRecovery
 import Challenge.Modexp.Submission.Proofs.Cycle.WordArithmetic
 import Challenge.Modexp.Submission.Proofs.Cycle.Convolution
 import Challenge.Modexp.Submission.Proofs.CRT.CRTMaskElision
@@ -21,7 +22,7 @@ def product11Low (carry inv : UInt256) (a b n q : Nat → UInt256) : Expr := (Ex
 
 def product11High (carry inv : UInt256) (a b n q : Nat → UInt256) : Expr := (Expr.add (Expr.product (q 8) (n 3)) (Expr.add (Expr.product (n 4) (q 7)) (Expr.add (Expr.product (n 5) (q 6)) (Expr.add (Expr.product (n 6) (q 5)) (Expr.add (Expr.product (n 7) (q 4)) (Expr.add (Expr.product (n 8) (q 3)) (Expr.add (Expr.product (b 3) (a 8)) (Expr.add (Expr.product (b 4) (a 7)) (Expr.add (Expr.product (b 5) (a 6)) (Expr.add (Expr.product (b 6) (a 5)) (Expr.add (Expr.product (b 7) (a 4)) (Expr.add (Expr.product (b 8) (a 3)) (Expr.literal carry)))))))))))))
 
-def product11Carry (carry inv : UInt256) (a b n q : Nat → UInt256) : UInt256 := ((UInt256.shiftRight (((n 3) * (q 8)) + (((n 4) * (q 7)) + (((n 5) * (q 6)) + (((n 6) * (q 5)) + (((n 7) * (q 4)) + (((n 8) * (q 3)) + (((b 3) * (a 8)) + (((b 4) * (a 7)) + (((b 5) * (a 6)) + (((b 6) * (a 5)) + (((b 7) * (a 4)) + (((b 8) * (a 3)) + carry)))))))))))) (UInt256.ofNat 240)) + (UInt256.shiftLeft (UInt256.shiftRight (UInt256.addMod ((UInt256.mulMod (q 8) (n 3) P) + ((UInt256.mulMod (n 4) (q 7) P) + ((UInt256.mulMod (n 5) (q 6) P) + ((UInt256.mulMod (n 6) (q 5) P) + ((UInt256.mulMod (n 7) (q 4) P) + ((UInt256.mulMod (n 8) (q 3) P) + ((UInt256.mulMod (b 3) (a 8) P) + ((UInt256.mulMod (b 4) (a 7) P) + ((UInt256.mulMod (b 5) (a 6) P) + ((UInt256.mulMod (b 6) (a 5) P) + ((UInt256.mulMod (b 7) (a 4) P) + ((UInt256.mulMod (b 8) (a 3) P) + carry)))))))))))) (UInt256.lnot (((n 3) * (q 8)) + (((n 4) * (q 7)) + (((n 5) * (q 6)) + (((n 6) * (q 5)) + (((n 7) * (q 4)) + (((n 8) * (q 3)) + (((b 3) * (a 8)) + (((b 4) * (a 7)) + (((b 5) * (a 6)) + (((b 6) * (a 5)) + (((b 7) * (a 4)) + (((b 8) * (a 3)) + carry))))))))))))) P) (UInt256.ofNat 5)) (UInt256.ofNat 16)))
+def product11Carry (carry inv : UInt256) (a b n q : Nat → UInt256) : UInt256 := (CycleSubmission.DirectRecovery.carry ((UInt256.mulMod (q 8) (n 3) P) + ((UInt256.mulMod (n 4) (q 7) P) + ((UInt256.mulMod (n 5) (q 6) P) + ((UInt256.mulMod (n 6) (q 5) P) + ((UInt256.mulMod (n 7) (q 4) P) + ((UInt256.mulMod (n 8) (q 3) P) + ((UInt256.mulMod (b 3) (a 8) P) + ((UInt256.mulMod (b 4) (a 7) P) + ((UInt256.mulMod (b 5) (a 6) P) + ((UInt256.mulMod (b 6) (a 5) P) + ((UInt256.mulMod (b 7) (a 4) P) + ((UInt256.mulMod (b 8) (a 3) P) + carry)))))))))))) (((n 3) * (q 8)) + (((n 4) * (q 7)) + (((n 5) * (q 6)) + (((n 6) * (q 5)) + (((n 7) * (q 4)) + (((n 8) * (q 3)) + (((b 3) * (a 8)) + (((b 4) * (a 7)) + (((b 5) * (a 6)) + (((b 6) * (a 5)) + (((b 7) * (a 4)) + (((b 8) * (a 3)) + carry)))))))))))))
 
 theorem product11_sameValue (carry inv : UInt256) (a b n q : Nat → UInt256) :
     (product11High carry inv a b n q).value = (product11Low carry inv a b n q).value := by
@@ -73,13 +74,15 @@ theorem product11_contract (carry inv : UInt256) (a b n q : Nat → UInt256)
     (hq : ∀ i < 9, (q i).toNat < radix)
     (hc : carry.toNat ≤ 18*(radix-1)) :
     (product11Carry carry inv a b n q).toNat = (product11High carry inv a b n q).value / radix := by
-  have hs := product11_sameValue carry inv a b n q
-  have hh := product11_residue carry inv a b n q hc
-  have hl : (product11Low carry inv a b n q).low.toNat = (product11High carry inv a b n q).value % wordRadix := by
-    rw [hs]; exact lowValue _
-  have hr := rounded_contract ((product11High carry inv a b n q).high P) (product11Low carry inv a b n q).low
-    (product11High carry inv a b n q).value carry.toNat hc (product11_bound carry inv a b n q ha hb hn hq hc) hl hh
-  exact hr
+  have hcp : carry.toNat ≤ HistoricalSearch.CRTColumn.residueModulus-1 := by
+    have h := HistoricalSearch.GenericColumn.carryReductionRedundant 240 carry.toNat (by decide) hc
+    omega
+  exact CycleSubmission.DirectRecovery.expression_contract
+    (product11High carry inv a b n q) (product11Low carry inv a b n q) carry.toNat
+    (by norm_num [product11High, Expr.count])
+    (by simp [product11High, Expr.literalsBounded, hcp])
+    (product11_sameValue carry inv a b n q) hc
+    (product11_bound carry inv a b n q ha hb hn hq hc)
 
 theorem product11_convolution (carry inv : UInt256) (a b n q : Nat → UInt256) :
     (product11High carry inv a b n q).value = carry.toNat +

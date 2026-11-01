@@ -311,7 +311,7 @@ structure Memory13 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) :
   at832 : MachineState.readWord mem 832 = (squareD2 inv a b n)
 
 def frame14 (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : List UInt256 :=
-  [(UInt256.ofNat 16), (UInt256.shiftRight (UInt256.addMod ((UInt256.mulMod (n 6) (squareQ8 inv a b n) P) + ((UInt256.mulMod (n 7) (squareQ7 inv a b n) P) + ((UInt256.mulMod (n 8) (squareQ6 inv a b n) P) + ((UInt256.mulMod (a 7) (a 7) P) + ((squareC14 inv a b n) + ((UInt256.mulMod (a 8) (a 6) P) + (UInt256.mulMod (a 8) (a 6) P))))))) (UInt256.lnot (((squareQ8 inv a b n) * (n 6)) + (((n 7) * (squareQ7 inv a b n)) + (((n 8) * (squareQ6 inv a b n)) + (((a 7) * (a 7)) + ((squareC14 inv a b n) + (((a 8) * (a 6)) + ((a 8) * (a 6))))))))) P) (UInt256.ofNat 5)), (((squareQ8 inv a b n) * (n 6)) + (((n 7) * (squareQ7 inv a b n)) + (((n 8) * (squareQ6 inv a b n)) + (((a 7) * (a 7)) + ((squareC14 inv a b n) + (((a 8) * (a 6)) + ((a 8) * (a 6)))))))), (n 2), (n 6), (n 4), (squareQ6 inv a b n), (squareD2 inv a b n), (n 5), (n 7), P, (n 8), (squareQ7 inv a b n), (UInt256.ofNat (2^240-1)), (squareQ8 inv a b n), (n 3), (a 8)] ++ rest
+  [(squareC15 inv a b n), (n 2), (n 6), (n 4), (squareQ6 inv a b n), (squareD2 inv a b n), (n 5), (n 7), P, (n 8), (squareQ7 inv a b n), (UInt256.ofNat (2^240-1)), (squareQ8 inv a b n), (n 3), (a 8)] ++ rest
 
 structure Memory14 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : Prop where
   at768 : MachineState.readWord mem 768 = (squareD0 inv a b n)

@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Cycle.DirectRecovery
 import Challenge.Modexp.Submission.Proofs.Cycle.WordArithmetic
 import Challenge.Modexp.Submission.Proofs.Cycle.Convolution
 import Challenge.Modexp.Submission.Proofs.CRT.CRTMaskElision
@@ -21,7 +22,7 @@ def square10Low (carry inv : UInt256) (a b n q : Nat → UInt256) : Expr := (Exp
 
 def square10High (carry inv : UInt256) (a b n q : Nat → UInt256) : Expr := (Expr.add (Expr.product (q 8) (n 2)) (Expr.add (Expr.product (q 7) (n 3)) (Expr.add (Expr.product (q 6) (n 4)) (Expr.add (Expr.product (q 5) (n 5)) (Expr.add (Expr.product (q 4) (n 6)) (Expr.add (Expr.product (n 7) (q 3)) (Expr.add (Expr.product (n 8) (q 2)) (Expr.add (Expr.product (a 5) (a 5)) (Expr.add (Expr.literal carry) (Expr.add (Expr.add (Expr.product (a 4) (a 6)) (Expr.add (Expr.product (a 3) (a 7)) (Expr.product (a 8) (a 2)))) (Expr.add (Expr.product (a 4) (a 6)) (Expr.add (Expr.product (a 3) (a 7)) (Expr.product (a 8) (a 2))))))))))))))
 
-def square10Carry (carry inv : UInt256) (a b n q : Nat → UInt256) : UInt256 := ((UInt256.shiftRight (((q 8) * (n 2)) + (((n 3) * (q 7)) + (((q 6) * (n 4)) + (((q 5) * (n 5)) + (((q 4) * (n 6)) + (((n 7) * (q 3)) + (((n 8) * (q 2)) + (((a 5) * (a 5)) + (carry + ((((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))) + (((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))))))))))))) (UInt256.ofNat 240)) + (UInt256.shiftLeft (UInt256.shiftRight (UInt256.addMod ((UInt256.mulMod (q 8) (n 2) P) + ((UInt256.mulMod (q 7) (n 3) P) + ((UInt256.mulMod (q 6) (n 4) P) + ((UInt256.mulMod (q 5) (n 5) P) + ((UInt256.mulMod (q 4) (n 6) P) + ((UInt256.mulMod (n 7) (q 3) P) + ((UInt256.mulMod (n 8) (q 2) P) + ((UInt256.mulMod (a 5) (a 5) P) + (carry + (((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P))) + ((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P))))))))))))) (UInt256.lnot (((q 8) * (n 2)) + (((n 3) * (q 7)) + (((q 6) * (n 4)) + (((q 5) * (n 5)) + (((q 4) * (n 6)) + (((n 7) * (q 3)) + (((n 8) * (q 2)) + (((a 5) * (a 5)) + (carry + ((((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))) + (((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2))))))))))))))) P) (UInt256.ofNat 5)) (UInt256.ofNat 16)))
+def square10Carry (carry inv : UInt256) (a b n q : Nat → UInt256) : UInt256 := (CycleSubmission.DirectRecovery.carry ((UInt256.mulMod (q 8) (n 2) P) + ((UInt256.mulMod (q 7) (n 3) P) + ((UInt256.mulMod (q 6) (n 4) P) + ((UInt256.mulMod (q 5) (n 5) P) + ((UInt256.mulMod (q 4) (n 6) P) + ((UInt256.mulMod (n 7) (q 3) P) + ((UInt256.mulMod (n 8) (q 2) P) + ((UInt256.mulMod (a 5) (a 5) P) + (carry + (((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P))) + ((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P))))))))))))) (((q 8) * (n 2)) + (((n 3) * (q 7)) + (((q 6) * (n 4)) + (((q 5) * (n 5)) + (((q 4) * (n 6)) + (((n 7) * (q 3)) + (((n 8) * (q 2)) + (((a 5) * (a 5)) + (carry + ((((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))) + (((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))))))))))))))
 
 theorem square10_sameValue (carry inv : UInt256) (a b n q : Nat → UInt256) :
     (square10High carry inv a b n q).value = (square10Low carry inv a b n q).value := by
@@ -72,13 +73,15 @@ theorem square10_contract (carry inv : UInt256) (a b n q : Nat → UInt256)
     (hq : ∀ i < 9, (q i).toNat < radix)
     (hc : carry.toNat ≤ 18*(radix-1)) :
     (square10Carry carry inv a b n q).toNat = (square10High carry inv a b n q).value / radix := by
-  have hs := square10_sameValue carry inv a b n q
-  have hh := square10_residue carry inv a b n q hc
-  have hl : (square10Low carry inv a b n q).low.toNat = (square10High carry inv a b n q).value % wordRadix := by
-    rw [hs]; exact lowValue _
-  have hr := rounded_contract ((square10High carry inv a b n q).high P) (square10Low carry inv a b n q).low
-    (square10High carry inv a b n q).value carry.toNat hc (square10_bound carry inv a b n q ha hb hn hq hc) hl hh
-  exact hr
+  have hcp : carry.toNat ≤ HistoricalSearch.CRTColumn.residueModulus-1 := by
+    have h := HistoricalSearch.GenericColumn.carryReductionRedundant 240 carry.toNat (by decide) hc
+    omega
+  exact CycleSubmission.DirectRecovery.expression_contract
+    (square10High carry inv a b n q) (square10Low carry inv a b n q) carry.toNat
+    (by norm_num [square10High, Expr.count])
+    (by simp [square10High, Expr.literalsBounded, hcp])
+    (square10_sameValue carry inv a b n q) hc
+    (square10_bound carry inv a b n q ha hb hn hq hc)
 
 theorem square10_convolution (carry inv : UInt256) (a b n q : Nat → UInt256) :
     (square10High carry inv a b n q).value = carry.toNat +

@@ -1,33 +1,8 @@
 [
   {
-    "submissionId": "f7477d8c-68fa-4bbf-a759-6d6cbb0dcc6e",
-    "rationale": "Direct parent (own, promoted frontier at 364,159): staged-entry dead slot overwrites removed. This tree drops the shift-reduce loop heads' never-read top-limb clears.",
-    "evidence": "bytecode.hex differs from that tree only in bytes 2723..2730, 3697..3705 and 10763..10770; proof edits in Fast/M9MacRun (run_ride_top_np_stale), new CycleGlobal/M9MacStale, CycleGlobal/M9MacShift, ShiftStates, ShiftPaths, ShiftTrace2, ShiftTrace4, PrefixPC, ShiftPCs and mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
-  },
-  {
-    "submissionId": "0e2e44e6-229e-4c5b-9c24-46aca3fc702f",
-    "rationale": "Direct parent (own, E+F: conversion block 5 and staged-entry padding). This tree removes the staged entry's two dead frame-slot overwrites.",
-    "evidence": "bytecode.hex differs from that tree only in bytes 3728..3742 and 3905; proof edits in CycleGlobal/SquareStagedEntry, CycleCaller/Blocks, CycleCaller/Prefix, CycleGlobal/R5Head, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
-  },
-  {
-    "submissionId": "4285f46d-d817-4e7a-b52a-3259d9db1d26",
-    "rationale": "Direct parent (own, promoted frontier at 364,237). Included unchanged apart from the conversion chain block 5 (pc 2933..2965), the staged entry (pc 3734..3742), two unreachable fillers and the index literals that follow.",
-    "evidence": "bytecode.hex differs from that tree only in bytes 2933..2965, 3482..3492, 3734..3742 and 3905; proof edits in Fast/M9MacRun (new run_rideW3), CycleGlobal/M9MacBlocks, M9MacChain, PrefixPC (eq_old_tail13 removed), ShiftPCs, ShiftTrace3, SquareStagedEntry, CycleCaller/Blocks plus mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
-  },
-  {
-    "submissionId": "670bc87a-6afd-4a84-94d0-68407138409e",
-    "rationale": "Direct parent (own, promoted frontier at 364,249). Included unchanged apart from the square-loop counter jump push (pc 7642..7651) and the instruction-index literals that follow from removing six instructions.",
-    "evidence": "bytecode.hex differs from that tree only in bytes 7642..7651; proof edits in Cycle/Execution/counterHead, Cycle/CounterControl, Cycle/LoopBlocks and mechanical index/count rewrites (8736 -> 8730) in Cycle, CycleCaller, CycleGlobal and R5 files; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
-  },
-  {
-    "submissionId": "62bac208-f906-4aeb-a8b2-46e687a20586",
-    "rationale": "Direct parent (own, submitted 2026-10-31, still validating at submission time): nine of the twelve dead-frame setup padding JUMPDESTs removed (-36/draw). This tree removes the remaining three.",
-    "evidence": "bytecode.hex differs from that tree only in bytes 3182..3211 and 3482..3492; proof edits in CycleCaller/DeadSetup, CycleCaller/Blocks, CycleGlobal/Cios2Dispatch, CycleGlobal/CsubFixed, CycleGlobal/ShiftPCs, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
-  },
-  {
     "submissionId": "9b28324d-2c0d-406b-9b13-14f8c0b36888",
-    "rationale": "Direct parent: the promoted frontier (364,297 on the official draw). Included unchanged except for the dead-frame setup padding (pc 3182..3211), the unreachable filler at pc 3437..3446 and the index literals that follow from it.",
-    "evidence": "bytecode.hex differs from that tree only in bytes 3182..3211 and 3437..3446; proof edits only in CycleCaller/DeadSetup, CycleCaller/Blocks, CycleGlobal/Cios2Dispatch, CycleGlobal/CsubFixed, CycleGlobal/ShiftPCs, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+    "rationale": "Immediate source parent: private four-limb conversion path and all inherited MODEXP routes and proofs.",
+    "evidence": "Commit 55b84fa420d7f2c5253ef7502af3d14b4e36f1a1; the carry recovery is extended to all 24 uncancelled handoffs."
   },
   {
     "submissionId": "089eb2f9-9bbe-4e41-940a-3d24945b848e",

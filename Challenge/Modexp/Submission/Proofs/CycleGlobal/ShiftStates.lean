@@ -242,22 +242,10 @@ def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
 def shiftBodyState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   slotKState z s mem (headPC n + 1) k n bsize esize msize
 
-/-- The `t` area right after the loop head's `MCOPY`: the head no longer clears the top limb
-`2080 + 32 n`, which the section's first block overwrites without reading it. -/
-def uMem0 (mem : ByteArray) (n : Nat) : ByteArray := Exp.mcopyMem mem 2080 2112 (32 * n)
-
-theorem uMem_eq_store (mem : ByteArray) (n : Nat) :
-    uMem mem n = Exp.storeWord (uMem0 mem n) (2080 + 32 * n) (UInt256.ofNat 0) := rfl
-
-theorem uMem0_readWord (mem : ByteArray) (n a : Nat) (ha : a + 32 ≤ 2080 + 32 * n) :
-    MachineState.readWord (uMem0 mem n) a = MachineState.readWord (uMem mem n) a := by
-  rw [uMem_eq_store]
-  exact (Exp.storeWord_readWord_disjoint (uMem0 mem n) (2080 + 32 * n) a _ (Or.inl ha)).symm
-
-/-- `ESTIMATE`, with `u` already in the `t` area (top limb not cleared). -/
+/-- `ESTIMATE`, with `u` already in the `t` area. -/
 def estimateState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { slotKState z s (uMem mem n) (headPC n + 9) k n bsize esize msize with memory := uMem0 mem n }
+  slotKState z s (uMem mem n) (headPC n + 14) k n bsize esize msize
 
 /-- `MAC_SETUP`, with the quotient guess on top of the `2^256-1` mask. -/
 def macSetupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
@@ -265,7 +253,7 @@ def macSetupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   { s with pc := UInt256.ofNat (headPC n + 73)
            stack := qhatOf (uMem mem n) :: Monpro.maxWord :: UInt256.ofNat k :: entrySlots z (uMem mem n) n bsize esize ++
              outer n bsize esize msize
-           memory := uMem0 mem n }
+           memory := uMem mem n }
 
 /-- The middle block entry: the eight straight blocks leave `[carry, q, 2^256-1]` above the
 counter and the riding slots.  The mask survives pc 3168..3170 (three `JUMPDEST`s) and is spent
