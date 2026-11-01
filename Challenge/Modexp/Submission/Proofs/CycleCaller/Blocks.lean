@@ -37,11 +37,11 @@ def setupBlock : Block Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.f
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def entryProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 5297, .op (.Swap ⟨1, by decide⟩), .op .POP, .push 0 0, .op (.Swap ⟨2, by decide⟩), .op .POP, .push 4 480, .op .SUB]
+  [.op .JUMPDEST, .push 12 480, .op .SUB]
 def entryBlock : Block Artifact.artifact .Osaka 3728 entryProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2879 9 3728 entryProgram
-    (by change 2879+9 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2879+9 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2879 3 3728 entryProgram
+    (by change 2879+3 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2879+3 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -51,9 +51,9 @@ operand guard. -/
 def testProgram : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5334]
 def testBlock : Block Artifact.artifact .Osaka 3743 testProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2888 5 3743 testProgram
-    (by change 2888+5 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2888+5 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2882 5 3743 testProgram
+    (by change 2882+5 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2882+5 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -61,9 +61,9 @@ def testBlock : Block Artifact.artifact .Osaka 3743 testProgram :=
 def branchProgram : List Instr :=
   [.op .JUMPI]
 def branchBlock : Block Artifact.artifact .Osaka 3751 branchProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2893 1 3751 branchProgram
-    (by change 2893+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2893+1 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2887 1 3751 branchProgram
+    (by change 2887+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2887+1 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -75,17 +75,17 @@ route at 219. -/
 def guardProgram : List Instr :=
   [.push 2 2368, .op .MLOAD, .op .NOT, .push 1 146, .op .SHR, .push 2 5506]
 def guardBlock : Block Artifact.artifact .Osaka 3752 guardProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2894 6 3752 guardProgram
-    (by change 2894+6 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2894+6 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2888 6 3752 guardProgram
+    (by change 2888+6 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2888+6 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def guardJumpBlock : Block Artifact.artifact .Osaka 3763 branchProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2900 1 3763 branchProgram
-    (by change 2900+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2900+1 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2894 1 3763 branchProgram
+    (by change 2894+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2894+1 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -93,9 +93,9 @@ def guardJumpBlock : Block Artifact.artifact .Osaka 3763 branchProgram :=
 def bailJumpProgram : List Instr :=
   [.push 1 219, .op .JUMP]
 def bailJumpBlock : Block Artifact.artifact .Osaka 3764 bailJumpProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2901 2 3764 bailJumpProgram
-    (by change 2901+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2901+2 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2895 2 3764 bailJumpProgram
+    (by change 2895+2 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2895+2 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

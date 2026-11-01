@@ -1,3 +1,13 @@
+# Current refinement: the staged square entry no longer overwrites two never-read frame slots (-60 gas per draw)
+
+* pc 3728: `JUMPDEST PUSH2 0x14b1 SWAP2 POP PUSH0 SWAP3 POP PUSH4 0x1e0 SUB` -> `JUMPDEST PUSH12 0x1e0 SUB`.
+  The two slots keep their previous values (the setup call's return address 3728 and `pb - 32 = 480`)
+  instead of 5297 and 0; no path ever reads either slot. 15 gas per RSA vector.
+* The six instructions are given back in the unreachable filler at pc 3905 (`PUSH5` + six `POP`s).
+* Proofs: `SquareStagedEntry` (program, block `2879 3 3728`, `h1State`), `CycleCaller/Blocks`,
+  `CycleCaller/Prefix.frame` (`hd := 3728`, `w3 := 480`), `R5Head` frame stack; indices of pcs
+  3743..3904 rewritten; `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
 # Current refinement: the eight-limb conversion block 5 no longer starts with a `JUMPDEST` (-14 gas per draw)
 
 * Nothing jumps to pc 2933 since the four-limb head got private chain copies, but every eight-limb

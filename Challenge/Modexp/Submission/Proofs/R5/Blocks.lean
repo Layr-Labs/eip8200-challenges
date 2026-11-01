@@ -47,9 +47,9 @@ def productSeg1Block : Block Artifact.artifact .Osaka 3256 ProductRun.prSeg1Prog
     (by decide)
 
 def productSeg2Block : Block Artifact.artifact .Osaka 3775 ProductRun.prSeg2Program :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 2911 111 3775 ProductRun.prSeg2Program
-    (by change 2911+111 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2911+111 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 2905 111 3775 ProductRun.prSeg2Program
+    (by change 2905+111 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 2905+111 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -109,9 +109,9 @@ def ctl3433Block : Block Artifact.artifact .Osaka 3433 ctl3433Program :=
 def ctl3901Program : List Instr := [.push 2 4857, .op .JUMP]
 
 def ctl3901Block : Block Artifact.artifact .Osaka 3901 ctl3901Program :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3022 2 3901 ctl3901Program
-    (by change 3022+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3022+2 ≤ 8730)
+  WindowTwentyOneSlice.block Artifact.wellFormed 3016 2 3901 ctl3901Program
+    (by change 3016+2 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 3016+2 ≤ 8730)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -325,7 +325,7 @@ theorem jumpDest3256 : Decode.isValidJumpDest Artifact.bytecode 3256 = true :=
   CycleSubmission.Global.Binding.jumpDest 2508 (by rfl)
 
 theorem jumpDest3775 : Decode.isValidJumpDest Artifact.bytecode 3775 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2911 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2905 (by rfl)
 
 theorem jumpDest4037 : Decode.isValidJumpDest Artifact.bytecode 4037 = true :=
   CycleSubmission.Global.Binding.jumpDest 3129 (by rfl)

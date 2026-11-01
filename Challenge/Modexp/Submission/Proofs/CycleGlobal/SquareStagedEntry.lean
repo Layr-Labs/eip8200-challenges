@@ -21,12 +21,10 @@ open Monpro CiosCached
 /-- The square entry: row head 4293, frame word 3 := `mem[0xc0]` (`n1`; p2), and the row pointer
 `q := 0x1e0 - base` (zneg2: `-0x100` for eight limbs, the R4 marker `-0x80` for four). -/
 def program : List Instr :=
-  [.op .JUMPDEST, .push 2 5297, .op (.Swap ⟨1, by decide⟩), .op .POP,
-   .push 0 0, .op (.Swap ⟨2, by decide⟩), .op .POP,
-   .push 4 480, .op .SUB]
+  [.op .JUMPDEST, .push 12 480, .op .SUB]
 
 def block : Block CycleSubmission.Artifact.artifact .Osaka 3728 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2879 9 3728 program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2879 3 3728 program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
@@ -44,7 +42,7 @@ theorem qWord_four : qWord 4 = UInt256.ofNat (2^256 - 128) := by decide
 def h1State (s : State) (mem : ByteArray) (n : Nat) (ent w5 inv m0 : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3743
-           stack := [qWord n, UInt256.ofNat 5297, UInt256.ofNat 0, ent, w5, allOnes,
+           stack := [qWord n, UInt256.ofNat 3728, UInt256.ofNat 480, ent, w5, allOnes,
              MachineState.readWord mem 128, inv, m0] ++ rest
            memory := mem }
 

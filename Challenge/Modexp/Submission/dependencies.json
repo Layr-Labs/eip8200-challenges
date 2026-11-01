@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "0e2e44e6-229e-4c5b-9c24-46aca3fc702f",
+    "rationale": "Direct parent (own, E+F: conversion block 5 and staged-entry padding). This tree removes the staged entry's two dead frame-slot overwrites.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 3728..3742 and 3905; proof edits in CycleGlobal/SquareStagedEntry, CycleCaller/Blocks, CycleCaller/Prefix, CycleGlobal/R5Head, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "4285f46d-d817-4e7a-b52a-3259d9db1d26",
     "rationale": "Direct parent (own, promoted frontier at 364,237). Included unchanged apart from the conversion chain block 5 (pc 2933..2965), the staged entry (pc 3734..3742), two unreachable fillers and the index literals that follow.",
     "evidence": "bytecode.hex differs from that tree only in bytes 2933..2965, 3482..3492, 3734..3742 and 3905; proof edits in Fast/M9MacRun (new run_rideW3), CycleGlobal/M9MacBlocks, M9MacChain, PrefixPC (eq_old_tail13 removed), ShiftPCs, ShiftTrace3, SquareStagedEntry, CycleCaller/Blocks plus mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
