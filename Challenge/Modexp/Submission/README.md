@@ -1,3 +1,18 @@
+# Current refinement: the fixed-vector memo returns its precomputed answer instead of running `EXP` (-101 gas per draw)
+
+* The memo answer block at pc 733 (`PUSH2 0xffff PUSH1 3 EXP PUSH0 MSTORE PUSH1 0x20 PUSH0 RETURN`,
+  129 gas with the 110-gas `EXP`) is now `PUSH2 0x003c JUMP` plus an unreachable filler
+  (`PUSH0 x5, PUSH2 0`; same 12 bytes and 8 instructions). The landing pad lives in the formerly
+  dead filler at pc 60..100: `JUMPDEST PUSH32 MemoCert.answer PUSH0 MSTORE PUSH2 0x0020 PUSH0 RETURN`
+  (same 41 bytes and 7 instructions; the general-width `JUMPDEST` stays instruction 48 at pc 101).
+* The trunc vector drops from 274 to 173 gas on every seed; image 10,983 bytes / 8,638 instructions.
+* Proofs: `CycleGlobal/MemoPaths` (`hitPrePath` = push 60 + `JUMP`, `hitPostPath` = the landing pad,
+  `answerPCs`, new `answerBlockPCs`, `expAt` removed), `CycleGlobal/MemoHit` (`jumpDestAnswer`,
+  `run_hitPre`, `run_hitPost`, `answerWord` as the pushed literal; `hitHandled` unchanged in
+  statement), `CycleGlobal/FastDefs` (`fastPC15`), `CycleGlobal/PrefixPC` (`eq_old4` split into
+  `eq_old4a` 486..510 and `eq_old4` 517..1865 re-anchored at pc 745), `CycleGlobal/ShiftTrace3`;
+  regenerated `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+
 # Current refinement: one-word exponent/modulus size test at the entry (-6 gas on every vector, -264 gas per draw)
 
 * pc 0..15: `PUSH1 0x20 DUP1 CALLDATALOAD XOR PUSH1 0x40 CALLDATALOAD PUSH1 0x20 XOR OR PUSH2 0x0242 JUMPI`

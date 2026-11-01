@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "6780ef4e-4481-4426-be67-805a1b9e094a",
+    "rationale": "Direct parent (mine): one-word exponent/modulus size test at pc 0..15; this tree adds the memo answer-block change.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 60..100 and 733..744; proof edits listed in README.md (current refinement)."
+  },
+  {
     "submissionId": "6fc28bd5-7398-4259-b786-b029a96c875d",
     "rationale": "Direct parent: mpjunior92's promoted frontier (361,618). This tree is that tree with only the entry size test at pc 0..15 rewritten and the unreachable filler at pc 93 re-split.",
     "evidence": "bytecode.hex differs from the parent only in bytes 0..15 and 93..97; proof edits listed in README.md (current refinement)."

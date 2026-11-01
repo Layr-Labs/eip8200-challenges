@@ -138,18 +138,19 @@ private theorem widths_eq_eq_old3b :
     689 + PCFast.byteLength ((Artifact.submissionInstructions.drop 485).take (i-480))
   rw [length_eq, length_eq, h]
 
-private theorem widths_eq_eq_old4 :
-    (((CycleSubmission.Artifact.instructions.drop 486).take (1865-486)).map width) =
-    (((Artifact.submissionInstructions.drop 490).take (1869-490)).map width) := by rfl
+private theorem widths_eq_eq_old4a :
+    (((CycleSubmission.Artifact.instructions.drop 486).take (510-486)).map width) =
+    (((Artifact.submissionInstructions.drop 490).take (514-490)).map width) := by rfl
 
-@[simp] theorem eq_old4 (i : Nat) (hlo : 486 ≤ i) (hhi : i ≤ 1865) :
+/-- Up to the memo's hit exit (index 510, pc 736) the widths agree with the accepted base. -/
+@[simp] theorem eq_old4a (i : Nat) (hlo : 486 ≤ i) (hhi : i ≤ 510) :
     CycleSubmission.Artifact.artifact.instructionPC i =
       Artifact.submissionArtifact.instructionPC (i+4) := by
   have h : (((CycleSubmission.Artifact.instructions.drop 486).take (i-486)).map width) =
       (((Artifact.submissionInstructions.drop 490).take (i-486)).map width) := by
-    have h := congrArg (List.take (i-486)) widths_eq_eq_old4
+    have h := congrArg (List.take (i-486)) widths_eq_eq_old4a
     simpa only [← List.map_take, List.take_take,
-      Nat.min_eq_left (show i-486 ≤ 1865-486 by omega)] using h
+      Nat.min_eq_left (show i-486 ≤ 510-486 by omega)] using h
   have ha : CycleSubmission.Artifact.artifact.instructionPC 486 = 696 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   have hb : Artifact.submissionArtifact.instructionPC 490 = 696 := by
@@ -159,6 +160,31 @@ private theorem widths_eq_eq_old4 :
   rw [show 486+(i-486)+4 = 490+(i-486) by omega, pc_add, hb]
   change 696 + PCFast.byteLength ((CycleSubmission.Artifact.instructions.drop 486).take (i-486)) =
     696 + PCFast.byteLength ((Artifact.submissionInstructions.drop 490).take (i-486))
+  rw [length_eq, length_eq, h]
+
+private theorem widths_eq_eq_old4 :
+    (((CycleSubmission.Artifact.instructions.drop 517).take (1865-517)).map width) =
+    (((Artifact.submissionInstructions.drop 521).take (1869-521)).map width) := by rfl
+
+/-- From the window core's `JUMPDEST` (index 517, pc 745) on, the widths agree with the accepted
+base again; the memo answer block before it keeps its byte length. -/
+@[simp] theorem eq_old4 (i : Nat) (hlo : 517 ≤ i) (hhi : i ≤ 1865) :
+    CycleSubmission.Artifact.artifact.instructionPC i =
+      Artifact.submissionArtifact.instructionPC (i+4) := by
+  have h : (((CycleSubmission.Artifact.instructions.drop 517).take (i-517)).map width) =
+      (((Artifact.submissionInstructions.drop 521).take (i-517)).map width) := by
+    have h := congrArg (List.take (i-517)) widths_eq_eq_old4
+    simpa only [← List.map_take, List.take_take,
+      Nat.min_eq_left (show i-517 ≤ 1865-517 by omega)] using h
+  have ha : CycleSubmission.Artifact.artifact.instructionPC 517 = 745 := by
+    rw [PCFast.instructionPC_eq_byteLength]; rfl
+  have hb : Artifact.submissionArtifact.instructionPC 521 = 745 := by
+    rw [PCFast.instructionPC_eq_byteLength]; rfl
+  have hi : 517+(i-517)=i := by omega
+  rw [← hi, pc_add, ha]
+  rw [show 517+(i-517)+4 = 521+(i-517) by omega, pc_add, hb]
+  change 745 + PCFast.byteLength ((CycleSubmission.Artifact.instructions.drop 517).take (i-517)) =
+    745 + PCFast.byteLength ((Artifact.submissionInstructions.drop 521).take (i-517))
   rw [length_eq, length_eq, h]
 
 private theorem widths_eq_eq_old_tail5 :
