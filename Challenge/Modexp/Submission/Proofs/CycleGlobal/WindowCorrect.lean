@@ -64,7 +64,7 @@ def handledOf (route : WindowRoute.Route)
   · by_cases hfast : Setup.FastPath input
     · rcases fastHandled input hvalid hfast with
         ⟨final, ⟨fastTrace⟩, hdone, hresult⟩
-      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hsize).trans fastTrace⟩,
+      exact ⟨final, ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans fastTrace⟩,
         hdone, hresult⟩
     · rcases Setup.gasSteps_fallback input hvalid hfast with
         ⟨_, steps⟩ | ⟨h32, hupper, steps⟩
@@ -72,13 +72,13 @@ def handledOf (route : WindowRoute.Route)
         -- input and returns the specified result, or restores the legacy entry
         by_cases hmemo : MemoLogic.Matches input
         · obtain ⟨final, ⟨tail⟩, done, result⟩ := Memo.hitHandled input hvalid hmemo
-          exact ⟨final, ⟨((EarlyWordCorrect.legacy input hsize).trans steps).trans tail⟩,
+          exact ⟨final, ⟨((EarlyWordCorrect.legacy input hvalid hsize).trans steps).trans tail⟩,
             done, result⟩
         · exact WindowBodyCorrect.handledOf route input hvalid
-            (((EarlyWordCorrect.legacy input hsize).trans steps).trans
+            (((EarlyWordCorrect.legacy input hvalid hsize).trans steps).trans
               (Memo.gasSteps_miss input hmemo))
       · exact bigBailHandled input hvalid h32 hupper
-          ((EarlyWordCorrect.legacy input hsize).trans steps)
+          ((EarlyWordCorrect.legacy input hvalid hsize).trans steps)
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

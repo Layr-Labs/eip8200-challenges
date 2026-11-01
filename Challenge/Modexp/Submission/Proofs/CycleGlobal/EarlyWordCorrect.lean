@@ -45,14 +45,15 @@ private def environment (input : ByteArray) :
   running := rfl
   noPrecompile := deployAddress_not_precompile
 
-/-- Every header whose exponent or modulus size is not 32 reaches the unchanged
+/-- Every valid header whose exponent or modulus size is not 32 reaches the unchanged
 legacy entry exactly. -/
-def legacy (input : ByteArray)
+def legacy (input : ByteArray) (hvalid : ValidInput input)
     (hmiss : ¬ (exponentSize input = 32 ∧ modulusSize input = 32)) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
       (Main.trampolineState input 578) := by
   have tail := EarlyWordGas.steps_size_miss CycleSubmission.Global.Paths.earlyWordPaths
-    (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl hmiss
+    (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl
+    hvalid.2.2.1 hvalid.2.2.2 hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
     (Main.trampolineState input 578) at tail
   exact (Main.gasSteps_entryHop input).trans tail

@@ -12,8 +12,8 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 private def earlyWord_size : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 0 EarlyWordProgram.sizeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 0 11 0 EarlyWordProgram.sizeProgram
-    (by exact Nat.le_trans (by decide : 0+11 ≤ 8638) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 0 9 0 EarlyWordProgram.sizeProgram
+    (by exact Nat.le_trans (by decide : 0+9 ≤ 8638) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths CycleSubmission.Artifact.artifact .Osaka where
   size := earlyWord_size
   legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 404 (by rfl)

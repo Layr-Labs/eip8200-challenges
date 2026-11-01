@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "6fc28bd5-7398-4259-b786-b029a96c875d",
+    "rationale": "Direct parent: mpjunior92's promoted frontier (361,618). This tree is that tree with only the entry size test at pc 0..15 rewritten and the unreachable filler at pc 93 re-split.",
+    "evidence": "bytecode.hex differs from the parent only in bytes 0..15 and 93..97; proof edits listed in README.md (current refinement)."
+  },
+  {
     "submissionId": "733f8a93-d281-41bc-8e9f-8797ab783343",
     "rationale": "Direct parent: aerugo-ef's promoted frontier (362,442; direct radix-240 carry recovery for all 24 uncancelled handoffs in the five- and nine-digit kernels). This tree is that tree with my own B..K refinement series (developed on 9b28324d -> 846b17f0 -> 8de1dd4c) ported on top.",
     "evidence": "bytecode.hex differs from that tree only in bytes 93..98, 645..647, 2663..2676, 2723..2730, 2933..2948, 3182..3211, 3240..3247, 3437..3446, 3482..3492, 3697..3705, 3728..3742, 3905, 4804..4813, 7642..7651 and 10763..10770 (none overlap its kernel edits at 4390..10229); proofs merged pc-anchored (index literals of both lines rewritten old index -> pc -> new index, then a 3-way merge), regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."

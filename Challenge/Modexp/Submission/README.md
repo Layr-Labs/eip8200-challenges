@@ -1,3 +1,20 @@
+# Current refinement: one-word exponent/modulus size test at the entry (-6 gas on every vector, -264 gas per draw)
+
+* pc 0..15: `PUSH1 0x20 DUP1 CALLDATALOAD XOR PUSH1 0x40 CALLDATALOAD PUSH1 0x20 XOR OR PUSH2 0x0242 JUMPI`
+  becomes `PUSH1 0x22 CALLDATALOAD PUSH1 0x40 CALLDATALOAD ADD PUSH3 0x200020 XOR PUSH2 0x0242 JUMPI`
+  (same 16 bytes, 27 -> 21 gas before the branch). For a valid tuple (every declared size <= 1024)
+  the unaligned word at 34 is exactly `exponentSize * 2^16`, so the sum equals `0x200020` exactly
+  when both sizes are 32. Every vector runs this block: -6 gas each, -264 per draw on every seed.
+* The two removed instructions are given back in the unreachable filler at pc 93
+  (`PUSH4 0` -> `PUSH2 0, PUSH0, PUSH0`); indices of pcs 16..92 move down by two, all later
+  indices are unchanged; image 10,983 bytes / 8,638 instructions.
+* Proofs: `Bytecode/EarlyWordProgram` (`sizeValueProgram`, `sizeDiff`, new `readWord34_toNat`,
+  `sizeDiff_zero_iff` under the EIP-7823 size bounds, `sizeDiff_zero_of`), `Bytecode/EarlyWordGas`
+  (`steps_size_miss` takes the bounds), `CycleGlobal/EarlyWordCorrect` (`legacy` takes
+  `ValidInput`), `CycleGlobal/WindowCorrect` (passes it), `CycleGlobal/ArtifactEarlyWordPaths`,
+  `CycleGlobal/ArtifactWindowPaths` (indices 11/17/28/34/41 -> 9/15/26/32/39); regenerated
+  `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+
 # Port: my B..K refinement series on top of aerugo-ef's direct-carry frontier (-434 gas per draw)
 
 aerugo-ef's promoted `733f8a93` (direct radix-240 carry recovery in the five- and nine-digit kernels)

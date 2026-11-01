@@ -8,10 +8,13 @@ namespace Challenge.Modexp.Submission.Proofs.Bytecode.EarlyWordProgram
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open WindowTwentyOneEntry WindowNibbleKernel
 
-/-- 0..12: the exponent and modulus size difference. -/
+/-- 0..12: the exponent and modulus size difference. One unaligned load at 34 reads the
+exponent size shifted left by 16 bits (its two high bytes and the modulus size's two high
+bytes are zero for every valid tuple), the aligned load at 64 adds the modulus size, and
+the sum is compared with `32 * 2^16 + 32`. -/
 def sizeValueProgram : List Instr :=
-  [.push 1 32, .op (.Dup ⟨0, by decide⟩), .op .CALLDATALOAD, .op .XOR,
-   .push 1 64, .op .CALLDATALOAD, .push 1 32, .op .XOR, .op .OR]
+  [.push 1 34, .op .CALLDATALOAD, .push 1 64, .op .CALLDATALOAD, .op .ADD,
+   .push 3 0x200020, .op .XOR]
 
 def sizeBranchProgram : List Instr := [.push 2 578, .op .JUMPI]
 
@@ -29,8 +32,8 @@ entry at 103 with an empty stack; 32 falls through to the fast entry at 24. -/
 def widthTestProgram : List Instr := widthValueProgram ++ widthBranchProgram
 
 def sizeDiff (input : ByteArray) : UInt256 :=
-  UInt256.lor (UInt256.xor (UInt256.ofNat 32) (UInt256.ofNat (modulusSize input)))
-    (UInt256.xor (UInt256.ofNat (exponentSize input)) (UInt256.ofNat 32))
+  UInt256.xor (UInt256.ofNat 0x200020)
+    (MachineState.readWord input 64 + MachineState.readWord input 34)
 
 def baseDiff (input : ByteArray) : UInt256 :=
   UInt256.xor (UInt256.ofNat 32) (UInt256.ofNat (baseSize input))
@@ -60,23 +63,74 @@ private theorem ofNat_eq_32_iff (value : Nat) (hvalue : value < 2 ^ 256) :
   · rintro rfl
     rfl
 
-theorem sizeDiff_eq_zero_iff (input : ByteArray) :
-    sizeDiff input = 0 ↔ exponentSize input = 32 ∧ modulusSize input = 32 := by
-  have he : exponentSize input < 2 ^ 256 := header_lt input 32
-  have hm : modulusSize input < 2 ^ 256 := header_lt input 64
-  simp only [sizeDiff, WindowGuardLogic.wordOr_eq_zero_iff, WindowGuardLogic.wordXor_eq_zero_iff]
-  rw [eq_comm (a := UInt256.ofNat 32), ofNat_eq_32_iff _ hm, ofNat_eq_32_iff _ he]
-  exact And.comm
+/-- The unaligned word at 34: for exponent and modulus sizes below `2^240` it is the
+exponent size shifted left by 16 bits. -/
+theorem readWord34_toNat (input : ByteArray)
+    (he : exponentSize input < 2 ^ 240) (hm : modulusSize input < 2 ^ 240) :
+    (MachineState.readWord input 34).toNat = exponentSize input * 65536 := by
+  rw [Bytes.readWord_toNat]
+  have hsplit := Bytes.bytesToNatPadded_add input 34 30 2
+  have hesplit := Bytes.bytesToNatPadded_add input 32 2 30
+  have hmsplit := Bytes.bytesToNatPadded_add input 64 2 30
+  have hlow := Bytes.bytesToNatPadded_lt_pow input 34 30
+  have hmlow := Bytes.bytesToNatPadded_lt_pow input 66 30
+  simp only [exponentSize, modulusSize] at he hm ⊢
+  norm_num at hsplit hesplit hmsplit hlow hmlow he hm ⊢
+  rw [hesplit] at he ⊢
+  rw [hmsplit] at hm
+  rw [hsplit]
+  have h30 : (2 : Nat) ^ 240 = 256 ^ 30 := by norm_num
+  have he0 : Precompile.bytesToNatPadded input 32 2 = 0 := by
+    by_contra hne
+    have hpos : 1 ≤ Precompile.bytesToNatPadded input 32 2 := Nat.one_le_iff_ne_zero.mpr hne
+    have : 256 ^ 30 ≤ Precompile.bytesToNatPadded input 32 2 * 256 ^ 30 :=
+      Nat.le_mul_of_pos_left _ hpos
+    omega
+  have hm0 : Precompile.bytesToNatPadded input 64 2 = 0 := by
+    by_contra hne
+    have hpos : 1 ≤ Precompile.bytesToNatPadded input 64 2 := Nat.one_le_iff_ne_zero.mpr hne
+    have : 256 ^ 30 ≤ Precompile.bytesToNatPadded input 64 2 * 256 ^ 30 :=
+      Nat.le_mul_of_pos_left _ hpos
+    omega
+  rw [he0, hm0]
+  ring
 
-theorem sizeDiff_zero_iff (input : ByteArray) :
+/-- The size difference vanishes exactly for exponent and modulus sizes 32, for every
+tuple whose two sizes are within the EIP-7823 bound. -/
+theorem sizeDiff_zero_iff (input : ByteArray)
+    (he : exponentSize input ≤ 1024) (hm : modulusSize input ≤ 1024) :
     (sizeDiff input).toNat = 0 ↔ exponentSize input = 32 ∧ modulusSize input = 32 := by
-  rw [← sizeDiff_eq_zero_iff]
+  have h34 := readWord34_toNat input (by omega) (by omega)
+  have h64 : (MachineState.readWord input 64).toNat = modulusSize input :=
+    Bytes.readWord_toNat input 64
+  have hsum : (MachineState.readWord input 64 + MachineState.readWord input 34).toNat =
+      modulusSize input + exponentSize input * 65536 := by
+    rw [Word.word_toNat_add, h34, h64]
+    exact Nat.mod_eq_of_lt (by omega)
+  have hc : (UInt256.ofNat 0x200020).toNat = 0x200020 := by
+    rw [Word.word_toNat_ofNat]
+    exact Nat.mod_eq_of_lt (by norm_num)
   constructor
   · intro h
-    exact Word.word_ext h
-  · intro h
-    rw [h]
+    have hz : sizeDiff input = 0 := Word.word_ext h
+    rw [sizeDiff, WindowGuardLogic.wordXor_eq_zero_iff] at hz
+    have hn := congrArg UInt256.toNat hz
+    rw [hc, hsum] at hn
+    omega
+  · rintro ⟨he32, hm32⟩
+    have hw : UInt256.ofNat 0x200020 =
+        MachineState.readWord input 64 + MachineState.readWord input 34 := by
+      apply Word.word_ext
+      rw [hc, hsum, he32, hm32]
+    rw [sizeDiff, hw,
+      (WindowGuardLogic.wordXor_eq_zero_iff _ _).mpr rfl]
     rfl
+
+/-- Exponent and modulus sizes 32 always give a zero size difference. -/
+theorem sizeDiff_zero_of (input : ByteArray)
+    (hsize : exponentSize input = 32 ∧ modulusSize input = 32) :
+    (sizeDiff input).toNat = 0 :=
+  (sizeDiff_zero_iff input (by omega) (by omega)).mpr hsize
 
 theorem baseDiff_eq_zero_iff (input : ByteArray) :
     baseDiff input = 0 ↔ baseSize input = 32 := by
@@ -97,9 +151,7 @@ theorem run_size_value (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input) :
     runInstructions sizeValueProgram (framed template (UInt256.ofNat 0) []) =
       some (framed template (UInt256.ofNat 12) [sizeDiff input]) := by
-  have he : MachineState.readWord input 32 = UInt256.ofNat (exponentSize input) := rfl
-  have hm : MachineState.readWord input 64 = UInt256.ofNat (modulusSize input) := rfl
-  simp [sizeValueProgram, runInstructions, framed, Stepper.runInstr, sizeDiff, hdata, he, hm,
+  simp [sizeValueProgram, runInstructions, framed, Stepper.runInstr, sizeDiff, hdata,
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 theorem run_size_branch (template : State) (value : UInt256)
