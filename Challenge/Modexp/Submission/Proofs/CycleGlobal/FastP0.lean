@@ -27,7 +27,7 @@ def blk977 :
    opAt 409 .SUB,
    pushAt 410 1 223,
    opAt 411 .LT,
-   pushAt 412 2 697,
+   pushAt 412 2 737,
    opAt 413 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to

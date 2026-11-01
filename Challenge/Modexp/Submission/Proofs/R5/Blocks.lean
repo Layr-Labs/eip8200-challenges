@@ -22,7 +22,7 @@ open CycleSubmission
 def squareBlock : Block Artifact.artifact .Osaka 4037 SquareRun.sqProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3122 498 4037 SquareRun.sqProgram
     (by change 3122+498 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3122+498 ≤ 8638)
+        exact Nat.le_trans (by decide : 3122+498 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -31,7 +31,7 @@ def squareBlock : Block Artifact.artifact .Osaka 4037 SquareRun.sqProgram :=
 def productSeg0Block : Block Artifact.artifact .Osaka 4716 ProductRun.prSeg0Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3622 69 4716 ProductRun.prSeg0Program
     (by change 3622+69 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3622+69 ≤ 8638)
+        exact Nat.le_trans (by decide : 3622+69 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -40,7 +40,7 @@ def productSeg0Block : Block Artifact.artifact .Osaka 4716 ProductRun.prSeg0Prog
 def productSeg1Block : Block Artifact.artifact .Osaka 3256 ProductRun.prSeg1Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2495 155 3256 ProductRun.prSeg1Program
     (by change 2495+155 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2495+155 ≤ 8638)
+        exact Nat.le_trans (by decide : 2495+155 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -49,7 +49,7 @@ def productSeg1Block : Block Artifact.artifact .Osaka 3256 ProductRun.prSeg1Prog
 def productSeg2Block : Block Artifact.artifact .Osaka 3775 ProductRun.prSeg2Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2898 111 3775 ProductRun.prSeg2Program
     (by change 2898+111 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2898+111 ≤ 8638)
+        exact Nat.le_trans (by decide : 2898+111 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -58,7 +58,7 @@ def productSeg2Block : Block Artifact.artifact .Osaka 3775 ProductRun.prSeg2Prog
 def productSeg3Block : Block Artifact.artifact .Osaka 4857 ProductRun.prSeg3Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3742 275 4857 ProductRun.prSeg3Program
     (by change 3742+275 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3742+275 ≤ 8638)
+        exact Nat.le_trans (by decide : 3742+275 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -67,7 +67,7 @@ def productSeg3Block : Block Artifact.artifact .Osaka 4857 ProductRun.prSeg3Prog
 def proSegBlock : Block Artifact.artifact .Osaka 5334 PrologueRun.proSegProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4140 87 5334 PrologueRun.proSegProgram
     (by change 4140+87 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4140+87 ≤ 8638)
+        exact Nat.le_trans (by decide : 4140+87 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -78,7 +78,7 @@ def ctl4712Program : List Instr := [.push 2 4037, .op .JUMPI]
 def ctl4712Block : Block Artifact.artifact .Osaka 4712 ctl4712Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3620 2 4712 ctl4712Program
     (by change 3620+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3620+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 3620+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -89,7 +89,7 @@ def ctl4800Program : List Instr := [.push 2 3256, .op .JUMP]
 def ctl4800Block : Block Artifact.artifact .Osaka 4800 ctl4800Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3691 2 4800 ctl4800Program
     (by change 3691+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3691+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 3691+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -100,7 +100,7 @@ def ctl3433Program : List Instr := [.push 2 3775, .op .JUMP]
 def ctl3433Block : Block Artifact.artifact .Osaka 3433 ctl3433Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2650 2 3433 ctl3433Program
     (by change 2650+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2650+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 2650+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -111,7 +111,7 @@ def ctl3901Program : List Instr := [.push 2 4857, .op .JUMP]
 def ctl3901Block : Block Artifact.artifact .Osaka 3901 ctl3901Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3009 2 3901 ctl3901Program
     (by change 3009+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 3009+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 3009+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -120,7 +120,7 @@ def ctl3901Block : Block Artifact.artifact .Osaka 3901 ctl3901Program :=
 def normBlock : Block Artifact.artifact .Osaka 5184 ExecNorm.normProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4017 4 5184 ExecNorm.normProgram
     (by change 4017+4 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4017+4 ≤ 8638)
+        exact Nat.le_trans (by decide : 4017+4 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -131,7 +131,7 @@ def ctl5188Program : List Instr := [.push 2 5285, .op .JUMPI]
 def ctl5188Block : Block Artifact.artifact .Osaka 5188 ctl5188Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4021 2 5188 ctl5188Program
     (by change 4021+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4021+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 4021+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -140,7 +140,7 @@ def ctl5188Block : Block Artifact.artifact .Osaka 5188 ctl5188Program :=
 def blk5192Block : Block Artifact.artifact .Osaka 5192 ExecNorm.blk5192Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4023 59 5192 ExecNorm.blk5192Program
     (by change 4023+59 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4023+59 ≤ 8638)
+        exact Nat.le_trans (by decide : 4023+59 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -151,7 +151,7 @@ def ctl5261Program : List Instr := [.push 2 5279, .op .JUMPI]
 def ctl5261Block : Block Artifact.artifact .Osaka 5261 ctl5261Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4082 2 5261 ctl5261Program
     (by change 4082+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4082+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 4082+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -160,7 +160,7 @@ def ctl5261Block : Block Artifact.artifact .Osaka 5261 ctl5261Program :=
 def blk5265Block : Block Artifact.artifact .Osaka 5265 ExecNorm.blk5265Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4084 10 5265 ExecNorm.blk5265Program
     (by change 4084+10 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4084+10 ≤ 8638)
+        exact Nat.le_trans (by decide : 4084+10 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -171,7 +171,7 @@ def ctl5275Program : List Instr := [.push 2 5184, .op .JUMP]
 def ctl5275Block : Block Artifact.artifact .Osaka 5275 ctl5275Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4094 2 5275 ctl5275Program
     (by change 4094+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4094+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 4094+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -180,7 +180,7 @@ def ctl5275Block : Block Artifact.artifact .Osaka 5275 ctl5275Program :=
 def negBlock : Block Artifact.artifact .Osaka 5279 ExecNorm.negProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4096 6 5279 ExecNorm.negProgram
     (by change 4096+6 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4096+6 ≤ 8638)
+        exact Nat.le_trans (by decide : 4096+6 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -189,7 +189,7 @@ def negBlock : Block Artifact.artifact .Osaka 5279 ExecNorm.negProgram :=
 def doneBlock : Block Artifact.artifact .Osaka 5285 ExecNorm.doneProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4102 35 5285 ExecNorm.doneProgram
     (by change 4102+35 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4102+35 ≤ 8638)
+        exact Nat.le_trans (by decide : 4102+35 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -200,7 +200,7 @@ def ctl5330Program : List Instr := [.push 1 128, .push 0 0, .op .RETURN]
 def ctl5330Block : Block Artifact.artifact .Osaka 5330 ctl5330Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4137 3 5330 ctl5330Program
     (by change 4137+3 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4137+3 ≤ 8638)
+        exact Nat.le_trans (by decide : 4137+3 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -209,7 +209,7 @@ def ctl5330Block : Block Artifact.artifact .Osaka 5330 ctl5330Program :=
 def proBlock : Block Artifact.artifact .Osaka 5334 ExecPrologue.proProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4140 8 5334 ExecPrologue.proProgram
     (by change 4140+8 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4140+8 ≤ 8638)
+        exact Nat.le_trans (by decide : 4140+8 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -218,7 +218,7 @@ def proBlock : Block Artifact.artifact .Osaka 5334 ExecPrologue.proProgram :=
 def blk5344Block : Block Artifact.artifact .Osaka 5344 ExecPrologue.blk5344Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4148 6 5344 ExecPrologue.blk5344Program
     (by change 4148+6 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4148+6 ≤ 8638)
+        exact Nat.le_trans (by decide : 4148+6 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -227,7 +227,7 @@ def blk5344Block : Block Artifact.artifact .Osaka 5344 ExecPrologue.blk5344Progr
 def blk5352Block : Block Artifact.artifact .Osaka 5352 ExecPrologue.blk5352Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4154 30 5352 ExecPrologue.blk5352Program
     (by change 4154+30 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4154+30 ≤ 8638)
+        exact Nat.le_trans (by decide : 4154+30 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -236,7 +236,7 @@ def blk5352Block : Block Artifact.artifact .Osaka 5352 ExecPrologue.blk5352Progr
 def blk5393Block : Block Artifact.artifact .Osaka 5393 ExecPrologue.blk5393Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4184 7 5393 ExecPrologue.blk5393Program
     (by change 4184+7 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4184+7 ≤ 8638)
+        exact Nat.le_trans (by decide : 4184+7 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -245,7 +245,7 @@ def blk5393Block : Block Artifact.artifact .Osaka 5393 ExecPrologue.blk5393Progr
 def blk5403Block : Block Artifact.artifact .Osaka 5403 ExecPrologue.blk5403Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4191 7 5403 ExecPrologue.blk5403Program
     (by change 4191+7 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4191+7 ≤ 8638)
+        exact Nat.le_trans (by decide : 4191+7 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -254,7 +254,7 @@ def blk5403Block : Block Artifact.artifact .Osaka 5403 ExecPrologue.blk5403Progr
 def blk5414Block : Block Artifact.artifact .Osaka 5414 ExecPrologue.blk5414Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4198 7 5414 ExecPrologue.blk5414Program
     (by change 4198+7 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4198+7 ≤ 8638)
+        exact Nat.le_trans (by decide : 4198+7 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -263,7 +263,7 @@ def blk5414Block : Block Artifact.artifact .Osaka 5414 ExecPrologue.blk5414Progr
 def blk5425Block : Block Artifact.artifact .Osaka 5425 ExecPrologue.blk5425Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4205 7 5425 ExecPrologue.blk5425Program
     (by change 4205+7 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4205+7 ≤ 8638)
+        exact Nat.le_trans (by decide : 4205+7 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -272,7 +272,7 @@ def blk5425Block : Block Artifact.artifact .Osaka 5425 ExecPrologue.blk5425Progr
 def blk5436Block : Block Artifact.artifact .Osaka 5436 ExecPrologue.blk5436Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4212 6 5436 ExecPrologue.blk5436Program
     (by change 4212+6 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4212+6 ≤ 8638)
+        exact Nat.le_trans (by decide : 4212+6 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -281,7 +281,7 @@ def blk5436Block : Block Artifact.artifact .Osaka 5436 ExecPrologue.blk5436Progr
 def blk5446Block : Block Artifact.artifact .Osaka 5446 ExecPrologue.blk5446Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4218 9 5446 ExecPrologue.blk5446Program
     (by change 4218+9 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4218+9 ≤ 8638)
+        exact Nat.le_trans (by decide : 4218+9 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -292,7 +292,7 @@ def ctl5464Program : List Instr := [.push 1 219, .op .JUMPI]
 def ctl5464Block : Block Artifact.artifact .Osaka 5464 ctl5464Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4227 2 5464 ctl5464Program
     (by change 4227+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4227+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 4227+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -301,7 +301,7 @@ def ctl5464Block : Block Artifact.artifact .Osaka 5464 ctl5464Program :=
 def blk5467Block : Block Artifact.artifact .Osaka 5467 ExecPrologue.blk5467Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4229 22 5467 ExecPrologue.blk5467Program
     (by change 4229+22 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4229+22 ≤ 8638)
+        exact Nat.le_trans (by decide : 4229+22 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -312,7 +312,7 @@ def ctl5502Program : List Instr := [.push 2 4037, .op .JUMP]
 def ctl5502Block : Block Artifact.artifact .Osaka 5502 ctl5502Program :=
   WindowTwentyOneSlice.block Artifact.wellFormed 4251 2 5502 ctl5502Program
     (by change 4251+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 4251+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 4251+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

@@ -1,3 +1,22 @@
+# Current refinement: empty-modulus early return and a zero-exponent fast path (-282 gas per draw)
+
+* pc 578 (RSA-route test) now jumps to the former unreachable filler at pc 737, which is
+  `JUMPDEST PUSH2 10983 JUMPI PUSH0 PUSH0 RETURN`: `msize = 0` returns the empty array
+  at once; any other size continues with an empty stack at pc 10983. The `POP` at pc 698
+  became a `JUMPDEST`, so the fixed-vector recogniser is re-entered at 698 unchanged.
+* Appended at pc 10983 (instructions 8638..8669): `esize = 0` with `1 <= msize <= 32`
+  returns `1 mod m = (1 < m)` in `msize` bytes (`MSTORE` at word 0, `RETURN` of its low
+  `msize` bytes); a nonzero `esize` or `msize > 32` jumps to pc 698 with an empty stack.
+* Seed-0 gas: empty tuple 135 -> 87, zero exponent 439 -> 189, zero modulus size 135 -> 87,
+  zero modulus 253 -> 285, trailing-zero memo 173 -> 205; total 361,212 -> 360,930.
+* Proofs: `CycleGlobal/FastP0` (push 737), `FastDefs` (`fastPC15`, `jumpDest1812` at 737,
+  `jumpDest698`), `MemoPaths.answerPCs`, `FastP6` (`blk1341`, `blkEmptyModulus`,
+  `blkZeroExp{Miss,Wide,Hit,Return}`, `zeroExpPCs`, `jumpDestZeroExp`), `Setup`
+  (new states/run lemmas, `zeroExp_readPadded`, `modPow_zero_exponent`, `Declined`/`Fallback`
+  constructors `empty` and `zeroExp`), `WindowCorrect.handledOf` (two new cases);
+  instruction-count literal 8638 -> 8670; regenerated `Cycle/Artifact.lean`, `Cycle/Bytes.lean`
+  (11,028 bytes).
+
 # Current refinement: the fixed-vector memo returns its precomputed answer instead of running `EXP` (-101 gas per draw)
 
 * The memo answer block at pc 733 (`PUSH2 0xffff PUSH1 3 EXP PUSH0 MSTORE PUSH1 0x20 PUSH0 RETURN`,

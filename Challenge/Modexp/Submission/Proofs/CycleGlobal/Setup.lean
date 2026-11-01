@@ -383,9 +383,284 @@ with an empty stack; its miss exits restore `fallbackState`. -/
 def memoEntryState (s : State) : State :=
   { s with pc := UInt256.ofNat 699, stack := [] }
 
-/-- Entry of `BAIL1` (pc 2016): one live stack word. -/
+/-- Entry of the zero-exponent test (pc 10983) with an empty stack. -/
+def zeroExpEntryState (s : State) : State :=
+  { s with pc := UInt256.ofNat 10983, stack := [] }
+
+/-- Entry of `BAIL1`, the empty-modulus test at pc 737: one live stack word. -/
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 697, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 737, stack := [UInt256.ofNat (modulusSize input)] }
+
+/-- Where `BAIL1` halts for `msize = 0`: `PUSH0 PUSH0 RETURN` at pc 744 returns the
+empty byte array; memory is untouched. -/
+def emptyModulusState (s : State) : State :=
+  { s with
+    pc := UInt256.ofNat 744
+    stack := []
+    halt := .Returned
+    hReturn := MachineState.readPadded s.memory 0 0
+    activeWords := s.activeWordsAfterUInt256 0 0 }
+
+theorem readPadded_zero_length (bs : ByteArray) (start : Nat) :
+    MachineState.readPadded bs start 0 = ByteArray.empty := by
+  apply ByteArray.ext
+  simp [MachineState.readPadded]
+
+@[simp] theorem emptyModulusState_isDone (s : State) (hcall : s.callStack = []) :
+    (emptyModulusState s).isDone = true := by
+  simp [emptyModulusState, State.isDone, State.isHalted, State.isRunning, hcall]
+
+theorem emptyModulusState_result (s : State) (input : ByteArray)
+    (hzero : modulusSize input = 0) :
+    (emptyModulusState s).toResult = .returned (spec input) := by
+  simp [emptyModulusState, State.toResult, spec, hzero, readPadded_zero_length]
+
+set_option linter.unusedSimpArgs false in
+theorem run_bail1_zero (s : State) (input : ByteArray)
+    (hrun : s.halt = .Running) (hzero : modulusSize input = 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkEmptyModulus (bail1State s input) =
+      some (emptyModulusState s) := by
+  have hz0 : (UInt256.ofNat (modulusSize input)).toNat = 0 := by rw [hzero]; rfl
+  have hz : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := rfl
+  simp (config := { maxSteps := 400000 })
+    [blkEmptyModulus, opAt, pushAt, wfOp,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+     bail1State, emptyModulusState, hrun, hz0, hz, UInt256.isTrue, State.activeWordsAfterUInt256,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.ofNat_add_mod,
+     Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-! ## The zero-exponent route appended at pc 10983
+
+A nonzero `msize` leaves the empty-modulus test for pc 10983 with an empty stack.  A
+nonzero `esize`, or a zero `esize` with `msize > 32`, falls into the fixed-vector
+recogniser through the `JUMPDEST` at pc 698; a zero `esize` with `1 ≤ msize ≤ 32`
+returns `1 mod m = (1 < m)` in `msize` bytes directly. -/
+
+/-- The modulus of a zero-exponent tuple: `msize` bytes right after the base. -/
+def zeroExpModulus (input : ByteArray) : Nat :=
+  Precompile.bytesToNatPadded input (96 + baseSize input) (modulusSize input)
+
+/-- The returned word `1 < m`. -/
+def zeroExpWord (input : ByteArray) : UInt256 :=
+  UInt256.lt (UInt256.ofNat 1) (UInt256.ofNat (zeroExpModulus input))
+
+def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
+  MachineState.writeBytes s.memory
+    (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
+
+/-- After the `MSTORE` of the result word (pc 11023), `msize` on the stack. -/
+def zeroExpStoreState (s : State) (input : ByteArray) : State :=
+  { s with
+    pc := UInt256.ofNat 11023
+    stack := [UInt256.ofNat (modulusSize input)]
+    memory := zeroExpMemory s input
+    activeWords := s.activeWordsAfterUInt256 0 32 }
+
+/-- The halted state of the zero-exponent hit. -/
+def zeroExpFinalState (s : State) (input : ByteArray) : State :=
+  { zeroExpStoreState s input with
+    stack := []
+    pc := UInt256.ofNat 11027
+    halt := .Returned
+    hReturn := MachineState.readPadded (zeroExpMemory s input)
+      (32 - modulusSize input) (modulusSize input)
+    activeWords := (zeroExpStoreState s input).activeWordsAfterUInt256
+      (32 - modulusSize input) (modulusSize input) }
+
+set_option linter.unusedSimpArgs false in
+theorem run_zeroExp_miss (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) (hrun : s.halt = .Running)
+    (hne : exponentSize input ≠ 0) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkZeroExpMiss (zeroExpEntryState s) =
+      some (memoEntryState s) := by
+  have hword : MachineState.readWord input 32 = UInt256.ofNat (exponentSize input) := rfl
+  have he : (UInt256.ofNat (exponentSize input)).toNat = exponentSize input :=
+    toNat_ofNat_self (exponentSize_lt input)
+  have htrue : (UInt256.ofNat (exponentSize input)).toNat ≠ 0 := by rw [he]; exact hne
+  have hmod : exponentSize input %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 =
+        exponentSize input := Nat.mod_eq_of_lt (exponentSize_lt input)
+  simp (config := { maxSteps := 400000 })
+    [blkZeroExpMiss, opAt, pushAt, wfOp,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+     zeroExpEntryState, memoEntryState, hrun, hcode, hdata, hword, htrue, hmod, hne, UInt256.isTrue, jumpDest698,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.ofNat_add_mod,
+     Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_zeroExp_wide (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) (hrun : s.halt = .Running)
+    (hzero : exponentSize input = 0) (hwide : 32 < modulusSize input) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkZeroExpWide (zeroExpEntryState s) =
+      some (memoEntryState s) := by
+  have hword : MachineState.readWord input 32 = UInt256.ofNat (exponentSize input) := rfl
+  have hfalse : (UInt256.ofNat (exponentSize input)).toNat = 0 := by rw [hzero]; rfl
+  have hlt := lt_ofNat_of_lt (by norm_num : (32 : Nat) < 2 ^ 256) (modulusSize_lt input) hwide
+  have htrue : (UInt256.ofNat 1).toNat = 1 := rfl
+  simp (config := { maxSteps := 400000 })
+    [blkZeroExpWide, opAt, pushAt, wfOp,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+     zeroExpEntryState, memoEntryState, hrun, hcode, hdata, hword, hfalse, read_modulus,
+     hlt, htrue, UInt256.isTrue, jumpDest698,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.ofNat_add_mod,
+     Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_zeroExp_hit (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input) (hrun : s.halt = .Running)
+    (hb : baseSize input ≤ 1024)
+    (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
+    (hsmall : modulusSize input ≤ 32) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkZeroExpHit (zeroExpEntryState s) =
+      some (zeroExpStoreState s input) := by
+  have hword : MachineState.readWord input 32 = UInt256.ofNat (exponentSize input) := rfl
+  have hfalse : (UInt256.ofNat (exponentSize input)).toNat = 0 := by rw [hzero]; rfl
+  have hle := lt_ofNat_of_le (by norm_num : (32 : Nat) < 2 ^ 256) (modulusSize_lt input) hsmall
+  have hfalse0 : (UInt256.ofNat 0).toNat = 0 := rfl
+  have hbase : MachineState.readWord input 0 = UInt256.ofNat (baseSize input) := rfl
+  have hadd : UInt256.ofNat 96 + UInt256.ofNat (baseSize input) =
+      UInt256.ofNat (96 + baseSize input) := by
+    rw [Challenge.EvmProof.Word.ofNat_add_mod]
+  have haddn : (UInt256.ofNat (96 + baseSize input)).toNat = 96 + baseSize input :=
+    toNat_ofNat_self (by omega)
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hsmall (by norm_num : 32 < 2 ^ 256)
+  have hshift :
+      UInt256.shiftLeft (UInt256.ofNat (32 - modulusSize input)) (UInt256.ofNat 3) =
+        UInt256.ofNat ((32 - modulusSize input) * 8) := by
+    rw [Challenge.EvmProof.Word.shiftLeft_ofNat] <;>
+      norm_num [Nat.shiftLeft_eq] <;> omega
+  have hshr := Challenge.EvmProof.Bytes.shiftRight_readWord input (96 + baseSize input)
+    (modulusSize input) hpos hsmall
+  have hz : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := rfl
+  have hzn : (UInt256.ofNat 0).toNat = 0 := rfl
+  simp (config := { maxSteps := 400000 })
+    [blkZeroExpHit, opAt, pushAt, wfOp,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+     zeroExpEntryState, zeroExpStoreState, zeroExpMemory, zeroExpWord, zeroExpModulus,
+     hrun, hdata, hword, hfalse, read_modulus, hle, hfalse0, hbase, hadd, haddn, hsub,
+     hshift, hshr, hz, hzn, List.exchange, UInt256.isTrue, State.activeWordsAfterUInt256,
+     Challenge.EvmProof.Word.literal_eq_ofNat,
+     Challenge.EvmProof.Word.ofNat_add_mod,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.word_toNat_ofNat]
+
+set_option linter.unusedSimpArgs false in
+theorem run_zeroExp_return (s : State) (input : ByteArray)
+    (hrun : s.halt = .Running) (hsmall : modulusSize input ≤ 32) :
+    Challenge.EvmProof.Stepper.runLocatedBlock blkZeroExpReturn (zeroExpStoreState s input) =
+      some (zeroExpFinalState s input) := by
+  have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hsmall (by norm_num : 32 < 2 ^ 256)
+  have hsubn : (UInt256.ofNat (32 - modulusSize input)).toNat = 32 - modulusSize input :=
+    toNat_ofNat_self (by omega)
+  have hm : (UInt256.ofNat (modulusSize input)).toNat = modulusSize input :=
+    toNat_ofNat_self (modulusSize_lt input)
+  simp (config := { maxSteps := 400000 })
+    [blkZeroExpReturn, opAt, pushAt, wfOp,
+     Challenge.EvmProof.Stepper.runLocatedBlock,
+     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+     zeroExpStoreState, zeroExpFinalState, hrun, hsub, hsubn, hm, List.exchange,
+     State.activeWordsAfterUInt256,
+     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
+     Challenge.EvmProof.Word.succ_ofNat_mod,
+     Challenge.EvmProof.Word.word_toNat_ofNat]
+
+/-- The returned bytes are the low `msize` bytes of the 32-byte word `r`. -/
+theorem zeroExp_readPadded (mem : ByteArray) (r width : Nat)
+    (hpos : 0 < width) (hwidth : width ≤ 32) (_hr : r < 256 ^ width) :
+    MachineState.readPadded
+        (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded r 32) 0)
+        (32 - width) width =
+      Precompile.natToBytes r width := by
+  apply ByteArray.ext_getElem
+  · rw [Challenge.EvmProof.Memory.readPadded_size]
+    rw [Precompile.natToBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+  · intro k hleft hright
+    have hk : k < width := by
+      simpa [Precompile.natToBytes,
+        YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hright
+    rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
+      ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,
+      if_pos hk]
+    rw [MachineState.writeBytes_getElem?_getD, if_pos (by
+      constructor
+      · omega
+      · simp [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
+        omega)]
+    rw [show 32 - width + k - 0 = 32 - width + k by omega,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ 32 (32 - width + k)
+        (by omega),
+      Precompile.natToBytes,
+      YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ width k hk]
+    rw [show 32 - 1 - (32 - width + k) = width - 1 - k by omega]
+
+theorem zeroExpModulus_lt (input : ByteArray) (hsmall : modulusSize input ≤ 32) :
+    zeroExpModulus input < 2 ^ 256 := by
+  have h := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input
+    (96 + baseSize input) (modulusSize input)
+  calc
+    zeroExpModulus input < 256 ^ modulusSize input := h
+    _ ≤ 256 ^ 32 := pow_le_pow_right₀ (by norm_num) hsmall
+    _ = 2 ^ 256 := by norm_num
+
+theorem zeroExpWord_toNat (input : ByteArray) (hsmall : modulusSize input ≤ 32) :
+    (zeroExpWord input).toNat = if 1 < zeroExpModulus input then 1 else 0 := by
+  unfold zeroExpWord
+  by_cases h : 1 < zeroExpModulus input
+  · rw [lt_ofNat_of_lt (by norm_num) (zeroExpModulus_lt input hsmall) h, if_pos h]
+    rfl
+  · rw [lt_ofNat_of_le (by norm_num) (zeroExpModulus_lt input hsmall) (by omega), if_neg h]
+    rfl
+
+@[simp] theorem zeroExpFinalState_isDone (s : State) (input : ByteArray)
+    (hcall : s.callStack = []) :
+    (zeroExpFinalState s input).isDone = true := by
+  simp [zeroExpFinalState, zeroExpStoreState, State.isDone, State.isHalted, State.isRunning, hcall]
+
+theorem modPow_zero_exponent (b m : Nat) :
+    Precompile.modPow b 0 m = if 1 < m then 1 else 0 := by
+  unfold Precompile.modPow
+  by_cases h0 : m = 0
+  · simp [h0]
+  · by_cases h1 : m = 1
+    · simp [h1]
+    · rw [if_neg h0, if_neg h1, if_pos (by omega)]
+      rw [Precompile.modPowAux]
+      simp
+
+theorem zeroExpFinalState_result (s : State) (input : ByteArray)
+    (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
+    (hsmall : modulusSize input ≤ 32) :
+    (zeroExpFinalState s input).toResult = .returned (spec input) := by
+  have hr : (zeroExpWord input).toNat < 256 ^ modulusSize input := by
+    rw [zeroExpWord_toNat input hsmall]
+    have h256 : 256 ≤ 256 ^ modulusSize input := by
+      calc
+        (256 : Nat) = 256 ^ 1 := by norm_num
+        _ ≤ 256 ^ modulusSize input := pow_le_pow_right₀ (by norm_num) hpos
+    split <;> omega
+  show ExecutionResult.returned (MachineState.readPadded (zeroExpMemory s input)
+      (32 - modulusSize input) (modulusSize input)) = _
+  rw [zeroExpMemory, zeroExp_readPadded _ _ _ hpos hsmall hr, zeroExpWord_toNat input hsmall]
+  have hm0 : modulusSize input ≠ 0 := by omega
+  simp only [spec, if_neg hm0, hzero, Nat.add_zero,
+    Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width, modPow_zero_exponent,
+    zeroExpModulus]
+  rfl
+
 
 /-- After the `msize > 32` check (pc 1456). -/
 def sizeCheckState (s : State) (input : ByteArray) : State :=
@@ -883,14 +1158,19 @@ theorem run_check_bail (s : State) (input : ByteArray)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bail1 (s : State) (input : ByteArray)
-    (_hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) (hrun : s.halt = .Running) :
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) (hrun : s.halt = .Running)
+    (hne : modulusSize input ≠ 0) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk1341 (bail1State s input) =
-      some (memoEntryState s) := by
+      some (zeroExpEntryState s) := by
+  have hm : (UInt256.ofNat (modulusSize input)).toNat = modulusSize input :=
+    toNat_ofNat_self (modulusSize_lt input)
+  have htrue : UInt256.isTrue (UInt256.ofNat (modulusSize input)) = true := by
+    simp [UInt256.isTrue, hm, hne]
   simp (config := { maxSteps := 400000 })
     [blk1341, opAt, pushAt, wfOp,
      Challenge.EvmProof.Stepper.runLocatedBlock,
      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     bail1State, memoEntryState, hrun,
+     bail1State, zeroExpEntryState, hrun, hcode, htrue, jumpDestZeroExp,
      Challenge.EvmProof.Word.literal_eq_ofNat,
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.ofNat_add_mod,
@@ -1014,11 +1294,23 @@ def gasSteps_bail1 (s : State) (input : ByteArray)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    Challenge.EvmProof.GasSteps (bail1State s input) (memoEntryState s) :=
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hne : modulusSize input ≠ 0) :
+    Challenge.EvmProof.GasSteps (bail1State s input) (zeroExpEntryState s) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka blk1341 hcode hfork
-      (run_bail1 s input hcode hrun) hrun hnp
+      (run_bail1 s input hcode hrun hne) hrun hnp
+
+def gasSteps_bail1_zero (s : State) (input : ByteArray)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hzero : modulusSize input = 0) :
+    Challenge.EvmProof.GasSteps (bail1State s input) (emptyModulusState s) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    CycleSubmission.Artifact.artifact .Osaka blkEmptyModulus hcode hfork
+      (run_bail1_zero s input hrun hzero) hrun hnp
 
 def gasSteps_bail6 (s : State) (input : ByteArray)
     (_hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -1027,6 +1319,70 @@ def gasSteps_bail6 (s : State) (input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Challenge.EvmProof.GasSteps (bail6State s input) (bigBailState s input) :=
   Challenge.EvmProof.GasSteps.refl _
+
+def gasSteps_zeroExp_miss (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hne : exponentSize input ≠ 0) :
+    Challenge.EvmProof.GasSteps (zeroExpEntryState s) (memoEntryState s) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    CycleSubmission.Artifact.artifact .Osaka blkZeroExpMiss hcode hfork
+      (run_zeroExp_miss s input hdata hcode hrun hne) hrun hnp
+
+def gasSteps_zeroExp_wide (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hzero : exponentSize input = 0) (hwide : 32 < modulusSize input) :
+    Challenge.EvmProof.GasSteps (zeroExpEntryState s) (memoEntryState s) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    CycleSubmission.Artifact.artifact .Osaka blkZeroExpWide hcode hfork
+      (run_zeroExp_wide s input hdata hcode hrun hzero hwide) hrun hnp
+
+def gasSteps_zeroExp_hitA (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hb : baseSize input ≤ 1024)
+    (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
+    (hsmall : modulusSize input ≤ 32) :
+    Challenge.EvmProof.GasSteps (zeroExpEntryState s) (zeroExpStoreState s input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    CycleSubmission.Artifact.artifact .Osaka blkZeroExpHit hcode hfork
+      (run_zeroExp_hit s input hdata hrun hb hzero hpos hsmall) hrun hnp
+
+def gasSteps_zeroExp_returnB (s : State) (input : ByteArray)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hsmall : modulusSize input ≤ 32) :
+    Challenge.EvmProof.GasSteps (zeroExpStoreState s input) (zeroExpFinalState s input) :=
+  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+    CycleSubmission.Artifact.artifact .Osaka blkZeroExpReturn hcode hfork
+      (run_zeroExp_return s input hrun hsmall) hrun hnp
+
+def gasSteps_zeroExp_hit (s : State) (input : ByteArray)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hb : baseSize input ≤ 1024)
+    (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
+    (hsmall : modulusSize input ≤ 32) :
+    Challenge.EvmProof.GasSteps (zeroExpEntryState s) (zeroExpFinalState s input) :=
+  Challenge.EvmProof.GasSteps.trans
+    (gasSteps_zeroExp_hitA s input hdata hcode hfork hrun hnp hb hzero hpos hsmall)
+    (gasSteps_zeroExp_returnB s input hcode hfork hrun hnp hsmall)
+
 
 /-! ## The fallback trace
 
@@ -1042,6 +1398,11 @@ inductive Declined (s : State) (input : ByteArray) : Type
       (steps : Challenge.EvmProof.GasSteps (entryState s) (memoEntryState s))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
       (steps : Challenge.EvmProof.GasSteps (entryState s) (bigBailState s input))
+  | empty (hzero : modulusSize input = 0)
+      (steps : Challenge.EvmProof.GasSteps (entryState s) (emptyModulusState s))
+  | zeroExp (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
+      (hsmall : modulusSize input ≤ 32)
+      (steps : Challenge.EvmProof.GasSteps (entryState s) (zeroExpFinalState s input))
 
 def gasSteps_fallback_of (s : State) (input : ByteArray)
     (hdata : s.executionEnv.calldata = input)
@@ -1095,14 +1456,31 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
                (topLimb_ne_zero_of_topBit input h1 (by omega) htop),
              by omega, by omega, hnprime, htop⟩)
             hfail
+    else if hzero : modulusSize input = 0 then
+      .empty hzero <|
+        (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
+          (gasSteps_bail1_zero s input hcode hfork hrun hnp hzero)
+    else if hez : exponentSize input = 0 then
+      .zeroExp hez (by omega) (by omega) <|
+        (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
+          ((gasSteps_bail1 s input hcode hfork hrun hnp hzero).trans
+            (gasSteps_zeroExp_hit s input hdata hcode hfork hrun hnp hb hez
+              (by omega) (by omega)))
     else
       .header (Or.inl (by omega)) <|
         (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
-          (gasSteps_bail1 s input hcode hfork hrun hnp)
+          ((gasSteps_bail1 s input hcode hfork hrun hnp hzero).trans
+            (gasSteps_zeroExp_miss s input hdata hcode hfork hrun hnp hez))
+  else if hez : exponentSize input = 0 then
+    .header (Or.inr (by omega)) <|
+      (gasSteps_entry_bail s input hdata hcode hfork hrun hnp
+        (Or.inr (by omega))).trans ((gasSteps_bail1 s input hcode hfork hrun hnp (by omega)).trans
+          (gasSteps_zeroExp_wide s input hdata hcode hfork hrun hnp hez (by omega)))
   else
     .header (Or.inr (by omega)) <|
       (gasSteps_entry_bail s input hdata hcode hfork hrun hnp
-        (Or.inr (by omega))).trans (gasSteps_bail1 s input hcode hfork hrun hnp)
+        (Or.inr (by omega))).trans ((gasSteps_bail1 s input hcode hfork hrun hnp (by omega)).trans
+          (gasSteps_zeroExp_miss s input hdata hcode hfork hrun hnp hez))
 
 theorem entryState_initial (input : ByteArray) :
     entryState (initialState CycleSubmission.Artifact.bytecode input 0) =
@@ -1124,6 +1502,13 @@ inductive Fallback (input : ByteArray) : Type
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
         (bigBailState (initialState CycleSubmission.Artifact.bytecode input 0) input))
+  | empty (hzero : modulusSize input = 0)
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
+        (emptyModulusState (initialState CycleSubmission.Artifact.bytecode input 0)))
+  | zeroExp (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
+      (hsmall : modulusSize input ≤ 32)
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
+        (zeroExpFinalState (initialState CycleSubmission.Artifact.bytecode input 0) input))
 
 /-- **Fallback certificate.**  For every calldata in the challenge domain that fails
 the fast-path precondition, the entry block runs from the state the retargeted
@@ -1145,6 +1530,11 @@ def gasSteps_fallback (input : ByteArray) (hvalid : ValidInput input)
       (entryState_initial input) (memoEntryState_initial input))
   | .big h32 hupper steps =>
     .big h32 hupper (Challenge.EvmProof.GasSteps.cast steps (entryState_initial input) rfl)
+  | .empty hzero steps =>
+    .empty hzero (Challenge.EvmProof.GasSteps.cast steps (entryState_initial input) rfl)
+  | .zeroExp hzero hpos hsmall steps =>
+    .zeroExp hzero hpos hsmall
+      (Challenge.EvmProof.GasSteps.cast steps (entryState_initial input) rfl)
 
 /-! ## Wrapping word arithmetic for the Newton iteration -/
 

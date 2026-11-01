@@ -13,7 +13,7 @@ def fixedProgram : List Instr :=
 def fixedBlock : Block Artifact.artifact .Osaka 2369 fixedProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 1863 10 2369 fixedProgram
     (by change 1863+10 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 1863+10 ≤ 8638)
+        exact Nat.le_trans (by decide : 1863+10 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -23,7 +23,7 @@ def commonProgram : List Instr :=
 def commonBlock : Block Artifact.artifact .Osaka 3181 commonProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2455 1 3181 commonProgram
     (by change 2455+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2455+1 ≤ 8638)
+        exact Nat.le_trans (by decide : 2455+1 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -31,7 +31,7 @@ def commonBlock : Block Artifact.artifact .Osaka 3181 commonProgram :=
 def setupBlock : Block Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2456 39 3182 CycleSubmission.DeadSetup.fullEntryProgram
     (by change 2456+39 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2456+39 ≤ 8638)
+        exact Nat.le_trans (by decide : 2456+39 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -41,7 +41,7 @@ def entryProgram : List Instr :=
 def entryBlock : Block Artifact.artifact .Osaka 3728 entryProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2872 3 3728 entryProgram
     (by change 2872+3 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2872+3 ≤ 8638)
+        exact Nat.le_trans (by decide : 2872+3 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -53,7 +53,7 @@ def testProgram : List Instr :=
 def testBlock : Block Artifact.artifact .Osaka 3743 testProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2875 5 3743 testProgram
     (by change 2875+5 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2875+5 ≤ 8638)
+        exact Nat.le_trans (by decide : 2875+5 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -63,7 +63,7 @@ def branchProgram : List Instr :=
 def branchBlock : Block Artifact.artifact .Osaka 3751 branchProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2880 1 3751 branchProgram
     (by change 2880+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2880+1 ≤ 8638)
+        exact Nat.le_trans (by decide : 2880+1 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -77,7 +77,7 @@ def guardProgram : List Instr :=
 def guardBlock : Block Artifact.artifact .Osaka 3752 guardProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2881 6 3752 guardProgram
     (by change 2881+6 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2881+6 ≤ 8638)
+        exact Nat.le_trans (by decide : 2881+6 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -85,7 +85,7 @@ def guardBlock : Block Artifact.artifact .Osaka 3752 guardProgram :=
 def guardJumpBlock : Block Artifact.artifact .Osaka 3763 branchProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2887 1 3763 branchProgram
     (by change 2887+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2887+1 ≤ 8638)
+        exact Nat.le_trans (by decide : 2887+1 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -95,7 +95,7 @@ def bailJumpProgram : List Instr :=
 def bailJumpBlock : Block Artifact.artifact .Osaka 3764 bailJumpProgram :=
   WindowTwentyOneSlice.block Artifact.wellFormed 2888 2 3764 bailJumpProgram
     (by change 2888+2 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 2888+2 ≤ 8638)
+        exact Nat.le_trans (by decide : 2888+2 ≤ 8670)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

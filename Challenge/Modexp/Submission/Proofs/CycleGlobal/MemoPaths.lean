@@ -88,7 +88,7 @@ def hitPostPath :
 
 @[simp] theorem answerPCs (i : Nat) (hi : 509 ≤ i) (hii : i ≤ 516) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([733, 736, 737, 738, 739, 740, 741, 742] : List Nat)[i - 509]! := by
+      ([733, 736, 737, 738, 741, 742, 743, 744] : List Nat)[i - 509]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

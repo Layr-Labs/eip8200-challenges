@@ -67,7 +67,7 @@ def handledOf (route : WindowRoute.Route)
       exact ⟨final, ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans fastTrace⟩,
         hdone, hresult⟩
     · rcases Setup.gasSteps_fallback input hvalid hfast with
-        ⟨_, steps⟩ | ⟨h32, hupper, steps⟩
+        ⟨_, steps⟩ | ⟨h32, hupper, steps⟩ | ⟨hzero, steps⟩ | ⟨hez, hpos, hsmall, steps⟩
       · -- the header route lands on the fixed-vector recogniser: it either claims the
         -- input and returns the specified result, or restores the legacy entry
         by_cases hmemo : MemoLogic.Matches input
@@ -79,6 +79,15 @@ def handledOf (route : WindowRoute.Route)
               (Memo.gasSteps_miss input hmemo))
       · exact bigBailHandled input hvalid h32 hupper
           ((EarlyWordCorrect.legacy input hvalid hsize).trans steps)
+      · -- an empty modulus returns the empty byte array straight from the test at pc 737
+        exact ⟨Setup.emptyModulusState (initialState CycleSubmission.Artifact.bytecode input 0),
+          ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
+          Setup.emptyModulusState_isDone _ rfl, Setup.emptyModulusState_result _ input hzero⟩
+      · -- a zero exponent with a one-word modulus returns `1 mod m` from pc 10983
+        exact ⟨Setup.zeroExpFinalState (initialState CycleSubmission.Artifact.bytecode input 0) input,
+          ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
+          Setup.zeroExpFinalState_isDone _ _ rfl,
+          Setup.zeroExpFinalState_result _ input hez hpos hsmall⟩
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →
