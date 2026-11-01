@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.M9MacChain
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.M9MacStale
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftModel
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftStates
 
@@ -87,5 +88,37 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
     (by rw [rest_length z um n bsize esize msize k]; omega)
     (entrySlots_ride z um n bsize esize msize k)
     htop htop4 hrun hcode hfork hnp hact
+
+/-- `gasSteps_macSection` entered on the loop head's memory `um0`, whose top limb is not cleared;
+`um = storeWord um0 (2080 + 32 n) 0` is the memory the section's model runs on. -/
+def gasSteps_macSection_stale (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State)
+    (um0 um : ByteArray) (hum : um = Exp.storeWord um0 (2080 + 32 * n) (UInt256.ofNat 0)) (q : UInt256)
+    (bsize esize msize k : Nat)
+    (hrun : s.halt = .Running)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hfork : s.fork = .Osaka)
+    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
+      s.executionEnv.fork s.executionEnv.codeAddr = false)
+    (hact : 88 ≤ s.activeWords.toNat) :
+    Challenge.EvmProof.GasSteps
+      { s with pc := UInt256.ofNat (Shift.headPC n + 73),
+               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
+                 Exp.outer n bsize esize msize,
+               memory := um0 }
+      { s with pc := UInt256.ofNat (Shift.midPC n),
+               stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
+                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
+               memory := (Monpro.l1Step um q Shift.NEG n n).memory } := by
+  have hpc : Shift.headPC n + 73 = sectionPC n := by
+    unfold Shift.headPC sectionPC; split_ifs <;> rfl
+  have hpc2 : Shift.midPC n = sectionEndPC n := by
+    unfold Shift.midPC sectionEndPC; split_ifs <;> rfl
+  rw [hpc, hpc2]
+  exact gasSteps_macChain_stale n hn s um0 um hum q
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (entrySlots_ride z um n bsize esize msize k)
+    hrun hcode hfork hnp hact
 
 end CycleSubmission.Global.Fast.M9Mac

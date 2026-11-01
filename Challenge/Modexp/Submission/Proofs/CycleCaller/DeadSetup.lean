@@ -12,7 +12,11 @@ set_option maxHeartbeats 1000000
 product kernel of this artifact ever reads (`m96`, `tl`, `m0`, `m64`, the row-end pointer
 `aprev`, `m32`, and the `DUP9`-addressed `m0` limb): they ride below the working stack until
 `RETURN`.  This variant pushes `0` for each of them instead (`PUSH0`, padded with `JUMPDEST`s so
-every instruction keeps its index; the freed bytes widen the `3347` literal to `PUSH10`).  The
+every instruction keeps its index; the freed bytes widen the `3347` literal to `PUSH10`).  All twelve padding `JUMPDEST`s are now gone: the seven zero
+pushes come first and the `3347` literal is a `PUSH22`; the twelve instructions this removes are
+given back by re-splitting the unreachable fillers at pc 3437 (`PUSH9 0` into ten `PUSH0`s) and
+pc 3482 (`PUSH6` into `PUSH3` and three `MLOAD`s), so every instruction index from 2712
+(pc 3493) on is unchanged.  The
 `shuffle`, `low`, `zero` and `pointersJump` parts are the inherited ones.
 -/
 
@@ -23,18 +27,14 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached StagedOperand
 open Challenge.Modexp.Submission.Proofs.Fast.TnM128Setup
 
 def loadProgram : List Instr :=
-  [.push 0 0, .op .JUMPDEST,
-   .push 0 0, .op .JUMPDEST,
-   .push 0 0, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 0 0, .op .JUMPDEST,
-   .push 0 0, .op .JUMPDEST, .op .JUMPDEST, .op .JUMPDEST,
-   .push 0 0, .push 0 0, .op .JUMPDEST, .push 10 3347]
+  [.push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0,
+   .push 22 3347]
 
 def fullEntryProgram : List Instr :=
   ((loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 54 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 39 := rfl
 
 theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :

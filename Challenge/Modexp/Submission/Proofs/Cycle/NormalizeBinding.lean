@@ -13,27 +13,27 @@ open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
 
 def normalizerBlock : Block Artifact.artifact .Osaka 10556 normalizeProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 8324 121 10556 normalizeProgram
-    (by change 8324+121 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8324+121 ≤ 8647)
+  WindowTwentyOneSlice.block Artifact.wellFormed 8318 121 10556 normalizeProgram
+    (by change 8318+121 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 8318+121 ≤ 8638)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 def returnBlock : Block Artifact.artifact .Osaka 10697 jumpProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 8445 1 10697 jumpProgram
-    (by change 8445+1 ≤ Artifact.instructions.length
-        exact Nat.le_trans (by decide : 8445+1 ≤ 8647)
+  WindowTwentyOneSlice.block Artifact.wellFormed 8439 1 10697 jumpProgram
+    (by change 8439+1 ≤ Artifact.instructions.length
+        exact Nat.le_trans (by decide : 8439+1 ≤ 8638)
           (Nat.le_of_eq Artifact.instructionCount.symm))
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 10409 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8235
-    (show Artifact.instructions[8235]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8235 = 10409 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8229
+    (show Artifact.instructions[8229]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8229 = 10409 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

@@ -201,7 +201,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
-        (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
+        (Exp.storeWord (preMem (negStep mem n n).memory) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -223,7 +223,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
-        (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
+        (Exp.storeWord (preMem (negStep mem n n).memory) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -244,7 +244,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
-        (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
+        (Exp.storeWord (preMem (negStep mem n n).memory) 1760
           (UInt256.ofNat 1)) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -528,17 +528,13 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
         (run_shiftBody z s mem n bsize esize msize k hw hn hn32 e.act hbs htl0
           (by rcases hfast with h | h <;> omega) e.code e.run))).trans
       (soundEnv blk3026 e
-        (run_estimate z s mem n bsize esize msize k hw e.act296 e.code e.run))
+        (run_estimate z s mem n bsize esize msize k hw hn
+          e.act296 e.code e.run))
   have g2 : Challenge.EvmProof.GasSteps
       (macSetupState z s mem n bsize esize msize k)
       (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k) :=
-    M9Mac.gasSteps_macSection z n hfast s (stepU mem n) (stepQ mem n) bsize esize msize k
-      (fun h8 => by
-        subst h8
-        simpa using uMem_readWord_limb mem 8 0 (by decide) (by decide))
-      (fun h4 => by
-        subst h4
-        simpa using uMem_readWord_limb mem 4 0 (by decide) (by decide))
+    M9Mac.gasSteps_macSection_stale z n hfast s (uMem0 mem n) (stepU mem n) (uMem_eq_store mem n)
+      (stepQ mem n) bsize esize msize k
       e.run e.code e.fork e.np e.act296
   have htlMid : MachineState.readWord (stepMid mem n) 2784 = UInt256.ofNat (2080 + 32 * n) := by
     rw [hhighMid 2784 (by omega)]; exact htl0

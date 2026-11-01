@@ -95,6 +95,6 @@ def expAt : Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact
 /-- The legacy entry, where both miss exits land. -/
 theorem jumpDestLegacy :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 533 = true :=
-  CycleSubmission.Global.Binding.jumpDest 369 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 370 (by rfl)
 
 end CycleSubmission.Global.Memo

@@ -13,10 +13,10 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 private def earlyWord_size : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 0 EarlyWordProgram.sizeProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 0 11 0 EarlyWordProgram.sizeProgram
-    (by exact Nat.le_trans (by decide : 0+11 ≤ 8647) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl) (by rfl) (by decide)
+    (by exact Nat.le_trans (by decide : 0+11 ≤ 8638) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl) (by rfl) (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths CycleSubmission.Artifact.artifact .Osaka where
   size := earlyWord_size
-  legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 403 (by rfl)
-  genJump := by exact CycleSubmission.Global.Binding.jumpDest 47 (by rfl)
+  legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 404 (by rfl)
+  genJump := by exact CycleSubmission.Global.Binding.jumpDest 48 (by rfl)
 
 end CycleSubmission.Global.Paths

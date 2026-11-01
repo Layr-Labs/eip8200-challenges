@@ -62,7 +62,6 @@ theorem phaseSwitch_inv (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8
   modulus := phaseSwitch_preserves mem n 0 n mm (Or.inl (by omega)) (Or.inr (by omega)) inv.modulus
   neg := phaseSwitch_preserves mem n NEG n _ (Or.inl (by unfold NEG; omega))
     (Or.inl (by unfold NEG; omega)) inv.neg
-  cache := (phaseSwitch_readWord mem n 1698 (Or.inl (by omega)) (Or.inr (by omega))).trans inv.cache
 
 theorem represents_acc_after_steps (mem : ByteArray) (n mm value k : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) (hrep : Model.FastRepresents mem 256 n value) :
@@ -135,7 +134,6 @@ theorem flagSet_inv (mem : ByteArray) (flag : UInt256) (n bsize mm minv : Nat)
     eoff := (flagSet_readWord mem flag 2656 (Or.inr (by omega))).trans inv.frame.eoff }
   modulus := flagSet_preserves mem flag 0 n mm (Or.inl (by omega)) inv.modulus
   neg := flagSet_preserves mem flag NEG n _ (Or.inl (by unfold NEG; omega)) inv.neg
-  cache := (flagSet_readWord mem flag 1698 (Or.inl (by omega))).trans inv.cache
 
 theorem flag_after_steps (mem : ByteArray) (flag : UInt256) (n mm k : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) :

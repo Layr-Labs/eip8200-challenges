@@ -44,7 +44,7 @@ def copyProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
 
 def copyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3706 copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2865 7 3706 copyProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2858 7 3706 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
 
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)

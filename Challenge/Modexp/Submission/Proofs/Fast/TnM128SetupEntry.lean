@@ -20,7 +20,7 @@ def fullEntryProgram : List Instr :=
   ((EntryPrefix.loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 54 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 51 := rfl
 
 theorem run_entry (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)

@@ -31,9 +31,9 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to the loop head). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2389 2 3069 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2391 5 3071 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2396 14 3080 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
+  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2378 2 3069 RootE3PhaseRun.phaseExitHeadProgram (by decide) (by rfl) (by rfl) (by decide)
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2380 5 3071 RootE3PhaseRun.phaseGuardProgram (by decide) (by rfl) (by rfl) (by decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2385 14 3080 RootE3PhaseRun.phaseSwitchProgram (by decide) (by rfl) (by rfl) (by decide)
 
 
 /-! ## Junction lemmas
@@ -110,15 +110,13 @@ theorem m2_readWord_2816 (mem input : ByteArray) (n : Nat) :
 /-- The E3 prologue's published memory in the cache model's spelling. -/
 theorem prologue_e3_end_eq (mem input : ByteArray) (n : Nat) :
     RootE3Phase.e3Prepared mem input n =
-      Exp.storeWord (Exp.storeWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 1698
-        (ShiftCacheModel.entryWord n)) 1760 (UInt256.ofNat 1) :=
+      Exp.storeWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 1760 (UInt256.ofNat 1) :=
   rfl
 
 /-- The ordinary prologue's published memory in the cache model's spelling. -/
 theorem flagSet_m2Of_eq (mem input : ByteArray) (n : Nat) (flag : UInt256) :
     RootE3Phase.flagSet (CycleSubmission.Global.Fast.Shift.m2Of mem input n) flag =
-      Exp.storeWord (Exp.storeWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 1698
-        (ShiftCacheModel.entryWord n)) 1760 flag :=
+      Exp.storeWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 1760 flag :=
   rfl
 
 /-- Word-sized naturals are equal when their embedded words are. -/
@@ -210,7 +208,6 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
   have heoff' : MachineState.readWord (preMem (negStep (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n n).memory) 2656 =
       UInt256.ofNat (96 + bsize) :=
     (m2_readWord_2816 mem input n).trans heoff
-  have hse := shiftEntry_eq_entryWord n hfast
   have hdispatch := CycleSubmission.Global.Fast.Shift.run_dispatch s mem n bsize esize msize hn8 (by omega) hmatch.2 e.code e.run
   rw [if_pos hmatch] at hdispatch
   have first := CycleSubmission.Global.Fast.Shift.soundEnv blk2862 e hdispatch
@@ -232,13 +229,11 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
         exact evne (nat_eq_of_word (by omega) (by decide) h)
       have third := CycleSubmission.Global.Fast.Shift.gasSteps_prologue_slow s (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n bsize esize msize
         (by omega) hn8 e hfast hes1 hebne hm1ml hm1n0 hm1d
-      rw [hse] at third
       exact (first.trans (second.trans third)).cast rfl
         (congrArg (fun m => CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize n)
           (flagSet_m2Of_eq mem input n (UInt256.ofNat 0)).symm)
     · have third := CycleSubmission.Global.Fast.Shift.gasSteps_prologue s (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n bsize esize msize
         (by omega) hn8 e hfast hes1 hm1ml hm1n0 hm1d
-      rw [hse] at third
       exact (first.trans (second.trans third)).cast rfl
         (congrArg (fun m => CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize n)
           (flagSet_m2Of_eq mem input n (UInt256.ofNat 0)).symm)
@@ -251,7 +246,6 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
       exact congrArg UInt256.ofNat hhit.2.1
     have third := CycleSubmission.Global.Fast.Shift.gasSteps_prologue_e3 s (CycleSubmission.Global.Fast.Shift.m1Of mem input n) n bsize esize msize
       (by omega) hn8 e hfast hes1 heb hm1ml hm1n0 hm1d
-    rw [hse] at third
     exact (first.trans (second.trans third)).cast rfl
       (congrArg (fun m => CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 0) s m n bsize esize msize (n / 2))
         (prologue_e3_end_eq mem input n).symm)

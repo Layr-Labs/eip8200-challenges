@@ -1,3 +1,137 @@
+# Port: my B..K refinement series on top of aerugo-ef's direct-carry frontier (-434 gas per draw)
+
+aerugo-ef's promoted `733f8a93` (direct radix-240 carry recovery in the five- and nine-digit kernels)
+was built on `9b28324d`, before my own promoted series `670bc87a` .. `846b17f0` and the later
+`8de1dd4c` / pc-645 refinements. This tree is `733f8a93` with that whole series ported on top:
+
+* Bytecode: `733f8a93`'s image with my byte edits applied unchanged (bytes 93..98, 645..647,
+  2663..2676, 2723..2730, 2933..2948, 3182..3211, 3240..3247, 3437..3446, 3482..3492, 3697..3705,
+  3728..3742, 3905, 4804..4813, 7642..7651, 10763..10770); none of them overlaps the kernel edits of
+  `733f8a93` (4390..10229) and every replaced byte range was checked to be identical in both parents.
+  Image 10,983 bytes, 8,638 instructions.
+* Proofs: every instruction-index literal of the base, of `733f8a93` and of my series was rewritten
+  old index -> pc -> new index into this image's numbering, then the 14 proof files both lines had
+  touched were merged 3-way; the only conflicting hunks were my own removals (the square-loop
+  counter exit block, and the four-limb head's top-limb clear with its pc lemmas). Files only my series touched are taken
+  from it; files only `733f8a93` touched are its versions re-indexed. `Cycle/Artifact.lean` and
+  `Cycle/Bytes.lean` are regenerated.
+* Gas: -434 per draw against `733f8a93` on every seed (Python replica of the common minimal draw
+  361,593 -> 361,159).
+
+The individual refinements of the ported series follow, then `733f8a93`'s own notes.
+
+# Current refinement: the entry check's padding `JUMPDEST` at pc 645 is folded into the bail push (-4 gas per draw)
+
+* The merged RSA entry check (top limb, parity, width, Montgomery inverse) ended in
+  `OR JUMPDEST PUSH1 0xdb JUMPI`; the `JUMPDEST` is not a jump target (layout padding) and ran once per
+  RSA vector. It is now `OR PUSH2 0x00db JUMPI` at the same pcs.
+* The removed instruction is given back in the unreachable filler at pc 93 (`PUSH5 0` becomes
+  `PUSH4 0, PUSH0`), so indices 46..453 move up by one and everything from index 455 (pc 648) on is
+  unchanged; the image keeps 8,727 instructions and 10,983 bytes.
+* Proofs: `CycleGlobal/FastP0.blk1003` ends in `pushAt 453 2 219, opAt 455 .JUMPI`;
+  `PrefixPC.eq_old` now covers 370..435 at offset 0, `eq_old2` is split into `eq_old2a` (453..454,
+  offset +2) and `eq_old2` (455..467, offset +3); the `FastDefs` pc tables and every other index
+  literal in 45..455 were rewritten old index -> pc -> new index; regenerated `Cycle/Artifact.lean`
+  and `Cycle/Bytes.lean`.
+
+# Current refinement: two never-read setup stores dropped (E5 entry cache at `0x06a2`, kernel zero at `0x0800`; -124 gas per draw)
+
+* Conversion setup E5 (pc 2663) computed `entry = 3017 - 29 * n` and stored it at `0x06a2`
+  (`DUP1 PUSH1 29 MUL PUSH2 3017 SUB PUSH2 0x06a2 MSTORE`, 23 gas). Nothing reads that word, so the
+  eight instructions and the following `PUSH1 32` are now one `PUSH13 32` (every pc unchanged).
+* Kernel setup (pc 3240) stored a zero word at `0x0800` (`PUSH0 PUSH2 0x0800 MSTORE`, 8 gas). Every
+  kernel writes that row word before reading it (the square route even preclears it with the calldata
+  copy), so the store is gone; `SWAP2 PUSH1 0x1f` becomes `SWAP2 PUSH6 0x1f` and every pc is unchanged.
+* Both run once per RSA vector: -31 per vector, -124 per draw on every seed.
+* Proofs: the two wrapper memories become the identity (`Fast/ShiftCacheModel.cacheMem mem n := mem`,
+  `Fast/SquarePartialClear.memory mem := mem`), so their read/represent lemmas are `rfl`; the
+  `StepInv.cache` field and `read_cache` uses are gone; the E5 lemmas (`CycleGlobal/ShiftTrace3`) and
+  their consumers (`ShiftTrace4`, `RootE3Bindings`) drop the `0x06a2` layer; `TnM128Setup.clearProgram`
+  is empty and `pointersJumpProgram` uses `PUSH6 31`; `PrefixPC.eq_old_tail11/12` re-cut;
+  `CycleCaller/Terminal` proves the caller-stack field through the definitions. Instructions are given
+  back in unreachable fillers (pc 3482, 3697, 4804); the image keeps 8,727 instructions.
+
+# Current refinement: the shift-reduce loop heads no longer clear the `t` top limb (-168 gas per draw)
+
+* Both conversion loop heads (eight limbs at pc 2714, four limbs at 10754) ran
+  `PUSH0 PUSH2 top MSTORE` after the `MCOPY` on every digit step (21 steps per draw). Nothing reads that
+  word before the section's first block (`rideTopProgramNP`) overwrites it, so the store is gone; the
+  next push is widened to `PUSH7 0x0820` so every pc is unchanged.
+* Proofs: the machine runs on `uMem0 = mcopy` while the model keeps `uMem` (top cleared);
+  `Fast/M9MacRun.run_ride_top_np_stale` and the new `CycleGlobal/M9MacStale` (`l1StepOn_stale`,
+  `gasSteps_block0_stale`, `gasSteps_zero4_stale`, `gasSteps_macChain_stale`) show the section reaches
+  the old conclusion from `uMem0`; `M9MacShift.gasSteps_macSection_stale`, `ShiftStates` (`uMem0`,
+  `estimateState` at `headPC + 9`), `ShiftPaths`, `ShiftTrace2`, `ShiftTrace4`; `PrefixPC.eq_old_tail12`
+  offset +15; three instructions given back at pc 3697 (eight limbs), image 8,727 instructions.
+
+# Current refinement: the staged square entry no longer overwrites two never-read frame slots (-60 gas per draw)
+
+* pc 3728: `JUMPDEST PUSH2 0x14b1 SWAP2 POP PUSH0 SWAP3 POP PUSH4 0x1e0 SUB` -> `JUMPDEST PUSH12 0x1e0 SUB`.
+  The two slots keep their previous values (the setup call's return address 3728 and `pb - 32 = 480`)
+  instead of 5297 and 0; no path ever reads either slot. 15 gas per RSA vector.
+* The six instructions are given back in the unreachable filler at pc 3905 (`PUSH5` + six `POP`s).
+* Proofs: `SquareStagedEntry` (program, block `2879 3 3728`, `h1State`), `CycleCaller/Blocks`,
+  `CycleCaller/Prefix.frame` (`hd := 3728`, `w3 := 480`), `R5Head` frame stack; indices of pcs
+  3743..3904 rewritten; `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
+# Current refinement: the eight-limb conversion block 5 no longer starts with a `JUMPDEST` (-14 gas per draw)
+
+* Nothing jumps to pc 2933 since the four-limb head got private chain copies, but every eight-limb
+  digit step executed its `JUMPDEST`. Block 5 is now `rideProgramW3 6 2176` (the `t`-limb load pushed as
+  `PUSH3`, the shape of `macFusedPostProgramW3`) at pc 2933; block 6 stays at 2966. The instruction is
+  given back in the unreachable filler at pc 3482 (`PUSH2 0x6161, MLOAD x8`).
+* Proofs: `Fast/M9MacRun.run_rideW3`, `CycleGlobal/M9MacBlocks.block5` (and the obsolete `jumpDest3032`
+  removed), `M9MacChain` (block 5 step), `PrefixPC.eq_old_tail13` removed and its 115 `ShiftPCs` users
+  proved by `pc_by_len`; index literals of pcs 2934..3481 rewritten.
+
+# Current refinement: the staged square entry drops its executed padding `JUMPDEST` (-4 gas per draw)
+
+* pc 3734: `PUSH0 JUMPDEST SWAP3 POP PUSH3 0x0001e0 SUB` -> `PUSH0 SWAP3 POP PUSH4 0x000001e0 SUB`
+  (same 9 bytes, same stack effect), run once by every RSA vector. The removed instruction is given
+  back by re-splitting the unreachable `PUSH12` filler at pc 3905 into `PUSH11` plus one `POP` byte,
+  so instruction indices from 3026 on are unchanged; indices of pcs 3736..3904 move down by one.
+* Proofs: `CycleGlobal/SquareStagedEntry.program` and `CycleCaller/Blocks.entryProgram` (9
+  instructions), `R5Head` (`h1Program` at index 2888), `R5/Blocks` (product segment 2 at 2911,
+  `ctl3901` at 3022); `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
+# Current refinement: the square-loop exit no longer runs six filler `JUMPDEST`s (-12 gas per draw)
+
+* The RSA-2048 square-loop counter block ended in `PUSH2 0x163e JUMPI` followed by six `JUMPDEST`s
+  (pc 7646..7651) that every loop exit executed. The jump target is now pushed as `PUSH8 0x163e`
+  (the six filler bytes become leading zero bytes of the push), so `JUMPI` sits at 7651 and the exit
+  falls straight through to the unpack block at 7652. Byte PCs are unchanged; the image now has
+  8,730 instructions (six fewer), so every instruction index after 6053 moves down by six.
+* Proofs: `Cycle/Execution/counterHead` (`.push 8 5694`, model pc 7651, `counterExitProgram` removed),
+  `Cycle/CounterControl` (`tested` at 7651, exit branch goes straight to 7652), `Cycle/LoopBlocks`
+  (`counterJumpBlock` at 7651, `counterExitBlock` removed); index literals after 6053 and the
+  instruction-count bound (8,730) rewritten mechanically in `Cycle/`, `CycleCaller/`, `CycleGlobal/`,
+  `R5/`; `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
+# Current refinement: the last three dead-frame setup padding `JUMPDEST`s are gone too (-12 gas per draw, -48 with the previous one)
+
+* `CycleCaller/DeadSetup.loadProgram` is now `PUSH0 x7, PUSH22 0x0d13` (8 instructions, same 30 bytes,
+  same output stack). The three extra instructions are given back by re-splitting the unreachable
+  `PUSH6` filler at pc 3482 (after the four-limb repair jump) into `PUSH3` plus three more `MLOAD`
+  bytes, so every instruction index from 2712 (pc 3493) on is unchanged; indices of pcs 3212..3481
+  move down by three.
+* Proofs: `DeadSetup` (length 42), `CycleCaller/Blocks`, `Cios2Dispatch` (`2467 42 3182`), `R5/Blocks`
+  (2509 / 2664), `CsubFixed` (the pc-3462 four-limb block at 2691..2703, anchor at index 2676 = pc 3447),
+  `ShiftPCs`; all index literals rewritten mechanically by old-index -> pc -> new-index.
+
+# Current refinement: nine executed padding `JUMPDEST`s dropped from the dead-frame kernel setup (-36 gas per draw)
+
+* The setup entry at pc 3182 (`CycleCaller/DeadSetup.loadProgram`) pushed its seven zero frame words
+  interleaved with twelve index-preserving `JUMPDEST`s. It now runs `PUSH0 x7, JUMPDEST x3,
+  PUSH19 0x0d13` (same 30 bytes, same output stack): -9 gas per RSA vector.
+* The nine instructions are given back by re-splitting the unreachable `PUSH9 0` at pc 3437 (after
+  the R5 tail `JUMP`) into ten `PUSH0`s, so every instruction index from 2679 (pc 3447) on is
+  unchanged. Image still 10,983 bytes / 8,736 instructions.
+* Proofs: `DeadSetup` (program, length 45), `CycleCaller/Blocks` and `Cios2Dispatch` (block
+  `2467 45 3182`), `R5/Blocks` (indices 2512 / 2667), `ShiftPCs` / `CsubFixed` index lemmas (anchor
+  moved to index 2679), `Cycle/Artifact.lean`, `Cycle/Bytes.lean` regenerated.
+
+---
+
 # Complete direct-carry port onto the current public conversion layout
 
 The measured candidate uses 362,011 gas on the standard seed-zero 44 cases,

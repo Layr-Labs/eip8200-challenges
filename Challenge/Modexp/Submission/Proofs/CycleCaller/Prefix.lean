@@ -17,8 +17,8 @@ def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512+32*n-32)
 
 def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Caller where
   pbi := qWord 8
-  hd := UInt256.ofNat 5297
-  w3 := UInt256.ofNat 0
+  hd := UInt256.ofNat 3728
+  w3 := UInt256.ofNat 480
   ent := UInt256.ofNat 3347
   m32 := UInt256.ofNat 0
   m128 := MachineState.readWord mem 128

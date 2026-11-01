@@ -66,12 +66,12 @@ private theorem instructionPC_succ
     assembleBytes_cons, assembleBytes_nil, List.append_nil, List.length_append]
 
 private theorem fastPCAnchor0 :
-    CycleSubmission.Artifact.artifact.instructionPC 403 = 578 := by
+    CycleSubmission.Artifact.artifact.instructionPC 404 = 578 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 private theorem fastPCAnchor1 :
-    CycleSubmission.Artifact.artifact.instructionPC 431 = 616 := by
+    CycleSubmission.Artifact.artifact.instructionPC 432 = 616 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -105,18 +105,18 @@ private theorem fastPCAnchor15 :
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem fastPC0 (i : Nat) (hi : 403 ≤ i) (hii : i ≤ 430) :
+@[simp] theorem fastPC0 (i : Nat) (hi : 404 ≤ i) (hii : i ≤ 431) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      [578,579,581,582,584,585,586,588,589,592,593,595,596,597,598,600,601,602,604,605,606,608,609,611,612,613,614,615][i - 403]! := by
-  have hsplit : i = 403 + (i - 403) := by omega
+      [578,579,581,582,584,585,586,588,589,592,593,595,596,597,598,600,601,602,604,605,606,608,609,611,612,613,614,615][i - 404]! := by
+  have hsplit : i = 404 + (i - 404) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor0]
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
 
-@[simp] theorem fastPC1 (i : Nat) (hi : 431 ≤ i) (hii : i ≤ 468) :
+@[simp] theorem fastPC1 (i : Nat) (hi : 432 ≤ i) (hii : i ≤ 468) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      [616,617,619,620,621,624,625,626,627,628,629,630,631,632,633,636,637,638,639,642,643,644,645,646,648,649,650,653,654,655,657,658,661,662,664,665,666,670][i - 431]! := by
-  have hsplit : i = 431 + (i - 431) := by omega
+      [616,617,619,620,621,624,625,626,627,628,629,630,631,632,633,636,637,638,639,642,643,644,645,648,649,650,653,654,655,657,658,661,662,664,665,666,670][i - 432]! := by
+  have hsplit : i = 432 + (i - 432) := by omega
   conv_lhs => rw [hsplit, instructionPC_add, fastPCAnchor1]
   rw [← PCFast.byteLength_eq_assemble]
   interval_cases i <;> rfl
@@ -171,7 +171,7 @@ private theorem fastPCAnchor15 :
 
 theorem jumpDest1196 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 533 = true :=
-  CycleSubmission.Global.Binding.jumpDest 369 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 370 (by rfl)
 
 theorem jumpDest3412 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2317 = true :=
@@ -182,9 +182,9 @@ theorem jumpDest1812 :
   CycleSubmission.Global.Binding.jumpDest 487 (by rfl)
 
 theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3717 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2872 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2865 (by rfl)
 
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3706 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2865 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2858 (by rfl)
 
 end CycleSubmission.Global.Fast

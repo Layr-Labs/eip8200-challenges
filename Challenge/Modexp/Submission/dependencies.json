@@ -1,5 +1,45 @@
 [
   {
+    "submissionId": "733f8a93-d281-41bc-8e9f-8797ab783343",
+    "rationale": "Direct parent: aerugo-ef's promoted frontier (362,442; direct radix-240 carry recovery for all 24 uncancelled handoffs in the five- and nine-digit kernels). This tree is that tree with my own B..K refinement series (developed on 9b28324d -> 846b17f0 -> 8de1dd4c) ported on top.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 93..98, 645..647, 2663..2676, 2723..2730, 2933..2948, 3182..3211, 3240..3247, 3437..3446, 3482..3492, 3697..3705, 3728..3742, 3905, 4804..4813, 7642..7651 and 10763..10770 (none overlap its kernel edits at 4390..10229); proofs merged pc-anchored (index literals of both lines rewritten old index -> pc -> new index, then a 3-way merge), regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "8de1dd4c-ac8c-40fb-a3cc-3fd503ff36eb",
+    "rationale": "Own ancestor of the ported series (rejected only because 733f8a93 was promoted first; its change is included here): never-read RSA setup stores at 0x06a2 and 0x0800 dropped. This tree additionally folds the entry check's padding JUMPDEST at pc 645 into the bail push.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 93..98 and 645..647; proof edits in CycleGlobal/FastP0, CycleGlobal/PrefixPC (eq_old shifted, eq_old2 split into eq_old2a/eq_old2), CycleGlobal/ShiftTrace3 (simp attribute list), CycleGlobal/FastDefs pc tables and mechanical index rewrites in 45..455; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "846b17f0-87bd-4dc9-8242-48340dcc8350",
+    "rationale": "Own ancestor of the ported series (promoted frontier at 363,991): the shift-reduce loop heads no longer clear the t top limb. This tree additionally drops the never-read E5 entry cache store at 0x06a2 and the kernel setup's zero store at 0x0800.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2663..2676, 3240..3247, 3482..3484, 3697..3698 and 4804..4813; proof edits in Fast/ShiftCacheModel, Fast/SquarePartialClear, Fast/SquarePreclearMemory, Fast/TnM128SetupZero, Fast/TnM128SetupEntry, Fast/ShiftTrace4/5, Fast/RootE3Memory, CycleGlobal/ShiftTrace3/4/5, RootE3Bindings, ShiftPaths, PrefixPC, ShiftPCs, CycleCaller/DeadSetup, CycleCaller/Terminal and mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "f7477d8c-68fa-4bbf-a759-6d6cbb0dcc6e",
+    "rationale": "Own ancestor of the ported series (promoted frontier at 364,159): staged-entry dead slot overwrites removed. This tree drops the shift-reduce loop heads' never-read top-limb clears.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2723..2730, 3697..3705 and 10763..10770; proof edits in Fast/M9MacRun (run_ride_top_np_stale), new CycleGlobal/M9MacStale, CycleGlobal/M9MacShift, ShiftStates, ShiftPaths, ShiftTrace2, ShiftTrace4, PrefixPC, ShiftPCs and mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "0e2e44e6-229e-4c5b-9c24-46aca3fc702f",
+    "rationale": "Own ancestor of the ported series (E+F: conversion block 5 and staged-entry padding). This tree removes the staged entry's two dead frame-slot overwrites.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 3728..3742 and 3905; proof edits in CycleGlobal/SquareStagedEntry, CycleCaller/Blocks, CycleCaller/Prefix, CycleGlobal/R5Head, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "4285f46d-d817-4e7a-b52a-3259d9db1d26",
+    "rationale": "Own ancestor of the ported series (promoted frontier at 364,237). Included unchanged apart from the conversion chain block 5 (pc 2933..2965), the staged entry (pc 3734..3742), two unreachable fillers and the index literals that follow.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2933..2965, 3482..3492, 3734..3742 and 3905; proof edits in Fast/M9MacRun (new run_rideW3), CycleGlobal/M9MacBlocks, M9MacChain, PrefixPC (eq_old_tail13 removed), ShiftPCs, ShiftTrace3, SquareStagedEntry, CycleCaller/Blocks plus mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "670bc87a-6afd-4a84-94d0-68407138409e",
+    "rationale": "Own ancestor of the ported series (promoted frontier at 364,249). Included unchanged apart from the square-loop counter jump push (pc 7642..7651) and the instruction-index literals that follow from removing six instructions.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 7642..7651; proof edits in Cycle/Execution/counterHead, Cycle/CounterControl, Cycle/LoopBlocks and mechanical index/count rewrites (8736 -> 8730) in Cycle, CycleCaller, CycleGlobal and R5 files; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
+    "submissionId": "62bac208-f906-4aeb-a8b2-46e687a20586",
+    "rationale": "Own ancestor of the ported series (rejected on a bump draw): nine of the twelve dead-frame setup padding JUMPDESTs removed (-36/draw). This tree removes the remaining three.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 3182..3211 and 3482..3492; proof edits in CycleCaller/DeadSetup, CycleCaller/Blocks, CycleGlobal/Cios2Dispatch, CycleGlobal/CsubFixed, CycleGlobal/ShiftPCs, R5/Blocks and the regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "9b28324d-2c0d-406b-9b13-14f8c0b36888",
     "rationale": "Immediate source parent: private four-limb conversion path and all inherited MODEXP routes and proofs.",
     "evidence": "Commit 55b84fa420d7f2c5253ef7502af3d14b4e36f1a1; the carry recovery is extended to all 24 uncancelled handoffs."

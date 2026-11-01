@@ -648,7 +648,7 @@ def bigBailState (s : State) (input : ByteArray) : State :=
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 
 theorem jumpDestBig : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 145 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
 
 /-! ## The parity check -/
 

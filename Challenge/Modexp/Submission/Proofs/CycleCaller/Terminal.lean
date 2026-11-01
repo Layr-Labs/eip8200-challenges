@@ -47,7 +47,10 @@ noncomputable opaque run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     hmod' ha' hb' hinv' hN hodd hB (decode_form N A hN hodd)
     (CallerPrefix.guard_bound mem A ha' hg)
   change GasSteps entry done at tr
-  refine ⟨done, lead.trans tr, halt, ?_, calls⟩
+  -- stated through the definitions: a bare defeq check would compare the two states' memories
+  have hcalls : done.callStack = (call s mem k ret tail).callStack := by
+    rw [calls]; simp only [entry, stateAt, call]
+  refine ⟨done, lead.trans tr, halt, ?_, hcalls⟩
   rw [result, product_eq N A B k hN hodd]
   exact bytes
 

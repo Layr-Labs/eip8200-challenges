@@ -114,17 +114,17 @@ theorem jumpDest3953 :
 /-- `modexpBig` (pc 219), the target of every recogniser miss. -/
 theorem jumpDestBail :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 145 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
 
 /-- `modexpBig` (pc 237), where the trampoline lands. -/
 theorem jumpDestBigC :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 145 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3181 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2466 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2455 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the
