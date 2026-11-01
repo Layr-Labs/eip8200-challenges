@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "846b17f0-87bd-4dc9-8242-48340dcc8350",
+    "rationale": "Direct parent (own, promoted frontier at 363,991): the shift-reduce loop heads no longer clear the t top limb. This tree additionally drops the never-read E5 entry cache store at 0x06a2 and the kernel setup's zero store at 0x0800.",
+    "evidence": "bytecode.hex differs from that tree only in bytes 2663..2676, 3240..3247, 3482..3484, 3697..3698 and 4804..4813; proof edits in Fast/ShiftCacheModel, Fast/SquarePartialClear, Fast/SquarePreclearMemory, Fast/TnM128SetupZero, Fast/TnM128SetupEntry, Fast/ShiftTrace4/5, Fast/RootE3Memory, CycleGlobal/ShiftTrace3/4/5, RootE3Bindings, ShiftPaths, PrefixPC, ShiftPCs, CycleCaller/DeadSetup, CycleCaller/Terminal and mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."
+  },
+  {
     "submissionId": "f7477d8c-68fa-4bbf-a759-6d6cbb0dcc6e",
     "rationale": "Direct parent (own, promoted frontier at 364,159): staged-entry dead slot overwrites removed. This tree drops the shift-reduce loop heads' never-read top-limb clears.",
     "evidence": "bytecode.hex differs from that tree only in bytes 2723..2730, 3697..3705 and 10763..10770; proof edits in Fast/M9MacRun (run_ride_top_np_stale), new CycleGlobal/M9MacStale, CycleGlobal/M9MacShift, ShiftStates, ShiftPaths, ShiftTrace2, ShiftTrace4, PrefixPC, ShiftPCs and mechanical index rewrites; regenerated Cycle/Artifact.lean and Cycle/Bytes.lean."

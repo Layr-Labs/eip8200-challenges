@@ -19,7 +19,8 @@ def stageProgram : List Instr :=
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .ADD, .push 2 1856, .op .ADD,
    .op .MCOPY]
 
-def clearProgram : List Instr := [.push 0 0, .push 2 2048, .op .MSTORE]
+/-- The `0x0800` clear is gone (the word is overwritten before any kernel reads it). -/
+def clearProgram : List Instr := []
 
 def zeroProgram : List Instr := stageProgram ++ clearProgram
 
@@ -39,7 +40,7 @@ def stagedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
 
 def clearedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3245
+  { s with pc := UInt256.ofNat 3240
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              l1Target n, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
@@ -83,22 +84,11 @@ theorem run_stageGen (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   exact ⟨(Challenge.EvmProof.Word.word_eq_ofNat_toNat s.activeWords).symm, by decide⟩
 
 theorem run_clearGen (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
-    (ent w5 dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (ent w5 dst ret : UInt256) (rest : List UInt256) (_hcap : rest.length ≤ 1005)
+    (_hact : 88 ≤ s.activeWords.toNat) :
     runInstructions clearProgram (stagedSetupState s mem hd pb n ent w5 dst ret rest) =
       some { stagedSetupState s (SquarePartialClear.memory mem) hd pb n ent w5 dst ret rest with
-        pc := UInt256.ofNat 3245 } := by
-  have hc9 : rest.length+9 < 1024 := by omega
-  have hc10 : rest.length+10 < 1024 := by omega
-  have hc11 : rest.length+11 < 1024 := by omega
-  have ha := activeWords_fix s 2048 32 (by decide) (by decide) hact
-  have h2048 : (2048 : UInt256).toNat = 2048 := by decide
-  simp [clearProgram, stagedSetupState, SquarePartialClear.memory, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, State.activeWordsAfterUInt256, ha, h2048,
-    hc9, hc10, hc11, Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.ofNat_add_mod]
-  refine ⟨by rfl, ?_⟩
-  exact (SquarePartialClear.readWord_outside mem 128 (Or.inl (by decide))).symm
+        pc := UInt256.ofNat 3240 } := rfl
 
 theorem run_zero (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1005)
@@ -122,7 +112,7 @@ def cachedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb _n : 
 
 def clearedSetupStateSq (s : State) (mem : ByteArray) (hd : UInt256) (pb n : Nat)
     (w5 dst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3245
+  { s with pc := UInt256.ofNat 3240
            stack := [hd, UInt256.ofNat (32*n), UInt256.ofNat pb,
              UInt256.ofNat 3347, w5, allOnes, MachineState.readWord mem 128, dst, ret] ++ rest
            memory := SquarePartialClear.memory mem }
@@ -178,7 +168,7 @@ theorem run_preclear (s : State) (mem : ByteArray) (n : Nat) (st : List UInt256)
   decide
 
 def pointersJumpProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .push 1 31, .op .NOT, .op .ADD,
+  [.op (.Swap ⟨1, by decide⟩), .push 6 31, .op .NOT, .op .ADD,
    .op (.Swap ⟨1, by decide⟩), .op (.Swap ⟨0, by decide⟩),
    .op (.Dup ⟨2, by decide⟩), .op .ADD,
    .op (.Dup ⟨1, by decide⟩), .op .JUMP]

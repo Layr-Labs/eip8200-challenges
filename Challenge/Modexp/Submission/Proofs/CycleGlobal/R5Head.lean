@@ -51,7 +51,7 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5334, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2882 6 3743 h1Program
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2875 6 3743 h1Program
     (by decide) (by rfl) (by rfl) (by decide)
 
 theorem cond_four : UInt256.isZero (UInt256.ofNat 128 + UInt256.ofNat (2^256 - 128)) = UInt256.ofNat 1 := by

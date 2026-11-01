@@ -124,7 +124,7 @@ theorem jumpDestBigC :
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3181 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2462 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2455 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

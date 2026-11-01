@@ -48,21 +48,7 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
 /-- The estimator words survive the cache store, which writes at 1698 -- two bytes above
 `PRE_DINV`'s word, which ends at 1696. -/
 theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
-    PreOK (ShiftCacheModel.cacheMem mem n) := by
-  obtain ⟨h1, h2, h3, h4, h5⟩ := h
-  have hread : ∀ a : Nat, a + 32 ≤ 1698 →
-      MachineState.readWord (ShiftCacheModel.cacheMem mem n) a = MachineState.readWord mem a := by
-    intro a ha
-    show MachineState.readWord (Exp.storeWord mem 1698 _) a = _
-    unfold Exp.storeWord
-    exact Csub.readWord_write_disjoint _ _ _ _ (by omega)
-  have hz := hread 0 (by omega)
-  refine ⟨?_, ?_, ?_, ?_, ?_⟩
-  · rw [hread PRE_L (by simp only [PRE_L]; omega), hz]; exact h1
-  · rw [hread PRE_DODD (by simp only [PRE_DODD]; omega), hz]; exact h2
-  · rw [hread PRE_X (by simp only [PRE_X]; omega), hz]; exact h3
-  · rw [hread PRE_BMOD (by simp only [PRE_BMOD]; omega), hz]; exact h4
-  · rw [hread PRE_DINV (by simp only [PRE_DINV]; omega), hz]; exact h5
+    PreOK (ShiftCacheModel.cacheMem mem n) := h
 
 /-- The configuration words survive a step. -/
 theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -92,7 +78,6 @@ theorem stepInv_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n)
   neg := fastRepresents_stepMem mem n mm NEG n _ hn
     ⟨Or.inr (by unfold NEG; omega), Or.inl (by unfold NEG; omega), Or.inl (by unfold NEG; omega)⟩
     inv.neg
-  cache := ShiftCacheModel.cache_survives_step mem n mm hn hn32 inv.cache
 
 theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (inv : StepInv mem n bsize mm minv) :
@@ -241,8 +226,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
     exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
       (by unfold NEG; omega)
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
-  exact ⟨hframe2, hmod2, hneg2, ShiftCacheModel.read_cache _ n,
-    PreOK_cacheMem _ n (PreOK_preMem _)⟩
+  exact ⟨hframe2, hmod2, hneg2, PreOK_cacheMem _ n (PreOK_preMem _)⟩
 
 /-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
 

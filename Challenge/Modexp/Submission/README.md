@@ -1,3 +1,20 @@
+# Current refinement: two never-read setup stores dropped (E5 entry cache at `0x06a2`, kernel zero at `0x0800`; -124 gas per draw)
+
+* Conversion setup E5 (pc 2663) computed `entry = 3017 - 29 * n` and stored it at `0x06a2`
+  (`DUP1 PUSH1 29 MUL PUSH2 3017 SUB PUSH2 0x06a2 MSTORE`, 23 gas). Nothing reads that word, so the
+  eight instructions and the following `PUSH1 32` are now one `PUSH13 32` (every pc unchanged).
+* Kernel setup (pc 3240) stored a zero word at `0x0800` (`PUSH0 PUSH2 0x0800 MSTORE`, 8 gas). Every
+  kernel writes that row word before reading it (the square route even preclears it with the calldata
+  copy), so the store is gone; `SWAP2 PUSH1 0x1f` becomes `SWAP2 PUSH6 0x1f` and every pc is unchanged.
+* Both run once per RSA vector: -31 per vector, -124 per draw on every seed.
+* Proofs: the two wrapper memories become the identity (`Fast/ShiftCacheModel.cacheMem mem n := mem`,
+  `Fast/SquarePartialClear.memory mem := mem`), so their read/represent lemmas are `rfl`; the
+  `StepInv.cache` field and `read_cache` uses are gone; the E5 lemmas (`CycleGlobal/ShiftTrace3`) and
+  their consumers (`ShiftTrace4`, `RootE3Bindings`) drop the `0x06a2` layer; `TnM128Setup.clearProgram`
+  is empty and `pointersJumpProgram` uses `PUSH6 31`; `PrefixPC.eq_old_tail11/12` re-cut;
+  `CycleCaller/Terminal` proves the caller-stack field through the definitions. Instructions are given
+  back in unreachable fillers (pc 3482, 3697, 4804); the image keeps 8,727 instructions.
+
 # Current refinement: the shift-reduce loop heads no longer clear the `t` top limb (-168 gas per draw)
 
 * Both conversion loop heads (eight limbs at pc 2714, four limbs at 10754) ran

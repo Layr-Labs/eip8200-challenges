@@ -37,13 +37,13 @@ entry at 3509. -/
 def pushProgram : List Instr := [.push 2 2412, .push 2 2112]
 
 def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3493 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2709 8 3493 entryProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2701 8 3493 entryProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 3503 pushProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2717 2 3503 pushProgram
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2709 2 3503 pushProgram
     (by decide) (by rfl) (by rfl) (by decide)
 theorem jumpDest4486 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3493 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2709 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2701 (by rfl)
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=
   UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)

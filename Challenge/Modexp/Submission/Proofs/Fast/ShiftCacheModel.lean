@@ -16,24 +16,18 @@ theorem entryWord_eq_entryPC (n : Nat) (hn : n = 4 ∨ n = 8) :
     entryWord n = UInt256.ofNat (M9Mac.entryPC n) := by
   rcases hn with h | h <;> subst h <;> rfl
 
-def cacheMem (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.storeWord mem 1698 (entryWord n)
-
-theorem read_cache (mem : ByteArray) (n : Nat) :
-    MachineState.readWord (cacheMem mem n) 1698 = entryWord n := by
-  exact Challenge.EvmProof.Memory.readWord_writeWord _ _ _
+/-- The conversion entry used to be cached at `0x6a2` (1698); nothing reads it, so the store is
+gone and the cache memory is the memory itself. -/
+def cacheMem (mem : ByteArray) (_n : Nat) : ByteArray := mem
 
 theorem read_disjoint (mem : ByteArray) (n addr : Nat)
     (h : addr + 32 ≤ 1698 ∨ 1730 ≤ addr) :
-    MachineState.readWord (cacheMem mem n) addr = MachineState.readWord mem addr := by
-  exact Exp.storeWord_readWord_disjoint mem 1698 addr (entryWord n) h
+    MachineState.readWord (cacheMem mem n) addr = MachineState.readWord mem addr := rfl
 
 theorem represents_cache (mem : ByteArray) (n ptr cnt value : Nat)
     (h : ptr + 32 * cnt ≤ 1698 ∨ 1730 ≤ ptr)
     (hr : Model.FastRepresents mem ptr cnt value) :
-    Model.FastRepresents (cacheMem mem n) ptr cnt value := by
-  exact Model.fastRepresents_writeWord_disjoint mem 1698 ptr cnt value (entryWord n).toNat
-    (Or.symm h) hr
+    Model.FastRepresents (cacheMem mem n) ptr cnt value := hr
 
 theorem cache_survives_step (mem : ByteArray) (n mm : Nat) (hn : 1 ≤ n) (hcap : n ≤ 8)
     (h : MachineState.readWord mem 1698 = entryWord n) :

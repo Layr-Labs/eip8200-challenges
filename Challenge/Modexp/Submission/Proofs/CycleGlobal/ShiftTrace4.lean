@@ -201,7 +201,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
-        (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
+        (Exp.storeWord (preMem (negStep mem n n).memory) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -223,7 +223,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
-        (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
+        (Exp.storeWord (preMem (negStep mem n n).memory) 1760
           (UInt256.ofNat 0)) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -244,7 +244,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
       (shiftLoopState (UInt256.ofNat 0) s
-        (Exp.storeWord (Exp.storeWord (preMem (negStep mem n n).memory) 1698 (shiftEntry n)) 1760
+        (Exp.storeWord (preMem (negStep mem n n).memory) 1760
           (UInt256.ofNat 1)) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e

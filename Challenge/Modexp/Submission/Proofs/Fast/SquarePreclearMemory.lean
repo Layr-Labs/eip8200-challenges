@@ -42,28 +42,7 @@ private theorem zero_prefix_byte (s : State) (n k : Nat) (hk : k < 32) :
     Monpro.natToBytesPadded_zero_byte 32 k hk]
 
 private theorem partial_after_mpZeroed (s : State) (mem : ByteArray) (n : Nat) :
-    SquarePartialClear.memory (Monpro.mpZeroed s mem n) = Monpro.mpZeroed s mem n := by
-  unfold SquarePartialClear.memory Monpro.mpZeroed
-  have hsize :
-      (SquarePartialClear.memory (Monpro.mpZeroed s mem n)).size =
-        (Monpro.mpZeroed s mem n).size := by
-    simp only [SquarePartialClear.memory, Monpro.mpZeroed,
-      MachineState.writeBytes_size,
-      Challenge.EvmProof.Memory.readPadded_size,
-      YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
-    split_ifs <;> omega
-  apply ByteArray.ext_getElem hsize
-  intro i hi hi'
-  rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi,
-    ← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi']
-  simp only [SquarePartialClear.memory, Monpro.mpZeroed,
-    MachineState.writeBytes_getElem?_getD,
-    YulEvmCompiler.BytesLemmas.natToBytesPadded_size,
-    Challenge.EvmProof.Memory.readPadded_size]
-  by_cases hp : 2048 ≤ i ∧ i < 2080
-  · rw [if_pos hp, if_pos (by omega)]
-    exact (zero_prefix_byte s n (i - 2048) (by omega)).symm
-  · rw [if_neg hp]
+    SquarePartialClear.memory (Monpro.mpZeroed s mem n) = Monpro.mpZeroed s mem n := rfl
 
 theorem mpZeroed_idem (s : State) (mem : ByteArray) (n : Nat) :
     Monpro.mpZeroed s (Monpro.mpZeroed s mem n) n = Monpro.mpZeroed s mem n := by
