@@ -1,3 +1,27 @@
+# Current refinement: negated carry difference in the square kernels (-2 gas per site, -306 gas per draw)
+
+* Eight carry-recovery sites of the form `SWAP1 SUB DUPk ADD` (`k = 9` in the nine-digit square
+  columns 9, 10, 11, 13 (twice) and 14 at pcs 6876, 7046, 7182, 7396, 7483, 7596; `k = 15` in the
+  five-digit square columns 5 and 8 at pcs 4426, 4686), plus the nine-digit square column 12 site
+  at pc 7302 that straddles generated parts 7/8, become `JUMPDEST SUB DUPk SUB`: the kernel
+  computes the negated difference `lo - z` and subtracts it, `x - (lo - z) = x + (z - lo)` in
+  wrapping 256-bit arithmetic. Same bytes, same instruction count, 1-gas `JUMPDEST` in place of
+  the 3-gas `SWAP1`; each site runs once per Montgomery square (17 times per e = 65537 vector).
+* Typical draw 360,381 -> 360,075; seed 0 360,789 -> 360,483. (An eight-site version, `07fbb547`,
+  verified but drew an unfavourable seed: 360,569.)
+* The other twelve such sites (five-digit square column 6, the product columns, and the sites that
+  straddle a generated part boundary) are left unchanged: with all fourteen in-part sites the
+  protected renderer's `abbrev bytecode` exceeds `maxRecDepth 16384` (content-sensitive; this
+  set of eight was checked with `scripts/yukon_benchmark.py prepare` + `lake env lean`).
+* Proofs: `Bytecode/WindowNibbleDefs.sub_sub_swap` (`c - (a - b) = c + (b - a)`); the eight part
+  programs and their column programs in `Cycle/Execution/Square{9,10,11,13,14}.lean` and
+  `R5/ExecSquare.lean` (`sqCol5part8`, `sqCol8part3`) with `sub_sub_swap` added to each part's
+  `simp` set; models, column theorems and everything downstream unchanged. For the column-12
+  boundary site, part 7 now ends with `JUMPDEST` (its model's top two words swap), part 8's model
+  computes `x1 - x0`, and the column theorem's two intermediate stack statements swap the same
+  two words; the column model is unchanged. Regenerated
+  `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+
 # Current refinement: shift-form merged entry test at pc 25 (-4 gas on every 32-byte-base vector, -141 gas per draw)
 
 * pc 25..38 `DUP2 NOT DUP2 ADD PUSH0 CALLDATALOAD PUSH1 0x20 EQ MUL PUSH2 0x02e9 JUMPI` (41 gas)
