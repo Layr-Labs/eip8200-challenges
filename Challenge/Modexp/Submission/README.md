@@ -1,3 +1,27 @@
+# Current refinement: shift-form merged entry test at pc 25 (-4 gas on every 32-byte-base vector, -141 gas per draw)
+
+* pc 25..38 `DUP2 NOT DUP2 ADD PUSH0 CALLDATALOAD PUSH1 0x20 EQ MUL PUSH2 0x02e9 JUMPI` (41 gas)
+  becomes pc 25..39 `DUP2 DUP2 SUB PUSH2 0x1fff PUSH1 0x01 CALLDATALOAD SUB SHR PUSH2 0x02e9 JUMPI`
+  (37 gas). The unaligned word at 1 is exactly `baseSize * 256` for a valid tuple, so the shift
+  `CALLDATALOAD(1) - 8191` is 1 for a 32-byte base and at least 256 (word vanishes) for every
+  other valid base size. A nonzero word therefore still means "32-byte base and
+  `modulus - exponent` is not 0 or 1"; every other header falls through unchanged.
+* The base-size recheck, the Fermat join and the prime jump move up one byte (39 -> 40, 47 -> 48,
+  56 -> 57); the general-width entry's `PUSH1 0x2f` at pc 132 becomes `PUSH1 0x30`.
+* The memo answer pad moves from pc 60 to 61 (`PUSH2 0x003c` at pc 733 -> `0x003d`) and returns
+  with the Fermat exit `PUSH0 MSTORE MSIZE PUSH0 RETURN` (one byte shorter, 1 gas cheaper; memory is
+  untouched on that route), with an unreachable `PUSH0` at pc 100. Instruction count (8,670),
+  byte count (11,028) and every instruction index from pc 101 on are unchanged.
+* Seed-0 gas 360,930 -> 360,789; typical draw 360,522 -> 360,381 (32 vectors with a 32-byte base:
+  -4 each; three memo/Fermat vectors: -1 each).
+* Proofs: `CycleGlobal/FermatNext` (new `mergeProgram`/`mergeWord`, block pcs 40/48/57, genLoad
+  target 48), `CycleGlobal/FermatGas` (`readWord1_toNat`, `mergeShift_toNat`, `mergeWord_ne32`,
+  rewritten `wideHandled`/`missSteps`), `CycleGlobal/EarlyWordCorrect` (`missSteps` takes the
+  base/exponent size bounds, `genBig` takes `ValidInput`), `CycleGlobal/ArtifactWindowPaths`
+  (indices 15/25/31/38), `CycleGlobal/MemoPaths` (hit jump to 61), `CycleGlobal/MemoHit` (answer
+  pad as an `MSIZE` block via `WindowTwentyOneMsize.Block.stepsX` and `FermatProgram.run_exit`);
+  regenerated `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+
 # Current refinement: empty-modulus early return and a zero-exponent fast path (-282 gas per draw)
 
 * pc 578 (RSA-route test) now jumps to the former unreachable filler at pc 737, which is

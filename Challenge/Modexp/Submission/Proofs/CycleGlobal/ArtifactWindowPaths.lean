@@ -112,26 +112,26 @@ private def fermat_fast :
 
 private def fermat_merge :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 25 FermatNext.mergeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 15 11 25 FermatNext.mergeProgram
-    (by exact Nat.le_trans (by decide : 15+11 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 15 10 25 FermatNext.mergeProgram
+    (by exact Nat.le_trans (by decide : 15+10 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_recheck :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 39 FermatNext.recheckProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 26 6 39 FermatNext.recheckProgram
-    (by exact Nat.le_trans (by decide : 26+6 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 40 FermatNext.recheckProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 25 6 40 FermatNext.recheckProgram
+    (by exact Nat.le_trans (by decide : 25+6 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_join :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 47 FermatNext.joinProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 32 7 47 FermatNext.joinProgram
-    (by exact Nat.le_trans (by decide : 32+7 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 48 FermatNext.joinProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 31 7 48 FermatNext.joinProgram
+    (by exact Nat.le_trans (by decide : 31+7 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_toPrime :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 56 FermatNext.toPrimeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 39 2 56 FermatNext.toPrimeProgram
-    (by exact Nat.le_trans (by decide : 39+2 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 57 FermatNext.toPrimeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 38 2 57 FermatNext.toPrimeProgram
+    (by exact Nat.le_trans (by decide : 38+2 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm)) (by rfl)
     (by rw [locations_map_instruction]; rfl) (by decide)
 
 private def fermat_prime :
@@ -183,7 +183,7 @@ def fermatPaths : FermatNext.Paths CycleSubmission.Artifact.artifact .Osaka wher
   genCheck := fermat_genCheck
   genLoad := fermat_genLoad
   routeJump := by exact CycleSubmission.Global.Binding.jumpDest 517 (by rfl)
-  joinJump := by exact CycleSubmission.Global.Binding.jumpDest 32 (by rfl)
+  joinJump := by exact CycleSubmission.Global.Binding.jumpDest 31 (by rfl)
   tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3732 (by rfl)
   bigJump := by exact CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
   primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8440 (by rfl)

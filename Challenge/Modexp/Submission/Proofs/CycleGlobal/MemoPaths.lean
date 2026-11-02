@@ -56,23 +56,11 @@ def tailPath :
    pushAt 507 2 533,
    opAt 508 .JUMPI]
 
-/-- The hit exit at pc 733: jump to the answer block at pc 60. -/
+/-- The hit exit at pc 733: jump to the answer block at pc 61. -/
 def hitPrePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 509 2 60,
+  [pushAt 509 2 61,
    opAt 510 .JUMP]
-
-/-- The answer block at pc 60: push the precomputed `3^65535 mod 2^255`, store it and
-return the word. -/
-def hitPostPath :
-    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 41 .JUMPDEST,
-   pushAt 42 32 26689440342447178617115869845918039756797228267049433585260346420242739014315,
-   pushAt 43 0 0,
-   opAt 44 .MSTORE,
-   pushAt 45 2 32,
-   pushAt 46 0 0,
-   opAt 47 .RETURN]
 
 @[simp] theorem widthPCs (i : Nat) (hi : 489 ≤ i) (hii : i ≤ 494) :
     CycleSubmission.Artifact.artifact.instructionPC i =
@@ -89,12 +77,6 @@ def hitPostPath :
 @[simp] theorem answerPCs (i : Nat) (hi : 509 ≤ i) (hii : i ≤ 516) :
     CycleSubmission.Artifact.artifact.instructionPC i =
       ([733, 736, 737, 738, 741, 742, 743, 744] : List Nat)[i - 509]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
-
-@[simp] theorem answerBlockPCs (i : Nat) (hi : 41 ≤ i) (hii : i ≤ 47) :
-    CycleSubmission.Artifact.artifact.instructionPC i =
-      ([60, 61, 94, 95, 96, 99, 100] : List Nat)[i - 41]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
