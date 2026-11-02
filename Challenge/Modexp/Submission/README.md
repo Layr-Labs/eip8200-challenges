@@ -1,3 +1,28 @@
+# Current refinement: three more negated-carry sites, paid for by two operand reorders (-102 gas per draw)
+
+* The protected renderer (`scripts/yukon_benchmark.py`) fails in code generation of
+  `abbrev bytecode` once the needed `maxRecDepth` exceeds 16,384. Measured: the requirement is
+  exactly `12,410 + sum over 64-byte chunks of the number of distinct byte values`, so the parent
+  (`2ad572c4`) sits at the limit (sum 3,974).
+* Two `DUPa DUPb MUL` pairs are rewritten to the equivalent `DUP(b-1) DUP(a+1) MUL` (same gas,
+  same bytes count, operands of the product swapped), each removing two singleton byte values
+  from their chunk: pc 6986 `DUP3 DUP15` -> `DUP14 DUP4` (nine-digit square column 10, part 1)
+  and pc 9958 `DUP14 DUP9` -> `DUP8 DUP15` (nine-digit product column 17, part 4).
+* The freed budget admits three more `SWAP1 SUB DUPk ADD` -> `JUMPDEST SUB DUPk SUB` sites, each
+  executed once per Montgomery square: pc 4531 (five-digit square column 6, in part 7), pc 4615
+  (five-digit square column 7, straddling parts 4/5) and pc 7548 (nine-digit square column 14,
+  straddling parts 5/6). Distinct-value sum 3,973 (one unit spare).
+* Typical draw 360,075 -> 359,973; seed 0 360,483 -> 360,381.
+* First hosted run (`6ba85b7a`): verified 44/44, drew a rare high seed (361,651). This tree differs
+  from it only in this README line.
+* Proofs: `Bytecode/WindowNibbleDefs.word_mul_comm`; `Cycle/Execution/Square10.lean` (part 1) and
+  `Product17.lean` (part 4) add `word_mul_comm` to the part's `simp`; `R5/ExecSquare.lean`
+  (`sqCol6part7` in-part as before; `sqCol7part4/5`: part 4 ends with `JUMPDEST`, its model's top
+  two words swap, part 5 computes `x1 - x0`, the column theorem swaps the two words);
+  `Cycle/Execution/Square14.lean` (part 5 ends `JUMPDEST SUB` and models `v0 - x0`, part 6 models
+  `x8 - x0`; the column theorem states the intermediate word as `v16 - v15` and closes part 6 with
+  `sub_sub_swap`, so the column model is unchanged). Regenerated `Cycle/Artifact.lean`/`Bytes.lean`.
+
 # Current refinement: negated carry difference in the square kernels (-2 gas per site, -306 gas per draw)
 
 * Eight carry-recovery sites of the form `SWAP1 SUB DUPk ADD` (`k = 9` in the nine-digit square
