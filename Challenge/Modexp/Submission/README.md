@@ -1,3 +1,21 @@
+# Current refinement: eight product-column negated-carry sites (-32 gas per draw)
+
+* Four gas-neutral `DUPa DUPb MUL` -> `DUP(b-1) DUP(a+1) MUL` reorders free renderer budget:
+  five-digit product kernel pc 3358 (`DUP13 DUP6` -> `DUP5 DUP14`, column 3 part 2), pc 3865
+  (`DUP14 DUP6` -> `DUP5 DUP15`, column 4 part 10), pc 4883 (`DUP15 DUP6` -> `DUP5 DUP16`, column 5
+  part 2); nine-digit product kernel pc 8461 (`DUP2 DUP6` -> `DUP5 DUP3`, column 5 part 7).
+* Eight `SWAP1 SUB DUPk ADD` -> `JUMPDEST SUB DUPk SUB` sites in the product columns, each run twice
+  per draw: pcs 4956, 5047, 5116, 5163 (five-digit columns 5..8), 10093 (nine-digit column 18,
+  part 5) and the part-boundary sites 9321 (column 12, parts 3/4), 9990 (column 17, parts 7/8),
+  10171 (column 18, parts 12/13). Distinct-value sum 3,973 (limit 3,974).
+* Typical draw 359,973 -> 359,941; seed 0 360,381 -> 360,349. (A five-site subset, `4cc09d53` and
+  its re-run `433c5c54`, verified but drew unlucky seeds.)
+* Proofs: `R5/ExecProduct.lean`, `Cycle/Execution/Product5.lean` (reorders, `word_mul_comm`);
+  `R5/ExecProduct.lean`, `Product18.lean` part 5 (in-part sites, `sub_sub_swap`);
+  `Product12.lean`, `Product17.lean`, `Product18.lean` (boundary sites: the first part ends with
+  `JUMPDEST` and its model's top two words swap, the second computes `x1 - x0`, the column theorem
+  swaps the same two words). Regenerated `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+
 # Current refinement: three more negated-carry sites, paid for by two operand reorders (-102 gas per draw)
 
 * The protected renderer (`scripts/yukon_benchmark.py`) fails in code generation of

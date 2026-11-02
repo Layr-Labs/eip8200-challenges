@@ -929,8 +929,8 @@ def prCol3part2Program : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨13, by decide⟩),
    .op .MUL]
 
 def prCol3part2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
@@ -948,7 +948,7 @@ theorem prCol3part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
   have hcr : rest.length < 1024 := by omega
   have ha0 : (0 : UInt256).toNat = 0 := rfl
   have hf0 := activeWords_fix s 0 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol3part2Program, prCol3part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0]
+  simp [word_mul_comm, hz, hzn, prCol3part2Program, prCol3part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0]
 
 def prCol3part3Program : List Instr :=
   [.op .ADD,
@@ -1191,8 +1191,8 @@ def prCol3Program : List Instr :=
    .op (.Dup ⟨9, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨13, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Dup ⟨11, by decide⟩),
@@ -1664,8 +1664,8 @@ def prCol4part10Program : List Instr :=
   [.op (.Dup ⟨6, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨14, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Dup ⟨12, by decide⟩)]
@@ -1683,7 +1683,7 @@ theorem prCol4part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
       some (prCol4part10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
-  simp [hz, hzn, prCol4part10Program, prCol4part10Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
+  simp [word_mul_comm, hz, hzn, prCol4part10Program, prCol4part10Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def prCol4part11Program : List Instr :=
   [.op (.Dup ⟨4, by decide⟩),
@@ -1859,8 +1859,8 @@ def prCol4Program : List Instr :=
    .op (.Dup ⟨6, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨14, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Dup ⟨12, by decide⟩),
@@ -2124,8 +2124,8 @@ def prCol5part2Program : List Instr :=
    .op (.Dup ⟨11, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨15, by decide⟩),
    .op .MUL]
 
 def prCol5part2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
@@ -2144,7 +2144,7 @@ theorem prCol5part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
   have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
   have ha32 : (32 : UInt256).toNat = 32 := rfl
   have hf32 := activeWords_fix s 32 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, prCol5part2Program, prCol5part2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha32, hf32]
+  simp [word_mul_comm, hz, hzn, prCol5part2Program, prCol5part2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha32, hf32]
 
 #print axioms prCol5part2_run
 
@@ -2381,10 +2381,10 @@ theorem prCol5part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
 #print axioms prCol5part10_run
 
 def prCol5part11Program : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩),
+  [.op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -2403,7 +2403,7 @@ theorem prCol5part11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, prCol5part11Program, prCol5part11Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [sub_sub_swap, hz, hzn, prCol5part11Program, prCol5part11Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms prCol5part11_run
 
@@ -2430,8 +2430,8 @@ def prCol5Program : List Instr :=
    .op (.Dup ⟨11, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨15, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Dup ⟨13, by decide⟩),
@@ -2498,10 +2498,10 @@ def prCol5Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨6, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -2893,10 +2893,10 @@ def prCol6part8Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨7, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD]
+   .op .SUB]
 
 def prCol6part8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x0 x1
@@ -2911,7 +2911,7 @@ theorem prCol6part8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, prCol6part8Program, prCol6part8Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [sub_sub_swap, hz, hzn, prCol6part8Program, prCol6part8Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms prCol6part8_run
 
@@ -3006,10 +3006,10 @@ def prCol6Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨7, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -3311,10 +3311,10 @@ theorem prCol7part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 
 def prCol7part6Program : List Instr :=
   [.op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩)]
@@ -3331,7 +3331,7 @@ theorem prCol7part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, prCol7part6Program, prCol7part6Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [sub_sub_swap, hz, hzn, prCol7part6Program, prCol7part6Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms prCol7part6_run
 
@@ -3403,10 +3403,10 @@ def prCol7Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨8, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -3600,10 +3600,10 @@ def prCol8part3Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨9, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD]
+   .op .SUB]
 
 def prCol8part3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x0 x1
@@ -3618,7 +3618,7 @@ theorem prCol8part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, prCol8part3Program, prCol8part3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [sub_sub_swap, hz, hzn, prCol8part3Program, prCol8part3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms prCol8part3_run
 
@@ -3673,10 +3673,10 @@ def prCol8Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨9, by decide⟩),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),

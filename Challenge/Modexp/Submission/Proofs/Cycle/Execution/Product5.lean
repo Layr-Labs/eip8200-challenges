@@ -217,8 +217,8 @@ def productColumn5part7Program : List Instr :=
    .push 2 1792,
    .op .MLOAD,
    .op (.Swap ⟨3, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
    .op .MUL]
 
 def productColumn5part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
@@ -238,7 +238,7 @@ theorem productColumn5part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x
   have hf128 := Monpro.activeWords_fix s 128 32 (by decide) (by norm_num) hact
   have ha1792 : (1792 : UInt256).toNat = 1792 := rfl
   have hf1792 := Monpro.activeWords_fix s 1792 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, productColumn5part7Program, productColumn5part7Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128, ha1792, hf1792]
+  simp [word_mul_comm, hz, hzn, productColumn5part7Program, productColumn5part7Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha128, hf128, ha1792, hf1792]
 
 
 def productColumn5part8Program : List Instr :=
@@ -470,8 +470,8 @@ def productColumn5Program : List Instr :=
    .push 2 1792,
    .op .MLOAD,
    .op (.Swap ⟨3, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Swap ⟨3, by decide⟩),

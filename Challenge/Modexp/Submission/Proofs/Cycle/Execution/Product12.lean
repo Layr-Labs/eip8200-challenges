@@ -105,13 +105,13 @@ def productColumn12part3Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 768,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩)]
+   .op .JUMPDEST]
 
 def productColumn12part3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
   let v1 : UInt256 := UInt256.land x13 x2
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 768
-  {s with pc := UInt256.ofNat 9322, memory := v2, stack := v0 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := UInt256.ofNat 9322, memory := v2, stack := v1 :: v0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem productColumn12part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -129,7 +129,7 @@ theorem productColumn12part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
 def productColumn12part4Program : List Instr :=
   [.op .SUB,
    .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -138,7 +138,7 @@ def productColumn12part4Program : List Instr :=
    .op .MLOAD]
 
 def productColumn12part4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x0 - x1
+  let v0 : UInt256 := x1 - x0
   let v1 : UInt256 := x9 + v0
   let v2 : UInt256 := UInt256.mulMod v1 (UInt256.ofNat 2048) x9
   let v3 : UInt256 := MachineState.readWord s.memory 1280
@@ -153,7 +153,7 @@ theorem productColumn12part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
   have capacity (j : Nat) (hj : j ≤ 17) : rest.length + j < 1024 := by omega
   have ha1280 : (1280 : UInt256).toNat = 1280 := rfl
   have hf1280 := Monpro.activeWords_fix s 1280 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, productColumn12part4Program, productColumn12part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha1280, hf1280]
+  simp [sub_sub_swap, hz, hzn, productColumn12part4Program, productColumn12part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha1280, hf1280]
 
 #print axioms productColumn12part4_run
 
@@ -418,10 +418,10 @@ def productColumn12Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 768,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 7 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -586,10 +586,10 @@ theorem productColumn12_run (s : State) (carry word0 word1 word2 word3 word4 wor
     simpa only [productColumn12part1Model, v5, v6] using productColumn12part1_run (s) (v4) (word3) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) rest hcap hact
   have h2 : runInstructions productColumn12part2Program {s with pc := UInt256.ofNat 9302, memory := s.memory, stack := word17 :: word11 :: v6 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9312, memory := s.memory, stack := v10 :: v9 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} := by
     simpa only [productColumn12part2Model, v7, v8, v9, v10] using productColumn12part2_run (s) (word17) (word11) (v6) (word3) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) rest hcap hact
-  have h3 : runInstructions productColumn12part3Program {s with pc := UInt256.ofNat 9312, memory := s.memory, stack := v10 :: v9 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9322, memory := v13, stack := v11 :: v12 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} := by
+  have h3 : runInstructions productColumn12part3Program {s with pc := UInt256.ofNat 9312, memory := s.memory, stack := v10 :: v9 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9322, memory := v13, stack := v12 :: v11 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} := by
     simpa only [productColumn12part3Model, v11, v12, v13] using productColumn12part3_run (s) (v10) (v9) (word3) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) rest hcap hact
-  have h4 : runInstructions productColumn12part4Program {s with pc := UInt256.ofNat 9322, memory := v13, stack := v11 :: v12 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9340, memory := v13, stack := v17 :: v16 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} := by
-    simpa only [productColumn12part4Model, v14, v15, v16, v17] using productColumn12part4_run ({s with memory := v13}) (v11) (v12) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) rest hcap hact
+  have h4 : runInstructions productColumn12part4Program {s with pc := UInt256.ofNat 9322, memory := v13, stack := v12 :: v11 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9340, memory := v13, stack := v17 :: v16 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} := by
+    simpa only [productColumn12part4Model, v14, v15, v16, v17] using productColumn12part4_run ({s with memory := v13}) (v12) (v11) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) rest hcap hact
   have h5 : runInstructions productColumn12part5Program {s with pc := UInt256.ofNat 9340, memory := v13, stack := v17 :: v16 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9350, memory := v13, stack := word8 :: v18 :: word11 :: v16 :: v18 :: v16 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: v17 :: word14 :: word15 :: word16 :: word17 :: rest} := by
     simpa only [productColumn12part5Model, v18] using productColumn12part5_run ({s with memory := v13}) (v17) (v16) (word4) (word5) (word6) (word7) (word8) (word9) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) rest hcap hact
   have h6 : runInstructions productColumn12part6Program {s with pc := UInt256.ofNat 9350, memory := v13, stack := word8 :: v18 :: word11 :: v16 :: v18 :: v16 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: v17 :: word14 :: word15 :: word16 :: word17 :: rest} = some {s with pc := UInt256.ofNat 9360, memory := v13, stack := v20 :: v22 :: word4 :: word5 :: word6 :: word7 :: v23 :: word9 :: word10 :: word11 :: word12 :: v17 :: word14 :: word15 :: word16 :: word17 :: rest} := by

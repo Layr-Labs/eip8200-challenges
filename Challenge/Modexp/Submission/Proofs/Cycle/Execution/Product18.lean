@@ -151,10 +151,10 @@ theorem productColumn18part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
 #print axioms productColumn18part4_run
 
 def productColumn18part5Program : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩),
+  [.op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 6 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -173,7 +173,7 @@ theorem productColumn18part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 17) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, productColumn18part5Program, productColumn18part5Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [sub_sub_swap, hz, hzn, productColumn18part5Program, productColumn18part5Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms productColumn18part5_run
 
@@ -357,13 +357,13 @@ def productColumn18part12Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 1 128,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩)]
+   .op .JUMPDEST]
 
 def productColumn18part12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
   let v1 : UInt256 := UInt256.land x13 x2
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 128
-  {s with pc := UInt256.ofNat 10172, memory := v2, stack := v0 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := UInt256.ofNat 10172, memory := v2, stack := v1 :: v0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem productColumn18part12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -381,7 +381,7 @@ theorem productColumn18part12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10
 def productColumn18part13Program : List Instr :=
   [.op .SUB,
    .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 6 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -390,7 +390,7 @@ def productColumn18part13Program : List Instr :=
    .op .MLOAD]
 
 def productColumn18part13Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
-  let v0 : UInt256 := x0 - x1
+  let v0 : UInt256 := x1 - x0
   let v1 : UInt256 := x9 + v0
   let v2 : UInt256 := UInt256.mulMod v1 (UInt256.ofNat 2048) x9
   let v3 : UInt256 := MachineState.readWord s.memory 2048
@@ -405,7 +405,7 @@ theorem productColumn18part13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10
   have capacity (j : Nat) (hj : j ≤ 17) : rest.length + j < 1024 := by omega
   have ha2048 : (2048 : UInt256).toNat = 2048 := rfl
   have hf2048 := Monpro.activeWords_fix s 2048 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, productColumn18part13Program, productColumn18part13Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha2048, hf2048]
+  simp [sub_sub_swap, hz, hzn, productColumn18part13Program, productColumn18part13Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc, ha2048, hf2048]
 
 #print axioms productColumn18part13_run
 
@@ -467,10 +467,10 @@ def productColumn18Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 1 96,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 6 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -531,10 +531,10 @@ def productColumn18Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 1 128,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
+   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
-   .op .ADD,
+   .op .SUB,
    .push 6 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
@@ -668,10 +668,10 @@ theorem productColumn18_run (s : State) (carry word0 word1 word2 word3 word4 wor
     simpa only [productColumn18part10Model, v33, v34, v35, v36] using productColumn18part10_run ({s with memory := v17}) (word14) (word15) (v30) (v32) (word6) (word7) (word8) (v23) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) rest hcap hact
   have h11 : runInstructions productColumn18part11Program {s with pc := UInt256.ofNat 10155, memory := v17, stack := word13 :: v32 :: v36 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} = some {s with pc := UInt256.ofNat 10163, memory := v17, stack := v39 :: v38 :: v36 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} := by
     simpa only [productColumn18part11Model, v37, v38, v39] using productColumn18part11_run ({s with memory := v17}) (word13) (v32) (v36) (word6) (word7) (word8) (v23) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) rest hcap hact
-  have h12 : runInstructions productColumn18part12Program {s with pc := UInt256.ofNat 10163, memory := v17, stack := v39 :: v38 :: v36 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} = some {s with pc := UInt256.ofNat 10172, memory := v42, stack := v40 :: v41 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} := by
+  have h12 : runInstructions productColumn18part12Program {s with pc := UInt256.ofNat 10163, memory := v17, stack := v39 :: v38 :: v36 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} = some {s with pc := UInt256.ofNat 10172, memory := v42, stack := v41 :: v40 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} := by
     simpa only [productColumn18part12Model, v40, v41, v42] using productColumn18part12_run ({s with memory := v17}) (v39) (v38) (v36) (word6) (word7) (word8) (v23) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) rest hcap hact
-  have h13 : runInstructions productColumn18part13Program {s with pc := UInt256.ofNat 10172, memory := v42, stack := v40 :: v41 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} = some {s with pc := UInt256.ofNat 10189, memory := v42, stack := v46 :: v45 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} := by
-    simpa only [productColumn18part13Model, v43, v44, v45, v46] using productColumn18part13_run ({s with memory := v42}) (v40) (v41) (word6) (word7) (word8) (v23) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) rest hcap hact
+  have h13 : runInstructions productColumn18part13Program {s with pc := UInt256.ofNat 10172, memory := v42, stack := v41 :: v40 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} = some {s with pc := UInt256.ofNat 10189, memory := v42, stack := v46 :: v45 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} := by
+    simpa only [productColumn18part13Model, v43, v44, v45, v46] using productColumn18part13_run ({s with memory := v42}) (v41) (v40) (word6) (word7) (word8) (v23) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) rest hcap hact
   have h14 : runInstructions productColumn18part14Program {s with pc := UInt256.ofNat 10189, memory := v42, stack := v46 :: v45 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} = some {s with pc := UInt256.ofNat 10190, memory := v42, stack := v45 :: v46 :: word6 :: word7 :: word8 :: v23 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: word18 :: word19 :: rest} := by
     simpa only [productColumn18part14Model] using productColumn18part14_run ({s with memory := v42}) (v46) (v45) (word6) (word7) (word8) (v23) (word10) (word11) (word12) (word13) (word14) (word15) (word16) (word17) (word18) (word19) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14))))))))))))))
