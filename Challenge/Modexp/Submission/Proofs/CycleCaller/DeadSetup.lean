@@ -107,12 +107,13 @@ def fullEntryProgram : List Instr :=
 theorem fullEntryProgram_length : fullEntryProgram.length = 36 := rfl
 
 theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions fullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     runInstructions oldFullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} := by
   change runInstructions (Prepared.SetupPrefix.newProgram ++ oldFullEntryProgram.drop 23) _ =
     runInstructions (Prepared.SetupPrefix.oldProgram ++ oldFullEntryProgram.drop 23) _
-  simp only [runInstructions_append, Prepared.SetupPrefix.replacement_run s hd pa pb dst ret rest hcap hact]
+  simp only [runInstructions_append, Prepared.SetupPrefix.replacement_run s hd pa pb dst ret rest hcap hact hw]
 
 theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
@@ -122,6 +123,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
+    (hw : rest[1]? = some (UInt256.ofNat (32*n)))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) =
     some (TnM128Setup.outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3347)
@@ -130,6 +132,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
         MachineState.readWord mem 2720 :: zeroTn ::
         UInt256.ofNat 0 :: dst :: ret :: rest)) := by
   have h := full_run_eq {s with memory := mem} hd (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest hcap hact
+    (by rw [hw]; exact congrArg some hs32.symm)
   change runInstructions fullEntryProgram _ = runInstructions oldFullEntryProgram _ at h
   rw [show runInstructions fullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) =
     runInstructions oldFullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) from h]

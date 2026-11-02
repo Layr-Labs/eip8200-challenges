@@ -136,7 +136,7 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (env.transfer rfl rfl) rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3728) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)
-      (by decide) (by decide) (by decide) hcds hs32
+      (by decide) (by decide) (by decide) hcds hs32 _hw
       (by rw [env.code]; exact valid3728))
   exact hcommon.trans hsetup
 

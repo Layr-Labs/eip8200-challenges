@@ -129,7 +129,7 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
   setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hpaFit hpb hpbFit
-      hcds hs32 (by rw [hcode]; exact hjump))
+      hcds hs32 _hw (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` with the square-loop frame's width slot (the limb count). -/
 opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
