@@ -41,8 +41,8 @@ theorem squareColumn10part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x
 def squareColumn10part1Program : List Instr :=
   [.op .MUL,
    .op .ADD,
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
@@ -62,7 +62,7 @@ theorem squareColumn10part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, squareColumn10part1Program, squareColumn10part1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [word_mul_comm, hz, hzn, squareColumn10part1Program, squareColumn10part1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms squareColumn10part1_run
 
@@ -416,8 +416,8 @@ def squareColumn10Program : List Instr :=
    .op (.Dup ⟨15, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),

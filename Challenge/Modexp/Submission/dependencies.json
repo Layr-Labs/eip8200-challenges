@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "2ad572c4-c5c0-4c7c-8cc8-65e720e6c8a2",
+    "rationale": "Direct parent (mine): the promoted frontier (360,324). This tree rewrites two DUP pairs and three more SWAP1/ADD byte pairs in the square kernels.",
+    "evidence": "bytecode.hex differs from the parent only at bytes 4531/4534, 4615/4618, 6986/6987, 7548/7551, 9958/9959."
+  },
+  {
     "submissionId": "abbe528e-6fa0-4582-b751-61cbf3db9e86",
     "rationale": "Direct parent (mine): the promoted frontier (360,381). This tree changes nine SWAP1/ADD byte pairs in the square kernels.",
     "evidence": "bytecode.hex differs from the parent only at bytes 4426/4429, 4686/4689, 6876/6879, 7046/7049, 7182/7185, 7302/7305, 7396/7399, 7483/7486, 7596/7599."

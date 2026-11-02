@@ -89,6 +89,12 @@ theorem sub_sub_swap (a b c : UInt256) : c - (a - b) = c + (b - a) := by
   have hc : c.toNat < 2 ^ 256 := c.val.isLt
   omega
 
+/-- Wrapping multiplication of words commutes. -/
+theorem word_mul_comm (a b : UInt256) : a * b = b * a := by
+  cases a with
+  | mk a => cases b with
+    | mk b => exact congrArg UInt256.mk (Fin.mul_comm a b)
+
 theorem word_add_assoc (left middle right : UInt256) :
     (left + middle) + right = left + (middle + right) := by
   cases left with
