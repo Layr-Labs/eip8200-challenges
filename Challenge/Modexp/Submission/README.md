@@ -1,3 +1,19 @@
+# Current refinement: five product-column negated-carry sites (-20 gas per draw)
+
+* Two more gas-neutral `DUPa DUPb MUL` -> `DUP(b-1) DUP(a+1) MUL` reorders in the five-digit
+  product kernel (pc 4883 `DUP15 DUP6` -> `DUP5 DUP16`, column 5 part 2; pc 3358 `DUP13 DUP6` ->
+  `DUP5 DUP14`, column 3 part 2) free renderer budget for five more
+  `SWAP1 SUB DUPk ADD` -> `JUMPDEST SUB DUPk SUB` sites in the product columns, each run twice per
+  draw: pcs 4956, 5047, 5116, 5163 (five-digit product columns 5..8) and 10093 (nine-digit product
+  column 18, part 5). Distinct-value sum back at exactly 3,974.
+* Typical draw 359,973 -> 359,953; seed 0 360,381 -> 360,361.
+* First hosted run (`4cc09d53`): verified 44/44, drew an unlucky seed (361,241). This tree differs
+  from it only in this README line.
+* Proofs: `R5/ExecProduct.lean` (`prCol3part2`, `prCol5part2` with `word_mul_comm`;
+  `prCol5part11`, `prCol6part8`, `prCol7part6`, `prCol8part3` with `sub_sub_swap`) and
+  `Cycle/Execution/Product18.lean` (`part5`), each with the matching column-program occurrence;
+  models unchanged. Regenerated `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+
 # Current refinement: three more negated-carry sites, paid for by two operand reorders (-102 gas per draw)
 
 * The protected renderer (`scripts/yukon_benchmark.py`) fails in code generation of
