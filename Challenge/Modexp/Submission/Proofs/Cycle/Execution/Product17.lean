@@ -124,8 +124,8 @@ theorem productColumn17part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
 #print axioms productColumn17part3_run
 
 def productColumn17part4Program : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
+  [.op (.Dup ⟨7, by decide⟩),
+   .op (.Dup ⟨14, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
@@ -145,7 +145,7 @@ theorem productColumn17part4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, productColumn17part4Program, productColumn17part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
+  simp [word_mul_comm, hz, hzn, productColumn17part4Program, productColumn17part4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, Nat.add_assoc]
 
 #print axioms productColumn17part4_run
 
@@ -436,8 +436,8 @@ def productColumn17Program : List Instr :=
    .op (.Dup ⟨4, by decide⟩),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup ⟨14, by decide⟩),
    .op .MUL,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
