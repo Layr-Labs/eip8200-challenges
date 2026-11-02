@@ -80,6 +80,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
       done, result⟩
   · have s2 := FermatGas.missSteps CycleSubmission.Global.Paths.fermatPaths
       (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input hb
+      (by have := hmatch.1; omega) (by rw [hmatch.2.1]; omega)
     have s3 := FermatGas.genSteps CycleSubmission.Global.Paths.fermatPaths
       (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input hmatch.1
       (loaded input) (by simp [loaded])
@@ -98,13 +99,15 @@ def genBigState (input : ByteArray) : State :=
     pc := UInt256.ofNat 219
     stack := [UInt256.ofNat (baseSize input), UInt256.ofNat 32] ++ loaded input }
 
-def genBig (input : ByteArray) (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
+def genBig (input : ByteArray) (hvalid : ValidInput input)
+    (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
     (hb : 32 < baseSize input) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0) (genBigState input) := by
   have s1 := EarlyWordGas.steps_size_hit CycleSubmission.Global.Paths.earlyWordPaths
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl hsize
   have s2 := FermatGas.missSteps CycleSubmission.Global.Paths.fermatPaths
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input (by omega)
+    hvalid.2.1 (by rw [hsize.1]; omega)
   have hjump : Decode.isValidJumpDest
       (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.code 219 = true :=
     CycleSubmission.Global.Paths.fermatPaths.bigJump
@@ -131,7 +134,7 @@ certified wide fallback from 238. -/
 def big (input : ByteArray) (hvalid : ValidInput input)
     (hsize : exponentSize input = 32 ∧ modulusSize input = 32) (hb : 32 < baseSize input) :
     Handled input := by
-  have steps := genBig input hsize hb
+  have steps := genBig input hvalid hsize hb
   have env : WindowTwentyOneBinding.Environment CycleSubmission.Artifact.artifact .Osaka
       (genBigState input) :=
     { sizeBound := by

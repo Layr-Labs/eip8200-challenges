@@ -21,9 +21,9 @@ def withModulus (template : State) (input : ByteArray) (tail : List UInt256)
   WindowTwentyOneEntry.framed (context template input) pc
     (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 
-/-- The join point at 47 with the core frame. -/
+/-- The join point at 48 with the core frame. -/
 def joinState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  withModulus template input tail (UInt256.ofNat 47)
+  withModulus template input tail (UInt256.ofNat 48)
 
 private def fermatHandled {artifact : ProgramArtifact} {fork : Fork}
     (paths : FermatNext.Paths artifact fork) (template : State) (env : Environment artifact fork template)
@@ -99,11 +99,11 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     WindowTwentyOneGasRoute.handled legacy template env hcall input tail htail hmatch
   by_cases hs : (FermatNext.fermatDiff m e).toNat = 0
   · rw [if_pos hs] at hraw
-    have joinSteps : GasSteps (joinState template input tail) (withModulus template input tail 56) :=
+    have joinSteps : GasSteps (joinState template input tail) (withModulus template input tail 57) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
     have hjp := FermatNext.run_toPrime (context template input) (m :: coreStack input tail)
       (by simp [coreStack]; omega) hprimejump
-    have toPrimeSteps : GasSteps (withModulus template input tail 56) (withModulus template input tail 10698) :=
+    have toPrimeSteps : GasSteps (withModulus template input tail 57) (withModulus template input tail 10698) :=
       paths.toPrime.steps (ec.transfer rfl rfl) rfl hjp
     have hpraw := FermatNext.run_prime (context template input) m (coreStack input tail)
       (by simp [coreStack]; omega) htailjump
@@ -132,6 +132,63 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     have joinSteps : GasSteps (joinState template input tail) (WindowTwentyOneGasRoute.entryState template input tail) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
     exact ⟨oldFinal, ⟨joinSteps.trans oldTrace⟩, oldDone, oldResult⟩
+
+/-- The unaligned word at 1: for base and exponent sizes below `2^248` it is the base size
+shifted left by eight bits. -/
+theorem readWord1_toNat (input : ByteArray)
+    (hb : baseSize input < 2 ^ 248) (he : exponentSize input < 2 ^ 248) :
+    (MachineState.readWord input 1).toNat = baseSize input * 256 := by
+  rw [Bytes.readWord_toNat]
+  have hsplit := Bytes.bytesToNatPadded_add input 1 31 1
+  have hbsplit := Bytes.bytesToNatPadded_add input 0 1 31
+  have hesplit := Bytes.bytesToNatPadded_add input 32 1 31
+  have hlow := Bytes.bytesToNatPadded_lt_pow input 33 31
+  simp only [baseSize, exponentSize] at hb he ⊢
+  norm_num at hsplit hbsplit hesplit hlow hb he ⊢
+  rw [hbsplit] at hb ⊢
+  rw [hesplit] at he
+  rw [hsplit]
+  have h31 : (2 : Nat) ^ 248 = 256 ^ 31 := by norm_num
+  have hb0 : Precompile.bytesToNatPadded input 0 1 = 0 := by
+    by_contra hne
+    have hpos : 1 ≤ Precompile.bytesToNatPadded input 0 1 := Nat.one_le_iff_ne_zero.mpr hne
+    have : 256 ^ 31 ≤ Precompile.bytesToNatPadded input 0 1 * 256 ^ 31 :=
+      Nat.le_mul_of_pos_left _ hpos
+    omega
+  have he0 : Precompile.bytesToNatPadded input 32 1 = 0 := by
+    by_contra hne
+    have hpos : 1 ≤ Precompile.bytesToNatPadded input 32 1 := Nat.one_le_iff_ne_zero.mpr hne
+    have : 256 ^ 31 ≤ Precompile.bytesToNatPadded input 32 1 * 256 ^ 31 :=
+      Nat.le_mul_of_pos_left _ hpos
+    omega
+  rw [hb0, he0]
+  ring
+
+theorem mergeShift_toNat (input : ByteArray)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024) :
+    (MachineState.readWord input 1 - UInt256.ofNat 8191).toNat =
+      (2 ^ 256 + baseSize input * 256 - 8191) % 2 ^ 256 := by
+  rw [Word.word_toNat_sub, readWord1_toNat input (by omega) (by omega), Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt (by norm_num : 8191 < 2 ^ 256)]
+
+/-- Any valid base size other than 32 shifts by at least 256: the merged word vanishes. -/
+theorem mergeWord_ne32 (input : ByteArray) (modulus exponent : UInt256)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024) (h32 : baseSize input ≠ 32) :
+    (FermatNext.mergeWord input modulus exponent).toNat = 0 := by
+  have hs := mergeShift_toNat input hb he
+  have hge : 256 ≤ (MachineState.readWord input 1 - UInt256.ofNat 8191).toNat := by
+    rw [hs]
+    rcases Nat.lt_or_gt_of_ne h32 with hlt | hgt
+    · rw [Nat.mod_eq_of_lt (by omega)]
+      have : (2 : Nat) ^ 256 ≥ 2 ^ 20 := Nat.pow_le_pow_right (by norm_num) (by norm_num)
+      omega
+    · have hge2 : 2 ^ 256 + baseSize input * 256 - 8191 = 2 ^ 256 + (baseSize input * 256 - 8191) := by
+        omega
+      rw [hge2, Nat.add_mod_left, Nat.mod_eq_of_lt (by omega)]
+      omega
+  unfold FermatNext.mergeWord UInt256.shiftRight
+  rw [if_pos hge]
+  rfl
 
 /-- The loads at 16 (base size 32) build the core frame at the merged test (25). -/
 def fastSteps {artifact : ProgramArtifact} {fork : Fork}
@@ -189,8 +246,8 @@ theorem eq32_zero (input : ByteArray) (hb : baseSize input ≠ 32) :
     Nat.mod_eq_of_lt (by norm_num : 32 < 2 ^ 256)]
   simp [Ne.symm hb]
 
-/-- With a 32-byte base the merged test either enters the window core directly or, for
-`exponent = modulus - 1`, falls through the base-size recheck to the join at 47. -/
+/-- With a 32-byte base the merged test either enters the window core directly or
+falls through the base-size recheck to the join at 48. -/
 def wideHandled {artifact : ProgramArtifact} {fork : Fork}
     (paths : FermatNext.Paths artifact fork) (legacy : WindowTwentyOneGasRoute.Paths artifact fork)
     (template : State) (env : Environment artifact fork template) (hcall : template.callStack = [])
@@ -207,16 +264,10 @@ def wideHandled {artifact : ProgramArtifact} {fork : Fork}
     rw [ec.code]; exact paths.genJump
   have hraw := FermatNext.run_merge (context template input) m e (shiftWord input :: [])
     (by simp) hjump
-  have hmw : FermatNext.mergeWord (context template input).executionEnv.calldata m e =
-      FermatNext.fermatDiff m e := by
-    change UInt256.eq (UInt256.ofNat 32) (MachineState.readWord input 0) * FermatNext.fermatDiff m e = _
-    rw [eq32_one input hb]
-    exact ofNat_one_mul _
-  rw [hmw] at hraw
-  by_cases hs : (FermatNext.fermatDiff m e).toNat = 0
+  by_cases hs : (FermatNext.mergeWord (context template input).executionEnv.calldata m e).toNat = 0
   · rw [if_pos hs] at hraw
     have mergeSteps : GasSteps (withModulus template input [] (UInt256.ofNat 25))
-        (withModulus template input [] (UInt256.ofNat 39)) :=
+        (withModulus template input [] (UInt256.ofNat 40)) :=
       paths.merge.steps (ec.transfer rfl rfl) rfl hraw
     have hrc := FermatNext.run_recheck (context template input) (m :: coreStack input [])
       (by simp [coreStack]) hgen
@@ -225,7 +276,7 @@ def wideHandled {artifact : ProgramArtifact} {fork : Fork}
       change (UInt256.xor (UInt256.ofNat 32) (MachineState.readWord input 0)).toNat = 0
       exact (EarlyWordProgram.baseDiff_zero_iff input).mpr hb
     rw [if_pos hx] at hrc
-    have recheckSteps : GasSteps (withModulus template input [] (UInt256.ofNat 39))
+    have recheckSteps : GasSteps (withModulus template input [] (UInt256.ofNat 40))
         (joinState template input []) :=
       paths.recheck.steps (ec.transfer rfl rfl) rfl hrc
     obtain ⟨final, ⟨tail⟩, done, result⟩ :=
@@ -244,7 +295,7 @@ recheck at 39 leaves for the general-width entry at 101 with those three words o
 def missSteps {artifact : ProgramArtifact} {fork : Fork}
     (paths : FermatNext.Paths artifact fork) (template : State)
     (env : Environment artifact fork template) (input : ByteArray)
-    (hb : baseSize input ≠ 32) :
+    (hb : baseSize input ≠ 32) (hbb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024) :
     GasSteps (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 16) [])
       (WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 101)
         [MachineState.readWord input 160, MachineState.readWord input 128,
@@ -263,11 +314,8 @@ def missSteps {artifact : ProgramArtifact} {fork : Fork}
   have hraw := FermatNext.run_merge (context template input) (MachineState.readWord input 160)
     (MachineState.readWord input 128) [MachineState.readWord input 96] (by simp) hjump
   have hz : (FermatNext.mergeWord (context template input).executionEnv.calldata
-      (MachineState.readWord input 160) (MachineState.readWord input 128)).toNat = 0 := by
-    change (UInt256.eq (UInt256.ofNat 32) (MachineState.readWord input 0) *
-      FermatNext.fermatDiff (MachineState.readWord input 160) (MachineState.readWord input 128)).toNat = 0
-    rw [eq32_zero input hb]
-    exact ofNat_zero_mul_toNat _
+      (MachineState.readWord input 160) (MachineState.readWord input 128)).toNat = 0 :=
+    mergeWord_ne32 input _ _ hbb he hb
   rw [if_pos hz] at hraw
   have mergeSteps := paths.merge.steps (ec.transfer (t := WindowTwentyOneEntry.framed
       (context template input) (UInt256.ofNat 25) [MachineState.readWord input 160,
@@ -281,7 +329,7 @@ def missSteps {artifact : ProgramArtifact} {fork : Fork}
     exact fun h => hb ((EarlyWordProgram.baseDiff_zero_iff input).mp h)
   rw [if_neg hx] at hrc
   have recheckSteps := paths.recheck.steps (ec.transfer (t := WindowTwentyOneEntry.framed
-      (context template input) (UInt256.ofNat 39) [MachineState.readWord input 160,
+      (context template input) (UInt256.ofNat 40) [MachineState.readWord input 160,
         MachineState.readWord input 128, MachineState.readWord input 96]) rfl rfl) rfl hrc
   exact (fastSteps.trans mergeSteps).trans recheckSteps
 
@@ -297,7 +345,7 @@ def genSteps {artifact : ProgramArtifact} {fork : Fork}
   have h238 : Decode.isValidJumpDest (context template input).executionEnv.code 219 = true := by
     rw [ec.code]
     exact paths.bigJump
-  have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 47 = true := by
+  have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 48 = true := by
     rw [ec.code]
     exact paths.joinJump
   have hword : MachineState.readWord (context template input).executionEnv.calldata 0 =
