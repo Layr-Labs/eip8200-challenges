@@ -216,9 +216,8 @@ def squareColumn12part7Program : List Instr :=
    .op (.Dup ⟨12, by decide⟩),
    .op .AND,
    .op (.Dup ⟨0, by decide⟩),
-   .push 1 32,
-   .op .MSTORE,
-   .op .JUMPDEST]
+   .push 2 32,
+   .op .MSTORE]
 
 def squareColumn12part7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
@@ -478,9 +477,8 @@ def squareColumn12Program : List Instr :=
    .op (.Dup ⟨12, by decide⟩),
    .op .AND,
    .op (.Dup ⟨0, by decide⟩),
-   .push 1 32,
+   .push 2 32,
    .op .MSTORE,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,

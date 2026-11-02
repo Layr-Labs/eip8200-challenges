@@ -122,11 +122,10 @@ theorem squareColumn13part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x
 #print axioms squareColumn13part3_run
 
 def squareColumn13part4Program : List Instr :=
-  [.op .JUMPDEST,
-   .op .SUB,
+  [.op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]
@@ -378,11 +377,10 @@ theorem squareColumn13part12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 
 def squareColumn13part13Program : List Instr :=
   [.push 1 96,
    .op .MSTORE,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨9, by decide⟩)]
 
 def squareColumn13part13Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
@@ -456,11 +454,10 @@ def squareColumn13Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 1 64,
    .op .MSTORE,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD,
@@ -530,11 +527,10 @@ def squareColumn13Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 1 96,
    .op .MSTORE,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]

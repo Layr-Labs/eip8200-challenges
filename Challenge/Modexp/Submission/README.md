@@ -1,3 +1,31 @@
+# Current refinement: eighteen executed padding `JUMPDEST`s removed from the kernels (-216 gas per draw)
+
+* The negated-carry rewrites (`SWAP1 SUB DUPk ADD` -> `JUMPDEST SUB DUPk SUB`) left a 1-gas
+  `JUMPDEST` executed at every site purely to keep byte and instruction positions. Eighteen of
+  them are now deleted outright and their byte is absorbed by widening an adjacent `PUSH`
+  (one more leading zero byte; same value, same 3 gas), so every jump target and every part
+  boundary pc of the kernel proofs is unchanged:
+  * next `PUSH` widened (the 3 instructions between move down one byte): R5 square pcs 4426,
+    4531, 4686; R5 product pcs 4956, 5116; nine-digit square pcs 6876, 7046, 7182, 7396, 7483;
+    nine-digit product pc 10093;
+  * previous `PUSH` widened (the instructions between move up one byte): R5 square pc 4615;
+    nine-digit square pcs 7302, 7548, 7596; nine-digit product pcs 9321, 9990, 10171.
+  * The two R5 product sites 5047 and 5163 (executed twice per draw) are left, since either
+    widening would move a part boundary.
+* Every site runs once per Montgomery square (17 per e = 65537 vector) or once per product:
+  216 executions removed, i.e. exactly 216 gas on every corpus seed (Python replica of the
+  pinned EVM: typical draw 359,941 -> 359,725; seed 0 360,349 -> 360,133).
+* Byte length stays 11,028; instruction count 8,670 -> 8,652. The protected renderer's
+  distinct-byte budget improves (sum of distinct byte values per 64-byte chunk 3,973 -> 3,961),
+  so the rendered artifact needs `maxRecDepth` 16,371 of the 16,384 allowed (measured).
+* Proofs: the affected part and column programs in `R5/ExecSquare.lean`, `R5/ExecProduct.lean`,
+  `Cycle/Execution/Square{9..14}.lean`, `Cycle/Execution/Product{12,17,18}.lean` lose their
+  `JUMPDEST` and carry the widened `PUSH` (models unchanged: `JUMPDEST` is a no-op and the
+  pushed value is equal). All later instruction-index literals of the cycle artifact (block
+  slices, `IPC`, `pushAt`/`opAt`, `instructions[i]?`, the instruction count) were rewritten
+  old index -> new index; `Cycle/Artifact.lean` and `Cycle/Bytes.lean` are regenerated from
+  `bytecode.hex`.
+
 # Current refinement: eight product-column negated-carry sites (-32 gas per draw)
 
 * Four gas-neutral `DUPa DUPb MUL` -> `DUP(b-1) DUP(a+1) MUL` reorders free renderer budget:

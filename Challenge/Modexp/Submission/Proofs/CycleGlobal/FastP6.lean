@@ -56,82 +56,82 @@ pc 698 (instruction 488), which falls into the fixed-vector recogniser at pc 699
 empty stack. -/
 def blkZeroExpMiss :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8638 .JUMPDEST,
-   pushAt 8639 1 32,
-   opAt 8640 .CALLDATALOAD,
-   pushAt 8641 2 698,
-   opAt 8642 .JUMPI,
+  [opAt 8620 .JUMPDEST,
+   pushAt 8621 1 32,
+   opAt 8622 .CALLDATALOAD,
+   pushAt 8623 2 698,
+   opAt 8624 .JUMPI,
    opAt 488 .JUMPDEST]
 
 /-- A zero `esize` with `msize > 32`: the width test `PUSH1 64 CALLDATALOAD PUSH1 32 LT
 PUSH2 698 JUMPI` (instructions 8643..8648) leaves for the recogniser too. -/
 def blkZeroExpWide :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8638 .JUMPDEST,
-   pushAt 8639 1 32,
-   opAt 8640 .CALLDATALOAD,
-   pushAt 8641 2 698,
-   opAt 8642 .JUMPI,
-   pushAt 8643 1 64,
-   opAt 8644 .CALLDATALOAD,
-   pushAt 8645 1 32,
-   opAt 8646 .LT,
-   pushAt 8647 2 698,
-   opAt 8648 .JUMPI,
+  [opAt 8620 .JUMPDEST,
+   pushAt 8621 1 32,
+   opAt 8622 .CALLDATALOAD,
+   pushAt 8623 2 698,
+   opAt 8624 .JUMPI,
+   pushAt 8625 1 64,
+   opAt 8626 .CALLDATALOAD,
+   pushAt 8627 1 32,
+   opAt 8628 .LT,
+   pushAt 8629 2 698,
+   opAt 8630 .JUMPI,
    opAt 488 .JUMPDEST]
 
 /-- A zero `esize` with `1 ≤ msize ≤ 32`: the result `1 mod m` is `1 < m`, stored at
 word 0 (instructions 8638..8665, pc 10983..11022). -/
 def blkZeroExpHit :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8638 .JUMPDEST,
+  [opAt 8620 .JUMPDEST,
+   pushAt 8621 1 32,
+   opAt 8622 .CALLDATALOAD,
+   pushAt 8623 2 698,
+   opAt 8624 .JUMPI,
+   pushAt 8625 1 64,
+   opAt 8626 .CALLDATALOAD,
+   pushAt 8627 1 32,
+   opAt 8628 .LT,
+   pushAt 8629 2 698,
+   opAt 8630 .JUMPI,
+   pushAt 8631 1 64,
+   opAt 8632 .CALLDATALOAD,
+   pushAt 8633 0 0,
+   opAt 8634 .CALLDATALOAD,
+   pushAt 8635 1 96,
+   opAt 8636 .ADD,
+   opAt 8637 .CALLDATALOAD,
+   opAt 8638 (.Dup ⟨1, by decide⟩),
    pushAt 8639 1 32,
-   opAt 8640 .CALLDATALOAD,
-   pushAt 8641 2 698,
-   opAt 8642 .JUMPI,
-   pushAt 8643 1 64,
-   opAt 8644 .CALLDATALOAD,
-   pushAt 8645 1 32,
-   opAt 8646 .LT,
-   pushAt 8647 2 698,
-   opAt 8648 .JUMPI,
-   pushAt 8649 1 64,
-   opAt 8650 .CALLDATALOAD,
-   pushAt 8651 0 0,
-   opAt 8652 .CALLDATALOAD,
-   pushAt 8653 1 96,
-   opAt 8654 .ADD,
-   opAt 8655 .CALLDATALOAD,
-   opAt 8656 (.Dup ⟨1, by decide⟩),
-   pushAt 8657 1 32,
-   opAt 8658 .SUB,
-   pushAt 8659 1 3,
-   opAt 8660 .SHL,
-   opAt 8661 .SHR,
-   pushAt 8662 1 1,
-   opAt 8663 .LT,
-   pushAt 8664 0 0,
-   opAt 8665 .MSTORE]
+   opAt 8640 .SUB,
+   pushAt 8641 1 3,
+   opAt 8642 .SHL,
+   opAt 8643 .SHR,
+   pushAt 8644 1 1,
+   opAt 8645 .LT,
+   pushAt 8646 0 0,
+   opAt 8647 .MSTORE]
 
 /-- The return of the zero-exponent hit: `DUP1 PUSH1 32 SUB RETURN` returns the low
 `msize` bytes of word 0 (instructions 8666..8669). -/
 def blkZeroExpReturn :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8666 (.Dup ⟨0, by decide⟩),
-   pushAt 8667 1 32,
-   opAt 8668 .SUB,
-   opAt 8669 .RETURN]
+  [opAt 8648 (.Dup ⟨0, by decide⟩),
+   pushAt 8649 1 32,
+   opAt 8650 .SUB,
+   opAt 8651 .RETURN]
 
-@[simp] theorem zeroExpPCs (i : Nat) (hi : 8638 ≤ i) (hii : i ≤ 8669) :
+@[simp] theorem zeroExpPCs (i : Nat) (hi : 8620 ≤ i) (hii : i ≤ 8651) :
     CycleSubmission.Artifact.artifact.instructionPC i =
       [10983, 10984, 10986, 10987, 10990, 10991, 10993, 10994, 10996, 10997, 11000,
        11001, 11003, 11004, 11005, 11006, 11008, 11009, 11010, 11011, 11013, 11014,
-       11016, 11017, 11018, 11020, 11021, 11022, 11023, 11024, 11026, 11027][i - 8638]! := by
+       11016, 11017, 11018, 11020, 11021, 11022, 11023, 11024, 11026, 11027][i - 8620]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDestZeroExp :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10983 = true :=
-  CycleSubmission.Global.Binding.jumpDest 8638 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 8620 (by rfl)
 
 end CycleSubmission.Global.Fast

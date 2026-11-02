@@ -2381,11 +2381,10 @@ theorem prCol5part10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
 #print axioms prCol5part10_run
 
 def prCol5part11Program : List Instr :=
-  [.op .JUMPDEST,
-   .op .SUB,
+  [.op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]
@@ -2498,11 +2497,10 @@ def prCol5Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨6, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]
@@ -3311,11 +3309,10 @@ theorem prCol7part5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 
 def prCol7part6Program : List Instr :=
   [.op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩)]
 
@@ -3403,11 +3400,10 @@ def prCol7Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨8, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]

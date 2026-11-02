@@ -1815,11 +1815,10 @@ def sqCol5part8Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨6, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 10 2048]
+   .push 11 2048]
 
 def sqCol5part8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x1 - x0
@@ -1925,11 +1924,10 @@ def sqCol5Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨6, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 10 2048,
+   .push 11 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]
@@ -2231,11 +2229,10 @@ theorem sqCol6part6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 
 def sqCol6part7Program : List Instr :=
   [.op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩)]
 
@@ -2331,11 +2328,10 @@ def sqCol6Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨7, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]
@@ -2546,12 +2542,11 @@ theorem sqCol7part3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 def sqCol7part4Program : List Instr :=
   [.op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 30 1766847064778384329583297500742918515827483896875618958121606201292619775,
+   .push 31 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op .AND,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨8, by decide⟩),
-   .op .POP,
-   .op .JUMPDEST]
+   .op .POP]
 
 def sqCol7part4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
@@ -2630,12 +2625,11 @@ def sqCol7Program : List Instr :=
    .op .MULMOD,
    .op .ADD,
    .op (.Swap ⟨0, by decide⟩),
-   .push 30 1766847064778384329583297500742918515827483896875618958121606201292619775,
+   .push 31 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op .AND,
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨8, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
@@ -2800,11 +2794,10 @@ theorem sqCol8part2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 def sqCol8part3Program : List Instr :=
   [.op (.Swap ⟨9, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩)]
 
 def sqCol8part3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
@@ -2869,11 +2862,10 @@ def sqCol8Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .op (.Swap ⟨9, by decide⟩),
    .op .POP,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨14, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨15, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]

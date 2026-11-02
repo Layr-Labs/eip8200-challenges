@@ -244,11 +244,10 @@ theorem squareColumn10part7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x
 #print axioms squareColumn10part7_run
 
 def squareColumn10part8Program : List Instr :=
-  [.op .JUMPDEST,
-   .op .SUB,
+  [.op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD]
@@ -471,11 +470,10 @@ def squareColumn10Program : List Instr :=
    .op (.Dup ⟨0, by decide⟩),
    .push 2 800,
    .op .MSTORE,
-   .op .JUMPDEST,
    .op .SUB,
    .op (.Dup ⟨8, by decide⟩),
    .op .SUB,
-   .push 7 2048,
+   .push 8 2048,
    .op (.Dup ⟨9, by decide⟩),
    .op (.Swap ⟨1, by decide⟩),
    .op .MULMOD,

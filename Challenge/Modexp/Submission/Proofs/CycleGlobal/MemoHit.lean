@@ -73,7 +73,7 @@ def padProgram : List Instr :=
 def padBlock :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 61 padProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 40 7 61 padProgram
-    (by exact Nat.le_trans (by decide : 40+7 ≤ 8670) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm))
+    (by exact Nat.le_trans (by decide : 40+7 ≤ 8652) (Nat.le_of_eq CycleSubmission.Artifact.instructionCount.symm))
     (by rfl) (by rfl) (by decide)
 
 /-- The halted state the block returns from. -/
