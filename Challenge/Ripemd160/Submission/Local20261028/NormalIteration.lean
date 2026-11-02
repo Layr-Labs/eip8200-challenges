@@ -93,7 +93,7 @@ def gasSteps_block (s : State) (p i : Nat) (h : Compression.HashState) (limit : 
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
       {states s p i with pc := UInt256.ofNat 462, stack := StaggerPersistentFrame.frame (hashes s p h i) (UInt256.ofNat (p+64*i)) limit (masks rho)}
-      {states s p (i+1) with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 (hashes s p h i).h2 :: StaggerPersistentFrame.frame (hashes s p h (i+1)) (UInt256.ofNat (p+64*i)) limit (masks rho)} := by
+      {states s p (i+1) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 (hashes s p h i).h2 :: StaggerPersistentFrame.frame (hashes s p h (i+1)) (UInt256.ofNat (p+64*i)) limit (masks rho)} := by
   apply NormalGas.gasSteps _ _ _ _ _ hs (by rw [halt]; exact hr) (by omega) hb
   · rw [executionEnv]; exact hc
   · change (states s p i).executionEnv.fork = .Osaka

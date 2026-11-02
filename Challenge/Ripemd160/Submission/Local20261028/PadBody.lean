@@ -24,7 +24,7 @@ theorem entry_eq (len : UInt256) (h : Compression.HashState) (off limit : UInt25
 theorem tail_eq (s : State) (len : UInt256) (h : Compression.HashState) (q : WordLane)
     (off limit : UInt256) (rho : List UInt256) :
     PadEpilogue.result s len (initial h).e q (PadCorePack.suffix (initial h) off limit rho) =
-      {s with pc := UInt256.ofNat 8033, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h (PadTail.tailInput len h (PadCoreLeft79.epilogueRaw len q) q off limit)) rho} := by
+      {s with pc := UInt256.ofNat 9893, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h (PadTail.tailInput len h (PadCoreLeft79.epilogueRaw len q) q off limit)) rho} := by
   rw [initial_eq]
   rfl
 def finalState (s : State) (len : UInt256) (h : Compression.HashState)
@@ -37,8 +37,8 @@ theorem run (s : State) (len : UInt256) (h : Compression.HashState)
     (hs : rho.length ≤ 892) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = len)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load len 162)
-    (hv1 : Decode.isValidJumpDest s.executionEnv.code 4601 = true)
-    (hv2 : Decode.isValidJumpDest s.executionEnv.code 10024 = true) :
+    (hv1 : Decode.isValidJumpDest s.executionEnv.code 6504 = true)
+    (hv2 : Decode.isValidJumpDest s.executionEnv.code 6409 = true) :
     runInstrSeq template
       {s with pc := UInt256.ofNat 89, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8::DenseScheduleTemplate.mask16::rho)} =
       some (finalState s len h off limit rho) := by

@@ -20,9 +20,9 @@ def high (s : State) : State :=
 
 theorem run_special (s : State) (rho : List UInt256) (hs : rho.length ≤ 880)
     (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 10108 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 9911 = true) :
     runInstrSeq specialTemplate {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho} =
-      some {high s with pc := UInt256.ofNat 10108, stack := FirstCore.frame (UInt256.ofNat 9949) rho} := by
+      some {high s with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
   have hcap (n : Nat) (hn : n ≤ 24) : rho.length+n < 1024 := by omega
   have hactive : s.activeWordsAfterUInt256 162 32 = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords 162 ha (by decide)
@@ -36,9 +36,9 @@ theorem run_special (s : State) (rho : List UInt256) (hs : rho.length ≤ 880)
 def special (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 880)
     (ha : 34 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
-      {high s with pc := UInt256.ofNat 10108, stack := FirstCore.frame (UInt256.ofNat 9949) rho} := by
+      {high s with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
   apply PadLift.gasSteps_of_raw specialSite {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
-    {high s with pc := UInt256.ofNat 10108, stack := FirstCore.frame (UInt256.ofNat 9949) rho}
+    {high s with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho}
     e.code e.fork e.running e.noPrecompile special_pc.symm
   · apply PadLift.advancesAll_sound; decide +kernel
   · exact run_special s rho hs e.running ha (by rw [e.code]; exact valid10108)
@@ -60,13 +60,13 @@ def align (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 900)
 
 def dispatch (s : State) (e : Env s) (h : Compression.HashState) (off junk : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 980) :
-    GasSteps {s with pc := UInt256.ofNat 4578, stack := junk :: StaggerPersistentFrame.frame h off (UInt256.ofNat 9949) rho}
-      {s with pc := UInt256.ofNat 9949, stack := StaggerPersistentFrame.frame h off junk rho} := by
-  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4578, stack := junk :: StaggerPersistentFrame.frame h off (UInt256.ofNat 9949) rho}
-    {s with pc := UInt256.ofNat 9949, stack := StaggerPersistentFrame.frame h off junk rho}
+    GasSteps {s with pc := UInt256.ofNat 4622, stack := junk :: StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho}
+      {s with pc := UInt256.ofNat 4882, stack := StaggerPersistentFrame.frame h off junk rho} := by
+  apply PadLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4622, stack := junk :: StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho}
+    {s with pc := UInt256.ofNat 4882, stack := StaggerPersistentFrame.frame h off junk rho}
     e.code e.fork e.running e.noPrecompile dispatch_pc.symm
   · apply PadLift.advancesAll_sound; decide +kernel
-  · exact RawDispatch.run_dispatch s (UInt256.ofNat 4578) h off (UInt256.ofNat 9949) junk rho
+  · exact RawDispatch.run_dispatch s (UInt256.ofNat 4622) h off (UInt256.ofNat 4882) junk rho
       (by omega) e.running (by rw [e.code]; exact valid9949)
 #print axioms run_special
 #print axioms special

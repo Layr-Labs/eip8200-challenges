@@ -185,29 +185,29 @@ theorem run_template (s : State) (pc a counter r : UInt256) (rho : List UInt256)
 
 theorem template_length : template.length = 155 := by decide
 
-theorem template_endPC : pcAfter (UInt256.ofNat 9709) template = UInt256.ofNat 9917 := by
+theorem template_endPC : pcAfter (UInt256.ofNat 6144) template = UInt256.ofNat 6352 := by
   decide
 
 /-- The exact scanner window: pc9427 to pc9635, with arbitrary seed and reference. -/
 theorem run (s : State) (a counter r : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq template
-        {s with pc := UInt256.ofNat 9709, stack := [a, counter, r] ++ rho} =
+        {s with pc := UInt256.ofNat 6144, stack := [a, counter, r] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9917
+        pc := UInt256.ofNat 6352
         stack := [acc s.executionEnv.calldata r a 10, 0, r] ++ rho} := by
-  simpa only [template_endPC] using run_template s (UInt256.ofNat 9709) a counter r rho hs hrun
+  simpa only [template_endPC] using run_template s (UInt256.ofNat 6144) a counter r rho hs hrun
 
 /-- Ready-to-use specialization to the existing repeated-input equality model. -/
 theorem run_equalityAcc (s : State) (counter : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq template
         {s with
-          pc := UInt256.ofNat 9709
+          pc := UInt256.ofNat 6144
           stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0, counter,
             Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9917
+        pc := UInt256.ofNat 6352
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 10, 0,
           Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} := by
   simpa only [acc_equalityAcc] using

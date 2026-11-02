@@ -19,27 +19,27 @@ open Challenge.Ripemd160.Submission.Proofs.Bytecode
 open StackRoundTrace StackRoundTemplate J2Moves ReverseLiteralRaw
 open Arms.Scan
 
-def tramp65Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (trampTemplate 9078) :=
-  StackSiteBuilder.ofSlice (trampTemplate 9078) 6165 (by rfl)
-    (by change 6165 + (trampTemplate 9078).length ≤ Control.Artifact.submissionInstructions.length
+def tramp65Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (trampTemplate 5552) :=
+  StackSiteBuilder.ofSlice (trampTemplate 5552) 3385 (by rfl)
+    (by change 3385 + (trampTemplate 5552).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
-    (Control.StackRoundData.templateWellFormed_mem (instructions := trampTemplate 9078) (by decide)) (by decide)
-theorem tramp65_pc : tramp65Site.startPC = UInt256.ofNat 8175 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6165) = _
+    (Control.StackRoundData.templateWellFormed_mem (instructions := trampTemplate 5552) (by decide)) (by decide)
+theorem tramp65_pc : tramp65Site.startPC = UInt256.ofNat 4702 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3385) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem valid_tramp65 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 8175 = true :=
-  valid_at 6165 8175 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+theorem valid_tramp65 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4702 = true :=
+  valid_at 3385 4702 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 def gasSteps_tramp65 (input : ByteArray) :
-    GasSteps (atState (base input) 8175 []) (atState (base input) 9078 []) :=
+    GasSteps (atState (base input) 4702 []) (atState (base input) 5552 []) :=
   RecognitionLift.gasSteps_of_raw tramp65Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using tramp65_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide))
-    (run_tramp input 8175 9078 (by decide)
-      (valid_at 6360 9078 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
+    (run_tramp input 4702 5552 (by decide)
+      (valid_at 3596 5552 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
 def gasSteps_short65 (input : ByteArray) (h : input.size = 65) :
-    GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 8175 []) := by
-  have hs := Control.Patterned128Entry.shortSource_eq input 65 8175 h (by decide)
-  have hn : (Control.Patterned128Entry.shortSource input).toNat = 8175 := by rw [hs]; rfl
+    GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 4702 []) := by
+  have hs := Control.Patterned128Entry.shortSource_eq input 65 4702 h (by decide)
+  have hn : (Control.Patterned128Entry.shortSource input).toNat = 4702 := by rw [hs]; rfl
   have g := Control.Patterned128Entry.gasSteps_short input (by omega)
     (by rw [hn]; exact valid_tramp65)
   exact GasSteps.cast g rfl (by rw [hn]; rfl)

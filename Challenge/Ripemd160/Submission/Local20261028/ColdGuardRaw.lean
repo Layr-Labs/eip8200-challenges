@@ -57,7 +57,7 @@ theorem run_special (s : State) (h : Compression.HashState) (off limit : UInt256
     (ha : 34 ≤ s.activeWords.toNat) (he : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0) :
     runInstrSeq ControlSites.specialTemplate
       {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho} =
-      some {FirstEntry.high s with pc := UInt256.ofNat 188, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 9949) rho} := by
+      some {FirstEntry.high s with pc := UInt256.ofNat 188, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by
   have hcap (n : Nat) (hn : n ≤ 28) : rho.length+n < 1024 := by omega
   have hat : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 162 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords 162 ha (by decide)

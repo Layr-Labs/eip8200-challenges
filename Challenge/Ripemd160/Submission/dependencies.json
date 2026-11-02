@@ -1,22 +1,37 @@
 [
   {
-    "submissionId": "64ee24d7-1e41-474c-88c9-e0e2091d539e",
-    "rationale": "Direct parent (own promoted submission): two fall-through JUMPDESTs removed, on top of our earlier promoted refinements of the 5b5782e2 tree. This ticket keeps it and replaces the three zero stores of the 32-byte table builder by masked table entries.",
-    "evidence": "Every byte before the 32-byte table builder is identical to the parent; proof files outside the builder lemmas and the regenerated mirrors are unchanged."
-  },
-  {
-    "submissionId": "f66f7ebb-ebd6-473e-b5a8-91c2eaa39948",
-    "rationale": "Direct parent (own promoted submission): constant store removed from the 32-byte table builder, on top of our direct final stores and the promoted tree 5b5782e2. This ticket keeps it and removes two fall-through JUMPDESTs (endian block and arm chain).",
-    "evidence": "Every byte outside the two removed markers and their widened pushes is identical to the parent; proof files outside the listed ones differ only in instruction-index literals."
-  },
-  {
-    "submissionId": "00c62922-d938-4573-a9e7-9f518a163c6b",
-    "rationale": "Direct parent (own promoted submission): direct final stores in the final-padding output, on top of the promoted tree 5b5782e2. This ticket keeps it and removes the constant store from the 32-byte table builder.",
-    "evidence": "Every byte outside the 32-byte table builder, and every proof file outside the listed ones, is identical to the parent tree."
+    "submissionId": "0cb260a1-c264-48ca-8817-bc4705d73aba",
+    "rationale": "Current public proof-tree base and benchmark comparison. Its masked overlapping writes informed the joint table-producer/consumer integration.",
+    "evidence": "Pinned source 7246c880f7b9d96dbf11b1eb533663ae578a3595. The candidate reuses the proof graph under Challenge/Ripemd160/Submission, with changed artifact and execution bindings."
   },
   {
     "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
-    "rationale": "Direct parent: the promoted tree with all of its inherited lineage. This ticket changes only the final-padding output stores and the matching proof and artifact-mirror files.",
-    "evidence": "Every byte outside the final-padding output block is identical to the parent. The child differs from the parent only in those bytes, in PadOutput.lean and PadSites.lean, in the regenerated CandidateBytes.lean and CandidateArtifact.lean, and in README.md and dependencies.json."
+    "rationale": "Our earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
+    "evidence": "The Local20261028 table/reader contracts, ordinary and padding compressor modules, and control-flow proof graph descend from this submission. The new preparation replaces the selected execution bindings and integrates the selected retained operands and message-table layout."
+  },
+  {
+    "submissionId": "3a5055d3-b39f-4223-b9b8-0977b65ee5ec",
+    "rationale": "Executable foundation of the retained local lineage: compact checked-input recognizers and a full specialized padding compressor.",
+    "evidence": "Source ancestor 0f910f3fe47b35ed9226b825d4d184c1aa091ee9, also declared by our prior submission 5b5782e2. The selected candidate retains the recognizer/fallback and padding-compressor architecture."
+  },
+  {
+    "submissionId": "1ab7033a-a3c3-4770-9d2f-9993f553161f",
+    "rationale": "Reused formal models and proofs for scalar stages, paired lanes, input readers, metered execution, and output serialization.",
+    "evidence": "Source ancestor 0bc05710006a860e6ebb218c395aa03074d43302. Relevant retained files include Proofs/Bytecode/StaggerAlgorithm.lean, StackRoundTrace.lean, PersistentStaggerFunctional.lean and PadOnlyContract.lean."
+  },
+  {
+    "submissionId": "00c62922-d938-4573-a9e7-9f518a163c6b",
+    "rationale": "Public direct-final-store refinement retained in the local lineage.",
+    "evidence": "The final padding-output logic and its inherited PadOutput and PadSites contracts originate in this refinement; later relocation and representation changes require rebinding those contracts."
+  },
+  {
+    "submissionId": "f66f7ebb-ebd6-473e-b5a8-91c2eaa39948",
+    "rationale": "Public unused-constant-store removal from the specialized 32-byte table builder.",
+    "evidence": "This removed-store variant was incorporated into the producer/consumer lineage before the current code-copy table selection; its public note and source supplied the comparison."
+  },
+  {
+    "submissionId": "64ee24d7-1e41-474c-88c9-e0e2091d539e",
+    "rationale": "Public removal of fall-through jump destinations in the endian block and arm chain.",
+    "evidence": "The retained source frontier incorporated these reductions before the new joint arm-order/selector packing. Its implementation also arrives through the current public proof-tree base."
   }
 ]

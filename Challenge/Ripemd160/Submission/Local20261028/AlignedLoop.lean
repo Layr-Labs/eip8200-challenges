@@ -12,7 +12,7 @@ def entry (states : Nat → State) (hashes : Nat → Compression.HashState) (cou
   {states i with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame (hashes i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat (64*(count-i))) rho}
 def post (states : Nat → State) (hashes : Nat → Compression.HashState) (count i : Nat)
     (rho : List UInt256) : State :=
-  {states (i+1) with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame (hashes (i+1)) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat (64*(count-i))) rho}
+  {states (i+1) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame (hashes (i+1)) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat (64*(count-i))) rho}
 def padEntry (states : Nat → State) (hashes : Nat → Compression.HashState) (count : Nat)
     (rho : List UInt256) : State :=
   {states count with pc := UInt256.ofNat 64, stack := StaggerPersistentFrame.frame (hashes count) (UInt256.ofNat (1056+64*(count-1))) (Word.ofUInt32 (hashes (count-1)).h2) rho}

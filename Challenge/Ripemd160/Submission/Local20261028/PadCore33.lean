@@ -18,7 +18,7 @@ def eval (n : UInt256) (q : WordLane) : WordLane :=
 
 theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.PadRaw33.outputStack n (input n h4 q right (StaggerAlgorithm.physicalKey 32)) rho =
-      stack n h4 [ .d, .factor, .cache 350, .a, .cachedMessage 360, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerAlgorithm.physicalKey 33) rho := by
+      stack n h4 [ .d, .factor, .cache 350, .a, .literal 1109194275457955143375908765704, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerAlgorithm.physicalKey 33) rho := by
   have hkb : StaggerAlgorithm.physicalKey 32 = UInt256.ofNat 136726760529788758926252426176837954510549114783656865 := by decide
   have hka : StaggerAlgorithm.physicalKey 33 = UInt256.ofNat 136726760529788758926252426176837954510549114783656865 := by decide
   have hm : StaggerAlgorithm.mode 33 = 2 := by decide
@@ -50,11 +50,11 @@ theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt25
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
     StackRoundTrace.runInstrSeq PadRaw33.template
-      {s with pc := UInt256.ofNat 6207, stack := stack n h4 [ .d, .cache 350, .factor, .cache 350, .e, .cachedMessage 360, .pair, .upper, .k, .c, .literal 23, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 32) rho} =
-      some {s with pc := UInt256.ofNat 6248, stack := stack n h4 [ .d, .factor, .cache 350, .a, .cachedMessage 360, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerAlgorithm.physicalKey 33) rho} := by
-  have h := PadRaw33.run_actual s (UInt256.ofNat 6207) n
+      {s with pc := UInt256.ofNat 8097, stack := stack n h4 [ .d, .cache 350, .factor, .cache 350, .e, .literal 1109194275457955143375908765704, .pair, .upper, .k, .c, .literal 23, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 32) rho} =
+      some {s with pc := UInt256.ofNat 8138, stack := stack n h4 [ .d, .factor, .cache 350, .a, .literal 1109194275457955143375908765704, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerAlgorithm.physicalKey 33) rho} := by
+  have h := PadRaw33.run_actual s (UInt256.ofNat 8097) n
     (input n h4 q right (StaggerAlgorithm.physicalKey 32)) rho hstack hrun hactive hcal hmem
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 6207) PadRaw33.template = UInt256.ofNat 6248 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 8097) PadRaw33.template = UInt256.ofNat 8138 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

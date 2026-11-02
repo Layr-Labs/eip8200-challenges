@@ -1,4 +1,5 @@
 import Challenge.Ripemd160.Submission.Local20261028.CandidateArtifact
+import Challenge.Ripemd160.Submission.Local20261028.CoreBody
 import Challenge.Ripemd160.Submission.Local20261028.ModFoldLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackSiteBuilder
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PadLift
@@ -28,16 +29,16 @@ theorem wellFormed_of_check (code : List Instr) (h : code.all wellFormedCheck = 
   letI := instructionWellFormedDecidable i
   exact of_decide_eq_true ((List.all_eq_true.mp h) i hi)
 theorem actual_slice :
-    (CandidateArtifact.artifact.instructions.drop 349).take CoreBody.template.length = CoreBody.template := by
+    (CandidateArtifact.artifact.instructions.drop 350).take CoreBody.template.length = CoreBody.template := by
   rfl
 def site : GenericRoundSite CandidateArtifact.artifact .Osaka CoreBody.template :=
-  StackSiteBuilder.ofSlice CoreBody.template 349 actual_slice
-    (by change 349 + CoreBody.template.length ≤ CandidateArtifact.instructions.length
-        rw [CandidateArtifact.instruction_count, CandidateArtifact.count2]; decide)
+  StackSiteBuilder.ofSlice CoreBody.template 350 actual_slice
+    (by change 350 + CoreBody.template.length ≤ CandidateArtifact.instructions.length
+        rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
-theorem site_pc : site.startPC = UInt256.ofNat 824 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 349) = UInt256.ofNat 824
+theorem site_pc : site.startPC = UInt256.ofNat 794 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 350) = UInt256.ofNat 794
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
@@ -46,11 +47,11 @@ def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256) (rho 
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
-      {s with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h off limit rho}
-      {s with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result s.memory h) off limit rho} := by
+      {s with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h off limit rho}
+      {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result s.memory h) off limit rho} := by
   apply ModFoldLift.gasSteps_of_raw site
-    {s with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h off limit rho}
-    {s with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result s.memory h) off limit rho}
+    {s with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h off limit rho}
+    {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result s.memory h) off limit rho}
     hc hf hr hnp site_pc.symm
   · apply ModFoldLift.advancesAll_sound
     decide +kernel

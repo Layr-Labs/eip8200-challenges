@@ -17,7 +17,7 @@ def eval (memory : ByteArray) (q : WordLane) : WordLane :=
 
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RawPaired11.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 10)) rho =
-      stack memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 11) rho := by
+      stack memory h4 [ .d, .cachedMessage 180, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 11) rho := by
   have hkb : StaggerAlgorithm.physicalKey 10 = UInt256.ofNat 30169115476673038213297653277143730720156734734729216 := by decide
   have hka : StaggerAlgorithm.physicalKey 11 = UInt256.ofNat 30169115476673038213297653277143730720156734734729216 := by decide
   have hm : StaggerAlgorithm.mode 11 = 0 := by decide
@@ -44,11 +44,11 @@ theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPaired11.template
-      {s with pc := UInt256.ofNat 1464, stack := stack s.memory h4 [ .d, .cache 350, .e, .literal 23, .cachedMessage 360, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 10) rho} =
-      some {s with pc := UInt256.ofNat 1514, stack := stack s.memory h4 [ .d, .literal 23, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 11) rho} := by
-  have h := RawPaired11.run_actual s (UInt256.ofNat 1464)
+      {s with pc := UInt256.ofNat 1448, stack := stack s.memory h4 [ .d, .cache 350, .e, .cachedMessage 180, .cachedMessage 360, .pair, .upper, .a, .c, .k, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 10) rho} =
+      some {s with pc := UInt256.ofNat 1499, stack := stack s.memory h4 [ .d, .cachedMessage 180, .cachedMessage 360, .pair, .upper, .e, .b, .k, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 11) rho} := by
+  have h := RawPaired11.run_actual s (UInt256.ofNat 1448)
     (input s.memory h4 q right (StaggerAlgorithm.physicalKey 10)) rho hstack hrun hactive
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1464) RawPaired11.template = UInt256.ofNat 1514 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 1448) RawPaired11.template = UInt256.ofNat 1499 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

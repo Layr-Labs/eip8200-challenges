@@ -36,7 +36,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32) (rho : List UInt256) (h
   have ga := align s e (FirstCore.frame (UInt256.ofNat 32) rho)
     (by simp [FirstCore.frame,StaggerPersistentFrame.frame,NormalPrepare.masks]; omega) h32
   have gp := special s e rho (by omega) ha
-  have gc := FirstReadGas.complete (high s) (UInt256.ofNat 9949) rho (by omega)
+  have gc := FirstReadGas.complete (high s) (UInt256.ofNat 4882) rho (by omega)
     e.running ha e.code e.fork e.noPrecompile
   have ep : Env (prepared input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
   have gd := dispatch (prepared input) ep (resultHash input) (UInt256.ofNat 1056)
@@ -50,7 +50,7 @@ def gasSteps (input : ByteArray) (h32 : input.size = 32) (rho : List UInt256) (h
 theorem returned_spec (input : ByteArray) (h32 : input.size = 32) (rho : List UInt256) :
     (result input rho).hReturn = Challenge.Ripemd160.spec input := by
   apply Return32Serialize.returned_spec_of_hashArray
-  apply FirstMessageSpec.hash_spec (high (padCopied input)) input h32
+  apply FirstMessageSpec.hash_spec (high (padCopied input)) input h32 ?_ rfl
   change PairedScheduleMemory.writeWord (padCopied input).memory 162 FirstInitial.highWord = _
   rw [copied_memory]
 

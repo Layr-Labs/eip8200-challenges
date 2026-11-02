@@ -25,9 +25,9 @@ noncomputable def lift (s t : State)
   have h3 := (Classical.choose_spec split2).2.2
   have eu := PadTrace.executionEnv h1
   have ev := (PadTrace.executionEnv h2).trans eu
-  have pu : u.pc = UInt256.ofNat 4601 := by
+  have pu : u.pc = UInt256.ofNat 6504 := by
     exact PadTrace.ends_jump_pc hr ((congrArg (fun code => runInstrSeq code s) PadSites.front_last).symm.trans h1)
-  have pv : v.pc = UInt256.ofNat 10024 := by
+  have pv : v.pc = UInt256.ofNat 6409 := by
     exact PadTrace.ends_jump_pc hu ((congrArg (fun code => runInstrSeq code u) PadSites.middle_last).symm.trans h2)
   have g1 := PadTrace.gasSteps_of_raw PadSites.frontSite s u hc hf hr hnp
     (hpc.trans PadSites.front_pc.symm) PadSites.front_advances h1
@@ -56,8 +56,8 @@ noncomputable def gasSteps (s : State) (len : UInt256) (h : Compression.HashStat
     (DenseScheduleTemplate.mask8::DenseScheduleTemplate.mask16::rho))
     (by simp [StaggerPersistentFrame.frame]; omega) hr ha hcal
   have hb := PadBody.run (PadSetup.prepared s len) len h off limit rho hs hr ha hcal
-    (PadSetup.read s len) (by change Decode.isValidJumpDest s.executionEnv.code 4601 = true; rw [hc]; exact PadSites.valid4601)
-    (by change Decode.isValidJumpDest s.executionEnv.code 10024 = true; rw [hc]; exact PadSites.valid10024)
+    (PadSetup.read s len) (by change Decode.isValidJumpDest s.executionEnv.code 6504 = true; rw [hc]; exact PadSites.valid4601)
+    (by change Decode.isValidJumpDest s.executionEnv.code 6409 = true; rw [hc]; exact PadSites.valid10024)
   exact lift _ _ hr hc hf hnp rfl (DenseScheduleTrace.runInstrSeq_append_running hp hr hb)
 
 theorem hReturn_eq (s : State) (len : UInt256) (h : Compression.HashState)

@@ -23,7 +23,7 @@ def template : List Instr :=
   [ .op (.Dup ⟨4, by decide⟩),
     .op (.Dup ⟨4, by decide⟩),
     .op (.Dup ⟨6, by decide⟩),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 4601),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 6504),
     .op .JUMP,
     .op .JUMPDEST,
     .op (.Dup ⟨15, by decide⟩),
@@ -98,9 +98,9 @@ private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : Li
     (hactive : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4601 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
-      some {s with pc := UInt256.ofNat 4638, stack := actualOutput n x rho} := by
+      some {s with pc := UInt256.ofNat 6541, stack := actualOutput n x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
@@ -119,9 +119,9 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hactive : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4601 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
-      some {s with pc := UInt256.ofNat 4638, stack := outputStack n x rho} := by
+      some {s with pc := UInt256.ofNat 6541, stack := outputStack n x rho} := by
   simpa only [actualOutput_eq] using run_generated s pc n x rho hstack halias hkey hcache hrun hactive hcal hmem hvalid
 #print axioms run_actual
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.PadRawRight1

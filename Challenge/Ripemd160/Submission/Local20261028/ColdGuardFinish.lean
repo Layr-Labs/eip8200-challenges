@@ -27,8 +27,8 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
     (hlim : limit = UInt256.ofNat s.executionEnv.calldata.size) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho}
       { s with
-        pc := UInt256.ofNat 9998
-        stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 9949) rho
+        pc := UInt256.ofNat 6383
+        stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho
         memory := wMemory s.memory dirtyB dirtyC } := by
   have g := gasSteps_high s h off limit rho hstack hrun hcode hfork hnp hsize hne hactive hlim
   have hm := high_memory s hmemsize hzero

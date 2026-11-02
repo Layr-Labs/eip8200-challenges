@@ -65,7 +65,7 @@ def entry (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
     (hm : MachineState.writeBytes s.memory input 1056 = FirstSpec.copiedMemory input)
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1056 32) = UInt256.ofNat 34) :
     GasSteps {s with pc := UInt256.ofNat 245, stack := rho}
-      {high (copied s input) with pc := UInt256.ofNat 10108, stack := FirstCore.frame (UInt256.ofNat 9949) rho} := by
+      {high (copied s input) with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
   have ec : Env (copied s input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
   have hs32 : (copied s input).executionEnv.calldata.size = 32 := hcal ▸ h32
   have hf := frame (copied s input) ec rho hs hs32

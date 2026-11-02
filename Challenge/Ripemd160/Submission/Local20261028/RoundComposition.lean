@@ -184,12 +184,13 @@ theorem run_block (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UI
     exact DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 1006).take (4441-1006) =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 977).take 3507 =
       PcEncoding.assembleBytes (block 77) := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (960+46)).take (4441-1006) = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (960+17)).take 3507 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop15]
   decide +kernel
+#print axioms exact_bytes
 #print axioms step
 #print axioms run_block
 #print axioms exact_bytes

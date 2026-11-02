@@ -38,44 +38,44 @@ theorem run_equalityAcc (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (_hanchor : Control.KnownInputCompactState.referenceWord s.executionEnv.calldata = KnownInputData.fullWord) :
     runInstrSeq template {s with
-      pc := UInt256.ofNat 9711
+      pc := UInt256.ofNat 6146
       stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0,
         Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9914
+        pc := UInt256.ofNat 6349
         stack := [mismatch s.executionEnv.calldata] ++ rho} := by
-  have hp := Control.TerminalMulRaw.run_prefix s (UInt256.ofNat 9711)
+  have hp := Control.TerminalMulRaw.run_prefix s (UInt256.ofNat 6146)
     (DirectGuard.equalityAcc s.executionEnv.calldata 0)
     (Control.KnownInputCompactState.referenceWord s.executionEnv.calldata) rho hs hrun
-  have ht := run_terminal s (pcAfter (UInt256.ofNat 9711) Control.TerminalMulRaw.scanPrefix)
+  have ht := run_terminal s (pcAfter (UInt256.ofNat 6146) Control.TerminalMulRaw.scanPrefix)
     (Control.UnrolledRepeatRaw.foldAcc s.executionEnv.calldata
       (Control.KnownInputCompactState.referenceWord s.executionEnv.calldata)
       (DirectGuard.equalityAcc s.executionEnv.calldata 0) Control.UnrolledRepeatRaw.offsets.dropLast)
     (Control.KnownInputCompactState.referenceWord s.executionEnv.calldata) rho hs hrun
   have hh := runInstrSeq_append_running hp hrun ht
-  have hpc : pcAfter (pcAfter (UInt256.ofNat 9711) Control.TerminalMulRaw.scanPrefix) terminalTemplate = UInt256.ofNat 9914 := by decide
+  have hpc : pcAfter (pcAfter (UInt256.ofNat 6146) Control.TerminalMulRaw.scanPrefix) terminalTemplate = UInt256.ofNat 6349 := by decide
   simpa only [template, hpc, mismatch] using hh
 
 /-- Keep all earlier comparisons, replacing only the final one. -/
 theorem run_unconditional (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq template {s with
-      pc := UInt256.ofNat 9711
+      pc := UInt256.ofNat 6146
       stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0,
         Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9914
+        pc := UInt256.ofNat 6349
         stack := [mismatch s.executionEnv.calldata] ++ rho} := by
-  have hp := Control.TerminalMulRaw.run_prefix s (UInt256.ofNat 9711)
+  have hp := Control.TerminalMulRaw.run_prefix s (UInt256.ofNat 6146)
     (DirectGuard.equalityAcc s.executionEnv.calldata 0)
     (Control.KnownInputCompactState.referenceWord s.executionEnv.calldata) rho hs hrun
-  have ht := run_terminal s (pcAfter (UInt256.ofNat 9711) Control.TerminalMulRaw.scanPrefix)
+  have ht := run_terminal s (pcAfter (UInt256.ofNat 6146) Control.TerminalMulRaw.scanPrefix)
     (Control.UnrolledRepeatRaw.foldAcc s.executionEnv.calldata
       (Control.KnownInputCompactState.referenceWord s.executionEnv.calldata)
       (DirectGuard.equalityAcc s.executionEnv.calldata 0) Control.UnrolledRepeatRaw.offsets.dropLast)
     (Control.KnownInputCompactState.referenceWord s.executionEnv.calldata) rho hs hrun
   have hh := runInstrSeq_append_running hp hrun ht
-  have hpc : pcAfter (pcAfter (UInt256.ofNat 9711) Control.TerminalMulRaw.scanPrefix) terminalTemplate = UInt256.ofNat 9914 := by decide
+  have hpc : pcAfter (pcAfter (UInt256.ofNat 6146) Control.TerminalMulRaw.scanPrefix) terminalTemplate = UInt256.ofNat 6349 := by decide
   simpa only [template, hpc, mismatch] using hh
 
 theorem isZero_mismatch (input : ByteArray)

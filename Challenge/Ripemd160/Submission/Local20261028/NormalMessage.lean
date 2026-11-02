@@ -16,8 +16,8 @@ theorem ready_congr (m : ByteArray) (x y : Nat → UInt32) (hm : CoreMessage.Rea
     simp only [StaggerAlgorithm.MessageWord, StaggerAlgorithm.LegacyMessageWord] at h ⊢
     rw [← hxy _ hlb, ← hxy _ hrb]
     exact h
-  · intro j hj
-    rw [hm.scalar j hj, hxy _ (StaggerTableLayout.slots_lt j hj)]
+  · intro j hj hne
+    rw [hm.scalar j hj hne, hxy _ (StaggerTableLayout.slots_lt j hj)]
 theorem schedule_word (bs : ByteArray) (off i : Nat) (hi : i < 16) :
     (CompressionCorrect.schedule bs off)[i]! = Crypto.Ripemd160.readLE32 bs (off+i*4) := by
   interval_cases i <;> simp [CompressionCorrect.schedule, List.range']

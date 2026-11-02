@@ -22,7 +22,8 @@ def load (memory : ByteArray) (oldAddress : Nat) : UInt256 :=
   MachineState.readWord memory GeneralMessageLayout.addresses[oldAddress/18]!
 def message (memory : ByteArray) (i : Nat) : UInt256 :=
   let raw := load memory (18*StaggerTableLayout.pairIndices[i]!)
-  if i=76 then UInt256.land Paired144WordRound.pairWord raw else raw
+  if i=76 then UInt256.land Paired144WordRound.pairWord raw
+  else if i=75 then UInt256.sub raw (UInt256.ofNat 2840853838) else raw
 def right0 (memory : ByteArray) (q : WordLane) : WordLane :=
   StaggerScalarWord.step true false 4 8 (load memory 486) (UInt256.ofNat 1352829926) q
 def right1 (memory : ByteArray) (q : WordLane) : WordLane :=

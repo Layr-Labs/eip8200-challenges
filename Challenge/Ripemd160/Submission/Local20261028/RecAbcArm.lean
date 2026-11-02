@@ -27,9 +27,9 @@ def shiftedWord (input : ByteArray) : UInt256 :=
 def wordCond (input : ByteArray) : UInt256 :=
   UInt256.xor (shiftedWord input) wordMask
 
-def armEntry (input : ByteArray) : State := Control.Execution.atPC input 8329
-def emptyEntry (input : ByteArray) : State := Control.Execution.atPC input 8051
-def fallbackState (input : ByteArray) : State := Control.Execution.atPC input 8086
+def armEntry (input : ByteArray) : State := Control.Execution.atPC input 4840
+def emptyEntry (input : ByteArray) : State := Control.Execution.atPC input 4624
+def fallbackState (input : ByteArray) : State := Control.Execution.atPC input 4659
 def answerWord (input : ByteArray) : UInt256 :=
   if input.size = 0 then UInt256.ofNat 890993315260586290631548281360202943075753233713
   else UInt256.ofNat 814647003348588794217809277549781461204094028796
@@ -39,26 +39,26 @@ def answerMemory (input : ByteArray) : ByteArray :=
   MachineState.writeBytes ByteArray.empty (answerBytes input) 0
 def stored (input : ByteArray) : State :=
   {initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 8394
+    pc := UInt256.ofNat 4879
     memory := answerMemory input
     activeWords := UInt256.ofNat 1}
 def sized (input : ByteArray) : State :=
-  {stored input with pc := UInt256.ofNat 8395, stack := [UInt256.ofNat 32]}
+  {stored input with pc := UInt256.ofNat 4880, stack := [UInt256.ofNat 32]}
 def returned (input : ByteArray) : State :=
   {stored input with
-    pc := UInt256.ofNat 8396
+    pc := UInt256.ofNat 4881
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory input) 0 32}
 def emptyStored (input : ByteArray) : State :=
   {initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 8075
+    pc := UInt256.ofNat 4648
     memory := answerMemory input
     activeWords := UInt256.ofNat 1}
 def emptySized (input : ByteArray) : State :=
-  {emptyStored input with pc := UInt256.ofNat 8076, stack := [UInt256.ofNat 32]}
+  {emptyStored input with pc := UInt256.ofNat 4649, stack := [UInt256.ofNat 32]}
 def emptyReturned (input : ByteArray) : State :=
   {emptyStored input with
-    pc := UInt256.ofNat 8077
+    pc := UInt256.ofNat 4650
     halt := .Returned
     hReturn := MachineState.readPadded (answerMemory input) 0 32}
 
@@ -76,8 +76,8 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
     exact hn
   simpa using ht
 
-private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 8085 = true := by
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 6096 (by rfl)
+private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 4658 = true := by
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 3358 (by rfl)
   rw [pc_176] at h
   exact h
 
@@ -117,28 +117,31 @@ private def sarStep {s : State} {shift value : UInt256} {rest : List UInt256}
 
 /-! ### The word test, with the sign-extending shift stepped directly -/
 
-def wordHead : List Located := wordPath.take 4
-def wordCalc : List Located := (wordPath.drop 5).take 2
+def wordHead : List Located := wordPath.take 6
+def wordCalc : List Located := (wordPath.drop 7).take 2
 def wordBranch : Located :=
-  ⟨6210, .op .JUMPI, by exact Control.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩
+  ⟨3442, .op .JUMPI, by exact Control.GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩
 def wordLoaded (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 8365
+    pc := UInt256.ofNat 4850
     stack := [UInt256.ofNat input.size, maskedWord input, wordMask] }
 def wordShifted (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 8366
+    pc := UInt256.ofNat 4851
     stack := [shiftedWord input, wordMask] }
 def wordTested (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
-    pc := UInt256.ofNat 8370
-    stack := [UInt256.ofNat 8085, wordCond input] }
+    pc := UInt256.ofNat 4855
+    stack := [UInt256.ofNat 4658, wordCond input] }
 
 private theorem run_word_head (input : ByteArray) :
     DataStepper.runLocatedBlock wordHead (armEntry input) = some (wordLoaded input) := by
-  simp [wordHead, wordPath, Control.Artifact.op, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
+  have hp1 : Control.Artifact.submissionArtifact.instructionPC 3434 = 4844 := Control.GuardInstructionWindow.pc 1
+  have hp2 : Control.Artifact.submissionArtifact.instructionPC 3435 = 4846 := Control.GuardInstructionWindow.pc 2
+  simp [hp1, hp2, wordHead, wordPath, Control.Artifact.op, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
     armEntry, wordLoaded, maskedWord, wordMask, Control.Execution.atPC, initialState, UInt256.succ,
     Word.ofNat_add_mod, Word.word_toNat_ofNat, List.getElem?_cons_zero]
+  decide +kernel
 private theorem run_word_calc (input : ByteArray) :
     DataStepper.runLocatedBlock wordCalc (wordShifted input) = some (wordTested input) := by
   simp [wordCalc, wordPath, DataStepper.runLocatedBlock, DataStepper.runLocated, DataStepper.runInstr,
@@ -146,12 +149,12 @@ private theorem run_word_calc (input : ByteArray) :
     Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 private def gasSteps_sar (input : ByteArray) : GasSteps (wordLoaded input) (wordShifted input) := by
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6207 .SAR
-    (by exact Control.GuardInstructionWindow.get 4) (by decide) trivial
-  have hp : (wordLoaded input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6207 := by
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 3439 .SAR
+    (by exact Control.GuardInstructionWindow.get 6) (by decide) trivial
+  have hp : (wordLoaded input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 3439 := by
     rw [pc_4101]; rfl
   have hop : (wordLoaded input).decodedOp = some .SAR :=
-    Control.Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 6207 rfl hp .SAR none hd rfl
+    Control.Artifact.submissionArtifact.state_decodedOp_of (wordLoaded input) 3439 rfl hp .SAR none hd rfl
   have g := sarStep (s := wordLoaded input) (shift := UInt256.ofNat input.size)
     (value := maskedWord input) (rest := [wordMask]) hop rfl
     (by show 3 + Operation.pushArity .SAR ≤ 1024 + Operation.popArity .SAR; decide) rfl
@@ -181,29 +184,29 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
     DataStepper.runLocatedBlock [wordBranch, entryDest] (wordTested input) =
       some (fallbackState input) := by
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
-      some (PatternedScan.stS input 8085 []) :=
+      some (PatternedScan.stS input 4658 []) :=
     PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 6210 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
-      (PatternedScan.stepS_jumpi_taken input 8370 8085 (UInt256.ofNat 8085) (wordCond input) []
+      (PatternedScan.pcFactS input 3442 4855 [UInt256.ofNat 4658, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.stepS_jumpi_taken input 4855 4658 (UInt256.ofNat 4658) (wordCond input) []
         (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
-  have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 8085 []) =
+  have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 4658 []) =
       some (fallbackState input) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 6096 8085 [] (by norm_num) pc_176)
-      (PatternedScan.stepS_jumpdest input 8085 [] (by simp) (by norm_num))
+      (PatternedScan.pcFactS input 3358 4658 [] (by norm_num) pc_176)
+      (PatternedScan.stepS_jumpdest input 4658 [] (by simp) (by norm_num))
   exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd
 
 theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
-    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Control.Execution.atPC input 8371) := by
+    DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Control.Execution.atPC input 4856) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   exact PatternedScan.blockOfS wordBranch
-    (PatternedScan.pcFactS input 6210 8370 [UInt256.ofNat 8085, wordCond input] (by norm_num) pc_4104)
-    (PatternedScan.stepS_jumpi_fall input 8370 (UInt256.ofNat 8085) (wordCond input) []
+    (PatternedScan.pcFactS input 3442 4855 [UInt256.ofNat 4658, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 4855 (UInt256.ofNat 4658) (wordCond input) []
       (by simp) (by norm_num) ht)
 
 theorem run_store (input : ByteArray) (hne : input.size ≠ 0) :
-    DataStepper.runLocatedBlock storePath (Control.Execution.atPC input 8371) = some (stored input) := by
+    DataStepper.runLocatedBlock storePath (Control.Execution.atPC input 4856) = some (stored input) := by
   simp (config := { maxSteps := 1000000 })
     [storePath, DataStepper.runLocatedBlock, DataStepper.runLocated,
      DataStepper.runInstr, PatternedScan.stS, Control.Execution.atPC, stored, answerMemory, answerBytes,
@@ -255,12 +258,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size
     GasSteps (armEntry input) (returned input) := by
   have gw := (gasSteps_word_prefix input).trans (sound [wordBranch] (run_word_hit input hw))
   have gs := sound storePath (run_store input hne)
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6214 .MSIZE
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 3446 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (stored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6214 := by
+  have hp : (stored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 3446 := by
     rw [pc_inlineMsize]; rfl
   have hop : (stored input).decodedOp = some .MSIZE :=
-    Control.Artifact.submissionArtifact.state_decodedOp_of (stored input) 6214 rfl hp .MSIZE none hd rfl
+    Control.Artifact.submissionArtifact.state_decodedOp_of (stored input) 3446 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (stored input) (sized input) := by
@@ -271,12 +274,12 @@ def gasSteps_hit (input : ByteArray) (hw : wordCond input = 0) (hne : input.size
 def gasSteps_empty_hit (input : ByteArray) (hz : input.size = 0) :
     GasSteps (emptyEntry input) (emptyReturned input) := by
   have gs := sound emptyStorePath (run_empty_store input hz)
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 6087 .MSIZE
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 3349 .MSIZE
     (by rfl) (by decide) trivial
-  have hp : (emptyStored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 6087 := by
+  have hp : (emptyStored input).pc.toNat = Control.Artifact.submissionArtifact.instructionPC 3349 := by
     rw [pc_emptyMsize]; rfl
   have hop : (emptyStored input).decodedOp = some .MSIZE :=
-    Control.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 6087 rfl hp .MSIZE none hd rfl
+    Control.Artifact.submissionArtifact.state_decodedOp_of (emptyStored input) 3349 rfl hp .MSIZE none hd rfl
   have gmraw := Msize.step hop (by change (0 : Nat) < 1024; decide)
     rfl deployAddress_not_precompile
   have gm : GasSteps (emptyStored input) (emptySized input) := by

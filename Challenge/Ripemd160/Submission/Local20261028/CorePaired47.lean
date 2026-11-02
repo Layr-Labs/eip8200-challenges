@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerModeSeven
 import Challenge.Ripemd160.Submission.Local20261028.RawPaired47
 import Challenge.Ripemd160.Submission.Local20261028.CoreCommon
@@ -18,7 +19,7 @@ def eval (memory : ByteArray) (q : WordLane) : WordLane :=
 
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RawPaired47.outputStack memory (input memory h4 q right (StaggerModeSeven.physicalKey 46)) rho =
-      stack memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerModeSeven.physicalKey 47) rho := by
+      stack memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerModeSeven.physicalKey 47) rho := by
   have hkb : StaggerModeSeven.physicalKey 46 = UInt256.ofNat 45805601672572416830120737830960963807809187239029665 := by decide
   have hka : StaggerModeSeven.physicalKey 47 = UInt256.ofNat 45805601672572416830120737830960963807809187239029665 := by decide
   have hm : StaggerAlgorithm.mode 47 = 7 := by decide
@@ -34,6 +35,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   simp only [wordRotate, usesCompact, wordCompact, wordScale, wordShift, factorPlusWord, usesFusedExtra, wordFusedRotate, fusedCoefficientWord, fusedModulusWord]
   simp
   all_goals try simp only [upperWord, lowerWord, and_true, true_and]
+  all_goals simp only [PrepWordLiterals.pair, PrepWordLiterals.upper_pack, PrepWordLiterals.upper_mask, PrepWordLiterals.lower_pack, PrepWordLiterals.lower_mask]
   all_goals simp only [CoreCommon.add_comm, CoreCommon.add_left_comm,
     CoreCommon.add_assoc, CoreCommon.mul_comm, CoreCommon.mul_one,
     CoreCommon.land_comm, CoreCommon.lor_comm, CoreCommon.xor_comm,
@@ -45,11 +47,11 @@ theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPaired47.template
-      {s with pc := UInt256.ofNat 3127, stack := stack s.memory h4 [ .d, .cache 310, .cache 140, .e, .cachedMessage 360, .pair, .upper, .k, .c, .literal 23, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerModeSeven.physicalKey 46) rho} =
-      some {s with pc := UInt256.ofNat 3166, stack := stack s.memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerModeSeven.physicalKey 47) rho} := by
-  have h := RawPaired47.run_actual s (UInt256.ofNat 3127)
+      {s with pc := UInt256.ofNat 3145, stack := stack s.memory h4 [ .d, .cache 310, .cache 140, .e, .cachedMessage 360, .pair, .upper, .k, .c, .cachedMessage 180, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerModeSeven.physicalKey 46) rho} =
+      some {s with pc := UInt256.ofNat 3185, stack := stack s.memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerModeSeven.physicalKey 47) rho} := by
+  have h := RawPaired47.run_actual s (UInt256.ofNat 3145)
     (input s.memory h4 q right (StaggerModeSeven.physicalKey 46)) rho hstack hrun hactive
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 3127) RawPaired47.template = UInt256.ofNat 3166 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 3145) RawPaired47.template = UInt256.ofNat 3185 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

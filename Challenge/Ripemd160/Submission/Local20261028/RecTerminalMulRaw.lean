@@ -142,33 +142,33 @@ theorem run_template (s : State) (pc a r : UInt256) (rho : List UInt256)
     rfl
   simpa only [template, pcAfter_append, hacc] using h
 
-theorem prefix_endPC : pcAfter (UInt256.ofNat 9711) scanPrefix = UInt256.ofNat 9909 := by decide
+theorem prefix_endPC : pcAfter (UInt256.ofNat 6146) scanPrefix = UInt256.ofNat 6344 := by decide
 
-theorem terminal_endPC : pcAfter (UInt256.ofNat 9909) terminalTemplate = UInt256.ofNat 9914 := by decide
+theorem terminal_endPC : pcAfter (UInt256.ofNat 6344) terminalTemplate = UInt256.ofNat 6349 := by decide
 
-theorem endPC : pcAfter (UInt256.ofNat 9711) template = UInt256.ofNat 9914 := by decide
+theorem endPC : pcAfter (UInt256.ofNat 6146) template = UInt256.ofNat 6349 := by decide
 
 /-- The concrete last comparison: exactly the requested AND-shaped result,
 with the reference consumed and all of rho preserved. -/
 theorem run_terminal_9627 (s : State) (a r : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hr : r ≠ 0) (ha : BooleanWord a) :
-    runInstrSeq terminalTemplate {s with pc := UInt256.ofNat 9909, stack := [a,r] ++ rho} =
+    runInstrSeq terminalTemplate {s with pc := UInt256.ofNat 6344, stack := [a,r] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9914
+        pc := UInt256.ofNat 6349
         stack := [UInt256.land
           (UInt256.eq (MachineState.readWord s.executionEnv.calldata 96) r) a] ++ rho} := by
   simpa only [terminal_endPC, Control.UnrolledRepeatRaw.step] using
-    run_terminal s (UInt256.ofNat 9909) a r rho hs hrun hr ha
+    run_terminal s (UInt256.ofNat 6344) a r rho hs hrun hr ha
 
 theorem run (s : State) (a r : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hr : r ≠ 0) (ha : BooleanWord a) :
-    runInstrSeq template {s with pc := UInt256.ofNat 9711, stack := [a,r] ++ rho} =
+    runInstrSeq template {s with pc := UInt256.ofNat 6146, stack := [a,r] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9914,
+        pc := UInt256.ofNat 6349,
         stack := [Control.UnrolledRepeatRaw.acc s.executionEnv.calldata r a 10] ++ rho} := by
-  simpa only [endPC] using run_template s (UInt256.ofNat 9711) a r rho hs hrun hr ha
+  simpa only [endPC] using run_template s (UInt256.ofNat 6146) a r rho hs hrun hr ha
 
 theorem fullWord_nonzero : KnownInputData.fullWord ≠ 0 := by decide
 
@@ -177,11 +177,11 @@ theorem run_equalityAcc (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (hanchor : Control.KnownInputCompactState.referenceWord s.executionEnv.calldata = KnownInputData.fullWord) :
     runInstrSeq template {s with
-      pc := UInt256.ofNat 9711
+      pc := UInt256.ofNat 6146
       stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0,
         Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9914,
+        pc := UInt256.ofNat 6349,
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 10] ++ rho} := by
   have hr : Control.KnownInputCompactState.referenceWord s.executionEnv.calldata ≠ 0 := by
     rw [hanchor]
@@ -197,10 +197,10 @@ theorem run_equalityAcc_singleton (s : State) (hrun : s.halt = .Running)
     (hanchor : Control.KnownInputCompactState.referenceWord s.executionEnv.calldata = KnownInputData.fullWord) :
     runInstrSeq template
       {s with
-        pc := UInt256.ofNat 9711
+        pc := UInt256.ofNat 6146
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0, KnownInputData.fullWord]} =
       some {s with
-        pc := UInt256.ofNat 9914
+        pc := UInt256.ofNat 6349
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 10]} := by
   simpa only [List.append_nil, hanchor] using
     run_equalityAcc s [] (by decide) hrun hanchor

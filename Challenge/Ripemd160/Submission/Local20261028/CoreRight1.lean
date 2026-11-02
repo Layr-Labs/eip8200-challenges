@@ -33,10 +33,10 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (halias : rho[2]? = some q.c) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
  :
-    StackRoundTrace.runInstrSeq RawRight1.template {s with pc := UInt256.ofNat 860, stack := stack s.memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho} =
-      some {s with pc := UInt256.ofNat 901, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
-  have h := RawRight1.run_actual s (UInt256.ofNat 860) (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs halias (by rfl) hh4.symm hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 860) RawRight1.template = UInt256.ofNat 901 := by decide +kernel
+    StackRoundTrace.runInstrSeq RawRight1.template {s with pc := UInt256.ofNat 830, stack := stack s.memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho} =
+      some {s with pc := UInt256.ofNat 871, stack := stack s.memory h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
+  have h := RawRight1.run_actual s (UInt256.ofNat 830) (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs halias (by rfl) hh4.symm hr ha
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 830) RawRight1.template = UInt256.ofNat 871 := by decide +kernel
   rw [hend] at h
   rw [output_eq] at h
   exact h

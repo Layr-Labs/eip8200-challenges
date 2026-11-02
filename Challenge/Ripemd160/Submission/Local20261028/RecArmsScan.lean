@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepRecognizerLiterals
 import Challenge.Ripemd160.Submission.Local20261028.ColdCommon
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.ReverseLiteralRaw
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.DirectDigestRaw
@@ -32,7 +33,7 @@ open StackRoundTrace StackRoundTemplate DirectLiteralRawV4 DirectLiteralModel J2
 
 /-! ## Layout -/
 
-def failPC : Nat := 8078
+def failPC : Nat := 4651
 
 /-- Chain entry JUMPDESTs. -/
 def chainEntry (k : Nat) : Bool := k = 7 ∨ k = 3 ∨ k = 2 ∨ k = 1 ∨ k = 0
@@ -43,12 +44,12 @@ def nval : Fin 12 → Nat
  | ⟨6, _⟩ => 64 | ⟨7, _⟩ => 65 | ⟨8, _⟩ => 119 | ⟨9, _⟩ => 120 | ⟨10, _⟩ => 128 | ⟨11, _⟩ => 256
 
 def armIndex : Fin 12 → Nat
- | ⟨0, _⟩ => 6168 | ⟨1, _⟩ => 6303 | ⟨2, _⟩ => 6316 | ⟨3, _⟩ => 6323 | ⟨4, _⟩ => 6333 | ⟨5, _⟩ => 6343
- | ⟨6, _⟩ => 6353 | ⟨7, _⟩ => 6360 | ⟨8, _⟩ => 6370 | ⟨9, _⟩ => 6380 | ⟨10, _⟩ => 6390 | ⟨11, _⟩ => 6397
+ | ⟨0, _⟩ => 3394 | ⟨1, _⟩ => 3535 | ⟨2, _⟩ => 3548 | ⟨3, _⟩ => 3555 | ⟨4, _⟩ => 3567 | ⟨5, _⟩ => 3579
+ | ⟨6, _⟩ => 3589 | ⟨7, _⟩ => 3596 | ⟨8, _⟩ => 3608 | ⟨9, _⟩ => 3620 | ⟨10, _⟩ => 3632 | ⟨11, _⟩ => 3639
 
 def armPC : Fin 12 → Nat
- | ⟨0, _⟩ => 8180 | ⟨1, _⟩ => 8761 | ⟨2, _⟩ => 8828 | ⟨3, _⟩ => 8857 | ⟨4, _⟩ => 8921 | ⟨5, _⟩ => 8985
- | ⟨6, _⟩ => 9049 | ⟨7, _⟩ => 9078 | ⟨8, _⟩ => 9143 | ⟨9, _⟩ => 9208 | ⟨10, _⟩ => 9273 | ⟨11, _⟩ => 9302
+ | ⟨0, _⟩ => 4717 | ⟨1, _⟩ => 5246 | ⟨2, _⟩ => 5313 | ⟨3, _⟩ => 5342 | ⟨4, _⟩ => 5400 | ⟨5, _⟩ => 5459
+ | ⟨6, _⟩ => 5523 | ⟨7, _⟩ => 5552 | ⟨8, _⟩ => 5589 | ⟨9, _⟩ => 5648 | ⟨10, _⟩ => 5708 | ⟨11, _⟩ => 5737
 
 /-- Number of chain words below the arm's own tail (zero for the two one-word arms). -/
 def chainWords : Fin 12 → Nat
@@ -56,13 +57,13 @@ def chainWords : Fin 12 → Nat
  | ⟨6, _⟩ => 2 | ⟨7, _⟩ => 2 | ⟨8, _⟩ => 3 | ⟨9, _⟩ => 3 | ⟨10, _⟩ => 4 | ⟨11, _⟩ => 8
 
 def chainPC : Nat → Nat
-  | 8 => 8446 | 4 => 8599 | 3 => 8638 | 2 => 8677 | 1 => 8715 | _ => 0
+  | 8 => 4931 | 4 => 5084 | 3 => 5123 | 2 => 5162 | 1 => 5200 | _ => 0
 def chainIndex : Nat → Nat
-  | 8 => 6253 | 4 => 6274 | 3 => 6280 | 2 => 6286 | 1 => 6292 | _ => 0
+  | 8 => 3485 | 4 => 3506 | 3 => 3512 | 2 => 3518 | 1 => 3524 | _ => 0
 
 /-- Index and PC of the success `MSIZE` after the result branch. -/
-def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 6178 else if i.val = 1 then 6313 else 6300
-def returnPC (i : Fin 12) : Nat := if i.val = 0 then 8244 else if i.val = 1 then 8825 else 8758
+def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 3406 else if i.val = 1 then 3545 else 3532
+def returnPC (i : Fin 12) : Nat := if i.val = 0 then 4753 else if i.val = 1 then 5310 else 5243
 
 /-! ## Templates -/
 
@@ -76,20 +77,19 @@ def lastOffset (n : Nat) : List Instr :=
  [.push ⟨if last n = 0 then 0 else if last n < 8 then 1 else 2,
      by split <;> (try split) <;> decide⟩ (UInt256.ofNat (32 * last n))]
 
-def prefixTemplate (n : Nat) : List Instr :=
- [.push ⟨32, by decide⟩ (ZeroTailModel.expectedLast n)] ++
- lastOffset n ++ [.op .CALLDATALOAD, .op .XOR]
+def prefixRest (n : Nat) : List Instr := lastOffset n ++ [.op .CALLDATALOAD, .op .XOR]
+def prefixTemplate (n : Nat) : List Instr := RipemdSubmission20261101.RecognizerLiteral.template n ++ prefixRest n
 
 /-- An arm's own first accumulator: the masked top word, or an empty accumulator. -/
 def startTemplate (n : Nat) : List Instr :=
   if n % 32 = 0 then [.push ⟨0, by decide⟩ (UInt256.ofNat 0)] else prefixTemplate n
 
 def resultTemplate : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 8078), .op .JUMPI]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
 
 /-- The shared chain's own result branch: a three-byte push of the failure PC. -/
 def chainResultTemplate : List Instr :=
-  [.push ⟨3, by decide⟩ (UInt256.ofNat 8078), .op .JUMPI]
+  [.push ⟨3, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
 
 def revE : Nat → List Instr
   | 0 => []
@@ -151,10 +151,10 @@ theorem run_revE (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
 
 theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 8078 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
     runInstrSeq resultTemplate {s with pc := pc, stack := a :: rho} =
       some {s with
-        pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 8078
+        pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4651
         stack := rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   by_cases hz : a.toNat = 0
@@ -165,10 +165,10 @@ theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
 
 theorem run_chainResult (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 8078 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
     runInstrSeq chainResultTemplate {s with pc := pc, stack := a :: rho} =
       some {s with
-        pc := if a.toNat = 0 then pcAfter pc chainResultTemplate else UInt256.ofNat 8078
+        pc := if a.toNat = 0 then pcAfter pc chainResultTemplate else UInt256.ofNat 4651
         stack := rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   by_cases hz : a.toNat = 0
@@ -180,41 +180,51 @@ theorem run_chainResult (s : State) (pc : UInt256) (a : UInt256) (rho : List UIn
 theorem run_chain (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1) (k : Nat) (hk : k ≤ 32)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 8078 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
     runInstrSeq (chainTemplate k) {s with pc:=pc,stack:=a::rho} =
       some {s with
         pc := if (rev s.executionEnv.calldata a k).toNat = 0 then pcAfter pc (chainTemplate k)
-          else UInt256.ofNat 8078
+          else UInt256.ofNat 4651
         stack := rho} := by
   have h1 := run_revE s pc a rho hs hrun ha k hk
   have h3 := run_chainResult s (pcAfter pc (revE k)) (rev s.executionEnv.calldata a k) rho hs hrun hv
   have hall := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h3
   simpa only [chainTemplate, DenseScheduleTrace.pcAfter_append, List.append_assoc] using hall
 
-theorem run_prefix (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
+theorem run_prefix_rest (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1) :
-    runInstrSeq (prefixTemplate n) {s with pc:=pc,stack:=rho} =
-      some {s with pc:=pcAfter pc (prefixTemplate n),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata n::rho} := by
+    runInstrSeq (prefixRest n) {s with pc:=pc,stack:=ZeroTailModel.expectedLast n::rho} =
+      some {s with pc:=pcAfter pc (prefixRest n),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata n::rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length+n<1024 := by omega
   have hoff : (UInt256.ofNat (32*last n)).toNat = 32*last n := by
     rw [Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   by_cases hk1 : last n=1
-  · simp (discharger := omega) [prefixTemplate,lastOffset,hk1,ZeroTailModel.tailDiff,
+  · simp (discharger := omega) [prefixRest,lastOffset,hk1,ZeroTailModel.tailDiff,
       runInstrSeq,DataStepper.runInstr,pcAfter,hrun,show rho.length<1024 by omega,hcap,
       UInt256.succ,Instr.size,Nat.add_assoc,Word.literal_eq_ofNat,
       List.getElem?_cons_zero,List.exchange,MachineState.msize,ha]
     repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
   by_cases hk0 : last n=0
-  · simp (discharger := omega) [prefixTemplate,lastOffset,hk1,ZeroTailModel.tailDiff, hk0, runInstrSeq,DataStepper.runInstr,
+  · simp (discharger := omega) [prefixRest,lastOffset,hk1,ZeroTailModel.tailDiff, hk0, runInstrSeq,DataStepper.runInstr,
       pcAfter,hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,
       Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
     repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
   by_cases hk8 : last n<8
-  all_goals simp (discharger := omega) [prefixTemplate,lastOffset,hk1,ZeroTailModel.tailDiff,hk0,hk8,runInstrSeq,DataStepper.runInstr,
+  all_goals simp (discharger := omega) [prefixRest,lastOffset,hk1,ZeroTailModel.tailDiff,hk0,hk8,runInstrSeq,DataStepper.runInstr,
     pcAfter,hrun,show rho.length<1024 by omega,hcap,UInt256.succ,Instr.size,Nat.add_assoc,hoff,
     Word.literal_eq_ofNat,List.getElem?_cons_zero,List.exchange]
   all_goals repeat first | apply And.intro | rfl | exact RawExpressionAC.xor_comm _ _
+
+theorem run_prefix (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
+    (ha : s.activeWords = UInt256.ofNat 1) :
+    runInstrSeq (prefixTemplate n) {s with pc:=pc,stack:=rho} =
+      some {s with pc:=pcAfter pc (prefixTemplate n),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata n::rho} := by
+  have h1 := RipemdSubmission20261101.RecognizerLiteral.run s pc n rho hs hrun
+  have h2 := run_prefix_rest s (pcAfter pc (RipemdSubmission20261101.RecognizerLiteral.template n)) n hk rho hs hrun ha
+  have h := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
+  simpa only [prefixTemplate, DenseScheduleTrace.pcAfter_append] using h
 
 /-! ## States -/
 
@@ -277,8 +287,8 @@ theorem valid_at (index pc : Nat) (hj : Control.Artifact.submissionArtifact.inst
   rw [hp] at h
   exact h
 
-theorem valid_fail : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 8078 = true :=
-  valid_at 6090 8078 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+theorem valid_fail : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4651 = true :=
+  valid_at 3352 4651 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 theorem lor_ofNat_zero (a : UInt256) : UInt256.lor a (UInt256.ofNat 0) = a := DirectLiteralRawV4.lor_zero a
 

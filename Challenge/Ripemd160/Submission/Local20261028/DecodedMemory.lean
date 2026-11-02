@@ -1,4 +1,4 @@
-import Challenge.Ripemd160.Submission.Local20261028.GeneralMessageReady
+import Challenge.Ripemd160.Submission.Local20261028.PrepOrdinaryReads
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerScratch
 
 set_option warningAsError true
@@ -6,7 +6,7 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.DecodedMemory
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
-open PairedScheduleMemory GeneralMessageReady GeneralMessageLayout
+open PairedScheduleMemory RipemdSubmission20261101.OrdinaryReads GeneralMessageLayout
 open RipemdMemoryBridge20261028
 
 def scratch (m : ByteArray) (low high : UInt256) : ByteArray :=

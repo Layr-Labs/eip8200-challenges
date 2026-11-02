@@ -17,47 +17,57 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM YulEvm
 open StackRoundTrace StackRoundTemplate
 
 def shortTemplate : List Instr := [
- .op .JUMPDEST, .push 0 0, .push 32 86844066968427068989796192873928558300976274593144298876555195987106453258240,
- .op .CALLDATASIZE, .op .SHL, .op .SLT,
- .push 2 8191, .push 18 2754871544244090618950329610157160902180841, .op .CALLDATASIZE,
- .op .SHR, .op .AND, .op .JUMPI]
+ .op .JUMPDEST,
+ .push ⟨0, by decide⟩ (UInt256.ofNat 0),
+ .push ⟨32, by decide⟩ (UInt256.ofNat 86844066968427068989796192873928558300976274593144298876555195987106453258240),
+ .op .CALLDATASIZE,
+ .op .SHL,
+ .op .SLT,
+ .push ⟨1, by decide⟩ (UInt256.ofNat 63),
+ .push ⟨17, by decide⟩ (UInt256.ofNat 35316923234007322291473649857320890401270),
+ .op .CALLDATASIZE,
+ .op .SHR,
+ .op .AND,
+ .push ⟨2, by decide⟩ (UInt256.ofNat 4658),
+ .op .ADD,
+ .op .JUMPI]
 def longTemplate (n target : Nat) : List Instr := [
  .op .CALLDATASIZE, .push 2 (UInt256.ofNat n), .op .EQ,
  .push 2 (UInt256.ofNat target), .op .JUMPI]
-theorem short_slice : (Control.Artifact.submissionArtifact.instructions.drop 6181).take shortTemplate.length = shortTemplate := by rfl
-theorem long256_slice : (Control.Artifact.submissionArtifact.instructions.drop 6193).take (longTemplate 256 9302).length = longTemplate 256 9302 := by rfl
-theorem long376_slice : (Control.Artifact.submissionArtifact.instructions.drop 6198).take (longTemplate 376 9331).length = longTemplate 376 9331 := by rfl
+theorem short_slice : (Control.Artifact.submissionArtifact.instructions.drop 3409).take shortTemplate.length = shortTemplate := by rfl
+theorem long256_slice : (Control.Artifact.submissionArtifact.instructions.drop 3423).take (longTemplate 256 5737).length = longTemplate 256 5737 := by rfl
+theorem long376_slice : (Control.Artifact.submissionArtifact.instructions.drop 3428).take (longTemplate 376 5766).length = longTemplate 376 5766 := by rfl
 theorem code_bound : Control.Artifact.submissionArtifact.code.size < 2^256 := by
  change submissionBytecode.size < 2^256
  rw [referenceBytecode_size]
  decide
 def shortSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka shortTemplate :=
- StackSiteBuilder.ofSlice shortTemplate 6181 short_slice
-  (by change 6181 + shortTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+ StackSiteBuilder.ofSlice shortTemplate 3409 short_slice
+  (by change 3409 + shortTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := shortTemplate) (by decide)) (by decide)
-def long256Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (longTemplate 256 9302) :=
- StackSiteBuilder.ofSlice (longTemplate 256 9302) 6193 long256_slice
-  (by change 6193 + (longTemplate 256 9302).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
-  code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 9302) (by decide)) (by decide)
-def long376Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (longTemplate 376 9331) :=
- StackSiteBuilder.ofSlice (longTemplate 376 9331) 6198 long376_slice
-  (by change 6198 + (longTemplate 376 9331).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
-  code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 9331) (by decide)) (by decide)
-theorem short_pc : shortSite.startPC = UInt256.ofNat 8247 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6181) = _
+def long256Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (longTemplate 256 5737) :=
+ StackSiteBuilder.ofSlice (longTemplate 256 5737) 3423 long256_slice
+  (by change 3423 + (longTemplate 256 5737).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+  code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := longTemplate 256 5737) (by decide)) (by decide)
+def long376Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (longTemplate 376 5766) :=
+ StackSiteBuilder.ofSlice (longTemplate 376 5766) 3428 long376_slice
+  (by change 3428 + (longTemplate 376 5766).length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+  code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := longTemplate 376 5766) (by decide)) (by decide)
+theorem short_pc : shortSite.startPC = UInt256.ofNat 4756 := by
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3409) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem long256_pc : long256Site.startPC = UInt256.ofNat 8311 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6193) = _
+theorem long256_pc : long256Site.startPC = UInt256.ofNat 4822 := by
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3423) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem long376_pc : long376Site.startPC = UInt256.ofNat 8320 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6198) = _
+theorem long376_pc : long376Site.startPC = UInt256.ofNat 4831 := by
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3428) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
-def shortSelectorConst : Nat := 2754871544244090618950329610157160902180841
+def shortSelectorConst : Nat := 35316923234007322291473649857320890401270
 def shortSource (input : ByteArray) : UInt256 :=
- UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat input.size))
-   (UInt256.ofNat 8191)
+ UInt256.add (UInt256.ofNat 4658) (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat input.size))
+   (UInt256.ofNat 63))
 theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input) = sizeFlag input := by
  unfold sizeBit
  rw [show (0 : UInt256) = UInt256.ofNat 0 from rfl, SignedSizeFlag.flag]
@@ -65,15 +75,16 @@ theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input) = size
  rw [SizeLookupFlag.mask_literal] at h
  simpa only [sizeFlag,Word.literal_eq_ofNat] using h
 theorem short_raw (input : ByteArray) :
- runInstrSeq shortTemplate (PatternedScan.stS input 8247 []) =
+ runInstrSeq shortTemplate (PatternedScan.stS input 4756 []) =
   if UInt256.isTrue (sizeBit input) then
    if Decode.isValidJumpDest submissionBytecode (shortSource input).toNat then
     some { initialState submissionBytecode input 0 with pc := shortSource input, stack := PatternedScan.entryRho input.size } else none
-  else some (PatternedScan.stS input 8311 []) := by
+  else some (PatternedScan.stS input 4822 []) := by
+ have hadd (a b : UInt256) : a+b = UInt256.add a b := rfl
  simp (config := {maxSteps := 400000}) [shortTemplate,runInstrSeq,DataStepper.runInstr,
   sizeBit,shortSource,shortSelectorConst,PatternedScan.stS,PatternedScan.entryRho,
   initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,
-  RawExpressionAC.land_comm]
+  RawExpressionAC.land_comm,hadd]
  split_ifs <;> simp_all
 theorem long_raw (input : ByteArray) (n target pc : Nat) :
  runInstrSeq (longTemplate n target) (PatternedScan.stS input pc []) =
@@ -85,16 +96,16 @@ theorem long_raw (input : ByteArray) (n target pc : Nat) :
   PatternedScan.stS,initialState,Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat, Nat.add_assoc]
  split_ifs <;> simp_all
 
-def soundShort (input : ByteArray) (t : State) (hr : runInstrSeq shortTemplate (PatternedScan.stS input 8247 []) = some t) :
- GasSteps (PatternedScan.stS input 8247 []) t :=
+def soundShort (input : ByteArray) (t : State) (hr : runInstrSeq shortTemplate (PatternedScan.stS input 4756 []) = some t) :
+ GasSteps (PatternedScan.stS input 4756 []) t :=
  RecognitionLift.gasSteps_of_raw shortSite _ _ rfl rfl rfl deployAddress_not_precompile short_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 9302) (PatternedScan.stS input 8311 []) = some t) :
- GasSteps (PatternedScan.stS input 8311 []) t :=
+def sound256 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 256 5737) (PatternedScan.stS input 4822 []) = some t) :
+ GasSteps (PatternedScan.stS input 4822 []) t :=
  RecognitionLift.gasSteps_of_raw long256Site _ _ rfl rfl rfl deployAddress_not_precompile long256_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
-def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 9331) (PatternedScan.stS input 8320 []) = some t) :
- GasSteps (PatternedScan.stS input 8320 []) t :=
+def sound376 (input : ByteArray) (t : State) (hr : runInstrSeq (longTemplate 376 5766) (PatternedScan.stS input 4831 []) = some t) :
+ GasSteps (PatternedScan.stS input 4831 []) t :=
  RecognitionLift.gasSteps_of_raw long376Site _ _ rfl rfl rfl deployAddress_not_precompile long376_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) hr
 theorem short_false (input : ByteArray) (hfit : CalldataFits input)
@@ -127,26 +138,26 @@ def gasSteps_short (input : ByteArray)
  exact GasSteps.cast (soundShort input _ (by rw [short_raw,if_pos hc,if_pos hv])) rfl hent
 
 theorem shortSource_eq (input : ByteArray) (n target : Nat) (h : input.size = n)
- (ht : (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat n))
-   (UInt256.ofNat 8191)) = UInt256.ofNat target) : shortSource input = UInt256.ofNat target := by
+ (ht : UInt256.add (UInt256.ofNat 4658) (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat n))
+   (UInt256.ofNat 63)) = UInt256.ofNat target) : shortSource input = UInt256.ofNat target := by
  unfold shortSource
  rw [h, ht]
 
 def gasSteps_256 (input : ByteArray) (hfit : CalldataFits input) (h : input.size = 256)
- (hv : Decode.isValidJumpDest submissionBytecode 9302 = true) :
- GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 9302 []) := by
+ (hv : Decode.isValidJumpDest submissionBytecode 5737 = true) :
+ GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 5737 []) := by
  have hns : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 ∧ input.size ≠ 0 := by omega
  have gs := soundShort input _ (by rw [short_raw,if_neg (short_false input hfit hns)])
- have gj := sound256 input (PatternedScan.stS input 9302 []) (by rw [long_raw,DirectGuard.size_eq_one input 256 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,Word.word_toNat_ofNat]; rw [if_pos (by simpa using hv)])
+ have gj := sound256 input (PatternedScan.stS input 5737 []) (by rw [long_raw,DirectGuard.size_eq_one input 256 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,Word.word_toNat_ofNat]; rw [if_pos (by simpa using hv)])
  exact gs.trans gj
 
 def gasSteps_376 (input : ByteArray) (hfit : CalldataFits input) (h : input.size = 376)
- (hv : Decode.isValidJumpDest submissionBytecode 9331 = true) :
- GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 9331 []) := by
+ (hv : Decode.isValidJumpDest submissionBytecode 5766 = true) :
+ GasSteps (DirectGuard.guardEntry input) (PatternedScan.stS input 5766 []) := by
  have hns : input.size ≠ 56 ∧ input.size ≠ 120 ∧ input.size ≠ 63 ∧ input.size ≠ 64 ∧ input.size ≠ 65 ∧ input.size ≠ 128 ∧ input.size ≠ 119 ∧ input.size ≠ 55 ∧ input.size ≠ 1 ∧ input.size ≠ 31 ∧ input.size ≠ 32 ∧ input.size ≠ 0 := by omega
  have gs := soundShort input _ (by rw [short_raw,if_neg (short_false input hfit hns)])
  have g1 := sound256 input _ (by rw [long_raw,if_neg (long_false input hfit 256 (by decide) (by omega))])
- have gj := sound376 input (PatternedScan.stS input 9331 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,Word.word_toNat_ofNat]; rw [if_pos (by simpa using hv)])
+ have gj := sound376 input (PatternedScan.stS input 5766 []) (by rw [long_raw,DirectGuard.size_eq_one input 376 h]; simp only [show UInt256.isTrue (UInt256.ofNat 1) from by decide,if_true,Word.word_toNat_ofNat]; rw [if_pos (by simpa using hv)])
  exact gs.trans (g1.trans gj)
 
 def gasSteps_to_arm (input : ByteArray) (hfit : CalldataFits input) (hn : ¬ RecognitionAccumulator.Allowed input.size) (_h1000 : input.size ≠ 1000) (h0 : input.size ≠ 0) :

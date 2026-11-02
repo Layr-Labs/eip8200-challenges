@@ -23,7 +23,7 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
     (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1056 32) = UInt256.ofNat 34) :
     GasSteps {s with pc := UInt256.ofNat 245, stack := rho} (result s input rho) := by
   have ge := FirstCopy.entry s e input rho hs hcal h32 hm ha
-  have gc := FirstReadGas.complete (high (FirstCopy.copied s input)) (UInt256.ofNat 9949) rho
+  have gc := FirstReadGas.complete (high (FirstCopy.copied s input)) (UInt256.ofNat 4882) rho
     (by omega) e.running (by change (34 : Nat) ≤ 34; decide) e.code e.fork e.noPrecompile
   have ep : Env (prepared s input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
   have gd := dispatch (prepared s input) ep (resultHash s input) (UInt256.ofNat 1056)
@@ -35,9 +35,9 @@ def gasSteps (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
   exact ge.trans (gc.trans (gd.trans go))
 
 theorem returned_spec (s : State) (input : ByteArray) (rho : List UInt256)
-    (h32 : input.size = 32) : (result s input rho).hReturn = spec input := by
+    (h32 : input.size = 32) (hc : s.executionEnv.code = Benchmark.bytecode) : (result s input rho).hReturn = spec input := by
   apply Return32Serialize.returned_spec_of_hashArray
-  exact FirstMessageSpec.hash_spec (high (FirstCopy.copied s input)) input h32 rfl
+  exact FirstMessageSpec.hash_spec (high (FirstCopy.copied s input)) input h32 rfl hc
 
 theorem eval_of_returned_trace (s t : State) (output : ByteArray)
     (trace : GasSteps s t) (hr : t.halt = .Returned) (hc : t.callStack = [])
@@ -62,7 +62,7 @@ theorem correct_from_entry (input : ByteArray) (rho : List UInt256) (hs : rho.le
   have e : Env s := ⟨rfl,rfl,rfl,deployAddress_not_precompile⟩
   have gt := prefixTrace.trans (gasSteps s e input rho hs rfl h32 rfl rfl)
   obtain ⟨g₀,hg⟩ := eval_of_returned_trace (initialState Benchmark.bytecode input 0)
-    (result s input rho) (spec input) gt rfl rfl (returned_spec s input rho h32)
+    (result s input rho) (spec input) gt rfl rfl (returned_spec s input rho h32 rfl)
   exact ⟨g₀,fun gas hgas => hg gas hgas⟩
 #print axioms gasSteps
 #print axioms returned_spec

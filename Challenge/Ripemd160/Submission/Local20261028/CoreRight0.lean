@@ -35,10 +35,10 @@ theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (haliasD : rho[0]? = some q.d) (haliasA : rho[3]? = some q.a) (hh4 : h4 = q.e)
     (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
  :
-    StackRoundTrace.runInstrSeq RawRight0.template {s with pc := UInt256.ofNat 824, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q right (UInt256.ofNat 1352829926) rho} =
-      some {s with pc := UInt256.ofNat 860, stack := stack s.memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
-  have h := RawRight0.run_actual s (UInt256.ofNat 824) (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs halias haliasC haliasD haliasA (by rfl) hh4 hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 824) RawRight0.template = UInt256.ofNat 860 := by decide +kernel
+    StackRoundTrace.runInstrSeq RawRight0.template {s with pc := UInt256.ofNat 794, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q right (UInt256.ofNat 1352829926) rho} =
+      some {s with pc := UInt256.ofNat 830, stack := stack s.memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
+  have h := RawRight0.run_actual s (UInt256.ofNat 794) (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs halias haliasC haliasD haliasA (by rfl) hh4 hr ha
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 794) RawRight0.template = UInt256.ofNat 830 := by decide +kernel
   rw [hend] at h
   rw [output_eq] at h
   exact h

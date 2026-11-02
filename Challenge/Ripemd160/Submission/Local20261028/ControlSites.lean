@@ -38,7 +38,7 @@ theorem align_pc : alignSite.startPC = UInt256.ofNat 447 := by
   change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 153) = UInt256.ofNat 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
-def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 9949), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 10108), .op .JUMPI]
+def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 9911), .op .JUMPI]
 def specialSite : GenericRoundSite CandidateArtifact.artifact .Osaka specialTemplate :=
   StackSiteBuilder.ofSlice specialTemplate 81 (by rfl)
     (by change 81 + specialTemplate.length ≤ CandidateArtifact.instructions.length
@@ -51,13 +51,13 @@ theorem special_pc : specialSite.startPC = UInt256.ofNat 143 := by
   decide +kernel
 def dispatchTemplate : List Instr := [.op (.Swap ⟨12, by decide⟩), .op .JUMP]
 def dispatchSite : GenericRoundSite CandidateArtifact.artifact .Osaka dispatchTemplate :=
-  StackSiteBuilder.ofSlice dispatchTemplate 3345 (by rfl)
-    (by change 3345 + dispatchTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice dispatchTemplate 3343 (by rfl)
+    (by change 3343 + dispatchTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4578 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 3345) = UInt256.ofNat 4578
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4622 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 3343) = UInt256.ofNat 4622
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid143 : Decode.isValidJumpDest CandidateArtifact.artifact.code 143 = true := by
@@ -67,17 +67,17 @@ theorem valid143 : Decode.isValidJumpDest CandidateArtifact.artifact.code 143 = 
   rw [hpc] at h
   exact h
 #print axioms valid143
-theorem valid9949 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9949 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 6773 = 9949 := by
+theorem valid9949 : Decode.isValidJumpDest CandidateArtifact.artifact.code 4882 = true := by
+  have hpc : CandidateArtifact.artifact.instructionPC 3449 = 4882 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 6773 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 3449 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid9949
-theorem valid10108 : Decode.isValidJumpDest CandidateArtifact.artifact.code 10108 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 6896 = 10108 := by
+theorem valid10108 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9911 = true := by
+  have hpc : CandidateArtifact.artifact.instructionPC 6826 = 9911 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 6896 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 6826 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid10108

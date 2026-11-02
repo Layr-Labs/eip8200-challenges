@@ -13,7 +13,7 @@ def template := (RawRight0.template ++ RawRight1.template) ++ RawPack.template
 theorem run (s : State) (h : WordLane) (off limit : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
     runInstrSeq template
-      {s with pc := UInt256.ofNat 824, stack := stack s.memory h.e [.factor,.lower,.cache 140,.cache 350,.cache 310,.cache 190,.e] h h (UInt256.ofNat 1352829926) (CorePack.suffix h off limit rho)} =
+      {s with pc := UInt256.ofNat 794, stack := stack s.memory h.e [.factor,.lower,.cache 140,.cache 350,.cache 310,.cache 190,.e] h h (UInt256.ofNat 1352829926) (CorePack.suffix h off limit rho)} =
       some (RoundComposition.state s h.e h (CorePack.suffix h off limit rho) 0
         (CoreModel.pair h (CoreModel.prologue s.memory h))) := by
   have hlen : (CorePack.suffix h off limit rho).length ≤ 900 := by

@@ -14,7 +14,7 @@ theorem run (s : State) (len : UInt256) (h : WordLane) (off limit : UInt256) (rh
     (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = len)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load len 162)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4601 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     runInstrSeq template
       {s with pc := UInt256.ofNat 89, stack := stack len h.e [.factor,.lower,.cache 140,.cache 350,.cache 310,.cache 190,.e] h h (UInt256.ofNat 1352829926) (PadCorePack.suffix h off limit rho)} =
       some (PadComposition.state s len h.e h (PadCorePack.suffix h off limit rho) 0

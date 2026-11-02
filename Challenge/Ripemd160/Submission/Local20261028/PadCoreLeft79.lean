@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Local20261028.PadModel
 import Challenge.Ripemd160.Submission.Local20261028.PadRawLeft79
 import Challenge.Ripemd160.Submission.Local20261028.PadCommon
@@ -20,7 +21,7 @@ def input (n : UInt256) (h4 : UInt256) (q right : WordLane) (k : UInt256) : Stag
   ⟨word n h4 (.d) q right k, word n h4 (.b) q right k, word n h4 (.c) q right k, word n h4 (.e) q right k, word n h4 (.a) q right k, word n h4 (.ar) q right k, word n h4 (.cachedMessage 360) q right k, word n h4 (.pair) q right k, word n h4 (.upper) q right k, word n h4 (.er) q right k, word n h4 (.cr) q right k, word n h4 (.literal 23) q right k, word n h4 (.k) q right k, word n h4 (.br) q right k, word n h4 (.factor) q right k, word n h4 (.lower) q right k, word n h4 (.cache 140) q right k, word n h4 (.cache 350) q right k, word n h4 (.cache 310) q right k, word n h4 (.cache 190) q right k⟩
 theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.d = q.a) :
     PadRawLeft79.outputStack n (input n h4 q right (UInt256.ofNat 2840853838)) (h4 :: rho) =
-      stack n h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw n q) (right) (UInt256.ofNat 2840853838) rho := by
+      stack n h4 [ .b, .c, .d, .a, .dr, .ar, .literal 1109194275457955143375908765704, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw n q) (right) (UInt256.ofNat 2840853838) rho := by
   simp only [PadRawLeft79.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, PadCommon.word, PadValues.load, hsame,
     PadModel.initial, PadModel.pair, PadModel.pairWord, PadModel.left,
@@ -38,10 +39,10 @@ theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List 
 theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.d = q.a)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
  :
-    StackRoundTrace.runInstrSeq PadRawLeft79.template {s with pc := UInt256.ofNat 8014, stack := stack n h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)} =
-      some {s with pc := UInt256.ofNat 8033, stack := stack n h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw n q) (right) (UInt256.ofNat 2840853838) rho} := by
-  have h := PadRawLeft79.run_actual s (UInt256.ofNat 8014) n (input n h4 q right (UInt256.ofNat 2840853838)) (h4 :: rho) (by simp only [List.length_cons]; omega) hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 8014) PadRawLeft79.template = UInt256.ofNat 8033 := by decide +kernel
+    StackRoundTrace.runInstrSeq PadRawLeft79.template {s with pc := UInt256.ofNat 9874, stack := stack n h4 [ .d, .b, .c, .e, .a, .ar, .literal 1109194275457955143375908765704, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)} =
+      some {s with pc := UInt256.ofNat 9893, stack := stack n h4 [ .b, .c, .d, .a, .dr, .ar, .literal 1109194275457955143375908765704, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw n q) (right) (UInt256.ofNat 2840853838) rho} := by
+  have h := PadRawLeft79.run_actual s (UInt256.ofNat 9874) n (input n h4 q right (UInt256.ofNat 2840853838)) (h4 :: rho) (by simp only [List.length_cons]; omega) hr ha
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 9874) PadRawLeft79.template = UInt256.ofNat 9893 := by decide +kernel
   rw [hend] at h
   rw [output_eq n h4 q right rho hsame] at h
   exact h

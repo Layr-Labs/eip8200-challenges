@@ -7,23 +7,23 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.FirstRead
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate RipemdMemoryBridge20261028
 def site : GenericRoundSite CandidateArtifact.artifact .Osaka FirstRead.template :=
-  StackSiteBuilder.ofSlice FirstRead.template 6896 (by rfl)
-    (by change 6896 + FirstRead.template.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice FirstRead.template 6826 (by rfl)
+    (by change 6826 + FirstRead.template.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
-theorem site_pc : site.startPC = UInt256.ofNat 10108 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6896) = UInt256.ofNat 10108
+theorem site_pc : site.startPC = UInt256.ofNat 9911 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6826) = UInt256.ofNat 9911
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
-      {FirstRead.result s with pc := UInt256.ofNat 10141, stack := FirstCore.frame cont rho} := by
-  apply PadLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
-    {FirstRead.result s with pc := UInt256.ofNat 10141, stack := FirstCore.frame cont rho}
+    GasSteps {s with pc := UInt256.ofNat 9911, stack := FirstCore.frame cont rho}
+      {FirstRead.result s with pc := UInt256.ofNat 9944, stack := FirstCore.frame cont rho} := by
+  apply PadLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 9911, stack := FirstCore.frame cont rho}
+    {FirstRead.result s with pc := UInt256.ofNat 9944, stack := FirstCore.frame cont rho}
     hc hf hr hnp site_pc.symm
   · apply PadLift.advancesAll_sound
     decide +kernel
@@ -32,16 +32,17 @@ def complete (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 10108, stack := FirstCore.frame cont rho}
-      {FirstCore.prepared (FirstRead.result s) with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 FirstCore.initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (FirstCore.prepared (FirstRead.result s)).memory FirstCore.initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} :=
+    GasSteps {s with pc := UInt256.ofNat 9911, stack := FirstCore.frame cont rho}
+      {FirstCore.prepared (FirstRead.result s) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 FirstCore.initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (FirstCore.prepared (FirstRead.result s)).memory FirstCore.initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} :=
   (gasSteps s cont rho hs hr ha hc hf hnp).trans
     (FirstCore.gasSteps (FirstRead.result s) cont rho hs hr ha hc hf hnp)
 theorem ready (s : State) (m : ByteArray)
     (hm : s.memory = PairedScheduleMemory.writeWord m 162 FirstInitial.highWord)
-    (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0) :
+    (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0)
+    (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     CoreMessage.Ready (FirstCore.prepared (FirstRead.result s)).memory
       (GeneralMessageReady.entryWords (FirstRead.result s).memory) := by
-  apply FirstCore.ready
+  apply FirstCore.ready (FirstRead.result s) ?_ hc
   rw [FirstRead.memory_eq s m hm]
   exact FirstInitial.matches_initial m hz
 #print axioms complete

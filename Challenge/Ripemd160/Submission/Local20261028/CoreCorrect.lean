@@ -20,9 +20,9 @@ open StaggerPrologueNear (Near LaneNear)
 theorem prologue_crypto (memory : ByteArray) (words : Nat → UInt32) (q : CryptoLane)
     (hm : CoreMessage.Ready memory words) :
     unpackLeft (prologue memory (embed q)) = rightFold words 3 q := by
-  have hm0 : low32 (CoreModel.load memory 486) = words 5 := hm.scalar 27 (by decide)
-  have hm1 : low32 (CoreModel.load memory 162) = words 14 := hm.scalar 9 (by decide)
-  have hm2 : low32 (CoreModel.load memory 252) = words 7 := hm.scalar 14 (by decide)
+  have hm0 : low32 (CoreModel.load memory 486) = words 5 := hm.scalar 27 (by decide) (by decide)
+  have hm1 : low32 (CoreModel.load memory 162) = words 14 := hm.scalar 9 (by decide) (by decide)
+  have hm2 : low32 (CoreModel.load memory 252) = words 7 := hm.scalar 14 (by decide) (by decide)
   have hi := StaggerScalarLow54.packCrypto_low54 q ⟨0,0,0,0,0⟩
   have h1 : StaggerScalarLow54.Low54 (bits (right0 memory (embed q)).c) := hi.2.1
   have h2 : StaggerScalarLow54.Low54 (bits (right1 memory (right0 memory (embed q))).c) :=
@@ -132,9 +132,9 @@ theorem epilogue_project (memory : ByteArray) (words : Nat → UInt32) (q : Pair
     (hb : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits q.b))
     (hc : StaggerScalarLow54.Low54 (PairedLaneUInt256Bridge.bits q.c)) :
     unpackLeft (epilogue memory q) = leftFinish words (unpackLeft q) := by
-  have hm0 : low32 (CoreModel.load memory 0) = words 6 := hm.scalar 0 (by decide)
-  have hm1 : low32 (CoreModel.load memory 612) = words 15 := hm.scalar 34 (by decide)
-  have hm2 : low32 (CoreModel.load memory 198) = words 13 := hm.scalar 11 (by decide)
+  have hm0 : low32 (CoreModel.load memory 0) = words 6 := hm.scalar 0 (by decide) (by decide)
+  have hm1 : low32 (CoreModel.load memory 612) = words 15 := hm.scalar 34 (by decide) (by decide)
+  have hm2 : low32 (CoreModel.load memory 198) = words 13 := hm.scalar 11 (by decide) (by decide)
   have h1 : StaggerScalarLow54.Low54
       (PairedLaneUInt256Bridge.bits (left77 memory q).c) := hb
   have h2 : StaggerScalarLow54.Low54

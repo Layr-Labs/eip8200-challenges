@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.FusedKeyReconstruction
 import Challenge.Ripemd160.Submission.Local20261028.RawPaired29
 import Challenge.Ripemd160.Submission.Local20261028.CoreCommon
@@ -18,7 +19,7 @@ def eval (memory : ByteArray) (q : WordLane) : WordLane :=
 
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RawPaired29.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 28)) rho =
-      stack memory h4 [ .d, .e, .cachedMessage 360, .pair, .upper, .a, .b, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 29) rho := by
+      stack memory h4 [ .d, .e, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 29) rho := by
   have hkb : StaggerAlgorithm.physicalKey 28 = UInt256.ofNat 34535016170389834383797866734609369064725061767952793 := by decide
   have hka : StaggerAlgorithm.physicalKey 29 = UInt256.ofNat 40945789247971450477386360121479348807026276516919705 := by decide
   have hm : StaggerAlgorithm.mode 29 = 6 := by decide
@@ -34,6 +35,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   simp only [wordRotate, usesCompact, wordCompact, wordScale, wordShift, factorPlusWord, usesFusedExtra, wordFusedRotate, fusedCoefficientWord, fusedModulusWord]
   simp
   all_goals try simp only [upperWord, lowerWord, and_true, true_and]
+  all_goals simp only [PrepWordLiterals.pair, PrepWordLiterals.upper_pack, PrepWordLiterals.upper_mask, PrepWordLiterals.lower_pack, PrepWordLiterals.lower_mask]
   all_goals simp only [CoreCommon.add_comm, CoreCommon.add_left_comm,
     CoreCommon.add_assoc, CoreCommon.mul_comm, CoreCommon.mul_one,
     CoreCommon.land_comm, CoreCommon.lor_comm, CoreCommon.xor_comm,
@@ -45,11 +47,11 @@ theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPaired29.template
-      {s with pc := UInt256.ofNat 2365, stack := stack s.memory h4 [ .d, .cache 190, .cache 140, .a, .cachedMessage 360, .pair, .upper, .e, .c, .literal 23, .literal 40945789247971450477386360121479348807026276516919705, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 28) rho} =
-      some {s with pc := UInt256.ofNat 2404, stack := stack s.memory h4 [ .d, .e, .cachedMessage 360, .pair, .upper, .a, .b, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 29) rho} := by
-  have h := RawPaired29.run_actual s (UInt256.ofNat 2365)
+      {s with pc := UInt256.ofNat 2367, stack := stack s.memory h4 [ .d, .cache 190, .cache 140, .a, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .literal 40945789247971450477386360121479348807026276516919705, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 28) rho} =
+      some {s with pc := UInt256.ofNat 2407, stack := stack s.memory h4 [ .d, .e, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 29) rho} := by
+  have h := RawPaired29.run_actual s (UInt256.ofNat 2367)
     (input s.memory h4 q right (StaggerAlgorithm.physicalKey 28)) rho hstack hrun hactive
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 2365) RawPaired29.template = UInt256.ofNat 2404 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 2367) RawPaired29.template = UInt256.ofNat 2407 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

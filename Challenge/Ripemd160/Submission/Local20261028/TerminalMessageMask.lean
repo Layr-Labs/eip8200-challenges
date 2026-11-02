@@ -15,17 +15,18 @@ open RipemdSubmissionTables20261028
 def template : List Instr := [.op (.Dup ⟨6, by decide⟩), .op .AND]
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 4420).take 2 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 4462).take 2 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (4416+4)).take 2 = _
+  change (CandidateBytes.bytes.drop (4416+46)).take 2 = _
   rw [← List.drop_drop, CandidateBytes.drop69]
   decide +kernel
+#print axioms exact_bytes
 
 theorem run (s : State) (message a b c d e : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
-    runInstrSeq template {s with pc := UInt256.ofNat 4420, stack := [message,a,b,c,d,e,pairWord] ++ rho} =
-      some {s with pc := UInt256.ofNat 4422, stack := [UInt256.land pairWord message,a,b,c,d,e,pairWord] ++ rho} := by
+    runInstrSeq template {s with pc := UInt256.ofNat 4462, stack := [message,a,b,c,d,e,pairWord] ++ rho} =
+      some {s with pc := UInt256.ofNat 4464, stack := [UInt256.land pairWord message,a,b,c,d,e,pairWord] ++ rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [template, runInstrSeq, DataStepper.runInstr,
     UInt256.succ, Instr.size, hrun, hcap, Word.word_toNat_ofNat,
@@ -64,7 +65,7 @@ theorem terminal_no_carry (message : UInt256) (junk : BitVec 144) (extra : Nat)
   simp only [Nat.reducePow] at *
   omega
 
-/-- Arithmetic values captured before the failing candidate's ADD at PC 4420.
+/-- Arithmetic values captured before the failing candidate's ADD at PC 4462.
     Their connection to calldata is reproduced by ReplayTerminalWitness.lean. -/
 theorem observed_carry :
     let m : Nat := 0x93d58388d47fb29988bc0a41a6110000de8193d58388d47fb29988bc0a41a611

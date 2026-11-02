@@ -61,8 +61,8 @@ def lengthLoopActiveWords (input : ByteArray) : Nat → UInt256
       (lengthLoopActiveWords input i).toNat (lengthAddr input i).toNat 1)
 def lengthLoopState (input : ByteArray) (i : Nat) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 4583
-    stack := lengthAddr input i :: lengthShift input i :: UInt256.ofNat 4583 :: padFrame input
+    pc := UInt256.ofNat 6486
+    stack := lengthAddr input i :: lengthShift input i :: UInt256.ofNat 6486 :: padFrame input
     memory := lengthLoopMemory input i
     activeWords := lengthLoopActiveWords input i }
 
@@ -71,19 +71,19 @@ the cursor, shift the residual, and `DUP4 JUMPI` back to the head 4547 that stay
 loop registers while the residual is nonzero. -/
 def lengthIterationPath : List
     (Challenge.EvmProof.DataStepper.Located Control.Artifact.submissionArtifact .Osaka) :=
-  [⟨3350, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3351, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3352, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3353, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3354, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨3355, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3356, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3357, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨3358, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3359, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3360, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3361, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3362, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨4093, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4094, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4095, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4096, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4097, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨4098, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4099, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4100, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨4101, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4102, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4103, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4104, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4105, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 10
 def lengthBranchPath := lengthIterationPath.drop 10
@@ -98,11 +98,11 @@ def lengthBranchPath := lengthIterationPath.drop 10
     (lengthLoopState input i).executionEnv.code = submissionBytecode := by rfl
 
 @[simp] theorem lengthLoopState_pc (input : ByteArray) (i : Nat) :
-    (lengthLoopState input i).pc = UInt256.ofNat 4583 := by rfl
+    (lengthLoopState input i).pc = UInt256.ofNat 6486 := by rfl
 
 @[simp] theorem lengthLoopState_stack (input : ByteArray) (i : Nat) :
     (lengthLoopState input i).stack =
-      lengthAddr input i :: lengthShift input i :: UInt256.ofNat 4583 :: padFrame input := by rfl
+      lengthAddr input i :: lengthShift input i :: UInt256.ofNat 6486 :: padFrame input := by rfl
 
 @[simp] theorem padSentinel_code (input : ByteArray) :
     (padSentinel input).executionEnv.code = submissionBytecode := by rfl
@@ -110,17 +110,17 @@ def lengthBranchPath := lengthIterationPath.drop 10
 /-- State after one low-byte store and both register updates (at the `DUP2` 4559). -/
 def lengthSteppedState (input : ByteArray) (i : Nat) : State :=
   { lengthLoopState input i with
-    pc := UInt256.ofNat 4595
-    stack := lengthAddr input (i + 1) :: lengthShift input (i + 1) :: UInt256.ofNat 4583 ::
+    pc := UInt256.ofNat 6498
+    stack := lengthAddr input (i + 1) :: lengthShift input (i + 1) :: UInt256.ofNat 6486 ::
       padFrame input
     memory := lengthLoopMemory input (i + 1)
     activeWords := lengthLoopActiveWords input (i + 1) }
 
 def lengthBackReturned (input : ByteArray) (i : Nat) : State :=
-  { lengthSteppedState input i with pc := UInt256.ofNat 4583 }
+  { lengthSteppedState input i with pc := UInt256.ofNat 6486 }
 
 def lengthExitPending (input : ByteArray) (i : Nat) : State :=
-  { lengthSteppedState input i with pc := UInt256.ofNat 4598 }
+  { lengthSteppedState input i with pc := UInt256.ofNat 6501 }
 
 theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
     lengthBackReturned input i = lengthLoopState input (i + 1) := by
@@ -133,19 +133,19 @@ theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
     (lengthSteppedState input i).halt = .Running := by rfl
 
 @[simp] theorem lengthSteppedState_pc (input : ByteArray) (i : Nat) :
-    (lengthSteppedState input i).pc = UInt256.ofNat 4595 := by rfl
+    (lengthSteppedState input i).pc = UInt256.ofNat 6498 := by rfl
 
 @[simp] theorem lengthSteppedState_code (input : ByteArray) (i : Nat) :
     (lengthSteppedState input i).executionEnv.code = submissionBytecode := by rfl
 
 @[simp] theorem validLengthLoopHead :
-    Decode.isValidJumpDest submissionBytecode 4583 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 3350 = 4583 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+    Decode.isValidJumpDest submissionBytecode 6486 = true := by
+  have hpc : Artifact.submissionArtifact.instructionPC 4093 = 6486 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Control.Artifact.submissionArtifact.isValidJumpDest_index 3350 (by rfl)
+  exact Control.Artifact.submissionArtifact.isValidJumpDest_index 4093 (by rfl)
 
 theorem validJump4949 :
-    Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 4583).toNat = true :=
+    Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 6486).toNat = true :=
   validLengthLoopHead
 
 theorem validJump198 :

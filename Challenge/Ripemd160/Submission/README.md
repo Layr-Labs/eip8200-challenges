@@ -1,70 +1,33 @@
-# Current refinement: masked table entries instead of zero stores in the 32-byte table builder
+# RIPEMD-160: compact tables, retained operands, and shared execution
 
-* 32-byte table builder: the three zero stores at 450, 666 and 846 (`PUSH0 PUSH2 a MSTORE`) are removed; the entries stored at 468 and 684 are masked to their low 18 bytes (`PUSH18 0xff..ff AND`) and the entry stored at 828 to its high 18 bytes (`PUSH32 0xff..ff00..00 AND`) before their stores. The builder grows by 59 bytes and its final jump is three instructions earlier; nothing after the builder exists, so no other PC moves. The bytecode is 10,500 bytes in 165 64-byte chunks.
-* Proofs: `FirstExecution.First3`-`First5` add the mask pushes and `AND`s and their masked memory writes, `First5` and `First6` drop the zero stores, and `First3`-`First7`, `FirstTable` and `FirstMemory` follow the shifted PCs and byte offsets. `FirstMemory` adds `low18_byte`, `high18_byte` and `masked_bytes`; `memory15`/`19`/`23` write the masked words with zero symbols for the cleared bytes, and `memory26`/`30`/`31` are now `memory25`/`29`/`30`. `FirstCore` has the new jump index and PC. `CandidateBytes.lean` gains `chunk164`, `tail164` and `drop164`. The artifact mirrors (`CandidateBytes.lean`, `CandidateArtifact.lean` and the count and size literals in `ColdArtifact.lean`, `ColdBytecode.lean` and `RecArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
+The complete correctness theorem and independent Comparator check pass for
+this exact image in the challenge's documented local verification mode.
+The protected scorer reports **616,801 gas** over 49 default-corpus vectors,
+versus **618,026** for public entry `0cb260a1`. All 98 clean/dirty checks pass.
+Bytecode size is **10,511 bytes**. Decoded SHA-256:
+`ae8b32c6b2ff25a06ed7c300d16ecd6e84b725033fa2b144063802b5f02e87cf`.
 
----
+The proof base is public commit `7246c880f7b9d96dbf11b1eb533663ae578a3595`.
+The candidate combines compact message-table production, retained operands,
+a precomputed entry for 32-byte inputs, and joint dispatch and code placement.
+Both compressors use ordinary, uncomplemented state at round boundaries.
 
-# Current refinement: fall-through `JUMPDEST`s removed from the endian block and the arm chain
+`Solution.lean` proves `Challenge.Ripemd160.Correct` for the protected literal:
+every input shorter than 2^64 bytes returns the specified 32-byte result with
+sufficient gas. Its only axioms are `propext`, `Quot.sound`, and `Classical.choice`.
 
-* Shared message load: the fall-through `JUMPDEST` between the high and the low half is removed and the low half's first shift push is widened from `PUSH1` to `PUSH2`; every later PC is unchanged.
-* Patterned arms: the fall-through `JUMPDEST` before the shared chain's result branch is removed and its failure-PC push is widened from `PUSH2` to `PUSH3`; every later PC is unchanged.
-* Proofs: `CoreEndian.candidateTemplate` drops the `JUMPDEST` and uses `stage8 false` for the low half (`run_candidate` follows); `Arms.Scan.chainTemplate` ends with the new `chainResultTemplate` (`run_chainResult`, `run_chain`). The instruction-index literals after each removed `JUMPDEST` (site indices and bounds, `instructionPC` facts, located paths, the arm, chain, return and hoisted-store index tables) are renumbered. The artifact mirrors (`CandidateBytes.lean`, `CandidateArtifact.lean` and the count literals in `ColdArtifact.lean` and `RecArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
-
----
-
-# Current refinement: constant store removed from the 32-byte table builder
-
-* 32-byte table builder: the constant store `PUSH22 ...; PUSH1 196; MSTORE` is removed; the rest of the builder moves 26 bytes down and its final jump is three instructions earlier.
-* Proofs: `FirstExecution.First0` drops the store and its memory write; `First1`-`First7`, `FirstTable` and `FirstMemory` follow the shifted PCs and byte offsets; `FirstMemory.memory2`/`symbols2` are now `memory1`/`symbols1`; `FirstCore` has the new jump index and PC. The artifact mirrors (`CandidateBytes.lean`, `CandidateArtifact.lean` and the count and size literals in `ColdArtifact.lean`, `ColdBytecode.lean` and `RecArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
-
----
-
-# Current refinement: direct final stores in the final-padding output
-
-* Final-padding output: the five final sums are stored directly at 16, 12, 8, 4 and 0 (`PUSH1 16 MSTORE`, `DUP11 ADD ADD PUSH1 12 MSTORE`, `DUP10 ADD ADD PUSH1 8 MSTORE`, `SWAP9 PUSH1 4 MSTORE`, `SWAP9 PUSH0 MSTORE`) instead of rearranging the frame and popping it; the following byte-swap stages read the two masks with `DUP15` and `DUP14`; seven `STOP` bytes after the `RETURN` keep the block's byte length and instruction count, so every later PC and instruction index is unchanged.
-* Proofs: `PadOutput.lean` has the new store sequence (`direct`, `direct_run`), the deep-mask stages (`stagesCode`, `run_stages`) and the new terminal PCs; `PadSites.output` is the new literal. The artifact mirrors (`CandidateBytes.lean` and `CandidateArtifact.lean`) are regenerated from `bytecode.hex`. Every other theorem statement is unchanged.
-
----
-
-# RIPEMD-160 candidate
-
-The entry point is `Solution.lean`. Its `candidate` theorem states universal
-RIPEMD-160 correctness for the protected bytecode literal generated by the
-challenge runner from `bytecode.hex`.
-
-The executable uses overlapping message tables, shared consumers for ordinary
-and 32-byte inputs, and a compact final-padding compressor. The fixed-input
-recognizers and their generic fallback remain fully checked.
-
-## Reproduce
-
-Use challenge commit `0bc05710006a860e6ebb218c395aa03074d43302` and the pinned
-Lean toolchain. From the challenge root:
+From the challenge repository root:
 
 ```sh
 ./setup.sh ripemd160
 bash Challenge/Ripemd160/Submission/verify.sh
 ```
 
-`verify.sh` uses the challenge's trusted bytecode renderer, builds the proof
-serially, and invokes the canonical local benchmark. The hosted runner supplies
-the ranking sandbox.
+The verification helper prepares the protected bytecode literal, builds the
+solution in dependency order, then runs Comparator and the protected scorer.
+It uses the documented non-ranked local mode. Hosted evaluation uses the
+challenge's unchanged `./benchmark.sh ripemd160` with its ranked sandbox.
 
-## Proof map
-
-New modules are in `Local20261028/`. `RecHoistedStoreCorrect` joins the complete
-input dispatch. `ColdGenericFramedCorrect` connects ordinary, aligned and
-32-byte routes to the hash specification. `ColdLoop` and `ColdIteration` cover
-arbitrary numbers of blocks. `PadContract` handles the specialized final block.
-`CandidateArtifact`, `CoreGas` and `PadGas` connect the instruction proofs to
-exact bytecode and metered EVM execution. The final theorem's allowed axioms
-are `propext`, `Classical.choice` and `Quot.sound`.
-
-Reused mathematical and execution lemmas are under `Proofs/Bytecode/`.
-The executable base is submission `3a5055d3-b39f-4223-b9b8-0977b65ee5ec`
-(mpjunior92, Claude Opus 5.5 / Claude Code). Proof integration also adapts
-submission `1ab7033a-a3c3-4770-9d2f-9993f553161f`. Table synthesis, consumer
-retargeting, compact padding and integration were developed with GPT-6 Astra
-and Codex. See the public submission note and dependency declaration for
-measurements and provenance. The challenge's Apache-2.0 license applies.
+`dependencies.json` records reused public code and proofs. The inherited
+Apache 2.0 license and notices apply. Earlier MODEXP work in the author's
+repository, including an optimization found by Claude, informed this search.

@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerTerminal75
 import Challenge.Ripemd160.Submission.Local20261028.RawPaired75
 import Challenge.Ripemd160.Submission.Local20261028.CoreCommon
@@ -18,7 +19,7 @@ def eval (memory : ByteArray) (q : WordLane) : WordLane :=
 
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RawPaired75.outputStack memory (input memory h4 q right (StaggerAlgorithm.physicalKey 74)) rho =
-      stack memory h4 [ .d, .e, .e, .cachedMessage 360, .pair, .upper, .a, .b, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 75) rho := by
+      stack memory h4 [ .d, .e, .e, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval memory q) right (StaggerAlgorithm.physicalKey 75) rho := by
   have hkb : StaggerAlgorithm.physicalKey 74 = UInt256.ofNat 2840853838 := by decide
   have hka : StaggerAlgorithm.physicalKey 75 = UInt256.ofNat 2840853838 := by decide
   have hm : StaggerAlgorithm.mode 75 = 4 := by decide
@@ -34,6 +35,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   simp only [wordRotate, usesCompact, wordCompact, wordScale, wordShift, factorPlusWord, usesFusedExtra, wordFusedRotate, fusedCoefficientWord, fusedModulusWord]
   simp
   all_goals try simp only [upperWord, lowerWord, and_true, true_and]
+  all_goals simp only [PrepWordLiterals.pair, PrepWordLiterals.upper_pack, PrepWordLiterals.upper_mask, PrepWordLiterals.lower_pack, PrepWordLiterals.lower_mask]
   all_goals simp only [CoreCommon.add_comm, CoreCommon.add_left_comm,
     CoreCommon.add_assoc, CoreCommon.mul_comm, CoreCommon.mul_one,
     CoreCommon.land_comm, CoreCommon.lor_comm, CoreCommon.xor_comm,
@@ -45,11 +47,11 @@ theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPaired75.template
-      {s with pc := UInt256.ofNat 4354, stack := stack s.memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .e, .c, .literal 23, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 74) rho} =
-      some {s with pc := UInt256.ofNat 4405, stack := stack s.memory h4 [ .d, .e, .e, .cachedMessage 360, .pair, .upper, .a, .b, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 75) rho} := by
-  have h := RawPaired75.run_actual s (UInt256.ofNat 4354)
+      {s with pc := UInt256.ofNat 4397, stack := stack s.memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 74) rho} =
+      some {s with pc := UInt256.ofNat 4447, stack := stack s.memory h4 [ .d, .e, .e, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 75) rho} := by
+  have h := RawPaired75.run_actual s (UInt256.ofNat 4397)
     (input s.memory h4 q right (StaggerAlgorithm.physicalKey 74)) rho hstack hrun hactive
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4354) RawPaired75.template = UInt256.ofNat 4405 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4397) RawPaired75.template = UInt256.ofNat 4447 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

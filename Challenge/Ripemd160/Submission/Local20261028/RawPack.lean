@@ -86,6 +86,7 @@ def template : List Instr :=
     .op .SHL,
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
+    .op .JUMPDEST,
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
@@ -167,11 +168,11 @@ theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive hlower
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 901).take 105 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 871).take 106 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (896+5)).take 105 = _
-  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop14]
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (832+39)).take 106 = _
+  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop13]
   decide +kernel
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RawPack

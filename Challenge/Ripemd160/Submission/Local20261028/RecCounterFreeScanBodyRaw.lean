@@ -41,25 +41,25 @@ theorem run_template (s : State) (pc a r : UInt256) (rho : List UInt256)
   rw [Control.UnrolledRepeatRaw.foldAcc_offsets] at hb
   simpa only [template, pcAfter_append] using hb
 
-theorem endPC : pcAfter (UInt256.ofNat 9711) template = UInt256.ofNat 9915 := by decide
+theorem endPC : pcAfter (UInt256.ofNat 6146) template = UInt256.ofNat 6350 := by decide
 
 theorem run (s : State) (a r : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
-    runInstrSeq template {s with pc := UInt256.ofNat 9711, stack := [a,r] ++ rho} =
+    runInstrSeq template {s with pc := UInt256.ofNat 6146, stack := [a,r] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9915
+        pc := UInt256.ofNat 6350
         stack := [Control.UnrolledRepeatRaw.acc s.executionEnv.calldata r a 10,r] ++ rho} := by
-  simpa only [endPC] using run_template s (UInt256.ofNat 9711) a r rho hs hrun
+  simpa only [endPC] using run_template s (UInt256.ofNat 6146) a r rho hs hrun
 
 theorem run_equalityAcc (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq template
       {s with
-        pc := UInt256.ofNat 9711
+        pc := UInt256.ofNat 6146
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 0,
           Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} =
       some {s with
-        pc := UInt256.ofNat 9915
+        pc := UInt256.ofNat 6350
         stack := [DirectGuard.equalityAcc s.executionEnv.calldata 10,
           Control.KnownInputCompactState.referenceWord s.executionEnv.calldata] ++ rho} := by
   simpa only [Control.UnrolledRepeatRaw.acc_equalityAcc] using

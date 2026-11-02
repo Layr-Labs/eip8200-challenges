@@ -35,9 +35,9 @@ theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt25
     (hs : rho.length ≤ 900) (halias : rho[2]? = some q.c) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4601 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     StackRoundTrace.runInstrSeq PadRawRight1.template {s with pc := UInt256.ofNat 121, stack := stack n h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho} =
-      some {s with pc := UInt256.ofNat 4638, stack := stack n h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.right1 n q) (right) (UInt256.ofNat 1352829926) rho} := by
+      some {s with pc := UInt256.ofNat 6541, stack := stack n h4 [ .d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.right1 n q) (right) (UInt256.ofNat 1352829926) rho} := by
   have h := PadRawRight1.run_actual s (UInt256.ofNat 121) n (input n h4 q right (UInt256.ofNat 1352829926)) rho hs halias (by rfl) hh4.symm hr ha hcal hmem hvalid
   rw [output_eq] at h
   exact h

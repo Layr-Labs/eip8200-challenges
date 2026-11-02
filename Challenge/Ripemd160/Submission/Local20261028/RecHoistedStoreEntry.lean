@@ -78,7 +78,7 @@ def success (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env s)
     (hanchor : Low64RepeatMath.condition s.executionEnv.calldata = 0)
     (hm : PcSeedRaw.mismatch s.executionEnv.calldata = 0) :
     GasSteps {s with pc := UInt256.ofNat 0, stack := rho}
-      {(HoistedStoreResearch.stored s) with pc := UInt256.ofNat 9940, stack := rho, halt := .Returned, hReturn := spec s.executionEnv.calldata} :=
+      {(HoistedStoreResearch.stored s) with pc := UInt256.ofNat 6375, stack := rho, halt := .Returned, hReturn := spec s.executionEnv.calldata} :=
   (to_seed s rho e hs hfilter hsize hanchor).trans
     (HoistedStoreComposed.success s rho e hs ha hsize hanchor hm)
 

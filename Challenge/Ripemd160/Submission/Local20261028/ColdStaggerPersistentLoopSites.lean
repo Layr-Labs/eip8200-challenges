@@ -19,18 +19,18 @@ open StackRoundTrace StackRoundTemplate Control.LoopRaw
 def dispatchCode : List Instr := Control.LoopRaw.dispatchTemplate
 
 theorem dispatch_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3345).take dispatchCode.length = dispatchCode := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3343).take dispatchCode.length = dispatchCode := by rfl
 
 def dispatchSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka dispatchCode :=
-  StackSiteBuilder.ofSlice dispatchCode 3345 dispatch_slice
-    (by change 3345 + dispatchCode.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice dispatchCode 3343 dispatch_slice
+    (by change 3343 + dispatchCode.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check dispatchCode (by decide))
     (by decide)
 
-theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4578 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3345) = UInt256.ofNat 4578
+theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4622 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3343) = UInt256.ofNat 4622
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def incTemplate : List Instr := Control.LoopRaw.incTemplate
@@ -162,11 +162,11 @@ def gasSteps_dispatch (s : State) (h : Compression.HashState) (off cont junk : U
     (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 4578, stack := junk :: StaggerPersistentFrame.frame h off cont rho}
+    GasSteps {s with pc := UInt256.ofNat 4622, stack := junk :: StaggerPersistentFrame.frame h off cont rho}
       {s with pc := cont, stack := StaggerPersistentFrame.frame h off junk rho} := by
-  apply ExitLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4578, stack := junk :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp dispatch_pc.symm
+  apply ExitLift.gasSteps_of_raw dispatchSite {s with pc := UInt256.ofNat 4622, stack := junk :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp dispatch_pc.symm
   · exact ExitLift.advancesAll_sound _ (by decide)
-  · exact Control.LoopRaw.run_dispatch s (UInt256.ofNat 4578) h off cont junk rho (by omega) hrun hvalid
+  · exact Control.LoopRaw.run_dispatch s (UInt256.ofNat 4622) h off cont junk rho (by omega) hrun hvalid
 
 /-- The 192 stub pushes its next continuation before jumping to the shared join. -/
 def stub192Push : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.pushContTemplate 128) :=

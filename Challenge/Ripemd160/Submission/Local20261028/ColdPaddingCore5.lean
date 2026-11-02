@@ -394,7 +394,7 @@ def lengthExitPath : List
   Control.Artifact.padExitPath
 
 def lengthExitEntered (input : ByteArray) (i : Nat) : State :=
-  { lengthLoopState input i with pc := UInt256.ofNat 4598 }
+  { lengthLoopState input i with pc := UInt256.ofNat 6501 }
 
 theorem lengthExitPending_eq (input : ByteArray) (i : Nat) :
     lengthExitPending input i = lengthExitEntered input (i + 1) := by
@@ -415,7 +415,7 @@ def lengthExitReturned (input : ByteArray) (i : Nat) : State :=
     (lengthExitEntered input i).halt = .Running := by rfl
 
 @[simp] theorem lengthExitEntered_pc (input : ByteArray) (i : Nat) :
-    (lengthExitEntered input i).pc = UInt256.ofNat 4598 := by rfl
+    (lengthExitEntered input i).pc = UInt256.ofNat 6501 := by rfl
 
 @[simp] theorem lengthExitEntered_code (input : ByteArray) (i : Nat) :
     (lengthExitEntered input i).executionEnv.code = submissionBytecode := by rfl
@@ -430,8 +430,8 @@ theorem run_lengthExitPop_opaque (s : State) (input : ByteArray)
     (h461 : Decode.isValidJumpDest s.executionEnv.code 461 = true) :
     Challenge.EvmProof.DataStepper.runLocatedBlock lengthExitPath
       { s with
-        pc := UInt256.ofNat 4598
-        stack := a :: b :: UInt256.ofNat 4583 :: padFrame input } =
+        pc := UInt256.ofNat 6501
+        stack := a :: b :: UInt256.ofNat 6486 :: padFrame input } =
       some { s with pc := UInt256.ofNat 461, stack := glFrame } := by
   simp [lengthExitPath, Control.Artifact.padExitPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,

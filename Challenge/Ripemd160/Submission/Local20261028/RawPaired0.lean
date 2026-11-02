@@ -18,7 +18,8 @@ private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
   [ .push ⟨2, by decide⟩ (UInt256.ofNat 324),
     .op .MLOAD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 604),
+    .op .MLOAD,
     .op (.Dup ⟨12, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
     .push ⟨22, by decide⟩ (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
@@ -53,74 +54,74 @@ def template : List Instr :=
     .op (.Swap ⟨10, by decide⟩),
     .op (.Dup ⟨12, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .op .SHR,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND ]
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 1006).take 69 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 977).take 72 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (960+46)).take 69 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (960+17)).take 72 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop15]
   decide +kernel
 #print axioms exact_bytes
 
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0,
-    x.v1,
+  [ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v2,
     x.v3,
     x.v4,
     x.v5,
     x.v6,
-    x.v7,
-    x.v8,
-    x.v9,
-    x.v10,
-    x.v11,
-    x.v12,
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (UInt256.ofNat 1109194275457955143345843994625),
+    (UInt256.ofNat 475368975196266490007815979009),
     x.v13 ] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 23))),
-    x.v7,
-    x.v10,
-    (UInt256.ofNat 23),
+  [(UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) x.v6) (UInt256.ofNat 23))),
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (MachineState.readWord memory 604),
     (MachineState.readWord memory 324),
-    x.v0,
-    x.v1,
+    (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v2,
     x.v3,
     (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
     x.v5,
-    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 316) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 22)))),
-    x.v7,
-    x.v8,
-    x.v9,
-    x.v10,
-    x.v11,
-    x.v12,
-    x.v13 ] ++ rho
+    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 316) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.v6)) (UInt256.xor x.v6 (UInt256.ofNat 95780971281817308448866066055358605703522833630494720))) x.v3) x.v4))))) (UInt256.ofNat 22)))),
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (UInt256.ofNat 1109194275457955143345843994625),
+    (UInt256.ofNat 475368975196266490007815979009),
+    x.v13] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.land x.v0 (UInt256.shiftRight (UInt256.mul x.v7 x.v6) (UInt256.ofNat 23))),
-    x.v7,
-    x.v10,
-    (UInt256.ofNat 23),
+  [(UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) x.v6) (UInt256.ofNat 23))),
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (MachineState.readWord memory 604),
     (MachineState.readWord memory 324),
-    x.v0,
-    x.v1,
+    (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v2,
     x.v3,
     (UInt256.ofNat 30169115476673038213297653277143730720156734734729216),
     x.v5,
-    (UInt256.land x.v0 (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v7 (UInt256.land x.v0 (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 316) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land x.v1 x.v6)) (UInt256.xor x.v6 x.v1)) x.v3) x.v4))))) (UInt256.ofNat 22)))),
-    x.v7,
-    x.v8,
-    x.v9,
-    x.v10,
-    x.v11,
-    x.v12,
-    x.v13 ] ++ rho
+    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 30169115476673038213297653277143730720156734734729216) (UInt256.add (MachineState.readWord memory 316) (UInt256.add (UInt256.xor (UInt256.xor (UInt256.lor x.v5 (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.v6)) (UInt256.xor x.v6 (UInt256.ofNat 95780971281817308448866066055358605703522833630494720))) x.v3) x.v4))))) (UInt256.ofNat 22)))),
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (UInt256.ofNat 1109194275457955143345843994625),
+    (UInt256.ofNat 475368975196266490007815979009),
+    x.v13] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
     actualOutput memory x rho = outputStack memory x rho := by rfl
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)

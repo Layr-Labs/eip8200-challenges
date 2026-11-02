@@ -15,7 +15,7 @@ def terminalCode : List Instr :=
    .push ⟨1,by decide⟩ (UInt256.ofNat 32), .push ⟨0,by decide⟩ (UInt256.ofNat 0), .op .RETURN]
 def terminal (s : State) (value : UInt256) (rho : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 10100
+    pc := UInt256.ofNat 6485
     stack := rho
     memory := Return32Finish.outputMemory s value
     activeWords := UInt256.ofNat (MachineState.activeWordsAfter
@@ -25,7 +25,7 @@ def terminal (s : State) (value : UInt256) (rho : List UInt256) : State :=
 
 theorem run_terminal (s : State) (value : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 1019) (hr : s.halt = .Running) :
-    runInstrSeq terminalCode {s with pc := UInt256.ofNat 10094, stack := value::rho} =
+    runInstrSeq terminalCode {s with pc := UInt256.ofNat 6479, stack := value::rho} =
       some (terminal s value rho) := by
   have hcap (k : Nat) (hk : k ≤ 4) : rho.length+k < 1024 := by omega
   have hbase : rho.length < 1024 := by omega
@@ -91,20 +91,20 @@ def finalState (s : State) (h : Compression.HashState) (q : ScheduledTailRaw.Inp
 
 theorem run (s : State) (h : Compression.HashState) (q : ScheduledTailRaw.Input)
     (rho : List UInt256) (hs : rho.length ≤ 960) (hr : s.halt = .Running)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 10024 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6409 = true) :
     runInstrSeq template
-      {s with pc := UInt256.ofNat 8033, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h q) (DenseScheduleTemplate.mask8::DenseScheduleTemplate.mask16::rho)} =
+      {s with pc := UInt256.ofNat 9893, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h q) (DenseScheduleTemplate.mask8::DenseScheduleTemplate.mask16::rho)} =
       some (finalState s h q rho) := by
   let f := PadTailRaw.fields (ScheduledTailFrame.bind h q) DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16
-  have hp := PadTailRaw.run s (UInt256.ofNat 8033) (ScheduledTailFrame.bind h q)
+  have hp := PadTailRaw.run s (UInt256.ofNat 9893) (ScheduledTailFrame.bind h q)
     DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16 rho (by omega) hr rfl hvalid
-  have ha := direct_run s (UInt256.ofNat 10042) f rho (by omega) hr
-  have hend : pcAfter (UInt256.ofNat 10042) direct = UInt256.ofNat 10073 := by decide +kernel
+  have ha := direct_run s (UInt256.ofNat 6427) f rho (by omega) hr
+  have hend : pcAfter (UInt256.ofNat 6427) direct = UInt256.ofNat 6458 := by decide +kernel
   rw [hend] at ha
   have hpa := DenseScheduleTrace.runInstrSeq_append_running hp hr ha
   have hl : runInstrSeq loadCode
-      {prepared s f with pc := UInt256.ofNat 10073, stack := leftover f rho} =
-      some {loaded (prepared s f) with pc := UInt256.ofNat 10076, stack := Return32Output.packedHash (ScheduledTailFrame.combine h q) :: leftover f rho} := by
+      {prepared s f with pc := UInt256.ofNat 6458, stack := leftover f rho} =
+      some {loaded (prepared s f) with pc := UInt256.ofNat 6461, stack := Return32Output.packedHash (ScheduledTailFrame.combine h q) :: leftover f rho} := by
     have hcap (k : Nat) (hk : k ≤ 20) : rho.length+k < 1024 := by omega
     have hpr : (prepared s f).halt = .Running := hr
     have hm := PadTailMath.read_eq s h q DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16
@@ -114,9 +114,9 @@ theorem run (s : State) (h : Compression.HashState) (q : ScheduledTailRaw.Input)
       Word.literal_eq_ofNat,hm,State.activeWordsAfterUInt256,leftover_length]
     all_goals repeat first | apply And.intro | rfl
   have hpal := DenseScheduleTrace.runInstrSeq_append_running hpa hr hl
-  have hst := run_stages (loaded (prepared s f)) (UInt256.ofNat 10076)
+  have hst := run_stages (loaded (prepared s f)) (UInt256.ofNat 6461)
     (Return32Output.packedHash (ScheduledTailFrame.combine h q)) f rho (by omega) hr
-  have hes : pcAfter (UInt256.ofNat 10076) stagesCode = UInt256.ofNat 10094 := by decide +kernel
+  have hes : pcAfter (UInt256.ofNat 6461) stagesCode = UInt256.ofNat 6479 := by decide +kernel
   have h21 : f 21 = DenseScheduleTemplate.mask8 := rfl
   have h22 : f 22 = DenseScheduleTemplate.mask16 := rfl
   rw [hes, h21, h22] at hst
@@ -135,7 +135,7 @@ theorem hReturn_eq (s : State) (h : Compression.HashState) (q : ScheduledTailRaw
     (prepared s (PadTailRaw.fields (ScheduledTailFrame.bind h q) DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16)).memory
     _ 3) 0 32 = _
   rw [PadTailMath.memory_eq]
-  exact Return32Finish.hReturn_eq s (ScheduledTailFrame.combine h q) (UInt256.ofNat 10094)
+  exact Return32Finish.hReturn_eq s (ScheduledTailFrame.combine h q) (UInt256.ofNat 6479)
     (leftover (PadTailRaw.fields (ScheduledTailFrame.bind h q) DenseScheduleTemplate.mask8 DenseScheduleTemplate.mask16) rho)
 
 #print axioms direct_run

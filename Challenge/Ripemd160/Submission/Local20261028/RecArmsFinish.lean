@@ -42,21 +42,21 @@ def finishSiteAt (idx : Nat)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := finishTemplate) (by decide)) (by decide)
 
-def finishSite0 := finishSiteAt 6178 (by rfl)
+def finishSite0 := finishSiteAt 3406 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
-def finishSite1 := finishSiteAt 6313 (by rfl)
+def finishSite1 := finishSiteAt 3545 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
-def finishSite2 := finishSiteAt 6300 (by rfl)
+def finishSite2 := finishSiteAt 3532 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
 
-theorem finishSite0_pc : finishSite0.startPC = UInt256.ofNat 8244 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6178) = _
+theorem finishSite0_pc : finishSite0.startPC = UInt256.ofNat 4753 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3406) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 8825 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6313) = _
+theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 5310 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3545) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem finishSite2_pc : finishSite2.startPC = UInt256.ofNat 8758 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 6300) = _
+theorem finishSite2_pc : finishSite2.startPC = UInt256.ofNat 5243 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3532) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-! ## Digest -/
@@ -114,7 +114,7 @@ theorem arm_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     (hn : RecognitionAccumulator.Allowed n) (hsize : input.size = n) (rpc : Nat)
     (hpre : GasSteps (initialState Control.submissionBytecode input 0)
       {prepared input n with
-        pc := if (ZeroTailModel.result input n).toNat = 0 then UInt256.ofNat rpc else UInt256.ofNat 8078,
+        pc := if (ZeroTailModel.result input n).toNat = 0 then UInt256.ofNat rpc else UInt256.ofNat 4651,
         stack := []})
     (hfin : ∃ t, Nonempty (GasSteps {prepared input n with pc := UInt256.ofNat rpc, stack := []} t) ∧
       t.halt = .Returned ∧ t.callStack = [] ∧ t.hReturn = MachineState.readPadded (digestMemory n) 0 32) :
@@ -131,7 +131,7 @@ theorem arm_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     exact output_spec input n hn (result_zero input n hn hsize hz)
   · rw [if_neg hz] at hpre
     have gf := Control.EarlySerializeFallback.gasSteps_of_eq input hfit hpos
-      {prepared input n with pc := UInt256.ofNat 8078, stack := []} (digestMemory n)
+      {prepared input n with pc := UInt256.ofNat 4651, stack := []} (digestMemory n)
       (digestMemory_size n) [] (by simp) rfl
     exact Control.GenericFramedCorrect.correct input hfit hpos [] (by simp) (hpre.trans gf)
 

@@ -44,7 +44,7 @@ def template : List Instr :=
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 10024),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 6409),
     .op .JUMP,
     .op .JUMPDEST,
     .op .SHR,
@@ -64,9 +64,9 @@ def template : List Instr :=
 theorem run (s : State) (pc : UInt256) (q : ScheduledTailRaw.Input) (m8 m16 : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 970) (hr : s.halt = .Running)
     (hlower : q.lower = UInt256.ofNat 4294967295)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 10024 = true) :
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6409 = true) :
     runInstrSeq template {s with pc := pc, stack := ScheduledTailRaw.stack0 q (m8::m16::rho)} =
-      some {s with pc := UInt256.ofNat 10042, stack := RipemdTerminalMaskWindows20261027.frame (fields q m8 m16) rho} := by
+      some {s with pc := UInt256.ofNat 6427, stack := RipemdTerminalMaskWindows20261027.frame (fields q m8 m16) rho} := by
   have hcap (n : Nat) (hn : n ≤ 50) : rho.length+n < 1024 := by omega
   simp (discharger := omega) [template, fields, ScheduledTailRaw.stack0,
     RipemdTerminalMaskWindows20261027.frame, runInstrSeq, DataStepper.runInstr,

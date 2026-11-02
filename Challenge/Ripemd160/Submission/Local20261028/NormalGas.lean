@@ -26,10 +26,10 @@ def prepare (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) 
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
       {s with pc := UInt256.ofNat 462, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)}
-      {scheduled s p with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)} := by
+      {scheduled s p with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)} := by
   apply PadLift.gasSteps_of_raw site
     {s with pc := UInt256.ofNat 462, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)}
-    {scheduled s p with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)}
+    {scheduled s p with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)}
     hc hf hr hnp site_pc.symm
   · apply PadLift.advancesAll_sound
     decide +kernel
@@ -41,7 +41,7 @@ def gasSteps (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps
       {s with pc := UInt256.ofNat 462, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)}
-      {scheduled s p with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (scheduled s p).memory h) (UInt256.ofNat p) limit (masks rho)} := by
+      {scheduled s p with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (scheduled s p).memory h) (UInt256.ofNat p) limit (masks rho)} := by
   have gp := prepare s h p limit rho hs hr hp hb hc hf hnp
   have gc := CoreGas.gasSteps (scheduled s p) h (UInt256.ofNat p) limit (masks rho)
     (by simp only [masks, List.length_cons]; omega) hr
@@ -59,7 +59,7 @@ theorem correct_block (s : State) (h : Compression.HashState) (p : Nat) (limit :
     ∃ h' : Compression.HashState,
       Nonempty (GasSteps
         {s with pc := UInt256.ofNat 462, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)}
-        {scheduled s p with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame h' (UInt256.ofNat p) limit (masks rho)}) ∧
+        {scheduled s p with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame h' (UInt256.ofNat p) limit (masks rho)}) ∧
       CompressionCorrect.hashArray h' = Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h) bs off ∧
       Clear (scheduled s p).memory ∧
       (∀ a, 1040 ≤ a → (scheduled s p).memory[a]?.getD 0 = s.memory[a]?.getD 0) :=

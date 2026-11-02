@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Local20261028.RawLeft79
 import Challenge.Ripemd160.Submission.Local20261028.CoreCommon
 import Challenge.Ripemd160.Submission.Local20261028.CoreModel
@@ -37,10 +38,10 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.d = q.a)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
  :
-    StackRoundTrace.runInstrSeq RawLeft79.template {s with pc := UInt256.ofNat 4499, stack := stack s.memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)} =
-      some {s with pc := UInt256.ofNat 4523, stack := stack s.memory h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
-  have h := RawLeft79.run_actual s (UInt256.ofNat 4499) (input s.memory h4 q right (UInt256.ofNat 2840853838)) (h4 :: rho) (by simp only [List.length_cons]; omega) hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4499) RawLeft79.template = UInt256.ofNat 4523 := by decide +kernel
+    StackRoundTrace.runInstrSeq RawLeft79.template {s with pc := UInt256.ofNat 4544, stack := stack s.memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .cachedMessage 180, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)} =
+      some {s with pc := UInt256.ofNat 4567, stack := stack s.memory h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
+  have h := RawLeft79.run_actual s (UInt256.ofNat 4544) (input s.memory h4 q right (UInt256.ofNat 2840853838)) (h4 :: rho) (by simp only [List.length_cons]; omega) hr ha
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4544) RawLeft79.template = UInt256.ofNat 4567 := by decide +kernel
   rw [hend] at h
   rw [output_eq s.memory h4 q right rho hsame] at h
   exact h

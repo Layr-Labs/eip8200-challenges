@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Local20261028.RawLeft77
 import Challenge.Ripemd160.Submission.Local20261028.CoreCommon
 import Challenge.Ripemd160.Submission.Local20261028.CoreModel
@@ -15,7 +16,7 @@ def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256)
   ⟨word memory h4 (.factor) q right k, word memory h4 (.dr) q right k, word memory h4 (.ar) q right k, word memory h4 (.cachedMessage 360) q right k, word memory h4 (.pair) q right k, word memory h4 (.upper) q right k, word memory h4 (.er) q right k, word memory h4 (.cr) q right k, word memory h4 (.literal 23) q right k, word memory h4 (.k) q right k, word memory h4 (.b) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right = q) :
     RawLeft77.outputStack memory (input memory h4 q right (UInt256.ofNat 2840853838)) rho =
-      stack memory h4 [ .b, .d, .e, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.left77 memory q) (right) (UInt256.ofNat 2840853838) rho := by
+      stack memory h4 [ .b, .d, .e, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.left77 memory q) (right) (UInt256.ofNat 2840853838) rho := by
   subst hsame
   simp only [RawLeft77.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, CoreCommon.word, CoreModel.load, GeneralMessageLayout.addresses,
@@ -34,10 +35,10 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right = q)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
  :
-    StackRoundTrace.runInstrSeq RawLeft77.template {s with pc := UInt256.ofNat 4442, stack := stack s.memory h4 [ .factor, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho} =
-      some {s with pc := UInt256.ofNat 4470, stack := stack s.memory h4 [ .b, .d, .e, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.left77 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
-  have h := RawLeft77.run_actual s (UInt256.ofNat 4442) (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4442) RawLeft77.template = UInt256.ofNat 4470 := by decide +kernel
+    StackRoundTrace.runInstrSeq RawLeft77.template {s with pc := UInt256.ofNat 4485, stack := stack s.memory h4 [ .factor, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .cachedMessage 180, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho} =
+      some {s with pc := UInt256.ofNat 4514, stack := stack s.memory h4 [ .b, .d, .e, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.left77 s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by
+  have h := RawLeft77.run_actual s (UInt256.ofNat 4485) (input s.memory h4 q right (UInt256.ofNat 2840853838)) rho hs hr ha
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 4485) RawLeft77.template = UInt256.ofNat 4514 := by decide +kernel
   rw [hend] at h
   rw [output_eq s.memory h4 q right rho hsame] at h
   exact h

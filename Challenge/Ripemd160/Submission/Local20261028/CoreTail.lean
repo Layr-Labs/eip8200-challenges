@@ -11,11 +11,11 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired144WordRound
 open CoreFunctional StackRoundTrace
 abbrev template := ScheduledTailRaw.template
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 4523).take 55 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 4567).take 55 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (4480+43)).take 55 = _
-  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop70]
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (4544+23)).take 55 = _
+  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop71]
   decide +kernel
 #print axioms exact_bytes
 def tailInput (memory : ByteArray) (h : Compression.HashState) (l r : WordLane)
@@ -44,13 +44,13 @@ theorem combine_eq (memory : ByteArray) (h : Compression.HashState) (q r : WordL
 theorem run (s : State) (h : Compression.HashState) (q r : WordLane)
     (off limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 980) (hr : s.halt = .Running) :
     runInstrSeq template
-      {s with pc := UInt256.ofNat 4523, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h
+      {s with pc := UInt256.ofNat 4567, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h
         (tailInput s.memory h (CoreLeft79.epilogueRaw s.memory q) r off limit)) rho} =
-      some {s with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 ::
+      some {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 ::
         ScheduledTailFrame.frame (combine h (CoreModel.epilogue s.memory q) r) off limit rho} := by
-  have ht := ScheduledTailFrame.run_tail s (UInt256.ofNat 4523) h
+  have ht := ScheduledTailFrame.run_tail s (UInt256.ofNat 4567) h
     (tailInput s.memory h (CoreLeft79.epilogueRaw s.memory q) r off limit) rho hs hr
-  have hend : pcAfter (UInt256.ofNat 4523) template = UInt256.ofNat 4578 := by decide +kernel
+  have hend : pcAfter (UInt256.ofNat 4567) template = UInt256.ofNat 4622 := by decide +kernel
   rw [hend, combine_eq] at ht
   exact ht
 #print axioms combine_eq

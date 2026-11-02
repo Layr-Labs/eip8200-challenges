@@ -41,78 +41,78 @@ def template : List Instr :=
     .op (.Dup ⟨12, by decide⟩),
     .op (.Dup ⟨14, by decide⟩),
     .op .MUL,
-    .op (.Dup ⟨11, by decide⟩),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .op .SHR ]
-def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.v0,
+def inputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
+  [x.v0,
     x.v1,
     x.v2,
     x.v3,
     x.v4,
-    x.v5,
-    x.v6,
+    (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v7,
     x.v8,
-    (UInt256.ofNat 23),
+    (MachineState.readWord memory 604),
     x.v10,
     x.v11,
-    x.v12,
-    x.v13,
-    x.v14,
-    x.v15,
-    x.v16,
-    x.v17,
-    x.v18 ] ++ rho
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (UInt256.ofNat 1109194275457955143345843994625),
+    (UInt256.ofNat 475368975196266490007815979009),
+    x.v18] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.shiftRight (UInt256.mul x.v12 x.v11) (UInt256.ofNat 23)),
-    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land x.v13 (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (MachineState.readWord memory 594))))) (UInt256.ofNat 28))),
+  [(UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) x.v11) (UInt256.ofNat 23)),
+    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 4294967295) (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (MachineState.readWord memory 594))))) (UInt256.ofNat 28))),
     x.v0,
     x.v1,
     x.v2,
     x.v3,
     x.v4,
-    x.v5,
-    x.v6,
+    (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v7,
     x.v8,
-    (UInt256.ofNat 23),
+    (MachineState.readWord memory 604),
     x.v10,
     x.v11,
-    x.v12,
-    x.v13,
-    x.v14,
-    x.v15,
-    x.v16,
-    x.v17,
-    x.v18 ] ++ rho
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (UInt256.ofNat 1109194275457955143345843994625),
+    (UInt256.ofNat 475368975196266490007815979009),
+    x.v18] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ (UInt256.shiftRight (UInt256.mul x.v12 x.v11) (UInt256.ofNat 23)),
-    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul x.v12 (UInt256.land x.v13 (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (MachineState.readWord memory 594))))) (UInt256.ofNat 28))),
+  [(UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) x.v11) (UInt256.ofNat 23)),
+    (UInt256.add x.v2 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 4294967295) (UInt256.add x.v7 (UInt256.add (UInt256.add (UInt256.xor (UInt256.lor (UInt256.lnot x.v1) x.v11) x.v0) x.v10) (MachineState.readWord memory 594))))) (UInt256.ofNat 28))),
     x.v0,
     x.v1,
     x.v2,
     x.v3,
     x.v4,
-    x.v5,
-    x.v6,
+    (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
+    (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v7,
     x.v8,
-    (UInt256.ofNat 23),
+    (MachineState.readWord memory 604),
     x.v10,
     x.v11,
-    x.v12,
-    x.v13,
-    x.v14,
-    x.v15,
-    x.v16,
-    x.v17,
-    x.v18 ] ++ rho
+    (UInt256.ofNat 158456325065422163343096938498),
+    (UInt256.ofNat 4294967295),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
+    (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928),
+    (UInt256.ofNat 1109194275457955143345843994625),
+    (UInt256.ofNat 475368975196266490007815979009),
+    x.v18] ++ rho
 private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UInt256) :
     actualOutput memory x rho = outputStack memory x rho := by rfl
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
+    runInstrSeq template {s with pc := pc, stack := inputStack s.memory x rho} =
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -130,16 +130,16 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
+    runInstrSeq template {s with pc := pc, stack := inputStack s.memory x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 4470).take 29 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 4514).take 30 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (4416+54)).take 29 = _
-  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop69]
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (4480+34)).take 30 = _
+  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop70]
   decide +kernel
 #print axioms exact_bytes
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RawLeft78

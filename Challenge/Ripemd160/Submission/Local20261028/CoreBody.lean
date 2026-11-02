@@ -24,14 +24,14 @@ theorem entry_eq (s : State) (h : Compression.HashState) (off limit : UInt256) (
 theorem tail_eq (s : State) (h : Compression.HashState) (q : WordLane)
     (off limit : UInt256) (rho : List UInt256) :
     CoreEpilogue.result s (initial h).e q (CorePack.suffix (initial h) off limit rho) =
-      {s with pc := UInt256.ofNat 4523, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h (CoreTail.tailInput s.memory h (CoreLeft79.epilogueRaw s.memory q) q off limit)) rho} := by
+      {s with pc := UInt256.ofNat 4567, stack := ScheduledTailRaw.stack0 (ScheduledTailFrame.bind h (CoreTail.tailInput s.memory h (CoreLeft79.epilogueRaw s.memory q) q off limit)) rho} := by
   rw [initial_eq]
   rfl
 theorem run (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
     runInstrSeq template
-      {s with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h off limit rho} =
-      some {s with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (result s.memory h) off limit rho} := by
+      {s with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h off limit rho} =
+      some {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (result s.memory h) off limit rho} := by
   have hlen : (CorePack.suffix (initial h) off limit rho).length ≤ 900 := by
     simp only [CorePack.suffix, List.length_append, List.length_cons, List.length_nil]
     omega
@@ -50,21 +50,21 @@ theorem run (s : State) (h : Compression.HashState) (off limit : UInt256) (rho :
   exact DenseScheduleTrace.runInstrSeq_append_running hpme hr ht
 
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 824).take (4578-824) =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 794).take 3828 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (768+56)).take (4578-824) = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (768+26)).take 3828 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop12]
   decide +kernel
-
+#print axioms exact_bytes
 theorem run_spec (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
     (bs : ByteArray) (blockOff : Nat)
     (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hm : CoreMessage.Ready s.memory (fun i => (CompressionCorrect.schedule bs blockOff)[i]!)) :
     ∃ h' : Compression.HashState,
       runInstrSeq template
-        {s with pc := UInt256.ofNat 824, stack := StaggerPersistentFrame.frame h off limit rho} =
-        some {s with pc := UInt256.ofNat 4578, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame h' off limit rho} ∧
+        {s with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h off limit rho} =
+        some {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame h' off limit rho} ∧
       CompressionCorrect.hashArray h' = Crypto.Ripemd160.compressBlock (CompressionCorrect.hashArray h) bs blockOff :=
   ⟨result s.memory h, run s h off limit rho hs hr ha,
     result_compressBlock s.memory bs blockOff h hm⟩

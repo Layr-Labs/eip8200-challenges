@@ -45,7 +45,7 @@ theorem run_stages (s : State) (pc value a b m8 m16 : UInt256) (rest : List UInt
 /-- Store at byte offset three and return the first word of memory. -/
 def terminalCode : List Instr :=
   [.push ⟨1, by decide⟩ (UInt256.ofNat 3), .op .MSTORE,
-   .op .CALLDATASIZE, .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .RETURN]
+   .push ⟨1, by decide⟩ (UInt256.ofNat 32), .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .RETURN]
 
 def outputMemory (s : State) (value : UInt256) : ByteArray :=
   MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded value.toNat 32) 3
@@ -62,13 +62,13 @@ def terminalResult (s : State) (pc value : UInt256) (rho : List UInt256) : State
 
 theorem run_terminal (s : State) (pc value : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1019) (hrun : s.halt = .Running)
-    (h32 : s.executionEnv.calldata.size = 32) :
+    (_h32 : s.executionEnv.calldata.size = 32) :
     runInstrSeq terminalCode {s with pc := pc, stack := value :: rho} =
       some (terminalResult s pc value rho) := by
   have hcap (n : Nat) (hn : n ≤ 4) : rho.length + n < 1024 := by omega
   have hs : rho.length < 1024 := by omega
   simp (discharger := omega) [terminalCode, terminalResult, outputMemory, runInstrSeq,
-    DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap, hs, h32, Nat.add_assoc,
+    DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, hrun, hcap, hs, Nat.add_assoc,
     State.activeWordsAfterUInt256, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 
@@ -84,32 +84,32 @@ theorem stages_advances : ∀ instruction ∈ stagesCode.dropLast, PadLift.Advan
 /-! ## The artifact sites -/
 
 theorem stages_slice :
-    (CandidateArtifact.artifact.instructions.drop 6792).take stagesCode.length = stagesCode := by rfl
+    (CandidateArtifact.artifact.instructions.drop 3468).take stagesCode.length = stagesCode := by rfl
 def stagesSite : GenericRoundSite CandidateArtifact.artifact .Osaka stagesCode :=
-  StackSiteBuilder.ofSlice stagesCode 6792 stages_slice
-    (by change 6792 + stagesCode.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice stagesCode 3468 stages_slice
+    (by change 3468 + stagesCode.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check stagesCode (by decide +kernel)) (by decide)
-theorem stages_pc : stagesSite.startPC = UInt256.ofNat 9973 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6792) = UInt256.ofNat 9973
+theorem stages_pc : stagesSite.startPC = UInt256.ofNat 4906 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 3468) = UInt256.ofNat 4906
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-theorem stages_end : stagesSite.endPC = UInt256.ofNat 9991 := by
+theorem stages_end : stagesSite.endPC = UInt256.ofNat 4924 := by
   have h := endPC_eq_pcAfter_sites stagesSite.sites stagesSite.startPC stagesSite.endPC
     stagesSite.head_eq stagesSite.end_eq stagesSite.contiguous
   rw [stagesSite.instruction_eq, stages_pc] at h
   exact h.trans (by decide)
 
 theorem terminal_slice :
-    (CandidateArtifact.artifact.instructions.drop 6804).take terminalCode.length = terminalCode := by rfl
+    (CandidateArtifact.artifact.instructions.drop 3480).take terminalCode.length = terminalCode := by rfl
 def terminalSite : GenericRoundSite CandidateArtifact.artifact .Osaka terminalCode :=
-  StackSiteBuilder.ofSlice terminalCode 6804 terminal_slice
-    (by change 6804 + terminalCode.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice terminalCode 3480 terminal_slice
+    (by change 3480 + terminalCode.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check terminalCode (by decide +kernel)) (by decide)
-theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 9991 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6804) = UInt256.ofNat 9991
+theorem terminal_pc : terminalSite.startPC = UInt256.ofNat 4924 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 3480) = UInt256.ofNat 4924
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
 
 def gasSteps_stages (s : State) (value a b m8 m16 : UInt256) (rest : List UInt256)
@@ -118,14 +118,14 @@ def gasSteps_stages (s : State) (value a b m8 m16 : UInt256) (rest : List UInt25
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 9973, stack := value :: a :: b :: m8 :: m16 :: rest}
-      {s with pc := UInt256.ofNat 9991, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest} := by
-  have hend : pcAfter (UInt256.ofNat 9973) stagesCode = UInt256.ofNat 9991 := by decide
-  have hraw := run_stages s (UInt256.ofNat 9973) value a b m8 m16 rest hstack hrun
+    GasSteps {s with pc := UInt256.ofNat 4906, stack := value :: a :: b :: m8 :: m16 :: rest}
+      {s with pc := UInt256.ofNat 4924, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest} := by
+  have hend : pcAfter (UInt256.ofNat 4906) stagesCode = UInt256.ofNat 4924 := by decide
+  have hraw := run_stages s (UInt256.ofNat 4906) value a b m8 m16 rest hstack hrun
   rw [hend] at hraw
   exact PadLift.gasSteps_of_raw stagesSite
-    {s with pc := UInt256.ofNat 9973, stack := value :: a :: b :: m8 :: m16 :: rest}
-    {s with pc := UInt256.ofNat 9991, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest}
+    {s with pc := UInt256.ofNat 4906, stack := value :: a :: b :: m8 :: m16 :: rest}
+    {s with pc := UInt256.ofNat 4924, stack := finish m8 m16 value :: a :: b :: m8 :: m16 :: rest}
     hcode hfork hrun hnp stages_pc.symm stages_advances hraw
 
 def gasSteps_terminal (s : State) (value : UInt256) (rho : List UInt256)
@@ -134,10 +134,10 @@ def gasSteps_terminal (s : State) (value : UInt256) (rho : List UInt256)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (h32 : s.executionEnv.calldata.size = 32) :
-    GasSteps {s with pc := UInt256.ofNat 9991, stack := value :: rho}
-      (terminalResult s (UInt256.ofNat 9991) value rho) :=
+    GasSteps {s with pc := UInt256.ofNat 4924, stack := value :: rho}
+      (terminalResult s (UInt256.ofNat 4924) value rho) :=
   PadLift.gasSteps_of_raw terminalSite _ _ hcode hfork hrun hnp terminal_pc.symm
-    terminal_advances (run_terminal s (UInt256.ofNat 9991) value rho hstack hrun h32)
+    terminal_advances (run_terminal s (UInt256.ofNat 4924) value rho hstack hrun h32)
 
 /-! ## Semantics: the stages produce the byte-swapped word scaled by `2^24` -/
 

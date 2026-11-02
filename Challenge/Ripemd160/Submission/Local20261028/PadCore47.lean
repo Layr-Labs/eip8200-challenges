@@ -1,3 +1,4 @@
+import Challenge.Ripemd160.Submission.Local20261028.PrepWordLiterals
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StaggerModeSeven
 import Challenge.Ripemd160.Submission.Local20261028.PadRaw47
 import Challenge.Ripemd160.Submission.Local20261028.PadCommon
@@ -18,7 +19,7 @@ def eval (n : UInt256) (q : WordLane) : WordLane :=
 
 theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.PadRaw47.outputStack n (input n h4 q right (StaggerModeSeven.physicalKey 46)) rho =
-      stack n h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerModeSeven.physicalKey 47) rho := by
+      stack n h4 [ .d, .a, .literal 1109194275457955143375908765704, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerModeSeven.physicalKey 47) rho := by
   have hkb : StaggerModeSeven.physicalKey 46 = UInt256.ofNat 45805601672572416830120737830960963807809187239029665 := by decide
   have hka : StaggerModeSeven.physicalKey 47 = UInt256.ofNat 45805601672572416830120737830960963807809187239029665 := by decide
   have hm : StaggerAlgorithm.mode 47 = 7 := by decide
@@ -34,6 +35,7 @@ theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List 
   try simp only [wordRotate, usesCompact, wordCompact, wordScale, wordShift, factorPlusWord, usesFusedExtra, wordFusedRotate, fusedCoefficientWord, fusedModulusWord]
   try simp
   all_goals try simp only [upperWord, lowerWord, and_true, true_and]
+  all_goals simp only [PrepWordLiterals.pair, PrepWordLiterals.upper_pack, PrepWordLiterals.upper_mask, PrepWordLiterals.lower_pack, PrepWordLiterals.lower_mask]
   all_goals simp only [PadCommon.add_comm, PadCommon.add_left_comm,
     PadCommon.add_assoc, PadCommon.mul_comm, PadCommon.mul_one,
     PadCommon.land_comm, PadCommon.lor_comm, PadCommon.xor_comm,
@@ -46,11 +48,11 @@ theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt25
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
     StackRoundTrace.runInstrSeq PadRaw47.template
-      {s with pc := UInt256.ofNat 6736, stack := stack n h4 [ .d, .cache 310, .cache 140, .e, .cachedMessage 360, .pair, .upper, .k, .c, .literal 23, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerModeSeven.physicalKey 46) rho} =
-      some {s with pc := UInt256.ofNat 6770, stack := stack n h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerModeSeven.physicalKey 47) rho} := by
-  have h := PadRaw47.run_actual s (UInt256.ofNat 6736) n
+      {s with pc := UInt256.ofNat 8626, stack := stack n h4 [ .d, .cache 310, .cache 140, .e, .literal 1109194275457955143375908765704, .pair, .upper, .k, .c, .literal 23, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerModeSeven.physicalKey 46) rho} =
+      some {s with pc := UInt256.ofNat 8660, stack := stack n h4 [ .d, .a, .literal 1109194275457955143375908765704, .pair, .upper, .k, .b, .literal 23, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerModeSeven.physicalKey 47) rho} := by
+  have h := PadRaw47.run_actual s (UInt256.ofNat 8626) n
     (input n h4 q right (StaggerModeSeven.physicalKey 46)) rho hstack hrun hactive hcal hmem
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 6736) PadRaw47.template = UInt256.ofNat 6770 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 8626) PadRaw47.template = UInt256.ofNat 8660 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

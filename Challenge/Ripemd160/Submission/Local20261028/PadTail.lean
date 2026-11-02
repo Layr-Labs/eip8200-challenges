@@ -7,14 +7,14 @@ set_option maxHeartbeats 8000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.PadTail
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired144WordRound
 open PadFunctional StackRoundTrace
-def tailInput (len : UInt256) (h : Compression.HashState) (l r : WordLane)
+def tailInput (_len : UInt256) (h : Compression.HashState) (l r : WordLane)
     (off limit : UInt256) : ScheduledTailRaw.Input :=
   {ld := l.d, lb := l.b, le := l.e, la := l.a, k := UInt256.ofNat 2840853838,
    lc := l.c, re := r.e, rc := r.c, ra := r.a, rd := r.d, rb := r.b,
    factor := factorPlusWord, lower := UInt256.ofNat 4294967295,
    cache140 := fusedModulusWord 5 7, cache190 := fusedCoefficientWord 0 2,
    cache310 := fusedCoefficientWord 0 3, cache350 := fusedModulusWord 8 5,
-   literal72 := PadValues.load len 360, literal28 := UInt256.ofNat 28,
+   literal72 := UInt256.ofNat 1109194275457955143375908765704, literal28 := UInt256.ofNat 28,
    h4 := Word.ofUInt32 h.h4, h1 := Word.ofUInt32 h.h1, h2 := Word.ofUInt32 h.h2,
    h3 := Word.ofUInt32 h.h3, h0 := Word.ofUInt32 h.h0, off := off, limit := limit}
 

@@ -44,10 +44,11 @@ theorem copied_zero (input : ByteArray) (a : Nat) (ha : a < 1056) :
     show ¬1056 ≤ a by omega]
 
 theorem ready_spec (s : State) (input : ByteArray) (h32 : input.size = 32)
-    (hm : s.memory = writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord) :
+    (hm : s.memory = writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord)
+    (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     CoreMessage.Ready (FirstCore.prepared (FirstRead.result s)).memory
       (fun i => (CompressionCorrect.schedule (Padding.paddedMessage input) 0)[i]!) := by
-  have hr := FirstReadGas.ready s (FirstSpec.copiedMemory input) hm (copied_zero input)
+  have hr := FirstReadGas.ready s (FirstSpec.copiedMemory input) hm (copied_zero input) hc
   apply NormalMessage.ready_congr _ _ _ hr
   intro i hi
   rw [FirstRead.memory_eq s _ hm]
@@ -58,12 +59,13 @@ theorem blockCount32 (input : ByteArray) (h32 : input.size = 32) :
   simp [DriverTrace.blockCount, Padding.paddedLength, h32]
 
 theorem hash_spec (s : State) (input : ByteArray) (h32 : input.size = 32)
-    (hm : s.memory = writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord) :
+    (hm : s.memory = writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord)
+    (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     CompressionCorrect.hashArray
       (CoreFunctional.result (FirstCore.prepared (FirstRead.result s)).memory FirstCore.initialHash) =
       CompressionSeamBridge.hashAfter input (DriverTrace.blockCount input) := by
   rw [CoreFunctional.result_compressBlock _ (Padding.paddedMessage input) 0
-    FirstCore.initialHash (ready_spec s input h32 hm)]
+    FirstCore.initialHash (ready_spec s input h32 hm hc)]
   rw [blockCount32 input h32, show (1 : Nat) = 0+1 from rfl, StackRunBridge.hashAfter_succ]
   rfl
 #print axioms entry_spec
