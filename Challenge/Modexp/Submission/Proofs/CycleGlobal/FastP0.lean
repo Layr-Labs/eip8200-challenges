@@ -19,16 +19,16 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 977..985, pc 1314..1326. -/
 def blk977 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 404 .JUMPDEST,
-   pushAt 405 1 64,
-   opAt 406 .CALLDATALOAD,
-   pushAt 407 1 33,
-   opAt 408 (.Dup ⟨1, by decide⟩),
-   opAt 409 .SUB,
-   pushAt 410 1 223,
-   opAt 411 .LT,
-   pushAt 412 2 737,
-   opAt 413 .JUMPI]
+  [opAt 400 .JUMPDEST,
+   pushAt 401 1 64,
+   opAt 402 .CALLDATALOAD,
+   pushAt 403 1 33,
+   opAt 404 (.Dup ⟨1, by decide⟩),
+   opAt 405 .SUB,
+   pushAt 406 1 223,
+   opAt 407 .LT,
+   pushAt 408 2 3482,
+   opAt 409 .JUMPI]
 
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR
@@ -37,53 +37,53 @@ bounds every declared size by 1024, so its `JUMPI` was never taken.  The block n
 straight through to the top-limb block at instruction 872, pc 1138. -/
 def blk986 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 414 1 32,
-   opAt 415 .CALLDATALOAD,
-   pushAt 416 0 0,
-   opAt 417 .CALLDATALOAD]
+  [pushAt 410 1 32,
+   opAt 411 .CALLDATALOAD,
+   pushAt 412 0 0,
+   opAt 413 .CALLDATALOAD]
 
 /-- Instructions 417..455, pc 598..648: the top-limb, parity, width and Montgomery-inverse
 checks, ORed into one `JUMPI` (the bail target is a `PUSH2` at 645 that absorbed the former
 padding `JUMPDEST`). -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 418 1 31,
-   opAt 419 (.Dup ⟨3, by decide⟩),
-   opAt 420 .ADD,
-   pushAt 421 1 5,
-   opAt 422 .SHR,
-   opAt 423 (.Dup ⟨0, by decide⟩),
-   pushAt 424 1 5,
-   opAt 425 .SHL,
-   pushAt 426 1 96,
-   opAt 427 (.Dup ⟨3, by decide⟩),
-   opAt 428 .ADD,
-   opAt 429 (.Dup ⟨4, by decide⟩),
-   opAt 430 .ADD,
-   opAt 431 (.Dup ⟨0, by decide⟩),
-   opAt 432 .CALLDATALOAD,
-   pushAt 433 1 255,
-   opAt 434 .SHR,
-   opAt 435 .ISZERO,
-   pushAt 436 2 32,
-   opAt 437 (.Dup ⟨7, by decide⟩),
-   opAt 438 (.Dup ⟨3, by decide⟩),
-   opAt 439 .ADD,
-   opAt 440 .SUB,
-   opAt 441 .CALLDATALOAD,
-   opAt 442 .NOT,
-   opAt 443 (.Dup ⟨0, by decide⟩),
-   opAt 444 .ISZERO,
-   opAt 445 (.Swap ⟨0, by decide⟩),
-   pushAt 446 2 1,
+  [pushAt 414 1 31,
+   opAt 415 (.Dup ⟨3, by decide⟩),
+   opAt 416 .ADD,
+   pushAt 417 1 5,
+   opAt 418 .SHR,
+   opAt 419 (.Dup ⟨0, by decide⟩),
+   pushAt 420 1 5,
+   opAt 421 .SHL,
+   pushAt 422 1 96,
+   opAt 423 (.Dup ⟨3, by decide⟩),
+   opAt 424 .ADD,
+   opAt 425 (.Dup ⟨4, by decide⟩),
+   opAt 426 .ADD,
+   opAt 427 (.Dup ⟨0, by decide⟩),
+   opAt 428 .CALLDATALOAD,
+   pushAt 429 1 255,
+   opAt 430 .SHR,
+   opAt 431 .ISZERO,
+   pushAt 432 2 32,
+   opAt 433 (.Dup ⟨7, by decide⟩),
+   opAt 434 (.Dup ⟨3, by decide⟩),
+   opAt 435 .ADD,
+   opAt 436 .SUB,
+   opAt 437 .CALLDATALOAD,
+   opAt 438 .NOT,
+   opAt 439 (.Dup ⟨0, by decide⟩),
+   opAt 440 .ISZERO,
+   opAt 441 (.Swap ⟨0, by decide⟩),
+   pushAt 442 2 1,
+   opAt 443 .AND,
+   opAt 444 .OR,
+   opAt 445 (.Dup ⟨7, by decide⟩),
+   pushAt 446 2 127,
    opAt 447 .AND,
    opAt 448 .OR,
-   opAt 449 (.Dup ⟨7, by decide⟩),
-   pushAt 450 2 127,
-   opAt 451 .AND,
-   opAt 452 .OR,
-   opAt 453 .OR,
-   pushAt 454 2 219,
-   opAt 455 .JUMPI]
+   opAt 449 .OR,
+   pushAt 450 2 219,
+   opAt 451 .JUMPI]
 
 end CycleSubmission.Global.Fast

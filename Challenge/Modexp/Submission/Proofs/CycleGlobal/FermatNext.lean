@@ -398,3 +398,4 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   genJump : Decode.isValidJumpDest artifact.code 101 = true
 
 end CycleSubmission.Global.FermatNext
+

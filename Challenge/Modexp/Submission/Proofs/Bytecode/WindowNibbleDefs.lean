@@ -78,23 +78,6 @@ def advancePC : Nat → UInt256 → UInt256
   | 0, pc => pc
   | count + 1, pc => (advancePC count pc).succ
 
-/-- `c - (a - b) = c + (b - a)` in 256-bit wrapping arithmetic.  Lets a kernel compute the
-negated difference and subtract it (`SUB DUPk SUB`) instead of `SWAP1 SUB DUPk ADD`. -/
-theorem sub_sub_swap (a b c : UInt256) : c - (a - b) = c + (b - a) := by
-  apply Challenge.EvmProof.Word.word_ext
-  rw [Challenge.EvmProof.Word.word_toNat_sub, Challenge.EvmProof.Word.word_toNat_sub,
-    Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_sub]
-  have ha : a.toNat < 2 ^ 256 := a.val.isLt
-  have hb : b.toNat < 2 ^ 256 := b.val.isLt
-  have hc : c.toNat < 2 ^ 256 := c.val.isLt
-  omega
-
-/-- Wrapping multiplication of words commutes. -/
-theorem word_mul_comm (a b : UInt256) : a * b = b * a := by
-  cases a with
-  | mk a => cases b with
-    | mk b => exact congrArg UInt256.mk (Fin.mul_comm a b)
-
 theorem word_add_assoc (left middle right : UInt256) :
     (left + middle) + right = left + (middle + right) := by
   cases left with

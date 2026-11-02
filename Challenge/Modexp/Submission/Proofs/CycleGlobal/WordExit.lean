@@ -37,8 +37,11 @@ def expFinishTailProgram : List Instr :=
    .op (.Dup ⟨5, by decide⟩), .push 0 0, .op .RETURN]
 
 def expFinishTailBlock : Block CycleSubmission.Artifact.artifact .Osaka 3976 expFinishTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3073 14 3976 expFinishTailProgram
-    (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3054 14 3976 expFinishTailProgram
+    (by change 3054 + 14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
 
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
   { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 3976 }
@@ -75,8 +78,11 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3976 = true := Word.jump669
 
 def expFinishGuardBlock : Block CycleSubmission.Artifact.artifact .Osaka 194 WordExitGuard.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 125 6 194 WordExitGuard.program
-    (by decide) (by rw [PCFast.instructionPC_eq_byteLength]; rfl) (by rfl) (by decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 122 6 194 WordExitGuard.program
+    (by change 122 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
 
 theorem run_expFinishGuard (input : ByteArray) (acc base : UInt256)
     (_hvalid : ValidInput input) :

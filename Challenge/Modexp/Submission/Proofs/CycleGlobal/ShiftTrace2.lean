@@ -24,7 +24,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
 
-
 attribute [local simp] CompactConstants.notThirtyOne notThirtyOneOfNat
 attribute [local simp] CompactConstants.notZero CompactConstants.notZeroStruct
 
@@ -34,189 +33,6 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
-
-@[simp] private theorem followupPC2764 : CycleSubmission.Artifact.artifact.instructionPC 2308 = 2983 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem followupPC2765 : CycleSubmission.Artifact.artifact.instructionPC 2309 = 2984 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2749 : CycleSubmission.Artifact.artifact.instructionPC 2302 = 2975 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2750 : CycleSubmission.Artifact.artifact.instructionPC 2303 = 2976 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2751 : CycleSubmission.Artifact.artifact.instructionPC 2304 = 2977 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2752 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2980 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2753 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2980 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2754 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2980 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2755 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2980 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-
-@[simp] private theorem compactLoopPC2758 : CycleSubmission.Artifact.artifact.instructionPC 2310 = 2985 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2759 : CycleSubmission.Artifact.artifact.instructionPC 2311 = 2986 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2760 : CycleSubmission.Artifact.artifact.instructionPC 2311 = 2986 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2761 : CycleSubmission.Artifact.artifact.instructionPC 2311 = 2986 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-
-
-@[simp] private theorem compactLoopPC2764 : CycleSubmission.Artifact.artifact.instructionPC 2314 = 2991 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2765 : CycleSubmission.Artifact.artifact.instructionPC 2315 = 2992 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2766 : CycleSubmission.Artifact.artifact.instructionPC 2316 = 2993 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2767 : CycleSubmission.Artifact.artifact.instructionPC 2317 = 2994 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2768 : CycleSubmission.Artifact.artifact.instructionPC 2318 = 2995 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2769 : CycleSubmission.Artifact.artifact.instructionPC 2319 = 2996 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2770 : CycleSubmission.Artifact.artifact.instructionPC 2320 = 2997 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2771 : CycleSubmission.Artifact.artifact.instructionPC 2321 = 2998 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2772 : CycleSubmission.Artifact.artifact.instructionPC 2322 = 3001 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2773 : CycleSubmission.Artifact.artifact.instructionPC 2323 = 3002 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2774 : CycleSubmission.Artifact.artifact.instructionPC 2324 = 3003 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2775 : CycleSubmission.Artifact.artifact.instructionPC 2325 = 3004 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2776 : CycleSubmission.Artifact.artifact.instructionPC 2326 = 3005 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2777 : CycleSubmission.Artifact.artifact.instructionPC 2327 = 3006 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2778 : CycleSubmission.Artifact.artifact.instructionPC 2328 = 3007 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2779 : CycleSubmission.Artifact.artifact.instructionPC 2329 = 3008 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2780 : CycleSubmission.Artifact.artifact.instructionPC 2330 = 3009 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2781 : CycleSubmission.Artifact.artifact.instructionPC 2331 = 3010 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2782 : CycleSubmission.Artifact.artifact.instructionPC 2332 = 3011 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2783 : CycleSubmission.Artifact.artifact.instructionPC 2333 = 3012 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2784 : CycleSubmission.Artifact.artifact.instructionPC 2334 = 3013 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2785 : CycleSubmission.Artifact.artifact.instructionPC 2335 = 3014 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2786 : CycleSubmission.Artifact.artifact.instructionPC 2336 = 3015 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2787 : CycleSubmission.Artifact.artifact.instructionPC 2337 = 3016 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2788 : CycleSubmission.Artifact.artifact.instructionPC 2338 = 3019 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2789 : CycleSubmission.Artifact.artifact.instructionPC 2339 = 3020 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2790 : CycleSubmission.Artifact.artifact.instructionPC 2340 = 3021 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2791 : CycleSubmission.Artifact.artifact.instructionPC 2341 = 3022 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2792 : CycleSubmission.Artifact.artifact.instructionPC 2342 = 3023 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2793 : CycleSubmission.Artifact.artifact.instructionPC 2343 = 3026 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2794 : CycleSubmission.Artifact.artifact.instructionPC 2344 = 3027 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem compactLoopPC2795 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3028 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
 
 theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4)
@@ -240,7 +56,6 @@ theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, jumpDest5366]
-
 
 theorem run_shiftHead_go_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -338,8 +153,6 @@ theorem run_shiftBody (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
       Challenge.EvmProof.Word.ofNat_add_mod]
   all_goals rfl
 
-
-
 theorem run_shiftBody_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hact : 88 ≤ s.activeWords.toNat)
@@ -413,7 +226,6 @@ theorem run_shiftBody_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.ofNat_add_mod]
   all_goals rfl
 
-
 private theorem ofNat_zero_lt_eq_double_isZero (x : UInt256) :
     UInt256.lt (UInt256.ofNat 0) x = UInt256.isZero (UInt256.isZero x) :=
   Monpro.zero_lt_eq_double_isZero x
@@ -431,132 +243,99 @@ private theorem saturation_gt_eq_lt (a b : UInt256) : a.gt b = b.lt a := by
   unfold UInt256.gt UInt256.lt
   split <;> [skip; skip] <;> simp_all
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@[simp] private theorem dagInstructionPC2333 : CycleSubmission.Artifact.artifact.instructionPC 2304 = 2977 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem dagInstructionPC2334 : CycleSubmission.Artifact.artifact.instructionPC 2305 = 2978 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem dagInstructionPC2335 : CycleSubmission.Artifact.artifact.instructionPC 2306 = 2979 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem dagInstructionPC2336 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2980 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-@[simp] private theorem nopMovePC2328 : CycleSubmission.Artifact.artifact.instructionPC 2299 = 2972 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2329 : CycleSubmission.Artifact.artifact.instructionPC 2300 = 2973 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2330 : CycleSubmission.Artifact.artifact.instructionPC 2301 = 2974 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2331 : CycleSubmission.Artifact.artifact.instructionPC 2302 = 2975 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2332 : CycleSubmission.Artifact.artifact.instructionPC 2303 = 2976 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2333 : CycleSubmission.Artifact.artifact.instructionPC 2304 = 2977 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2334 : CycleSubmission.Artifact.artifact.instructionPC 2305 = 2978 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2335 : CycleSubmission.Artifact.artifact.instructionPC 2306 = 2979 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2336 : CycleSubmission.Artifact.artifact.instructionPC 2307 = 2980 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] private theorem nopMovePC2337 : CycleSubmission.Artifact.artifact.instructionPC 2308 = 2983 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
 /-- Use the inherited all-ones sentinel to complement a boolean mask. -/
 private theorem sentinel_add_lt (a b : UInt256) :
     Monpro.maxWord + UInt256.lt a b =
       UInt256.ofNat 0 - UInt256.isZero (UInt256.lt a b) := by
   unfold UInt256.lt
   split <;> decide
+
+/-- Boundary before the quotient multiplication; keeps the kernel certificate small. -/
+private def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let U := uMem mem n
+  let hi := UInt256.shiftRight (MachineState.readWord U 2080) (MachineState.readWord U 1536)
+  let lo := UInt256.shiftRight (MachineState.readWord U 2112) (MachineState.readWord U 1536) +
+    UInt256.shiftLeft (MachineState.readWord U 2080) (MachineState.readWord U 1600)
+  let diff := lo - UInt256.addMod lo
+    (UInt256.mulMod hi (MachineState.readWord U 1632) (MachineState.readWord U 1568))
+    (MachineState.readWord U 1568)
+  { s with pc := UInt256.ofNat (headPC n + 44)
+           memory := uMem0 mem n
+           stack := MachineState.readWord U 1664 :: diff :: hi :: UInt256.ofNat k ::
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
+
+private theorem run_estimate_left (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n ≠ 4) (hn2 : 2 ≤ n)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.take 24)
+      (estimateState z s mem n bsize esize msize k) = some (estimateMid z s mem n bsize esize msize k) := by
+  have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hr2080 := uMem0_readWord mem n 2080 (by omega)
+  have hr2112 := uMem0_readWord mem n 2112 (by omega)
+  have hr1600 := uMem0_readWord mem n 1600 (by omega)
+  have hr0 := uMem0_readWord mem n 0 (by omega)
+  simp (config := { maxSteps := 600000 })
+    [blk3026, estimateMid, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      hr2080, hr2112, hr1600, hr0,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      headPC, hw, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+
+private theorem run_estimate_right (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n ≠ 4) (hn2 : 2 ≤ n)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.drop 24)
+      (estimateMid z s mem n bsize esize msize k) = some (macSetupState z s mem n bsize esize msize k) := by
+  have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hr2080 := uMem0_readWord mem n 2080 (by omega)
+  have hr2112 := uMem0_readWord mem n 2112 (by omega)
+  have hr1600 := uMem0_readWord mem n 1600 (by omega)
+  have hr0 := uMem0_readWord mem n 0 (by omega)
+  simp (config := { maxSteps := 600000 })
+    [blk3026, estimateMid, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      hr2080, hr2112, hr1600, hr0,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      headPC, hw, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
 
 theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4) (hn2 : 2 ≤ n)
@@ -566,38 +345,178 @@ theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     Challenge.EvmProof.Stepper.runLocatedBlock blk3026
       (estimateState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
+  have h := Challenge.EvmProof.Stepper.runLocatedBlock_append
+    (blk3026.take 24) (blk3026.drop 24)
+    (estimateState z s mem n bsize esize msize k) (estimateMid z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
+    (run_estimate_left z s mem n bsize esize msize k hw hn2 hact hcode hrun) hrun
+    (run_estimate_right z s mem n bsize esize msize k hw hn2 hact hcode hrun)
+  simpa only [List.take_append_drop] using h
+
+private def estimateRawPart0 : List YulEvmCompiler.Instr :=
+  [.push 7 2080,
+   .op .MLOAD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup ⟨14, by decide⟩),
+   .op .SHR,
+   .op (.Swap ⟨0, by decide⟩),
+   .push 2 1600,
+   .op .MLOAD]
+
+private def estimateRawPart1 : List YulEvmCompiler.Instr :=
+  [.op .SHL,
+   .push 2 2112,
+   .op .MLOAD,
+   .op (.Dup ⟨15, by decide⟩),
+   .op .SHR,
+   .op .ADD,
+   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩)]
+
+private def estimateRawPart2 : List YulEvmCompiler.Instr :=
+  [.op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨4, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADDMOD,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SUB,
+   .op (.Dup ⟨12, by decide⟩)]
+
+private def estimateRawPart3 : List YulEvmCompiler.Instr :=
+  [.op .MUL,
+   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .push 3 128,
+   .op .SHR,
+   .op .MUL,
+   .op (.Dup ⟨1, by decide⟩),
+   .push 0 0]
+
+private def estimateRawPart4 : List YulEvmCompiler.Instr :=
+  [.op .MLOAD,
+   .op .MUL,
+   .push 2 2112,
+   .op .MLOAD,
+   .op .SUB,
+   .op .LT,
+   .op (.Swap ⟨0, by decide⟩),
+   .op .SUB]
+
+private def estimateRawPart5 : List YulEvmCompiler.Instr :=
+  [.push 0 0,
+   .op .NOT,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup ⟨14, by decide⟩),
+   .op .GT,
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op .OR]
+
+private def estimate8 (z : UInt256) (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let U := uMem mem n
+  let v0 : UInt256 := MachineState.readWord U 2080
+  let v1 : UInt256 := UInt256.shiftRight v0 (MachineState.readWord U 1536)
+  let v2 : UInt256 := MachineState.readWord U 1600
+  { s with pc := UInt256.ofNat (headPC n + 26)
+           memory := uMem0 mem n
+           stack := v2 :: v0 :: v1 :: UInt256.ofNat k ::
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
+
+private def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let U := uMem mem n
+  let v0 : UInt256 := MachineState.readWord U 2080
+  let v1 : UInt256 := UInt256.shiftRight v0 (MachineState.readWord U 1536)
+  let v2 : UInt256 := MachineState.readWord U 1600
+  let v3 : UInt256 := UInt256.shiftLeft v0 v2
+  let v4 : UInt256 := MachineState.readWord U 2112
+  let v5 : UInt256 := UInt256.shiftRight v4 (MachineState.readWord U 1536)
+  let v6 : UInt256 := v5 + v3
+  { s with pc := UInt256.ofNat (headPC n + 36)
+           memory := uMem0 mem n
+           stack := (MachineState.readWord U 1568) :: (MachineState.readWord U 1568) :: v6 :: v1 :: UInt256.ofNat k ::
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
+
+private def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let U := uMem mem n
+  let v0 : UInt256 := MachineState.readWord U 2080
+  let v1 : UInt256 := UInt256.shiftRight v0 (MachineState.readWord U 1536)
+  let v2 : UInt256 := MachineState.readWord U 1600
+  let v3 : UInt256 := UInt256.shiftLeft v0 v2
+  let v4 : UInt256 := MachineState.readWord U 2112
+  let v5 : UInt256 := UInt256.shiftRight v4 (MachineState.readWord U 1536)
+  let v6 : UInt256 := v5 + v3
+  let v7 : UInt256 := UInt256.mulMod v1 (MachineState.readWord U 1632) (MachineState.readWord U 1568)
+  let v8 : UInt256 := UInt256.addMod v6 v7 (MachineState.readWord U 1568)
+  let v9 : UInt256 := v6 - v8
+  let v10 : UInt256 := (MachineState.readWord U 1664) * v9
+  let v11 : UInt256 := UInt256.shiftRight v10 (UInt256.ofNat 128)
+  let v12 : UInt256 := v11 * (UInt256.shiftRight (MachineState.readWord U 32) (UInt256.ofNat 128))
+  { s with pc := UInt256.ofNat (headPC n + 55)
+           memory := uMem0 mem n
+           stack := (UInt256.ofNat 0) :: v10 :: v12 :: v10 :: v1 :: UInt256.ofNat k ::
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
+
+private def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
+    (n bsize esize msize k : Nat) : State :=
+  let U := uMem mem n
+  let v0 : UInt256 := MachineState.readWord U 2080
+  let v1 : UInt256 := UInt256.shiftRight v0 (MachineState.readWord U 1536)
+  let v2 : UInt256 := MachineState.readWord U 1600
+  let v3 : UInt256 := UInt256.shiftLeft v0 v2
+  let v4 : UInt256 := MachineState.readWord U 2112
+  let v5 : UInt256 := UInt256.shiftRight v4 (MachineState.readWord U 1536)
+  let v6 : UInt256 := v5 + v3
+  let v7 : UInt256 := UInt256.mulMod v1 (MachineState.readWord U 1632) (MachineState.readWord U 1568)
+  let v8 : UInt256 := UInt256.addMod v6 v7 (MachineState.readWord U 1568)
+  let v9 : UInt256 := v6 - v8
+  let v10 : UInt256 := (MachineState.readWord U 1664) * v9
+  let v11 : UInt256 := UInt256.shiftRight v10 (UInt256.ofNat 128)
+  let v12 : UInt256 := v11 * (UInt256.shiftRight (MachineState.readWord U 32) (UInt256.ofNat 128))
+  let v13 : UInt256 := MachineState.readWord U 0
+  let v14 : UInt256 := v13 * v10
+  let v15 : UInt256 := MachineState.readWord U 2112
+  let v16 : UInt256 := v15 - v14
+  let v17 : UInt256 := UInt256.lt v16 v12
+  let v18 : UInt256 := v10 - v17
+  { s with pc := UInt256.ofNat (headPC n + 65)
+           memory := uMem0 mem n
+           stack := v18 :: v1 :: UInt256.ofNat k ::
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
+
+private theorem run_estimate_h4_part0 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n = 4)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    WindowNibbleKernel.runInstructions estimateRawPart0
+      (estimateState z s mem n bsize esize msize k) = some (estimate8 z s mem n bsize esize msize k) := by
+  have hn2 : 2 ≤ n := by omega
+  have hhead : headPC n = 10754 := by simp [headPC, hw]
   have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hB : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1536 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hE : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1568 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hF : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1632 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hG : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1664 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hr2080 := uMem0_readWord mem n 2080 (by omega)
   have hr2112 := uMem0_readWord mem n 2112 (by omega)
   have hr1600 := uMem0_readWord mem n 1600 (by omega)
   have hr0 := uMem0_readWord mem n 0 (by omega)
   simp (config := { maxSteps := 600000 })
-    [blk3026, opAt, pushAt, wfOp,
+    [estimateRawPart0, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       hr2080, hr2112, hr1600, hr0,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      headPC, hw, qhatOf,
+      hhead, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -605,9 +524,167 @@ theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
       estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
 
+private theorem run_estimate_h4_part1 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n = 4)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    WindowNibbleKernel.runInstructions estimateRawPart1
+      (estimate8 z s mem n bsize esize msize k) = some (estimate16 z s mem n bsize esize msize k) := by
+  have hn2 : 2 ≤ n := by omega
+  have hhead : headPC n = 10754 := by simp [headPC, hw]
+  have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hr2080 := uMem0_readWord mem n 2080 (by omega)
+  have hr2112 := uMem0_readWord mem n 2112 (by omega)
+  have hr1600 := uMem0_readWord mem n 1600 (by omega)
+  have hr0 := uMem0_readWord mem n 0 (by omega)
+  simp (config := { maxSteps := 600000 })
+    [estimateRawPart1, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      hr2080, hr2112, hr1600, hr0,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      hhead, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
 
+private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n = 4)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    WindowNibbleKernel.runInstructions estimateRawPart2
+      (estimate16 z s mem n bsize esize msize k) = some (estimateMid z s mem n bsize esize msize k) := by
+  have hn2 : 2 ≤ n := by omega
+  have hhead : headPC n = 10754 := by simp [headPC, hw]
+  simp (config := { maxSteps := 600000 })
+    [estimateRawPart2, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      hhead, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
 
+private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n = 4)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    WindowNibbleKernel.runInstructions estimateRawPart3
+      (estimateMid z s mem n bsize esize msize k) = some (estimate32 z s mem n bsize esize msize k) := by
+  have hn2 : 2 ≤ n := by omega
+  have hhead : headPC n = 10754 := by simp [headPC, hw]
+  simp (config := { maxSteps := 600000 })
+    [estimateRawPart3, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      hhead, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
 
+private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n = 4)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    WindowNibbleKernel.runInstructions estimateRawPart4
+      (estimate32 z s mem n bsize esize msize k) = some (estimate40 z s mem n bsize esize msize k) := by
+  have hn2 : 2 ≤ n := by omega
+  have hhead : headPC n = 10754 := by simp [headPC, hw]
+  have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hr2080 := uMem0_readWord mem n 2080 (by omega)
+  have hr2112 := uMem0_readWord mem n 2112 (by omega)
+  have hr1600 := uMem0_readWord mem n 1600 (by omega)
+  have hr0 := uMem0_readWord mem n 0 (by omega)
+  simp (config := { maxSteps := 600000 })
+    [estimateRawPart4, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      hr2080, hr2112, hr1600, hr0,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      hhead, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+
+private theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hw : n = 4)
+    (hact : 88 ≤ s.activeWords.toNat)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hrun : s.halt = .Running) :
+    WindowNibbleKernel.runInstructions estimateRawPart5
+      (estimate40 z s mem n bsize esize msize k) = some (macSetupState z s mem n bsize esize msize k) := by
+  have hn2 : 2 ≤ n := by omega
+  have hhead : headPC n = 10754 := by simp [headPC, hw]
+  simp (config := { maxSteps := 600000 })
+    [estimateRawPart5, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
+      hhead, qhatOf,
+      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+
+private theorem estimate_h4_program :
+    blk3026h.map Challenge.EvmProof.Stepper.Located.instruction =
+      estimateRawPart0 ++ (estimateRawPart1 ++ (estimateRawPart2 ++ (estimateRawPart3 ++ (estimateRawPart4 ++ (estimateRawPart5))))) := by rfl
+
+private theorem estimate_h4_layout :
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10763) blk3026h := by
+  dsimp only [blk3026h, opAt, pushAt, wfOp,
+    WindowTwentyOneLocated.LinearPath, WindowTwentyOneLocated.Linear]
+  simp [YulEvmCompiler.Instr.size_push, YulEvmCompiler.Instr.size_op,
+    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_estimate_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -617,47 +694,21 @@ theorem run_estimate_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esi
     Challenge.EvmProof.Stepper.runLocatedBlock blk3026h
       (estimateState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
-  have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hB : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1536 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hD : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2112 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hE : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1568 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hF : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1632 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hG : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1664 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hH : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hI : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have hr2080 := uMem0_readWord mem 4 2080 (by omega)
-  have hr2112 := uMem0_readWord mem 4 2112 (by omega)
-  have hr1600 := uMem0_readWord mem 4 1600 (by omega)
-  have hr0 := uMem0_readWord mem 4 0 (by omega)
-  simp (config := { maxSteps := 600000 })
-    [blk3026h, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      hr2080, hr2112, hr1600, hr0,
-      estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      headPC, hw, qhatOf,
-      PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, hA, hB, hC, hD, hE, hF, hG, hH, hI, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
-
-
-
+  have hraw := (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
+      (run_estimate_h4_part0 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
+      (run_estimate_h4_part1 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
+      (run_estimate_h4_part2 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
+      (run_estimate_h4_part3 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
+      (run_estimate_h4_part4 z s mem n bsize esize msize k hw hact hcode hrun) (run_estimate_h4_part5 z s mem n bsize esize msize k hw hact hcode hrun))))))
+  refine WindowTwentyOneLocated.run_linear blk3026h (UInt256.ofNat 10763)
+    (estimateState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
+    ?_ estimate_h4_layout ?_ hrun ?_
+  · change CycleSubmission.Artifact.bytecode.size < 2 ^ 256
+    rw [CycleSubmission.Artifact.bytecodeSize]
+    decide
+  · simp [estimateState, slotKState, headPC, hw]
+  · rw [estimate_h4_program]
+    exact hraw
 
 /-- Both loop heads are jump destinations. -/
 theorem jumpDestHead (n : Nat) :

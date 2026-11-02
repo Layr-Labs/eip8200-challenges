@@ -44,10 +44,7 @@ length the `bsize` ride slot via `DUP15`), take the loop counter from the `n` ri
 (`DUP14`) shifted down two bits and jump back to the loop head of the width, which the
 scratch slot (`DUP2`) holds. -/
 def phaseSwitchProgram : List Instr :=
-  [.op (.Swap ⟨15, by decide⟩), .push 2 1760, .op .MSTORE, .push 3 12,
-   .op (.Swap ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY,
-   .op (.Dup ⟨13, by decide⟩), .push 1 2, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
+  [.op (.Swap ⟨15, by decide⟩), .push 2 1760, .op .MSTORE, .push 2 12, .op (.Swap ⟨15, by decide⟩), .op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY, .op (.Dup ⟨13, by decide⟩), .push 2 2, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
 /-- The flag is cleared before MCOPY reads the retained accumulator at 2112. -/
 def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray :=

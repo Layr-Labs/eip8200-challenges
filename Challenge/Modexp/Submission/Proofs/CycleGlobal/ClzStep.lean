@@ -15,11 +15,9 @@ case, so a straight-line block containing `CLZ` cannot be run with
 `runLocatedBlock`.  This module lifts the relational rule
 `EvmSemantics.EVM.StepRunning.clz` into the gas-parametric trace algebra through the
 public `Challenge.EvmProof.GasStep.of_running`, exactly as `SgtStep` does for `SGT`,
-and locates the only `CLZ` of the candidate bytecode: instruction 2091 at pc 2672
-(0x0a70) in the estimator prologue (`... DUP1 CLZ DUP1 NOT PUSH0 SUB PUSH2 0640 MSTORE`).
-
-Use: split the prologue block at the `CLZ`: a located block for idx 2077..2090
-(pc 2658..2671), `gasSteps_clz`, then a located block for idx 2092..2114 (pc 2673..).
+and locates the estimator's `CLZ` at instruction 1940, byte PC 2502.
+Split the located instruction sequence at that instruction and use
+`gasSteps_clz` between the surrounding located-block proofs.
 -/
 
 namespace CycleSubmission.Global.Fast.ClzStep
@@ -50,12 +48,12 @@ def gasStep_clz {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas, cost] using
     StepRunning.clz (withGas s gas) a rest hop hgas hstack hcap
 
-/-- The candidate's only `CLZ` is instruction 2091. -/
-theorem clz_index : CycleSubmission.Artifact.instructions[1946]? = some (.op .CLZ) := by
+/-- The estimator's `CLZ` is instruction 1940. -/
+theorem clz_index : CycleSubmission.Artifact.instructions[1940]? = some (.op .CLZ) := by
   rfl
 
-/-- ... at program counter 2672 (0x0a70). -/
-theorem clz_pc : CycleSubmission.Artifact.artifact.instructionPC 1946 = 2502 := by
+/-- ... at program counter 2502 (0x09c6). -/
+@[simp] theorem clz_pc : CycleSubmission.Artifact.artifact.instructionPC 1940 = 2502 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -63,18 +61,18 @@ theorem decodedOp_clz (s : State)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 2502) :
     s.decodedOp = some .CLZ := by
-  have hpcNat : s.pc.toNat = CycleSubmission.Artifact.artifact.instructionPC 1946 := by
+  have hpcNat : s.pc.toNat = CycleSubmission.Artifact.artifact.instructionPC 1940 := by
     rw [hpc, clz_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .CLZ) := by
     rw [hfork]
     exact ⟨by decide, trivial, by decide⟩
-  exact Stepper.decodes_of_artifact CycleSubmission.Artifact.artifact s 1946 (.op .CLZ)
+  exact Stepper.decodes_of_artifact CycleSubmission.Artifact.artifact s 1940 (.op .CLZ)
     hcode hpcNat clz_index hwf
 
 theorem succ_2672 : (UInt256.ofNat 2502).succ = UInt256.ofNat 2503 := by
   decide
 
-/-- The `CLZ` of the estimator prologue (pc 2672 → 2673): pops `a`, pushes `UInt256.clz a`.
+/-- The `CLZ` of the estimator prologue (pc 2502 → 2503): pops `a`, pushes `UInt256.clz a`.
 There `a = L`, the lowest set bit of the modulus top limb; see `Shift.clz_two_pow`. -/
 def gasSteps_clz (s : State) (a : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)

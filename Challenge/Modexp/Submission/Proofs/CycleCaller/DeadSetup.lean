@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.SetupPrefix
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SetupEntry
 
 set_option warningAsError true
@@ -8,7 +9,7 @@ set_option maxHeartbeats 1000000
 /-!
 # The kernel setup entry with the unread frame words zeroed
 
-`Fast.TnM128Setup.fullEntryProgram` loads seven words into the caller frame that no square or
+`Fast.TnM128Setup.oldFullEntryProgram` loads seven words into the caller frame that no square or
 product kernel of this artifact ever reads (`m96`, `tl`, `m0`, `m64`, the row-end pointer
 `aprev`, `m32`, and the `DUP9`-addressed `m0` limb): they ride below the working stack until
 `RETURN`.  This variant pushes `0` for each of them instead (`PUSH0`, padded with `JUMPDEST`s so
@@ -30,11 +31,11 @@ def loadProgram : List Instr :=
   [.push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0, .push 0 0,
    .push 22 3347]
 
-def fullEntryProgram : List Instr :=
+def oldFullEntryProgram : List Instr :=
   ((loadProgram ++ EntryPrefix.shuffleProgram) ++ EntryPrefix.lowProgram) ++
     (zeroProgram ++ pointersJumpProgram)
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 39 := rfl
+theorem oldFullEntryProgram_length : oldFullEntryProgram.length = 39 := rfl
 
 theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
@@ -52,7 +53,7 @@ theorem run_load (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, ← word_add_assoc]
   try exact ⟨rfl, rfl⟩
 
-theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
+theorem old_run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
@@ -61,7 +62,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
-    runInstructions fullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) =
+    runInstructions oldFullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) =
     some (TnM128Setup.outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3347)
       (UInt256.ofNat 0) (UInt256.ofNat 0) (UInt256.ofNat 0)
       (UInt256.ofNat 0 :: UInt256.ofNat 0 ::
@@ -100,4 +101,39 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
   have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
   exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 
+def fullEntryProgram : List Instr :=
+  Prepared.SetupPrefix.newProgram ++ oldFullEntryProgram.drop 23
+
+theorem fullEntryProgram_length : fullEntryProgram.length = 36 := rfl
+
+theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions fullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} =
+    runInstructions oldFullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} := by
+  change runInstructions (Prepared.SetupPrefix.newProgram ++ oldFullEntryProgram.drop 23) _ =
+    runInstructions (Prepared.SetupPrefix.oldProgram ++ oldFullEntryProgram.drop 23) _
+  simp only [runInstructions_append, Prepared.SetupPrefix.replacement_run s hd pa pb dst ret rest hcap hact]
+
+theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
+    (dst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998)
+    (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
+    (hpaFit : pa+32*n ≤ 2816)
+    (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816)
+    (hcds : s.executionEnv.calldata.size < 2^256)
+    (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
+    (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
+    runInstructions fullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) =
+    some (TnM128Setup.outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3347)
+      (UInt256.ofNat 0) (UInt256.ofNat 0) (UInt256.ofNat 0)
+      (UInt256.ofNat 0 :: UInt256.ofNat 0 ::
+        MachineState.readWord mem 2720 :: zeroTn ::
+        UInt256.ofNat 0 :: dst :: ret :: rest)) := by
+  have h := full_run_eq {s with memory := mem} hd (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest hcap hact
+  change runInstructions fullEntryProgram _ = runInstructions oldFullEntryProgram _ at h
+  rw [show runInstructions fullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) =
+    runInstructions oldFullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) from h]
+  exact old_run_entry_sq s mem hd pa pb n dst ret rest hcap hact hn hn32 hpaFit hpb hpbFit hcds hs32 htarget
+
+#print axioms run_entry_sq
 end CycleSubmission.DeadSetup

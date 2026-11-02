@@ -1,23 +1,8 @@
 [
   {
-    "submissionId": "f7c6a4f5-a55a-4c09-95e4-e29e5ac78cde",
-    "rationale": "Direct parent (mine): the promoted frontier (359,973). This tree rewrites four DUP pairs and eight SWAP1/ADD byte pairs in the product kernels.",
-    "evidence": "bytecode.hex differs from the parent only at bytes 3358/3359, 3865/3866, 4883/4884, 4956/4959, 5047/5050, 5116/5119, 5163/5166, 8461/8462, 9321/9324, 9990/9993, 10093/10096, 10171/10174."
-  },
-  {
-    "submissionId": "2ad572c4-c5c0-4c7c-8cc8-65e720e6c8a2",
-    "rationale": "Direct parent (mine): the promoted frontier (360,324). This tree rewrites two DUP pairs and three more SWAP1/ADD byte pairs in the square kernels.",
-    "evidence": "bytecode.hex differs from the parent only at bytes 4531/4534, 4615/4618, 6986/6987, 7548/7551, 9958/9959."
-  },
-  {
     "submissionId": "abbe528e-6fa0-4582-b751-61cbf3db9e86",
-    "rationale": "Direct parent (mine): the promoted frontier (360,381). This tree changes nine SWAP1/ADD byte pairs in the square kernels.",
-    "evidence": "bytecode.hex differs from the parent only at bytes 4426/4429, 4686/4689, 6876/6879, 7046/7049, 7182/7185, 7302/7305, 7396/7399, 7483/7486, 7596/7599."
-  },
-  {
-    "submissionId": "651d04b9-e476-4554-a135-3acfbff68c16",
-    "rationale": "Direct parent: the promoted frontier (360,522). This tree is that tree with the merged base-size/Fermat test at pc 25 rewritten as a shift test, the following dispatch blocks moved by one byte, and the memo answer pad moved from pc 60 to 61.",
-    "evidence": "bytecode.hex differs from the parent only in bytes 25..100, 133 and 735; proof edits are listed in README.md (current refinement)."
+    "rationale": "Shift-form unaligned-header entry test; FermatNext, FermatGas and EarlyWordCorrect proofs adapted into the local verified scheduling/CODECOPY baseline. Empty-modulus and zero-exponent Setup/FastP6/WindowCorrect proofs adapted into a packed layout.",
+    "evidence": "Public commit 088f4fc7f59addf6ee3f2f343b95a18aec08ccd8; gate bytes 25..39, recheck/join PCs 40/48, memo constant moved to bytes 62..93."
   },
   {
     "submissionId": "6780ef4e-4481-4426-be67-805a1b9e094a",

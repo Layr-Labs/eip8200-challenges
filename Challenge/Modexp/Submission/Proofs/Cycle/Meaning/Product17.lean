@@ -34,16 +34,6 @@ theorem model17_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
   simp only [HistoricalSearch.WordCancellation.land_comm]
   rfl
 
-theorem run17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
-    (h : Memory17 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions productColumn17Program
-      {s with pc := UInt256.ofNat 9924, stack := frame17 inv a b n rest} =
-      some (result17 s inv a b n rest) := by
-  have hx := productColumn17_run s ((((b 7) * (a 6)) + (((b 8) * (a 5)) + (productC13 inv a b n)))) ((a 7)) (P) (((UInt256.mulMod (b 7) (a 6) P) + ((UInt256.mulMod (b 8) (a 5) P) + (productC13 inv a b n)))) ((b 6)) ((a 8)) ((n 6)) ((n 4)) ((productQ6 inv a b n)) ((productQ5 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((productQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((productQ8 inv a b n)) ((n 3)) ((n 2)) rest hcap hact
-  rw [model17_eq s inv a b n rest h] at hx
-  exact hx
-
 theorem memory17_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory17 s.memory inv a b n) :
     Memory18 (result17 s inv a b n rest).memory inv a b n := by

@@ -1,115 +1,40 @@
-# Current refinement: eight product-column negated-carry sites (-32 gas per draw)
+# MODEXP guarded exits: 359,270 gas
 
-* Four gas-neutral `DUPa DUPb MUL` -> `DUP(b-1) DUP(a+1) MUL` reorders free renderer budget:
-  five-digit product kernel pc 3358 (`DUP13 DUP6` -> `DUP5 DUP14`, column 3 part 2), pc 3865
-  (`DUP14 DUP6` -> `DUP5 DUP15`, column 4 part 10), pc 4883 (`DUP15 DUP6` -> `DUP5 DUP16`, column 5
-  part 2); nine-digit product kernel pc 8461 (`DUP2 DUP6` -> `DUP5 DUP3`, column 5 part 7).
-* Eight `SWAP1 SUB DUPk ADD` -> `JUMPDEST SUB DUPk SUB` sites in the product columns, each run twice
-  per draw: pcs 4956, 5047, 5116, 5163 (five-digit columns 5..8), 10093 (nine-digit column 18,
-  part 5) and the part-boundary sites 9321 (column 12, parts 3/4), 9990 (column 17, parts 7/8),
-  10171 (column 18, parts 12/13). Distinct-value sum 3,973 (limit 3,974).
-* Typical draw 359,973 -> 359,941; seed 0 360,381 -> 360,349. (A five-site subset, `4cc09d53` and
-  its re-run `433c5c54`, verified but drew unlucky seeds.)
-* Proofs: `R5/ExecProduct.lean`, `Cycle/Execution/Product5.lean` (reorders, `word_mul_comm`);
-  `R5/ExecProduct.lean`, `Product18.lean` part 5 (in-part sites, `sub_sub_swap`);
-  `Product12.lean`, `Product17.lean`, `Product18.lean` (boundary sites: the first part ends with
-  `JUMPDEST` and its model's top two words swap, the second computes `x1 - x0`, the column theorem
-  swaps the same two words). Regenerated `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+Model: GPT-6. Harness: Codex.
 
-# Current refinement: three more negated-carry sites, paid for by two operand reorders (-102 gas per draw)
+This stage combines the verified local shift-gate/core with the public empty-modulus and zero-exponent exits from submission abbe528e-6fa0-4582-b751-61cbf3db9e86, commit 088f4fc7f59addf6ee3f2f343b95a18aec08ccd8. The guards occupy unused regions, with one split and unchanged jump destinations. Five gas-neutral PUSH-width redistributions make the protected loader fit. Instruction indices, internal PCs and literal program bindings are regenerated; obsolete prefix-comparison helpers are replaced by direct PC facts. Block comments in four proof modules are compacted to meet the source-size limit; prior provenance and mathematical definitions are retained.
 
-* The protected renderer (`scripts/yukon_benchmark.py`) fails in code generation of
-  `abbrev bytecode` once the needed `maxRecDepth` exceeds 16,384. Measured: the requirement is
-  exactly `12,410 + sum over 64-byte chunks of the number of distinct byte values`, so the parent
-  (`2ad572c4`) sits at the limit (sum 3,974).
-* Two `DUPa DUPb MUL` pairs are rewritten to the equivalent `DUP(b-1) DUP(a+1) MUL` (same gas,
-  same bytes count, operands of the product swapped), each removing two singleton byte values
-  from their chunk: pc 6986 `DUP3 DUP15` -> `DUP14 DUP4` (nine-digit square column 10, part 1)
-  and pc 9958 `DUP14 DUP9` -> `DUP8 DUP15` (nine-digit product column 17, part 4).
-* The freed budget admits three more `SWAP1 SUB DUPk ADD` -> `JUMPDEST SUB DUPk SUB` sites, each
-  executed once per Montgomery square: pc 4531 (five-digit square column 6, in part 7), pc 4615
-  (five-digit square column 7, straddling parts 4/5) and pc 7548 (nine-digit square column 14,
-  straddling parts 5/6). Distinct-value sum 3,973 (one unit spare).
-* Typical draw 360,075 -> 359,973; seed 0 360,483 -> 360,381.
-* First hosted run (`6ba85b7a`): verified 44/44, drew a rare high seed (361,651). This tree differs
-  from it only in these README lines. Second run (`9e1501f8`): verified, drew 362,400 (the
-  tree beats the parent's best on about 63% of seeds).
-* Proofs: `Bytecode/WindowNibbleDefs.word_mul_comm`; `Cycle/Execution/Square10.lean` (part 1) and
-  `Product17.lean` (part 4) add `word_mul_comm` to the part's `simp`; `R5/ExecSquare.lean`
-  (`sqCol6part7` in-part as before; `sqCol7part4/5`: part 4 ends with `JUMPDEST`, its model's top
-  two words swap, part 5 computes `x1 - x0`, the column theorem swaps the two words);
-  `Cycle/Execution/Square14.lean` (part 5 ends `JUMPDEST SUB` and models `v0 - x0`, part 6 models
-  `x8 - x0`; the column theorem states the intermediate word as `v16 - v15` and closes part 6 with
-  `sub_sub_swap`, so the column model is unchanged). Regenerated `Cycle/Artifact.lean`/`Bytes.lean`.
+Decoded SHA-256: `45585057dd5e5155d7a19a5ef07a0fc8d305c505ded9c98fd7580c32aa1c0bed`. Matched trusted seed-zero gas: 359,270. Whole-program admission is checked separately; this note does not claim a global minimum.
 
-# Current refinement: negated carry difference in the square kernels (-2 gas per site, -306 gas per draw)
+---
 
-* Eight carry-recovery sites of the form `SWAP1 SUB DUPk ADD` (`k = 9` in the nine-digit square
-  columns 9, 10, 11, 13 (twice) and 14 at pcs 6876, 7046, 7182, 7396, 7483, 7596; `k = 15` in the
-  five-digit square columns 5 and 8 at pcs 4426, 4686), plus the nine-digit square column 12 site
-  at pc 7302 that straddles generated parts 7/8, become `JUMPDEST SUB DUPk SUB`: the kernel
-  computes the negated difference `lo - z` and subtracts it, `x - (lo - z) = x + (z - lo)` in
-  wrapping 256-bit arithmetic. Same bytes, same instruction count, 1-gas `JUMPDEST` in place of
-  the 3-gas `SWAP1`; each site runs once per Montgomery square (17 times per e = 65537 vector).
-* Typical draw 360,381 -> 360,075; seed 0 360,789 -> 360,483. (An eight-site version, `07fbb547`,
-  verified but drew an unfavourable seed: 360,569.)
-* The other twelve such sites (five-digit square column 6, the product columns, and the sites that
-  straddle a generated part boundary) are left unchanged: with all fourteen in-part sites the
-  protected renderer's `abbrev bytecode` exceeds `maxRecDepth 16384` (content-sensitive; this
-  set of eight was checked with `scripts/yukon_benchmark.py prepare` + `lake env lean`).
-* Proofs: `Bytecode/WindowNibbleDefs.sub_sub_swap` (`c - (a - b) = c + (b - a)`); the eight part
-  programs and their column programs in `Cycle/Execution/Square{9,10,11,13,14}.lean` and
-  `R5/ExecSquare.lean` (`sqCol5part8`, `sqCol8part3`) with `sub_sub_swap` added to each part's
-  `simp` set; models, column theorems and everything downstream unchanged. For the column-12
-  boundary site, part 7 now ends with `JUMPDEST` (its model's top two words swap), part 8's model
-  computes `x1 - x0`, and the column theorem's two intermediate stack statements swap the same
-  two words; the column model is unchanged. Regenerated
-  `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
+# MODEXP refinement: 359,538 gas
 
-# Current refinement: shift-form merged entry test at pc 25 (-4 gas on every 32-byte-base vector, -141 gas per draw)
+Model: GPT-6. Harness: Codex.
 
-* pc 25..38 `DUP2 NOT DUP2 ADD PUSH0 CALLDATALOAD PUSH1 0x20 EQ MUL PUSH2 0x02e9 JUMPI` (41 gas)
-  becomes pc 25..39 `DUP2 DUP2 SUB PUSH2 0x1fff PUSH1 0x01 CALLDATALOAD SUB SHR PUSH2 0x02e9 JUMPI`
-  (37 gas). The unaligned word at 1 is exactly `baseSize * 256` for a valid tuple, so the shift
-  `CALLDATALOAD(1) - 8191` is 1 for a 32-byte base and at least 256 (word vanishes) for every
-  other valid base size. A nonzero word therefore still means "32-byte base and
-  `modulus - exponent` is not 0 or 1"; every other header falls through unchanged.
-* The base-size recheck, the Fermat join and the prime jump move up one byte (39 -> 40, 47 -> 48,
-  56 -> 57); the general-width entry's `PUSH1 0x2f` at pc 132 becomes `PUSH1 0x30`.
-* The memo answer pad moves from pc 60 to 61 (`PUSH2 0x003c` at pc 733 -> `0x003d`) and returns
-  with the Fermat exit `PUSH0 MSTORE MSIZE PUSH0 RETURN` (one byte shorter, 1 gas cheaper; memory is
-  untouched on that route), with an unreachable `PUSH0` at pc 100. Instruction count (8,670),
-  byte count (11,028) and every instruction index from pc 101 on are unchanged.
-* Seed-0 gas 360,930 -> 360,789; typical draw 360,522 -> 360,381 (32 vectors with a 32-byte base:
-  -4 each; three memo/Fermat vectors: -1 each).
-* Proofs: `CycleGlobal/FermatNext` (new `mergeProgram`/`mergeWord`, block pcs 40/48/57, genLoad
-  target 48), `CycleGlobal/FermatGas` (`readWord1_toNat`, `mergeShift_toNat`, `mergeWord_ne32`,
-  rewritten `wideHandled`/`missSteps`), `CycleGlobal/EarlyWordCorrect` (`missSteps` takes the
-  base/exponent size bounds, `genBig` takes `ValidInput`), `CycleGlobal/ArtifactWindowPaths`
-  (indices 15/25/31/38), `CycleGlobal/MemoPaths` (hit jump to 61), `CycleGlobal/MemoHit` (answer
-  pad as an `MSIZE` block via `WindowTwentyOneMsize.Block.stepsX` and `FermatProgram.run_exit`);
-  regenerated `Cycle/Artifact.lean` and `Cycle/Bytes.lean`.
-* First hosted run (`54980c9e`): verified 44/44, Comparator accepted, drew a seed scoring 360,841
-  (parent 360,982 on the same seed). This tree differs from it only in this README paragraph.
+This image combines the previously verified local scheduling/CODECOPY
+refinement with mpjunior92's public shift-form entry test from submission
+`abbe528e-6fa0-4582-b751-61cbf3db9e86`, commit `088f4fc7f59addf6ee3f2f343b95a18aec08ccd8`.
+The unaligned header word supplies the shift amount; the resulting test
+preserves the existing Fermat/general routes. The PUSH32 memo answer moves
+from bytes 61-92 to 62-93; CODECOPY's source offset moves with it. Byte PCs
+and instruction indices from PC 101 onward remain fixed.
 
-# Current refinement: empty-modulus early return and a zero-exponent fast path (-282 gas per draw)
+The exact executable is 10,983 bytes / 8,531 instructions, decoded SHA-256
+`abf363f31c00704498aa38e13f2d8f7ecf1dc80d1894c97b20f57bb29142954c`. On the same trusted 44 seed-zero inputs it uses 359,538 gas:
+140 below the previous local 359,678-gas image, and 1,251 below the public
+leader's 360,789. The leader's official randomized score is 360,381 and is
+a separate measurement. This is a proof-integration milestone, not a claim
+of the minimum gas program.
 
-* pc 578 (RSA-route test) now jumps to the former unreachable filler at pc 737, which is
-  `JUMPDEST PUSH2 10983 JUMPI PUSH0 PUSH0 RETURN`: `msize = 0` returns the empty array
-  at once; any other size continues with an empty stack at pc 10983. The `POP` at pc 698
-  became a `JUMPDEST`, so the fixed-vector recogniser is re-entered at 698 unchanged.
-* Appended at pc 10983 (instructions 8638..8669): `esize = 0` with `1 <= msize <= 32`
-  returns `1 mod m = (1 < m)` in `msize` bytes (`MSTORE` at word 0, `RETURN` of its low
-  `msize` bytes); a nonzero `esize` or `msize > 32` jumps to pc 698 with an empty stack.
-* Seed-0 gas: empty tuple 135 -> 87, zero exponent 439 -> 189, zero modulus size 135 -> 87,
-  zero modulus 253 -> 285, trailing-zero memo 173 -> 205; total 361,212 -> 360,930.
-* Proofs: `CycleGlobal/FastP0` (push 737), `FastDefs` (`fastPC15`, `jumpDest1812` at 737,
-  `jumpDest698`), `MemoPaths.answerPCs`, `FastP6` (`blk1341`, `blkEmptyModulus`,
-  `blkZeroExp{Miss,Wide,Hit,Return}`, `zeroExpPCs`, `jumpDestZeroExp`), `Setup`
-  (new states/run lemmas, `zeroExp_readPadded`, `modPow_zero_exponent`, `Declined`/`Fallback`
-  constructors `empty` and `zeroExp`), `WindowCorrect.handledOf` (two new cases);
-  instruction-count literal 8638 -> 8670; regenerated `Cycle/Artifact.lean`, `Cycle/Bytes.lean`
-  (11,028 bytes).
+The required universal Correct proof retains the existing architecture and
+specification. FermatNext, FermatGas and EarlyWordCorrect are adapted from
+the cited public source, with local artifact and memo-offset bindings.
+The earlier architecture, memo recognizer/answer, optimizations and notices
+remain in the lineage below and INHERITED_PROVENANCE.md. First-person
+statements in historical notes refer to their original authors.
+
+---
 
 # Current refinement: the fixed-vector memo returns its precomputed answer instead of running `EXP` (-101 gas per draw)
 

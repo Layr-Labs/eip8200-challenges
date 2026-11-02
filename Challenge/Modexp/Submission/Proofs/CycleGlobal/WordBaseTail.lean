@@ -18,99 +18,36 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
 set_option linter.unusedSimpArgs false in
-theorem run_baseTail_head (input : ByteArray) (i : Nat) (base : UInt256)
-    (hvalid : ValidInput input) (hi : i < baseSize input) :
-    Challenge.EvmProof.Stepper.runLocatedBlock baseTailHeadPath
-      (baseReturnedState input i base) =
-        some (baseTailMidState input i base) := by
-  rcases hvalid with ⟨_, hb, he, hm⟩
-  have hi256 : i < 2 ^ 256 := by omega
-  have h169 : (172 : UInt256).toNat = 172 := by decide
-  have h169Word : (172 : UInt256) = UInt256.ofNat 172 := by decide
-  have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
-  simp (config := { maxSteps := 150000 })
-    [baseTailHeadPath, opAt, pushAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      baseReturnedState, baseTailMidState, Accessors.calldataByteReturned,
-      baseRest, baseLoopState, baseStep, byteWord, Accessors.calldataByteValue,
-      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
-      initialState, wordPCs, List.exchange,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      hi256, h169, h169Word, h256Word]
-
-set_option linter.unusedSimpArgs false in
-theorem run_baseTail_swap (input : ByteArray) (i : Nat) (base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock baseTailSwapPath
-      (baseTailMidState input i base) =
-        some (baseTailSwappedState input i base) := by
-  simp (config := { maxSteps := 100000 })
-    [baseTailSwapPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      baseTailMidState, baseTailSwappedState, baseLoopState, nonzeroState,
-      callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
-      wordPCs, List.exchange]
-
-set_option linter.unusedSimpArgs false in
-theorem run_baseTail_pop (input : ByteArray) (i : Nat) (base : UInt256) :
-    Challenge.EvmProof.Stepper.runLocatedBlock baseTailPopPath
-      (baseTailSwappedState input i base) =
-        some (baseTailPoppedState input i base) := by
-  simp (config := { maxSteps := 100000 })
-    [baseTailPopPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      baseTailSwappedState, baseTailPoppedState, baseLoopState, nonzeroState,
-      callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
-      wordPCs]
-
-set_option linter.unusedSimpArgs false in
-theorem run_baseTail_finish (input : ByteArray) (i : Nat) (base : UInt256)
-    (hvalid : ValidInput input) (hi : i < baseSize input) :
-    Challenge.EvmProof.Stepper.runLocatedBlock baseTailFinishPath
-      (baseTailPoppedState input i base) =
-        some (baseLoopState input (i + 1) (baseStep input i base)) := by
-  rcases hvalid with ⟨_, hb, he, hm⟩
-  have hi256 : i < 2 ^ 256 := by omega
-  have h541 : (157 : UInt256).toNat = 157 := by decide
-  have h541Word : (157 : UInt256) = UInt256.ofNat 157 := by decide
-  have hisucc' := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
-  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i =
-      UInt256.ofNat (i + 1) := by
-    rw [Challenge.EvmProof.Word.word_add_comm]
-    exact hisucc'
-  have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  simp (config := { maxSteps := 150000 })
-    [baseTailFinishPath, opAt, pushAt,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      baseTailPoppedState, baseLoopState, nonzeroState, callerRest,
-      Dispatch.wordEntryState, Main.headerState, initialState, wordPCs,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      hi256, h541, h541Word, honeWord, jump541, hisucc', hincLeft]
-
 theorem run_baseTail (input : ByteArray) (i : Nat) (base : UInt256)
     (hvalid : ValidInput input) (hi : i < baseSize input) :
     Challenge.EvmProof.Stepper.runLocatedBlock baseTailPath
       (baseReturnedState input i base) =
         some (baseLoopState input (i + 1) (baseStep input i base)) := by
-  unfold baseTailPath
-  exact Challenge.EvmProof.Stepper.runLocatedBlock_append
-    baseTailHeadPath (baseTailSwapPath ++ baseTailPopPath ++ baseTailFinishPath)
-    (baseReturnedState input i base) (baseTailMidState input i base)
-    (baseLoopState input (i + 1) (baseStep input i base))
-    (run_baseTail_head input i base hvalid hi) rfl
-    (Challenge.EvmProof.Stepper.runLocatedBlock_append
-      baseTailSwapPath (baseTailPopPath ++ baseTailFinishPath)
-      (baseTailMidState input i base) (baseTailSwappedState input i base)
-      (baseLoopState input (i + 1) (baseStep input i base))
-      (run_baseTail_swap input i base) rfl
-      (Challenge.EvmProof.Stepper.runLocatedBlock_append
-        baseTailPopPath baseTailFinishPath
-        (baseTailSwappedState input i base) (baseTailPoppedState input i base)
-        (baseLoopState input (i + 1) (baseStep input i base))
-        (run_baseTail_pop input i base) rfl
-        (run_baseTail_finish input i base hvalid hi)))
+  rcases hvalid with ⟨_, hb, he, hm⟩
+  have hi256 : i < 2 ^ 256 := by omega
+  have h172 : (172 : UInt256).toNat = 172 := by decide
+  have h172Word : (172 : UInt256) = UInt256.ofNat 172 := by decide
+  have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
+  have h157 : (157 : UInt256).toNat = 157 := by decide
+  have h157Word : (157 : UInt256) = UInt256.ofNat 157 := by decide
+  have hisucc := Challenge.EvmProof.Word.ofNat_add_ofNat
+    (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
+  have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
+    rw [Challenge.EvmProof.Word.word_add_comm]; exact hisucc
+  have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
+  simp (config := { maxSteps := 300000 })
+    [baseTailPath, opAt, pushAt,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+      baseReturnedState, Accessors.calldataByteReturned,
+      baseRest, baseLoopState, baseStep, byteWord, Accessors.calldataByteValue,
+      nonzeroState, callerRest, Dispatch.wordEntryState, Main.headerState,
+      initialState, wordPCs, List.exchange,
+      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
+      hi256, h172, h172Word, h256Word, h157, h157Word, honeWord,
+      jump541, hisucc, hincLeft]
+
+#print axioms run_baseTail
 
 /-- One base-byte iteration: guard, inlined byte read, tail. -/
 def gasSteps_baseIteration (input : ByteArray) (i : Nat) (base : UInt256)

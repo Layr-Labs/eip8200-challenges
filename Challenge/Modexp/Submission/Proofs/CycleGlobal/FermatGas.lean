@@ -394,3 +394,4 @@ def genSteps {artifact : ProgramArtifact} {fork : Fork}
   exact gc.trans gl
 
 end CycleSubmission.Global.FermatGas
+

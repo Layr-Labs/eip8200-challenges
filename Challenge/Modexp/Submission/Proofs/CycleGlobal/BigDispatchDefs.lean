@@ -48,28 +48,28 @@ def bigJumpPath := Dispatch.wordJumpPath
 
 def bigCheckExpPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 383 .JUMPDEST,
-   opAt 384 (.Dup ⟨2, by decide⟩),
-   pushAt 385 1 96,
-   opAt 386 .ADD]
+  [opAt 379 .JUMPDEST,
+   opAt 380 (.Dup ⟨2, by decide⟩),
+   pushAt 381 1 96,
+   opAt 382 .ADD]
 
 def bigCheckModPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 387 (.Dup ⟨2, by decide⟩),
-   opAt 388 (.Dup ⟨1, by decide⟩),
-   opAt 389 .ADD]
+  [opAt 383 (.Dup ⟨2, by decide⟩),
+   opAt 384 (.Dup ⟨1, by decide⟩),
+   opAt 385 .ADD]
 
 def bigCheckComparePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 390 1 32,
-   opAt 391 (.Dup ⟨3, by decide⟩),
-   opAt 392 .GT]
+  [pushAt 386 1 32,
+   opAt 387 (.Dup ⟨3, by decide⟩),
+   opAt 388 .GT]
 
 /-- `PUSH1 236; JUMPI` (pc 580..582): the taken branch is the fallback entry itself. -/
 def bigCheckJumpPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 393 1 219,
-   opAt 394 .JUMPI]
+  [pushAt 389 1 219,
+   opAt 390 .JUMPI]
 
 def bigCheckPath := bigCheckExpPath ++ bigCheckModPath ++
   bigCheckComparePath ++ bigCheckJumpPath
@@ -109,6 +109,6 @@ def bigEntryState (input : ByteArray) : State :=
 abbrev bigCheckedState (input : ByteArray) : State := bigEntryState input
 
 theorem jump704 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 146 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 143 (by rfl)
 
 end CycleSubmission.Global.BigDispatch

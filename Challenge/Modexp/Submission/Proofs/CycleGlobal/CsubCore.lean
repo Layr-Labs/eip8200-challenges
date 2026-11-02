@@ -48,6 +48,26 @@ def csFixedState (s : State) (memory : ByteArray) (n j pc : Nat)
            stack := (if j = 0 then [] else [(csStep memory n j).flag]) ++ [pdst, ret] ++ rest
            memory := (csStep memory n j).memory }
 
+@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 2665 = 3477 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 2666 = 3478 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 2667 = 3481 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 2846 = 3726 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC2859 : CycleSubmission.Artifact.artifact.instructionPC 2847 = 3727 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
 -- the eight-limb entry now falls through the dispatch instead of jumping, so it no longer needs
 -- the code hypothesis; the binder stays so the call sites are unchanged
 set_option linter.unusedVariables false in

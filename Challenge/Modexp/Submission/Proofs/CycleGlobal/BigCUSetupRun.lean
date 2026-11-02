@@ -44,21 +44,7 @@ def setupProgram : List Instr :=
 
 /-- Exact U raw interval [271,290). -/
 def zLoopProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 0 0,
-   .op .NOT,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .push 2 1024,
-   .op .ADD,
-   .op .MLOAD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
-   .op .OR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .push 1 254,
-   .op .JUMPI]
+  [.op .JUMPDEST, .push 0 0, .op .NOT, .op .ADD, .op (.Dup ⟨0, by decide⟩), .push 2 1024, .op .ADD, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op (.Swap ⟨2, by decide⟩), .op .OR, .op (.Swap ⟨1, by decide⟩), .push 2 254, .op .JUMPI]
 
 /-- Exact U raw interval [290,295). -/
 def zExitProgram : List Instr :=

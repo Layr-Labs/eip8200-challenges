@@ -34,16 +34,6 @@ theorem model19_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
   simp only [HistoricalSearch.WordCancellation.land_comm]
   rfl
 
-theorem run19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
-    (h : Memory19 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions productColumn19Program
-      {s with pc := UInt256.ofNat 10190, stack := frame19 inv a b n rest} =
-      some (result19 s inv a b n rest) := by
-  have hx := productColumn19_run s ((productC16 inv a b n)) ((b 8)) ((a 8)) ((n 6)) ((n 4)) ((productD1 inv a b n)) ((productD2 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((productQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((productQ8 inv a b n)) ((n 3)) ((n 2)) rest hcap hact
-  rw [model19_eq s inv a b n rest h] at hx
-  exact hx
-
 theorem memory19_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory19 s.memory inv a b n) :
     Memory20 (result19 s inv a b n rest).memory inv a b n := by

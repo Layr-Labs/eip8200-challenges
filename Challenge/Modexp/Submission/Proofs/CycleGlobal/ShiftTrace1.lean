@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Mathlib.Data.Nat.Bitwise
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
@@ -30,6 +31,10 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
 
 
+@[simp] theorem packedJumpPC2411 : CycleSubmission.Artifact.artifact.instructionPC 1880 = 2411 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
 attribute [local simp] CompactConstants.notThirtyOne
 
 open EvmSemantics
@@ -39,16 +44,76 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
 
-@[simp] private theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2017 = 2596 := by
+@[simp] theorem preparedPC1917 : CycleSubmission.Artifact.artifact.instructionPC 1917 = 2470 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] private theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2023 = 2604 := by
+@[simp] theorem preparedPC1918 : CycleSubmission.Artifact.artifact.instructionPC 1918 = 2471 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1919 : CycleSubmission.Artifact.artifact.instructionPC 1919 = 2474 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1920 : CycleSubmission.Artifact.artifact.instructionPC 1920 = 2475 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1921 : CycleSubmission.Artifact.artifact.instructionPC 1921 = 2476 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1922 : CycleSubmission.Artifact.artifact.instructionPC 1922 = 2479 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1923 : CycleSubmission.Artifact.artifact.instructionPC 1923 = 2480 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1924 : CycleSubmission.Artifact.artifact.instructionPC 1924 = 2482 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1925 : CycleSubmission.Artifact.artifact.instructionPC 1925 = 2483 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1926 : CycleSubmission.Artifact.artifact.instructionPC 1926 = 2484 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1928 : CycleSubmission.Artifact.artifact.instructionPC 1928 = 2488 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1930 : CycleSubmission.Artifact.artifact.instructionPC 1930 = 2490 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1931 : CycleSubmission.Artifact.artifact.instructionPC 1931 = 2491 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC1932 : CycleSubmission.Artifact.artifact.instructionPC 1932 = 2492 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2017 = 2606 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2011 = 2596 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+
+@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2015 = 2604 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] private theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2032 = 2616 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2023 = 2616 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -370,86 +435,14 @@ theorem run_negN8d (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `negNTa`: a later limb (`NOT m` at 64). -/
-theorem run_negNTa (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 64) (hact : 88 ≤ s.activeWords.toNat)
-    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock negNTa
-      (negState s mem 2471 n bsize esize msize j) =
-      some (negState s mem 2479 n bsize esize msize (j + 1)) := by
-  have haw64 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 64 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw1344 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1344 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  unfold negState
-  rw [negStep_succ_not mem n j hj, hA]
-  generalize (negStep mem n j).memory = M
-  simp (config := { maxSteps := 400000 })
-    [negNTa, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      NEG, outer, Exp.outer, hcode, hrun, haw64, haw1344, Exp.push0_word,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
+/- `negNTa`: a later limb (`NOT m` at 64). -/
 
-/-- `negNTb`: a later limb (`NOT m` at 32). -/
-theorem run_negNTb (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 32) (hact : 88 ≤ s.activeWords.toNat)
-    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock negNTb
-      (negState s mem 2479 n bsize esize msize j) =
-      some (negState s mem 2487 n bsize esize msize (j + 1)) := by
-  have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw1312 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1312 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  unfold negState
-  rw [negStep_succ_not mem n j hj, hA]
-  generalize (negStep mem n j).memory = M
-  simp (config := { maxSteps := 400000 })
-    [negNTb, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      NEG, outer, Exp.outer, hcode, hrun, haw32, haw1312, Exp.push0_word,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
 
-/-- `negNTc`: a later limb (`NOT m` at 0). -/
-theorem run_negNTc (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
-    (hj : 1 ≤ j) (hA : 32 * (n - 1 - j) = 0) (hact : 88 ≤ s.activeWords.toNat)
-    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
-    (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock negNTc
-      (negState s mem 2487 n bsize esize msize j) =
-      some (negState s mem 2494 n bsize esize msize (j + 1)) := by
-  have haw0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw1280 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1280 32) =
-      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  unfold negState
-  rw [negStep_succ_not mem n j hj, hA]
-  generalize (negStep mem n j).memory = M
-  simp (config := { maxSteps := 400000 })
-    [negNTc, opAt, pushAt, wfOp,
-      Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated,
-      Challenge.EvmProof.Stepper.runInstr,
-      NEG, outer, Exp.outer, hcode, hrun, haw0, haw1280, Exp.push0_word,
-      State.activeWordsAfterUInt256,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
-      Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
+/- `negNTb`: a later limb (`NOT m` at 32). -/
+
+
+/- `negNTc`: a later limb (`NOT m` at 0). -/
+
 
 /-- `negS4`: limb `0` (`0 - m` at 96). -/
 theorem run_negS4 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -583,16 +576,44 @@ theorem run_negT (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blkNegT
       (negState s mem pcNegT n bsize esize msize j) =
-      some (negState s mem pcNegDone n bsize esize msize (j + 1 + 1 + 1)) := by
-  unfold blkNegT
-  simp only [List.append_assoc]
-  refine Challenge.EvmProof.Stepper.runLocatedBlock_append _ _ _ _ _
-    (run_negJT s mem n bsize esize msize j hcode hrun) hrun ?_
-  refine Challenge.EvmProof.Stepper.runLocatedBlock_append _ _ _ _ _
-    (run_negNTa s mem n bsize esize msize j hj hA0 hact hcode hrun) hrun ?_
-  refine Challenge.EvmProof.Stepper.runLocatedBlock_append _ _ _ _ _
-    (run_negNTb s mem n bsize esize msize (j + 1) (by omega) hA1 hact hcode hrun) hrun ?_
-  exact run_negNTc s mem n bsize esize msize (j + 1 + 1) (by omega) hA2 hact hcode hrun
+      some {negState s mem pcNegDone n bsize esize msize (j + 1 + 1 + 1) with
+        stack := MachineState.readWord (negStep mem n (j + 1 + 1 + 1)).memory 0 :: outer n bsize esize msize} := by
+  have hj1 : 1 ≤ j + 1 := by omega
+  have hj2 : 1 ≤ j + 1 + 1 := by omega
+  have haw0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 0 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw64 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 64 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1280 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1280 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1312 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1312 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw1344 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1344 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  unfold negState
+  rw [negStep_succ_not mem n (j + 1 + 1) hj2,
+    negStep_succ_not mem n (j + 1) hj1, negStep_succ_not mem n j hj,
+    hA0, hA1, hA2]
+  generalize (negStep mem n j).memory = M
+  simp (config := { maxSteps := 800000 })
+    [blkNegT, opAt, pushAt, wfOp,
+      Challenge.EvmProof.Stepper.runLocatedBlock,
+      Challenge.EvmProof.Stepper.runLocated,
+      Challenge.EvmProof.Stepper.runInstr,
+      pcNegT, pcNegDone, NEG, outer, Exp.outer, hcode, hrun,
+      haw0, haw32, haw64, haw1280, haw1312, haw1344, Exp.push0_word,
+      State.activeWordsAfterUInt256,
+      Challenge.EvmProof.Word.literal_eq_ofNat,
+      Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,
+      Challenge.EvmProof.Word.ofNat_add_mod]
+
+  all_goals simp (disch := decide) only [CycleSubmission.Prepared.Arithmetic.read_disjoint]
+
+#print axioms run_negT
+
 
 /-- `blk2919a`: leave `[L, L, d]` at the `CLZ`. -/
 theorem run_negDoneA (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -746,7 +767,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
   have haw2720 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2720 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 2500000 })
-    [blkNbTail, opAt, pushAt, wfOp,
+    [blkNbTail, opAt, pushAt, wfOp, List.exchange, CycleSubmission.Prepared.Arithmetic.mulC,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -757,6 +778,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  all_goals (first | rfl | simp [UInt256.ofNat, Fin.ofNat] | decide)
+
+
 
 end CycleSubmission.Global.Fast.Shift
