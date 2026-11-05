@@ -56,7 +56,7 @@ theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat)
   simp [Shift.entrySlots, Exp.outer]
 
 /-- The section on the conversion frame: from `macSetupState` (the end of the loop head of the
-width, `headPC n + 73`) with the quotient guess above the counter, slots and outer frame over `um`,
+width, `headPC n + (if n = 4 then 73 else 98)`) with the quotient guess above the counter, slots and outer frame over `um`,
 to the middle block at pc 3034 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
 def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
@@ -69,7 +69,7 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat (Shift.headPC n + 73),
+      { s with pc := UInt256.ofNat (Shift.headPC n + (if n = 4 then 73 else 98)),
                stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
@@ -77,7 +77,7 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
                  UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } := by
-  have hpc : Shift.headPC n + 73 = sectionPC n := by
+  have hpc : Shift.headPC n + (if n = 4 then 73 else 98) = sectionPC n := by
     unfold Shift.headPC sectionPC; split_ifs <;> rfl
   have hpc2 : Shift.midPC n = sectionEndPC n := by
     unfold Shift.midPC sectionEndPC; split_ifs <;> rfl
@@ -101,7 +101,7 @@ def gasSteps_macSection_stale (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s 
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat (Shift.headPC n + 73),
+      { s with pc := UInt256.ofNat (Shift.headPC n + (if n = 4 then 73 else 98)),
                stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um0 }
@@ -109,7 +109,7 @@ def gasSteps_macSection_stale (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s 
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
                  UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } := by
-  have hpc : Shift.headPC n + 73 = sectionPC n := by
+  have hpc : Shift.headPC n + (if n = 4 then 73 else 98) = sectionPC n := by
     unfold Shift.headPC sectionPC; split_ifs <;> rfl
   have hpc2 : Shift.midPC n = sectionEndPC n := by
     unfold Shift.midPC sectionEndPC; split_ifs <;> rfl

@@ -35,9 +35,14 @@ open WindowNibbleKernel WindowTwentyOneBinding
 abbrev commonGuardProgram := CycleSubmission.CallerBlocks.commonProgram
 abbrev commonGuard := CycleSubmission.CallerBlocks.commonBlock
 
+/-- Current setup PC; the inherited arithmetic setup frame is otherwise unchanged. -/
+def relocatedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
+    (pdst ret : UInt256) (rest : List UInt256) : State :=
+  { CiosCached.setupState s mem hd pa pb pdst ret rest with pc := UInt256.ofNat 3203 }
+
 def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3181
+  { s with pc := UInt256.ofNat 3202
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -53,17 +58,17 @@ theorem run_commonGuard (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Na
     (_hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
     (_hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     runInstructions commonGuardProgram (commonState s mem hd pa pb pdst ret rest) =
-      some (CiosCached.setupState s mem hd pa pb pdst ret rest) := by
+      some (relocatedSetupState s mem hd pa pb pdst ret rest) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   simp [commonGuardProgram, CycleSubmission.CallerBlocks.commonProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    commonState, CiosCached.setupState, hc5, Challenge.EvmProof.Word.succ_ofNat_mod]
+    commonState, relocatedSetupState, CiosCached.setupState, hc5, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 set_option linter.unusedSimpArgs false in
 
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
-def setup : Block CycleSubmission.Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 35 3182 CycleSubmission.DeadSetup.fullEntryProgram
+def setup : Block CycleSubmission.Artifact.artifact .Osaka 3203 CycleSubmission.DeadSetup.fullEntryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 35 3203 CycleSubmission.DeadSetup.fullEntryProgram
     (by change 2447 + 35 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -93,7 +98,7 @@ opaque gasSteps_common (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps
       (commonState s mem hd pa pb pdst ret rest)
-      (CiosCached.setupState s mem hd pa pb pdst ret rest) :=
+      (relocatedSetupState s mem hd pa pb pdst ret rest) :=
   commonGuard.steps (environment (commonState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp) rfl
     (run_commonGuard s mem hd pa pb pdst ret rest hcap hcode hact hs32 hguard hzero)
 
@@ -119,14 +124,14 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
     (_hslotn : rest[2]? = some (UInt256.ofNat n))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
-      (CiosCached.setupState s mem hd pa pb pdst ret rest)
+      (relocatedSetupState s mem hd pa pb pdst ret rest)
       (CiosCached.outState s (SquarePartialClear.memory (StagedOperand.stageW mem pa n)) pb n 0 hd
         (UInt256.ofNat 3347)
         (UInt256.ofNat 0) (UInt256.ofNat 0) (UInt256.ofNat 0)
         (UInt256.ofNat 0 :: UInt256.ofNat 0 ::
           MachineState.readWord mem 2720 :: UInt256.ofNat 0 ::
           UInt256.ofNat 0 :: pdst :: ret :: rest)) :=
-  setup.steps (environment (CiosCached.setupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
+  setup.steps (environment (relocatedSetupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hpaFit hpb hpbFit
       hcds hs32 _hw (by rw [hcode]; exact hjump))

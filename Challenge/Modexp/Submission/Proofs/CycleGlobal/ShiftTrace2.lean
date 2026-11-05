@@ -239,6 +239,9 @@ private theorem estimate_notZero_maxWord : UInt256.lnot (⟨0⟩ : UInt256) = Mo
 private theorem estimate_notZeroOfNat_maxWord : UInt256.lnot (UInt256.ofNat 0) = Monpro.maxWord := by
   decide
 
+private theorem estimate_directMax_maxWord :
+    UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 = Monpro.maxWord := by decide
+
 private theorem saturation_gt_eq_lt (a b : UInt256) : a.gt b = b.lt a := by
   unfold UInt256.gt UInt256.lt
   split <;> [skip; skip] <;> simp_all
@@ -260,7 +263,7 @@ private def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
   let diff := lo - UInt256.addMod lo
     (UInt256.mulMod hi (MachineState.readWord U 1632) (MachineState.readWord U 1568))
     (MachineState.readWord U 1568)
-  { s with pc := UInt256.ofNat (headPC n + 44)
+  { s with pc := UInt256.ofNat (headPC n + (if n = 4 then 44 else 39))
            memory := uMem0 mem n
            stack := MachineState.readWord U 1664 :: diff :: hi :: UInt256.ofNat k ::
              entrySlots z U n bsize esize ++ outer n bsize esize msize }
@@ -299,7 +302,7 @@ private theorem run_estimate_left (z : UInt256) (s : State) (mem : ByteArray) (n
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem run_estimate_right (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4) (hn2 : 2 ≤ n)
@@ -335,7 +338,7 @@ private theorem run_estimate_right (z : UInt256) (s : State) (mem : ByteArray) (
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4) (hn2 : 2 ≤ n)
@@ -514,7 +517,7 @@ private theorem run_estimate_h4_part0 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Stepper.runInstr,
       hr2080, hr2112, hr1600, hr0,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      hhead, qhatOf,
+      hhead, if_pos hw, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
@@ -522,7 +525,7 @@ private theorem run_estimate_h4_part0 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem run_estimate_h4_part1 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -552,7 +555,7 @@ private theorem run_estimate_h4_part1 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Stepper.runInstr,
       hr2080, hr2112, hr1600, hr0,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      hhead, qhatOf,
+      hhead, if_pos hw, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
@@ -560,7 +563,7 @@ private theorem run_estimate_h4_part1 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -577,7 +580,7 @@ private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      hhead, qhatOf,
+      hhead, if_pos hw, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
@@ -585,7 +588,7 @@ private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -602,7 +605,7 @@ private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      hhead, qhatOf,
+      hhead, if_pos hw, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
@@ -610,7 +613,7 @@ private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -640,7 +643,7 @@ private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Stepper.runInstr,
       hr2080, hr2112, hr1600, hr0,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      hhead, qhatOf,
+      hhead, if_pos hw, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, hA, hC, hD, hH, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
@@ -648,7 +651,7 @@ private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -665,7 +668,7 @@ private theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       estimateState, macSetupState, slotKState, rideSlots, entrySlots, shiftEntry,
-      hhead, qhatOf,
+      hhead, if_pos hw, qhatOf,
       PRE_L, PRE_DODD, PRE_X, PRE_BMOD, PRE_DINV,
       outer, Exp.outer, hcode, hrun, Exp.push0_word, ofNat_zero_lt_eq_double_isZero,
       State.activeWordsAfterUInt256,
@@ -673,7 +676,7 @@ private theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
-      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, sentinel_add_lt]
+      estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
 private theorem estimate_h4_program :
     blk3026h.map Challenge.EvmProof.Stepper.Located.instruction =

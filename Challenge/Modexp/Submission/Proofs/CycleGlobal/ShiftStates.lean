@@ -36,22 +36,22 @@ def pcPreNewton : Nat := 2535
 def pcShiftLoop : Nat := 2714
 def pcShiftBody : Nat := 2709
 def pcEstimate : Nat := 2723
-def pcMacSetup : Nat := 2787   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
+def pcMacSetup : Nat := 2812   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
 def headPC (n : Nat) : Nat := if n = 4 then 10754 else 2714
 def headWord (n : Nat) : UInt256 := UInt256.ofNat (headPC n)
-def pcMid : Nat := 3034   -- the fall-through after the eight straight blocks
-def midPC (n : Nat) : Nat := if n = 4 then 10945 else 3034
-def pcAddLoop : Nat := 3106
-def pcAddInner : Nat := 3112
-def pcAddTail : Nat := 3149
-def pcAddMid : Nat := 3136
-def pcAddPad : Nat := 3149
-def pcSubCheck : Nat := 3167
-def pcCsubCall : Nat := 3063
-def pcUnc : Nat := 3104
+def pcMid : Nat := 3059   -- the fall-through after the eight straight blocks
+def midPC (n : Nat) : Nat := if n = 4 then 10945 else 3059
+def pcAddLoop : Nat := 3127
+def pcAddInner : Nat := 3133
+def pcAddTail : Nat := 3170
+def pcAddMid : Nat := 3157
+def pcAddPad : Nat := 3170
+def pcSubCheck : Nat := 3188
+def pcCsubCall : Nat := 3086
+def pcUnc : Nat := 3125
 def pcAfterCsub : Nat := 2714
-def pcCsubExit : Nat := 3069
-def pcShiftDone : Nat := 3069
+def pcCsubExit : Nat := 3092
+def pcShiftDone : Nat := 3092
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pc
            stack := outer n bsize esize msize
@@ -164,7 +164,7 @@ def estimateState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   { slotKState z s (uMem mem n) (headPC n + 9) k n bsize esize msize with memory := uMem0 mem n }
 def macSetupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat (headPC n + 73)
+  { s with pc := UInt256.ofNat (headPC n + (if n = 4 then 73 else 98))
            stack := qhatOf (uMem mem n) :: Monpro.maxWord :: UInt256.ofNat k :: entrySlots z (uMem mem n) n bsize esize ++
              outer n bsize esize msize
            memory := uMem0 mem n }

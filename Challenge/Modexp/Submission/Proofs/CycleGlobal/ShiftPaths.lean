@@ -314,7 +314,7 @@ def blk3018 :
 /-- Located block of the selected shift-reduce program. -/
 def blk3026 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 2080 7 2080,
+  [pushAt 2080 2 2080,
    opAt 2081 .MLOAD,
    opAt 2082 (.Dup ⟨0, by decide⟩),
    opAt 2083 (.Dup ⟨14, by decide⟩),
@@ -341,7 +341,7 @@ def blk3026 :
    opAt 2104 .MUL,
    opAt 2105 (.Dup ⟨15, by decide⟩),
    opAt 2106 (.Dup ⟨1, by decide⟩),
-   pushAt 2107 3 128,
+   pushAt 2107 1 128,
    opAt 2108 .SHR,
    opAt 2109 .MUL,
    opAt 2110 (.Dup ⟨1, by decide⟩),
@@ -354,8 +354,8 @@ def blk3026 :
    opAt 2117 .LT,
    opAt 2118 (.Swap ⟨0, by decide⟩),
    opAt 2119 .SUB,
-   pushAt 2120 0 0,
-   opAt 2121 .NOT,
+   pushAt 2120 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   opAt 2121 .JUMPDEST,
    opAt 2122 (.Swap ⟨1, by decide⟩),
    opAt 2123 (.Dup ⟨14, by decide⟩),
    opAt 2124 .GT,
@@ -458,7 +458,7 @@ def blk3125 :
    opAt 2358 .MSTORE,
    opAt 2359 (.Dup ⟨1, by decide⟩),
    opAt 2360 .OR,
-   pushAt 2361 4 3104,
+   pushAt 2361 2 3125,
    opAt 2362 .JUMPI]
 
 /-- `UNC`: entered only with `neg ≠ 0`; drops it and falls into `ADD_LOOP`. -/
@@ -506,7 +506,7 @@ def blk3157 :
    pushAt 2421 2 2111,
    opAt 2422 (.Dup ⟨1, by decide⟩),
    opAt 2423 .GT,
-   pushAt 2424 2 3112,
+   pushAt 2424 2 3133,
    opAt 2425 .JUMPI]
 
 /-- Located block of the selected shift-reduce program. -/
@@ -522,7 +522,7 @@ def blk3192 :
    opAt 2433 .MSTORE,
    opAt 2434 .LT,
    opAt 2435 .ISZERO,
-   pushAt 2436 2 3106,
+   pushAt 2436 2 3127,
    opAt 2437 .JUMPI]
 
 /-- `SUB_CHECK` up to its jump: `TN = 0` jumps to the `CSUB` call with `[TN, k]`. -/
@@ -532,7 +532,7 @@ def blk3204 :
    opAt 2439 .MLOAD,
    opAt 2440 (.Dup ⟨0, by decide⟩),
    opAt 2441 .ISZERO,
-   pushAt 2442 2 3063,
+   pushAt 2442 2 3086,
    opAt 2443 .JUMPI]
 
 /-- `k := k - 1` (`NOT ADD` on the zero above `k`), back to the loop head while `k ≠ 0` (the `CSUB` call is the identity on every reachable state). -/
@@ -573,7 +573,7 @@ def blk3125h :
    opAt 8508 .MSTORE,
    opAt 8509 (.Dup ⟨1, by decide⟩),
    opAt 8510 .OR,
-   pushAt 8511 4 3104,
+   pushAt 8511 4 3125,
    opAt 8512 .JUMPI]
 
 /-- The four-limb private counter (pc 10974; nothing jumps here, so no `JUMPDEST`). -/
@@ -588,7 +588,7 @@ def blk3253h :
 /-- The four-limb loop exit: `PUSH2 3069 JUMP` (pc 10979) to the shared exit block. -/
 def blkExit4 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 8518 2 3069,
+  [pushAt 8518 2 3092,
    opAt 8519 .JUMP]
 
 theorem jumpDest4608 :
@@ -623,23 +623,23 @@ theorem jumpDestHead4 :
   CycleSubmission.Global.Binding.jumpDest 8337 (by rfl)
 
 theorem jumpDest5115 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3106 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3127 = true :=
   CycleSubmission.Global.Binding.jumpDest 2392 (by rfl)
 
 theorem jumpDest5121 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3112 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3133 = true :=
   CycleSubmission.Global.Binding.jumpDest 2396 (by rfl)
 
 theorem jumpDestUnc :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3104 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3125 = true :=
   CycleSubmission.Global.Binding.jumpDest 2390 (by rfl)
 
 theorem jumpDest5311 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3063 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3086 = true :=
   CycleSubmission.Global.Binding.jumpDest 2363 (by rfl)
 
 theorem jumpDest5366 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3069 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3092 = true :=
   CycleSubmission.Global.Binding.jumpDest 2369 (by rfl)
 
 theorem jumpDest5444 :

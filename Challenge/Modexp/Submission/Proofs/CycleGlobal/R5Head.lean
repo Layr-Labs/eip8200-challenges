@@ -91,7 +91,7 @@ def gasSteps_h1 (s : State) (mem : ByteArray)
 
 theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3181 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3202 = true) :
     runInstructions CycleSubmission.CallerBlocks.fixedProgram
         (FixedDirectStates.special s mem 4 bsize esize 128 k) =
       some (CycleSubmission.Global.Fast.Cios2Dispatch.commonState s mem

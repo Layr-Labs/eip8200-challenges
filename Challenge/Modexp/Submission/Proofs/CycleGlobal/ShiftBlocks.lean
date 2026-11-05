@@ -53,7 +53,7 @@ def blk3157b :
    pushAt 2421 2 2111,
    opAt 2422 (.Dup ⟨1, by decide⟩),
    opAt 2423 .GT,
-   pushAt 2424 2 3112,
+   pushAt 2424 2 3133,
    opAt 2425 .JUMPI]
 
 /-- The five padding `JUMPDEST`s on the add-round fall-through (indices 2413 to 2417). -/

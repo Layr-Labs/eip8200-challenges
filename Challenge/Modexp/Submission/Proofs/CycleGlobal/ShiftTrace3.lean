@@ -230,7 +230,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2372 = 3074 := by
+@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2372 = 3097 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -1051,7 +1051,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   rfl
 
 /-- Followup-PC facts for the shift-done, cleanup and stub blocks. -/
-@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2447 = 3182 := by
+@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2447 = 3203 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 @[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3026 = 3945 := by

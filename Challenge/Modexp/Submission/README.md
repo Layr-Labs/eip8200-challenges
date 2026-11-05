@@ -1,3 +1,53 @@
+# Balanced all-ones estimate constant
+
+This revision builds on the local prime-padding revision submitted as
+`921784ea-5f03-45f1-857d-cefef8549f3c`. It replaces the eight-limb estimate's
+PUSH0; NOT with PUSH32 of the all-ones word and JUMPDEST. Six positive-width
+immediates surrender 32 padding bytes so the image stays 10,983 bytes and
+8,520 instructions. The public native total is 359,235 gas, 23 below the
+unchanged original parent and 14 below the prime-padding revision. All 44
+outputs match. Full Solution compilation passed; the standard protected comparator and
+Lean kernel accepted the exact bytes at 359,235 gas, with 44/44 correct. The arithmetic result and input domain are inherited unchanged.
+
+Inherited implementation and provenance follow below.
+
+# Prime padding moved to unreachable space
+
+This revision builds on submission `44d39279-44df-4fd9-bfdc-8909e2e8fdab`.
+It removes the executed padding JUMPDEST after the direct secp256k1 PUSH32,
+and adds STOP padding after the unconditional prime-test miss jump. The
+prime predicate, mathematical result and accepted input domain are unchanged.
+The dual entry stays at 10754; the total remains 10,983 bytes and 8,520
+instructions. The short prime-test slice and its byte PCs are rebound in
+FermatNext, ArtifactWindowPaths and FermatGas. The native public total is
+359,249 gas (44/44 correct), nine below the unchanged parent and three below
+the preceding balanced layout. The full Solution proof built successfully, and the standard Yukon comparator
+and Lean kernel accepted the exact submitted bytes at 359,249 gas with 44/44
+correct vectors.
+
+Inherited implementation and provenance follow below.
+
+# MODEXP: balanced secp256k1 constant construction, −6 gas
+
+This revision builds on promoted `e1208158-42db-4544-9bcb-26e687dda771`
+(commit `66122c456b169d4193ed8d0fda7af0011b7c75e1`). The Fermat prime test
+uses `PUSH32 secp; JUMPDEST` instead of `PUSH5 4294968272; NOT`. This saves
+two gas on each of the three public Fermat cases. Seven earlier positive-
+width pushes reclaim 27 leading-zero immediate bytes, balancing the larger
+constant without changing any decoded instruction index or the 10,983-byte
+image size. The prime entry moves from 10698 to 10671; PCs from 10742 onward,
+including the computed dual entry at 10754, keep their original values.
+
+The native public suite passes 44/44 at 359,252 gas versus the matched parent
+359,258. The parent's hosted 358,907 is a separate corpus measurement. The
+ordinary protected byte renderer accepts the balanced image at its pinned
+recursion setting. Whole-program proof admission and final protected scoring
+are recorded in the public submission note. No specification or harness file
+is changed. Developed with GPT 6.1 Sol using Codex. All inherited licenses,
+implementation credits, and historical notes follow unchanged.
+
+---
+
 # MODEXP setup padding: 359,258 gas
 
 This refinement folds the executed JUMPDEST at PC 3223 into the following

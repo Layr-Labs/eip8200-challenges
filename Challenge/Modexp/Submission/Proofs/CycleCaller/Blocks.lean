@@ -9,7 +9,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 def fixedProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 2519, .push 1 1, .op (.Dup ⟨2, by decide⟩), .op .SUB, .push 2 512, .push 2 2112, .push 2 3728, .push 2 3181, .op .JUMP]
+  [.op .JUMPDEST, .push 2 2519, .push 1 1, .op (.Dup ⟨2, by decide⟩), .op .SUB, .push 2 512, .push 2 2112, .push 2 3728, .push 2 3202, .op .JUMP]
 def fixedBlock : Block Artifact.artifact .Osaka 2369 fixedProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1858 10 2369 fixedProgram
     (by change 1858 + 10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
@@ -18,14 +18,14 @@ def fixedBlock : Block Artifact.artifact .Osaka 2369 fixedProgram :=
     (by decide)
 def commonProgram : List Instr :=
   [.op .JUMPDEST]
-def commonBlock : Block Artifact.artifact .Osaka 3181 commonProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2446 1 3181 commonProgram
+def commonBlock : Block Artifact.artifact .Osaka 3202 commonProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2446 1 3202 commonProgram
     (by change 2446 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def setupBlock : Block Artifact.artifact .Osaka 3182 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 35 3182 CycleSubmission.DeadSetup.fullEntryProgram
+def setupBlock : Block Artifact.artifact .Osaka 3203 CycleSubmission.DeadSetup.fullEntryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 35 3203 CycleSubmission.DeadSetup.fullEntryProgram
     (by change 2447 + 35 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -82,10 +82,10 @@ def bailJumpBlock : Block Artifact.artifact .Osaka 3764 bailJumpProgram :=
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-theorem valid3181 : Decode.isValidJumpDest Artifact.bytecode 3181 = true := by
+theorem valid3181 : Decode.isValidJumpDest Artifact.bytecode 3202 = true := by
   have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 2446
     (show Artifact.instructions[2446]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 2446 = 3181 := by
+  have hp : Artifact.artifact.instructionPC 2446 = 3202 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

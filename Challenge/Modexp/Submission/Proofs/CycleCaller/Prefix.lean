@@ -35,7 +35,7 @@ def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Ca
 
 def call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 3181
+    pc := UInt256.ofNat 3202
     memory := mem
     stack := [UInt256.ofNat 3728, UInt256.ofNat 2112, UInt256.ofNat 512,
       UInt256.ofNat (k-1), ret] ++ tail}
@@ -132,7 +132,7 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (env.transfer rfl rfl) rfl (jumpDest_run _ (by
       simp only [call, List.length_append, List.length_cons, List.length_nil]; omega))
   have hsetup := setupBlock.steps
-    (s := CiosCached.setupState s mem (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) ret tail)
+    (s := { CiosCached.setupState s mem (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) ret tail with pc := UInt256.ofNat 3203 })
     (env.transfer rfl rfl) rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3728) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)

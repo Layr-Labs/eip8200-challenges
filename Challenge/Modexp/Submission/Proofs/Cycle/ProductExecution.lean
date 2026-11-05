@@ -84,9 +84,9 @@ def state17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
 def memory18 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory17 mem inv a b n) (cells17 inv a b n)
 def state18 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10052, memory := memory18 s.memory inv a b n, stack := frame18 inv a b n rest}
 def memory19 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory18 mem inv a b n) (cells18 inv a b n)
-def state19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10190, memory := memory19 s.memory inv a b n, stack := frame19 inv a b n rest}
+def state19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10188, memory := memory19 s.memory inv a b n, stack := frame19 inv a b n rest}
 def memory20 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory19 mem inv a b n) (cells19 inv a b n)
-def state20 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10234, memory := memory20 s.memory inv a b n, stack := frame20 inv a b n rest}
+def state20 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10226, memory := memory20 s.memory inv a b n, stack := frame20 inv a b n rest}
 theorem memory0_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
     (start count : Nat) (hs : (256 ≤ start ∧ start+count ≤ 768) ∨ 1312 ≤ start) :
     MachineState.readPadded (memory0 mem inv a b n) start count =

@@ -187,7 +187,7 @@ def newpart0Program : List Instr :=
    .push 0 0,
    .push 0 0,
    .push 0 0,
-   .push 22 128,
+   .push 1 128,
    .op .MLOAD,
    .push 0 0,
    .op .NOT]
@@ -199,7 +199,7 @@ def newpart0Model (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256) :
 
 theorem newpart0_run (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newpart0Program {s with pc := UInt256.ofNat 3182, stack := x0 :: x1 :: x2 :: x3 :: x4 :: rest} =
+    runInstructions newpart0Program {s with pc := UInt256.ofNat 3203, stack := x0 :: x1 :: x2 :: x3 :: x4 :: rest} =
       some (newpart0Model s x0 x1 x2 x3 x4 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -314,7 +314,7 @@ def newProgram : List Instr :=
    .push 0 0,
    .push 0 0,
    .push 0 0,
-   .push 22 128,
+   .push 1 128,
    .op .MLOAD,
    .push 0 0,
    .op .NOT,
@@ -340,13 +340,13 @@ def newModel (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256) : St
 theorem new_run (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
-    runInstructions newProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} =
+    runInstructions newProgram {s with pc := UInt256.ofNat 3203, stack := hd :: pa :: pb :: dst :: ret :: rest} =
       some (newModel s hd pa pb dst ret rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 128
   let v1 : UInt256 := UInt256.lnot (UInt256.ofNat 0)
   let v2 : UInt256 := MachineState.readWord s.memory 2688
   let v3 : UInt256 := MachineState.readWord s.memory 2720
-  have h0 : runInstructions newpart0Program {s with pc := UInt256.ofNat 3182, memory := s.memory, stack := hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3212, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} := by
+  have h0 : runInstructions newpart0Program {s with pc := UInt256.ofNat 3203, memory := s.memory, stack := hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3212, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} := by
     simpa only [newpart0Model, v0, v1] using newpart0_run (s) (hd) (pa) (pb) (dst) (ret) rest hcap hact
   have h1 : runInstructions newpart1Program {s with pc := UInt256.ofNat 3212, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3228, memory := s.memory, stack := v3 :: v2 :: pb :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: (UInt256.ofNat 0) :: dst :: ret :: rest} := by
     simpa only [newpart1Model, v2, v3] using newpart1_run (s) (v1) (v0) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) (hd) (pa) (pb) (dst) (ret) rest hcap hact hw
@@ -363,7 +363,7 @@ theorem same_state (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256
 theorem replacement_run (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
-    runInstructions newProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} =
+    runInstructions newProgram {s with pc := UInt256.ofNat 3203, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     runInstructions oldProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} := by
   rw [new_run s hd pa pb dst ret rest hcap hact hw, old_run s hd pa pb dst ret rest hcap hact, same_state]
 #print axioms replacement_run
