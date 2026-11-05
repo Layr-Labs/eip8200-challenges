@@ -79,7 +79,7 @@ structure Computed (s : State) (inv : UInt256) (a b n : Nat → UInt256)
   out : Nat → UInt256
   slot0 : UInt256
   slot1 : UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 7744, stack := ProductMeaning.frame0 inv a b n rest} state
+  trace : GasSteps {s with pc := UInt256.ofNat 7774, stack := ProductMeaning.frame0 inv a b n rest} state
   memory : NormalizeMeaning.MemoryInput state.memory out n
   frame : state.stack = NormalizeMeaning.frame out n slot0 slot1 rest
   pc : state.pc = UInt256.ofNat 10383
@@ -120,7 +120,7 @@ noncomputable def product (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     (hinv : (N*inv.toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hNsize : N < 2^2048) (hodd : Odd N)
     (hB : value b < N) (hform : value a ≡ x*radix^9 [MOD N]) :
-    Outcome {s with pc := UInt256.ofNat 7744, stack := ProductMeaning.frame0 inv a b n rest}
+    Outcome {s with pc := UInt256.ofNat 7774, stack := ProductMeaning.frame0 inv a b n rest}
       (Precompile.natToBytes (value b*x % N) 256) := by
   obtain ⟨st, out, slot0, slot1, ht, mem, frame, pc, en, halt, active, calls, bound, valueEq⟩ :=
     compute s inv a b n rest env hm hcap hact ha hb hn N x hn0 hNvalue hinv hN hNsize hodd hB hform

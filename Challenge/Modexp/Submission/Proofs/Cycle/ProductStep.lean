@@ -28,7 +28,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix) (hb : ∀ i < 9, (b i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*inv.toNat+1) % 2^256 = 0) :
-    GasSteps {s with pc := UInt256.ofNat 7744, stack := ProductMeaning.frame0 inv a b n rest}
+    GasSteps {s with pc := UInt256.ofNat 7774, stack := ProductMeaning.frame0 inv a b n rest}
       (result s inv a b n rest) := by
   have h1 := ProductExecution.gasSteps s inv a b n rest env hm hcap hact
   have hm2 := ProductExecution.normalizer_input s inv a b n rest hm

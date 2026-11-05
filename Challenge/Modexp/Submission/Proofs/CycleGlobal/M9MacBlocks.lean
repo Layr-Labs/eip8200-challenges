@@ -131,8 +131,8 @@ def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3058 exitProgram 
 
 /-- E6, the section entry: instructions 2325..2328, pc 2895..2898 (`Dup 5` = the scratch slot). -/
 def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10823 (rideTopProgramNP 6 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8389 16 10823 (rideTopProgramNP 6 2208)
-    (by change 8389 + 16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8459 16 10823 (rideTopProgramNP 6 2208)
+    (by change 8459 + 16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -140,24 +140,24 @@ def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10823 (rideTopPr
 set_option maxHeartbeats 4000000 in
 /-- The four-limb private copies of blocks 5..7 (instructions 8622.., pc 10841..10940). -/
 def block5c : Block CycleSubmission.Artifact.artifact .Osaka 10841 (rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8405 28 10841 (rideProgram 6 2176)
-    (by change 8405 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8475 28 10841 (rideProgram 6 2176)
+    (by change 8475 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 set_option maxHeartbeats 4000000 in
 def block6c : Block CycleSubmission.Artifact.artifact .Osaka 10873 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8433 28 10873 (rideProgram 5 2144)
-    (by change 8433 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8503 28 10873 (rideProgram 5 2144)
+    (by change 8503 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 set_option maxHeartbeats 4000000 in
 def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10905 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8461 30 10905 (blockProgram 1280 2112)
-    (by change 8461 + 30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8531 30 10905 (blockProgram 1280 2112)
+    (by change 8531 + 30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

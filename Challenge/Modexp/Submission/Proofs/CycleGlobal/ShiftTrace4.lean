@@ -257,90 +257,72 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
 
 
 
-/-- One add-pass iteration with limbs to go. -/
-def gasSteps_addIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat)
-    (hn32 : n ≤ 8) (hj : j + 1 < n) (e : Env s) :
-    Challenge.EvmProof.GasSteps (addInnerState z s mem n bsize esize msize k j)
-      (addInnerState z s mem n bsize esize msize k (j + 1)) :=
-    (soundEnv blk3157a e
-      (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)) n bsize esize msize k j
-        (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
-        hn32 (by omega) (tPtr_toNat n j hn32 (by omega))
-        (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
-        e.act296 e.code e.run)).trans
-    (soundEnv blk3157b e
-      (run_addTail_go s (addStep mem n (j + 1)).memory (addStep mem n (j + 1)).flag
-        (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j))
-        (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1))) n bsize esize msize k
-        (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
-        (ptrWord_step _ _)
-        (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
-        (tPtr_gt_8255 n (j + 1) hn32 hj) e.code e.run))
-
-/-- The last add-pass iteration, falling into the add tail. -/
-def gasSteps_addLastIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) :
-    Challenge.EvmProof.GasSteps (addInnerState z s mem n bsize esize msize k (n - 1))
-      (addTailState z s mem n bsize esize msize k) :=
-  Challenge.EvmProof.GasSteps.cast
-    ((soundEnv blk3157a e
-        (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1))) n bsize esize
-          msize k (n - 1) (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
-          hn32 (by omega) (tPtr_toNat n (n - 1) hn32 (by omega))
-          (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer]) e.act296 e.code e.run)).trans
-      ((soundEnv blk3157b e
-        (run_addTail_last s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
-          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1)))
-          (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
-          (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
-          (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
-          (ptrWord_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32)
-          e.code e.run)).trans
-        (soundEnv blk3157c e
-          (run_addPad s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
-            (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
-            (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
-            e.code e.run))))
-    rfl (by rw [Nat.sub_add_cancel hn]; rfl)
-
 /-- The whole add pass from the round head to the add tail. -/
 def gasSteps_addPass (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hfast : n = 4 ∨ n = 8)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
-      (addTailState z s mem n bsize esize msize k) :=
-  ((soundEnv blk3153 e
-      (run_addEntry z s mem n bsize esize msize k e.act296 htl e.code e.run)).trans
-    (Challenge.EvmProof.GasSteps.iterateBounded
-      (I := fun j => addInnerState z s mem n bsize esize msize k j) (n - 1) (fun j hj =>
-        gasSteps_addIter z s mem n bsize esize msize k j hn32 (by omega) e))).trans
-    (gasSteps_addLastIter z s mem n bsize esize msize k hn hn32 e)
+      (addTailState z s mem n bsize esize msize k) := by
+  have entry := soundEnv blk3153 e
+    (run_addEntry z s mem n bsize esize msize k e.act296 htl e.code e.run)
+  let rest := UInt256.ofNat k :: entrySlots z mem n bsize esize ++ outer n bsize esize msize
+  have hcap : rest.length ≤ 1011 := by simp [rest, entrySlots, outer, Exp.outer]
+  have htarget : pcAddInner < 2^256 := by decide
+  have hdest : Decode.isValidJumpDest s.executionEnv.code pcAddInner = true := by
+    rw [e.code]
+    exact jumpDest5121
+  by_cases h4 : n = 4
+  · subst n
+    have last := repairGroupBlock.steps
+      (s := RepairFour.limbState pcAddInner s mem 4 0 rest) (bindingEnv e) rfl
+      (RepairFour.run_group_last pcAddInner pcAddInner s mem 4 0 rest hn32 (by decide)
+        hcap e.act296 e.code e.run)
+    exact entry.trans (last.cast rfl rfl)
+  · have h8 : n = 8 := hfast.resolve_left h4
+    subst n
+    have go := repairGroupBlock.steps
+      (s := RepairFour.limbState pcAddInner s mem 8 0 rest) (bindingEnv e) rfl
+      (RepairFour.run_group_go pcAddInner pcAddInner s mem 8 0 rest hn32 (by decide)
+        hcap e.act296 e.code e.run htarget hdest)
+    have last := repairGroupBlock.steps
+      (s := RepairFour.limbState pcAddInner s mem 8 4 rest) (bindingEnv e) rfl
+      (RepairFour.run_group_last pcAddInner pcAddInner s mem 8 4 rest hn32 (by decide)
+        hcap e.act296 e.code e.run)
+    exact entry.trans ((go.trans last).cast rfl rfl)
 
 /-- One add round, from the loop head back to the loop head. -/
 def gasSteps_addRound_again (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hfast : n = 4 ∨ n = 8)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hout : addOut mem n = UInt256.ofNat 0) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
       (addLoopState z s (addRoundMem mem n) n bsize esize msize k) :=
-  (gasSteps_addPass z s mem n bsize esize msize k hn hn32 e htl).trans
+  (gasSteps_addPass z s mem n bsize esize msize k hn hn32 e hfast htl).trans
     (soundEnv blk3192 e
       (run_addTail_again z s mem n bsize esize msize k e.act296 hout e.code e.run))
 
 /-- The last add round, ending at `SUB_CHECK`. -/
 def gasSteps_addRound_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hfast : n = 4 ∨ n = 8)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hout : addOut mem n = UInt256.ofNat 1) :
     Challenge.EvmProof.GasSteps (addLoopState z s mem n bsize esize msize k)
-      (subCheckState z s (addRoundMem mem n) n bsize esize msize k) :=
-  (gasSteps_addPass z s mem n bsize esize msize k hn hn32 e htl).trans
-    (soundEnv blk3192 e
-      (run_addTail_done z s mem n bsize esize msize k e.act296 hout e.code e.run))
+      (subCheckState z s (addRoundMem mem n) n bsize esize msize k) := by
+  let rest := UInt256.ofNat k :: entrySlots z mem n bsize esize ++ outer n bsize esize msize
+  have hcap : rest.length ≤ 1011 := by simp [rest, entrySlots, outer, Exp.outer]
+  have hs := RepairFour.run_tail_done pcAddTail pcAddLoop s mem n rest hn32 hcap e.act296 hout e.run
+  have hf := RepairFour.run_finish (pcAddTail + 18) s (addRoundMem mem n) rest hcap
+  have first := repairTailBlock.steps (bindingEnv e) rfl hs
+  have second := repairFinishBlock.steps (bindingEnv e) rfl hf
+  have result := WindowNibbleKernel.runInstructions_append_some _ _ _ _ _ hs hf
+  have finalEq := Option.some.inj (result.symm.trans
+    (run_addTail_done z s mem n bsize esize msize k hn32 e.act296 hout e.code e.run))
+  exact (gasSteps_addPass z s mem n bsize esize msize k hn hn32 e hfast htl).trans
+    ((first.trans second).cast rfl finalEq)
 
 /-- `c ≥ 1` add rounds, the last of which carries out. -/
 def gasSteps_addRounds (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k c : Nat)
-    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hc : 1 ≤ c)
+    (hn : 1 ≤ n) (hn32 : n ≤ 8) (e : Env s) (hfast : n = 4 ∨ n = 8) (hc : 1 ≤ c)
     (htl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n))
     (hrounds : ∀ i, i < c - 1 → addOut (addRounds mem n i) n = UInt256.ofNat 0)
     (hlast : addOut (addRounds mem n (c - 1)) n = UInt256.ofNat 1) :
@@ -353,9 +335,9 @@ def gasSteps_addRounds (z : UInt256) (s : State) (mem : ByteArray) (n bsize esiz
     ((Challenge.EvmProof.GasSteps.iterateBounded
         (I := fun i => addLoopState z s (addRounds mem n i) n bsize esize msize k) (c - 1)
         (fun i hi =>
-          gasSteps_addRound_again z s (addRounds mem n i) n bsize esize msize k hn hn32 e
+          gasSteps_addRound_again z s (addRounds mem n i) n bsize esize msize k hn hn32 e hfast
             (htl' i) (hrounds i hi))).trans
-      (gasSteps_addRound_done z s (addRounds mem n (c - 1)) n bsize esize msize k hn hn32 e
+      (gasSteps_addRound_done z s (addRounds mem n (c - 1)) n bsize esize msize k hn hn32 e hfast
         (htl' (c - 1)) hlast))
     rfl (by
       show subCheckState z s (addRounds mem n (c - 1 + 1)) n bsize esize msize k = _
@@ -645,7 +627,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
             (soundEnv blkUnc e
               (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
       have adds := gasSteps_addRounds z s (stepMid mem n) n bsize esize msize k
-        (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
+        (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hfast hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)
       exact .inl ((start.trans adds).trans tail)
   exact match g3 with

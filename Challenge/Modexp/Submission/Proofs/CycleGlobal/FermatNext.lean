@@ -129,7 +129,7 @@ theorem joinGuard_zero_iff (modulus exponent : UInt256) :
     omega
 
 def jumpTailProgram : List Instr := [.push 2 745, .op .JUMP]
-/-- The landing pad at 4864, directly before the result at 4865. The prime test
+/-- The landing pad at 4963, directly before the result at 4964. The prime test
 jumps here; the join guard already established `exponent = modulus - 1`. -/
 def tailProgram : List Instr :=
   [.op .JUMPDEST]
@@ -141,7 +141,7 @@ def primeValueProgram : List Instr :=
 
 /-- The special-prime test at 10643: BN254 or secp256k1 modulus goes to the Fermat result. -/
 def primeProgram : List Instr :=
-  [.op .JUMPDEST] ++ primeValueProgram ++ [.push 2 4864, .op .JUMPI]
+  [.op .JUMPDEST] ++ primeValueProgram ++ [.push 2 4963, .op .JUMPI]
 
 /-- The merged test word. -/
 def mergeWord (calldata : ByteArray) (modulus exponent : UInt256) : UInt256 :=
@@ -315,11 +315,11 @@ theorem run_gen_load (template : State) (b : UInt256) (rest : List UInt256)
 
 theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 4864 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 4963 = true) :
     runInstructions primeProgram (framed template (UInt256.ofNat 10643) (modulus :: rest)) =
     some (framed template
       (if (FermatProgram.primeValue modulus).toNat = 0
-        then UInt256.ofNat 10719 else UInt256.ofNat 4864)
+        then UInt256.ofNat 10719 else UInt256.ofNat 4963)
       (modulus :: rest)) := by
   have hc0 : rest.length + 1 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -339,12 +339,12 @@ theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
       [primeValueProgram, FermatProgram.primeValue, runInstructions, framed,
         Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
         Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-  have ht : runInstructions [.push 2 4864, .op .JUMPI]
+  have ht : runInstructions [.push 2 4963, .op .JUMPI]
       (framed template (UInt256.ofNat 10715)
         (FermatProgram.primeValue modulus :: modulus :: rest)) =
       some (framed template
         (if (FermatProgram.primeValue modulus).toNat = 0
-          then UInt256.ofNat 10719 else UInt256.ofNat 4864)
+          then UInt256.ofNat 10719 else UInt256.ofNat 4963)
         (modulus :: rest)) := by
     by_cases hp : (FermatProgram.primeValue modulus).toNat = 0 <;>
       simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
@@ -366,8 +366,8 @@ theorem run_jumpTail (template : State) (rest : List UInt256) (hrest : rest.leng
 theorem run_tail (template : State) (modulus exponent : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
     runInstructions tailProgram
-      (framed template (UInt256.ofNat 4864) (modulus :: exponent :: rest)) =
-    some (framed template (UInt256.ofNat 4865) (modulus :: exponent :: rest)) := by
+      (framed template (UInt256.ofNat 4963) (modulus :: exponent :: rest)) =
+    some (framed template (UInt256.ofNat 4964) (modulus :: exponent :: rest)) := by
   have hk0 : rest.length < 1024 := by omega
   have hk1 : rest.length + 1 < 1024 := by omega
   have hk2 : rest.length + 2 < 1024 := by omega
@@ -385,14 +385,14 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   toPrime : WindowTwentyOneBinding.Block artifact fork 57 toPrimeProgram
   prime : WindowTwentyOneBinding.Block artifact fork 10643 primeProgram
   jumpTail : WindowTwentyOneBinding.Block artifact fork 10719 jumpTailProgram
-  tail : WindowTwentyOneBinding.Block artifact fork 4864 tailProgram
-  result : WindowTwentyOneBinding.Block artifact fork 4865 FermatProgram.returnProgram
+  tail : WindowTwentyOneBinding.Block artifact fork 4963 tailProgram
+  result : WindowTwentyOneBinding.Block artifact fork 4964 FermatProgram.returnProgram
   genCheck : WindowTwentyOneBinding.Block artifact fork 101 genCheckProgram
   genLoad : WindowTwentyOneBinding.Block artifact fork 112 genLoadProgram
   routeJump : Decode.isValidJumpDest artifact.code 745 = true
   joinJump : Decode.isValidJumpDest artifact.code 48 = true
   bigJump : Decode.isValidJumpDest artifact.code 219 = true
-  tailJump : Decode.isValidJumpDest artifact.code 4864 = true
+  tailJump : Decode.isValidJumpDest artifact.code 4963 = true
   primeJump : Decode.isValidJumpDest artifact.code 10643 = true
   genJump : Decode.isValidJumpDest artifact.code 101 = true
 

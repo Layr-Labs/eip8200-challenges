@@ -1,78 +1,30 @@
-# Reuse exact memory size in setup and zero-exponent return
+# Four-limb repair groups with a cached pointer decrement
 
-This revision extends submission `47bb2ac9-6808-4808-9d28-fff6c0264cfd`.
-Two bounded MSIZE substitutions save five further gas on the matched public
-run: 359183 becomes359178, with44/44 outputs correct. The runtime remains
-10980 bytes and8520 instructions. Another48 RSA cases all match. The full
-Solution build passed and the protected Comparator accepted this exact image
-at359178 gas with44/44 correct vectors.
-The generic state bounds are proved and discharged from the actual initial state.
+This working revision unrolls four repair limbs per loop test and retains
+negative32 on the repair stack until the carry loop exits. Native tests pass
+all44 public vectors at359178 gas and all48 additional RSA cases. The extra
+cases save1874 gas relative to the MSIZE revision. The image is10980 bytes,
+8590 instructions. The complete Solution build passed with only propext, Classical.choice and
+Quot.sound. The standard protected Comparator accepted the exact image at359178 gas,
+with44/44 correct outputs.
 
 Inherited implementation and provenance follow below.
 
 ---
 
-# Direct setup sentinels with unreachable padding
+# Direct repair-loop decrement with balanced padding
 
-This revision extends submission `ea04b923-8842-48bc-8453-4896d6479738`.
-It directly pushes the setup all-ones and negative-32 words and the R5
-prologue all-ones word. Three NOTs become direct literals; unreachable
-STOPs and positive-width compaction retain 10,980 bytes and 8,520 instructions.
-The matched native score is 359,183 with 44/44 outputs correct: 24 below
-the preceding revision and 75 below the original matched parent. Another
-48 RSA tests all match. The full Solution built all 3,615 jobs with only
-propext, Classical.choice and Quot.sound. Protected Comparator accepted
-this exact revision; the protected score is359183 with44/44 correct vectors.
+This revision extends the verified MSIZE implementation. PUSH1 31; NOT in
+the repair loop becomes PUSH32 (2^256-32); JUMPDEST, saving two gas per
+repaired limb. The public44 score remains359178 with all44 outputs correct;
+none of those vectors enter repair. Another48 RSA cases all match and save
+192 gas across96 repaired limbs. The image stays10980 bytes and8520 instructions.
+The full Solution build passed all3615 jobs with only the permitted three axioms.
+Protected Comparator admission of this exact image is pending.
 
 Inherited implementation and provenance follow below.
 
-# Direct max words with unreachable padding
-
-This revision extends the synced promoted source
-`7ccff08c-cf6b-470e-98dc-6f194fdfdf65`, hosted score 358,884.
-Its matched local total is 359,235; this revision verifies at 359,207.
-
-This revision extends the balanced eight-limb estimate revision. It constructs
-both estimate all-ones words directly, removes the executed padding no-ops,
-and places STOP padding after unconditional jumps. Shortened positive-width
-immediates balance the image. The two computed entries are 2714 and 10726,
-selected by 18738 - 2003*n. The image is 10,980 bytes and 8,520 instructions.
-The public native total is 359,207 gas with all 44 outputs correct, a saving
-of 51 from the original local parent and 28 from the preceding revision.
-The full Lean Solution build passed with the three permitted axioms.
-The standard protected Comparator and Lean kernel accepted this exact revision
-at 359,207 gas with 44/44 correct vectors.
-
-Inherited implementation and provenance follow below.
-
-# Balanced all-ones estimate constant
-
-This revision builds on the local prime-padding revision submitted as
-`921784ea-5f03-45f1-857d-cefef8549f3c`. It replaces the eight-limb estimate's
-PUSH0; NOT with PUSH32 of the all-ones word and JUMPDEST. Six positive-width
-immediates surrender 32 padding bytes so the image stays 10,983 bytes and
-8,520 instructions. The public native total is 359,235 gas, 23 below the
-unchanged original parent and 14 below the prime-padding revision. All 44
-outputs match. Full Solution compilation passed; the standard protected comparator and
-Lean kernel accepted the exact bytes at 359,235 gas, with 44/44 correct. The arithmetic result and input domain are inherited unchanged.
-
-Inherited implementation and provenance follow below.
-
-# Prime padding moved to unreachable space
-
-This revision builds on submission `44d39279-44df-4fd9-bfdc-8909e2e8fdab`.
-It removes the executed padding JUMPDEST after the direct secp256k1 PUSH32,
-and adds STOP padding after the unconditional prime-test miss jump. The
-prime predicate, mathematical result and accepted input domain are unchanged.
-The dual entry stays at 10754; the total remains 10,983 bytes and 8,520
-instructions. The short prime-test slice and its byte PCs are rebound in
-FermatNext, ArtifactWindowPaths and FermatGas. The native public total is
-359,249 gas (44/44 correct), nine below the unchanged parent and three below
-the preceding balanced layout. The full Solution proof built successfully, and the standard Yukon comparator
-and Lean kernel accepted the exact submitted bytes at 359,249 gas with 44/44
-correct vectors.
-
-Inherited implementation and provenance follow below.
+---
 
 # MODEXP: balanced secp256k1 constant construction, −6 gas
 

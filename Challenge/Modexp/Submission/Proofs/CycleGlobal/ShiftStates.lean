@@ -41,12 +41,12 @@ def headPC (n : Nat) : Nat := if n = 4 then 10726 else 2714
 def headWord (n : Nat) : UInt256 := UInt256.ofNat (headPC n)
 def pcMid : Nat := 3058   -- the fall-through after the eight straight blocks
 def midPC (n : Nat) : Nat := if n = 4 then 10941 else 3058
-def pcAddLoop : Nat := 3127
-def pcAddInner : Nat := 3133
-def pcAddTail : Nat := 3170
-def pcAddMid : Nat := 3157
-def pcAddPad : Nat := 3170
-def pcSubCheck : Nat := 3188
+def pcAddLoop : Nat := 3160
+def pcAddInner : Nat := 3166
+def pcAddTail : Nat := 3276
+def pcAddMid : Nat := 3190
+def pcAddPad : Nat := 3276
+def pcSubCheck : Nat := 3295
 def pcCsubCall : Nat := 3085
 def pcUnc : Nat := 3125
 def pcAfterCsub : Nat := 2714
@@ -175,19 +175,21 @@ def midState (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize e
              entrySlots z um n bsize esize ++ outer n bsize esize msize
            memory := (Monpro.l1Step um q NEG n n).memory }
 def addLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
-  slotKState z s mem pcAddLoop k n bsize esize msize
+  {slotKState z s mem pcAddLoop k n bsize esize msize with
+    stack := UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: UInt256.ofNat k ::
+      entrySlots z mem n bsize esize ++ outer n bsize esize msize}
 def addInnerState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k j : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcAddInner
            stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j) ::
-             (addStep mem n j).flag :: UInt256.ofNat k ::
+             (addStep mem n j).flag :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := (addStep mem n j).memory }
 def addTailState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcAddTail
            stack := UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) n) ::
-             (addStep mem n n).flag :: UInt256.ofNat k ::
+             (addStep mem n n).flag :: UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := (addStep mem n n).memory }
 def subCheckState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
@@ -224,7 +226,7 @@ def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
   slotKState z s mem pcShiftDone 0 n bsize esize msize
 def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3986
+  { s with pc := UInt256.ofNat 4092
            stack := entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 theorem negK_literal :

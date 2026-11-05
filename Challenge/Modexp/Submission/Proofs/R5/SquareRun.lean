@@ -75,15 +75,15 @@ def sqProgram : List Instr := CycleSubmission.Prepared.R5Square.newProgram
 private theorem raw_model_eq (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0 : UInt256) (rest : List UInt256)
     (h_n0 : MachineState.readWord s.memory 160 = n0)
     (h_inv : MachineState.readWord s.memory 192 = inv) :
-    CycleSubmission.Prepared.R5Square.oldModel s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt rest = {s with pc := UInt256.ofNat 4727, stack := cnt :: (sqV5_5 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV6_6 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV7_7 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_8 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: n1 :: n2 :: n3 :: n4 :: P :: inv :: (sqV9_12 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: rest} := by
+    CycleSubmission.Prepared.R5Square.oldModel s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt rest = {s with pc := UInt256.ofNat 4826, stack := cnt :: (sqV5_5 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV6_6 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV7_7 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_8 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: n1 :: n2 :: n3 :: n4 :: P :: inv :: (sqV9_12 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: rest} := by
   simp only [CycleSubmission.Prepared.R5Square.oldModel, h_n0, h_inv, fusePair, sqCol0_o0, sqCol0_o1, sqCol1_o0, sqCol1_o1, sqCol2_o0, sqCol2_o1, sqCol3_o0, sqCol3_o1, sqCol4_o0, sqCol4_o4, sqCol5_o0, sqCol5_o5, sqCol6_o0, sqCol6_o6, sqCol7_o0, sqCol7_o7, sqCol8_o0, sqCol8_o8, sqTail_o12, sqV0_0, sqV0_1, sqV1_0, sqV1_1, sqV2_0, sqV2_1, sqV3_0, sqV3_1, sqV4_0, sqV4_4, sqV5_0, sqV5_5, sqV6_0, sqV6_6, sqV7_0, sqV7_7, sqV8_0, sqV8_8, sqV9_12]
 
 theorem sq_run (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
     (h_n0 : MachineState.readWord s.memory 160 = n0)
     (h_inv : MachineState.readWord s.memory 192 = inv) :
-    runInstructions sqProgram {s with pc := UInt256.ofNat 4079, stack := a0 :: a1 :: a2 :: a3 :: a4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cnt :: rest} =
-      some {s with pc := UInt256.ofNat 4727, stack := cnt :: (sqV5_5 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV6_6 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV7_7 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_8 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: n1 :: n2 :: n3 :: n4 :: P :: inv :: (sqV9_12 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: rest} := by
+    runInstructions sqProgram {s with pc := UInt256.ofNat 4185, stack := a0 :: a1 :: a2 :: a3 :: a4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cnt :: rest} =
+      some {s with pc := UInt256.ofNat 4826, stack := cnt :: (sqV5_5 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV6_6 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV7_7 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_8 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: (sqV8_0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: n1 :: n2 :: n3 :: n4 :: P :: inv :: (sqV9_12 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0) :: rest} := by
   exact (CycleSubmission.Prepared.R5Square.new_run s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt rest hcap hact).trans
     (congrArg some ((CycleSubmission.Prepared.R5Square.same_state s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt rest).symm.trans
       (raw_model_eq s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cnt n0 rest h_n0 h_inv)))

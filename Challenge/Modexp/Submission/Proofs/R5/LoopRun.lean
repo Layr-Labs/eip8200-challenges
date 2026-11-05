@@ -7,9 +7,9 @@ set_option maxHeartbeats 16000000
 /-!
 # The r5 square loop (execution)
 
-At `r5_head` (4079) the stack is `[x0..x4, n1..n4, P, inv', c, rest]`. One round runs the
-square block (4079 → 4727) and the loop test (`PUSH2 4079; JUMPI` on the old counter): a zero
-counter leaves to the product at 4731, otherwise the round repeats with `c - 1`. Starting with
+At `r5_head` (4185) the stack is `[x0..x4, n1..n4, P, inv', c, rest]`. One round runs the
+square block (4185 → 4826) and the loop test (`PUSH2 4185; JUMPI` on the old counter): a zero
+counter leaves to the product at 4830, otherwise the round repeats with `c - 1`. Starting with
 `c.toNat = m` the loop runs `m + 1` squares (`iter`).
 -/
 
@@ -53,10 +53,10 @@ theorem dec_toNat (x : D5) (c : UInt256) (hc : c.toNat ≠ 0) :
 end
 
 def head (s : State) (x : D5) (n1 n2 n3 n4 P inv c : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4079, stack := x.d0 :: x.d1 :: x.d2 :: x.d3 :: x.d4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: c :: rest}
+  {s with pc := UInt256.ofNat 4185, stack := x.d0 :: x.d1 :: x.d2 :: x.d3 :: x.d4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: c :: rest}
 
 def leave (s : State) (x : D5) (n1 n2 n3 n4 P inv c : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4731, stack := x.d0 :: x.d1 :: x.d2 :: x.d3 :: x.d4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: c :: rest}
+  {s with pc := UInt256.ofNat 4830, stack := x.d0 :: x.d1 :: x.d2 :: x.d3 :: x.d4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: c :: rest}
 
 section
 variable (s : State) (n1 n2 n3 n4 P inv n0 : UInt256) (rest : List UInt256)
@@ -67,7 +67,7 @@ variable (s : State) (n1 n2 n3 n4 P inv n0 : UInt256) (rest : List UInt256)
 /-- One round: square, then the loop test on the old counter `c`. -/
 noncomputable def round (x : D5) (c : UInt256) :
     GasSteps (head s x n1 n2 n3 n4 P inv c rest)
-      {s with pc := (if c.toNat = 0 then UInt256.ofNat 4731 else UInt256.ofNat 4079), stack := (next n1 n2 n3 n4 P inv n0 x c).d0 :: (next n1 n2 n3 n4 P inv n0 x c).d1 :: (next n1 n2 n3 n4 P inv n0 x c).d2 :: (next n1 n2 n3 n4 P inv n0 x c).d3 :: (next n1 n2 n3 n4 P inv n0 x c).d4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: dec n1 n2 n3 n4 P inv n0 x c :: rest} :=
+      {s with pc := (if c.toNat = 0 then UInt256.ofNat 4830 else UInt256.ofNat 4185), stack := (next n1 n2 n3 n4 P inv n0 x c).d0 :: (next n1 n2 n3 n4 P inv n0 x c).d1 :: (next n1 n2 n3 n4 P inv n0 x c).d2 :: (next n1 n2 n3 n4 P inv n0 x c).d3 :: (next n1 n2 n3 n4 P inv n0 x c).d4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: dec n1 n2 n3 n4 P inv n0 x c :: rest} :=
   (squareBlock.steps (s := head s x n1 n2 n3 n4 P inv c rest) (env.transfer rfl rfl) rfl
     (sq_run s x.d0 x.d1 x.d2 x.d3 x.d4 n1 n2 n3 n4 P inv c n0 rest hcap hact h_n0 h_inv)).trans
   (ctl4712_steps s c _ env (by simp only [List.length_cons]; omega))

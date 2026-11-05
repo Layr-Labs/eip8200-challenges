@@ -248,12 +248,12 @@ def fallbackState (s : State) : State :=
 def memoEntryState (s : State) : State :=
   { s with pc := UInt256.ofNat 699, stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 3489, stack := [] }
+  { s with pc := UInt256.ofNat 3595, stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 3534, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 3640, stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 3541
+    pc := UInt256.ofNat 3647
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -294,14 +294,14 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 4841
+    pc := UInt256.ofNat 4940
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
 def zeroExpFinalState (s : State) (input : ByteArray) : State :=
   { zeroExpStoreState s input with
     stack := []
-    pc := UInt256.ofNat 4844
+    pc := UInt256.ofNat 4943
     halt := .Returned
     hReturn := MachineState.readPadded (zeroExpMemory s input)
       (32 - modulusSize input) (modulusSize input)
@@ -395,9 +395,9 @@ set_option linter.unusedSimpArgs false in
 def zeroExpReturnProgram80 : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .op .MSIZE, .op .SUB, .op .RETURN]
 
-def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4841 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3679 4 4841 zeroExpReturnProgram80
-    (by change 3679 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4940 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 3749 4 4940 zeroExpReturnProgram80
+    (by change 3749 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
