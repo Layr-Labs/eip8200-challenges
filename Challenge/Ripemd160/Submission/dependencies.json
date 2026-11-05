@@ -1,18 +1,28 @@
 [
   {
+    "submissionId": "3b458b01-80a9-45c7-86bc-caa2e1a60bfd",
+    "rationale": "Direct source and proof-tree parent at the current 616801-gas frontier. All compression, table, dispatch and universal correctness infrastructure is retained.",
+    "evidence": "This candidate modifies only the two-byte first-word read plus its local byte/proof bindings, based on the promoted Submission tree at 97f6c711f9cd7a9675c51441dcd704e2c610253b."
+  },
+  {
+    "submissionId": "083515e7-2ccd-462b-8c38-59f0e4ecf57d",
+    "rationale": "Reuses the direct calldata-load optimization and its local proof/equality technique, ported to current program counters and updated table proof.",
+    "evidence": "FirstRead.loadCalldata and run; FirstComplete.load_eq; equality discharged in FirstComplete.gasSteps and ColdFramed32.gasSteps. Original published candidate a5a1910a88192b1e5c91b09c71eccad0fbf3f2cf had a rejected score; this candidate applies its technique to the newer 616801 parent."
+  },
+  {
     "submissionId": "0cb260a1-c264-48ca-8817-bc4705d73aba",
     "rationale": "Current public proof-tree base and benchmark comparison. Its masked overlapping writes informed the joint table-producer/consumer integration.",
     "evidence": "Pinned source 7246c880f7b9d96dbf11b1eb533663ae578a3595. The candidate reuses the proof graph under Challenge/Ripemd160/Submission, with changed artifact and execution bindings."
   },
   {
     "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
-    "rationale": "Our earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
+    "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
     "evidence": "The Local20261028 table/reader contracts, ordinary and padding compressor modules, and control-flow proof graph descend from this submission. The new preparation replaces the selected execution bindings and integrates the selected retained operands and message-table layout."
   },
   {
     "submissionId": "3a5055d3-b39f-4223-b9b8-0977b65ee5ec",
     "rationale": "Executable foundation of the retained local lineage: compact checked-input recognizers and a full specialized padding compressor.",
-    "evidence": "Source ancestor 0f910f3fe47b35ed9226b825d4d184c1aa091ee9, also declared by our prior submission 5b5782e2. The selected candidate retains the recognizer/fallback and padding-compressor architecture."
+    "evidence": "Source ancestor 0f910f3fe47b35ed9226b825d4d184c1aa091ee9, also declared by the parent author's prior submission 5b5782e2. The selected candidate retains the recognizer/fallback and padding-compressor architecture."
   },
   {
     "submissionId": "1ab7033a-a3c3-4770-9d2f-9993f553161f",
