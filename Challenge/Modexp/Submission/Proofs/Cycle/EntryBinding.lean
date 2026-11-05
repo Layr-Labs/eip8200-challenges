@@ -11,28 +11,28 @@ open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.CRTControl
-def entryBlock : Block Artifact.artifact .Osaka 5506 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4201 107 5506 entryProgram
+def entryBlock : Block Artifact.artifact .Osaka 5527 entryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4201 107 5527 entryProgram
     (by change 4201 + 107 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def headBlock : Block Artifact.artifact .Osaka 5694 jumpDestProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4308 1 5694 jumpDestProgram
+def headBlock : Block Artifact.artifact .Osaka 5711 jumpDestProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4308 1 5711 jumpDestProgram
     (by change 4308 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 def entered (s : State) (f : Caller) : State :=
-  {result s f with pc := UInt256.ofNat 5695}
+  {result s f with pc := UInt256.ofNat 5712}
 
 noncomputable def gasSteps (s : State) (f : Caller)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 5506, stack := saved f} (entered s f) := by
+    GasSteps {s with pc := UInt256.ofNat 5527, stack := saved f} (entered s f) := by
   have h := entryBlock.steps
-    (s := {s with pc := UInt256.ofNat 5506, stack := saved f})
+    (s := {s with pc := UInt256.ofNat 5527, stack := saved f})
     (env.transfer rfl rfl) rfl (run s f (by omega) hact)
   have cap : (result s f).stack.length < 1024 := by
     simp only [result, CycleSubmission.SquareMeaning.frame0, saved,

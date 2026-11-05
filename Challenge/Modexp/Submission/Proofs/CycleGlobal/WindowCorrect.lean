@@ -83,7 +83,7 @@ def handledOf (route : WindowRoute.Route)
         exact ⟨Setup.emptyModulusState (initialState CycleSubmission.Artifact.bytecode input 0),
           ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
           Setup.emptyModulusState_isDone _ rfl, Setup.emptyModulusState_result _ input hzero⟩
-      · -- a zero exponent with a one-word modulus returns `1 mod m` from pc 10983
+      · -- a zero exponent with a one-word modulus returns `1 mod m` from pc 10980
         exact ⟨Setup.zeroExpFinalState (initialState CycleSubmission.Artifact.bytecode input 0) input,
           ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
           Setup.zeroExpFinalState_isDone _ _ rfl,

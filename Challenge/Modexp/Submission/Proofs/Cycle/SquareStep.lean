@@ -25,7 +25,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
     (hz : (overflowFlag (squared inv a zeroWords n)).toNat = 0) :
-    GasSteps {s with pc := UInt256.ofNat 5695, stack := SquareMeaning.frame0 inv a zeroWords n rest}
+    GasSteps {s with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
   have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact
   have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest hz

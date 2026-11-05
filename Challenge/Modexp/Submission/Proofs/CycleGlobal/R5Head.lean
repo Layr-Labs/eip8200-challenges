@@ -34,7 +34,7 @@ open Monpro CiosCached StagedOperand
 /-- The sixteen-word frame the shared setup leaves above `rest`. -/
 def frameStack (mem : ByteArray)
     (pbi ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 3728, UInt256.ofNat 480, ent, m32, allOnes,
+  [pbi, UInt256.ofNat 3780, UInt256.ofNat 480, ent, m32, allOnes,
     MachineState.readWord mem 128, m64, m0, tl, m96, inv, UInt256.ofNat 0, aprev, pdst, ret] ++ rest
 
 def frameAt (pc : Nat) (s : State) (mem : ByteArray)
@@ -44,15 +44,15 @@ def frameAt (pc : Nat) (s : State) (mem : ByteArray)
     memory := mem
     stack := frameStack mem pbi ent tl inv m0 m96 m64 m32 aprev pdst ret rest}
 
-def pcH1 : Nat := 3743
+def pcH1 : Nat := 3785
 def pcEntry : Nat := 5334
 
 def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5334, .op .JUMPI]
 
-def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2850 6 3743 h1Program
-    (by change 2850 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3785 h1Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2848 6 3785 h1Program
+    (by change 2848 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -95,7 +95,7 @@ theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     runInstructions CycleSubmission.CallerBlocks.fixedProgram
         (FixedDirectStates.special s mem 4 bsize esize 128 k) =
       some (CycleSubmission.Global.Fast.Cios2Dispatch.commonState s mem
-        (UInt256.ofNat 3728) 2112 512 (UInt256.ofNat (k-1)) (UInt256.ofNat 2519)
+        (UInt256.ofNat 3780) 2112 512 (UInt256.ofNat (k-1)) (UInt256.ofNat 2519)
         (UInt256.ofNat k :: Exp.outer 4 bsize esize 128)) := by
   have hdec : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k-1) := by
     interval_cases k <;> decide
@@ -152,7 +152,7 @@ def gasSteps_head (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     have h := congrArg UInt256.toNat h
     simpa only [Exp.toNat_ofNat_self hmi, Exp.toNat_ofNat_self (by decide : 1 < 2^256)] using h
   have g1 := CycleSubmission.Global.Fast.Cios2Dispatch.gasSteps_commonSetupSq s mem
-    (UInt256.ofNat 3728) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
+    (UInt256.ofNat 3780) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
     (UInt256.ofNat k :: Exp.outer 4 bsize esize 128) (by simp [Exp.outer])
     env.running env.code env.forkEq env.noPrecompile hact (Or.inl rfl) (by omega)
     (by decide) (by omega) hcds hf.s32 hf.ml (by simp [Exp.outer]) (by simp [Exp.outer])

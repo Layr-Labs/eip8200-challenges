@@ -18,13 +18,13 @@ def dec (c : UInt256) : UInt256 := c - UInt256.ofNat 1
 def initial (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 7619, stack := frame a n (n 0) (n 1) (counter s :: rest)}
 def tested (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 7651, stack := UInt256.ofNat 5694 :: counter s :: frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := UInt256.ofNat 7651, stack := UInt256.ofNat 5711 :: counter s :: frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def branched (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := if (counter s).toNat = 0 then UInt256.ofNat 7652 else UInt256.ofNat 5694, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := if (counter s).toNat = 0 then UInt256.ofNat 7652 else UInt256.ofNat 5711, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def looped (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 5694, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := UInt256.ofNat 5711, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def repeated (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 5695, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := UInt256.ofNat 5712, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def completed (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   if (counter s).toNat = 0 then
     {s with pc := UInt256.ofNat 7652, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
@@ -42,13 +42,13 @@ noncomputable def decision (s : State) (a n : Nat → UInt256) (rest : List UInt
     GasSteps (initial s a n rest) (branched s a n rest) := by
   have h1 := LoopBlocks.counterBlock.steps (s := initial s a n rest)
     (env.transfer rfl rfl) rfl (head_run s a n rest hcap hact)
-  have valid : Decode.isValidJumpDest (tested s a n rest).executionEnv.code 5694 = true := by
+  have valid : Decode.isValidJumpDest (tested s a n rest).executionEnv.code 5711 = true := by
     rw [show (tested s a n rest).executionEnv.code = Artifact.bytecode from env.code]
     exact LoopBlocks.validJump6152
   have cap : (tested s a n rest).stack.length < 1024 := by
     simp only [tested, frame, List.length_cons, List.length_append, List.length_nil]
     omega
-  have hr := jumpi_run (tested s a n rest) (UInt256.ofNat 5694) (counter s)
+  have hr := jumpi_run (tested s a n rest) (UInt256.ofNat 5711) (counter s)
     (frame a n (n 0) (n 1) (dec (counter s) :: rest)) rfl cap valid
   have h2 := LoopBlocks.counterJumpBlock.steps (s := tested s a n rest)
     (env.transfer rfl rfl) rfl hr

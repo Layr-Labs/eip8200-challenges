@@ -101,19 +101,50 @@ theorem old_run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n :
   have hbody := runInstructions_append_some _ _ _ _ _ hzero hpointers
   exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 
-def fullEntryProgram : List Instr :=
-  Prepared.SetupPrefix.newProgram ++ oldFullEntryProgram.drop 23
+def newTailProgram : List Instr :=
+  [.op (.Dup ⟨1, by decide⟩),
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
+   .push 2 1856,
+   .op .ADD,
+   .op .MCOPY,
+   .op (.Swap ⟨1, by decide⟩),
+   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   .op .ADD,
+   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨1, by decide⟩),
+   .op .JUMP]
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 35 := rfl
+def fullEntryProgram : List Instr :=
+  Prepared.SetupPrefix.newProgram ++ newTailProgram
+
+theorem fullEntryProgram_length : fullEntryProgram.length = 33 := rfl
+
+private theorem run_tail_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 998) :
+    runInstructions newTailProgram (Prepared.SetupPrefix.newModel s hd pa pb dst ret rest) =
+    runInstructions (oldFullEntryProgram.drop 23) (Prepared.SetupPrefix.oldModel s hd pa pb dst ret rest) := by
+  have capacity (j : Nat) (hj : j ≤ 25) : rest.length + j < 1024 := by omega
+  have hn32 : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 = UInt256.lnot (UInt256.ofNat 31) := by decide
+  have hn32Cast : (115792089237316195423570985008687907853269984665640564039457584007913129639904 : UInt256) = UInt256.lnot (31 : UInt256) := by decide
+  simp [newTailProgram, oldFullEntryProgram, loadProgram,
+    EntryPrefix.shuffleProgram, EntryPrefix.lowProgram, zeroProgram, stageProgram, clearProgram,
+    pointersJumpProgram, Prepared.SetupPrefix.newModel, Prepared.SetupPrefix.oldModel,
+    runInstructions, Challenge.EvmProof.Stepper.runInstr, capacity, Nat.add_assoc, List.exchange, hn32, hn32Cast, State.activeWordsAfterUInt256_2]
 
 theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
     (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions fullEntryProgram {s with pc := UInt256.ofNat 3203, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     runInstructions oldFullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} := by
-  change runInstructions (Prepared.SetupPrefix.newProgram ++ oldFullEntryProgram.drop 23) _ =
+  change runInstructions (Prepared.SetupPrefix.newProgram ++ newTailProgram) _ =
     runInstructions (Prepared.SetupPrefix.oldProgram ++ oldFullEntryProgram.drop 23) _
-  simp only [runInstructions_append, Prepared.SetupPrefix.replacement_run s hd pa pb dst ret rest hcap hact hw]
+  simp only [runInstructions_append, Prepared.SetupPrefix.new_run s hd pa pb dst ret rest hcap hact hw,
+    Prepared.SetupPrefix.old_run s hd pa pb dst ret rest hcap hact, Option.bind_some]
+  exact run_tail_eq s hd pa pb dst ret rest hcap
 
 theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
     (dst ret : UInt256) (rest : List UInt256)

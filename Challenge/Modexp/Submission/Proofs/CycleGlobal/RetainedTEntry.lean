@@ -36,20 +36,20 @@ def entryProgram : List Instr :=
 entry at 3509. -/
 def pushProgram : List Instr := [.push 2 2412, .push 2 2112]
 
-def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3493 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2676 8 3493 entryProgram
-    (by change 2676 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3545 entryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2674 8 3545 entryProgram
+    (by change 2674 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 3503 pushProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2684 2 3503 pushProgram
-    (by change 2684 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 3555 pushProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2682 2 3555 pushProgram
+    (by change 2682 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-theorem jumpDest4486 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3493 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2676 (by rfl)
+theorem jumpDest4486 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3545 = true :=
+  CycleSubmission.Global.Binding.jumpDest 2674 (by rfl)
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=
   UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)
@@ -66,9 +66,9 @@ theorem skipWord_toNat (mem : ByteArray) :
   · rw [if_neg h, if_neg (show ¬ RetainedTNormalizer.Skip mem from h)]
 
 def entryState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3493, stack := ret :: rest, memory := mem }
+  { s with pc := UInt256.ofNat 3545, stack := ret :: rest, memory := mem }
 def pushState (s : State) (mem : ByteArray) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3503, stack := rest, memory := mem }
+  { s with pc := UInt256.ofNat 3555, stack := rest, memory := mem }
 def returnedState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := ret, stack := rest, memory := mem }
 

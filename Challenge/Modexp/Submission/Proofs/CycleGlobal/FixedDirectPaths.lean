@@ -94,7 +94,7 @@ def squareCall : List Located :=
    CycleSubmission.Global.Fast.opAt 1862 .SUB,
    CycleSubmission.Global.Fast.pushAt 1863 2 512,
    CycleSubmission.Global.Fast.pushAt 1864 2 2112,
-   CycleSubmission.Global.Fast.pushAt 1865 2 3728,
+   CycleSubmission.Global.Fast.pushAt 1865 2 3780,
    CycleSubmission.Global.Fast.pushAt 1866 2 3202,
    CycleSubmission.Global.Fast.opAt 1867 .JUMP]
 
