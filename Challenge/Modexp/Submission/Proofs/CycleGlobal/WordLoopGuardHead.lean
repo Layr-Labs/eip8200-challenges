@@ -18,7 +18,7 @@ open Word
 pops that dead slot before the next byte pushes its own fresh zero. -/
 def bitFinishDispatchState (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) : State :=
-  { bitLoopState input outer 8 byte offset acc base with pc := UInt256.ofNat 4008 }
+  { bitLoopState input outer 8 byte offset acc base with pc := UInt256.ofNat 4062 }
 
 /-- The tail of the block drops `base - 1` and rejoins the byte loop. -/
 def gasSteps_bitExit (input : ByteArray) (outer : Nat)

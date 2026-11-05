@@ -43,10 +43,10 @@ def pcMid : Nat := 3058   -- the fall-through after the eight straight blocks
 def midPC (n : Nat) : Nat := if n = 4 then 10941 else 3058
 def pcAddLoop : Nat := 3127
 def pcAddInner : Nat := 3133
-def pcAddTail : Nat := 3170
-def pcAddMid : Nat := 3157
-def pcAddPad : Nat := 3170
-def pcSubCheck : Nat := 3188
+def pcAddTail : Nat := 3225
+def pcAddMid : Nat := 3181
+def pcAddPad : Nat := 3225
+def pcSubCheck : Nat := 3243
 def pcCsubCall : Nat := 3085
 def pcUnc : Nat := 3125
 def pcAfterCsub : Nat := 2714
@@ -224,7 +224,7 @@ def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
   slotKState z s mem pcShiftDone 0 n bsize esize msize
 def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 3986
+  { s with pc := UInt256.ofNat 4040
            stack := entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 theorem negK_literal :

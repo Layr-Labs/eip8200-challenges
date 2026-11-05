@@ -24,7 +24,7 @@ def blk3157a :
   [opAt 2396 .JUMPDEST,
    opAt 2397 (.Dup ⟨0, by decide⟩),
    opAt 2398 .MLOAD,
-   pushAt 2399 2 2112,
+   pushAt 2399 26 2112,
    opAt 2400 (.Dup ⟨2, by decide⟩),
    opAt 2401 .SUB,
    opAt 2402 .MLOAD,
@@ -47,8 +47,8 @@ def blk3157a :
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 2418 1 31,
-   opAt 2419 .NOT,
+  [pushAt 2418 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2419 .JUMPDEST,
    opAt 2420 .ADD,
    pushAt 2421 2 2111,
    opAt 2422 (.Dup ⟨1, by decide⟩),

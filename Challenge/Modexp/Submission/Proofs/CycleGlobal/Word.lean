@@ -134,7 +134,7 @@ def expGuardPath :
    opAt 123 (.Dup ⟨5, by decide⟩),
    opAt 124 (.Dup ⟨1, by decide⟩),
    opAt 125 .EQ,
-   pushAt 126 2 4018,
+   pushAt 126 2 4072,
    opAt 127 .JUMPI]
 
 def expLoadPath :
@@ -164,14 +164,14 @@ def bitHeadPath :
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 3097 .POP,
-   pushAt 3098 2 4008,
+   pushAt 3098 2 4062,
    opAt 3099 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
   match j with
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 4039
-  | _ => 4074
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 4093
+  | _ => 4128
 
 def bitCounter (j : Nat) : Nat := if j < 8 then j else 8
 
@@ -327,15 +327,15 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 213, stack := UInt256.ofNat 4034 :: s.stack }
+  { s with pc := UInt256.ofNat 213, stack := UInt256.ofNat 4088 :: s.stack }
 
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 4034
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 4088
     ([UInt256.ofNat 0, byte, offset, UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
-theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4034 = true :=
+theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4088 = true :=
   CycleSubmission.Global.Binding.jumpDest 3065 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
@@ -480,16 +480,16 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
 
 @[simp] theorem expTailPCs (i : Nat) (hi : 3043 ≤ i) (hii : i ≤ 3050) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4008, 4009, 4010, 4011, 4012, 4014, 4015, 4017] : List Nat)[i - 3043]! := by
+      ([4062, 4063, 4064, 4065, 4066, 4068, 4069, 4071] : List Nat)[i - 3043]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump669 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4018 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4072 = true :=
   CycleSubmission.Global.Binding.jumpDest 3051 (by rfl)
 
 @[simp] theorem jump655 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4008 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4062 = true :=
   CycleSubmission.Global.Binding.jumpDest 3043 (by rfl)
 
 @[simp] theorem jump589 :

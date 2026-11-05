@@ -17,7 +17,7 @@ def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512+32*n-32)
 
 def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Caller where
   pbi := qWord 8
-  hd := UInt256.ofNat 3780
+  hd := UInt256.ofNat 3834
   w3 := UInt256.ofNat 480
   ent := UInt256.ofNat 3347
   m32 := UInt256.ofNat 0
@@ -35,13 +35,13 @@ def frame (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : Ca
 
 def call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 3202
+    pc := UInt256.ofNat 3257
     memory := mem
-    stack := [UInt256.ofNat 3780, UInt256.ofNat 2112, UInt256.ofNat 512,
+    stack := [UInt256.ofNat 3834, UInt256.ofNat 2112, UInt256.ofNat 512,
       UInt256.ofNat (k-1), ret] ++ tail}
 
 def staged (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
-  CiosCached.outState s (CallerMemory.memory mem) 512 8 0 (UInt256.ofNat 3780)
+  CiosCached.outState s (CallerMemory.memory mem) 512 8 0 (UInt256.ofNat 3834)
     (UInt256.ofNat 3347) (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0)
     ([UInt256.ofNat 0, UInt256.ofNat 0,
@@ -57,7 +57,7 @@ def stateAt (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List
 
 theorem entry_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entryProgram (staged s mem k ret tail) = some (stateAt s mem k ret tail 3785) := by
+    runInstructions entryProgram (staged s mem k ret tail) = some (stateAt s mem k ret tail 3839) := by
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
   have hactM := Csub.activeWords_fix s 192 32 (by decide) (by decide) hact
@@ -71,12 +71,12 @@ theorem entry_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail 
     CallerMemory.readWord mem 128 (Or.inl (by decide)), CiosCached.allOnes]
 
 def tested (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
-  {stateAt s mem k ret tail 3793 with
-    stack := UInt256.ofNat 5334 :: UInt256.ofNat 0 :: saved (frame mem k ret tail)}
+  {stateAt s mem k ret tail 3847 with
+    stack := UInt256.ofNat 5374 :: UInt256.ofNat 0 :: saved (frame mem k ret tail)}
 
 theorem test_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (hcap : tail.length ≤ 943) :
-    runInstructions testProgram (stateAt s mem k ret tail 3785) = some (tested s mem k ret tail) := by
+    runInstructions testProgram (stateAt s mem k ret tail 3839) = some (tested s mem k ret tail) := by
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
   have h18 : tail.length + 18 < 1024 := by omega
@@ -93,12 +93,12 @@ def guardWord (mem : ByteArray) : UInt256 :=
     (UInt256.ofNat 146)
 
 def guarded (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
-  {stateAt s mem k ret tail 3805 with
-    stack := UInt256.ofNat 5527 :: guardWord mem :: saved (frame mem k ret tail)}
+  {stateAt s mem k ret tail 3859 with
+    stack := UInt256.ofNat 5562 :: guardWord mem :: saved (frame mem k ret tail)}
 
 theorem guard_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions guardProgram (stateAt s mem k ret tail 3794) = some (guarded s mem k ret tail) := by
+    runInstructions guardProgram (stateAt s mem k ret tail 3848) = some (guarded s mem k ret tail) := by
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
   have h18 : tail.length + 18 < 1024 := by omega
@@ -111,7 +111,7 @@ theorem guard_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail 
 theorem bailJump_run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (hcap : tail.length ≤ 943)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 219 = true) :
-    runInstructions bailJumpProgram (stateAt s mem k ret tail 3806) = some (stateAt s mem k ret tail 219) := by
+    runInstructions bailJumpProgram (stateAt s mem k ret tail 3860) = some (stateAt s mem k ret tail 219) := by
   have h16 : tail.length + 16 < 1024 := by omega
   have h17 : tail.length + 17 < 1024 := by omega
   simp [bailJumpProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
@@ -132,52 +132,52 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (env.transfer rfl rfl) rfl (jumpDest_run _ (by
       simp only [call, List.length_append, List.length_cons, List.length_nil]; omega))
   have hsetup := setupBlock.steps
-    (s := { CiosCached.setupState s mem (UInt256.ofNat 3780) 2112 512 (UInt256.ofNat (k-1)) ret tail with pc := UInt256.ofNat 3203 })
+    (s := { CiosCached.setupState s mem (UInt256.ofNat 3834) 2112 512 (UInt256.ofNat (k-1)) ret tail with pc := UInt256.ofNat 3258 })
     (env.transfer rfl rfl) rfl
-    (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3780) 2112 512 8
+    (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3834) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)
       (by decide) (by decide) (by decide) hcds hs32 _hw
       (by rw [env.code]; exact valid3728))
   exact hcommon.trans hsetup
 
-/-- From the staged state to the guard's conditional jump at 3805. -/
+/-- From the staged state to the guard's conditional jump at 3859. -/
 noncomputable opaque toGuard (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat) :
     GasSteps (staged s mem k ret tail) (guarded s mem k ret tail) := by
   have he2 := entryBlock.steps (s := staged s mem k ret tail)
     (env.transfer rfl rfl) rfl (entry_run s mem k ret tail hcap hact)
-  have ht := testBlock.steps (s := stateAt s mem k ret tail 3785)
+  have ht := testBlock.steps (s := stateAt s mem k ret tail 3839)
     (env.transfer rfl rfl) rfl (test_run s mem k ret tail hcap)
   have hc : (tested s mem k ret tail).stack.length < 1024 := by
     simp only [tested, stateAt, saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  have hr := jumpi_run (tested s mem k ret tail) (UInt256.ofNat 5334)
+  have hr := jumpi_run (tested s mem k ret tail) (UInt256.ofNat 5374)
     (UInt256.ofNat 0) (saved (frame mem k ret tail)) rfl hc
     (by rw [show (tested s mem k ret tail).executionEnv.code = Artifact.bytecode from env.code]; exact valid5334)
   have hj := branchBlock.steps (s := tested s mem k ret tail) (env.transfer rfl rfl) rfl hr
-  have chosen : conditionalModel (tested s mem k ret tail) = stateAt s mem k ret tail 3794 := by
+  have chosen : conditionalModel (tested s mem k ret tail) = stateAt s mem k ret tail 3848 := by
     simp only [conditionalModel, tested, stateAt, List.drop_succ_cons, List.drop_zero, List.headD_cons]
     simp
     rfl
   rw [chosen] at hj
-  have hg := guardBlock.steps (s := stateAt s mem k ret tail 3794)
+  have hg := guardBlock.steps (s := stateAt s mem k ret tail 3848)
     (env.transfer rfl rfl) rfl (guard_run s mem k ret tail hcap hact)
   exact ((he2.trans ht).trans hj).trans hg
 
-/-- The guard holds: the call reaches the cycle entry at 5527. -/
+/-- The guard holds: the call reaches the cycle entry at 5562. -/
 noncomputable opaque suffixTrace (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hg : (guardWord mem).toNat ≠ 0) :
-    GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5527) := by
+    GasSteps (staged s mem k ret tail) (stateAt s mem k ret tail 5562) := by
   have h1 := toGuard s mem k ret tail env hcap hact
   have hc : (guarded s mem k ret tail).stack.length < 1024 := by
     simp only [guarded, stateAt, saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  have hr := jumpi_run (guarded s mem k ret tail) (UInt256.ofNat 5527)
+  have hr := jumpi_run (guarded s mem k ret tail) (UInt256.ofNat 5562)
     (guardWord mem) (saved (frame mem k ret tail)) rfl hc
     (by rw [show (guarded s mem k ret tail).executionEnv.code = Artifact.bytecode from env.code]; exact valid5964)
   have hj := guardJumpBlock.steps (s := guarded s mem k ret tail) (env.transfer rfl rfl) rfl hr
-  have chosen : conditionalModel (guarded s mem k ret tail) = stateAt s mem k ret tail 5527 := by
+  have chosen : conditionalModel (guarded s mem k ret tail) = stateAt s mem k ret tail 5562 := by
     simp only [conditionalModel, guarded, stateAt, List.drop_succ_cons, List.drop_zero, List.headD_cons, if_neg hg]
   rw [chosen] at hj
   exact h1.trans hj
@@ -191,16 +191,16 @@ noncomputable opaque bailTrace (s : State) (mem : ByteArray) (k : Nat) (ret : UI
   have h1 := toGuard s mem k ret tail env hcap hact
   have hc : (guarded s mem k ret tail).stack.length < 1024 := by
     simp only [guarded, stateAt, saved, frame, List.length_cons, List.length_append, List.length_nil]; omega
-  have hr := jumpi_run (guarded s mem k ret tail) (UInt256.ofNat 5527)
+  have hr := jumpi_run (guarded s mem k ret tail) (UInt256.ofNat 5562)
     (guardWord mem) (saved (frame mem k ret tail)) rfl hc
     (by rw [show (guarded s mem k ret tail).executionEnv.code = Artifact.bytecode from env.code]; exact valid5964)
   have hj := guardJumpBlock.steps (s := guarded s mem k ret tail) (env.transfer rfl rfl) rfl hr
-  have chosen : conditionalModel (guarded s mem k ret tail) = stateAt s mem k ret tail 3806 := by
+  have chosen : conditionalModel (guarded s mem k ret tail) = stateAt s mem k ret tail 3860 := by
     simp only [conditionalModel, guarded, stateAt, List.drop_succ_cons, List.drop_zero, List.headD_cons, hg]
     simp
     rfl
   rw [chosen] at hj
-  have hx := bailJumpBlock.steps (s := stateAt s mem k ret tail 3806)
+  have hx := bailJumpBlock.steps (s := stateAt s mem k ret tail 3860)
     (env.transfer rfl rfl) rfl (bailJump_run s mem k ret tail hcap
       (by rw [env.code]; exact valid219))
   exact (h1.trans hj).trans hx
@@ -214,7 +214,7 @@ noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (t
     (hw : tail[1]? = some (UInt256.ofNat 256))
     (hn : tail[2]? = some (UInt256.ofNat 8))
     (hg : (guardWord mem).toNat ≠ 0) :
-    GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5527) :=
+    GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5562) :=
   (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw hn).trans
     (suffixTrace s mem k ret tail env hcap hact hg)
 

@@ -31,9 +31,9 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   inv : UInt256
   a : Nat → UInt256
   n : Nat → UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 5527, stack := saved f} state
+  trace : GasSteps {s with pc := UInt256.ofNat 5562, stack := saved f} state
   frame : state.stack = SquareMeaning.frame0 inv a SquareStep.zeroWords n (f.counter :: saved f)
-  pc : state.pc = UInt256.ofNat 5712
+  pc : state.pc = UInt256.ofNat 5747
   memory : SquareMeaning.Memory0 state.memory inv a SquareStep.zeroWords n
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt

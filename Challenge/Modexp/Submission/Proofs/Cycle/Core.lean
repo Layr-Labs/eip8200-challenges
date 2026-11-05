@@ -22,7 +22,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938) :
-    Finish.Outcome {s with pc := UInt256.ofNat 5527, stack := saved f}
+    Finish.Outcome {s with pc := UInt256.ofNat 5562, stack := saved f}
       (Precompile.natToBytes (B*x^(2^k)%N) 256) := by
   have cap : (saved f).length ≤ 959 := by
     simp only [saved, List.length_cons, List.length_append, List.length_nil]
@@ -64,7 +64,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     SquareLoop.run start inv a n (saved f) k N x hk hk16 envStart memory counter cap actStart
       aBound nBound n0 nValue inverse hN hNR hodd hN4 small form
   have counterStart : CounterControl.counter start = f.counter := counter.trans hcounter.symm
-  have startReset : {start with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (CounterControl.counter start :: saved f)} = start :=
+  have startReset : {start with pc := UInt256.ofNat 5747, stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (CounterControl.counter start :: saved f)} = start :=
     SquareExecution.reset_self _ _ _ pc (by rw [counterStart]; exact frame)
   rw [startReset] at rounds
   have baseLast : FastRepresents last.memory 256 8 B := by
@@ -109,7 +109,7 @@ theorem correct_from_entry (s : State) (f : Caller) (k N A B x : Nat)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938)
     (hstack : s.callStack = []) :
     ∃ gas0, ∀ gas, gas0 ≤ gas →
-      Eval (withGas {s with pc := UInt256.ofNat 5527, stack := saved f} gas)
+      Eval (withGas {s with pc := UInt256.ofNat 5562, stack := saved f} gas)
         (.returned (Precompile.natToBytes (B*x^(2^k)%N) 256)) :=
   (run s f k N A B x hk hk16 env hcap hact hcounter hn ha hb hinv hN hodd hB hform hAtop).eventually hstack
 

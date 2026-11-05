@@ -1046,71 +1046,71 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   all_goals (first | rfl | decide)
 
 @[simp] private theorem pcFact4392 :
-    CycleSubmission.Artifact.artifact.instructionPC 3023 = 3986 := by
+    CycleSubmission.Artifact.artifact.instructionPC 3023 = 4040 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- Followup-PC facts for the shift-done, cleanup and stub blocks. -/
-@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2447 = 3203 := by
+@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2447 = 3258 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3024 = 3987 := by
+@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3024 = 4041 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3025 = 3988 := by
+@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3025 = 4042 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3026 = 3989 := by
+@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3026 = 4043 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3990 := by
+@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 4044 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3991 := by
+@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 4045 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3029 = 3992 := by
+@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3029 = 4046 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3030 = 3993 := by
+@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3030 = 4047 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3031 = 3994 := by
+@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3031 = 4048 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3034 = 3997 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  rfl
-
-@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 3996 := by
+@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3034 = 4051 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 3995 := by
+@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 4050 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3035 = 3998 := by
+
+@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 4049 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3036 = 3999 := by
+@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3035 = 4052 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3037 = 4000 := by
+@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3036 = 4053 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3038 = 4001 := by
+@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3037 = 4054 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3039 = 4002 := by
+@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3038 = 4055 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3040 = 4003 := by
+@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3039 = 4056 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3041 = 4006 := by
+@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3040 = 4057 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3042 = 4007 := by
+@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3041 = 4060 := by
+  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rfl
+@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3042 = 4061 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

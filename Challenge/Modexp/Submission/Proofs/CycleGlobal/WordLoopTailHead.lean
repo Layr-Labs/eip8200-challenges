@@ -32,7 +32,7 @@ def bitFinishTailFinishPath :
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
   { bitLoopState input outer 8 0 0 acc base with
-    pc := UInt256.ofNat 4012
+    pc := UInt256.ofNat 4066
     stack := [UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
@@ -41,7 +41,7 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
 
 @[simp] private theorem exitPCs (i : Nat) (hi : 3043 ≤ i) (hii : i ≤ 3064) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4008, 4009, 4010, 4011, 4012, 4014, 4015, 4017, 4018, 4019, 4020, 4021, 4022, 4024, 4025, 4027, 4028, 4029, 4030, 4031, 4032, 4033] : List Nat)[i - 3043]! := by
+      ([4062, 4063, 4064, 4065, 4066, 4068, 4069, 4071, 4072, 4073, 4074, 4075, 4076, 4078, 4079, 4081, 4082, 4083, 4084, 4085, 4086, 4087] : List Nat)[i - 3043]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -51,10 +51,10 @@ theorem run_bitFinishTailHead (input : ByteArray) (outer : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bitFinishTailHeadPath
       (bitFinishDispatchState input outer byte offset acc base) =
         some (bitFinishTailMidState input outer acc base) := by
-  have h656 : (UInt256.ofNat 4008).succ = UInt256.ofNat 4009 := by decide
-  have h657 : (UInt256.ofNat 4009).succ = UInt256.ofNat 4010 := by decide
-  have h658 : (UInt256.ofNat 4010).succ = UInt256.ofNat 4011 := by decide
-  have h659 : (UInt256.ofNat 4011).succ = UInt256.ofNat 4012 := by decide
+  have h656 : (UInt256.ofNat 4062).succ = UInt256.ofNat 4063 := by decide
+  have h657 : (UInt256.ofNat 4063).succ = UInt256.ofNat 4064 := by decide
+  have h658 : (UInt256.ofNat 4064).succ = UInt256.ofNat 4065 := by decide
+  have h659 : (UInt256.ofNat 4065).succ = UInt256.ofNat 4066 := by decide
   simp (config := { maxSteps := 100000 })
     [bitFinishTailHeadPath, Word.opAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,

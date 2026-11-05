@@ -20,7 +20,7 @@ attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
 
 @[simp] private theorem exitPCs (i : Nat) (hi : 3043 ≤ i) (hii : i ≤ 3064) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4008, 4009, 4010, 4011, 4012, 4014, 4015, 4017, 4018, 4019, 4020, 4021, 4022, 4024, 4025, 4027, 4028, 4029, 4030, 4031, 4032, 4033] : List Nat)[i - 3043]! := by
+      ([4062, 4063, 4064, 4065, 4066, 4068, 4069, 4071, 4072, 4073, 4074, 4075, 4076, 4078, 4079, 4081, 4082, 4083, 4084, 4085, 4086, 4087] : List Nat)[i - 3043]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

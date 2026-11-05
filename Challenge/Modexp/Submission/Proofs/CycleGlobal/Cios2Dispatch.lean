@@ -38,11 +38,11 @@ abbrev commonGuard := CycleSubmission.CallerBlocks.commonBlock
 /-- Current setup PC; the inherited arithmetic setup frame is otherwise unchanged. -/
 def relocatedSetupState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { CiosCached.setupState s mem hd pa pb pdst ret rest with pc := UInt256.ofNat 3203 }
+  { CiosCached.setupState s mem hd pa pb pdst ret rest with pc := UInt256.ofNat 3258 }
 
 def commonState (s : State) (mem : ByteArray) (hd : UInt256) (pa pb : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3202
+  { s with pc := UInt256.ofNat 3257
            stack := [hd, UInt256.ofNat pa, UInt256.ofNat pb, pdst, ret] ++ rest
            memory := mem }
 
@@ -67,8 +67,8 @@ set_option linter.unusedSimpArgs false in
 
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
-def setup : Block CycleSubmission.Artifact.artifact .Osaka 3203 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 33 3203 CycleSubmission.DeadSetup.fullEntryProgram
+def setup : Block CycleSubmission.Artifact.artifact .Osaka 3258 CycleSubmission.DeadSetup.fullEntryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2447 33 3258 CycleSubmission.DeadSetup.fullEntryProgram
     (by change 2447 + 33 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

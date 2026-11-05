@@ -35,7 +35,7 @@ def blk2874 :
    pushAt 1876 2 2112,
    opAt 1877 .CALLDATACOPY,
    pushAt 1878 2 2412,
-   pushAt 1879 2 3545,
+   pushAt 1879 2 3599,
    opAt 1880 .JUMP]
 
 
@@ -479,7 +479,7 @@ def blk3157 :
   [opAt 2396 .JUMPDEST,
    opAt 2397 (.Dup ⟨0, by decide⟩),
    opAt 2398 .MLOAD,
-   pushAt 2399 2 2112,
+   pushAt 2399 26 2112,
    opAt 2400 (.Dup ⟨2, by decide⟩),
    opAt 2401 .SUB,
    opAt 2402 .MLOAD,
@@ -498,8 +498,8 @@ def blk3157 :
    opAt 2415 (.Swap ⟨1, by decide⟩),
    opAt 2416 (.Dup ⟨1, by decide⟩),
    opAt 2417 .MSTORE,
-   pushAt 2418 1 31,
-   opAt 2419 .NOT,
+   pushAt 2418 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
+   opAt 2419 .JUMPDEST,
    opAt 2420 .ADD,
    pushAt 2421 2 2111,
    opAt 2422 (.Dup ⟨1, by decide⟩),
@@ -641,7 +641,7 @@ theorem jumpDest5366 :
   CycleSubmission.Global.Binding.jumpDest 2368 (by rfl)
 
 theorem jumpDest5444 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3986 = true :=
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4040 = true :=
   CycleSubmission.Global.Binding.jumpDest 3023 (by rfl)
 
 /-- `e3go` (pc 2471): the dispatcher's E3 hit block, where the cleanup tail lands after the
@@ -694,7 +694,7 @@ def blk3346 :
    pushAt 2370 2 1760,
    opAt 2371 .MLOAD,
    opAt 2372 .ISZERO,
-   pushAt 2373 2 3986,
+   pushAt 2373 2 4040,
    opAt 2374 .JUMPI]
 
 /-- The cleanup tail (pcs 3866-3887): sixteen `POP`s drop all riding slots but the last,

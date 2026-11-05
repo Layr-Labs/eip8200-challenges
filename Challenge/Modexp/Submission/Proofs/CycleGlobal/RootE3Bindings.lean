@@ -147,7 +147,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : C
     GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 0) s mem n bsize esize msize)
       (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
         (n / 4)) := by
-  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 3986 = true := by
+  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 4040 = true := by
     rw [e.code]; exact CycleSubmission.Global.Fast.jumpDest5444
   have hd2811 : Decode.isValidJumpDest s.executionEnv.code
       (CycleSubmission.Global.Fast.Shift.headPC n) = true := by

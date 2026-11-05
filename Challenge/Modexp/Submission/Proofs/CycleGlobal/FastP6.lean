@@ -31,7 +31,7 @@ empty stack. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2665 .JUMPDEST,
-   pushAt 2666 2 3489,
+   pushAt 2666 2 3543,
    opAt 2667 .JUMPI]
 
 /-- The same test for `msize = 0`: the `JUMPI` falls through to `PUSH0 PUSH0 RETURN`
@@ -39,7 +39,7 @@ def blk1341 :
 def blkEmptyModulus :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2665 .JUMPDEST,
-   pushAt 2666 2 3489,
+   pushAt 2666 2 3543,
    opAt 2667 .JUMPI,
    pushAt 2668 0 0,
    pushAt 2669 0 0,
@@ -96,7 +96,7 @@ def blkZeroExpHit :
    pushAt 2646 2 698,
    opAt 2647 .JUMPI,
    pushAt 2648 1 64,
-   pushAt 2649 2 4819,
+   pushAt 2649 2 4866,
    opAt 2650 .JUMP,
    opAt 3662 .JUMPDEST,
    opAt 3663 .CALLDATALOAD,
@@ -127,28 +127,28 @@ def blkZeroExpReturn :
 
 
 
-theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3489 = true :=
+theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3543 = true :=
   CycleSubmission.Global.Binding.jumpDest 2637 (by rfl)
 
 @[simp] theorem packedEmptyPCs (i : Nat) (hi : 2665 ≤ i) (hii : i ≤ 2670) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3534, 3535, 3538, 3539, 3540, 3541] : List Nat)[i - 2665]! := by
+      ([3588, 3589, 3592, 3593, 3594, 3595] : List Nat)[i - 2665]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem packedHeadPCs (i : Nat) (hi : 2637 ≤ i) (hii : i ≤ 2650) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3489, 3490, 3492, 3493, 3496, 3497, 3499, 3500, 3502, 3503, 3506, 3507, 3509, 3512] : List Nat)[i - 2637]! := by
+      ([3543, 3544, 3546, 3547, 3550, 3551, 3553, 3554, 3556, 3557, 3560, 3561, 3563, 3566] : List Nat)[i - 2637]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem packedTailPCs (i : Nat) (hi : 3662 ≤ i) (hii : i ≤ 3682) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4819, 4820, 4821, 4822, 4823, 4825, 4826, 4827, 4828, 4830, 4831, 4834, 4835, 4836, 4838, 4839, 4840, 4841, 4842, 4843, 4844] : List Nat)[i - 3662]! := by
+      ([4866, 4867, 4868, 4869, 4870, 4872, 4873, 4874, 4875, 4877, 4878, 4881, 4882, 4883, 4885, 4886, 4887, 4888, 4889, 4890, 4891] : List Nat)[i - 3662]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-theorem jumpDestZeroExpTail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4819 = true :=
+theorem jumpDestZeroExpTail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4866 = true :=
   CycleSubmission.Global.Binding.jumpDest 3662 (by rfl)
 
 end CycleSubmission.Global.Fast
