@@ -155,17 +155,17 @@ def bitJumpPath :
 /-- The head of the unrolled block derives `base - 1` for the eight copies. -/
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3068 .JUMPDEST,
-   pushAt 3069 1 1,
-   opAt 3070 (.Dup ⟨6, by decide⟩),
-   opAt 3071 .SUB]
+  [opAt 3067 .JUMPDEST,
+   pushAt 3068 1 1,
+   opAt 3069 (.Dup ⟨6, by decide⟩),
+   opAt 3070 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3100 .POP,
-   pushAt 3101 2 3966,
-   opAt 3102 .JUMP]
+  [opAt 3099 .POP,
+   pushAt 3100 2 3966,
+   opAt 3101 .JUMP]
 
 /-- Byte offset of the copy of the unrolled body that handles exponent bit `j`. -/
 def bitPC (j : Nat) : Nat :=
@@ -336,7 +336,7 @@ def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
       UInt256.ofNat (modulusValue input)] ++ bitTail input)
 
 theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3992 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3068 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3067 (by rfl)
 
 /-- The loop head jumps into the unrolled block. -/
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
@@ -478,19 +478,19 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem expTailPCs (i : Nat) (hi : 3046 ≤ i) (hii : i ≤ 3053) :
+@[simp] theorem expTailPCs (i : Nat) (hi : 3045 ≤ i) (hii : i ≤ 3052) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3966, 3967, 3968, 3969, 3970, 3972, 3973, 3975] : List Nat)[i - 3046]! := by
+      ([3966, 3967, 3968, 3969, 3970, 3972, 3973, 3975] : List Nat)[i - 3045]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump669 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3976 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3054 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3053 (by rfl)
 
 @[simp] theorem jump655 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3966 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3046 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3045 (by rfl)
 
 @[simp] theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 194 = true :=

@@ -128,11 +128,11 @@ theorem jumpDest3412 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2317 = true :=
   CycleSubmission.Global.Binding.jumpDest 1826 (by rfl)
 theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3482 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2668 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2667 (by rfl)
 theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 698 = true :=
   CycleSubmission.Global.Binding.jumpDest 484 (by rfl)
 theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3717 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2841 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2840 (by rfl)
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3706 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2834 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2833 (by rfl)
 end CycleSubmission.Global.Fast

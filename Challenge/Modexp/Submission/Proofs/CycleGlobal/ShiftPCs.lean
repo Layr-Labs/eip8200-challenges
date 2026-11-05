@@ -229,59 +229,59 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pcSaturate2993 : IPC 2291 = 2973 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2883 : IPC 2630 = 3423 := by pc_by_len
+@[simp] theorem earlyExtraPC2883 : IPC 2629 = 3423 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2884 : IPC 2631 = 3424 := by pc_by_len
+@[simp] theorem earlyExtraPC2884 : IPC 2630 = 3424 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2885 : IPC 2632 = 3425 := by pc_by_len
+@[simp] theorem earlyExtraPC2885 : IPC 2631 = 3425 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2886 : IPC 2633 = 3426 := by pc_by_len
+@[simp] theorem earlyExtraPC2886 : IPC 2632 = 3426 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2888 : IPC 2634 = 3427 := by pc_by_len
+@[simp] theorem earlyExtraPC2888 : IPC 2633 = 3427 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2889 : IPC 2635 = 3428 := by pc_by_len
+@[simp] theorem earlyExtraPC2889 : IPC 2634 = 3428 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2890 : IPC 2636 = 3429 := by pc_by_len
+@[simp] theorem earlyExtraPC2890 : IPC 2635 = 3429 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2891 : IPC 2637 = 3432 := by pc_by_len
+@[simp] theorem earlyExtraPC2891 : IPC 2636 = 3432 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2892 : IPC 2638 = 3433 := by pc_by_len
+@[simp] theorem earlyExtraPC2892 : IPC 2637 = 3433 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2893 : IPC 2638 = 3433 := by pc_by_len
+@[simp] theorem earlyExtraPC2893 : IPC 2637 = 3433 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2894 : IPC 2639 = 3436 := by pc_by_len
+@[simp] theorem earlyExtraPC2894 : IPC 2638 = 3436 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2895 : IPC 2640 = 3437 := by pc_by_len
+@[simp] theorem earlyExtraPC2895 : IPC 2639 = 3437 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2896 : IPC 2652 = 3457 := by pc_by_len
+@[simp] theorem earlyExtraPC2896 : IPC 2651 = 3457 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2930 : IPC 2652 = 3457 := by pc_by_len
+@[simp] theorem earlyExtraPC2930 : IPC 2651 = 3457 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2931 : IPC 2652 = 3457 := by pc_by_len
+@[simp] theorem earlyExtraPC2931 : IPC 2651 = 3457 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2932 : IPC 2653 = 3460 := by pc_by_len
+@[simp] theorem earlyExtraPC2932 : IPC 2652 = 3460 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2933 : IPC 2654 = 3461 := by pc_by_len
+@[simp] theorem earlyExtraPC2933 : IPC 2653 = 3461 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2934 : IPC 2655 = 3462 := by pc_by_len
+@[simp] theorem earlyExtraPC2934 : IPC 2654 = 3462 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2935 : IPC 2656 = 3463 := by pc_by_len
+@[simp] theorem earlyExtraPC2935 : IPC 2655 = 3463 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2936 : IPC 2657 = 3466 := by pc_by_len
+@[simp] theorem earlyExtraPC2936 : IPC 2656 = 3466 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2937 : IPC 2658 = 3467 := by pc_by_len
+@[simp] theorem earlyExtraPC2937 : IPC 2657 = 3467 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2938 : IPC 2659 = 3469 := by pc_by_len
+@[simp] theorem earlyExtraPC2938 : IPC 2658 = 3469 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2939 : IPC 2660 = 3470 := by pc_by_len
+@[simp] theorem earlyExtraPC2939 : IPC 2659 = 3470 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2940 : IPC 2661 = 3471 := by pc_by_len
+@[simp] theorem earlyExtraPC2940 : IPC 2660 = 3471 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2941 : IPC 2662 = 3472 := by pc_by_len
+@[simp] theorem earlyExtraPC2941 : IPC 2661 = 3472 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2942 : IPC 2663 = 3473 := by pc_by_len
+@[simp] theorem earlyExtraPC2942 : IPC 2662 = 3473 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2943 : IPC 2664 = 3476 := by pc_by_len
+@[simp] theorem earlyExtraPC2943 : IPC 2663 = 3476 := by pc_by_len
 
 
 @[simp] theorem pcC3009 : IPC 2347 = 3041 := by pc_by_len
@@ -1244,374 +1244,374 @@ loop head (8548 .. 8610). -/
 
 @[simp] theorem pcDual2465 : IPC 2445 = 3180 := by pc_by_len
 
-@[simp] theorem pcDual8548 : IPC 8336 = 10752 := by pc_by_len
+@[simp] theorem pcDual8548 : IPC 8335 = 10752 := by pc_by_len
 
-@[simp] theorem pcDual8549 : IPC 8337 = 10753 := by pc_by_len
+@[simp] theorem pcDual8549 : IPC 8336 = 10753 := by pc_by_len
 
-@[simp] theorem pcDual8550 : IPC 8338 = 10754 := by pc_by_len
+@[simp] theorem pcDual8550 : IPC 8337 = 10754 := by pc_by_len
 
-@[simp] theorem pcDual8551 : IPC 8339 = 10755 := by pc_by_len
+@[simp] theorem pcDual8551 : IPC 8338 = 10755 := by pc_by_len
 
-@[simp] theorem pcDual8552 : IPC 8340 = 10756 := by pc_by_len
+@[simp] theorem pcDual8552 : IPC 8339 = 10756 := by pc_by_len
 
-@[simp] theorem pcDual8553 : IPC 8341 = 10759 := by pc_by_len
+@[simp] theorem pcDual8553 : IPC 8340 = 10759 := by pc_by_len
 
-@[simp] theorem pcDual8554 : IPC 8342 = 10762 := by pc_by_len
+@[simp] theorem pcDual8554 : IPC 8341 = 10762 := by pc_by_len
 
-@[simp] theorem pcDual8555 : IPC 8343 = 10763 := by pc_by_len
+@[simp] theorem pcDual8555 : IPC 8342 = 10763 := by pc_by_len
 
-@[simp] theorem pcDual8559 : IPC 8344 = 10771 := by pc_by_len
+@[simp] theorem pcDual8559 : IPC 8343 = 10771 := by pc_by_len
 
-@[simp] theorem pcDual8560 : IPC 8345 = 10772 := by pc_by_len
+@[simp] theorem pcDual8560 : IPC 8344 = 10772 := by pc_by_len
 
-@[simp] theorem pcDual8561 : IPC 8346 = 10773 := by pc_by_len
+@[simp] theorem pcDual8561 : IPC 8345 = 10773 := by pc_by_len
 
-@[simp] theorem pcDual8562 : IPC 8347 = 10774 := by pc_by_len
+@[simp] theorem pcDual8562 : IPC 8346 = 10774 := by pc_by_len
 
-@[simp] theorem pcDual8563 : IPC 8348 = 10775 := by pc_by_len
+@[simp] theorem pcDual8563 : IPC 8347 = 10775 := by pc_by_len
 
-@[simp] theorem pcDual8564 : IPC 8349 = 10776 := by pc_by_len
+@[simp] theorem pcDual8564 : IPC 8348 = 10776 := by pc_by_len
 
-@[simp] theorem pcDual8565 : IPC 8350 = 10779 := by pc_by_len
+@[simp] theorem pcDual8565 : IPC 8349 = 10779 := by pc_by_len
 
-@[simp] theorem pcDual8566 : IPC 8351 = 10780 := by pc_by_len
+@[simp] theorem pcDual8566 : IPC 8350 = 10780 := by pc_by_len
 
-@[simp] theorem pcDual8567 : IPC 8352 = 10781 := by pc_by_len
+@[simp] theorem pcDual8567 : IPC 8351 = 10781 := by pc_by_len
 
-@[simp] theorem pcDual8568 : IPC 8353 = 10784 := by pc_by_len
+@[simp] theorem pcDual8568 : IPC 8352 = 10784 := by pc_by_len
 
-@[simp] theorem pcDual8569 : IPC 8354 = 10785 := by pc_by_len
+@[simp] theorem pcDual8569 : IPC 8353 = 10785 := by pc_by_len
 
-@[simp] theorem pcDual8570 : IPC 8355 = 10786 := by pc_by_len
+@[simp] theorem pcDual8570 : IPC 8354 = 10786 := by pc_by_len
 
-@[simp] theorem pcDual8571 : IPC 8356 = 10787 := by pc_by_len
+@[simp] theorem pcDual8571 : IPC 8355 = 10787 := by pc_by_len
 
-@[simp] theorem pcDual8572 : IPC 8357 = 10788 := by pc_by_len
+@[simp] theorem pcDual8572 : IPC 8356 = 10788 := by pc_by_len
 
-@[simp] theorem pcDual8573 : IPC 8358 = 10789 := by pc_by_len
+@[simp] theorem pcDual8573 : IPC 8357 = 10789 := by pc_by_len
 
-@[simp] theorem pcDual8574 : IPC 8359 = 10790 := by pc_by_len
+@[simp] theorem pcDual8574 : IPC 8358 = 10790 := by pc_by_len
 
-@[simp] theorem pcDual8575 : IPC 8360 = 10791 := by pc_by_len
+@[simp] theorem pcDual8575 : IPC 8359 = 10791 := by pc_by_len
 
-@[simp] theorem pcDual8576 : IPC 8361 = 10792 := by pc_by_len
+@[simp] theorem pcDual8576 : IPC 8360 = 10792 := by pc_by_len
 
-@[simp] theorem pcDual8577 : IPC 8362 = 10793 := by pc_by_len
+@[simp] theorem pcDual8577 : IPC 8361 = 10793 := by pc_by_len
 
-@[simp] theorem pcDual8578 : IPC 8363 = 10794 := by pc_by_len
+@[simp] theorem pcDual8578 : IPC 8362 = 10794 := by pc_by_len
 
-@[simp] theorem pcDual8579 : IPC 8364 = 10795 := by pc_by_len
+@[simp] theorem pcDual8579 : IPC 8363 = 10795 := by pc_by_len
 
-@[simp] theorem pcDual8580 : IPC 8365 = 10796 := by pc_by_len
+@[simp] theorem pcDual8580 : IPC 8364 = 10796 := by pc_by_len
 
-@[simp] theorem pcDual8581 : IPC 8366 = 10797 := by pc_by_len
+@[simp] theorem pcDual8581 : IPC 8365 = 10797 := by pc_by_len
 
-@[simp] theorem pcDual8582 : IPC 8367 = 10798 := by pc_by_len
+@[simp] theorem pcDual8582 : IPC 8366 = 10798 := by pc_by_len
 
-@[simp] theorem pcDual8583 : IPC 8368 = 10799 := by pc_by_len
+@[simp] theorem pcDual8583 : IPC 8367 = 10799 := by pc_by_len
 
-@[simp] theorem pcDual8584 : IPC 8369 = 10800 := by pc_by_len
+@[simp] theorem pcDual8584 : IPC 8368 = 10800 := by pc_by_len
 
-@[simp] theorem pcDual8585 : IPC 8370 = 10801 := by pc_by_len
+@[simp] theorem pcDual8585 : IPC 8369 = 10801 := by pc_by_len
 
-@[simp] theorem pcDual8586 : IPC 8371 = 10805 := by pc_by_len
+@[simp] theorem pcDual8586 : IPC 8370 = 10805 := by pc_by_len
 
-@[simp] theorem pcDual8587 : IPC 8372 = 10806 := by pc_by_len
+@[simp] theorem pcDual8587 : IPC 8371 = 10806 := by pc_by_len
 
-@[simp] theorem pcDual8588 : IPC 8373 = 10807 := by pc_by_len
+@[simp] theorem pcDual8588 : IPC 8372 = 10807 := by pc_by_len
 
-@[simp] theorem pcDual8589 : IPC 8374 = 10808 := by pc_by_len
+@[simp] theorem pcDual8589 : IPC 8373 = 10808 := by pc_by_len
 
-@[simp] theorem pcDual8590 : IPC 8375 = 10809 := by pc_by_len
+@[simp] theorem pcDual8590 : IPC 8374 = 10809 := by pc_by_len
 
-@[simp] theorem pcDual8591 : IPC 8376 = 10810 := by pc_by_len
+@[simp] theorem pcDual8591 : IPC 8375 = 10810 := by pc_by_len
 
-@[simp] theorem pcDual8592 : IPC 8377 = 10811 := by pc_by_len
+@[simp] theorem pcDual8592 : IPC 8376 = 10811 := by pc_by_len
 
-@[simp] theorem pcDual8593 : IPC 8378 = 10814 := by pc_by_len
+@[simp] theorem pcDual8593 : IPC 8377 = 10814 := by pc_by_len
 
-@[simp] theorem pcDual8594 : IPC 8379 = 10815 := by pc_by_len
+@[simp] theorem pcDual8594 : IPC 8378 = 10815 := by pc_by_len
 
-@[simp] theorem pcDual8595 : IPC 8380 = 10816 := by pc_by_len
+@[simp] theorem pcDual8595 : IPC 8379 = 10816 := by pc_by_len
 
-@[simp] theorem pcDual8596 : IPC 8381 = 10817 := by pc_by_len
+@[simp] theorem pcDual8596 : IPC 8380 = 10817 := by pc_by_len
 
-@[simp] theorem pcDual8597 : IPC 8382 = 10818 := by pc_by_len
+@[simp] theorem pcDual8597 : IPC 8381 = 10818 := by pc_by_len
 
-@[simp] theorem pcDual8598 : IPC 8383 = 10819 := by pc_by_len
+@[simp] theorem pcDual8598 : IPC 8382 = 10819 := by pc_by_len
 
-@[simp] theorem pcDual8599 : IPC 8384 = 10820 := by pc_by_len
+@[simp] theorem pcDual8599 : IPC 8383 = 10820 := by pc_by_len
 
-@[simp] theorem pcDual8600 : IPC 8385 = 10821 := by pc_by_len
+@[simp] theorem pcDual8600 : IPC 8384 = 10821 := by pc_by_len
 
-@[simp] theorem pcDual8601 : IPC 8386 = 10822 := by pc_by_len
+@[simp] theorem pcDual8601 : IPC 8385 = 10822 := by pc_by_len
 
-@[simp] theorem pcDual8602 : IPC 8387 = 10823 := by pc_by_len
+@[simp] theorem pcDual8602 : IPC 8386 = 10823 := by pc_by_len
 
-@[simp] theorem pcDual8603 : IPC 8388 = 10824 := by pc_by_len
+@[simp] theorem pcDual8603 : IPC 8387 = 10824 := by pc_by_len
 
-@[simp] theorem pcDual8604 : IPC 8389 = 10825 := by pc_by_len
+@[simp] theorem pcDual8604 : IPC 8388 = 10825 := by pc_by_len
 
-@[simp] theorem pcDual8605 : IPC 8390 = 10826 := by pc_by_len
+@[simp] theorem pcDual8605 : IPC 8389 = 10826 := by pc_by_len
 
-@[simp] theorem pcDual8606 : IPC 8391 = 10827 := by pc_by_len
+@[simp] theorem pcDual8606 : IPC 8390 = 10827 := by pc_by_len
 
-@[simp] theorem pcDual8607 : IPC 8392 = 10828 := by pc_by_len
+@[simp] theorem pcDual8607 : IPC 8391 = 10828 := by pc_by_len
 
-@[simp] theorem pcDual8608 : IPC 8393 = 10829 := by pc_by_len
+@[simp] theorem pcDual8608 : IPC 8392 = 10829 := by pc_by_len
 
-@[simp] theorem pcDual8609 : IPC 8394 = 10830 := by pc_by_len
+@[simp] theorem pcDual8609 : IPC 8393 = 10830 := by pc_by_len
 
-@[simp] theorem pcDual8610 : IPC 8395 = 10831 := by pc_by_len
+@[simp] theorem pcDual8610 : IPC 8394 = 10831 := by pc_by_len
 
-@[simp] theorem pcDual8611 : IPC 8396 = 10832 := by pc_by_len
+@[simp] theorem pcDual8611 : IPC 8395 = 10832 := by pc_by_len
 
-@[simp] theorem pcDual8612 : IPC 8397 = 10833 := by pc_by_len
+@[simp] theorem pcDual8612 : IPC 8396 = 10833 := by pc_by_len
 
-@[simp] theorem pcDual8613 : IPC 8398 = 10834 := by pc_by_len
+@[simp] theorem pcDual8613 : IPC 8397 = 10834 := by pc_by_len
 
-@[simp] theorem pcDual8614 : IPC 8399 = 10835 := by pc_by_len
+@[simp] theorem pcDual8614 : IPC 8398 = 10835 := by pc_by_len
 
-@[simp] theorem pcDual8615 : IPC 8400 = 10838 := by pc_by_len
+@[simp] theorem pcDual8615 : IPC 8399 = 10838 := by pc_by_len
 
-@[simp] theorem pcDual8616 : IPC 8401 = 10839 := by pc_by_len
+@[simp] theorem pcDual8616 : IPC 8400 = 10839 := by pc_by_len
 
-@[simp] theorem pcDual8617 : IPC 8402 = 10840 := by pc_by_len
+@[simp] theorem pcDual8617 : IPC 8401 = 10840 := by pc_by_len
 
-@[simp] theorem pcDual8618 : IPC 8403 = 10841 := by pc_by_len
+@[simp] theorem pcDual8618 : IPC 8402 = 10841 := by pc_by_len
 
-@[simp] theorem pcDual8619 : IPC 8404 = 10842 := by pc_by_len
+@[simp] theorem pcDual8619 : IPC 8403 = 10842 := by pc_by_len
 
-@[simp] theorem pcDual8620 : IPC 8405 = 10843 := by pc_by_len
+@[simp] theorem pcDual8620 : IPC 8404 = 10843 := by pc_by_len
 
-@[simp] theorem pcDual8621 : IPC 8406 = 10844 := by pc_by_len
+@[simp] theorem pcDual8621 : IPC 8405 = 10844 := by pc_by_len
 
-@[simp] theorem pcDual8622 : IPC 8407 = 10845 := by pc_by_len
+@[simp] theorem pcDual8622 : IPC 8406 = 10845 := by pc_by_len
 
-@[simp] theorem pcDual8623 : IPC 8408 = 10846 := by pc_by_len
+@[simp] theorem pcDual8623 : IPC 8407 = 10846 := by pc_by_len
 
-@[simp] theorem pcDual8624 : IPC 8409 = 10847 := by pc_by_len
+@[simp] theorem pcDual8624 : IPC 8408 = 10847 := by pc_by_len
 
-@[simp] theorem pcDual8625 : IPC 8410 = 10848 := by pc_by_len
+@[simp] theorem pcDual8625 : IPC 8409 = 10848 := by pc_by_len
 
-@[simp] theorem pcDual8626 : IPC 8411 = 10849 := by pc_by_len
+@[simp] theorem pcDual8626 : IPC 8410 = 10849 := by pc_by_len
 
-@[simp] theorem pcDual8627 : IPC 8412 = 10850 := by pc_by_len
+@[simp] theorem pcDual8627 : IPC 8411 = 10850 := by pc_by_len
 
-@[simp] theorem pcDual8628 : IPC 8413 = 10851 := by pc_by_len
+@[simp] theorem pcDual8628 : IPC 8412 = 10851 := by pc_by_len
 
-@[simp] theorem pcDual8629 : IPC 8414 = 10852 := by pc_by_len
+@[simp] theorem pcDual8629 : IPC 8413 = 10852 := by pc_by_len
 
-@[simp] theorem pcDual8630 : IPC 8415 = 10853 := by pc_by_len
+@[simp] theorem pcDual8630 : IPC 8414 = 10853 := by pc_by_len
 
-@[simp] theorem pcDual8631 : IPC 8416 = 10854 := by pc_by_len
+@[simp] theorem pcDual8631 : IPC 8415 = 10854 := by pc_by_len
 
-@[simp] theorem pcDual8632 : IPC 8417 = 10855 := by pc_by_len
+@[simp] theorem pcDual8632 : IPC 8416 = 10855 := by pc_by_len
 
-@[simp] theorem pcDual8633 : IPC 8418 = 10856 := by pc_by_len
+@[simp] theorem pcDual8633 : IPC 8417 = 10856 := by pc_by_len
 
-@[simp] theorem pcDual8634 : IPC 8419 = 10857 := by pc_by_len
+@[simp] theorem pcDual8634 : IPC 8418 = 10857 := by pc_by_len
 
-@[simp] theorem pcDual8635 : IPC 8420 = 10858 := by pc_by_len
+@[simp] theorem pcDual8635 : IPC 8419 = 10858 := by pc_by_len
 
-@[simp] theorem pcDual8636 : IPC 8421 = 10859 := by pc_by_len
+@[simp] theorem pcDual8636 : IPC 8420 = 10859 := by pc_by_len
 
-@[simp] theorem pcDual8637 : IPC 8422 = 10862 := by pc_by_len
+@[simp] theorem pcDual8637 : IPC 8421 = 10862 := by pc_by_len
 
-@[simp] theorem pcDual8638 : IPC 8423 = 10863 := by pc_by_len
+@[simp] theorem pcDual8638 : IPC 8422 = 10863 := by pc_by_len
 
-@[simp] theorem pcDual8639 : IPC 8424 = 10864 := by pc_by_len
+@[simp] theorem pcDual8639 : IPC 8423 = 10864 := by pc_by_len
 
-@[simp] theorem pcDual8640 : IPC 8425 = 10865 := by pc_by_len
+@[simp] theorem pcDual8640 : IPC 8424 = 10865 := by pc_by_len
 
-@[simp] theorem pcDual8641 : IPC 8426 = 10866 := by pc_by_len
+@[simp] theorem pcDual8641 : IPC 8425 = 10866 := by pc_by_len
 
-@[simp] theorem pcDual8642 : IPC 8427 = 10869 := by pc_by_len
+@[simp] theorem pcDual8642 : IPC 8426 = 10869 := by pc_by_len
 
-@[simp] theorem pcDual8643 : IPC 8428 = 10870 := by pc_by_len
+@[simp] theorem pcDual8643 : IPC 8427 = 10870 := by pc_by_len
 
-@[simp] theorem pcDual8644 : IPC 8429 = 10871 := by pc_by_len
+@[simp] theorem pcDual8644 : IPC 8428 = 10871 := by pc_by_len
 
-@[simp] theorem pcDual8645 : IPC 8430 = 10872 := by pc_by_len
+@[simp] theorem pcDual8645 : IPC 8429 = 10872 := by pc_by_len
 
-@[simp] theorem pcDual8646 : IPC 8431 = 10873 := by pc_by_len
+@[simp] theorem pcDual8646 : IPC 8430 = 10873 := by pc_by_len
 
-@[simp] theorem pcDual8647 : IPC 8432 = 10874 := by pc_by_len
+@[simp] theorem pcDual8647 : IPC 8431 = 10874 := by pc_by_len
 
-@[simp] theorem pcDual8648 : IPC 8433 = 10875 := by pc_by_len
+@[simp] theorem pcDual8648 : IPC 8432 = 10875 := by pc_by_len
 
-@[simp] theorem pcDual8649 : IPC 8434 = 10876 := by pc_by_len
+@[simp] theorem pcDual8649 : IPC 8433 = 10876 := by pc_by_len
 
-@[simp] theorem pcDual8650 : IPC 8435 = 10877 := by pc_by_len
+@[simp] theorem pcDual8650 : IPC 8434 = 10877 := by pc_by_len
 
-@[simp] theorem pcDual8651 : IPC 8436 = 10878 := by pc_by_len
+@[simp] theorem pcDual8651 : IPC 8435 = 10878 := by pc_by_len
 
-@[simp] theorem pcDual8652 : IPC 8437 = 10879 := by pc_by_len
+@[simp] theorem pcDual8652 : IPC 8436 = 10879 := by pc_by_len
 
-@[simp] theorem pcDual8653 : IPC 8438 = 10880 := by pc_by_len
+@[simp] theorem pcDual8653 : IPC 8437 = 10880 := by pc_by_len
 
-@[simp] theorem pcDual8654 : IPC 8439 = 10881 := by pc_by_len
+@[simp] theorem pcDual8654 : IPC 8438 = 10881 := by pc_by_len
 
-@[simp] theorem pcDual8655 : IPC 8440 = 10882 := by pc_by_len
+@[simp] theorem pcDual8655 : IPC 8439 = 10882 := by pc_by_len
 
-@[simp] theorem pcDual8656 : IPC 8441 = 10883 := by pc_by_len
+@[simp] theorem pcDual8656 : IPC 8440 = 10883 := by pc_by_len
 
-@[simp] theorem pcDual8657 : IPC 8442 = 10884 := by pc_by_len
+@[simp] theorem pcDual8657 : IPC 8441 = 10884 := by pc_by_len
 
-@[simp] theorem pcDual8658 : IPC 8443 = 10885 := by pc_by_len
+@[simp] theorem pcDual8658 : IPC 8442 = 10885 := by pc_by_len
 
-@[simp] theorem pcDual8659 : IPC 8444 = 10886 := by pc_by_len
+@[simp] theorem pcDual8659 : IPC 8443 = 10886 := by pc_by_len
 
-@[simp] theorem pcDual8660 : IPC 8445 = 10887 := by pc_by_len
+@[simp] theorem pcDual8660 : IPC 8444 = 10887 := by pc_by_len
 
-@[simp] theorem pcDual8661 : IPC 8446 = 10888 := by pc_by_len
+@[simp] theorem pcDual8661 : IPC 8445 = 10888 := by pc_by_len
 
-@[simp] theorem pcDual8662 : IPC 8447 = 10889 := by pc_by_len
+@[simp] theorem pcDual8662 : IPC 8446 = 10889 := by pc_by_len
 
-@[simp] theorem pcDual8663 : IPC 8448 = 10890 := by pc_by_len
+@[simp] theorem pcDual8663 : IPC 8447 = 10890 := by pc_by_len
 
-@[simp] theorem pcDual8664 : IPC 8449 = 10891 := by pc_by_len
+@[simp] theorem pcDual8664 : IPC 8448 = 10891 := by pc_by_len
 
-@[simp] theorem pcDual8665 : IPC 8450 = 10894 := by pc_by_len
+@[simp] theorem pcDual8665 : IPC 8449 = 10894 := by pc_by_len
 
-@[simp] theorem pcDual8666 : IPC 8451 = 10895 := by pc_by_len
+@[simp] theorem pcDual8666 : IPC 8450 = 10895 := by pc_by_len
 
-@[simp] theorem pcDual8667 : IPC 8452 = 10896 := by pc_by_len
+@[simp] theorem pcDual8667 : IPC 8451 = 10896 := by pc_by_len
 
-@[simp] theorem pcDual8668 : IPC 8453 = 10897 := by pc_by_len
+@[simp] theorem pcDual8668 : IPC 8452 = 10897 := by pc_by_len
 
-@[simp] theorem pcDual8669 : IPC 8454 = 10898 := by pc_by_len
+@[simp] theorem pcDual8669 : IPC 8453 = 10898 := by pc_by_len
 
-@[simp] theorem pcDual8670 : IPC 8455 = 10901 := by pc_by_len
+@[simp] theorem pcDual8670 : IPC 8454 = 10901 := by pc_by_len
 
-@[simp] theorem pcDual8671 : IPC 8456 = 10902 := by pc_by_len
+@[simp] theorem pcDual8671 : IPC 8455 = 10902 := by pc_by_len
 
-@[simp] theorem pcDual8672 : IPC 8457 = 10903 := by pc_by_len
+@[simp] theorem pcDual8672 : IPC 8456 = 10903 := by pc_by_len
 
-@[simp] theorem pcDual8673 : IPC 8458 = 10904 := by pc_by_len
+@[simp] theorem pcDual8673 : IPC 8457 = 10904 := by pc_by_len
 
-@[simp] theorem pcDual8674 : IPC 8459 = 10905 := by pc_by_len
+@[simp] theorem pcDual8674 : IPC 8458 = 10905 := by pc_by_len
 
-@[simp] theorem pcDual8675 : IPC 8460 = 10906 := by pc_by_len
+@[simp] theorem pcDual8675 : IPC 8459 = 10906 := by pc_by_len
 
-@[simp] theorem pcDual8676 : IPC 8461 = 10907 := by pc_by_len
+@[simp] theorem pcDual8676 : IPC 8460 = 10907 := by pc_by_len
 
-@[simp] theorem pcDual8677 : IPC 8462 = 10908 := by pc_by_len
+@[simp] theorem pcDual8677 : IPC 8461 = 10908 := by pc_by_len
 
-@[simp] theorem pcDual8678 : IPC 8463 = 10909 := by pc_by_len
+@[simp] theorem pcDual8678 : IPC 8462 = 10909 := by pc_by_len
 
-@[simp] theorem pcDual8679 : IPC 8464 = 10912 := by pc_by_len
+@[simp] theorem pcDual8679 : IPC 8463 = 10912 := by pc_by_len
 
-@[simp] theorem pcDual8680 : IPC 8465 = 10913 := by pc_by_len
+@[simp] theorem pcDual8680 : IPC 8464 = 10913 := by pc_by_len
 
-@[simp] theorem pcDual8681 : IPC 8466 = 10914 := by pc_by_len
+@[simp] theorem pcDual8681 : IPC 8465 = 10914 := by pc_by_len
 
-@[simp] theorem pcDual8682 : IPC 8467 = 10915 := by pc_by_len
+@[simp] theorem pcDual8682 : IPC 8466 = 10915 := by pc_by_len
 
-@[simp] theorem pcDual8683 : IPC 8468 = 10916 := by pc_by_len
+@[simp] theorem pcDual8683 : IPC 8467 = 10916 := by pc_by_len
 
-@[simp] theorem pcDual8684 : IPC 8469 = 10917 := by pc_by_len
+@[simp] theorem pcDual8684 : IPC 8468 = 10917 := by pc_by_len
 
-@[simp] theorem pcDual8685 : IPC 8470 = 10918 := by pc_by_len
+@[simp] theorem pcDual8685 : IPC 8469 = 10918 := by pc_by_len
 
-@[simp] theorem pcDual8686 : IPC 8471 = 10919 := by pc_by_len
+@[simp] theorem pcDual8686 : IPC 8470 = 10919 := by pc_by_len
 
-@[simp] theorem pcDual8687 : IPC 8472 = 10920 := by pc_by_len
+@[simp] theorem pcDual8687 : IPC 8471 = 10920 := by pc_by_len
 
-@[simp] theorem pcDual8688 : IPC 8473 = 10921 := by pc_by_len
+@[simp] theorem pcDual8688 : IPC 8472 = 10921 := by pc_by_len
 
-@[simp] theorem pcDual8689 : IPC 8474 = 10922 := by pc_by_len
+@[simp] theorem pcDual8689 : IPC 8473 = 10922 := by pc_by_len
 
-@[simp] theorem pcDual8690 : IPC 8475 = 10923 := by pc_by_len
+@[simp] theorem pcDual8690 : IPC 8474 = 10923 := by pc_by_len
 
-@[simp] theorem pcDual8691 : IPC 8476 = 10924 := by pc_by_len
+@[simp] theorem pcDual8691 : IPC 8475 = 10924 := by pc_by_len
 
-@[simp] theorem pcDual8692 : IPC 8477 = 10925 := by pc_by_len
+@[simp] theorem pcDual8692 : IPC 8476 = 10925 := by pc_by_len
 
-@[simp] theorem pcDual8693 : IPC 8478 = 10926 := by pc_by_len
+@[simp] theorem pcDual8693 : IPC 8477 = 10926 := by pc_by_len
 
-@[simp] theorem pcDual8694 : IPC 8479 = 10927 := by pc_by_len
+@[simp] theorem pcDual8694 : IPC 8478 = 10927 := by pc_by_len
 
-@[simp] theorem pcDual8695 : IPC 8480 = 10930 := by pc_by_len
+@[simp] theorem pcDual8695 : IPC 8479 = 10930 := by pc_by_len
 
-@[simp] theorem pcDual8696 : IPC 8481 = 10931 := by pc_by_len
+@[simp] theorem pcDual8696 : IPC 8480 = 10931 := by pc_by_len
 
-@[simp] theorem pcDual8697 : IPC 8482 = 10932 := by pc_by_len
+@[simp] theorem pcDual8697 : IPC 8481 = 10932 := by pc_by_len
 
-@[simp] theorem pcDual8698 : IPC 8483 = 10933 := by pc_by_len
+@[simp] theorem pcDual8698 : IPC 8482 = 10933 := by pc_by_len
 
-@[simp] theorem pcDual8699 : IPC 8484 = 10934 := by pc_by_len
+@[simp] theorem pcDual8699 : IPC 8483 = 10934 := by pc_by_len
 
-@[simp] theorem pcDual8700 : IPC 8485 = 10937 := by pc_by_len
+@[simp] theorem pcDual8700 : IPC 8484 = 10937 := by pc_by_len
 
-@[simp] theorem pcDual8701 : IPC 8486 = 10938 := by pc_by_len
+@[simp] theorem pcDual8701 : IPC 8485 = 10938 := by pc_by_len
 
-@[simp] theorem pcDual8702 : IPC 8487 = 10939 := by pc_by_len
+@[simp] theorem pcDual8702 : IPC 8486 = 10939 := by pc_by_len
 
-@[simp] theorem pcDual8703 : IPC 8488 = 10940 := by pc_by_len
+@[simp] theorem pcDual8703 : IPC 8487 = 10940 := by pc_by_len
 
-@[simp] theorem pcDual8704 : IPC 8489 = 10941 := by pc_by_len
+@[simp] theorem pcDual8704 : IPC 8488 = 10941 := by pc_by_len
 
-@[simp] theorem pcDual8705 : IPC 8490 = 10942 := by pc_by_len
+@[simp] theorem pcDual8705 : IPC 8489 = 10942 := by pc_by_len
 
-@[simp] theorem pcDual8706 : IPC 8491 = 10943 := by pc_by_len
+@[simp] theorem pcDual8706 : IPC 8490 = 10943 := by pc_by_len
 
-@[simp] theorem pcDual8707 : IPC 8492 = 10944 := by pc_by_len
+@[simp] theorem pcDual8707 : IPC 8491 = 10944 := by pc_by_len
 
-@[simp] theorem pcDual8708 : IPC 8493 = 10945 := by pc_by_len
+@[simp] theorem pcDual8708 : IPC 8492 = 10945 := by pc_by_len
 
-@[simp] theorem pcDual8709 : IPC 8494 = 10948 := by pc_by_len
+@[simp] theorem pcDual8709 : IPC 8493 = 10948 := by pc_by_len
 
-@[simp] theorem pcDual8710 : IPC 8495 = 10949 := by pc_by_len
+@[simp] theorem pcDual8710 : IPC 8494 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8711 : IPC 8496 = 10950 := by pc_by_len
+@[simp] theorem pcDual8711 : IPC 8495 = 10950 := by pc_by_len
 
-@[simp] theorem pcDual8712 : IPC 8497 = 10951 := by pc_by_len
+@[simp] theorem pcDual8712 : IPC 8496 = 10951 := by pc_by_len
 
-@[simp] theorem pcDual8713 : IPC 8498 = 10952 := by pc_by_len
+@[simp] theorem pcDual8713 : IPC 8497 = 10952 := by pc_by_len
 
-@[simp] theorem pcDual8714 : IPC 8499 = 10953 := by pc_by_len
+@[simp] theorem pcDual8714 : IPC 8498 = 10953 := by pc_by_len
 
-@[simp] theorem pcDual8715 : IPC 8500 = 10954 := by pc_by_len
+@[simp] theorem pcDual8715 : IPC 8499 = 10954 := by pc_by_len
 
-@[simp] theorem pcDual8716 : IPC 8501 = 10955 := by pc_by_len
+@[simp] theorem pcDual8716 : IPC 8500 = 10955 := by pc_by_len
 
-@[simp] theorem pcDual8717 : IPC 8502 = 10956 := by pc_by_len
+@[simp] theorem pcDual8717 : IPC 8501 = 10956 := by pc_by_len
 
-@[simp] theorem pcDual8718 : IPC 8503 = 10957 := by pc_by_len
+@[simp] theorem pcDual8718 : IPC 8502 = 10957 := by pc_by_len
 
-@[simp] theorem pcDual8719 : IPC 8504 = 10958 := by pc_by_len
+@[simp] theorem pcDual8719 : IPC 8503 = 10958 := by pc_by_len
 
-@[simp] theorem pcDual8720 : IPC 8505 = 10959 := by pc_by_len
+@[simp] theorem pcDual8720 : IPC 8504 = 10959 := by pc_by_len
 
-@[simp] theorem pcDual8721 : IPC 8506 = 10960 := by pc_by_len
+@[simp] theorem pcDual8721 : IPC 8505 = 10960 := by pc_by_len
 
-@[simp] theorem pcDual8722 : IPC 8507 = 10961 := by pc_by_len
+@[simp] theorem pcDual8722 : IPC 8506 = 10961 := by pc_by_len
 
-@[simp] theorem pcDual8723 : IPC 8508 = 10962 := by pc_by_len
+@[simp] theorem pcDual8723 : IPC 8507 = 10962 := by pc_by_len
 
-@[simp] theorem pcDual8724 : IPC 8509 = 10965 := by pc_by_len
+@[simp] theorem pcDual8724 : IPC 8508 = 10965 := by pc_by_len
 
-@[simp] theorem pcDual8725 : IPC 8510 = 10966 := by pc_by_len
+@[simp] theorem pcDual8725 : IPC 8509 = 10966 := by pc_by_len
 
-@[simp] theorem pcDual8726 : IPC 8511 = 10967 := by pc_by_len
+@[simp] theorem pcDual8726 : IPC 8510 = 10967 := by pc_by_len
 
-@[simp] theorem pcDual8727 : IPC 8512 = 10968 := by pc_by_len
+@[simp] theorem pcDual8727 : IPC 8511 = 10968 := by pc_by_len
 
-@[simp] theorem pcDual8728 : IPC 8513 = 10973 := by pc_by_len
+@[simp] theorem pcDual8728 : IPC 8512 = 10973 := by pc_by_len
 
-@[simp] theorem pcDual8729 : IPC 8514 = 10974 := by pc_by_len
+@[simp] theorem pcDual8729 : IPC 8513 = 10974 := by pc_by_len
 
-@[simp] theorem pcDual8730 : IPC 8515 = 10975 := by pc_by_len
+@[simp] theorem pcDual8730 : IPC 8514 = 10975 := by pc_by_len
 
-@[simp] theorem pcDual8731 : IPC 8516 = 10976 := by pc_by_len
+@[simp] theorem pcDual8731 : IPC 8515 = 10976 := by pc_by_len
 
-@[simp] theorem pcDual8732 : IPC 8517 = 10977 := by pc_by_len
+@[simp] theorem pcDual8732 : IPC 8516 = 10977 := by pc_by_len
 
-@[simp] theorem pcDual8733 : IPC 8518 = 10978 := by pc_by_len
+@[simp] theorem pcDual8733 : IPC 8517 = 10978 := by pc_by_len
 
-@[simp] theorem pcDual8734 : IPC 8519 = 10979 := by pc_by_len
+@[simp] theorem pcDual8734 : IPC 8518 = 10979 := by pc_by_len
 
-@[simp] theorem pcDual8735 : IPC 8520 = 10982 := by pc_by_len
+@[simp] theorem pcDual8735 : IPC 8519 = 10982 := by pc_by_len
 
 end CycleSubmission.Global.ShiftPCs

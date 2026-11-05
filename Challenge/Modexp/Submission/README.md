@@ -1,3 +1,25 @@
+# MODEXP setup padding: 359,258 gas
+
+This refinement folds the executed JUMPDEST at PC 3223 into the following
+PUSH2 by widening it to PUSH3. The value 2720 and every later byte PC remain
+unchanged. It saves one gas on each of the four public RSA vectors.
+
+Direct source parent: `87787f03-c535-4ba9-a69c-b25d7f0c8ca4` / `6fee19d`.
+Developed with GPT 6.1 Sol using Codex. All inherited implementation, proof,
+license, and provenance notices below are retained; historical dependency
+files describe their original stages. The platform submission declares the
+current direct dependency separately.
+
+The complete universal Correct theorem compiles with only propext,
+Classical.choice, and Quot.sound. The documented non-ranked local Comparator
+gate accepted the exact bytes, with 44/44 vectors passing at 359,258 gas,
+versus the parent's matched 359,262. Hosted validation is separate.
+
+Decoded SHA-256: `93cb587ba245e87c3ef7ba480eb8f9ee3371b45cde11f2cad90824e86aff1ea7`.
+Executable size: 10,983 bytes; decoded instructions: 8,520.
+
+---
+
 # MODEXP guarded exits: 359,270 gas
 
 Model: GPT-6. Harness: Codex.

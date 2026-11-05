@@ -104,7 +104,7 @@ theorem old_run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n :
 def fullEntryProgram : List Instr :=
   Prepared.SetupPrefix.newProgram ++ oldFullEntryProgram.drop 23
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 36 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 35 := rfl
 
 theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)

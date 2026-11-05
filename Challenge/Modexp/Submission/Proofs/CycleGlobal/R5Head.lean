@@ -51,8 +51,8 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5334, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3743 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2851 6 3743 h1Program
-    (by change 2851 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2850 6 3743 h1Program
+    (by change 2850 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

@@ -226,8 +226,7 @@ def newpart1Program : List Instr :=
    .push 0 0,
    .op (.Swap ⟨10, by decide⟩),
    .op (.Dup ⟨15, by decide⟩),
-   .op .JUMPDEST,
-   .push 2 2720,
+   .push 3 2720,
    .op .MLOAD]
 
 def newpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (rest : List UInt256) : State :=
@@ -324,8 +323,7 @@ def newProgram : List Instr :=
    .push 0 0,
    .op (.Swap ⟨10, by decide⟩),
    .op (.Dup ⟨15, by decide⟩),
-   .op .JUMPDEST,
-   .push 2 2720,
+   .push 3 2720,
    .op .MLOAD,
    .op (.Swap ⟨10, by decide⟩),
    .op (.Dup ⟨1, by decide⟩),

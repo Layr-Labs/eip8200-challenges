@@ -164,32 +164,32 @@ private def fermat_toPrime :
 
 private def fermat_prime :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10698 FermatNext.primeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8323 11 10698 FermatNext.primeProgram
-    (by change 8323 + 11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8322 11 10698 FermatNext.primeProgram
+    (by change 8322 + 11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_jumpTail :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10748 FermatNext.jumpTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8334 2 10748 FermatNext.jumpTailProgram
-    (by change 8334 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8333 2 10748 FermatNext.jumpTailProgram
+    (by change 8333 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_tail :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4847 FermatNext.tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3701 1 4847 FermatNext.tailProgram
-    (by change 3701 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3700 1 4847 FermatNext.tailProgram
+    (by change 3700 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_result :
     WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4848 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3702 9 4848 FermatProgram.returnProgram
-    (by change 3702 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3701 9 4848 FermatProgram.returnProgram
+    (by change 3701 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -224,9 +224,9 @@ def fermatPaths : FermatNext.Paths CycleSubmission.Artifact.artifact .Osaka wher
   genLoad := fermat_genLoad
   routeJump := by exact CycleSubmission.Global.Binding.jumpDest 512 (by rfl)
   joinJump := by exact CycleSubmission.Global.Binding.jumpDest 31 (by rfl)
-  tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3701 (by rfl)
+  tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3700 (by rfl)
   bigJump := by exact CycleSubmission.Global.Binding.jumpDest 143 (by rfl)
-  primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8323 (by rfl)
+  primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8322 (by rfl)
   genJump := by exact CycleSubmission.Global.Binding.jumpDest 46 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths CycleSubmission.Artifact.artifact .Osaka where
