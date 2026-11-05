@@ -163,16 +163,16 @@ private def fermat_toPrime :
     (by decide)
 
 private def fermat_prime :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10671 FermatNext.primeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8322 10 10671 FermatNext.primeProgram
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10643 FermatNext.primeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8322 10 10643 FermatNext.primeProgram
     (by change 8322 + 10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_jumpTail :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10747 FermatNext.jumpTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8332 2 10747 FermatNext.jumpTailProgram
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10719 FermatNext.jumpTailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8332 2 10719 FermatNext.jumpTailProgram
     (by change 8332 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

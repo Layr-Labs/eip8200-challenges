@@ -126,7 +126,7 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
   have hor2 : UInt256.isTrue (UInt256.lor (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor.symm
   unfold negOf bwOf cwOf tnOf wN at hor1 hor2
   simp only [midGtSwap] at hor1 hor2
-  have hpc : midPC n = 10945 := by simp [midPC, hw]
+  have hpc : midPC n = 10941 := by simp [midPC, hw]
   simp (config := { maxSteps := 500000 })
     [blk3125h, midGtSwap, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -215,7 +215,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
   unfold tnOf wN at htz
   rw [hmem]
   simp only [midGtSwap] at hneg
-  have hpc : midPC n = 10945 := by simp [midPC, hw]
+  have hpc : midPC n = 10941 := by simp [midPC, hw]
   simp (config := { maxSteps := 1500000 })
     [blk3125h, midGtSwap, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -230,7 +230,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
-@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2372 = 3097 := by
+@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2371 = 3096 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -707,11 +707,11 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
-  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18794 -
-      (UInt256.ofNat 2010 * UInt256.ofNat 4).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10754 := by decide
-  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18794 -
-      (UInt256.ofNat 2010 * UInt256.ofNat 8).toNat) %
+  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18738 -
+      (UInt256.ofNat 2003 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10726 := by decide
+  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18738 -
+      (UInt256.ofNat 2003 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2714 := by decide
   have hflag1760 : ∀ (v a : Nat), a + 32 ≤ 1760 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1760) a =
@@ -833,11 +833,11 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
-  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18794 -
-      (UInt256.ofNat 2010 * UInt256.ofNat 4).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10754 := by decide
-  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18794 -
-      (UInt256.ofNat 2010 * UInt256.ofNat 8).toNat) %
+  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18738 -
+      (UInt256.ofNat 2003 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10726 := by decide
+  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18738 -
+      (UInt256.ofNat 2003 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2714 := by decide
   have hflag1760 : ∀ (v a : Nat), a + 32 ≤ 1760 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1760) a =
@@ -978,11 +978,11 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hv8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 3017 -
       (UInt256.ofNat 29 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2785 := by decide
-  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18794 -
-      (UInt256.ofNat 2010 * UInt256.ofNat 4).toNat) %
-      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10754 := by decide
-  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18794 -
-      (UInt256.ofNat 2010 * UInt256.ofNat 8).toNat) %
+  have hw4 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18738 -
+      (UInt256.ofNat 2003 * UInt256.ofNat 4).toNat) %
+      115792089237316195423570985008687907853269984665640564039457584007913129639936 = 10726 := by decide
+  have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18738 -
+      (UInt256.ofNat 2003 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2714 := by decide
   have hflag1760 : ∀ (v a : Nat), a + 32 ≤ 1760 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1760) a =

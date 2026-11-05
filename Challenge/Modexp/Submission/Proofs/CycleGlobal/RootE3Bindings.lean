@@ -31,18 +31,18 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to the loop head). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2369 2 3092 RootE3PhaseRun.phaseExitHeadProgram
-    (by change 2369 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2368 2 3091 RootE3PhaseRun.phaseExitHeadProgram
+    (by change 2368 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2371 5 3094 RootE3PhaseRun.phaseGuardProgram
-    (by change 2371 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2370 5 3093 RootE3PhaseRun.phaseGuardProgram
+    (by change 2370 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2376 14 3103 RootE3PhaseRun.phaseSwitchProgram
-    (by change 2376 + 14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2375 14 3102 RootE3PhaseRun.phaseSwitchProgram
+    (by change 2375 + 14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -60,7 +60,7 @@ is pure delta-reduction: no `CycleSubmission.Global.Fast.Shift.entrySlots`/`read
 theorem shiftDone_eq_exitStart (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) :
     CycleSubmission.Global.Fast.Shift.shiftDoneState z s mem n bsize esize msize =
-      RootE3PhaseRun.frame s mem 3092
+      RootE3PhaseRun.frame s mem 3091
         (UInt256.ofNat 0 :: CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize ++
           Exp.outer n bsize esize msize) :=
   rfl

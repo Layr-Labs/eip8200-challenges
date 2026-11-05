@@ -1,3 +1,22 @@
+# Direct max words with unreachable padding
+
+This revision extends the synced promoted source
+`7ccff08c-cf6b-470e-98dc-6f194fdfdf65`, hosted score 358,884.
+Its matched local total is 359,235; this revision verifies at 359,207.
+
+This revision extends the balanced eight-limb estimate revision. It constructs
+both estimate all-ones words directly, removes the executed padding no-ops,
+and places STOP padding after unconditional jumps. Shortened positive-width
+immediates balance the image. The two computed entries are 2714 and 10726,
+selected by 18738 - 2003*n. The image is 10,980 bytes and 8,520 instructions.
+The public native total is 359,207 gas with all 44 outputs correct, a saving
+of 51 from the original local parent and 28 from the preceding revision.
+The full Lean Solution build passed with the three permitted axioms.
+The standard protected Comparator and Lean kernel accepted this exact revision
+at 359,207 gas with 44/44 correct vectors.
+
+Inherited implementation and provenance follow below.
+
 # Balanced all-ones estimate constant
 
 This revision builds on the local prime-padding revision submitted as
