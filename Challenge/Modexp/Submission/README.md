@@ -1,3 +1,17 @@
+# Reuse exact memory size in setup and zero-exponent return
+
+This revision extends submission `47bb2ac9-6808-4808-9d28-fff6c0264cfd`.
+Two bounded MSIZE substitutions save five further gas on the matched public
+run: 359183 becomes359178, with44/44 outputs correct. The runtime remains
+10980 bytes and8520 instructions. Another48 RSA cases all match. The full
+Solution build passed and the protected Comparator accepted this exact image
+at359178 gas with44/44 correct vectors.
+The generic state bounds are proved and discharged from the actual initial state.
+
+Inherited implementation and provenance follow below.
+
+---
+
 # Direct setup sentinels with unreachable padding
 
 This revision extends submission `ea04b923-8842-48bc-8453-4896d6479738`.

@@ -108,7 +108,7 @@ def blkZeroExpHit :
    opAt 3669 (.Dup ⟨1, by decide⟩),
    pushAt 3670 1 32,
    opAt 3671 .SUB,
-   pushAt 3672 1 3,
+   pushAt 3672 2 3,
    opAt 3673 .SHL,
    opAt 3674 .SHR,
    pushAt 3675 1 1,
@@ -121,7 +121,7 @@ def blkZeroExpHit :
 def blkZeroExpReturn :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 3679 (.Dup ⟨0, by decide⟩),
-   pushAt 3680 1 32,
+   opAt 3680 .MSIZE,
    opAt 3681 .SUB,
    opAt 3682 .RETURN]
 
@@ -144,7 +144,7 @@ theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.byteco
 
 @[simp] theorem packedTailPCs (i : Nat) (hi : 3662 ≤ i) (hii : i ≤ 3682) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4819, 4820, 4821, 4822, 4823, 4825, 4826, 4827, 4828, 4830, 4831, 4833, 4834, 4835, 4837, 4838, 4839, 4840, 4841, 4843, 4844] : List Nat)[i - 3662]! := by
+      ([4819, 4820, 4821, 4822, 4823, 4825, 4826, 4827, 4828, 4830, 4831, 4834, 4835, 4836, 4838, 4839, 4840, 4841, 4842, 4843, 4844] : List Nat)[i - 3662]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

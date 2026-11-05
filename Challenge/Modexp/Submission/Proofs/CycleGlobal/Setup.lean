@@ -7,11 +7,15 @@ import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastP6
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.MainDefs
 import Challenge.EvmProof.Memory
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
+import Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 namespace CycleSubmission.Global.Fast.Setup
+open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
@@ -290,7 +294,7 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 4840
+    pc := UInt256.ofNat 4841
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
@@ -388,20 +392,33 @@ theorem run_zeroExp_hit (s : State) (input : ByteArray)
      Challenge.EvmProof.Word.succ_ofNat_mod,
      Challenge.EvmProof.Word.word_toNat_ofNat]
 set_option linter.unusedSimpArgs false in
+def zeroExpReturnProgram80 : List Instr :=
+  [.op (.Dup ⟨0, by decide⟩), .op .MSIZE, .op .SUB, .op .RETURN]
+
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4841 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 3679 4 4841 zeroExpReturnProgram80
+    (by change 3679 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+
+set_option linter.unusedSimpArgs false in
 theorem run_zeroExp_return (s : State) (input : ByteArray)
-    (hrun : s.halt = .Running) (hsmall : modulusSize input ≤ 32) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blkZeroExpReturn (zeroExpStoreState s input) =
+    (hrun : s.halt = .Running) (hsmall : modulusSize input ≤ 32) (hwords : s.activeWords.toNat ≤ 1) :
+    runInstructionsX zeroExpReturnProgram80 (zeroExpStoreState s input) =
       some (zeroExpFinalState s input) := by
+  have haw : s.activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
+    simp [State.activeWordsAfterUInt256, MachineState.activeWordsAfter, Nat.max_eq_right hwords]
+  have hawn : MachineState.activeWordsAfter s.activeWords.toNat 0 32 = 1 := by
+    simp [MachineState.activeWordsAfter, Nat.max_eq_right hwords]
   have hsub := Challenge.EvmProof.Word.ofNat_sub_ofNat hsmall (by norm_num : 32 < 2 ^ 256)
   have hsubn : (UInt256.ofNat (32 - modulusSize input)).toNat = 32 - modulusSize input :=
     toNat_ofNat_self (by omega)
   have hm : (UInt256.ofNat (modulusSize input)).toNat = modulusSize input :=
     toNat_ofNat_self (modulusSize_lt input)
   simp (config := { maxSteps := 400000 })
-    [blkZeroExpReturn, opAt, pushAt, wfOp,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     zeroExpStoreState, zeroExpFinalState, hrun, hsub, hsubn, hm, List.exchange,
+    [zeroExpReturnProgram80, runInstructionsX, runInstrX, Challenge.EvmProof.Stepper.runInstr,
+     zeroExpStoreState, zeroExpFinalState, haw, hawn, hrun, hsub, hsubn, hm, List.exchange,
      State.activeWordsAfterUInt256,
      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod,
      Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1076,11 +1093,13 @@ def gasSteps_zeroExp_returnB (s : State) (input : ByteArray)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hsmall : modulusSize input ≤ 32) :
+    (hsmall : modulusSize input ≤ 32) (hwords : s.activeWords.toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (zeroExpStoreState s input) (zeroExpFinalState s input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-    CycleSubmission.Artifact.artifact .Osaka blkZeroExpReturn hcode hfork
-      (run_zeroExp_return s input hrun hsmall) hrun hnp
+  WindowTwentyOneMsize.Block.stepsX zeroExpReturnBlock80
+    (s := zeroExpStoreState s input)
+    ⟨by change Artifact.bytecode.size < 2^256; rw [Artifact.bytecodeSize]; decide,
+      hcode, hfork, hrun, hnp⟩ rfl
+    (run_zeroExp_return s input hrun hsmall hwords)
 def gasSteps_zeroExp_hit (s : State) (input : ByteArray)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -1089,11 +1108,11 @@ def gasSteps_zeroExp_hit (s : State) (input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hb : baseSize input ≤ 1024)
     (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
-    (hsmall : modulusSize input ≤ 32) :
+    (hsmall : modulusSize input ≤ 32) (hwords : s.activeWords.toNat ≤ 1) :
     Challenge.EvmProof.GasSteps (zeroExpEntryState s) (zeroExpFinalState s input) :=
   Challenge.EvmProof.GasSteps.trans
     (gasSteps_zeroExp_hitA s input hdata hcode hfork hrun hnp hb hzero hpos hsmall)
-    (gasSteps_zeroExp_returnB s input hcode hfork hrun hnp hsmall)
+    (gasSteps_zeroExp_returnB s input hcode hfork hrun hnp hsmall hwords)
 inductive Declined (s : State) (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
       (steps : Challenge.EvmProof.GasSteps (entryState s) (memoEntryState s))
@@ -1112,7 +1131,7 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
     (hm : modulusSize input ≤ 1024)
-    (hfail : ¬ FastPath input) :
+    (hfail : ¬ FastPath input) (hwords : s.activeWords.toNat ≤ 1) :
     Declined s input :=
   if hupper : modulusSize input ≤ 256 then
     if h1 : 32 < modulusSize input then
@@ -1165,7 +1184,7 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
         (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
           ((gasSteps_bail1 s input hcode hfork hrun hnp hzero).trans
             (gasSteps_zeroExp_hit s input hdata hcode hfork hrun hnp hb hez
-              (by omega) (by omega)))
+              (by omega) (by omega) hwords))
     else
       .header (Or.inl (by omega)) <|
         (gasSteps_entry_bail s input hdata hcode hfork hrun hnp (Or.inl (by omega))).trans
@@ -1207,7 +1226,7 @@ inductive Fallback (input : ByteArray) : Type
 def gasSteps_fallback (input : ByteArray) (hvalid : ValidInput input)
     (hfail : ¬ FastPath input) : Fallback input :=
   match gasSteps_fallback_of (initialState CycleSubmission.Artifact.bytecode input 0) input rfl rfl rfl rfl
-      deployAddress_not_precompile hvalid.2.1 hvalid.2.2.1 hvalid.2.2.2 hfail with
+      deployAddress_not_precompile hvalid.2.1 hvalid.2.2.1 hvalid.2.2.2 hfail (by change 0 ≤ 1; decide) with
   | .header hsize steps =>
     .header hsize (Challenge.EvmProof.GasSteps.cast steps
       (entryState_initial input) (memoEntryState_initial input))
@@ -1344,14 +1363,14 @@ def setupPathA :
    opAt 465 (.Dup ⟨1, by decide⟩),
    pushAt 466 2 2080,
    opAt 467 .ADD,
-   pushAt 468 2 2784,
+   opAt 468 .MSIZE,
    opAt 469 .MSTORE,
    opAt 470 (.Dup ⟨5, by decide⟩),
    opAt 471 (.Dup ⟨1, by decide⟩),
    pushAt 472 0 0,
    opAt 473 .CALLDATACOPY,
    opAt 474 .POP,
-   pushAt 475 3 2390,
+   pushAt 475 5 2390,
    opAt 476 .JUMP]
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
   { s with pc := UInt256.ofNat 2390
@@ -1361,19 +1380,138 @@ def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
 private theorem jumpDest3296 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
   CycleSubmission.Global.Binding.jumpDest 1868 (by rfl)
-set_option linter.unusedSimpArgs false in
-theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
+namespace MsizeSetup
+open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
+set_option linter.unusedSimpArgs false
+def prefixWords (w : UInt256) : UInt256 :=
+  UInt256.ofNat (awNext (awNext (MachineState.activeWordsAfter w.toNat 2688 32) 2656 32) 2752 32)
+
+theorem prefixWords_eq (w : UInt256) (hw : w.toNat ≤ 87) :
+    prefixWords w = UInt256.ofNat 87 := by
+  have hb : 87 < (2 : Nat)^256 := by decide
+  simp only [prefixWords, awNext, activeWordsAfter_max _ _ 32 (by decide)]
+  congr 1
+  omega
+
+theorem prefixMsize_eq (w : UInt256) (hw : w.toNat ≤ 87) :
+    UInt256.ofNat (32 * (prefixWords w).toNat) = UInt256.ofNat 2784 := by
+  rw [prefixWords_eq w hw]
+  decide
+
+
+def program80 : List Instr :=
+  [.op (.Dup ⟨1, by decide⟩),
+   .push 2 2688,
+   .op .MSTORE,
+   .op (.Dup ⟨3, by decide⟩),
+   .push 1 96,
+   .op .ADD,
+   .push 2 2656,
+   .op .MSTORE,
+   .push 1 32,
+   .op (.Dup ⟨2, by decide⟩),
+   .op .SUB,
+   .push 3 2752,
+   .op .MSTORE,
+   .op (.Dup ⟨1, by decide⟩),
+   .push 2 2080,
+   .op .ADD,
+   .op .MSIZE,
+   .op .MSTORE,
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩),
+   .push 0 0,
+   .op .CALLDATACOPY,
+   .op .POP,
+   .push 5 2390,
+   .op .JUMP]
+
+def prefixProgram : List Instr := program80.take 16
+
+def prefixMemory (mem : ByteArray) (input : ByteArray) : ByteArray :=
+  mstoreAt (mstoreAt (mstoreAt mem 2688 (s32 input))
+    2656 (96 + baseSize input)) 2752 (s32 input - 32)
+
+def prefixState (s : State) (input : ByteArray) : State :=
+  { s with pc := UInt256.ofNat 676
+           memory := prefixMemory s.memory input
+           activeWords := prefixWords s.activeWords
+           stack := UInt256.ofNat (2080 + s32 input) :: UInt256.ofNat (modOffset input) :: outerStack input }
+
+theorem run_prefix (s : State) (input : ByteArray)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
+    (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input) :
+    runInstructions prefixProgram (setupEntryState s input) = some (prefixState s input) := by
+  have hn2 := limbs_ge_two input h32
+  have hS := s32_le_1024 input hm
+  have hSge : 32 ≤ s32 input := by unfold s32; omega
+  have hsub32 : UInt256.ofNat (s32 input) - UInt256.ofNat 32 =
+      UInt256.ofNat (s32 input - 32) :=
+    Challenge.EvmProof.Word.ofNat_sub_ofNat hSge (by omega)
+  have hmodS := mod_word_self (s32_lt input hm)
+  have hmodn := mod_word_self (limbs_lt input hm)
+  have hmodb := mod_word_self (show 96 + baseSize input < 2 ^ 256 by omega)
+  have hmodml := mod_word_self (show s32 input - 32 < 2 ^ 256 by omega)
+  have hmodtl := mod_word_self (show 2080 + s32 input < 2 ^ 256 by omega)
+  have hmodmoff := mod_word_self (modOffset_lt input hb he)
+  simp [prefixProgram, program80, prefixState, prefixMemory,
+    runInstructions, Challenge.EvmProof.Stepper.runInstr, setupEntryState, outerStack,
+    mstoreAt, prefixWords, awNext, State.activeWordsAfterUInt256, hsub32,
+    hmodS, hmodn, hmodb, hmodml, hmodtl, hmodmoff,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.add_assoc, List.exchange]
+
+
+
+def sizedState (s : State) (input : ByteArray) : State :=
+  { (prefixState s input) with
+    pc := UInt256.ofNat 677
+    stack := UInt256.ofNat 2784 :: (prefixState s input).stack }
+
+theorem run_msize (s : State) (input : ByteArray) (hw : s.activeWords.toNat ≤ 87) :
+    runInstructionsX [.op .MSIZE] (prefixState s input) = some (sizedState s input) := by
+  simp [runInstructionsX, runInstrX, prefixState, sizedState, outerStack,
+    prefixWords_eq s.activeWords hw, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod]
+
+theorem setupWords_bounded (w : UInt256) (input : ByteArray) (hw : w.toNat ≤ 87)
+    (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input) :
+    setupWords w input = UInt256.ofNat 88 := by
+  have hn2 := limbs_ge_two input h32
+  have hS := s32_le_1024 input hm
+  have hSge : 32 ≤ s32 input := by unfold s32; omega
+  have hms := modulusSize_le_s32 input
+  have hSne : s32 input ≠ 0 := by omega
+  have hmsne : modulusSize input ≠ 0 := by omega
+  simp only [setupWords, awNext,
+    activeWordsAfter_max _ _ 32 (by norm_num),
+    activeWordsAfter_max _ _ (s32 input) hSne,
+    activeWordsAfter_max _ _ (modulusSize input) hmsne,
+    Challenge.EvmProof.Word.word_toNat_ofNat]
+  congr 1
+  omega
+
+theorem copyWords88 (n : Nat) (hn : n ≤ 1024) :
+    MachineState.activeWordsAfter 88 0 n = 88 := by
+  by_cases hz : n = 0
+  · simp [MachineState.activeWordsAfter, hz]
+  · simp only [MachineState.activeWordsAfter, if_neg hz, Nat.zero_add]
+    exact Nat.max_eq_left (by omega)
+
+
+
+def restProgram : List Instr := program80.drop 17
+private theorem jumpDest2390 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
+  CycleSubmission.Global.Binding.jumpDest 1868 (by rfl)
+
+theorem run_rest (s : State) (input : ByteArray) (m0 : Nat)
     (hdata : s.executionEnv.calldata = input)
-    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) (hrun : s.halt = .Running)
-    (hsize : input.size < 2 ^ 256)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
     (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
-    (hwidth : modulusSize input % 128 = 0) :
-    Challenge.EvmProof.Stepper.runLocatedBlock setupPathA (setupEntryState s input) =
-      some (setupExitState s input m0) := by
-  -- With `msize % 128 = 0` the limb block needs no padding, so the deleted zero-fill copy wrote
-  -- exactly the bytes the surviving operand copy then overwrote, and both memory and the
-  -- active-word high-water mark are unchanged by dropping it.
+    (hwidth : modulusSize input % 128 = 0) (hw : s.activeWords.toNat ≤ 87) :
+    runInstructions restProgram (sizedState s input) = some (setupExitState s input m0) := by
   have hs32 : s32 input = modulusSize input := s32_eq_of_mask input hwidth
   have hpad : s32 input - modulusSize input = 0 := by omega
   have hmem : ∀ mem : ByteArray,
@@ -1386,65 +1524,57 @@ theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
     intro mem
     rw [hpad]
     exact writeBytes_overwrite mem _ _ 0 (by simp [hs32])
-  -- stated with the raw modulus literal, because `simp` has already reduced `2 ^ 256` to a
-  -- numeral in the goal and a rewrite rule only fires on a syntactic match
-  have hlw : ∀ X : Nat,
-      MachineState.activeWordsAfter
-          (MachineState.activeWordsAfter
-              (X % 115792089237316195423570985008687907853269984665640564039457584007913129639936)
-              0 (s32 input) %
-            115792089237316195423570985008687907853269984665640564039457584007913129639936)
-          (s32 input - modulusSize input) (modulusSize input) %
-        115792089237316195423570985008687907853269984665640564039457584007913129639936 =
-      MachineState.activeWordsAfter
-          (X % 115792089237316195423570985008687907853269984665640564039457584007913129639936)
-          0 (modulusSize input) %
-        115792089237316195423570985008687907853269984665640564039457584007913129639936 := by
-    intro X
-    rw [hpad, hs32]
-    exact activeWords_refill _ (modulusSize input) (Nat.mod_lt _ (by norm_num)) (by omega)
-  -- the block now ends at the copies, so the last expansion is not wrapped again
-  have hlw0 : ∀ X : Nat,
-      MachineState.activeWordsAfter
-          (MachineState.activeWordsAfter
-              (X % 115792089237316195423570985008687907853269984665640564039457584007913129639936)
-              0 (s32 input) %
-            115792089237316195423570985008687907853269984665640564039457584007913129639936)
-          (s32 input - modulusSize input) (modulusSize input) =
-      MachineState.activeWordsAfter
-          (X % 115792089237316195423570985008687907853269984665640564039457584007913129639936)
-          0 (modulusSize input) := by
-    intro X
-    rw [hpad, hs32]
-    exact activeWords_refill_raw _ (modulusSize input) (Nat.mod_lt _ (by norm_num)) (by omega)
-  have hn2 := limbs_ge_two input h32
-  have hS := s32_le_1024 input hm
-  have hSge : 32 ≤ s32 input := by unfold s32; omega
-  have hsub32 : UInt256.ofNat (s32 input) - UInt256.ofNat 32 =
-      UInt256.ofNat (s32 input - 32) :=
-    Challenge.EvmProof.Word.ofNat_sub_ofNat hSge (by omega)
-  have hsubms := sub_s32_msize input hm
-  have hmodS := mod_word_self (s32_lt input hm)
-  have hmodn := mod_word_self (limbs_lt input hm)
-  have hmodb := mod_word_self (show 96 + baseSize input < 2 ^ 256 by omega)
-  have hmodml := mod_word_self (show s32 input - 32 < 2 ^ 256 by omega)
-  have hmodtl := mod_word_self (show 2080 + s32 input < 2 ^ 256 by omega)
-  have hmodsz := mod_word_self hsize
-  have hmodms := mod_word_self (show modulusSize input < 2 ^ 256 by omega)
+  have hmodtl := mod_word_self (show 2080 + s32 input < 2^256 by
+    have hS := s32_le_1024 input hm; omega)
+  have hmodms := mod_word_self (show modulusSize input < 2^256 by omega)
   have hmodmoff := mod_word_self (modOffset_lt input hb he)
-  have hmodsub := mod_word_self (show s32 input - modulusSize input < 2 ^ 256 by omega)
-  simp (config := { maxSteps := 1000000 })
-    [setupPathA, opAt, pushAt, wfOp,
-     Challenge.EvmProof.Stepper.runLocatedBlock,
-     Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-     setupEntryState, setupExitState, outerStack, setupMem, modulusMem, varsMem, mstoreAt,
-     setupWords, awNext, State.activeWordsAfterUInt256,
-     hmem, hlw, hlw0, hdata, hcode, hrun, push0_word, hsub32, hsubms, jumpDest3296,
-     hmodS, hmodn, hmodb, hmodml, hmodtl, hmodsz, hmodms, hmodmoff, hmodsub,
-     Challenge.EvmProof.Word.literal_eq_ofNat,
-     Challenge.EvmProof.Word.succ_ofNat_mod,
-     Challenge.EvmProof.Word.ofNat_add_mod,
-     Challenge.EvmProof.Word.word_toNat_ofNat, List.exchange]
+  have hStore : MachineState.activeWordsAfter 87 2784 32 = 88 := by decide
+  simp [restProgram, program80, sizedState, prefixState, prefixMemory,
+    runInstructions, Challenge.EvmProof.Stepper.runInstr, setupExitState, outerStack,
+    setupMem, modulusMem, varsMem, mstoreAt, prefixWords_eq s.activeWords hw,
+    setupWords_bounded s.activeWords input hw hm h32, hmem, hdata, hcode,
+    State.activeWordsAfterUInt256, hStore, copyWords88 (modulusSize input) hm,
+    push0_word, hmodtl, hmodms, hmodmoff, jumpDest2390,
+    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+    Challenge.EvmProof.Word.ofNat_add_mod, Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.add_assoc, List.exchange]
+
+theorem run_setup80 (s : State) (input : ByteArray) (m0 : Nat)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
+    (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
+    (hwidth : modulusSize input % 128 = 0) (hw : s.activeWords.toNat ≤ 87) :
+    runInstructionsX program80 (setupEntryState s input) = some (setupExitState s input m0) := by
+  have hp : runInstructionsX prefixProgram (setupEntryState s input) = some (prefixState s input) := by
+    rw [runInstructionsX_eq prefixProgram (by decide)]
+    exact run_prefix s input hb he hm h32
+  have hz := run_msize s input hw
+  have hr : runInstructionsX restProgram (sizedState s input) = some (setupExitState s input m0) := by
+    rw [runInstructionsX_eq restProgram (by decide)]
+    exact run_rest s input m0 hdata hcode hb he hm h32 hwidth hw
+  change runInstructionsX ((prefixProgram ++ [.op .MSIZE]) ++ restProgram) _ = _
+  exact runInstructionsX_append_some _ _ _ _ _ (runInstructionsX_append_some _ _ _ _ _ hp hz) hr
+
+end MsizeSetup
+
+def setupBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 649 MsizeSetup.program80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 452 25 649 MsizeSetup.program80
+    (by change 452 + 25 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+    (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+
+theorem run_setupA (s : State) (input : ByteArray) (m0 : Nat)
+    (hdata : s.executionEnv.calldata = input)
+    (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
+    (_hrun : s.halt = .Running) (_hsize : input.size < 2^256)
+    (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
+    (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
+    (hwidth : modulusSize input % 128 = 0) (hupper : s.activeWords.toNat ≤ 87) :
+    runInstructionsX MsizeSetup.program80 (setupEntryState s input) = some (setupExitState s input m0) :=
+  MsizeSetup.run_setup80 s input m0 hdata hcode hb he hm h32 hwidth hupper
+
 theorem byteFrom_eq (bs : ByteArray) (i : Nat) :
     YulSemantics.EVM.byteFrom bs.toList i = bs[i]?.getD 0 := by
   unfold YulSemantics.EVM.byteFrom
@@ -1698,12 +1828,13 @@ def gasSteps_setup (s : State) (input : ByteArray) (m0 : Nat)
     (hsize : input.size < 2 ^ 256)
     (hb : baseSize input ≤ 1024) (he : exponentSize input ≤ 1024)
     (hm : modulusSize input ≤ 1024) (h32 : 32 < modulusSize input)
-    (hwidth : modulusSize input % 128 = 0) :
+    (hwidth : modulusSize input % 128 = 0) (hupper : s.activeWords.toNat ≤ 87) :
     Challenge.EvmProof.GasSteps (setupEntryState s input) (setupExitState s input m0) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
-      CycleSubmission.Artifact.artifact .Osaka setupPathA
-        (s := setupEntryState s input) hcode hfork
-        (run_setupA s input m0 hdata hcode hrun hsize hb he hm h32 hwidth) hrun hnp
+  WindowTwentyOneMsize.Block.stepsX setupBlock80
+    (s := setupEntryState s input)
+    ⟨by change Artifact.bytecode.size < 2^256; rw [Artifact.bytecodeSize]; decide,
+      hcode, hfork, hrun, hnp⟩ rfl
+    (run_setupA s input m0 hdata hcode hrun hsize hb he hm h32 hwidth hupper)
 def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
     (hdata : s.executionEnv.calldata = input)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -1711,7 +1842,7 @@ def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hsize : input.size < 2 ^ 256)
-    (hpath : FastPath input) :
+    (hpath : FastPath input) (hupper : s.activeWords.toNat ≤ 87) :
     Challenge.EvmProof.GasSteps (entryState s) (setupExitState s input m0) :=
   (gasSteps_entry_pass s input hdata hcode hfork hrun hnp hpath.1 hpath.2.1.2.2).trans
     ((gasSteps_sizeCheck_pass s input hdata hcode hfork hrun hnp
@@ -1722,7 +1853,7 @@ def gasSteps_fastPath_of (s : State) (input : ByteArray) (m0 : Nat)
           (fastPath_nprime input hpath)).trans
           (gasSteps_setup s input m0 hdata hcode hfork hrun hnp hsize
             hpath.2.1.1 hpath.2.1.2.1 (fastPath_modulus_le_1024 input hpath) hpath.1
-            (fastPath_width input hpath))))
+            (fastPath_width input hpath) hupper)))
 def lowLimb (input : ByteArray) : Nat :=
   (MachineState.readWord (modulusMem ByteArray.empty input) (s32 input - 32)).toNat
 def minvValue (input : ByteArray) : Nat := negWord (newton8 (lowLimb input))
@@ -1742,7 +1873,7 @@ def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState CycleSubmission.Artifact.bytecode input 0) input
-      (lowLimb input) rfl rfl rfl rfl deployAddress_not_precompile hsize hpath)
+      (lowLimb input) rfl rfl rfl rfl deployAddress_not_precompile hsize hpath (by change 0 ≤ 87; decide))
     (entryState_initial input) rfl
 theorem fastSetup_modulus (input : ByteArray) (hpath : FastPath input) :
     Model.FastRepresents (fastSetupMemory input) 0 (limbs input) (modulus input) :=

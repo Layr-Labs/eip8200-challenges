@@ -93,7 +93,7 @@ private theorem fastPCAnchor15 :
   interval_cases i <;> rfl
 @[simp] theorem fastPC2 (i : Nat) (hi : 465 ≤ i) (hii : i ≤ 476) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([671, 672, 675, 676, 679, 680, 681, 682, 683, 684, 685, 689] : List Nat)[i - 465]! := by
+      ([671, 672, 675, 676, 677, 678, 679, 680, 681, 682, 683, 689] : List Nat)[i - 465]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem fastPC8 (i : Nat) (hi : 477 ≤ i) (hii : i ≤ 482) :
