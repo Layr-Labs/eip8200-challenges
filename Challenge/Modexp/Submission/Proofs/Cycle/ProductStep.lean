@@ -37,7 +37,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (productQ8 inv a b n) (productQ7 inv a b n) rest (env.transfer rfl rfl)
     hm2 hcap hact hlow (fun i hi => hn i (by omega))
   have he : {middle s inv a b n rest with
-      pc := UInt256.ofNat 10234
+      pc := UInt256.ofNat 10226
       stack := NormalizeMeaning.frame (productd inv a b n) n
         (productQ8 inv a b n) (productQ7 inv a b n) rest} = middle s inv a b n rest :=
     SquareExecution.reset_self _ _ _ rfl (ProductExecution.output_frame s inv a b n rest)
@@ -54,7 +54,7 @@ theorem frame_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
       (slot0 inv a b n) (productQ7 inv a b n) rest :=
   Canonical.frame_output _ _ _ _ _ _
 theorem pc_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a b n rest).pc = UInt256.ofNat 10409 := Canonical.pc_output _ _ _ _ _ _
+    (result s inv a b n rest).pc = UInt256.ofNat 10400 := Canonical.pc_output _ _ _ _ _ _
 theorem executionEnv_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) :
     (result s inv a b n rest).executionEnv = s.executionEnv := Canonical.executionEnv_eq _ _ _ _ _ _
 theorem halt_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) :
