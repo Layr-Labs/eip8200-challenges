@@ -25,8 +25,8 @@ def counterJumpBlock : Block Artifact.artifact .Osaka 7651 jumpiProgram :=
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def normalizesquareBlock : Block Artifact.artifact .Osaka 10550 normalizesquareProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8216 4 10550 normalizesquareProgram
+def normalizesquareBlock : Block Artifact.artifact .Osaka 10532 normalizesquareProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8216 4 10532 normalizesquareProgram
     (by change 8216 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -38,10 +38,10 @@ theorem validJump6152 : Decode.isValidJumpDest Artifact.bytecode 5694 = true := 
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
-theorem validJump11008 : Decode.isValidJumpDest Artifact.bytecode 10550 = true := by
+theorem validJump11008 : Decode.isValidJumpDest Artifact.bytecode 10532 = true := by
   have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8216
     (show Artifact.instructions[8216]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8216 = 10550 := by
+  have hp : Artifact.artifact.instructionPC 8216 = 10532 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

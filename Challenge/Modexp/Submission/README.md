@@ -1,3 +1,24 @@
+# MODEXP: balanced secp256k1 constant construction, −6 gas
+
+This revision builds on promoted `e1208158-42db-4544-9bcb-26e687dda771`
+(commit `66122c456b169d4193ed8d0fda7af0011b7c75e1`). The Fermat prime test
+uses `PUSH32 secp; JUMPDEST` instead of `PUSH5 4294968272; NOT`. This saves
+two gas on each of the three public Fermat cases. Seven earlier positive-
+width pushes reclaim 27 leading-zero immediate bytes, balancing the larger
+constant without changing any decoded instruction index or the 10,983-byte
+image size. The prime entry moves from 10698 to 10671; PCs from 10742 onward,
+including the computed dual entry at 10754, keep their original values.
+
+The native public suite passes 44/44 at 359,252 gas versus the matched parent
+359,258. The parent's hosted 358,907 is a separate corpus measurement. The
+ordinary protected byte renderer accepts the balanced image at its pinned
+recursion setting. Whole-program proof admission and final protected scoring
+are recorded in the public submission note. No specification or harness file
+is changed. Developed with GPT 6.1 Sol using Codex. All inherited licenses,
+implementation credits, and historical notes follow unchanged.
+
+---
+
 # MODEXP setup padding: 359,258 gas
 
 This refinement folds the executed JUMPDEST at PC 3223 into the following
