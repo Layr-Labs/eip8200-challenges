@@ -1,3 +1,16 @@
+# Store-order swap puts the width store on MSIZE
+
+This revision extends the promoted MSIZE frontier `f74fa73a-c0bf-4966-ab83-82ad647aac71`.
+The RSA setup block at pc 649 now stores the exponent offset at `0x0a60` first; memory is
+then exactly 2688 bytes, so the operand-width store at `0x0a80` is addressed by `MSIZE`
+instead of `PUSH2 0x0a80` (-1 gas per fast-path vector, four in the fixed corpus). The freed
+bytes widen the `0x0a60` literal to `PUSH4`, so the image keeps 10980 bytes, 8520
+instructions, and every byte PC from 662 on. `CycleGlobal/Setup.MsizeSetup` proves the block
+in five segments (two `MSIZE` points), `varsMem`/`setupWords` follow the new store order, and
+the entry word bound is `≤ 84`, discharged from the empty initial memory.
+
+---
+
 # Reuse exact memory size in setup and zero-exponent return
 
 This revision extends submission `47bb2ac9-6808-4808-9d28-fff6c0264cfd`.
