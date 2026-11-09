@@ -16,49 +16,51 @@ private theorem hadd_eq_add (x y : UInt256) : x + y = UInt256.add x y := rfl
 def template : List Instr :=
   [ .op (.Swap ⟨4, by decide⟩),
     .op .POP,
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨15, by decide⟩),
     .push ⟨22, by decide⟩ (UInt256.ofNat 45805601672572416830120737830960963807809187780213980),
-    .op (.Swap ⟨0, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+    .op (.Swap ⟨2, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .OR,
     .op .XOR,
-    .op (.Dup ⟨10, by decide⟩),
-    .op (.Dup ⟨6, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨8, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨7, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .XOR,
     .op .AND,
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op .XOR,
     .push ⟨2, by decide⟩ (UInt256.ofNat 320),
     .op .MLOAD,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .ADD,
     .op .ADD,
     .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND,
-    .op (.Dup ⟨10, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 22),
     .op .SHR,
-    .op (.Dup ⟨8, by decide⟩),
-    .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
-    .op .AND,
-    .op (.Swap ⟨8, by decide⟩),
     .op (.Dup ⟨10, by decide⟩),
+    .op .ADD,
+    .op (.Dup ⟨5, by decide⟩),
+    .op .AND,
+    .op (.Swap ⟨10, by decide⟩),
+    .op (.Dup ⟨12, by decide⟩),
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .op .SHR,
-    .op (.Dup ⟨3, by decide⟩),
+    .op (.Dup ⟨5, by decide⟩),
     .op .AND ]
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 3185).take 66 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 3185).take 68 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (3136+49)).take 66 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (3136+49)).take 68 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop49]
   decide +kernel
 #print axioms exact_bytes
@@ -83,6 +85,8 @@ def inputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt
     x.v16] ++ rho
 def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [(UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) x.v9) (UInt256.ofNat 23))),
+    (UInt256.ofNat 475368975196266490007815979009),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
     (UInt256.ofNat 45805601672572416830120737830960963807809187780213980),
     x.v2,
     (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
@@ -101,6 +105,8 @@ def outputStack (memory : ByteArray) (x : Input) (rho : List UInt256) : List UIn
     x.v16] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [(UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) x.v9) (UInt256.ofNat 23))),
+    (UInt256.ofNat 475368975196266490007815979009),
+    (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096),
     (UInt256.ofNat 45805601672572416830120737830960963807809187780213980),
     x.v2,
     (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),

@@ -2,12 +2,17 @@
   {
     "submissionId": "354bc894-43bd-4043-bdbc-c3c94a430b78",
     "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and correctness infrastructure is retained.",
-    "evidence": "This candidate changes only two padding-block round templates (constant message word folded into the round key), one zero-gas push widening, their byte/PC bindings and dependent instruction indices, based on the Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
+    "evidence": "This candidate changes three padding-block round templates (constant message word folded into the round key), the templates of paired rounds 15, 16, 48 and 49 in both compressors (one stack shuffle removed in each pair), four gas-neutral commutative operand orders, and the byte/PC bindings and schedules of the rounds that move, based on the Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
   },
   {
     "submissionId": "82ed8662-84e0-4554-81a7-0cefa3e3ac7c",
-    "rationale": "Our own earlier candidate with the round-73 padding fold alone (616,664). This candidate keeps that fold and its PadRaw73 proof and adds the round-0 fold.",
-    "evidence": "PadRaw73.fold_message_key and the round-73 template are the same as in 82ed8662; PadRaw0.fold_message_key and the PUSH13->PUSH14 widening in round 43 are new."
+    "rationale": "Our own earlier candidate with the round-73 padding fold alone (616,664). This candidate keeps that fold and its PadRaw73 proof.",
+    "evidence": "PadRaw73.fold_message_key and the folded round-73 key literal are the same as in 82ed8662; this candidate restores the parent's PUSH1 0x14 in that round, adds the round-0 and round-65 folds and the round 15/16 and 48/49 shuffle removals."
+  },
+  {
+    "submissionId": "e25fb40f-37d3-4050-8203-54d6b6cb8f03",
+    "rationale": "Our own accepted candidate with the round-0 and round-73 padding folds (616,538), the record when this candidate was submitted. This candidate keeps both folds and their proofs.",
+    "evidence": "PadRaw0.fold_message_key and PadRaw73.fold_message_key are the same as in e25fb40f; its PUSH13->PUSH14 widening in round 43 is dropped because the added round-65 fold and round 73's two-byte shrink already balance the routine's length."
   },
   {
     "submissionId": "3b458b01-80a9-45c7-86bc-caa2e1a60bfd",

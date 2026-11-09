@@ -33,10 +33,8 @@ def template : List Instr :=
     .op (.Dup ⟨13, by decide⟩),
     .op .XOR,
     .op .XOR,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 128),
+    .push ⟨4, by decide⟩ (UInt256.ofNat 2840853966),
     .op .ADD,
-    .op .ADD,
-    .op (.Dup ⟨10, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
@@ -99,7 +97,7 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
     (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v5,
-    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.ofNat 1109194275457955143375908765704) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (PadValues.load n 522) (UInt256.add (UInt256.xor x.v9 (UInt256.xor x.v6 (UInt256.xor (UInt256.lor x.v0 (UInt256.land x.v6 (UInt256.ofNat 4294967295))) (UInt256.ofNat 4294967295)))) x.v7)))) (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928)) (UInt256.ofNat 20)))),
+    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.ofNat 1109194275457955143375908765704) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2840853966) (UInt256.add (UInt256.xor x.v9 (UInt256.xor x.v6 (UInt256.xor (UInt256.lor x.v0 (UInt256.land x.v6 (UInt256.ofNat 4294967295))) (UInt256.ofNat 4294967295)))) x.v7))) (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928)) (UInt256.ofNat 20)))),
     (UInt256.ofNat 23),
     (UInt256.ofNat 2840853838),
     x.v9,
@@ -110,8 +108,16 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 1109194275457955143345843994625),
     (UInt256.ofNat 475368975196266490007815979009),
     x.v16] ++ rho
+/-- The padding message word (`load n 522`) and the round key fold into one literal. -/
+private theorem fold_message_key (n z : UInt256) :
+    UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (PadValues.load n 522) z) =
+      UInt256.add (UInt256.ofNat 2840853966) z := by
+  change UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (UInt256.ofNat 128) z) = _
+  rw [← StaggerCoreCommon.add_assoc]
+  rfl
 private theorem actualOutput_eq (n : UInt256) (x : Input) (rho : List UInt256) :
     actualOutput n x rho = outputStack n x rho := by
+  simp only [outputStack, fold_message_key]
   simp only [actualOutput, outputStack, RawExpressionAC.add_assoc, RawExpressionAC.add_comm,
     RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm,
     RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm,
@@ -150,10 +156,10 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc n x rho hstack hrun hactive hcal hmem
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9391).take 35 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9390).take 36 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9344+47)).take 35 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9344+46)).take 36 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop146]
   decide +kernel
 #print axioms exact_bytes

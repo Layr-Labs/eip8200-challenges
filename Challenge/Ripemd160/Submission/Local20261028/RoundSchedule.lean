@@ -101,7 +101,7 @@ def shapes : Nat → List Reg
   | 13 => [ .d, .cachedMessage 360, .pair, .upper, .a, .c, .cachedMessage 180, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 14 => [ .d, .e, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 15 => [ .d, .cache 140, .cache 140, .a, .cachedMessage 360, .pair, .upper, .k, .c, .cachedMessage 180, .e, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
-  | 16 => [ .d, .cache 140, .e, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
+  | 16 => [ .d, .cache 140, .e, .cachedMessage 360, .pair, .upper, .literal 34535016170389834383797866734609369064725061767952793, .b, .cachedMessage 180, .a, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 17 => [ .d, .cache 140, .a, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 18 => [ .d, .e, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 19 => [ .d, .cache 350, .e, .a, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
@@ -134,7 +134,7 @@ def shapes : Nat → List Reg
   | 46 => [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 47 => [ .d, .cache 310, .cache 140, .e, .cachedMessage 360, .pair, .upper, .k, .c, .cachedMessage 180, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 48 => [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
-  | 49 => [ .d, .k, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
+  | 49 => [ .d, .cache 190, .cache 140, .k, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 50 => [ .d, .k, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 51 => [ .d, .cache 350, .e, .k, .cachedMessage 360, .pair, .upper, .e, .c, .cachedMessage 180, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
   | 52 => [ .d, .k, .cachedMessage 360, .pair, .upper, .a, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ]
@@ -181,7 +181,7 @@ def pcs : Nat → Nat
   | 13 => 1538
   | 14 => 1603
   | 15 => 1660
-  | 16 => 1714
+  | 16 => 1737
   | 17 => 1780
   | 18 => 1833
   | 19 => 1873
@@ -214,7 +214,7 @@ def pcs : Nat → Nat
   | 46 => 3087
   | 47 => 3145
   | 48 => 3185
-  | 49 => 3251
+  | 49 => 3253
   | 50 => 3294
   | 51 => 3336
   | 52 => 3389

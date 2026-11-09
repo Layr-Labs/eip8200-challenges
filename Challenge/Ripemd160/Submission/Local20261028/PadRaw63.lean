@@ -24,8 +24,8 @@ def template : List Instr :=
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
     .op (.Dup ⟨2, by decide⟩),
-    .op (.Dup ⟨8, by decide⟩),
-    .op (.Dup ⟨12, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op (.Dup ⟨9, by decide⟩),
     .op .XOR,
     .op (.Dup ⟨7, by decide⟩),
     .op .OR,
@@ -79,7 +79,7 @@ def outputStack (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :=
     (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
     (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v5,
-    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2400959708) (UInt256.add (PadValues.load n 342) (UInt256.add (UInt256.xor (UInt256.xor x.v6 (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.v9)) (UInt256.land (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) (UInt256.xor x.v6 x.v9)) x.v0)) x.v7))))) (UInt256.ofNat 21)))),
+    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2400959708) (UInt256.add (UInt256.xor x.v6 (UInt256.xor (UInt256.land (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) (UInt256.xor x.v6 x.v9)) x.v0) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.v9))) x.v7)))) (UInt256.ofNat 21)))),
     (UInt256.ofNat 23),
     (UInt256.ofNat 2840853838),
     x.v9,
@@ -97,7 +97,7 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
     (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v5,
-    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2400959708) (UInt256.add (PadValues.load n 342) (UInt256.add (UInt256.xor (UInt256.xor x.v6 (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.v9)) (UInt256.land (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) (UInt256.xor x.v6 x.v9)) x.v0)) x.v7))))) (UInt256.ofNat 21)))),
+    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul (UInt256.ofNat 158456325065422163343096938498) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2400959708) (UInt256.add (UInt256.xor x.v6 (UInt256.xor (UInt256.land (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) (UInt256.xor x.v6 x.v9)) x.v0) (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.v9))) x.v7)))) (UInt256.ofNat 21)))),
     (UInt256.ofNat 23),
     (UInt256.ofNat 2840853838),
     x.v9,
@@ -141,10 +141,10 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc n x rho hstack hrun hactive hcal hmem
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9316).take 40 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9315).take 40 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9280+36)).take 40 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9280+35)).take 40 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop145]
   decide +kernel
 #print axioms exact_bytes

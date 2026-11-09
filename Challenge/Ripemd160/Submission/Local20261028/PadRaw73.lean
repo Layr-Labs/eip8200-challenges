@@ -109,7 +109,7 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 1109194275457955143345843994625),
     (UInt256.ofNat 475368975196266490007815979009),
     x.v16] ++ rho
-/-- The padding message word (`load n 540`) and the round key fold into one literal. -/
+/-- Round 73 folds its padding message word (`load n 540`) and the round key into one literal. -/
 private theorem fold_message_key (n z : UInt256) :
     UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (PadValues.load n 540) z) =
       UInt256.add (UInt256.ofNat 2854495385411919762116571938898990275606347086) z := by
@@ -118,8 +118,7 @@ private theorem fold_message_key (n z : UInt256) :
   rfl
 private theorem actualOutput_eq (n : UInt256) (x : Input) (rho : List UInt256) :
     actualOutput n x rho = outputStack n x rho := by
-  simp only [outputStack, fold_message_key]
-  simp only [actualOutput]
+  simp only [actualOutput, outputStack, fold_message_key]
 private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat)
