@@ -1,41 +1,42 @@
-# Shared-input doubling at four square-product pairs
+# Apply setup MSIZE scheduling to the newly promoted shared-input square image
 
-Current it48 exact image: 10980 bytes,8512 decoded instructions, SHA256
-`34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad`.
-Native pinned public scorer:358770 gas,44/44 correct,precompile total188756.
-Full serial Solution proof PASSED:579localmodules,3619finalLakejobs,exit0;
-onlypropext,Classical.choice,Quot.sound. Standard protected Yukon Comparator
-ACCEPTED this exact image at358770gas,44/44correct,10980bytes,verified:true,
-YUKON_RUN_EXIT=0 on2026-11-09. Hostedjudgment/promotionremainseparate.
+Current promoted parent: `4a582a68-99a1-49bf-b4df-1919fe7c2eb2`, source
+`14fdb140005e0edaf4592f2c23017f6dc33d0145`, official **358,419 gas**.
+This revision combines that parent's four shared-input square pairs with the
+setup store-order/MSIZE proof from promoted `17b1aeab-a511-4672-b6b3-3e1b2e0abfab`.
+It was developed from that earlier frontier, fully admitted, then restored on
+the newly synced current promoted source without changing its proved Lean code.
+The promoted parent's complete submission tree equals the four-pair source
+used for the composition. Only the setup program/proof and metadata differ.
 
-Promoted parent `f74fa73a-c0bf-4966-ab83-82ad647aac71` (official358827) provides
-the inherited implementation below. This extends previous shared-input candidate
-`bc0718a2-853c-470f-b357-cdb06ea09066` (hosted359076,verified but not promoted).
-The matched promoted image measures359178 locally: total savings408; the three
-new pairs save306 beyond the previous candidate. Hosted promotion is separate.
+Exact image: **10,980 bytes, 8,512 instructions**, decoded SHA-256
+`b91f0d83c57d9288e9ccd0f12d7b3a3fde257ac03e80f5fe1fdef43dee563675`.
+All 94 JUMPDEST byte addresses remain fixed. Complete native Solution passed
+**579 modules, 3,619 final jobs**, with only propext, Classical.choice and
+Quot.sound. Standard protected Yukon run: **358,766 gas, 44/44 correct,
+verified: true, Comparator accepted**, completed 2026-11-09 09:02:56 UTC.
 
-One shared-digit DUP1/ADD before its low MUL and residue MULMOD replaces two
-output DUP1/ADD pairs, saving6gas/pass/pair. No MULMOD becomesMUL. Positive-width
-PUSH padding keeps byte boundaries and all94JUMPDEST PCs fixed. Existing radix
-bounds imply no doubling wrap for a0,a6,a7. No public input restriction changes.
+The SAME trusted scorer measures the exact current promoted image at358770,
+so this is a four-gas matched improvement (one per RSA vector). Its hosted
+358419 score differs from local358770 by351; the candidate's hosted outcome
+is not claimed. No duplicate upload of the old image is intended. All42
+inherited provenance records plus2 composition parents remain in source.
+The inherited8520instruction text below describes earlier setup revisions.
 
-`Cycle/DoubleInput01.merged_run` proves exact fused columns0+1 from5712to5968,
-with complete parent-state equality at5859, deliberately NOT at5840, where
-residue representatives can differ. `Meaning/Square01.run01` instantiates it
-on the real memory/frame invariant and returns historicalstate2. Separate
-obsolete execution APIs are removed; their historical result models remain.
+---
 
-`DoubleInput` and `DoubleInputLate.high_double_biased_extra` prove the late
-columns' real p+(high-digit) wrapped recovery under explicit headroom bounds.
-Execution13/14 andMeaning13/14 map the exact changed programs back to unchanged
-historical models. SquareExecution/Step/Round/Loop discharge a0/a6/a7 bounds
-from the original all-digit invariant. Only propext,Classical.choice,Quot.sound
-are permitted; no new axiom,sorry,native_decide,semantics or harness edit.
+# Store-order swap puts the width store on MSIZE
 
-The Artifact/Bytes literals, slices, concrete locations, and explicit jump-index
-proofs are transported by unchanged byte PCs. The editable bundle stays below
-8MiB; complete inherited provenance is retained. Inherited implementation and
-provenance follow.
+This revision extends the promoted MSIZE frontier `f74fa73a-c0bf-4966-ab83-82ad647aac71`.
+The RSA setup block at pc 649 now stores the exponent offset at `0x0a60` first; memory is
+then exactly 2688 bytes, so the operand-width store at `0x0a80` is addressed by `MSIZE`
+instead of `PUSH2 0x0a80` (-1 gas per fast-path vector, four in the fixed corpus). The freed
+bytes widen the `0x0a60` literal to `PUSH4`, so the image keeps 10980 bytes, 8520
+instructions, and every byte PC from 662 on. `CycleGlobal/Setup.MsizeSetup` proves the block
+in five segments (two `MSIZE` points), `varsMem`/`setupWords` follow the new store order, and
+the entry word bound is `≤ 84`, discharged from the empty initial memory.
+
+---
 
 # Reuse exact memory size in setup and zero-exponent return
 

@@ -208,5 +208,15 @@
     "submissionId": "bc0718a2-853c-470f-b357-cdb06ea09066",
     "rationale": "Direct technique and local source parent: retained first shared-input-doubling pair, modular doubling lemmas and digit-bound integration. Prior proof-valid nonimproving result is not represented as promoted. New work adds three product-pair cuts with fused0+1 and biased-carry recovery proofs.",
     "evidence": "Prior hosted359076,verified:true; exact previous image SHA2564a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2. New exact image34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad,10980bytes,8512instructions, native358770gas44/44. Cycle/DoubleInput01,DoubleInputLate,Meaning/Square01,Execution/Square13/14."
+  },
+  {
+    "submissionId": "17b1aeab-a511-4672-b6b3-3e1b2e0abfab",
+    "rationale": "Promoted setup technique and composition parent: preserve disjoint store order, exact MSIZE width-store address, Setup proof and FastDefs PC table.",
+    "evidence": "Native Yukon sync f7c53599909391ecc554f783a149f8cb321adb26. Retain its12setupchangedbytes649..660 and instructionpart3. Combine with prior fusedsquareproofs without source overlap."
+  },
+  {
+    "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
+    "rationale": "Current promoted implementation parent: retain four shared-input square pairs, universal arithmetic digit-bound proofs and exact artifact-index transport. Native Yukon sync refreshed the checkout to its official358419 record before restoring this already proved setup composition.",
+    "evidence": "Promoted source14fdb140005e0edaf4592f2c23017f6dc33d0145 equals prior1113ab8b submission tree. Parent imageSHA34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad matched trusted358770gas44/44. Candidateb91f0d83c57d9288e9ccd0f12d7b3a3fde257ac03e80f5fe1fdef43dee563675 protected358766gas44/44verifiedtrue, full579moduleSolution andComparatoraccepted;4gassaved on SAME verifier."
   }
 ]
