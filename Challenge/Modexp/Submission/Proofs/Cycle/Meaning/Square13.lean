@@ -32,11 +32,11 @@ theorem model13_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
 
 theorem run13 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory13 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat) (ha6 : (a 6).toNat < radix) :
     runInstructions squareColumn13Program
       {s with pc := UInt256.ofNat 7363, stack := frame13 inv a b n rest} =
       some (result13 s inv a b n rest) := by
-  have hx := squareColumn13_run s (((n 6) * (squareQ7 inv a b n))) ((((n 7) * (squareQ6 inv a b n)) + (((n 8) * (squareQ5 inv a b n)) + ((squareC13 inv a b n) + ((((a 6) * (a 7)) + ((a 8) * (a 5))) + (((a 6) * (a 7)) + ((a 8) * (a 5)))))))) (((squareC13 inv a b n) + (((UInt256.mulMod (a 6) (a 7) P) + (UInt256.mulMod (a 8) (a 5) P)) + ((UInt256.mulMod (a 6) (a 7) P) + (UInt256.mulMod (a 8) (a 5) P))))) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareQ5 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact
+  have hx := squareColumn13_run s (((n 6) * (squareQ7 inv a b n))) ((((n 7) * (squareQ6 inv a b n)) + (((n 8) * (squareQ5 inv a b n)) + ((squareC13 inv a b n) + ((((a 6) * (a 7)) + ((a 8) * (a 5))) + (((a 6) * (a 7)) + ((a 8) * (a 5)))))))) (((squareC13 inv a b n) + (((UInt256.mulMod (a 6) (a 7) P) + (UInt256.mulMod (a 8) (a 5) P)) + ((UInt256.mulMod (a 6) (a 7) P) + (UInt256.mulMod (a 8) (a 5) P))))) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareQ5 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact rfl rfl (by rw [h.at128]; exact ha6)
   rw [model13_eq s inv a b n rest h] at hx
   exact hx
 

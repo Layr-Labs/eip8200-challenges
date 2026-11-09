@@ -31,10 +31,12 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (env : Environment Artifact.artifact .Osaka s)
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
     (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+    (ha0 : (a 0).toNat < WordArithmetic.radix)
+    (ha6 : (a 6).toNat < WordArithmetic.radix) (ha7 : (a 7).toNat < WordArithmetic.radix)
     (hz : (ControlArithmetic.overflowFlag (WordHistory.squared inv a zeroWords n)).toNat = 0) :
     GasSteps {s with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)}
       (result s inv a n rest) := by
-  have h1 := SquareStep.gasSteps s inv a n (CounterControl.counter s :: rest) env h (by simp only [List.length_cons]; omega) hact hz
+  have h1 := SquareStep.gasSteps s inv a n (CounterControl.counter s :: rest) env h (by simp only [List.length_cons]; omega) hact ha0 ha6 ha7 hz
   have e := env.transfer (SquareStep.executionEnv_eq s inv a n (CounterControl.counter s :: rest)) (SquareStep.halt_eq s inv a n (CounterControl.counter s :: rest))
   have act : 88 ≤ (SquareStep.result s inv a n (CounterControl.counter s :: rest)).activeWords.toNat := by
     rw [SquareStep.active_eq]; exact hact

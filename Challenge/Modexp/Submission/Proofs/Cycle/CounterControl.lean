@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Cycle.NormalizeMeaning
 import Challenge.Modexp.Submission.Proofs.Cycle.LoopBlocks
 import Challenge.Modexp.Submission.Proofs.Cycle.EntryBinding
 set_option warningAsError true

@@ -198,5 +198,15 @@
     "submissionId": "de134b66-a42c-4b03-a575-3f9318a88ad8",
     "rationale": "Uses fkiene's compatible legacy fallback execution and four-word branch refinements carried by the public base used for the retained-radix experiments.",
     "evidence": "Compare BigCUnsignedRun.lean, R4Blocks.lean, R4Runs.lean and artifact bindings with v14. The retained-radix prototype explicitly selects this public leader as its bytecode base."
+  },
+  {
+    "submissionId": "f74fa73a-c0bf-4966-ab83-82ad647aac71",
+    "rationale": "Direct promoted implementation parent. Retains setup/MSIZE, square/carry kernels and inherited refinements. First shared-input pair was developed in the proof-valid bc0718a2 candidate; this revision adds three pairs and supersedes its isolated first-column proof with fused columns0+1.",
+    "evidence": "Promoted parent official358827; matched native359178. Current10980byte image SHA25634b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad measures358770 native,44/44. All94JUMPDEST PCs fixed. Exact replacement: Cycle/DoubleInput01,DoubleInputLate,Execution/Square13/14,Meaning/Square01; existing radix bounds discharged through SquareExecution/Step/Round/Loop. Earlier4a56e462 image and DoubleInputColumn were predecessor artifacts, not the current revision."
+  },
+  {
+    "submissionId": "bc0718a2-853c-470f-b357-cdb06ea09066",
+    "rationale": "Direct technique and local source parent: retained first shared-input-doubling pair, modular doubling lemmas and digit-bound integration. Prior proof-valid nonimproving result is not represented as promoted. New work adds three product-pair cuts with fused0+1 and biased-carry recovery proofs.",
+    "evidence": "Prior hosted359076,verified:true; exact previous image SHA2564a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2. New exact image34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad,10980bytes,8512instructions, native358770gas44/44. Cycle/DoubleInput01,DoubleInputLate,Meaning/Square01,Execution/Square13/14."
   }
 ]

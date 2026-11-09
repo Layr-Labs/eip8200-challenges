@@ -1,5 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square0
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square1
+import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square01
 import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square2
 import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square3
 import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square4
@@ -253,20 +252,17 @@ theorem memory15_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt25
 
 theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat)
+    (ha0 : (a 0).toNat < radix) (ha6 : (a 6).toNat < radix) (ha7 : (a 7).toNat < radix) :
     runInstructions program
       {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} =
       some (state15 s inv a b n rest) := by
-  have m0 := h
-
-  have m1 := memory0_output (state0 s inv a b n rest) inv a b n rest m0
-  have h0 : runInstructions squareColumn0Program {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} = some (state1 s inv a b n rest) :=
-    run0 (state0 s inv a b n rest) inv a b n rest m0 hcap hact
-  have m2 := memory1_output (state1 s inv a b n rest) inv a b n rest m1
-  have h1 : runInstructions squareColumn1Program (state1 s inv a b n rest) = some (state2 s inv a b n rest) := by
-    have hx := run1 (state1 s inv a b n rest) inv a b n rest m1 hcap hact
-    rw [reset_self (state1 s inv a b n rest) (UInt256.ofNat 5840) (frame1 inv a b n rest) rfl rfl] at hx
-    exact hx
+  have h01 : runInstructions DoubleInput01.mergedProgram
+      {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} =
+      some (state2 s inv a b n rest) :=
+    run01 s inv a b n rest h hcap hact ha0
+  have m2 : Memory2 (state2 s inv a b n rest).memory inv a b n :=
+    memory01_output s inv a b n rest h
   have m3 := memory2_output (state2 s inv a b n rest) inv a b n rest m2
   have h2 : runInstructions squareColumn2Program (state2 s inv a b n rest) = some (state3 s inv a b n rest) := by
     have hx := run2 (state2 s inv a b n rest) inv a b n rest m2 hcap hact
@@ -324,15 +320,19 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
     exact hx
   have m14 := memory13_output (state13 s inv a b n rest) inv a b n rest m13
   have h13 : runInstructions squareColumn13Program (state13 s inv a b n rest) = some (state14 s inv a b n rest) := by
-    have hx := run13 (state13 s inv a b n rest) inv a b n rest m13 hcap hact
+    have hx := run13 (state13 s inv a b n rest) inv a b n rest m13 hcap hact ha6
     rw [reset_self (state13 s inv a b n rest) (UInt256.ofNat 7363) (frame13 inv a b n rest) rfl rfl] at hx
     exact hx
   have m15 := memory14_output (state14 s inv a b n rest) inv a b n rest m14
   have h14 : runInstructions squareColumn14Program (state14 s inv a b n rest) = some (state15 s inv a b n rest) := by
-    have hx := run14 (state14 s inv a b n rest) inv a b n rest m14 hcap hact
+    have hx := run14 (state14 s inv a b n rest) inv a b n rest m14 hcap hact ha7
     rw [reset_self (state14 s inv a b n rest) (UInt256.ofNat 7498) (frame14 inv a b n rest) rfl rfl] at hx
     exact hx
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14))))))))))))))
+  -- The two aliases retain their existing slots in `program`; after they are
+  -- rewired, this is the exact fused bytecode, not a transient-frame equality.
+  change runInstructions (DoubleInput01.program0 ++ (DoubleInput01.program1 ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (squareColumn10Program ++ (squareColumn11Program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program))))))))))))))) _ = _
+  simpa only [DoubleInput01.mergedProgram, List.append_assoc] using
+    runInstructions_append_some _ _ _ _ _ h01 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14))))))))))))
 
 theorem memory_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) (h : Memory0 s.memory inv a b n) :
     Memory15 (state15 s inv a b n rest).memory inv a b n := by
@@ -406,8 +406,8 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 5712 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4309 1610 5712 program
-    (by change 4309 + 1610 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4309 1602 5712 program
+    (by change 4309 + 1602 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -415,12 +415,13 @@ def block : Block Artifact.artifact .Osaka 5712 program :=
 noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat)
+    (ha0 : (a 0).toNat < radix) (ha6 : (a 6).toNat < radix) (ha7 : (a 7).toNat < radix) :
     GasSteps {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest}
       (state15 s inv a b n rest) :=
   block.steps
     (s := {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest})
-    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact)
+    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact ha0 ha6 ha7)
 
 noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
@@ -440,7 +441,7 @@ noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (a i).toNat) +
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (squareq inv a b n i).toNat) *
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (n i).toNat)) := by
-  refine ⟨gasSteps s inv a b n rest env h hcap hact, ?_⟩
+  refine ⟨gasSteps s inv a b n rest env h hcap hact (ha 0 (by decide)) (ha 6 (by decide)) (ha 7 (by decide)), ?_⟩
   rw [output_value s inv a b n rest h]
   exact (squareTrace inv a b n).exact_product ha hb hn N hn0 hinv
 

@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Cycle.NormalizeMeaning
 import Challenge.Modexp.Submission.Proofs.Cycle.Execution.Entry
 import Challenge.Modexp.Submission.Proofs.Cycle.SquareFrames
 import Challenge.Modexp.Submission.Proofs.Cycle.InputWords

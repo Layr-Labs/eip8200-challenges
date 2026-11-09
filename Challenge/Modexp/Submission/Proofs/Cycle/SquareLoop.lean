@@ -69,7 +69,7 @@ noncomputable def oneRound (s : State) (inv : UInt256) (a n : Nat → UInt256) (
   have hsmall' : value (digits inv a n) + 2*N ≤ radix^9 := by
     simpa only [digits, ControlArithmetic.normalized, if_pos hz] using hsq
   refine ⟨Round.result s inv a n rest, digits inv a n,
-    Round.gasSteps s inv a n rest env hm hcap hact hz,
+    Round.gasSteps s inv a n rest env hm hcap hact (ha 0 (by decide)) (ha 6 (by decide)) (ha 7 (by decide)) hz,
     Round.memory_output s inv a n rest hm,
     Round.frame_output s inv a n rest,
     Round.pc_output s inv a n rest k hk hk16 hc,

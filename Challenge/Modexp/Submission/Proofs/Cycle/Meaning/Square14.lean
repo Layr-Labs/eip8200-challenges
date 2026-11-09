@@ -32,11 +32,16 @@ theorem model14_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest :
 
 theorem run14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory14 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat) (ha7 : (a 7).toNat < radix) :
     runInstructions squareColumn14Program
       {s with pc := UInt256.ofNat 7498, stack := frame14 inv a b n rest} =
       some (result14 s inv a b n rest) := by
-  have hx := squareColumn14_run s ((squareC15 inv a b n)) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareD2 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact
+  have hx := squareColumn14_run s ((squareC15 inv a b n)) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareD2 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact rfl rfl
+    (by
+      unfold squareC15 CycleSubmission.DirectRecovery.carry
+      rw [CycleSubmission.DoubleInput.mulMod_nat]
+      · exact Nat.mod_lt _ (by norm_num [P, HistoricalSearch.CRTColumn.residueModulus, Challenge.EvmProof.Word.word_toNat_ofNat])
+      · norm_num [P, HistoricalSearch.CRTColumn.residueModulus, Challenge.EvmProof.Word.word_toNat_ofNat]) (by rw [h.at160]; exact ha7)
   rw [model14_eq s inv a b n rest h] at hx
   exact hx
 
