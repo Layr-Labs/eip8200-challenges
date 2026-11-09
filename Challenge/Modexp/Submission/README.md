@@ -1,3 +1,44 @@
+## Exact fixed-mask refinement: final admission receipt
+
+The R5 retained-mask rewrite on direct promoted parent
+`4a582a68-99a1-49bf-b4df-1919fe7c2eb2` has passed the full serial Solution
+proof (579 local modules, 3,619 final jobs, BUILD_EXIT=0) and the standard
+protected Comparator. The candidate theorem uses only propext,
+Classical.choice, and Quot.sound. Protected scoring on 2026-11-09 at
+11:29:40 UTC reports **358,758 gas**, **44/44 correct**, **10,980 bytes**,
+`verified: true`, Comparator accepted and YUKON_RUN_EXIT=0. The exact decoded
+image SHA-256 is
+`3731a447febc5e2db6315fc8a0a6a378bb0c1c7f87c8922c6c16e04d84997bd0`.
+Matched promoted-parent scoring is 358,770, so this saves twelve gas on that
+same corpus. Hosted scores and promotion are separate; this local receipt
+does not claim either. Earlier pending-admission notes below are historical
+checkpoints, superseded for this exact mask image by this receipt.
+
+# Direct retained R5 mask: remove a redundant constant shift
+
+Exact it51 image10980bytes,8510instructions,SHA256
+`3731a447febc5e2db6315fc8a0a6a378bb0c1c7f87c8922c6c16e04d84997bd0`.
+Directparentpromoted`4a582a68-99a1-49bf-b4df-1919fe7c2eb2`,source14fdb140.
+Nativepairedscorer358770->358758(-12gas),44/44correcteach.
+All94JUMPDESTbyteaddressesunchanged;onlyspan[5349,5392)edited.
+
+PushM251directly,deriveM240byrightshift11,storeat224,retainM251.
+ThisreplacespushM256,deriveM240byshift16,store,thenrightshift5.
+PUSH4addresspaddingkeepsexactbytewidthwithnoextradynamicgas.
+Samearbitraryincomingstack,samememorywrite/expansion,closedconstantidentity.
+NoMULMODreplacement,inputrecognition,additionalboundorspecificationchange.
+
+R5.PrologueRunlocalLeanPASSED1352finaljobs,onlypropext/Classical.choice/
+Quot.sound. Mergedparts1/2joinexisting5401boundarywithunchangedfinalmodel.
+FullSolutionandprotectedadmissionarePENDINGatthischeckpoint;doNOTread
+inheritedproof/scorestatementsbelowascurrentcandidateadmission.
+Fourdiagnosticcorpora176poworacleoutputs,8fullstack/memoryjoinsallpass.
+
+Inheritedimplementationandprovenancefollow;it51doesnotincorporatethe
+rejected169a02b2setupcomposition.
+
+---
+
 # Shared-input doubling at four square-product pairs
 
 Current it48 exact image: 10980 bytes,8512 decoded instructions, SHA256

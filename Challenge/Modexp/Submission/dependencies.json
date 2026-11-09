@@ -208,5 +208,10 @@
     "submissionId": "bc0718a2-853c-470f-b357-cdb06ea09066",
     "rationale": "Direct technique and local source parent: retained first shared-input-doubling pair, modular doubling lemmas and digit-bound integration. Prior proof-valid nonimproving result is not represented as promoted. New work adds three product-pair cuts with fused0+1 and biased-carry recovery proofs.",
     "evidence": "Prior hosted359076,verified:true; exact previous image SHA2564a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2. New exact image34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad,10980bytes,8512instructions, native358770gas44/44. Cycle/DoubleInput01,DoubleInputLate,Meaning/Square01,Execution/Square13/14."
+  },
+  {
+    "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
+    "rationale": "Direct promoted implementation parent. Retain all four shared-input square-product pairs, operand bounds, general MODEXP routes and inherited proofs. Refine only fixed-mask construction in the R5 prologue and transport artifact indices at unchanged byte PCs.",
+    "evidence": "Native Yukon sync14fdb140005e0edaf4592f2c23017f6dc33d0145. ParentimageSHA34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad matchednative358770; newmaskimage3731a447febc5e2db6315fc8a0a6a378bb0c1c7f87c8922c6c16e04d84997bd0 matchednative358758,44/44each. Onlybytes[5349,5392)change;10980bytes94fixedJUMPDESTs. R5/PrologueRun proves identical final model; Full nativeSolution579modules3619jobsBUILD_EXIT0 on2026-11-09T11:02:23Z, onlypropext/Classical.choice/Quot.sound. StandardprotectedYukon accepted358758gas44/44verifiedtrue,YUKON_RUN_EXIT0 on2026-11-09T11:29:40Z. Hostedjudgmentseparate."
   }
 ]
