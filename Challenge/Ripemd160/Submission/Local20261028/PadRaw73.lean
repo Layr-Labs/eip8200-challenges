@@ -40,7 +40,7 @@ def template : List Instr :=
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
     .op .MULMOD,
-    .push ⟨3, by decide⟩ (UInt256.ofNat 20),
+    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
     .op .SHR,
     .op (.Dup ⟨6, by decide⟩),
     .op .ADD,
@@ -109,7 +109,7 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 1109194275457955143345843994625),
     (UInt256.ofNat 475368975196266490007815979009),
     x.v16] ++ rho
-/-- Round 73 folds its padding message word (`load n 540`) and the round key into one literal. -/
+/-- The padding message word (`load n 540`) and the round key fold into one literal. -/
 private theorem fold_message_key (n z : UInt256) :
     UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (PadValues.load n 540) z) =
       UInt256.add (UInt256.ofNat 2854495385411919762116571938898990275606347086) z := by
@@ -118,7 +118,8 @@ private theorem fold_message_key (n z : UInt256) :
   rfl
 private theorem actualOutput_eq (n : UInt256) (x : Input) (rho : List UInt256) :
     actualOutput n x rho = outputStack n x rho := by
-  simp only [actualOutput, outputStack, fold_message_key]
+  simp only [outputStack, fold_message_key]
+  simp only [actualOutput]
 private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat)
@@ -150,10 +151,10 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc n x rho hstack hrun hactive hcal hmem
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9673).take 56 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9675).take 54 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9664+9)).take 56 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9664+11)).take 54 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop151]
   decide +kernel
 #print axioms exact_bytes

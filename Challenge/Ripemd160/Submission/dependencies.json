@@ -1,8 +1,13 @@
 [
   {
     "submissionId": "354bc894-43bd-4043-bdbc-c3c94a430b78",
-    "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and universal correctness infrastructure is retained.",
-    "evidence": "This candidate changes ten bytes of the padding compressor's round 73 (PCs 9689-9716) and the local byte/proof bindings (PadRaw73, PadSites, CandidateArtifact, CandidateBytes, ColdArtifact, ControlSites, FirstCore, FirstReadGas, RecArtifact), based on the promoted Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
+    "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and correctness infrastructure is retained.",
+    "evidence": "This candidate changes only two padding-block round templates (constant message word folded into the round key), one zero-gas push widening, their byte/PC bindings and dependent instruction indices, based on the Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
+  },
+  {
+    "submissionId": "82ed8662-84e0-4554-81a7-0cefa3e3ac7c",
+    "rationale": "Our own earlier candidate with the round-73 padding fold alone (616,664). This candidate keeps that fold and its PadRaw73 proof and adds the round-0 fold.",
+    "evidence": "PadRaw73.fold_message_key and the round-73 template are the same as in 82ed8662; PadRaw0.fold_message_key and the PUSH13->PUSH14 widening in round 43 are new."
   },
   {
     "submissionId": "3b458b01-80a9-45c7-86bc-caa2e1a60bfd",
@@ -21,7 +26,7 @@
   },
   {
     "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
-    "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture. Its padding-block specialization (known padding words folded into round keys) is the technique extended here to round 73.",
+    "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
     "evidence": "The Local20261028 table/reader contracts, ordinary and padding compressor modules, and control-flow proof graph descend from this submission. The new preparation replaces the selected execution bindings and integrates the selected retained operands and message-table layout."
   },
   {

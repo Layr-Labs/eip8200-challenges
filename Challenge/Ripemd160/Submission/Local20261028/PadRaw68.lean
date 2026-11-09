@@ -138,10 +138,10 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc n x rho hstack hrun hactive hcal hmem
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9491).take 33 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9493).take 33 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9472+19)).take 33 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (9472+21)).take 33 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop148]
   decide +kernel
 #print axioms exact_bytes

@@ -32,13 +32,13 @@ theorem table_run (s : State) (cont : UInt256) (rho : List UInt256)
   rw [frame_eq, RipemdSubmission20261101.FirstMemory.eq5] at h
   simpa only [RipemdSubmission20261101.FirstMemory.state5, prepared, ← frame_eq, First0.inputs] using h
 def tableSite : GenericRoundSite CandidateArtifact.artifact .Osaka FirstTable.template :=
-  StackSiteBuilder.ofSlice FirstTable.template 6849 (by rfl)
-    (by change 6849 + (FirstTable.template).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice FirstTable.template 6847 (by rfl)
+    (by change 6847 + (FirstTable.template).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem tableSite_pc : tableSite.startPC = UInt256.ofNat 9944 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6849) = UInt256.ofNat 9944
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6847) = UInt256.ofNat 9944
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def table_gas (s : State) (cont : UInt256) (rho : List UInt256)
@@ -77,13 +77,13 @@ theorem rest_run (s : State) (cont : UInt256) (rho : List UInt256)
   cases hu
   exact ht
 def prefixSite : GenericRoundSite CandidateArtifact.artifact .Osaka PrefixAfter.template :=
-  StackSiteBuilder.ofSlice PrefixAfter.template 6945 (by rfl)
-    (by change 6945 + (PrefixAfter.template).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice PrefixAfter.template 6943 (by rfl)
+    (by change 6943 + (PrefixAfter.template).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem prefixSite_pc : prefixSite.startPC = UInt256.ofNat 10185 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6945) = UInt256.ofNat 10185
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6943) = UInt256.ofNat 10185
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def prefix_gas (s : State) (cont : UInt256) (rho : List UInt256)
@@ -102,13 +102,13 @@ def prefix_gas (s : State) (cont : UInt256) (rho : List UInt256)
 
 def jumpTemplate : List Instr := [.push ⟨2,by decide⟩ (UInt256.ofNat 930), .op .JUMP]
 def jumpSite : GenericRoundSite CandidateArtifact.artifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 7022 (by rfl)
-    (by change 7022 + (jumpTemplate).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 7020 (by rfl)
+    (by change 7020 + (jumpTemplate).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem jumpSite_pc : jumpSite.startPC = UInt256.ofNat 10422 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7022) = UInt256.ofNat 10422
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7020) = UInt256.ofNat 10422
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid_join : Decode.isValidJumpDest CandidateArtifact.artifact.code 930 = true := by

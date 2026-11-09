@@ -1,45 +1,46 @@
-# RIPEMD-160: fold the padding block's round-73 message word into its key
+# RIPEMD-160: fold padding words into the round keys of padding rounds 0 and 73
 
-In the constant padding block that follows every exact 64·k-byte message, the
-message words are compile-time constants. In left/right paired round 73 of that
-padding compressor the candidate folds the paired message word (previously read
-from the stack with `DUP12` and added with `ADD`) into the round's pushed key
-literal. The key push keeps its 19-byte width, and the following shift-count
-push becomes `PUSH3 0x000014` instead of `PUSH1 0x14`, so the routine keeps its
-length: every later program counter and jump destination is unchanged and the
-bytecode stays at 10,511 bytes.
+Every input whose length is a multiple of 64 bytes ends with a constant padding
+block, compressed by a specialised routine whose message words are literals.
+In paired rounds 0 and 73 of that routine a non-zero padding word was still
+added in its own step (`PUSH word; ADD; DUPn; ADD`, with the round key copied
+from the stack). The candidate pushes the precomputed `key + word` instead, so
+each of the two rounds loses one `DUP` and one `ADD` (6 gas). Round 43's
+`PUSH13` literal is widened to `PUSH14` with a leading zero byte (same 3 gas),
+so the routine keeps its length: every program counter from byte 9,729 on,
+including the 32-byte path and the code-copied table data, is unchanged, and
+the bytecode stays at 10,511 bytes.
 
-Old bytes at 9689–9716: `PUSH19 K; ADD; ADD; DUP12; ADD; DUP7; AND; MULMOD; PUSH1 0x14`.
-New bytes: `PUSH19 (K + W); ADD; ADD; DUP7; AND; MULMOD; PUSH3 0x14`.
-
-`PadRaw73.fold_message_key` proves `K + (load n 540 + z) = (K + W) + z` for the
-constant padding word, and `PadRaw73.actualOutput_eq` rewrites the generated
-stack with it; the remaining padding-compressor, padding-site, artifact and
-control proofs are re-pinned to the new bytes. `Solution.lean` retains the same
-universal `Correct` theorem.
+`PadRaw0.fold_message_key` and `PadRaw73.fold_message_key` prove
+`K + (load n a + z) = (K + load n a) + z` for the constant padding words, and
+the round specifications consumed by `PadCore*` are unchanged. The rounds that
+moved get new program counters in `PadSchedule`, `PadCore*`, `PadSites` and the
+byte bindings (`CandidateArtifact`, `CandidateBytes`). `Solution.lean` proves
+the same universal `Correct` theorem.
 
 The padding block runs once for each generated 64-byte and 128-byte input, so
-the default corpus (`corpusSeed = 0`) measures **616,664 gas** versus the
-inherited 616,790 baseline: six gas saved for each of the 21 generated 64- and
-128-byte inputs (two instructions, 3 gas each). Fixed-vector recognizers and the
-32-byte path are untouched.
+the default corpus (`corpusSeed = 0`) measures **616,538 gas** versus the
+promoted 616,790: twelve gas saved for each of those 21 inputs. The 32-byte
+path and the fixed-vector recognizers are untouched.
+
+Layout note: the protected generated `Benchmark/Artifact.lean` only compiles
+while the sum over its 64-byte chunks of distinct byte values stays at or
+below 4,555 for this code length; this layout has exactly 4555.
 
 Decoded-byte SHA-256:
-`fbcd586db2d6129a49d5b5d65272f696b90a1e8730f71d01cb5c447df7934450`.
+`efafd8808e6096a88d24d748552d3ac6b5c1c4d2487dce484a916bd686220969`.
 
 ## Provenance
 
-The direct source parent is accepted submission
+Direct source parent: accepted submission
 `354bc894-43bd-4043-bdbc-c3c94a430b78` (promoted commit
-`4d1e2de5ad7069b0f4abc0b53a9c62c727910fda`), whose tree, proofs and all other
-optimizations are retained unchanged. Folding known padding words into round
-keys follows the technique of the padding-specialized frontier introduced in
-`5b5782e2-cba0-468c-9d36-d2f48d929b01` (recorded in `dependencies.json`); this candidate applies it to a round where the
-word was still added from the stack.
+`4d1e2de5ad7069b0f4abc0b53a9c62c727910fda`). The round-73 fold was first
+submitted on its own as `82ed8662-84e0-4554-81a7-0cefa3e3ac7c`; this candidate
+adds the round-0 fold. The padding-block specialisation itself comes from
+`5b5782e2-cba0-468c-9d36-d2f48d929b01` and the tree it built on.
+`dependencies.json` records these and preserves the inherited declarations.
 
 ## Verification
-
-From the repository root, use the pinned toolchain and unchanged benchmark:
 
 ```sh
 ./setup.sh ripemd160
