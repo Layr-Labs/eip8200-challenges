@@ -34,15 +34,13 @@ def template : List Instr :=
     .op .XOR,
     .op (.Dup ⟨10, by decide⟩),
     .op .XOR,
-    .push ⟨19, by decide⟩ (UInt256.ofNat 2854495385411919762116571938898990272765493248),
+    .push ⟨19, by decide⟩ (UInt256.ofNat 2854495385411919762116571938898990275606347086),
     .op .ADD,
-    .op .ADD,
-    .op (.Dup ⟨11, by decide⟩),
     .op .ADD,
     .op (.Dup ⟨6, by decide⟩),
     .op .AND,
     .op .MULMOD,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 20),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 20),
     .op .SHR,
     .op (.Dup ⟨6, by decide⟩),
     .op .ADD,
@@ -100,7 +98,7 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
     (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     x.v5,
-    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (PadValues.load n 540) (UInt256.add (UInt256.xor x.v9 (UInt256.xor (UInt256.ofNat 4294967295) (UInt256.xor x.v6 (UInt256.lor (UInt256.land x.v6 (UInt256.ofNat 4294967295)) x.v0)))) x.v7)))) (UInt256.ofNat 1109194275457955143345843994625) (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096)) (UInt256.ofNat 20)))),
+    (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mulMod (UInt256.land (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) (UInt256.add (UInt256.ofNat 2854495385411919762116571938898990275606347086) (UInt256.add (UInt256.xor x.v9 (UInt256.xor (UInt256.ofNat 4294967295) (UInt256.xor x.v6 (UInt256.lor (UInt256.land x.v6 (UInt256.ofNat 4294967295)) x.v0)))) x.v7))) (UInt256.ofNat 1109194275457955143345843994625) (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096)) (UInt256.ofNat 20)))),
     (UInt256.ofNat 23),
     (UInt256.ofNat 2840853838),
     x.v9,
@@ -111,8 +109,16 @@ def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :
     (UInt256.ofNat 1109194275457955143345843994625),
     (UInt256.ofNat 475368975196266490007815979009),
     x.v16] ++ rho
+/-- Round 73 folds its padding message word (`load n 540`) and the round key into one literal. -/
+private theorem fold_message_key (n z : UInt256) :
+    UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (PadValues.load n 540) z) =
+      UInt256.add (UInt256.ofNat 2854495385411919762116571938898990275606347086) z := by
+  change UInt256.add (UInt256.ofNat 2840853838) (UInt256.add (UInt256.ofNat 2854495385411919762116571938898990272765493248) z) = _
+  rw [← StaggerCoreCommon.add_assoc]
+  rfl
 private theorem actualOutput_eq (n : UInt256) (x : Input) (rho : List UInt256) :
-    actualOutput n x rho = outputStack n x rho := by rfl
+    actualOutput n x rho = outputStack n x rho := by
+  simp only [actualOutput, outputStack, fold_message_key]
 private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat)

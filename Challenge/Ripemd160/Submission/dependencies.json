@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "354bc894-43bd-4043-bdbc-c3c94a430b78",
+    "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and universal correctness infrastructure is retained.",
+    "evidence": "This candidate changes ten bytes of the padding compressor's round 73 (PCs 9689-9716) and the local byte/proof bindings (PadRaw73, PadSites, CandidateArtifact, CandidateBytes, ColdArtifact, ControlSites, FirstCore, FirstReadGas, RecArtifact), based on the promoted Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
+  },
+  {
     "submissionId": "3b458b01-80a9-45c7-86bc-caa2e1a60bfd",
     "rationale": "Direct source and proof-tree parent at the current 616801-gas frontier. All compression, table, dispatch and universal correctness infrastructure is retained.",
     "evidence": "This candidate modifies only the two-byte first-word read plus its local byte/proof bindings, based on the promoted Submission tree at 97f6c711f9cd7a9675c51441dcd704e2c610253b."
@@ -16,7 +21,7 @@
   },
   {
     "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
-    "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
+    "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture. Its padding-block specialization (known padding words folded into round keys) is the technique extended here to round 73.",
     "evidence": "The Local20261028 table/reader contracts, ordinary and padding compressor modules, and control-flow proof graph descend from this submission. The new preparation replaces the selected execution bindings and integrates the selected retained operands and message-table layout."
   },
   {
