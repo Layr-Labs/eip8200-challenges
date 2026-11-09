@@ -208,5 +208,10 @@
     "submissionId": "bc0718a2-853c-470f-b357-cdb06ea09066",
     "rationale": "Direct technique and local source parent: retained first shared-input-doubling pair, modular doubling lemmas and digit-bound integration. Prior proof-valid nonimproving result is not represented as promoted. New work adds three product-pair cuts with fused0+1 and biased-carry recovery proofs.",
     "evidence": "Prior hosted359076,verified:true; exact previous image SHA2564a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2. New exact image34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad,10980bytes,8512instructions, native358770gas44/44. Cycle/DoubleInput01,DoubleInputLate,Meaning/Square01,Execution/Square13/14."
+  },
+  {
+    "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
+    "rationale": "Direct promoted implementation parent. Retain four shared-input square pairs and every inherited MODEXP route. Reuse SquareDiag signed-word arithmetic and TnM128SgtStep operational SGT theorem for a universal signed top-bit dispatch identity. New work changes only dispatch617..624 with exact artifact/PC transport and Setup pass/bail proofs.",
+    "evidence": "Parent source14fdb140005e0edaf4592f2c23017f6dc33d0145 imageSHA34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad. CandidateSHA2f31ef6d57862d693b88a0395b5a54c2b98d85170ca77305384e07beb3bb155c; native358770->358766,44/44 each. FullSolution and standard protectedComparator passed for exact image, candidate axioms only propext/Classical.choice/Quot.sound. Protected score358766,44/44verified:true; fourgas saved on matched scorer. No hosted result or promotion claimed."
   }
 ]

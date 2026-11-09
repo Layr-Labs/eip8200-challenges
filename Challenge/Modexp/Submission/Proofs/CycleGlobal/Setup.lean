@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.SignedTopBit
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.NewtonSeed
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
@@ -15,6 +16,11 @@ set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 namespace CycleSubmission.Global.Fast.Setup
+private theorem signedTopRaw (x : EvmSemantics.UInt256) :
+    EvmSemantics.UInt256.sgt ({val := 0} : EvmSemantics.UInt256) x =
+      EvmSemantics.UInt256.shiftRight x (EvmSemantics.UInt256.ofNat 255) :=
+  CycleSubmission.Global.Fast.SignedTopBit.sgt_zero_eq_shr x
+open CycleSubmission.Global.Fast.SignedTopBit
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
@@ -737,7 +743,7 @@ theorem run_check_pass (s : State) (input : ByteArray)
     (hwidth : modulusSize input % 128 = 0)
     (hnprime : MachineState.readWord input (modOffset input + modulusSize input - 32) ≠
       UInt256.ofNat (Limbs.radix - 1)) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1003 (topCheckState s input) =
+    SignedTopBit.runLocatedBlockS blk1003 (topCheckState s input) =
       some (setupEntryState s input) := by
   have hmoff : 96 + (baseSize input + exponentSize input) = modOffset input := by
     unfold modOffset; omega
@@ -762,8 +768,8 @@ theorem run_check_pass (s : State) (input : ByteArray)
       [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
        lnot_ofNat_zero,
        blk1003, opAt, pushAt, wfOp,
-       Challenge.EvmProof.Stepper.runLocatedBlock,
-       Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+       SignedTopBit.runLocatedBlockS,
+       SignedTopBit.runLocatedS, SignedTopBit.runInstrS, SignedTopBit.sgt_zero_eq_shr, signedTopRaw, Challenge.EvmProof.Stepper.runInstr,
        topCheckState, sizesOkStack, outerStack, hdata, hrun,
        shr5_limbs input hm, hshr, hmoff', shl5_s32 input hm,
        hmoff, hmodmod, shiftRight_topBit input, hsub, hmodmod',
@@ -821,7 +827,7 @@ theorem run_check_bail (s : State) (input : ByteArray)
       modulus input % 2 = 0 ∨ modulusSize input % 128 ≠ 0 ∨
       MachineState.readWord input (modOffset input + modulusSize input - 32) =
         UInt256.ofNat (Limbs.radix - 1)) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blk1003 (topCheckState s input) =
+    SignedTopBit.runLocatedBlockS blk1003 (topCheckState s input) =
       some (bail6State s input) := by
   have hmoff : 96 + (baseSize input + exponentSize input) = modOffset input := by
     unfold modOffset; omega
@@ -846,8 +852,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
       [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
-         Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+         SignedTopBit.runLocatedBlockS,
+         SignedTopBit.runLocatedS, SignedTopBit.runInstrS, SignedTopBit.sgt_zero_eq_shr, signedTopRaw, Challenge.EvmProof.Stepper.runInstr,
          topCheckState, sizesOkStack, outerStack, hdata, hrun,
          shr5_limbs input hm, hshr, hmoff', shl5_s32 input hm,
          hmoff, hmodmod, shiftRight_topBit input, hsub, hmodmod',
@@ -863,8 +869,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
       [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
-         Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+         SignedTopBit.runLocatedBlockS,
+         SignedTopBit.runLocatedS, SignedTopBit.runInstrS, SignedTopBit.sgt_zero_eq_shr, signedTopRaw, Challenge.EvmProof.Stepper.runInstr,
          topCheckState, sizesOkStack, outerStack, hdata, hrun,
          shr5_limbs input hm, hshr, hmoff', shl5_s32 input hm,
          hmoff, hmodmod, shiftRight_topBit input, hsub, hmodmod',
@@ -880,8 +886,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
       [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
-         Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+         SignedTopBit.runLocatedBlockS,
+         SignedTopBit.runLocatedS, SignedTopBit.runInstrS, SignedTopBit.sgt_zero_eq_shr, signedTopRaw, Challenge.EvmProof.Stepper.runInstr,
          topCheckState, sizesOkStack, outerStack, hdata, hrun,
          shr5_limbs input hm, hshr, hmoff', shl5_s32 input hm,
          hmoff, hmodmod, shiftRight_topBit input, hsub, hmodmod',
@@ -897,8 +903,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
       [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
-         Challenge.EvmProof.Stepper.runLocatedBlock,
-         Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
+         SignedTopBit.runLocatedBlockS,
+         SignedTopBit.runLocatedS, SignedTopBit.runInstrS, SignedTopBit.sgt_zero_eq_shr, signedTopRaw, Challenge.EvmProof.Stepper.runInstr,
          topCheckState, sizesOkStack, outerStack, hdata, hrun,
          shr5_limbs input hm, hshr, hmoff', shl5_s32 input hm,
          hmoff, hmodmod, shiftRight_topBit input, hsub, hmodmod',
@@ -1007,7 +1013,7 @@ def gasSteps_check_pass (s : State) (input : ByteArray)
     (hnprime : MachineState.readWord input (modOffset input + modulusSize input - 32) ≠
       UInt256.ofNat (Limbs.radix - 1)) :
     Challenge.EvmProof.GasSteps (topCheckState s input) (setupEntryState s input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+  SignedTopBit.runLocatedBlockS_sound
     CycleSubmission.Artifact.artifact .Osaka blk1003 hcode hfork
       (run_check_pass s input hdata hrun hb he hm h32 htop hodd hwidth hnprime) hrun hnp
 def gasSteps_check_bail (s : State) (input : ByteArray)
@@ -1023,7 +1029,7 @@ def gasSteps_check_bail (s : State) (input : ByteArray)
       MachineState.readWord input (modOffset input + modulusSize input - 32) =
         UInt256.ofNat (Limbs.radix - 1)) :
     Challenge.EvmProof.GasSteps (topCheckState s input) (bail6State s input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_sound
+  SignedTopBit.runLocatedBlockS_sound
     CycleSubmission.Artifact.artifact .Osaka blk1003 hcode hfork
       (run_check_bail s input hdata hcode hrun hb he hm h32 hfail) hrun hnp
 def gasSteps_bail1 (s : State) (input : ByteArray)

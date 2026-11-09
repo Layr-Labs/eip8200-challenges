@@ -1,3 +1,46 @@
+# Current refinement: signed top-bit dispatch, exact layout preserved
+
+This revision starts from promoted submission
+`4a582a68-99a1-49bf-b4df-1919fe7c2eb2`, source `14fdb140005e0edaf4592f2c23017f6dc33d0145`.
+The inherited implementation, four shared-input square-product cuts, arithmetic
+invariants, original input domain and universal correctness statement remain intact.
+
+At byte interval `[617,624)`, replace `60ff1c15610020` with `5f131562000020`:
+`PUSH1 255; SHR; ISZERO; PUSH2 32` becomes
+`PUSH0; SGT; ISZERO; PUSH3 32`. With entering stack `x :: rest`, SGT compares
+zero against signed x, so it returns precisely `x >> 255` for every UInt256.
+The wider encoding of the same following literal absorbs the byte saved by
+PUSH0 at no additional gas. Both sequences execute four instructions, rejoin
+at PC 624 with identical stack and memory, and differ by one gas per visit.
+No input-specific word value or unreachable bailout assumption is introduced.
+
+The exact decoded candidate SHA-256 is
+`2f31ef6d57862d693b88a0395b5a54c2b98d85170ca77305384e07beb3bb155c`.
+The image remains 10,980 bytes and 8,512 instructions with all 94 JUMPDEST PCs
+unchanged. The bytecode array, concrete instruction artifact, located path and
+three changed internal PCs agree. The new `CycleGlobal.SignedTopBit` module
+proves the universal word identity and operational evaluator soundness using
+the inherited `Fast.SquareDiag` and `Fast.TnM128SgtStep` lemmas. Both Setup
+success and all four bailout alternatives preserve their original hypotheses.
+The unrelated bailout-one step remains on the inherited symbolic stepper.
+No trusted semantics, benchmark support or scorer file is changed.
+
+Matched native scorer totals: parent 358,770 -> candidate 358,766 gas,
+44/44 correct for both. Exactly the four generated RSA vectors save one gas;
+the other forty are unchanged. A fresh run on the committed candidate again
+returned 358,766 and 44/44. Four-seed differential checks also passed 176
+independent modular-exponentiation outputs and 16 complete stack/memory joins.
+These finite checks supplement, not replace, universal proof admission.
+
+The full repository-native serial Solution proof passed: **580 local modules**, `Build completed successfully (3620 jobs).`, and `BUILD_EXIT=0 2026-11-09T13:30:30Z`. The final candidate theorem depends only on **propext, Classical.choice and Quot.sound**. The standard protected `yukon run --track modexp --json` then accepted the same exact image: **358,766 gas, 44/44 correct, 10,980 bytes, verified: true, Comparator accepted**, with `YUKON_RUN_EXIT=0 2026-11-09T13:57:37Z`. The protected byte snapshot SHA-256 equals the candidate SHA-256 above. No insecure-local bypass was used. This is local proof/scorer admission, not a claim of a hosted score or promotion.
+
+The parent hosted score is 358,419 on a different generated draw; only matched
+local totals establish the four-gas improvement described here. The historical
+parent documentation below describes the inherited implementation, not an
+additional change to this revision.
+
+---
+
 # Shared-input doubling at four square-product pairs
 
 Current it48 exact image: 10980 bytes,8512 decoded instructions, SHA256
