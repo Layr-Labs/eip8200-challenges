@@ -253,7 +253,8 @@ theorem memory15_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt25
 
 theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat)
+    (ha0 : (a 0).toNat < radix) :
     runInstructions program
       {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} =
       some (state15 s inv a b n rest) := by
@@ -261,7 +262,7 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
 
   have m1 := memory0_output (state0 s inv a b n rest) inv a b n rest m0
   have h0 : runInstructions squareColumn0Program {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} = some (state1 s inv a b n rest) :=
-    run0 (state0 s inv a b n rest) inv a b n rest m0 hcap hact
+    run0 (state0 s inv a b n rest) inv a b n rest m0 hcap hact ha0
   have m2 := memory1_output (state1 s inv a b n rest) inv a b n rest m1
   have h1 : runInstructions squareColumn1Program (state1 s inv a b n rest) = some (state2 s inv a b n rest) := by
     have hx := run1 (state1 s inv a b n rest) inv a b n rest m1 hcap hact
@@ -406,8 +407,8 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 5712 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4309 1610 5712 program
-    (by change 4309 + 1610 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4309 1608 5712 program
+    (by change 4309 + 1608 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -415,12 +416,13 @@ def block : Block Artifact.artifact .Osaka 5712 program :=
 noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
-    (hact : 88 ≤ s.activeWords.toNat) :
+    (hact : 88 ≤ s.activeWords.toNat)
+    (ha0 : (a 0).toNat < radix) :
     GasSteps {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest}
       (state15 s inv a b n rest) :=
   block.steps
     (s := {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest})
-    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact)
+    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact ha0)
 
 noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
@@ -440,7 +442,7 @@ noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (a i).toNat) +
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (squareq inv a b n i).toNat) *
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (n i).toNat)) := by
-  refine ⟨gasSteps s inv a b n rest env h hcap hact, ?_⟩
+  refine ⟨gasSteps s inv a b n rest env h hcap hact (ha 0 (by decide)), ?_⟩
   rw [output_value s inv a b n rest h]
   exact (squareTrace inv a b n).exact_product ha hb hn N hn0 hinv
 

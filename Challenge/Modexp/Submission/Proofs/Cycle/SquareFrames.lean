@@ -1,5 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Cycle.SquareHistory
-import Challenge.Modexp.Submission.Proofs.Cycle.NormalizeMeaning
+import Challenge.Modexp.Submission.Proofs.CRT.CRTMemoryCells
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 set_option warningAsError true
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
@@ -9,7 +10,6 @@ namespace CycleSubmission.SquareMeaning
 open EvmSemantics EvmSemantics.EVM
 open CycleSubmission.WordArithmetic CycleSubmission.WordHistory
 open HistoricalSearch.CRTMemoryCells Challenge.EvmProof.Memory
-open CycleSubmission.NormalizeMeaning (readStore)
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 
 def frame0 (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : List UInt256 :=

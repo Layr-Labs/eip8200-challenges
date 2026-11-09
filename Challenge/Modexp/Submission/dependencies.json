@@ -198,5 +198,10 @@
     "submissionId": "de134b66-a42c-4b03-a575-3f9318a88ad8",
     "rationale": "Uses fkiene's compatible legacy fallback execution and four-word branch refinements carried by the public base used for the retained-radix experiments.",
     "evidence": "Compare BigCUnsignedRun.lean, R4Blocks.lean, R4Runs.lean and artifact bindings with v14. The retained-radix prototype explicitly selects this public leader as its bytecode base."
+  },
+  {
+    "submissionId": "f74fa73a-c0bf-4966-ab83-82ad647aac71",
+    "rationale": "Direct promoted parent. Retains its setup/MSIZE and all inherited improvements; new change doubles a shared radix-240 input before its low and residue products in the first RSA square column.",
+    "evidence": "Same 10980-byte image, SHA256 4a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2; only bytes [5743,5791) can differ. Exact replacement and frame-bound integration are proved in Cycle/DoubleInputColumn, Execution/Square0 and Meaning/Square0. No specification or permitted inputs are changed."
   }
 ]

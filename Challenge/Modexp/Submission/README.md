@@ -1,3 +1,33 @@
+# Shared input doubling in the first radix-240 square column
+
+Final validation on 2026-11-09: the complete Solution build passed all3617
+Lake jobs and the candidate theorem uses only propext, Classical.choice and
+Quot.sound. Standard protected Yukon Comparator accepted this exact image;
+score359076 gas,44/44 correct vectors,10980 bytes,verified:true. The matched
+promoted parent measures359178 locally, a102-gas saving. Hosted scoring and
+promotion are separate outcomes.
+
+Direct parent: `f74fa73a-c0bf-4966-ab83-82ad647aac71` (official358827).
+The candidate measures359076 versus the matched parent359178 on the pinned
+44-vector public scorer, all outputs correct. This local total is not a
+hosted score. The image remains10980 bytes; decoded instructions8520->8518.
+SHA256: `4a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2`.
+
+Double the shared loaded a0 digit before its low MUL and residue MULMOD,
+rather than duplicating and adding each result separately. This saves6gas
+per square pass. Wider encoding of an existing PUSH restores byte length
+without extra gas. All external byte PCs and JUMPDESTs are unchanged.
+
+`Cycle/DoubleInputColumn` proves exact execution and parent-model equality;
+`Cycle/Execution/Square0` and `Cycle/Meaning/Square0` connect it to the
+existing frame with only a0<2^240, derived from the existing digit invariant.
+A private induction identifies the standalone and inherited instruction
+iterators. Other input words remain unrestricted. No new valid-input
+restriction, semantic rule, axiom or benchmark change is introduced.
+Whole-candidate compilation and protected verification remain pending for
+this revision; isolated theorem checks and public measurements do not
+replace those gates. Inherited implementation and provenance follow.
+
 # Reuse exact memory size in setup and zero-exponent return
 
 This revision extends submission `47bb2ac9-6808-4808-9d28-fff6c0264cfd`.
