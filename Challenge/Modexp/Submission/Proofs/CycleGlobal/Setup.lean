@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.LowBitFlag
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.NewtonSeed
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
@@ -759,7 +760,8 @@ theorem run_check_pass (s : State) (input : ByteArray)
       (MachineState.readWord input (modOffset input)).val.isLt
   have hzero := isZero_ofNat_of_ne hlt htop
   simp (config := { maxSteps := 1600000 })
-      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+      [LowBitFlag.flag, LowBitFlag.flagRaw,
+       PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
        lnot_ofNat_zero,
        blk1003, opAt, pushAt, wfOp,
        Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -843,7 +845,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
   rcases hfail with htop | hodd | hwidth | hnprime
   · -- zero top bit: the top-limb `ISZERO` is one
     simp (config := { maxSteps := 1600000 })
-      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+      [LowBitFlag.flag, LowBitFlag.flagRaw,
+       PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
          Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -860,7 +863,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
          Challenge.EvmProof.Word.word_toNat_ofNat]
   · -- even modulus: `ISZERO` of the parity bit is one
     simp (config := { maxSteps := 1600000 })
-      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+      [LowBitFlag.flag, LowBitFlag.flagRaw,
+       PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
          Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -877,7 +881,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
          Challenge.EvmProof.Word.word_toNat_ofNat]
   · -- width not a multiple of 128: the masked width is nonzero
     simp (config := { maxSteps := 1600000 })
-      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+      [LowBitFlag.flag, LowBitFlag.flagRaw,
+       PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
          Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -894,7 +899,8 @@ theorem run_check_bail (s : State) (input : ByteArray)
          Challenge.EvmProof.Word.word_toNat_ofNat]
   · -- last modulus word all ones: `EQ` against the all-ones word is one
     simp (config := { maxSteps := 1600000 })
-      [PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
+      [LowBitFlag.flag, LowBitFlag.flagRaw,
+       PredicateIdentity.complement_parity, PredicateIdentity.not_isZero,
          lnot_ofNat_zero,
          blk1003, opAt, pushAt, wfOp,
          Challenge.EvmProof.Stepper.runLocatedBlock,

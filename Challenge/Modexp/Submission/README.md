@@ -1,3 +1,20 @@
+# Low-bit isolation dispatch candidate (universal and protected admission passed)
+
+Direct promoted parent: `4a582a68-99a1-49bf-b4df-1919fe7c2eb2`, source `14fdb140`.
+This revision changes bytes629..638 from `198015906100011617` to `19805f031661000211`.
+For a=NOTx, it replaces `(a AND1) OR ISZERO(a)` with `2 > (a AND(-a))`.
+The universal UInt256 identity in `CycleGlobal.LowBitFlag` is kernel-checked;
+its axioms are only propext, Classical.choice and Quot.sound. No native decision
+axiom is used. One PUSH0 replacing a3-gas instruction saves1gas per reached
+entry. Native paired scorer:358770->358766,44/44correct each. Image unchanged
+in size(10980bytes), instructioncount(8512), and all94JUMPDESTaddresses.
+CandidateSHA256:`d92db5021e487d6156c5f6b5a2d64539cdc20fb212e0fa8fd4f118b7c3b446ca`.
+The full repository-native serial Solution proof passed: **580 local modules**, `Build completed successfully (3620 jobs).`, and `BUILD_EXIT=0 2026-11-09T16:23:50Z`. The final candidate theorem depends only on **propext, Classical.choice and Quot.sound**. The standard protected `yukon run --track modexp --json` then accepted the same exact image: **358,766 gas, 44/44 correct, 10,980 bytes, verified: true, Comparator accepted**, with `YUKON_RUN_EXIT=0 2026-11-09T17:01:01Z`. The protected byte snapshot SHA-256 equals the candidate SHA-256 above. No insecure-local bypass was used. This is local proof/scorer admission, not a claim of a hosted score or promotion.
+
+The hosted parent record of358419 uses a different generated draw; only matched
+local358770->358766 establishes the four-gas improvement. No hosted promotion
+is claimed. The inherited implementation/provenance description follows.
+
 # Shared-input doubling at four square-product pairs
 
 Current it48 exact image: 10980 bytes,8512 decoded instructions, SHA256
