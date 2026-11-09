@@ -14,6 +14,7 @@ import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square13
 import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square14
 
 import Challenge.Modexp.Submission.Proofs.Cycle.Artifact
+import Challenge.Modexp.Submission.Proofs.Cycle.TripleColumns
 set_option warningAsError true
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
@@ -33,7 +34,7 @@ theorem reset_self (s : State) (pc : UInt256) (stack : List UInt256)
   rw [← hp, ← hs]
 
 def program : List Instr :=
-  squareColumn0Program ++ (squareColumn1Program ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (squareColumn10Program ++ (squareColumn11Program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program))))))))))))))
+  squareColumn0Program ++ (squareColumn1Program ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (TripleColumns.program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program)))))))))))))
 
 def memory0 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := mem
 def state0 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := s
@@ -313,6 +314,11 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
     have hx := run11 (state11 s inv a b n rest) inv a b n rest m11 hcap hact
     rw [reset_self (state11 s inv a b n rest) (UInt256.ofNat 7110) (frame11 inv a b n rest) rfl rfl] at hx
     exact hx
+  have h1011 : runInstructions TripleColumns.program (state10 s inv a b n rest) = some (state12 s inv a b n rest) := by
+    have he := TripleColumns.run_eq (state10 s inv a b n rest) ((squareQ5 inv a b n)) ((n 5)) ((((squareQ4 inv a b n) * (n 6)) + (((n 7) * (squareQ3 inv a b n)) + (((n 8) * (squareQ2 inv a b n)) + (((a 5) * (a 5)) + ((squareC10 inv a b n) + ((((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))) + (((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2))))))))))) (((squareC10 inv a b n) + (((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P))) + ((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P)))))) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareQ5 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact
+    change runInstructions TripleColumns.program (state10 s inv a b n rest) =
+      runInstructions (squareColumn10Program ++ squareColumn11Program) (state10 s inv a b n rest) at he
+    exact he.trans (runInstructions_append_some _ _ _ _ _ h10 h11)
   have m13 := memory12_output (state12 s inv a b n rest) inv a b n rest m12
   have h12 : runInstructions squareColumn12Program (state12 s inv a b n rest) = some (state13 s inv a b n rest) := by
     have hx := run12 (state12 s inv a b n rest) inv a b n rest m12 hcap hact
@@ -330,9 +336,9 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
     exact hx
   -- The two aliases retain their existing slots in `program`; after they are
   -- rewired, this is the exact fused bytecode, not a transient-frame equality.
-  change runInstructions (DoubleInput01.program0 ++ (DoubleInput01.program1 ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (squareColumn10Program ++ (squareColumn11Program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program))))))))))))))) _ = _
+  change runInstructions (DoubleInput01.program0 ++ (DoubleInput01.program1 ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (TripleColumns.program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program)))))))))))))) _ = _
   simpa only [DoubleInput01.mergedProgram, List.append_assoc] using
-    runInstructions_append_some _ _ _ _ _ h01 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14))))))))))))
+    runInstructions_append_some _ _ _ _ _ h01 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h1011 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14)))))))))))
 
 theorem memory_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) (h : Memory0 s.memory inv a b n) :
     Memory15 (state15 s inv a b n rest).memory inv a b n := by
@@ -406,8 +412,8 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 5712 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4309 1602 5712 program
-    (by change 4309 + 1602 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4309 1600 5712 program
+    (by change 4309 + 1600 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

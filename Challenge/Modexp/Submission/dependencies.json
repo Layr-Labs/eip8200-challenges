@@ -208,5 +208,10 @@
     "submissionId": "bc0718a2-853c-470f-b357-cdb06ea09066",
     "rationale": "Direct technique and local source parent: retained first shared-input-doubling pair, modular doubling lemmas and digit-bound integration. Prior proof-valid nonimproving result is not represented as promoted. New work adds three product-pair cuts with fused0+1 and biased-carry recovery proofs.",
     "evidence": "Prior hosted359076,verified:true; exact previous image SHA2564a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2. New exact image34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad,10980bytes,8512instructions, native358770gas44/44. Cycle/DoubleInput01,DoubleInputLate,Meaning/Square01,Execution/Square13/14."
+  },
+  {
+    "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
+    "rationale": "Direct promoted source parent; retains the four shared-input square-pair changes and inherited universal proof. This revision schedules three paired wrapping/modular products at bytes[7066,7118), not the predecessor two-product span.",
+    "evidence": "Parent source14fdb140005e0edaf4592f2c23017f6dc33d0145; exact bytecode34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad. Current02f7e53277408acc7f07857267521ada3164bf0887ea130fa4ed52b68f0f2287 changes only[7066,7118), same10980bytes94fixedJUMPDESTs. Matched native358770to358668,44correct. Changed arbitrary-word and merged-column proofs passed; final full Solution passed3621jobs with permitted3axioms. Standard protected Comparator accepted exact02f7e532 image at358668gas,44/44correct,verified:true. Not a hosted result."
   }
 ]
