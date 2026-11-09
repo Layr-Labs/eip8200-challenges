@@ -208,5 +208,10 @@
     "submissionId": "bc0718a2-853c-470f-b357-cdb06ea09066",
     "rationale": "Direct technique and local source parent: retained first shared-input-doubling pair, modular doubling lemmas and digit-bound integration. Prior proof-valid nonimproving result is not represented as promoted. New work adds three product-pair cuts with fused0+1 and biased-carry recovery proofs.",
     "evidence": "Prior hosted359076,verified:true; exact previous image SHA2564a56e462dca386f32bccfd46be6ff899fd019344d085e65649f043d9b00bcad2. New exact image34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad,10980bytes,8512instructions, native358770gas44/44. Cycle/DoubleInput01,DoubleInputLate,Meaning/Square01,Execution/Square13/14."
+  },
+  {
+    "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
+    "rationale": "Direct promoted source parent. Retains the four shared-input square-pair changes and all inherited arithmetic, control flow, fallback and universal correctness architecture. This revision changes only a later grouped square product and its carry consumer schedule, not the arithmetic contract.",
+    "evidence": "Exact parent source 14fdb140005e0edaf4592f2c23017f6dc33d0145; decoded bytecode parent SHA256 34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad. Candidate differs only in byte span [7197,7232), with unchanged length and JUMPDEST addresses. Native matched total 358770 -> 358719, 44 correct outputs each. Changed operational column and exact artifact binding passed. Full serial Solution proof and standard protected Comparator accepted exact candidate SHA256 cc14b8bbfa1677cac0c5f5fd55dcdf9d1b90153d932f02a00040044a5fdd7fea; protected gas358719,44/44correct,verified:true. Hosted outcome remains separate."
   }
 ]
