@@ -33,7 +33,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < WordArithmetic.radix)
     (hz : (ControlArithmetic.overflowFlag (WordHistory.squared inv a zeroWords n)).toNat = 0) :
-    GasSteps {s with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)}
+    GasSteps {s with pc := UInt256.ofNat 5568, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)}
       (result s inv a n rest) := by
   have h1 := SquareStep.gasSteps s inv a n (CounterControl.counter s :: rest) env h (by simp only [List.length_cons]; omega) hact ha hz
   have e := env.transfer (SquareStep.executionEnv_eq s inv a n (CounterControl.counter s :: rest)) (SquareStep.halt_eq s inv a n (CounterControl.counter s :: rest))
@@ -73,7 +73,7 @@ theorem active_eq (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
 theorem pc_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (k : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (hc : CounterControl.counter s = UInt256.ofNat (k-1)) :
-    (result s inv a n rest).pc = if k = 1 then UInt256.ofNat 7584 else UInt256.ofNat 5712 := by
+    (result s inv a n rest).pc = if k = 1 then UInt256.ofNat 7666 else UInt256.ofNat 5568 := by
   unfold result CounterControl.completed
   rw [counter_middle, hc]
   interval_cases k <;> rfl

@@ -9,10 +9,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
-  base : Block artifact fork 745 WindowTwentyOneEntry.baseProgram
-  modulus : Block artifact fork 746 WindowTwentyOneEntry.modulusProgram
-  genJump : Decode.isValidJumpDest artifact.code 101 = true
-  missJump : Decode.isValidJumpDest artifact.code 136 = true
+  base : Block artifact fork 717 WindowTwentyOneEntry.baseProgram
+  modulus : Block artifact fork 718 WindowTwentyOneEntry.modulusProgram
+  genJump : Decode.isValidJumpDest artifact.code 97 = true
+  missJump : Decode.isValidJumpDest artifact.code 131 = true
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
     (env : Environment artifact fork template) (input : ByteArray) :
@@ -38,7 +38,7 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
 /-- The state at the core entry 872: the frame built at 24 or 103 with the
 modulus word on top. -/
 def entryState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 745)
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 717)
     (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 
 /-- Base, spare modulus copy, normalization and the whole window core.  No
@@ -54,7 +54,7 @@ def core_steps {artifact : ProgramArtifact} {fork : Fork}
   have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
     (shiftWord input) (coreStack input tail) (by simp [coreStack]; omega) rfl
   have hm' : runInstructions WindowTwentyOneEntry.modulusProgram
-      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 746)
+      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 718)
         (WindowTwentyOneInput.modulusWord input :: coreStack input tail)) =
       some (normalized template input tail) := by
     simpa only [normalized, WindowTwentyOneTablePrelude.initial, WindowTwentyOneEntry.framed,

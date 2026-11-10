@@ -19,7 +19,7 @@ private def earlyWord_size : WindowTwentyOneBinding.Block CycleSubmission.Artifa
     (by decide)
 def earlyWordPaths : EarlyWordProgram.Paths CycleSubmission.Artifact.artifact .Osaka where
   size := earlyWord_size
-  legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 400 (by rfl)
-  genJump := by exact CycleSubmission.Global.Binding.jumpDest 46 (by rfl)
+  legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 392 (by rfl)
+  genJump := by exact CycleSubmission.Global.Binding.jumpDest 44 (by rfl)
 
 end CycleSubmission.Global.Paths

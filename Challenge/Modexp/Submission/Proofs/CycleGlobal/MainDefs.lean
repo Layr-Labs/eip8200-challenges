@@ -55,17 +55,17 @@ def trampoline1Path :
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 366 .JUMPDEST]
+  [opAt 358 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 367 0 0,
-   opAt 368 .CALLDATALOAD,
-   pushAt 369 1 32,
-   opAt 370 .CALLDATALOAD,
-   pushAt 371 1 64,
-   opAt 372 .CALLDATALOAD]
+  [pushAt 359 0 0,
+   opAt 360 .CALLDATALOAD,
+   pushAt 361 1 32,
+   opAt 362 .CALLDATALOAD,
+   pushAt 363 1 64,
+   opAt 364 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
@@ -81,44 +81,44 @@ def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
 def tramp0Path : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) := []
-def tramp7DestPath := [opAt 366 .JUMPDEST]
+def tramp7DestPath := [opAt 358 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat pc }
 
 /-- Gas-erased state at the public entry point. -/
 def headerEntryState (input : ByteArray) : State :=
-  { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat 534 }
+  { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat 520 }
 
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 542
+    pc := UInt256.ofNat 528
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerModulusCheckedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 542
+    pc := UInt256.ofNat 528
     stack := [0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerExponentCheckedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 542
+    pc := UInt256.ofNat 528
     stack := [0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 def headerBaseCheckedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 542
+    pc := UInt256.ofNat 528
     stack := [0, 0, 0, UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
 /-- Gas-erased state immediately after the successful size-check jump. -/
 def headerState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 542
+    pc := UInt256.ofNat 528
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)] }
 
@@ -142,15 +142,15 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     CycleSubmission.Artifact.artifact.instructionPC i = [0, 2][i]! := by
   interval_cases i <;> decide
 
-@[simp] theorem headerPCs899 (i : Nat) (hi : 366 ≤ i) (hii : i ≤ 373) :
+@[simp] theorem headerPCs899 (i : Nat) (hi : 358 ≤ i) (hii : i ≤ 365) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([533, 534, 535, 536, 538, 539, 541, 542] : List Nat)[i - 366]! := by
+      ([519, 520, 521, 522, 524, 525, 527, 528] : List Nat)[i - 358]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump1196 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 533 = true :=
-  CycleSubmission.Global.Binding.jumpDest 366 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true :=
+  CycleSubmission.Global.Binding.jumpDest 358 (by rfl)
 
 
 

@@ -11,7 +11,7 @@ set_option maxHeartbeats 4000000
 # The three exits of the fixed-vector recogniser
 
 Both tests end in `JUMPI`.  On a non-zero word they restore
-`Main.trampolineState input 553` exactly: empty stack, untouched memory, only the
+`Main.trampolineState input 539` exactly: empty stack, untouched memory, only the
 program counter differs from the entry state, so every unrecognised input
 rejoins the legacy entry with nothing changed.  On two zero words execution
 falls through to the answer block.
@@ -27,16 +27,16 @@ open EvmSemantics.EVM
 open CycleSubmission.Global.Dispatch
 
 /-- Where the width-miss trampoline lands: the recogniser entry. -/
-def entryState (input : ByteArray) : State := Main.trampolineState input 699
+def entryState (input : ByteArray) : State := Main.trampolineState input 674
 
 /-- After the width test passes: the tail test. -/
-def tailState (input : ByteArray) : State := Main.trampolineState input 713
+def tailState (input : ByteArray) : State := Main.trampolineState input 688
 
 /-- Where both miss exits land: the unchanged legacy entry. -/
-def legacyState (input : ByteArray) : State := Main.trampolineState input 533
+def legacyState (input : ByteArray) : State := Main.trampolineState input 519
 
 /-- After both tests pass: the first instruction of the answer block. -/
-def hitEntryState (input : ByteArray) : State := Main.trampolineState input 733
+def hitEntryState (input : ByteArray) : State := Main.trampolineState input 708
 
 /-- The word test in the shape the evaluator leaves it. -/
 private def widthNat (input : ByteArray) : Nat :=
@@ -103,16 +103,16 @@ private theorem widthBody_iff (input : ByteArray) :
 
 /-- The state after the six instructions before the first `JUMPI`. -/
 private def widthMidState (input : ByteArray) : State :=
-  { Main.trampolineState input 712 with
-      stack := [UInt256.ofNat 533, MachineState.readWord input 68 - (137506062208 : UInt256)] }
+  { Main.trampolineState input 687 with
+      stack := [UInt256.ofNat 519, MachineState.readWord input 68 - (137506062208 : UInt256)] }
 
 set_option linter.unusedSimpArgs false in
 private theorem run_width_prefix (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock (widthPath.take 5) (entryState input) =
       some (widthMidState input) := by
   obtain ⟨c0, c32, c68, c100, c1, c2, cK⟩ := lits
-  have h598 : (533 : UInt256).toNat = 533 := by decide
-  have h598Word : (533 : UInt256) = UInt256.ofNat 533 := by decide
+  have h598 : (519 : UInt256).toNat = 519 := by decide
+  have h598Word : (519 : UInt256) = UInt256.ofNat 519 := by decide
   simp only [entryState, widthMidState, Main.trampolineState]
   generalize htemplate : initialState CycleSubmission.Artifact.bytecode input 0 = template
   have hcode : template.executionEnv.code = CycleSubmission.Artifact.bytecode := by rw [← htemplate]; rfl
@@ -131,12 +131,12 @@ private theorem run_width_prefix (input : ByteArray) :
 
 set_option linter.unusedSimpArgs false in
 private theorem run_width_jump (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock [opAt 490 .JUMPI] (widthMidState input) =
+    Challenge.EvmProof.Stepper.runLocatedBlock [opAt 482 .JUMPI] (widthMidState input) =
       some (if MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
         then tailState input else legacyState input) := by
   obtain ⟨c0, c32, c68, c100, c1, c2, cK⟩ := lits
-  have h598 : (533 : UInt256).toNat = 533 := by decide
-  have h598Word : (533 : UInt256) = UInt256.ofNat 533 := by decide
+  have h598 : (519 : UInt256).toNat = 519 := by decide
+  have h598Word : (519 : UInt256) = UInt256.ofNat 519 := by decide
   by_cases hc : MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
   · rw [if_pos hc]
     have hz : (115792089237316195423570985008687907853269984665640564039457584007913129639936 +
@@ -171,7 +171,7 @@ private theorem run_width_generic (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock widthPath (entryState input) =
       some (if MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
         then tailState input else legacyState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_append (widthPath.take 5) [opAt 490 .JUMPI]
+  Challenge.EvmProof.Stepper.runLocatedBlock_append (widthPath.take 5) [opAt 482 .JUMPI]
     (entryState input) (widthMidState input) _ (run_width_prefix input) rfl
     (run_width_jump input)
 
@@ -180,8 +180,8 @@ private theorem run_tail_generic (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tailPath (tailState input) =
       some (if tailNat input = 0 then hitEntryState input else legacyState input) := by
   obtain ⟨c0, c32, c68, c100, c1, c2, cK⟩ := lits
-  have h598 : (533 : UInt256).toNat = 533 := by decide
-  have h598Word : (533 : UInt256) = UInt256.ofNat 533 := by decide
+  have h598 : (519 : UInt256).toNat = 519 := by decide
+  have h598Word : (519 : UInt256) = UInt256.ofNat 519 := by decide
   simp only [tailState, hitEntryState, legacyState, Main.trampolineState]
   generalize htemplate : initialState CycleSubmission.Artifact.bytecode input 0 = template
   have hcode : template.executionEnv.code = CycleSubmission.Artifact.bytecode := by rw [← htemplate]; rfl

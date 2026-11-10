@@ -429,40 +429,40 @@ theorem routeMem_table (base modulus exponent : UInt256) :
 def returnedState (template : State) (base modulus exponent : UInt256) (rest : List UInt256) :
     State :=
   WindowTwentyOneReturn.returned
-    (routeState template 2306 base modulus exponent
+    (routeState template 2278 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 :: exponent :: rest))
-    (UInt256.ofNat 2311) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
+    (UInt256.ofNat 2283) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
     (exponent :: rest)
 
 theorem run_setupAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
     runInstructions setupProgram
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 837) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 809) base modulus 16
         (modulus :: exponent :: rest)) =
-    some (WindowTwentyOneTable.framed template (UInt256.ofNat 841) base modulus 16
+    some (WindowTwentyOneTable.framed template (UInt256.ofNat 813) base modulus 16
       (UInt256.shiftRight exponent (UInt256.ofNat 3) :: frame modulus exponent rest)) := by
-  have h := run_setup template (UInt256.ofNat 837) base modulus exponent rest (by omega)
+  have h := run_setup template (UInt256.ofNat 809) base modulus exponent rest (by omega)
   rw [advancePC_ofNat] at h
   exact h
 
 theorem run_copyAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
     runInstructionsX copyProgram
-      (WindowTwentyOneTable.framed template (UInt256.ofNat 841) base modulus 16
+      (WindowTwentyOneTable.framed template (UInt256.ofNat 813) base modulus 16
         (UInt256.shiftRight exponent (UInt256.ofNat 3) :: frame modulus exponent rest)) =
-    some (routeState template 849 base modulus exponent (frame modulus exponent rest)) := by
-  have h := run_copy template (UInt256.ofNat 841) base modulus exponent
+    some (routeState template 821 base modulus exponent (frame modulus exponent rest)) := by
+  have h := run_copy template (UInt256.ofNat 813) base modulus exponent
     (UInt256.shiftRight exponent (UInt256.ofNat 3)) rest (by omega)
   rw [advancePC_ofNat] at h
   exact h
 
 theorem run_poolAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
-    runInstructions poolProgram (routeState template 849 base modulus exponent
+    runInstructions poolProgram (routeState template 821 base modulus exponent
       (frame modulus exponent rest)) =
-    some (routeState template 1163 base modulus exponent
+    some (routeState template 1135 base modulus exponent
       (List.replicate 314 modulus ++ frame modulus exponent rest)) := by
-  have h := run_pool template (UInt256.ofNat 849) (routeMem base modulus exponent) 18
+  have h := run_pool template (UInt256.ofNat 821) (routeMem base modulus exponent) 18
     modulus (exponent :: rest)
     (by simp only [List.length_cons]; omega)
   rw [advancePC_ofNat] at h
@@ -470,13 +470,13 @@ theorem run_poolAt (template : State) (base modulus exponent : UInt256)
 
 theorem run_firstAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
-    runInstructions firstProgram (routeState template 1163 base modulus exponent
+    runInstructions firstProgram (routeState template 1135 base modulus exponent
       (List.replicate 314 modulus ++ frame modulus exponent rest)) =
-    some (routeState template 1172 base modulus exponent
+    some (routeState template 1144 base modulus exponent
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat ::
         List.replicate 314 modulus ++ frame modulus exponent rest)) := by
   have hd := WindowTwentyOneMath.nibble_lt exponent.toNat 0
-  have h := run_first template (UInt256.ofNat 1163) (routeMem base modulus exponent) base modulus
+  have h := run_first template (UInt256.ofNat 1135) (routeMem base modulus exponent) base modulus
     (WindowTwentyOneMath.nibble exponent.toNat 0) hd (routeMem_table base modulus exponent _ hd)
     (first_address _ exponent) (List.replicate 314 modulus ++ frame modulus exponent rest)
     (by simp only [frame, List.length_append, List.length_replicate, List.length_cons]; omega)
@@ -485,15 +485,15 @@ theorem run_firstAt (template : State) (base modulus exponent : UInt256)
 
 theorem run_headAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
-    runInstructions (routeWindows 0 60) (routeState template 1172 base modulus exponent
+    runInstructions (routeWindows 0 60) (routeState template 1144 base modulus exponent
       (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat ::
         List.replicate 314 modulus ++ frame modulus exponent rest)) =
-    some (routeState template 2252 base modulus exponent
+    some (routeState template 2224 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 14 modulus ++ frame modulus exponent rest)) := by
   have h := run_routeWindows template (routeMem base modulus exponent) base modulus exponent
     (frame modulus exponent rest) (routeMem_table base modulus exponent)
-    (fun i hi => precopy_address _ exponent i hi) 60 0 (by omega) (UInt256.ofNat 1172)
+    (fun i hi => precopy_address _ exponent i hi) 60 0 (by omega) (UInt256.ofNat 1144)
     (WindowTwentyOneMath.initialAccumulator base modulus exponent.toNat) 14
     (by simp only [frame, List.length_cons]; omega)
   rw [advancePC_ofNat] at h
@@ -501,19 +501,19 @@ theorem run_headAt (template : State) (base modulus exponent : UInt256)
 
 theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 600) :
-    runInstructions tailProgram (routeState template 2252 base modulus exponent
+    runInstructions tailProgram (routeState template 2224 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 14 modulus ++ frame modulus exponent rest)) =
     some (returnedState template base modulus exponent rest) := by
-  have h1 : runInstructions (routeWindows 60 1) (routeState template 2252 base modulus exponent
+  have h1 : runInstructions (routeWindows 60 1) (routeState template 2224 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60 ::
         List.replicate 14 modulus ++ frame modulus exponent rest)) =
-      some (routeState template 2270 base modulus exponent
+      some (routeState template 2242 base modulus exponent
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 61 ::
           List.replicate 9 modulus ++ frame modulus exponent rest)) := by
     have h := run_routeWindows template (routeMem base modulus exponent) base modulus exponent
       (frame modulus exponent rest) (routeMem_table base modulus exponent)
-      (fun i hi => precopy_address _ exponent i hi) 1 60 (by omega) (UInt256.ofNat 2252)
+      (fun i hi => precopy_address _ exponent i hi) 1 60 (by omega) (UInt256.ofNat 2224)
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 60) 9
       (by simp only [frame, List.length_cons]; omega)
     have h61 : WindowTwentyOneMath.advance base modulus exponent.toNat (1 + 60) 1
@@ -523,14 +523,14 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     rw [advancePC_ofNat, h61] at h
     exact h
   have h2a : runInstructions (WindowSixteenBlock.Block.squares 4)
-      (routeState template 2270 base modulus exponent
+      (routeState template 2242 base modulus exponent
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 61 ::
           List.replicate 9 modulus ++ frame modulus exponent rest)) =
-      some (routeState template 2278 base modulus exponent
+      some (routeState template 2250 base modulus exponent
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 61) ::
           List.replicate 5 modulus ++ frame modulus exponent rest)) := by
-    have h := WindowSixteenBlock.Block.run_squares template (UInt256.ofNat 2270)
+    have h := WindowSixteenBlock.Block.run_squares template (UInt256.ofNat 2242)
       (routeMem base modulus exponent) 18 modulus
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 61)
       (List.replicate 5 modulus ++ frame modulus exponent rest) 4 (by decide)
@@ -545,14 +545,14 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     exact h
   have hd62 := WindowTwentyOneMath.nibble_lt exponent.toNat 62
   have h2b : runInstructions stackLookupProgram
-      (routeState template 2278 base modulus exponent
+      (routeState template 2250 base modulus exponent
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 61) ::
           List.replicate 5 modulus ++ frame modulus exponent rest)) =
-      some (routeState template 2288 base modulus exponent
+      some (routeState template 2260 base modulus exponent
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62 ::
           List.replicate 4 modulus ++ frame modulus exponent rest)) := by
-    have h := run_stackLookup template (UInt256.ofNat 2278) (routeMem base modulus exponent)
+    have h := run_stackLookup template (UInt256.ofNat 2250) (routeMem base modulus exponent)
       base modulus
       (WindowMath.squareWordAfter modulus 4
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 61))
@@ -570,14 +570,14 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     rw [h62]
     exact h
   have h3 : runInstructions (WindowSixteenBlock.Block.squares 4)
-      (routeState template 2288 base modulus exponent
+      (routeState template 2260 base modulus exponent
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62 ::
           List.replicate 4 modulus ++ frame modulus exponent rest)) =
-      some (routeState template 2296 base modulus exponent
+      some (routeState template 2268 base modulus exponent
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62) ::
           frame modulus exponent rest)) := by
-    have h := WindowSixteenBlock.Block.run_squares template (UInt256.ofNat 2288)
+    have h := WindowSixteenBlock.Block.run_squares template (UInt256.ofNat 2260)
       (routeMem base modulus exponent) 18 modulus
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62)
       (frame modulus exponent rest) 4 (by decide)
@@ -586,18 +586,18 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
     exact h
   have hd := WindowTwentyOneMath.nibble_lt exponent.toNat 63
   have h4 : runInstructions finalProgram
-      (routeState template 2296 base modulus exponent
+      (routeState template 2268 base modulus exponent
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62) ::
           frame modulus exponent rest)) =
       some (WindowTwentyOneReturn.framed
-        (routeState template 2306 base modulus exponent
+        (routeState template 2278 base modulus exponent
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 ::
             exponent :: rest))
-        (UInt256.ofNat 2306)
+        (UInt256.ofNat 2278)
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 ::
           exponent :: rest)) := by
-    have h := run_final template (UInt256.ofNat 2296) (routeMem base modulus exponent) base modulus
+    have h := run_final template (UInt256.ofNat 2268) (routeMem base modulus exponent) base modulus
       (WindowMath.squareWordAfter modulus 4
         (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62))
       exponent (WindowTwentyOneMath.nibble exponent.toNat 63)
@@ -609,9 +609,9 @@ theorem run_tailAt (template : State) (base modulus exponent : UInt256)
           (WindowTwentyOneMath.accumulator base modulus exponent.toNat 62)) modulus] at h
     exact h
   have h5 := WindowTwentyOneReturn.run_return
-    (routeState template 2306 base modulus exponent
+    (routeState template 2278 base modulus exponent
       (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63 :: exponent :: rest))
-    (UInt256.ofNat 2306) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
+    (UInt256.ofNat 2278) (WindowTwentyOneMath.accumulator base modulus exponent.toNat 63) 18
     (by decide) rfl (exponent :: rest) (by simp only [List.length_cons]; omega)
   rw [advancePC_ofNat] at h5
   have h012 := runInstructions_append_some _ _ _ _ _ h1 h2a

@@ -70,8 +70,8 @@ def returnProgram : List Instr := valueProgram ++ exitProgram
 
 private theorem run_value (template : State) (modulus base : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999) (hbase : rest[1]? = some base) :
-    runInstructions valueProgram (framed template (UInt256.ofNat 4865) (modulus :: rest)) =
-    some (framed template (UInt256.ofNat 4869)
+    runInstructions valueProgram (framed template (UInt256.ofNat 4749) (modulus :: rest)) =
+    some (framed template (UInt256.ofNat 4753)
       (UInt256.isZero (UInt256.isZero (UInt256.mod base modulus)) :: rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -107,19 +107,19 @@ theorem run_return (template : State) (modulus base : UInt256) (rest : List UInt
     (hrest : rest.length ≤ 999) (hbase : rest[1]? = some base)
     (hactive : template.activeWords = UInt256.ofNat 0) :
     WindowTwentyOneMsize.runInstructionsX returnProgram
-      (framed template (UInt256.ofNat 4865) (modulus :: rest)) =
-    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 4873)
+      (framed template (UInt256.ofNat 4749) (modulus :: rest)) =
+    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 4757)
       (UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))) 0 rest) := by
   let word := UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))
   have hv := run_value template modulus base rest hrest hbase
   have hvx : WindowTwentyOneMsize.runInstructionsX valueProgram
-      (framed template (UInt256.ofNat 4865) (modulus :: rest)) =
-      some (framed template (UInt256.ofNat 4869) (word :: rest)) := by
+      (framed template (UInt256.ofNat 4749) (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 4753) (word :: rest)) := by
     rw [WindowTwentyOneMsize.runInstructionsX_eq valueProgram (by decide)]
     exact hv
-  have hr := run_exit template (UInt256.ofNat 4869) word hactive rest (by omega)
+  have hr := run_exit template (UInt256.ofNat 4753) word hactive rest (by omega)
   have both := WindowTwentyOneMsize.runInstructionsX_append_some _ _ _ _ _ hvx hr
-  have hpc : advancePC 4 (UInt256.ofNat 4869) = UInt256.ofNat 4873 := by decide
+  have hpc : advancePC 4 (UInt256.ofNat 4753) = UInt256.ofNat 4757 := by decide
   simpa only [returnProgram, hpc, word] using both
 
 

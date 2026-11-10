@@ -31,8 +31,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 theorem jumpD4643 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
-    (UInt256.ofNat 2390).toNat = true :=
-  by simpa only [show (UInt256.ofNat 2390).toNat = 2390 by decide] using jumpDest4608
+    (UInt256.ofNat 2357).toNat = true :=
+  by simpa only [show (UInt256.ofNat 2357).toNat = 2357 by decide] using jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 
@@ -312,7 +312,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : CycleSubmission.Global.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 578) final) ∧
+        (Main.trampolineState input 564) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)

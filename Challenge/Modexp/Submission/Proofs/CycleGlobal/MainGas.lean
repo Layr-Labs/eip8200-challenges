@@ -25,7 +25,7 @@ private def gasSteps_tramp0 (input : ByteArray) :
 
 /-- The body's own `JUMPDEST`, reached when the legacy fast path declines. -/
 private def gasSteps_tramp7Dest (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 533)
+    Challenge.EvmProof.GasSteps (trampolineState input 519)
       (headerEntryState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka tramp7DestPath rfl rfl
@@ -61,7 +61,7 @@ private def gasSteps_headerCheck (input : ByteArray) :
 from the entry.  The appended fast path reaches that pc itself, so the entry hop
 is factored out. -/
 def gasSteps_headerFromBody (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 533)
+    Challenge.EvmProof.GasSteps (trampolineState input 519)
       (headerState input) := by
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
@@ -76,7 +76,7 @@ def gasSteps_entryHop (input : ByteArray) :
 inputs it declines. -/
 def gasSteps_header (input : ByteArray) (_hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
-      (trampolineState input 533)) :
+      (trampolineState input 519)) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
       (headerState input) :=
   entry.trans (gasSteps_headerFromBody input)

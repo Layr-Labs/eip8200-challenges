@@ -16,7 +16,7 @@ def sizeValueProgram : List Instr :=
   [.push 1 34, .op .CALLDATALOAD, .push 1 64, .op .CALLDATALOAD, .op .ADD,
    .push 3 0x200020, .op .XOR]
 
-def sizeBranchProgram : List Instr := [.push 2 578, .op .JUMPI]
+def sizeBranchProgram : List Instr := [.push 2 564, .op .JUMPI]
 
 /-- 0..16: the exponent and modulus size test. Any mismatch enters the fixed-vector
 recogniser at 599 with an empty stack. -/
@@ -25,7 +25,7 @@ def sizeProgram : List Instr := sizeValueProgram ++ sizeBranchProgram
 /-- 16..21: the base size difference. -/
 def widthValueProgram : List Instr := [.push 0 0, .op .CALLDATALOAD, .push 1 32, .op .XOR]
 
-def widthBranchProgram : List Instr := [.push 1 101, .op .JUMPI]
+def widthBranchProgram : List Instr := [.push 1 97, .op .JUMPI]
 
 /-- 16..24: the base size test. A base size other than 32 enters the general-width
 entry at 103 with an empty stack; 32 falls through to the fast entry at 24. -/
@@ -42,9 +42,9 @@ def baseDiff (input : ByteArray) : UInt256 :=
 structure Paths (artifact : ProgramArtifact) (fork : Fork) where
   size : WindowTwentyOneBinding.Block artifact fork 0 sizeProgram
   /-- The fixed-vector recogniser's entry, where a size miss lands. -/
-  legacyJump : Decode.isValidJumpDest artifact.code 578 = true
+  legacyJump : Decode.isValidJumpDest artifact.code 564 = true
   /-- The general-width entry. -/
-  genJump : Decode.isValidJumpDest artifact.code 101 = true
+  genJump : Decode.isValidJumpDest artifact.code 97 = true
 
 theorem header_lt (input : ByteArray) (offset : Nat) :
     Precompile.bytesToNatPadded input offset 32 < 2 ^ 256 := by
@@ -155,10 +155,10 @@ theorem run_size_value (template : State) (input : ByteArray)
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 theorem run_size_branch (template : State) (value : UInt256)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 578 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 564 = true) :
     runInstructions sizeBranchProgram (framed template (UInt256.ofNat 12) [value]) =
       some (framed template
-        (if value.toNat = 0 then UInt256.ofNat 16 else UInt256.ofNat 578) []) := by
+        (if value.toNat = 0 then UInt256.ofNat 16 else UInt256.ofNat 564) []) := by
   by_cases hv : value.toNat = 0 <;>
     simp [sizeBranchProgram, runInstructions, framed, Stepper.runInstr, UInt256.isTrue,
       hv, hjump, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
@@ -167,10 +167,10 @@ theorem run_size_branch (template : State) (value : UInt256)
 /-- The size test covers all byte arrays, including truncated headers. -/
 theorem run_size (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 578 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 564 = true) :
     runInstructions sizeProgram (framed template (UInt256.ofNat 0) []) =
       some (framed template
-        (if (sizeDiff input).toNat = 0 then UInt256.ofNat 16 else UInt256.ofNat 578) []) :=
+        (if (sizeDiff input).toNat = 0 then UInt256.ofNat 16 else UInt256.ofNat 564) []) :=
   runInstructions_append_some _ _ _ _ _ (run_size_value template input hdata)
     (run_size_branch template (sizeDiff input) hjump)
 
@@ -184,10 +184,10 @@ theorem run_width_value (template : State) (input : ByteArray)
     Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod, Word.word_toNat_ofNat]
 
 theorem run_width_branch (template : State) (value : UInt256)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 101 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 97 = true) :
     runInstructions widthBranchProgram (framed template (UInt256.ofNat 21) [value]) =
       some (framed template
-        (if value.toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 101) []) := by
+        (if value.toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 97) []) := by
   by_cases hv : value.toNat = 0 <;>
     simp [widthBranchProgram, runInstructions, framed, Stepper.runInstr, UInt256.isTrue,
       hv, hjump, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
@@ -195,10 +195,10 @@ theorem run_width_branch (template : State) (value : UInt256)
 
 theorem run_width (template : State) (input : ByteArray)
     (hdata : template.executionEnv.calldata = input)
-    (hjump : Decode.isValidJumpDest template.executionEnv.code 101 = true) :
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 97 = true) :
     runInstructions widthTestProgram (framed template (UInt256.ofNat 16) []) =
       some (framed template
-        (if (baseDiff input).toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 101) []) :=
+        (if (baseDiff input).toNat = 0 then UInt256.ofNat 24 else UInt256.ofNat 97) []) :=
   runInstructions_append_some _ _ _ _ _ (run_width_value template input hdata)
     (run_width_branch template (baseDiff input) hjump)
 

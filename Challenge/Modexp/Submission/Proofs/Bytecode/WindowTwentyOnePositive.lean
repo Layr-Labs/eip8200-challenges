@@ -27,7 +27,7 @@ def headerStack (input : ByteArray) : List UInt256 :=
 def routeStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-   exponentOffset input, modulusOffset input, UInt256.ofNat 1186,
+   exponentOffset input, modulusOffset input, UInt256.ofNat 1158,
    modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
    UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
 
@@ -60,7 +60,7 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
     Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
 
 def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 748)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 720)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 

@@ -32,53 +32,53 @@ open Challenge.Modexp.Submission.Proofs.Fast
 abbrev Located :=
   Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka
 
-@[simp] theorem directPC0 (i : Nat) (hi : 1826 ≤ i) (hii : i ≤ 1857) :
+@[simp] theorem directPC0 (i : Nat) (hi : 1813 ≤ i) (hii : i ≤ 1844) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([2317, 2318, 2319, 2321, 2322, 2325, 2326, 2328, 2329, 2330, 2332, 2335, 2336, 2337, 2339, 2340, 2341, 2342, 2345, 2346, 2349, 2350, 2351, 2354, 2355, 2356, 2358, 2359, 2363, 2364, 2366, 2367] : List Nat)[i - 1826]! := by
+      ([2284, 2285, 2286, 2288, 2289, 2292, 2293, 2295, 2296, 2297, 2299, 2302, 2303, 2304, 2306, 2307, 2308, 2309, 2312, 2313, 2316, 2317, 2318, 2321, 2322, 2323, 2325, 2326, 2330, 2331, 2333, 2334] : List Nat)[i - 1813]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem directPC1 (i : Nat) (hi : 1858 ≤ i) (hii : i ≤ 1867) :
+@[simp] theorem directPC1 (i : Nat) (hi : 1845 ≤ i) (hii : i ≤ 1854) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([2369, 2370, 2373, 2375, 2376, 2377, 2380, 2383, 2386, 2389] : List Nat)[i - 1858]! := by
+      ([2336, 2337, 2340, 2342, 2343, 2344, 2347, 2350, 2353, 2356] : List Nat)[i - 1845]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 def check65537 : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [CycleSubmission.Global.Fast.opAt 1847 .JUMPDEST,
-   CycleSubmission.Global.Fast.pushAt 1848 2 2656,
-   CycleSubmission.Global.Fast.opAt 1849 .MLOAD,
-   CycleSubmission.Global.Fast.opAt 1850 .CALLDATALOAD,
-   CycleSubmission.Global.Fast.pushAt 1851 1 232,
-   CycleSubmission.Global.Fast.opAt 1852 .SHR,
-   CycleSubmission.Global.Fast.pushAt 1853 3 65537,
-   CycleSubmission.Global.Fast.opAt 1854 .XOR,
-   CycleSubmission.Global.Fast.pushAt 1855 1 219,
-   CycleSubmission.Global.Fast.opAt 1856 .JUMPI]
+  [CycleSubmission.Global.Fast.opAt 1834 .JUMPDEST,
+   CycleSubmission.Global.Fast.pushAt 1835 2 2656,
+   CycleSubmission.Global.Fast.opAt 1836 .MLOAD,
+   CycleSubmission.Global.Fast.opAt 1837 .CALLDATALOAD,
+   CycleSubmission.Global.Fast.pushAt 1838 1 232,
+   CycleSubmission.Global.Fast.opAt 1839 .SHR,
+   CycleSubmission.Global.Fast.pushAt 1840 3 65537,
+   CycleSubmission.Global.Fast.opAt 1841 .XOR,
+   CycleSubmission.Global.Fast.pushAt 1842 1 207,
+   CycleSubmission.Global.Fast.opAt 1843 .JUMPI]
 
 def entryPrefix : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [CycleSubmission.Global.Fast.opAt 1826 .JUMPDEST,
-   CycleSubmission.Global.Fast.opAt 1827 (.Dup ⟨3, by decide⟩),
-   CycleSubmission.Global.Fast.pushAt 1828 1 3,
-   CycleSubmission.Global.Fast.opAt 1829 .EQ,
-   CycleSubmission.Global.Fast.pushAt 1830 2 2350,
-   CycleSubmission.Global.Fast.opAt 1831 .JUMPI]
+  [CycleSubmission.Global.Fast.opAt 1813 .JUMPDEST,
+   CycleSubmission.Global.Fast.opAt 1814 (.Dup ⟨3, by decide⟩),
+   CycleSubmission.Global.Fast.pushAt 1815 1 3,
+   CycleSubmission.Global.Fast.opAt 1816 .EQ,
+   CycleSubmission.Global.Fast.pushAt 1817 2 2317,
+   CycleSubmission.Global.Fast.opAt 1818 .JUMPI]
 
 def fermatHit : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [CycleSubmission.Global.Fast.pushAt 1857 1 16]
+  [CycleSubmission.Global.Fast.pushAt 1844 1 16]
 
 /-- Every exponent width but three (pc 2326) jumps to `modexpBig` (219). -/
 def oneWidth : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [CycleSubmission.Global.Fast.pushAt 1832 1 219,
-   CycleSubmission.Global.Fast.opAt 1833 .JUMP]
+  [CycleSubmission.Global.Fast.pushAt 1819 1 207,
+   CycleSubmission.Global.Fast.opAt 1820 .JUMP]
 
 /-- `e3go` (pc 2329): the E3 hit, square count `1`, jump to the loop head.  Entered by the shift
 cleanup tail after the E3 phase switch. -/
 def threeHit : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [CycleSubmission.Global.Fast.opAt 1834 .JUMPDEST,
-   CycleSubmission.Global.Fast.pushAt 1835 1 1,
-   CycleSubmission.Global.Fast.pushAt 1836 2 2369,
-   CycleSubmission.Global.Fast.opAt 1837 .JUMP]
+  [CycleSubmission.Global.Fast.opAt 1821 .JUMPDEST,
+   CycleSubmission.Global.Fast.pushAt 1822 1 1,
+   CycleSubmission.Global.Fast.pushAt 1823 2 2336,
+   CycleSubmission.Global.Fast.opAt 1824 .JUMP]
 
 def start : List Located :=
   []
@@ -87,43 +87,43 @@ def start : List Located :=
 `pdst` slot (the in-kernel loop counts it down) and call `SQUARE(0x840) → 0x200`,
 entering the kernel's `common` block with `hd = sq_row` and return address 2519. -/
 def squareCall : List Located :=
-  [CycleSubmission.Global.Fast.opAt 1858 .JUMPDEST,
-   CycleSubmission.Global.Fast.pushAt 1859 2 2519,
-   CycleSubmission.Global.Fast.pushAt 1860 1 1,
-   CycleSubmission.Global.Fast.opAt 1861 (.Dup ⟨2, by decide⟩),
-   CycleSubmission.Global.Fast.opAt 1862 .SUB,
-   CycleSubmission.Global.Fast.pushAt 1863 2 512,
-   CycleSubmission.Global.Fast.pushAt 1864 2 2112,
-   CycleSubmission.Global.Fast.pushAt 1865 2 3780,
-   CycleSubmission.Global.Fast.pushAt 1866 2 3202,
-   CycleSubmission.Global.Fast.opAt 1867 .JUMP]
+  [CycleSubmission.Global.Fast.opAt 1845 .JUMPDEST,
+   CycleSubmission.Global.Fast.pushAt 1846 2 2519,
+   CycleSubmission.Global.Fast.pushAt 1847 1 1,
+   CycleSubmission.Global.Fast.opAt 1848 (.Dup ⟨2, by decide⟩),
+   CycleSubmission.Global.Fast.opAt 1849 .SUB,
+   CycleSubmission.Global.Fast.pushAt 1850 2 512,
+   CycleSubmission.Global.Fast.pushAt 1851 2 2112,
+   CycleSubmission.Global.Fast.pushAt 1852 2 3710,
+   CycleSubmission.Global.Fast.pushAt 1853 2 3146,
+   CycleSubmission.Global.Fast.opAt 1854 .JUMP]
 
 theorem jumpDest3892 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2317 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1826 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2284 = true :=
+  CycleSubmission.Global.Binding.jumpDest 1813 (by rfl)
 
 theorem jumpDest3895 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2350 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1847 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2317 = true :=
+  CycleSubmission.Global.Binding.jumpDest 1834 (by rfl)
 
 theorem jumpDest3953 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2369 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1858 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2336 = true :=
+  CycleSubmission.Global.Binding.jumpDest 1845 (by rfl)
 
 /-- `modexpBig` (pc 219), the target of every recogniser miss. -/
 theorem jumpDestBail :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 143 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 207 = true :=
+  CycleSubmission.Global.Binding.jumpDest 135 (by rfl)
 
 /-- `modexpBig` (pc 237), where the trampoline lands. -/
 theorem jumpDestBigC :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 143 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 207 = true :=
+  CycleSubmission.Global.Binding.jumpDest 135 (by rfl)
 
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3202 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2446 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3146 = true :=
+  CycleSubmission.Global.Binding.jumpDest 2432 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

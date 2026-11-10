@@ -51,113 +51,113 @@ that reaches it, so its incoming carry is the literal zero `entryProgram` pushes
 accumulator word it reads (`0x920`) is the limb the shift just zeroed.  It pops the carry, so
 the limb rides in `Dup 10`.  Block 4 keeps the fused schedule — pc 3032 is both jumped to
 (four limbs, carry zero) and fallen into from block 3 (carry nonzero). -/
-def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2811 (rideTopProgramNP 10 2336) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2127 16 2811 (rideTopProgramNP 10 2336)
-    (by change 2127 + 16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2757 (rideTopProgramNP 10 2336) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2114 16 2757 (rideTopProgramNP 10 2336)
+    (by change 2114 + 16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 1: instructions 2347..2374, pc 2933..2965,
 `-N` limb riding in slot 6 (`Dup 11`, address 1472 = 0x5c0), `t` limb at 2304. -/
-def block1 : Block CycleSubmission.Artifact.artifact .Osaka 2829 (rideProgram 10 2304) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2143 28 2829 (rideProgram 10 2304)
-    (by change 2143 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block1 : Block CycleSubmission.Artifact.artifact .Osaka 2775 (rideProgram 10 2304) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2130 28 2775 (rideProgram 10 2304)
+    (by change 2130 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 2: instructions 2375..2402, pc 2966..2998,
 `-N` limb riding in slot 5 (`Dup 10`, address 1440 = 0x5a0), `t` limb at 2272. -/
-def block2 : Block CycleSubmission.Artifact.artifact .Osaka 2861 (rideProgram 9 2272) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2171 28 2861 (rideProgram 9 2272)
-    (by change 2171 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block2 : Block CycleSubmission.Artifact.artifact .Osaka 2807 (rideProgram 9 2272) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2158 28 2807 (rideProgram 9 2272)
+    (by change 2158 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 3: instructions 2403..2430, pc 2999..3031,
 `-N` limb riding in slot 4 (`Dup 9`, address 1408 = 0x580), `t` limb at 2240. -/
-def block3 : Block CycleSubmission.Artifact.artifact .Osaka 2893 (rideProgram 8 2240) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2199 28 2893 (rideProgram 8 2240)
-    (by change 2199 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block3 : Block CycleSubmission.Artifact.artifact .Osaka 2839 (rideProgram 8 2240) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2186 28 2839 (rideProgram 8 2240)
+    (by change 2186 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 4: instructions 2247..2274, pc 2901..2932 (eight limbs only; the four-limb head runs
 its own zero-carry copy), `-N` limb riding in slot 3 (`Dup 8`, address 1376 = 0x560), `t` limb at 2208. -/
-def block4 : Block CycleSubmission.Artifact.artifact .Osaka 2925 (rideProgram 7 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2227 28 2925 (rideProgram 7 2208)
-    (by change 2227 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block4 : Block CycleSubmission.Artifact.artifact .Osaka 2871 (rideProgram 7 2208) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2214 28 2871 (rideProgram 7 2208)
+    (by change 2214 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 5: instructions 2460..2487, pc 3066..3098,
 `-N` limb riding in slot 2 (`Dup 7`, address 1344 = 0x540), `t` limb at 2176. -/
-def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2957 (rideProgramW3 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2255 28 2957 (rideProgramW3 6 2176)
-    (by change 2255 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block5 : Block CycleSubmission.Artifact.artifact .Osaka 2903 (rideProgram 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2242 28 2903 (rideProgram 6 2176)
+    (by change 2242 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 6: instructions 2488..2515, pc 3099..3131,
 `-N` limb riding in slot 1 (`Dup 6`, address 1312 = 0x520), `t` limb at 2144. -/
-def block6 : Block CycleSubmission.Artifact.artifact .Osaka 2990 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2283 28 2990 (rideProgram 5 2144)
-    (by change 2283 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block6 : Block CycleSubmission.Artifact.artifact .Osaka 2935 (rideProgram 5 2144) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2270 28 2935 (rideProgram 5 2144)
+    (by change 2270 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- Block 7: instructions 2516..2545, pc 3132..3167 — the one `MLOAD` block left:
 `0x500 = 1280` is not a riding slot, `t` limb at 2112 (0x840). -/
-def block7 : Block CycleSubmission.Artifact.artifact .Osaka 3022 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2311 30 3022 (blockProgram 1280 2112)
-    (by change 2311 + 30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block7 : Block CycleSubmission.Artifact.artifact .Osaka 2967 (blockProgram 1280 2112) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2298 30 2967 (blockProgram 1280 2112)
+    (by change 2298 + 30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- The exit: empty program at pc 3168. -/
-def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3058 exitProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2341 0 3058 exitProgram
-    (by change 2341 + 0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3003 exitProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2328 0 3003 exitProgram
+    (by change 2328 + 0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- E6, the section entry: instructions 2325..2328, pc 2895..2898 (`Dup 5` = the scratch slot). -/
-def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10755 (rideTopProgramNP 6 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8339 16 10755 (rideTopProgramNP 6 2208)
-    (by change 8339 + 16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10789 (rideTopProgramNP 6 2208) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8298 16 10789 (rideTopProgramNP 6 2208)
+    (by change 8298 + 16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 set_option maxHeartbeats 4000000 in
 /-- The four-limb private copies of blocks 5..7 (instructions 8622.., pc 10841..10940). -/
-def block5c : Block CycleSubmission.Artifact.artifact .Osaka 10773 (rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8355 28 10773 (rideProgram 6 2176)
-    (by change 8355 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block5c : Block CycleSubmission.Artifact.artifact .Osaka 10807 (rideProgram 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8314 28 10807 (rideProgram 6 2176)
+    (by change 8314 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 set_option maxHeartbeats 4000000 in
-def block6c : Block CycleSubmission.Artifact.artifact .Osaka 10805 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8383 28 10805 (rideProgram 5 2144)
-    (by change 8383 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block6c : Block CycleSubmission.Artifact.artifact .Osaka 10839 (rideProgram 5 2144) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8342 28 10839 (rideProgram 5 2144)
+    (by change 8342 + 28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 set_option maxHeartbeats 4000000 in
-def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10837 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8411 30 10837 (blockProgram 1280 2112)
-    (by change 8411 + 30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10871 (blockProgram 1280 2112) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8370 30 10871 (blockProgram 1280 2112)
+    (by change 8370 + 30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

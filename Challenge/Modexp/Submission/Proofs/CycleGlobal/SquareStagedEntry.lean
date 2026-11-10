@@ -25,16 +25,16 @@ def program : List Instr :=
    .push 2 480,
    .op .SUB]
 
-def block : Block CycleSubmission.Artifact.artifact .Osaka 3780 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2845 3 3780 program
-    (by change 2845 + 3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block : Block CycleSubmission.Artifact.artifact .Osaka 3710 program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2822 3 3710 program
+    (by change 2822 + 3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
-    (UInt256.ofNat 3780).toNat = true :=
-  CycleSubmission.Global.Binding.jumpDest 2845 (by rfl)
+    (UInt256.ofNat 3710).toNat = true :=
+  CycleSubmission.Global.Binding.jumpDest 2822 (by rfl)
 
 /-- The entry's row pointer word. -/
 def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512 + 32 * n - 32)
@@ -46,8 +46,8 @@ theorem qWord_four : qWord 4 = UInt256.ofNat (2^256 - 128) := by decide
 /-- The state at H1 (4597). -/
 def h1State (s : State) (mem : ByteArray) (n : Nat) (ent w5 inv m0 : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 3785
-           stack := [qWord n, UInt256.ofNat 3780, UInt256.ofNat 480, ent, w5, allOnes,
+  { s with pc := UInt256.ofNat 3715
+           stack := [qWord n, UInt256.ofNat 3710, UInt256.ofNat 480, ent, w5, allOnes,
              MachineState.readWord mem 128, inv, m0] ++ rest
            memory := mem }
 
@@ -55,7 +55,7 @@ theorem run_entry (s : State) (mem : ByteArray) (n : Nat)
     (ent w5 inv m0 : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1012)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions program
-      (outState s mem 512 n 0 (UInt256.ofNat 3780) ent w5 inv m0 rest) =
+      (outState s mem 512 n 0 (UInt256.ofNat 3710) ent w5 inv m0 rest) =
     some (h1State s mem n ent w5 inv m0 rest) := by
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
@@ -75,7 +75,7 @@ def gasSteps_entry (s : State) (mem : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (outState s mem 512 n 0 (UInt256.ofNat 3780) ent w5 inv m0 rest)
+      (outState s mem 512 n 0 (UInt256.ofNat 3710) ent w5 inv m0 rest)
       (h1State s mem n ent w5 inv m0 rest) :=
   block.steps (SquareRow.environment _ hcode hfork hrun hnp) rfl
     (run_entry s mem n ent w5 inv m0 rest hcap hact)

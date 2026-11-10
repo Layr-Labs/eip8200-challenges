@@ -34,7 +34,7 @@ def Matches (input : ByteArray) (bsize esize : Nat) : Prop :=
 
 abbrev entryState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=
-  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2317 }
+  { Exp.bDone s mem n bsize esize msize with pc := UInt256.ofNat 2284 }
 
 abbrev missState (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) : State :=

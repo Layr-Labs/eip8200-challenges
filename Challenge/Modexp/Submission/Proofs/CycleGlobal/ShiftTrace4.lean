@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftCopyAt
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace4
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerSplitRun
@@ -366,11 +367,11 @@ def gasSteps_addRounds (z : UInt256) (s : State) (mem : ByteArray) (n bsize esiz
 
 theorem jumpD5357 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat pcAfterCsub).toNat = true :=
-  by rw [show (UInt256.ofNat pcAfterCsub).toNat = 2714 from by decide]; exact jumpDest4839
+  by rw [show (UInt256.ofNat pcAfterCsub).toNat = 2660 from by decide]; exact jumpDest4839
 
 theorem jumpD4692 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat pcCsubReturn).toNat = true :=
-  by rw [show (UInt256.ofNat pcCsubReturn).toNat = 2412 from by decide]; exact jumpDest4657
+  by rw [show (UInt256.ofNat pcCsubReturn).toNat = 2378 from by decide]; exact jumpDest4657
 
 /-- `blk3253` now returns straight to the loop head: the `CSUB` it used to call is the identity
 on every reachable state (`repair_lt_mm`), so the artifact does not call it.  The hypotheses the
@@ -385,10 +386,10 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     Challenge.EvmProof.GasSteps (csubCallState z s mem n bsize esize msize k)
       (afterCsubState z s mem n bsize esize msize k) :=
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
-def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2412
+def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2378
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1881 5 2412 ShiftProducerSplitRun.copyProgram
-    (by change 1881 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1868 5 2378 ShiftProducerSplitRun.copyProgram
+    (by change 1868 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -436,7 +437,7 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
           (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn' hfast))
       rfl rfl
   have copy := canonicalCopyBlock.steps (bindingEnv e) rfl
-    (ShiftProducerSplitRun.run_copy s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n
+    (ShiftCopyAt.run_copy s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n
       [UInt256.ofNat n, UInt256.ofNat bsize, UInt256.ofNat esize, UInt256.ofNat msize]
       (by simp) (by omega) hn32 e.act)
   exact first.trans (by

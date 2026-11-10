@@ -54,7 +54,7 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
   e3Tail : ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 1760 = UInt256.ofNat 0 →
     GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 12) s phaseMem n bsize esize msize)
-      (CycleSubmission.Global.Fast.Shift.frameState s phaseMem 2329 n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.frameState s phaseMem 2296 n bsize esize msize)
 
 theorem phaseSwitch_flag_zero (mem : ByteArray) (n : Nat) (hn8 : n ≤ 8) :
     MachineState.readWord (RootE3Phase.phaseSwitch mem n) 1760 = UInt256.ofNat 0 := by
@@ -107,7 +107,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hhit : Eligible input n bsize esize) :
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.Fast.Shift.frameState s (e3Final mem input n mm k) 2329 n bsize esize msize) := by
+      (CycleSubmission.Global.Fast.Shift.frameState s (e3Final mem input n mm k) 2296 n bsize esize msize) := by
   have hhalf : n / 2 = 2 * k := by omega
   have inv0 := CycleSubmission.Global.Fast.Shift.m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have hquarter : n / 4 = k := by omega

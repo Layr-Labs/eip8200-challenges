@@ -252,18 +252,18 @@ theorem topWidth_add (input : ByteArray) (h : 32 < modulusSize input) :
   unfold topWidth limbs Limbs.limbCount
   omega
 def entryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 578, stack := [] }
+  { s with pc := UInt256.ofNat 564, stack := [] }
 def fallbackState (s : State) : State :=
-  { s with pc := UInt256.ofNat 533, stack := [] }
+  { s with pc := UInt256.ofNat 519, stack := [] }
 def memoEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 699, stack := [] }
+  { s with pc := UInt256.ofNat 674, stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 3489, stack := [] }
+  { s with pc := UInt256.ofNat 3428, stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 3534, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 3473, stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 3541
+    pc := UInt256.ofNat 3480
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -304,14 +304,14 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 4841
+    pc := UInt256.ofNat 4738
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
 def zeroExpFinalState (s : State) (input : ByteArray) : State :=
   { zeroExpStoreState s input with
     stack := []
-    pc := UInt256.ofNat 4844
+    pc := UInt256.ofNat 4741
     halt := .Returned
     hReturn := MachineState.readPadded (zeroExpMemory s input)
       (32 - modulusSize input) (modulusSize input)
@@ -405,9 +405,9 @@ set_option linter.unusedSimpArgs false in
 def zeroExpReturnProgram80 : List Instr :=
   [.op (.Dup dA0), .op .MSIZE, .op .SUB, .op .RETURN]
 
-def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4841 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3663 4 4841 zeroExpReturnProgram80
-    (by change 3663 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4738 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 3640 4 4738 zeroExpReturnProgram80
+    (by change 3640 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -512,7 +512,7 @@ theorem zeroExpFinalState_result (s : State) (input : ByteArray)
     zeroExpModulus]
   rfl
 def sizeCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 593, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 579, stack := [UInt256.ofNat (modulusSize input)] }
 theorem entryCond_zero (m : Nat) (hm : m < 2 ^ 256)
     (hlo : 32 < m) (hhi : m ≤ 256) :
     UInt256.lt (UInt256.ofNat 223) (UInt256.ofNat m - UInt256.ofNat 33) =
@@ -597,7 +597,7 @@ def sizesOkStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input)]
 def topCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 598, stack := sizesOkStack input }
+  { s with pc := UInt256.ofNat 584, stack := sizesOkStack input }
 set_option linter.unusedSimpArgs false in
 theorem run_sizeCheck_pass (s : State) (input : ByteArray)
     (hdata : s.executionEnv.calldata = input) (hrun : s.halt = .Running)
@@ -706,16 +706,16 @@ def outerStack (input : ByteArray) : List UInt256 :=
    UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
    UInt256.ofNat (modulusSize input)]
 def oddCheckState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 624
+  { s with pc := UInt256.ofNat 608
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 def bail6State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 219
+  { s with pc := UInt256.ofNat 207
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 def bigBailState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 219
+  { s with pc := UInt256.ofNat 207
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
-theorem jumpDestBig : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 219 = true :=
-  CycleSubmission.Global.Binding.jumpDest 143 (by rfl)
+theorem jumpDestBig : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 207 = true :=
+  CycleSubmission.Global.Binding.jumpDest 135 (by rfl)
 theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
     UInt256.land (UInt256.ofNat 1)
         (MachineState.readWord input (modOffset input + modulusSize input - 32)) =
@@ -735,7 +735,7 @@ theorem land_one_lastWord (input : ByteArray) (h : 32 < modulusSize input) :
   rw [hsplit, Nat.add_mod, Nat.mul_mod, show (256:Nat) ^ 32 % 2 = 0 from by norm_num]
   simp
 def setupEntryState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 649
+  { s with pc := UInt256.ofNat 630
            stack := UInt256.ofNat (modOffset input) :: outerStack input }
 set_option linter.unusedSimpArgs false in
 theorem run_check_pass (s : State) (input : ByteArray)
@@ -1217,26 +1217,26 @@ def gasSteps_fallback_of (s : State) (input : ByteArray)
           (gasSteps_zeroExp_miss s input hdata hcode hfork hrun hnp hez))
 theorem entryState_initial (input : ByteArray) :
     entryState (initialState CycleSubmission.Artifact.bytecode input 0) =
-      Main.trampolineState input 578 := rfl
+      Main.trampolineState input 564 := rfl
 theorem fallbackState_initial (input : ByteArray) :
     fallbackState (initialState CycleSubmission.Artifact.bytecode input 0) =
-      Main.trampolineState input 533 := rfl
+      Main.trampolineState input 519 := rfl
 theorem memoEntryState_initial (input : ByteArray) :
     memoEntryState (initialState CycleSubmission.Artifact.bytecode input 0) =
-      Main.trampolineState input 699 := rfl
+      Main.trampolineState input 674 := rfl
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
-        (Main.trampolineState input 699))
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
+        (Main.trampolineState input 674))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
         (bigBailState (initialState CycleSubmission.Artifact.bytecode input 0) input))
   | empty (hzero : modulusSize input = 0)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
         (emptyModulusState (initialState CycleSubmission.Artifact.bytecode input 0)))
   | zeroExp (hzero : exponentSize input = 0) (hpos : 0 < modulusSize input)
       (hsmall : modulusSize input ≤ 32)
-      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
+      (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
         (zeroExpFinalState (initialState CycleSubmission.Artifact.bytecode input 0) input))
 def gasSteps_fallback (input : ByteArray) (hvalid : ValidInput input)
     (hfail : ¬ FastPath input) : Fallback input :=
@@ -1362,39 +1362,39 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
     2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 452 (.Dup dA3),
-   pushAt 453 1 96,
-   opAt 454 .ADD,
-   pushAt 455 4 2656,
+  [opAt 444 (.Dup dA3),
+   pushAt 445 1 96,
+   opAt 446 .ADD,
+   pushAt 447 2 2656,
+   opAt 448 .MSTORE,
+   opAt 449 (.Dup dA1),
+   opAt 450 .MSIZE,
+   opAt 451 .MSTORE,
+   pushAt 452 1 32,
+   opAt 453 (.Dup dA2),
+   opAt 454 .SUB,
+   pushAt 455 2 2752,
    opAt 456 .MSTORE,
    opAt 457 (.Dup dA1),
-   opAt 458 .MSIZE,
-   opAt 459 .MSTORE,
-   pushAt 460 1 32,
-   opAt 461 (.Dup dA2),
-   opAt 462 .SUB,
-   pushAt 463 3 2752,
-   opAt 464 .MSTORE,
-   opAt 465 (.Dup dA1),
-   pushAt 466 2 2080,
-   opAt 467 .ADD,
-   opAt 468 .MSIZE,
-   opAt 469 .MSTORE,
-   opAt 470 (.Dup dA5),
-   opAt 471 (.Dup dA1),
-   pushAt 472 0 0,
-   opAt 473 .CALLDATACOPY,
-   opAt 474 .POP,
-   pushAt 475 5 2390,
-   opAt 476 .JUMP]
+   pushAt 458 2 2080,
+   opAt 459 .ADD,
+   opAt 460 .MSIZE,
+   opAt 461 .MSTORE,
+   opAt 462 (.Dup dA5),
+   opAt 463 (.Dup dA1),
+   pushAt 464 0 0,
+   opAt 465 .CALLDATACOPY,
+   opAt 466 .POP,
+   pushAt 467 2 2357,
+   opAt 468 .JUMP]
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
-  { s with pc := UInt256.ofNat 2390
+  { s with pc := UInt256.ofNat 2357
            stack := outerStack input
            memory := setupMem s.memory input m0
            activeWords := setupWords s.activeWords input }
 private theorem jumpDest3296 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1868 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2357 = true :=
+  CycleSubmission.Global.Binding.jumpDest 1855 (by rfl)
 namespace MsizeSetup
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 set_option linter.unusedSimpArgs false
@@ -1426,7 +1426,7 @@ def program80 : List Instr :=
   [.op (.Dup dA3),
    .push 1 96,
    .op .ADD,
-   .push 4 2656,
+   .push 2 2656,
    .op .MSTORE,
    .op (.Dup dA1),
    .op .MSIZE,
@@ -1434,7 +1434,7 @@ def program80 : List Instr :=
    .push 1 32,
    .op (.Dup dA2),
    .op .SUB,
-   .push 3 2752,
+   .push 2 2752,
    .op .MSTORE,
    .op (.Dup dA1),
    .push 2 2080,
@@ -1446,7 +1446,7 @@ def program80 : List Instr :=
    .push 0 0,
    .op .CALLDATACOPY,
    .op .POP,
-   .push 5 2390,
+   .push 2 2357,
    .op .JUMP]
 
 def headProgram : List Instr := program80.take 6
@@ -1458,18 +1458,18 @@ def prefixMemory (mem : ByteArray) (input : ByteArray) : ByteArray :=
     2688 (s32 input)) 2752 (s32 input - 32)
 
 def headState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 660
+  { s with pc := UInt256.ofNat 639
            memory := mstoreAt s.memory 2656 (96 + baseSize input)
            activeWords := headWords s.activeWords
            stack := UInt256.ofNat (s32 input) :: UInt256.ofNat (modOffset input) :: outerStack input }
 
 def sized1State (s : State) (input : ByteArray) : State :=
   { (headState s input) with
-    pc := UInt256.ofNat 661
+    pc := UInt256.ofNat 640
     stack := UInt256.ofNat 2688 :: (headState s input).stack }
 
 def prefixState (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 676
+  { s with pc := UInt256.ofNat 654
            memory := prefixMemory s.memory input
            activeWords := prefixWords s.activeWords
            stack := UInt256.ofNat (2080 + s32 input) :: UInt256.ofNat (modOffset input) :: outerStack input }
@@ -1525,7 +1525,7 @@ theorem run_mid (s : State) (input : ByteArray)
 
 def sizedState (s : State) (input : ByteArray) : State :=
   { (prefixState s input) with
-    pc := UInt256.ofNat 677
+    pc := UInt256.ofNat 655
     stack := UInt256.ofNat 2784 :: (prefixState s input).stack }
 
 theorem run_msize (s : State) (input : ByteArray) (hw : s.activeWords.toNat ≤ 84) :
@@ -1561,8 +1561,8 @@ theorem copyWords88 (n : Nat) (hn : n ≤ 1024) :
 
 
 def restProgram : List Instr := program80.drop 17
-private theorem jumpDest2390 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2390 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1868 (by rfl)
+private theorem jumpDest2390 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2357 = true :=
+  CycleSubmission.Global.Binding.jumpDest 1855 (by rfl)
 
 theorem run_rest (s : State) (input : ByteArray) (m0 : Nat)
     (hdata : s.executionEnv.calldata = input)
@@ -1625,9 +1625,9 @@ theorem run_setup80 (s : State) (input : ByteArray) (m0 : Nat)
 
 end MsizeSetup
 
-def setupBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 649 MsizeSetup.program80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 452 25 649 MsizeSetup.program80
-    (by change 452 + 25 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+def setupBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 630 MsizeSetup.program80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 444 25 630 MsizeSetup.program80
+    (by change 444 + 25 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -1931,12 +1931,12 @@ def fastSetupMemory (input : ByteArray) : ByteArray :=
 theorem fastSetupState_memory (input : ByteArray) :
     (fastSetupState input).memory = fastSetupMemory input := rfl
 theorem fastSetupState_pc (input : ByteArray) :
-    (fastSetupState input).pc = UInt256.ofNat 2390 := rfl
+    (fastSetupState input).pc = UInt256.ofNat 2357 := rfl
 theorem fastSetupState_stack (input : ByteArray) :
     (fastSetupState input).stack = outerStack input := rfl
 def gasSteps_fastSetup (input : ByteArray) (hsize : input.size < 2 ^ 256)
     (hpath : FastPath input) :
-    Challenge.EvmProof.GasSteps (Main.trampolineState input 578)
+    Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
       (fastSetupState input) :=
   Challenge.EvmProof.GasSteps.cast
     (gasSteps_fastPath_of (initialState CycleSubmission.Artifact.bytecode input 0) input

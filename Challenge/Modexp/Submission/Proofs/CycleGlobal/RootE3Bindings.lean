@@ -31,18 +31,18 @@ open WindowTwentyOneBinding Shift
 exit head at idx 2597 (pc 3346), guard at idx 2599 (pc 3348, `JUMPI` to the
 cleanup tail at 3866), switch at idx 2604 (pc 3357, jump back to the loop head). -/
 def phases : RootE3PhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .Osaka where
-  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2368 2 3091 RootE3PhaseRun.phaseExitHeadProgram
-    (by change 2368 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  exitHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2355 2 3036 RootE3PhaseRun.phaseExitHeadProgram
+    (by change 2355 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2370 5 3093 RootE3PhaseRun.phaseGuardProgram
-    (by change 2370 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2357 5 3038 RootE3PhaseRun.phaseGuardProgram
+    (by change 2357 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2375 14 3102 RootE3PhaseRun.phaseSwitchProgram
-    (by change 2375 + 14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2362 14 3047 RootE3PhaseRun.phaseSwitchProgram
+    (by change 2362 + 14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -60,7 +60,7 @@ is pure delta-reduction: no `CycleSubmission.Global.Fast.Shift.entrySlots`/`read
 theorem shiftDone_eq_exitStart (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) :
     CycleSubmission.Global.Fast.Shift.shiftDoneState z s mem n bsize esize msize =
-      RootE3PhaseRun.frame s mem 3091
+      RootE3PhaseRun.frame s mem 3036
         (UInt256.ofNat 0 :: CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize ++
           Exp.outer n bsize esize msize) :=
   rfl
@@ -101,7 +101,7 @@ theorem switchEnd_eq (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 
 /-- The done stub lands on the fixed-exponent dispatcher entry. -/
 theorem frameState_bdone_eq (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
-    CycleSubmission.Global.Fast.Shift.frameState s mem 2317 n bsize esize msize =
+    CycleSubmission.Global.Fast.Shift.frameState s mem 2284 n bsize esize msize =
       FixedExponentRoute.entryState s mem n bsize esize msize :=
   rfl
 
@@ -147,7 +147,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : C
     GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 0) s mem n bsize esize msize)
       (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 12) s (RootE3Phase.phaseSwitch mem n) n bsize esize msize
         (n / 4)) := by
-  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 3986 = true := by
+  have hd5444 : Decode.isValidJumpDest s.executionEnv.code 3914 = true := by
     rw [e.code]; exact CycleSubmission.Global.Fast.jumpDest5444
   have hd2811 : Decode.isValidJumpDest s.executionEnv.code
       (CycleSubmission.Global.Fast.Shift.headPC n) = true := by
@@ -173,7 +173,7 @@ def switchSteps (s : State) (mem : ByteArray) (n bsize esize msize : Nat) (e : C
 /-- Flag clear, exit slot `d`: the guard jumps to the cleanup tail, whose sixteen `POP`s
 and `PUSH2 0989 ADD JUMP` land on `2441 + d` with the memory unchanged. -/
 def tailSteps (s : State) (mem : ByteArray) (n bsize esize msize d target : Nat) (e : CycleSubmission.Global.Fast.Shift.Env s)
-    (htarget : 2317 + d = target) (hlt : target < 2 ^ 256)
+    (htarget : 2284 + d = target) (hlt : target < 2 ^ 256)
     (hdest : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode target = true)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0) :
     GasSteps (CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat d) s mem n bsize esize msize)
@@ -264,10 +264,10 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
   · intro hsize phaseMem hflag
     exact switchSteps s phaseMem n bsize esize msize e hsize hmatch.1 hflag
   · intro phaseMem hflag _hs32
-    exact (tailSteps s phaseMem n bsize esize msize 0 2317 e rfl (by norm_num) CycleSubmission.Global.Fast.jumpDest3412
+    exact (tailSteps s phaseMem n bsize esize msize 0 2284 e rfl (by norm_num) CycleSubmission.Global.Fast.jumpDest3412
       hflag).cast rfl (frameState_bdone_eq s phaseMem n bsize esize msize)
   · intro phaseMem hflag
-    exact tailSteps s phaseMem n bsize esize msize 12 2329 e rfl (by norm_num) CycleSubmission.Global.Fast.jumpDest2471 hflag
+    exact tailSteps s phaseMem n bsize esize msize 12 2296 e rfl (by norm_num) CycleSubmission.Global.Fast.jumpDest2471 hflag
 
 
 end CycleSubmission.Global.RootE3Bindings

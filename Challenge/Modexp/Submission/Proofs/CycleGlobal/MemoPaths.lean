@@ -30,46 +30,46 @@ open CycleSubmission.Global.Dispatch
 branch. -/
 def widthPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 485 5 137506062208,
-   pushAt 486 1 68,
-   opAt 487 .CALLDATALOAD,
-   opAt 488 .SUB,
-   pushAt 489 2 533,
-   opAt 490 .JUMPI]
+  [pushAt 477 5 137506062208,
+   pushAt 478 1 68,
+   opAt 479 .CALLDATALOAD,
+   opAt 480 .SUB,
+   pushAt 481 2 519,
+   opAt 482 .JUMPI]
 
 /-- The size test (`1 - bsize`, `2 - esize`, `word100`): fourteen instructions
 ending in the second miss branch. -/
 def tailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 491 0 0,
-   opAt 492 .CALLDATALOAD,
-   pushAt 493 1 1,
-   opAt 494 .SUB,
-   pushAt 495 1 32,
-   opAt 496 .CALLDATALOAD,
-   pushAt 497 1 2,
-   opAt 498 .SUB,
-   opAt 499 .OR,
-   pushAt 500 1 100,
-   opAt 501 .CALLDATALOAD,
-   opAt 502 .OR,
-   pushAt 503 2 533,
-   opAt 504 .JUMPI]
+  [pushAt 483 0 0,
+   opAt 484 .CALLDATALOAD,
+   pushAt 485 1 1,
+   opAt 486 .SUB,
+   pushAt 487 1 32,
+   opAt 488 .CALLDATALOAD,
+   pushAt 489 1 2,
+   opAt 490 .SUB,
+   opAt 491 .OR,
+   pushAt 492 1 100,
+   opAt 493 .CALLDATALOAD,
+   opAt 494 .OR,
+   pushAt 495 2 519,
+   opAt 496 .JUMPI]
 
-@[simp] theorem widthPCs (i : Nat) (hi : 485 ≤ i) (hii : i ≤ 490) :
+@[simp] theorem widthPCs (i : Nat) (hi : 477 ≤ i) (hii : i ≤ 482) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([699, 705, 707, 708, 709, 712] : List Nat)[i - 485]! := by
+      ([674, 680, 682, 683, 684, 687] : List Nat)[i - 477]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem tailPCs (i : Nat) (hi : 491 ≤ i) (hii : i ≤ 504) :
+@[simp] theorem tailPCs (i : Nat) (hi : 483 ≤ i) (hii : i ≤ 496) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([713, 714, 715, 717, 718, 720, 721, 723, 724, 725, 727, 728, 729, 732] : List Nat)[i - 491]! := by
+      ([688, 689, 690, 692, 693, 695, 696, 698, 699, 700, 702, 703, 704, 707] : List Nat)[i - 483]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDestLegacy :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 533 = true :=
-  CycleSubmission.Global.Binding.jumpDest 366 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true :=
+  CycleSubmission.Global.Binding.jumpDest 358 (by rfl)
 
 end CycleSubmission.Global.Memo

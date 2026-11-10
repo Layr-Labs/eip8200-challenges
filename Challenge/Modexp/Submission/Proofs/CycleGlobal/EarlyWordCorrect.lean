@@ -50,12 +50,12 @@ legacy entry exactly. -/
 def legacy (input : ByteArray) (hvalid : ValidInput input)
     (hmiss : ¬ (exponentSize input = 32 ∧ modulusSize input = 32)) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
-      (Main.trampolineState input 578) := by
+      (Main.trampolineState input 564) := by
   have tail := EarlyWordGas.steps_size_miss CycleSubmission.Global.Paths.earlyWordPaths
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl
     hvalid.2.2.1 hvalid.2.2.2 hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 578) at tail
+    (Main.trampolineState input 564) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 
 /-- The three words the loads at 16 read for any header; garbage unless the base size is 32. -/
@@ -96,7 +96,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
 entry: the wide fallback at 219 with the base size, 32 and the three loaded words on the stack. -/
 def genBigState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 219
+    pc := UInt256.ofNat 207
     stack := [UInt256.ofNat (baseSize input), UInt256.ofNat 32] ++ loaded input }
 
 def genBig (input : ByteArray) (hvalid : ValidInput input)
@@ -109,7 +109,7 @@ def genBig (input : ByteArray) (hvalid : ValidInput input)
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input (by omega)
     hvalid.2.1 (by rw [hsize.1]; omega)
   have hjump : Decode.isValidJumpDest
-      (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.code 219 = true :=
+      (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.code 207 = true :=
     CycleSubmission.Global.Paths.fermatPaths.bigJump
   have hc := FermatNext.run_gen_check (initialState CycleSubmission.Artifact.bytecode input 0)
     (loaded input) (by simp [loaded]) hjump
@@ -125,7 +125,7 @@ def genBig (input : ByteArray) (hvalid : ValidInput input)
   rw [hword, if_neg hgt] at hc
   have s3 := CycleSubmission.Global.Paths.fermatPaths.genCheck.steps
     ((environment input).transfer (t := WindowTwentyOneEntry.framed
-      (initialState CycleSubmission.Artifact.bytecode input 0) (UInt256.ofNat 101) (loaded input)) rfl rfl) rfl hc
+      (initialState CycleSubmission.Artifact.bytecode input 0) (UInt256.ofNat 97) (loaded input)) rfl rfl) rfl hc
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0) _ at s1
   exact (Main.gasSteps_entryHop input).trans ((s1.trans s2).trans s3)
 

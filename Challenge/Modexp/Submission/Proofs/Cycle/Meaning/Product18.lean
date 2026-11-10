@@ -22,7 +22,7 @@ def cells18 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
 
 def result18 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 10103
+    pc := UInt256.ofNat 10143
     memory := storeCells s.memory (cells18 inv a b n)
     stack := frame19 inv a b n rest}
 

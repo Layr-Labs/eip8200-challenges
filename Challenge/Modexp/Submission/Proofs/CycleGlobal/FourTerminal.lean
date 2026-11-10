@@ -54,7 +54,7 @@ theorem handled (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize k
     exact ⟨final, ⟨head.trans tail⟩, hd, hr⟩
   · obtain ⟨tr⟩ := htr
     obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-      {s with pc := UInt256.ofNat 219, stack := stk, memory := m'} (env.transfer rfl rfl) rfl hlen
+      {s with pc := UInt256.ofNat 207, stack := stk, memory := m'} (env.transfer rfl rfl) rfl hlen
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
       (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rwa [hdata])
     refine ⟨done, ⟨(head.trans tr).trans tail⟩, hd, ?_⟩

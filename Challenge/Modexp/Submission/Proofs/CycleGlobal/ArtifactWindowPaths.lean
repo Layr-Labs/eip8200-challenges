@@ -51,73 +51,73 @@ private theorem instructionPC_add (p : Challenge.EvmProof.ProgramArtifact) (base
     assembleBytes_append, List.length_append]
 
 private def nine_base :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 745 WindowTwentyOneEntry.baseProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 512 1 745 WindowTwentyOneEntry.baseProgram
-    (by change 512 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 717 WindowTwentyOneEntry.baseProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 504 1 717 WindowTwentyOneEntry.baseProgram
+    (by change 504 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_modulus :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 746 WindowTwentyOneEntry.modulusProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 513 2 746 WindowTwentyOneEntry.modulusProgram
-    (by change 513 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 718 WindowTwentyOneEntry.modulusProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 505 2 718 WindowTwentyOneEntry.modulusProgram
+    (by change 505 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_table :
-  WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 748 WindowTwentyOneTableBuild.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 515 88 748 WindowTwentyOneTableBuild.program
-    (by change 515 + 88 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 720 WindowTwentyOneTableBuild.program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 507 88 720 WindowTwentyOneTableBuild.program
+    (by change 507 + 88 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_setup :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 837 WindowPrecopyRoute.setupProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 603 3 837 WindowPrecopyRoute.setupProgram
-    (by change 603 + 3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 809 WindowPrecopyRoute.setupProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 595 3 809 WindowPrecopyRoute.setupProgram
+    (by change 595 + 3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_copy :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 841 WindowPrecopyRoute.copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 606 7 841 WindowPrecopyRoute.copyProgram
-    (by change 606 + 7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 813 WindowPrecopyRoute.copyProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 598 7 813 WindowPrecopyRoute.copyProgram
+    (by change 598 + 7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_pool :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 849 WindowPrecopyRoute.poolProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 613 314 849 WindowPrecopyRoute.poolProgram
-    (by change 613 + 314 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 821 WindowPrecopyRoute.poolProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 605 314 821 WindowPrecopyRoute.poolProgram
+    (by change 605 + 314 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_first :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 1163 WindowPrecopyRoute.firstProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 927 5 1163 WindowPrecopyRoute.firstProgram
-    (by change 927 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 1135 WindowPrecopyRoute.firstProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 919 5 1135 WindowPrecopyRoute.firstProgram
+    (by change 919 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_head :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 1172 (WindowPrecopyRoute.routeWindows 0 60) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 932 840 1172 (WindowPrecopyRoute.routeWindows 0 60)
-    (by change 932 + 840 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 1144 (WindowPrecopyRoute.routeWindows 0 60) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 924 840 1144 (WindowPrecopyRoute.routeWindows 0 60)
+    (by change 924 + 840 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def nine_tail :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2252 WindowPrecopyRoute.tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1772 49 2252 WindowPrecopyRoute.tailProgram
-    (by change 1772 + 49 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2224 WindowPrecopyRoute.tailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1764 49 2224 WindowPrecopyRoute.tailProgram
+    (by change 1764 + 49 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -163,49 +163,49 @@ private def fermat_toPrime :
     (by decide)
 
 private def fermat_prime :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10575 FermatNext.primeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8272 10 10575 FermatNext.primeProgram
-    (by change 8272 + 10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10612 FermatNext.primeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8234 10 10612 FermatNext.primeProgram
+    (by change 8234 + 10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_jumpTail :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10651 FermatNext.jumpTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8282 2 10651 FermatNext.jumpTailProgram
-    (by change 8282 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10688 FermatNext.jumpTailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8244 2 10688 FermatNext.jumpTailProgram
+    (by change 8244 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_tail :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4864 FermatNext.tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3684 1 4864 FermatNext.tailProgram
-    (by change 3684 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4748 FermatNext.tailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3650 1 4748 FermatNext.tailProgram
+    (by change 3650 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_result :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4865 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3685 9 4865 FermatProgram.returnProgram
-    (by change 3685 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4749 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3651 9 4749 FermatProgram.returnProgram
+    (by change 3651 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_genCheck :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 101 FermatNext.genCheckProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 46 9 101 FermatNext.genCheckProgram
-    (by change 46 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 97 FermatNext.genCheckProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 44 9 97 FermatNext.genCheckProgram
+    (by change 44 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_genLoad :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 112 FermatNext.genLoadProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 55 18 112 FermatNext.genLoadProgram
-    (by change 55 + 18 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 108 FermatNext.genLoadProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 53 18 108 FermatNext.genLoadProgram
+    (by change 53 + 18 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -222,12 +222,12 @@ def fermatPaths : FermatNext.Paths CycleSubmission.Artifact.artifact .Osaka wher
   result := fermat_result
   genCheck := fermat_genCheck
   genLoad := fermat_genLoad
-  routeJump := by exact CycleSubmission.Global.Binding.jumpDest 512 (by rfl)
+  routeJump := by exact CycleSubmission.Global.Binding.jumpDest 504 (by rfl)
   joinJump := by exact CycleSubmission.Global.Binding.jumpDest 31 (by rfl)
-  tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3684 (by rfl)
-  bigJump := by exact CycleSubmission.Global.Binding.jumpDest 143 (by rfl)
-  primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8272 (by rfl)
-  genJump := by exact CycleSubmission.Global.Binding.jumpDest 46 (by rfl)
+  tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3650 (by rfl)
+  bigJump := by exact CycleSubmission.Global.Binding.jumpDest 135 (by rfl)
+  primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8234 (by rfl)
+  genJump := by exact CycleSubmission.Global.Binding.jumpDest 44 (by rfl)
 
 def twentyOnePaths : WindowTwentyOneGasRoute.Paths CycleSubmission.Artifact.artifact .Osaka where
   base := nine_base
@@ -240,10 +240,10 @@ def twentyOnePaths : WindowTwentyOneGasRoute.Paths CycleSubmission.Artifact.arti
   head := nine_head
   tail := nine_tail
   genJump := by
-    have h := CycleSubmission.Global.Binding.jumpDest 46 (by rfl)
+    have h := CycleSubmission.Global.Binding.jumpDest 44 (by rfl)
     exact h
   missJump := by
-    have h := CycleSubmission.Global.Binding.jumpDest 74 (by rfl)
+    have h := CycleSubmission.Global.Binding.jumpDest 71 (by rfl)
     exact h
 
 end CycleSubmission.Global.Paths

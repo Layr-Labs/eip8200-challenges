@@ -12,7 +12,7 @@ open CycleSubmission.CallerBlocks CycleSubmission.CallerPrefix
 
 theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 3202 = true) :
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 3146 = true) :
     runInstructions fixedProgram (FixedDirectStates.special s mem 8 bsize esize 256 k) =
       some (call s mem k (UInt256.ofNat 2519)
         (UInt256.ofNat k :: Exp.outer 8 bsize esize 256)) := by
@@ -61,7 +61,7 @@ noncomputable def bail (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (hf : Exp.Frame mem 8 bsize mi)
     (hg : (CallerPrefix.guardWord mem).toNat = 0) :
     GasSteps (FixedDirectStates.special s mem 8 bsize esize 256 k)
-      (stateAt s mem k (UInt256.ofNat 2519) (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 219) := by
+      (stateAt s mem k (UInt256.ofNat 2519) (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 207) := by
   have head := fixedBlock.steps (s := FixedDirectStates.special s mem 8 bsize esize 256 k)
     (env.transfer rfl rfl) rfl (call_run s mem bsize esize k hk hk16
       (by rw [env.code]; exact valid3181))
