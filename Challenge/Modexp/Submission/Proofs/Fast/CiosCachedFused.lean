@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacCore
+
+open CycleSubmission.SharedStackArgs
 
 /-!
 # The fused multiply-accumulate cell
@@ -33,17 +36,17 @@ private theorem add_comm (a b : UInt256) : a + b = b + a := by
   ac_rfl
 
 private def headProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩), .op .ADD]
+  [.op (.Dup dA0), .op (.Dup dA2),
+   .op .GT, .op .SUB, .op (.Dup dA1),
+   .op (.Dup dA3), .op .ADD]
 
 private def memoryProgram (tl ts : UInt256) : List Instr :=
-  [.push 2 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩), .op .GT]
+  [.push 2 tl, .op .MLOAD, .op (.Dup dA1), .op .ADD,
+   .op (.Dup dA0), .push 2 ts, .op .MSTORE,
+   .op (.Dup dA1), .op .GT]
 
 private def tailProgram : List Instr :=
-  [.op (.Swap ⟨3, by decide⟩), .op .GT, .op .SUB, .op .SUB,
+  [.op (.Swap sA3), .op .GT, .op .SUB, .op .SUB,
    .op .ADD]
 
 private theorem post_eq (tl ts : UInt256) :
@@ -77,7 +80,7 @@ private theorem run_load_word (template : State) (pc sum borrow lo c y tl : UInt
 
 private theorem run_form_sum (template : State) (pc t sum borrow lo c y : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
-    runInstructions [.op (.Dup ⟨1, by decide⟩), .op .ADD]
+    runInstructions [.op (.Dup dA1), .op .ADD]
       (framed template pc ([t, sum, borrow, lo, c, y] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 2)
       ([sum + t, sum, borrow, lo, c, y] ++ rest)) := by
@@ -91,8 +94,8 @@ private theorem run_store_word (template : State) (pc value sum borrow lo c y ts
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat ts.toNat 32) = template.activeWords) :
-    runInstructions [.op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
-        .op (.Dup ⟨1, by decide⟩), .op .GT]
+    runInstructions [.op (.Dup dA0), .push 2 ts, .op .MSTORE,
+        .op (.Dup dA1), .op .GT]
       (framed template pc ([value, sum, borrow, lo, c, y] ++ rest)) =
     some (framed
       { template with
@@ -221,9 +224,9 @@ theorem run_fused (template : State) (pc x y c tl ts : UInt256)
     hpc] using both
 
 private def memoryProgramW3 (tl ts : UInt256) : List Instr :=
-  [.push 3 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩), .op .GT]
+  [.push 3 tl, .op .MLOAD, .op (.Dup dA1), .op .ADD,
+   .op (.Dup dA0), .push 2 ts, .op .MSTORE,
+   .op (.Dup dA1), .op .GT]
 
 private theorem postW3_eq (tl ts : UInt256) :
     macFusedPostProgramW3 tl ts = (headProgram ++ memoryProgramW3 tl ts) ++ tailProgram := rfl
@@ -353,16 +356,16 @@ the zero carry slot is consumed by the final `ADD`.  Same bytes and instruction 
 `run_fused`, only under the extra hypothesis `c = 0`, and is derived from `run_fused`. -/
 
 private def headZeroProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
+  [.op (.Dup dA0), .op (.Dup dA2),
+   .op .GT, .op .SUB, .op (.Dup dA1),
    .op .JUMPDEST, .op .JUMPDEST]
 
 private def memoryZeroProgram (tl ts : UInt256) : List Instr :=
-  [.push 2 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE]
+  [.push 2 tl, .op .MLOAD, .op (.Dup dA1), .op .ADD,
+   .op (.Dup dA0), .push 2 ts, .op .MSTORE]
 
 private def tailZeroProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .JUMPDEST, .op .JUMPDEST, .op .GT,
+  [.op (.Swap sA0), .op .JUMPDEST, .op .JUMPDEST, .op .GT,
    .op .SUB, .op .SUB, .op .ADD]
 
 private theorem post_zero_eq (tl ts : UInt256) :
@@ -385,7 +388,7 @@ private theorem run_store_only (template : State) (pc value sum borrow lo c y ts
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat ts.toNat 32) = template.activeWords) :
-    runInstructions [.op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE]
+    runInstructions [.op (.Dup dA0), .push 2 ts, .op .MSTORE]
       (framed template pc ([value, sum, borrow, lo, c, y] ++ rest)) =
     some (framed
       { template with

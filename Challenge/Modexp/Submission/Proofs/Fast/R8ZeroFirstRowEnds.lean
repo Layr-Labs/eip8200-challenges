@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRowModel
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -12,8 +15,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 def diagonalTail (next : UInt256) : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MSTORE,
-   .push 2 next, .op (.Swap ⟨5, by decide⟩), .op .POP]
+  [.op (.Swap sA0), .op (.Dup dA5), .op .MSTORE,
+   .push 2 next, .op (.Swap sA5), .op .POP]
 
 def diagonalProgram (next : UInt256) : List Instr :=
   R8RowZero.coreProgram ++ diagonalTail next
@@ -115,12 +118,12 @@ theorem run_finishStore (s : State) (pc c u bi : UInt256)
   rfl
 
 def diagonalMathTailM128 (next : UInt256) : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op .MULMOD, .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .MUL,
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .GT,
-   .op (.Swap ⟨1, by decide⟩), .op .SUB, .op .SUB,
-   .push 2 next, .op (.Swap ⟨5, by decide⟩), .op .POP]
+  [.op (.Dup dA6), .op (.Dup dA15), .op (.Dup dA0),
+   .op .MULMOD, .op (.Dup dA15), .op (.Dup dA0), .op .MUL,
+   .op (.Dup dA0), .op (.Dup dA6), .op .MSTORE,
+   .op (.Dup dA1), .op (.Dup dA1), .op .GT,
+   .op (.Swap sA1), .op .SUB, .op .SUB,
+   .push 2 next, .op (.Swap sA5), .op .POP]
 
 def diagonalProgramM128 (next : UInt256) : List Instr :=
   R8RowZero.headProgram ++ diagonalMathTailM128 next

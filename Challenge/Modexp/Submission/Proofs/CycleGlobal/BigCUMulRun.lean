@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.BigCUnsignedGas
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -27,10 +30,10 @@ def mEntryProgram : List Instr :=
 /-- Exact U raw interval [419,430). -/
 def mGuardProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .push 1 3,
    .op .SHL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .EQ,
    .push 2 457,
    .op .JUMPI]
@@ -45,13 +48,13 @@ def mDoubleProgram : List Instr :=
 /-- Exact U raw interval [438,459). -/
 def m2Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 3,
    .op .SHR,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .ADD,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 1 7,
    .op .AND,
    .op .SHL,
@@ -63,7 +66,7 @@ def m2Program : List Instr :=
 
 /-- Exact U raw interval [459,467). -/
 def mAddProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
+  [.op (.Dup dA2),
    .push 2 449,
    .push 2 464,
    .op .JUMP]
@@ -80,7 +83,7 @@ def m3Program : List Instr :=
 def m9Program : List Instr :=
   [.op .JUMPDEST,
    .op .POP,
-   .op (.Swap ⟨2, by decide⟩),
+   .op (.Swap sA2),
    .op .POP,
    .op .POP,
    .op .POP,

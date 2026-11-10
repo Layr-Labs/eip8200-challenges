@@ -37,10 +37,10 @@ def pcShiftLoop : Nat := 2714
 def pcShiftBody : Nat := 2709
 def pcEstimate : Nat := 2723
 def pcMacSetup : Nat := 2811   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
-def headPC (n : Nat) : Nat := if n = 4 then 10726 else 2714
+def headPC (n : Nat) : Nat := if n = 4 then 10658 else 2714
 def headWord (n : Nat) : UInt256 := UInt256.ofNat (headPC n)
 def pcMid : Nat := 3058   -- the fall-through after the eight straight blocks
-def midPC (n : Nat) : Nat := if n = 4 then 10941 else 3058
+def midPC (n : Nat) : Nat := if n = 4 then 10873 else 3058
 def pcAddLoop : Nat := 3127
 def pcAddInner : Nat := 3133
 def pcAddTail : Nat := 3170
@@ -200,7 +200,7 @@ def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
            memory := mem }
 def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 10970
+  { s with pc := UInt256.ofNat 10902
            stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
@@ -218,7 +218,7 @@ def csubExitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   slotKState z s mem pcCsubExit 0 n bsize esize msize
 def csubExit4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotKState z s mem 10975 0 n bsize esize msize
+  slotKState z s mem 10907 0 n bsize esize msize
 def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   slotKState z s mem pcShiftDone 0 n bsize esize msize

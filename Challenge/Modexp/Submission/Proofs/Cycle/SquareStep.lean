@@ -24,11 +24,11 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (env : Environment Artifact.artifact .Osaka s)
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
-    (ha0 : (a 0).toNat < radix) (ha6 : (a 6).toNat < radix) (ha7 : (a 7).toNat < radix)
+    (ha : ∀ i < 8, (a i).toNat < WordArithmetic.radix)
     (hz : (overflowFlag (squared inv a zeroWords n)).toNat = 0) :
     GasSteps {s with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
-  have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact ha0 ha6 ha7
+  have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact ha
   have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest hz
   have he : SquareNormalize.initial (middle s inv a n rest) (squared inv a zeroWords n) n rest =
       middle s inv a n rest :=
@@ -49,7 +49,7 @@ theorem frame_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
   SquareNormalize.frame_output _ _ _ _
 
 theorem pc_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a n rest).pc = UInt256.ofNat 7619 := by
+    (result s inv a n rest).pc = UInt256.ofNat 7551 := by
   unfold result SquareNormalize.completed
   split_ifs <;> rfl
 

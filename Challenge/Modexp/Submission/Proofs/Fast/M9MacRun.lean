@@ -1,6 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.M9MacPrograms
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 import Challenge.Modexp.Submission.Proofs.Fast.SquareModel
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -68,7 +71,7 @@ theorem run_dupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi x :
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd3 : 3 ≤ d.val) (_hin : d.val < 3 + rest.length)
     (hx : rest[d.val - 3]? = some x) :
-    runInstructions [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)]
+    runInstructions [.op (.Dup { idx := d }), .op (.Dup dA3)]
       (framed template pc ([carry, bi, maxWord] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 2)
       ([maxWord, x, carry, bi, maxWord] ++ rest)) := by
@@ -209,7 +212,7 @@ theorem run_ride_zero_head (template : State) (pc : UInt256) (m : MacState) (bi 
   have hjd : runInstructions [.op .JUMPDEST] (chainState template pc m bi rest) =
       some (chainState template (pc + UInt256.ofNat 1) m bi rest) := by
     simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, chainState, hc, succ_eq_add]
-  have hl : runInstructions [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)]
+  have hl : runInstructions [.op (.Dup { idx := d }), .op (.Dup dA3)]
       (framed st (pc + UInt256.ofNat 1) ([m.carry, bi, maxWord] ++ rest)) =
       some (framed st (pc + UInt256.ofNat 1 + UInt256.ofNat 2)
       ([maxWord, MachineState.readWord m.memory (1280 + 32 * (n - 1 - j)), m.carry, bi, maxWord] ++ rest)) :=
@@ -229,7 +232,7 @@ theorem run_popDupHead (template : State) (pc : UInt256) (d : Fin 16) (carry bi 
     (rest : List UInt256) (hrest : rest.length ≤ 1014)
     (hd2 : 2 ≤ d.val) (_hin : d.val < 2 + rest.length)
     (hx : rest[d.val - 2]? = some x) :
-    runInstructions [.op .POP, .op (.Dup { idx := d }), .op (.Dup ⟨2, by decide⟩)]
+    runInstructions [.op .POP, .op (.Dup { idx := d }), .op (.Dup dA2)]
       (framed template pc ([carry, bi, maxWord] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 3)
       ([maxWord, x, bi, maxWord] ++ rest)) := by
@@ -513,7 +516,7 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
       List.cons_append, List.nil_append, succ_eq_add, word_add_assoc,
       Challenge.EvmProof.Word.ofNat_add_mod, notZero_maxWord,
       notZeroOfNat_maxWord, push0_ofNat]
-  have hs2 : runInstructions [.op (.Dup ⟨4, by decide⟩)]
+  have hs2 : runInstructions [.op (.Dup dA4)]
       (framed st (pc + UInt256.ofNat 1) (UInt256.ofNat 0 :: bi :: maxWord :: rest)) =
       some (framed st (pc + UInt256.ofNat 2)
         (UInt256.ofNat ent :: UInt256.ofNat 0 :: bi :: maxWord :: rest)) := by
@@ -546,12 +549,12 @@ theorem run_entry (template : State) (pc : UInt256) (um : ByteArray) (bi : UInt2
 
 def rideTopHeadNP (d : Fin 16) : List Instr :=
   if h : d.val ≤ 13 then
-    [.op (.Dup ⟨0, by decide⟩),
+    [.op (.Dup dA0),
      .op (.Dup ⟨d.val + 1, by omega⟩),
      .op .MUL,
-     .op (.Dup ⟨2, by decide⟩),
+     .op (.Dup dA2),
      .op (.Dup ⟨d.val + 2, by omega⟩),
-     .op (.Dup ⟨3, by decide⟩),
+     .op (.Dup dA3),
      .op .MULMOD]
   else []
 

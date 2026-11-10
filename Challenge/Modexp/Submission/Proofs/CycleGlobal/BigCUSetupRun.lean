@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.BigCUMulRun
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -27,24 +30,24 @@ def setupProgram : List Instr :=
    .op .CALLDATALOAD,
    .push 0 0,
    .op .CALLDATALOAD,
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA2),
+   .op (.Dup dA1),
+   .op (.Dup dA3),
    .op .ADD,
    .push 1 96,
    .op .ADD,
    .push 2 1024,
    .op .CALLDATACOPY,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 96,
    .push 2 5120,
    .op .CALLDATACOPY,
    .push 0 0,
-   .op (.Dup ⟨3, by decide⟩)]
+   .op (.Dup dA3)]
 
 /-- Exact U raw interval [271,290). -/
 def zLoopProgram : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op .NOT, .op .ADD, .op (.Dup ⟨0, by decide⟩), .push 2 1024, .op .ADD, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op (.Swap ⟨2, by decide⟩), .op .OR, .op (.Swap ⟨1, by decide⟩), .push 2 254, .op .JUMPI]
+  [.op .JUMPDEST, .push 0 0, .op .NOT, .op .ADD, .op (.Dup dA0), .push 2 1024, .op .ADD, .op .MLOAD, .op (.Dup dA1), .op (.Swap sA2), .op .OR, .op (.Swap sA1), .push 2 254, .op .JUMPI]
 
 /-- Exact U raw interval [290,295). -/
 def zExitProgram : List Instr :=
@@ -55,7 +58,7 @@ def zExitProgram : List Instr :=
 /-- Exact U raw interval [295,299). -/
 def zeroRetProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 0 0,
    .op .RETURN]
 
@@ -63,7 +66,7 @@ def zeroRetProgram : List Instr :=
 def nzProgram : List Instr :=
   [.op .JUMPDEST,
    .push 1 1,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .push 2 3071,
    .op .ADD,
    .op .MSTORE8,

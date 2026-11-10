@@ -22,13 +22,13 @@ def counterHeadProgram : List Instr :=
 
 def counterHeadModel (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 c : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 7651
+    pc := UInt256.ofNat 7583
     stack := UInt256.ofNat 5711 :: c :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: (c - UInt256.ofNat 1) :: rest}
 
 theorem counterHead_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 c : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions counterHeadProgram {s with
-      pc := UInt256.ofNat 7619
+      pc := UInt256.ofNat 7551
       stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: c :: rest} =
       some (counterHeadModel s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 c rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl

@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SignedTopBit
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.LowBitFlag
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
@@ -12,6 +13,8 @@ import Challenge.EvmProof.Memory
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMsize
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 import Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast
+open CycleSubmission.SharedStackArgs
+
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -400,7 +403,7 @@ theorem run_zeroExp_hit (s : State) (input : ByteArray)
      Challenge.EvmProof.Word.word_toNat_ofNat]
 set_option linter.unusedSimpArgs false in
 def zeroExpReturnProgram80 : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op .MSIZE, .op .SUB, .op .RETURN]
+  [.op (.Dup dA0), .op .MSIZE, .op .SUB, .op .RETURN]
 
 def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4841 zeroExpReturnProgram80 :=
   WindowTwentyOneSlice.block Artifact.wellFormed 3663 4 4841 zeroExpReturnProgram80
@@ -1359,26 +1362,26 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
     2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 452 (.Dup ⟨3, by decide⟩),
+  [opAt 452 (.Dup dA3),
    pushAt 453 1 96,
    opAt 454 .ADD,
    pushAt 455 4 2656,
    opAt 456 .MSTORE,
-   opAt 457 (.Dup ⟨1, by decide⟩),
+   opAt 457 (.Dup dA1),
    opAt 458 .MSIZE,
    opAt 459 .MSTORE,
    pushAt 460 1 32,
-   opAt 461 (.Dup ⟨2, by decide⟩),
+   opAt 461 (.Dup dA2),
    opAt 462 .SUB,
    pushAt 463 3 2752,
    opAt 464 .MSTORE,
-   opAt 465 (.Dup ⟨1, by decide⟩),
+   opAt 465 (.Dup dA1),
    pushAt 466 2 2080,
    opAt 467 .ADD,
    opAt 468 .MSIZE,
    opAt 469 .MSTORE,
-   opAt 470 (.Dup ⟨5, by decide⟩),
-   opAt 471 (.Dup ⟨1, by decide⟩),
+   opAt 470 (.Dup dA5),
+   opAt 471 (.Dup dA1),
    pushAt 472 0 0,
    opAt 473 .CALLDATACOPY,
    opAt 474 .POP,
@@ -1420,26 +1423,26 @@ theorem headWords_eq (w : UInt256) (hw : w.toNat ≤ 84) :
   omega
 
 def program80 : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup dA3),
    .push 1 96,
    .op .ADD,
    .push 4 2656,
    .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .MSIZE,
    .op .MSTORE,
    .push 1 32,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .SUB,
    .push 3 2752,
    .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 2 2080,
    .op .ADD,
    .op .MSIZE,
    .op .MSTORE,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA5),
+   .op (.Dup dA1),
    .push 0 0,
    .op .CALLDATACOPY,
    .op .POP,

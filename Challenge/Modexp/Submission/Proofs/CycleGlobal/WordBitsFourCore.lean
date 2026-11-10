@@ -1,6 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Challenge.EvmProof.Word
+
+open CycleSubmission.SharedStackArgs
 
 noncomputable section
 set_option warningAsError true
@@ -18,11 +21,11 @@ def framed (s : State) (pc : UInt256) (stack : List UInt256) : State :=
   { s with pc := pc, stack := stack }
 
 def bodyProgram (shift : UInt256) : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩), .push 1 1, .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩), .push 1 shift, .op .SUB, .op .SHR, .op .AND,
-   .op (.Dup ⟨2, by decide⟩), .op .MUL, .push 1 1, .op .ADD,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op .MULMOD, .op .MULMOD, .op (.Swap ⟨5, by decide⟩), .op .POP]
+  [.op (.Dup dA7), .push 1 1, .op (.Dup dA4),
+   .op (.Dup dA4), .push 1 shift, .op .SUB, .op .SHR, .op .AND,
+   .op (.Dup dA2), .op .MUL, .push 1 1, .op .ADD,
+   .op (.Dup dA1), .op (.Dup dA8), .op (.Dup dA0),
+   .op .MULMOD, .op .MULMOD, .op (.Swap sA5), .op .POP]
 
 def stepValue (shift counter Bm1 byte acc m : UInt256) : UInt256 :=
   UInt256.mulMod (UInt256.mulMod acc acc m)
@@ -101,7 +104,7 @@ PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven
 after incrementing the counter; on the eighth bit it falls through to the exit at
 pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
-  [.push 1 1, .op (.Dup ⟨2, by decide⟩), .op .ADD, .op (.Swap ⟨1, by decide⟩),
+  [.push 1 1, .op (.Dup dA2), .op .ADD, .op (.Swap sA1),
    .push 1 7, .op .GT,
    .push 2 4039, .op .JUMPI]
 

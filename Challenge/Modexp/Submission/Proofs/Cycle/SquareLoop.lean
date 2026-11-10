@@ -18,7 +18,7 @@ structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
   trace : GasSteps {s with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)} state
   memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
   frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (CounterControl.counter state :: rest)
-  pc : state.pc = UInt256.ofNat 7652
+  pc : state.pc = UInt256.ofNat 7584
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
@@ -40,7 +40,7 @@ structure RoundOutcome (s : State) (inv : UInt256) (a n : Nat → UInt256)
   trace : GasSteps {s with pc := UInt256.ofNat 5712, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)} state
   memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
   frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (CounterControl.counter state :: rest)
-  pc : state.pc = if k = 1 then UInt256.ofNat 7652 else UInt256.ofNat 5712
+  pc : state.pc = if k = 1 then UInt256.ofNat 7584 else UInt256.ofNat 5712
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
@@ -69,7 +69,7 @@ noncomputable def oneRound (s : State) (inv : UInt256) (a n : Nat → UInt256) (
   have hsmall' : value (digits inv a n) + 2*N ≤ radix^9 := by
     simpa only [digits, ControlArithmetic.normalized, if_pos hz] using hsq
   refine ⟨Round.result s inv a n rest, digits inv a n,
-    Round.gasSteps s inv a n rest env hm hcap hact (ha 0 (by decide)) (ha 6 (by decide)) (ha 7 (by decide)) hz,
+    Round.gasSteps s inv a n rest env hm hcap hact (fun i hi => ha i (by omega)) hz,
     Round.memory_output s inv a n rest hm,
     Round.frame_output s inv a n rest,
     Round.pc_output s inv a n rest k hk hk16 hc,

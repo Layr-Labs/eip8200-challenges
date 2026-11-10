@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 
@@ -16,25 +19,25 @@ def framed (template : State) (pc : UInt256) (stack : List UInt256) : State :=
   { template with pc := pc, stack := stack }
 
 def stageProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨14, by decide⟩)]
+  [.op (.Dup dA1),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Swap sA14)]
 
 def pairProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA0), .op .MULMOD]
 
 def fourSquaresProgram : List Instr :=
   pairProgram ++ pairProgram ++ pairProgram ++ pairProgram
 
 private theorem run_dupTop (template : State) (pc value : UInt256)
     (tail : List UInt256) (hcap : tail.length + 1 < 1024) :
-    runInstructions [.op (.Dup ⟨0, by decide⟩)]
+    runInstructions [.op (.Dup dA0)]
       (framed template pc (value :: tail)) =
     some (framed template pc.succ (value :: value :: tail)) := by
   simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hcap]
@@ -43,7 +46,7 @@ private theorem run_dupTop (template : State) (pc value : UInt256)
 theorem run_topCopies (template : State) (pc value : UInt256)
     (tail : List UInt256) (count : Nat) :
     tail.length + count + 1 < 1024 →
-    runInstructions (List.replicate count (.op (.Dup ⟨0, by decide⟩)))
+    runInstructions (List.replicate count (.op (.Dup dA0)))
       (framed template pc (value :: tail)) =
     some (framed template (advancePC count pc)
       (List.replicate (count + 1) value ++ tail)) := by
@@ -56,7 +59,7 @@ theorem run_topCopies (template : State) (pc value : UInt256)
         (List.replicate count value ++ tail)
         (by simp only [List.length_append, List.length_replicate]; omega)
       have after' :
-          runInstructions [.op (.Dup ⟨0, by decide⟩)]
+          runInstructions [.op (.Dup dA0)]
             (framed template (advancePC count pc)
               (List.replicate (count + 1) value ++ tail)) =
           some (framed template (advancePC (count + 1) pc)
@@ -68,7 +71,7 @@ theorem run_topCopies (template : State) (pc value : UInt256)
 private theorem run_liftModulus (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions [.op (.Dup ⟨1, by decide⟩)]
+    runInstructions [.op (.Dup dA1)]
       (framed template pc ([accumulator, modulus, exponent, mask, counter] ++ rest)) =
     some (framed template pc.succ
       ([modulus, accumulator, modulus, exponent, mask, counter] ++ rest)) := by
@@ -79,7 +82,7 @@ private theorem run_liftModulus (template : State)
 private theorem run_swap15 (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions [.op (.Swap ⟨14, by decide⟩)]
+    runInstructions [.op (.Swap sA14)]
       (framed template pc (List.replicate 15 modulus ++
         [accumulator, modulus, exponent, mask, counter] ++ rest)) =
     some (framed template pc.succ
@@ -111,17 +114,17 @@ theorem run_stage (template : State) (pc accumulator modulus exponent mask count
 /-- The MX trampoline replays the first five staging instructions (`DUP2 DUP1 DUP1 DUP1
 DUP1`) before jumping back into the loop body; the body resumes with the other eleven. -/
 def stageHead : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩)]
+  [.op (.Dup dA1),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0)]
 
 def stageRest : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨14, by decide⟩)]
+  [.op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Swap sA14)]
 
 theorem stageProgram_split : stageProgram = stageHead ++ stageRest := rfl
 
@@ -153,7 +156,7 @@ theorem run_stageRest (template : State) (pc accumulator modulus exponent mask c
           List.length_replicate]; omega)
   have h2 := run_swap15 template (advancePC 10 pc)
     accumulator modulus exponent mask counter rest hrest
-  have h1' : runInstructions (List.replicate 10 (.op (.Dup ⟨0, by decide⟩)))
+  have h1' : runInstructions (List.replicate 10 (.op (.Dup dA0)))
       (framed template pc
         (List.replicate 5 modulus ++ ([accumulator, modulus, exponent, mask, counter] ++ rest))) =
       some (framed template (advancePC 10 pc)

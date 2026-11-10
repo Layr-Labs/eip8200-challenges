@@ -1,6 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -25,8 +28,8 @@ private theorem hzn : ({val := 0} : W).toNat = 0 := rfl
 
 def normpart0Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA5),
    .op .LT]
 
 def normpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (rest : List W) : State :=
@@ -43,8 +46,8 @@ theorem normpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (r
 
 def normProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA5),
    .op .LT]
 
 def normModel (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W) : State :=
@@ -77,11 +80,11 @@ def preparedpart0Program : List Instr :=
   [.push 6 255,
    .push 4 160,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .SUB,
-   .op (.Dup ⟨7, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩)]
+   .op (.Dup dA7),
+   .op (.Dup dA1),
+   .op (.Dup dA3)]
 
 def preparedpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 160
@@ -102,12 +105,12 @@ theorem preparedpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W
 
 def preparedpart1Program : List Instr :=
   [.op .SHR,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .SUB,
    .op .SUB,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA1),
+   .op (.Dup dA4),
    .op .SHR]
 
 def preparedpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -128,13 +131,13 @@ theorem preparedpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
 
 
 def preparedpart2Program : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA7),
    .op .SUB,
    .op .SUB,
    .push 4 224,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .AND]
 
 def preparedpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -157,14 +160,14 @@ theorem preparedpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
 
 
 def preparedpart3Program : List Instr :=
-  [.op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+  [.op (.Swap sA2),
+   .op (.Dup dA1),
    .op .AND,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .AND,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .SHR,
-   .op (.Dup ⟨7, by decide⟩)]
+   .op (.Dup dA7)]
 
 def preparedpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.land x1 x3
@@ -184,13 +187,13 @@ theorem preparedpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
 
 def preparedpart4Program : List Instr :=
   [.op .SUB,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Swap sA0),
    .op .SUB,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 255,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Swap sA0)]
 
 def preparedpart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 - x1
@@ -212,11 +215,11 @@ def preparedpart5Program : List Instr :=
   [.push 1 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA9),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Dup dA13),
+   .op (.Swap sA0)]
 
 def preparedpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 224
@@ -238,7 +241,7 @@ theorem preparedpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
 
 def preparedpart6Program : List Instr :=
   [.op .SUB,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 255,
    .op .SHR]
 
@@ -261,53 +264,53 @@ def preparedProgram : List Instr :=
   [.push 6 255,
    .push 4 160,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .SUB,
-   .op (.Dup ⟨7, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA7),
+   .op (.Dup dA1),
+   .op (.Dup dA3),
    .op .SHR,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .SUB,
    .op .SUB,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA1),
+   .op (.Dup dA4),
    .op .SHR,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .SUB,
    .op .SUB,
    .push 4 224,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .AND,
-   .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Swap sA2),
+   .op (.Dup dA1),
    .op .AND,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .AND,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .SHR,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .SUB,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Swap sA0),
    .op .SUB,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 255,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .push 1 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA9),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Swap sA0),
    .op .SUB,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 255,
    .op .SHR]
 
@@ -447,13 +450,13 @@ theorem blk5192_eq (s : State) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M : W) 
 /-! ## blk5265: pc 5265..5275, 10 instructions -/
 
 def blk5265part0Program : List Instr :=
-  [.op (.Swap ⟨8, by decide⟩),
+  [.op (.Swap sA8),
    .op .POP,
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Swap sA6),
    .op .POP,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .POP,
-   .op (.Swap ⟨2, by decide⟩),
+   .op (.Swap sA2),
    .op .POP]
 
 def blk5265part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -468,7 +471,7 @@ theorem blk5265part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
   simp [hz, hzn, blk5265part0Program, blk5265part0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def blk5265part1Program : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩),
+  [.op (.Swap sA0),
    .op .POP]
 
 def blk5265part1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : W) (rest : List W) : State :=
@@ -483,15 +486,15 @@ theorem blk5265part1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
   simp [hz, hzn, blk5265part1Program, blk5265part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def blk5265Program : List Instr :=
-  [.op (.Swap ⟨8, by decide⟩),
+  [.op (.Swap sA8),
    .op .POP,
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Swap sA6),
    .op .POP,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .POP,
-   .op (.Swap ⟨2, by decide⟩),
+   .op (.Swap sA2),
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .op .POP]
 
 def blk5265Model (s : State) (d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : W) (rest : List W) : State :=
@@ -561,10 +564,10 @@ theorem neg_eq (s : State) (d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp
 
 def donepart0Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 1 240,
    .op .SHL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .OR,
    .push 1 96,
    .op .MSTORE]
@@ -586,10 +589,10 @@ theorem donepart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (r
   simp [hz, hzn, donepart0Program, donepart0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96]
 
 def donepart1Program : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
+  [.op (.Dup dA2),
    .push 1 224,
    .op .SHL,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 1 16,
    .op .SHR,
    .op .OR]
@@ -611,10 +614,10 @@ theorem donepart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (r
 def donepart2Program : List Instr :=
   [.push 1 64,
    .op .MSTORE,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .push 1 208,
    .op .SHL,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .push 1 32,
    .op .SHR]
 
@@ -638,10 +641,10 @@ def donepart3Program : List Instr :=
   [.op .OR,
    .push 1 32,
    .op .MSTORE,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .push 1 192,
    .op .SHL,
-   .op (.Dup ⟨4, by decide⟩)]
+   .op (.Dup dA4)]
 
 def donepart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : W) (rest : List W) : State :=
   let v0 : W := UInt256.lor x0 x1
@@ -684,35 +687,35 @@ theorem donepart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 def doneProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 1 240,
    .op .SHL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .OR,
    .push 1 96,
    .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 1 224,
    .op .SHL,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 1 16,
    .op .SHR,
    .op .OR,
    .push 1 64,
    .op .MSTORE,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .push 1 208,
    .op .SHL,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .push 1 32,
    .op .SHR,
    .op .OR,
    .push 1 32,
    .op .MSTORE,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .push 1 192,
    .op .SHL,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .push 1 48,
    .op .SHR,
    .op .OR,

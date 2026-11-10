@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Fast.SquareRow
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -13,31 +16,31 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def coreProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨15, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
+   .op (.Swap sA15),
    .op .POP,
    .op .ADD,
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA6),
+   .op (.Dup dA15),
+   .op (.Dup dA0),
    .op .MULMOD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA0),
    .op .MUL,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .LT,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Swap ⟨2, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Swap sA2),
    .op .SUB,
    .op .SUB]
 
 def tailProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MSTORE,
-   .push 2 3989, .op (.Swap ⟨5, by decide⟩), .op .JUMP]
+  [.op (.Swap sA0), .op (.Dup dA5), .op .MSTORE,
+   .push 2 3989, .op (.Swap sA5), .op .JUMP]
 
 
 def headProgram : List Instr := coreProgram.take 8

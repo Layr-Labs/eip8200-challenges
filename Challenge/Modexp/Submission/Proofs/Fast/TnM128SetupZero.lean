@@ -1,7 +1,10 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.StagedMonpro
 import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandMemory
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SetupFrames
 import Challenge.Modexp.Submission.Proofs.Fast.SquarePartialClear
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -15,8 +18,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached StagedOperand
 
 def stageProgram : List Instr :=
-  [.push 2 2688, .op .MLOAD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨2, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op .ADD, .push 2 1856, .op .ADD,
+  [.push 2 2688, .op .MLOAD, .op (.Dup dA0), .op (.Swap sA2),
+   .op (.Dup dA1), .op (.Dup dA0), .op .ADD, .push 2 1856, .op .ADD,
    .op .MCOPY]
 
 /-- The `0x0800` clear is gone (the word is overwritten before any kernel reads it). -/
@@ -168,10 +171,10 @@ theorem run_preclear (s : State) (mem : ByteArray) (n : Nat) (st : List UInt256)
   decide
 
 def pointersJumpProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩), .push 6 31, .op .NOT, .op .ADD,
-   .op (.Swap ⟨1, by decide⟩), .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op .ADD,
-   .op (.Dup ⟨1, by decide⟩), .op .JUMP]
+  [.op (.Swap sA1), .push 6 31, .op .NOT, .op .ADD,
+   .op (.Swap sA1), .op (.Swap sA0),
+   .op (.Dup dA2), .op .ADD,
+   .op (.Dup dA1), .op .JUMP]
 
 private theorem negative32_add_ofNat (x : Nat) (hx : 32 ≤ x)
     (hx' : x < 115792089237316195423570985008687907853269984665640564039457584007913129639936) :

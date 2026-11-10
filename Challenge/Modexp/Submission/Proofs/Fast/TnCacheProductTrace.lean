@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyComponents
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheProductTrace
@@ -11,11 +14,11 @@ def cacheStack (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret 
     (rest : List UInt256) : List UInt256 :=
   [bi,pbi,pa,pb,flag,tn,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest
 
-def cachedLoadLow : List Instr := [.op (.Dup ⟨10, by decide⟩), .op .MLOAD]
+def cachedLoadLow : List Instr := [.op (.Dup dA10), .op .MLOAD]
 def cachedMakeMu : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL,
-   .op (.Swap ⟨0, by decide⟩)]
-def cachedLoadMask : List Instr := [.op (.Dup ⟨8, by decide⟩)]
+  [.op (.Dup dA0), .op (.Dup dA10), .op .MUL,
+   .op (.Swap sA0)]
+def cachedLoadMask : List Instr := [.op (.Dup dA8)]
 
 theorem run_cachedLoadLow (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
@@ -61,10 +64,10 @@ theorem run_cachedLoadMask (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2
     framed, cacheStack, baseStack, Nat.add_assoc, hc19, allOnes_value, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def makeModProduct : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA2), .op (.Dup dA13), .op .MULMOD]
 
 def finishCarry : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .ADDMOD]
+  [.op (.Dup dA9), .op (.Swap sA1), .op .ADDMOD]
 
 theorem run_cachedMakeModProduct (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret mu t0 : UInt256)
@@ -97,10 +100,10 @@ theorem run_cachedFinishCarry (pc0 : Nat) (s : State)
     List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def cachedProduct : List Instr :=
-  [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD,
-   .op .MUL, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
+  [.op (.Dup dA8), .op (.Dup dA11), .op .MLOAD,
+   .op .MUL, .op (.Dup dA7), .op (.Dup dA0),
+   .op (.Dup dA2), .op (.Dup dA13), .op .MULMOD,
+   .op (.Dup dA13), .op .MLOAD, .op .ADDMOD]
 
 theorem run_cachedProduct (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
@@ -128,9 +131,9 @@ theorem run_cachedProduct (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 
     Challenge.EvmProof.Word.succ_ofNat_mod, hmod, hactQ, List.exchange]
 
 def cachedProduct4 : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩), .push 2 2208, .op .MLOAD,
-   .op .MUL, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op .MULMOD,
+  [.op (.Dup dA12), .push 2 2208, .op .MLOAD,
+   .op .MUL, .op (.Dup dA7), .op (.Dup dA0),
+   .op (.Dup dA2), .op (.Dup dA13), .op .MULMOD,
    .push 2 2208, .op .MLOAD, .op .ADDMOD]
 
 theorem run_cachedProduct4 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
@@ -189,9 +192,9 @@ theorem run_cachedProduct4_model (pc0 : Nat) (s : State)
   simpa only [hcarry, rowC0, rowMu] using hr
 
 def cachedProduct8 : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩), .push 2 2336, .op .MLOAD,
-   .op .MUL, .op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op .MULMOD,
+  [.op (.Dup dA12), .push 2 2336, .op .MLOAD,
+   .op .MUL, .op (.Dup dA7), .op (.Dup dA0),
+   .op (.Dup dA2), .op (.Dup dA14), .op .MULMOD,
    .push 2 2336, .op .MLOAD, .op .ADDMOD]
 
 theorem run_cachedProduct8 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)

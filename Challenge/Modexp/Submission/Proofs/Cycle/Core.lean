@@ -79,9 +79,9 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
   have capFinal : (CounterControl.counter last :: saved f).length ≤ 960 := by
     simp only [List.length_cons]; omega
   have unpack := Unpack.gasSteps last inv out n (CounterControl.counter last :: saved f) envLast capFinal actLast
-  have lastReset : {last with pc := UInt256.ofNat 7652, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (CounterControl.counter last :: saved f)} = last :=
+  have lastReset : {last with pc := UInt256.ofNat 7584, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (CounterControl.counter last :: saved f)} = last :=
     SquareExecution.reset_self _ _ _ lastPc lastFrame
-  change GasSteps {last with pc := UInt256.ofNat 7652, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (CounterControl.counter last :: saved f)} (Unpack.result last inv out n (CounterControl.counter last :: saved f)) at unpack
+  change GasSteps {last with pc := UInt256.ofNat 7584, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (CounterControl.counter last :: saved f)} (Unpack.result last inv out n (CounterControl.counter last :: saved f)) at unpack
   rw [lastReset] at unpack
   obtain ⟨done, finish, returned, bytes, callsDone⟩ := Finish.product (Unpack.result last inv out n (CounterControl.counter last :: saved f))
     inv out (ordinary last.memory 256) n (CounterControl.counter last :: saved f) (envLast.transfer rfl rfl)
@@ -89,7 +89,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     lastBound factor.1 nBound N (x^(2^k)) n0 nValue inverse hN hNsize hodd
     (by rw [hfactor]; exact hB) lastForm
   have unpackReset : {Unpack.result last inv out n (CounterControl.counter last :: saved f) with
-      pc := UInt256.ofNat 7744
+      pc := UInt256.ofNat 7676
       stack := ProductMeaning.frame0 inv out (ordinary last.memory 256) n (CounterControl.counter last :: saved f)} =
       Unpack.result last inv out n (CounterControl.counter last :: saved f) := SquareExecution.reset_self _ _ _ rfl rfl
   rw [unpackReset] at finish

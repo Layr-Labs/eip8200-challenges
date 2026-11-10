@@ -17,18 +17,18 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 def counter (s : State) : UInt256 := s.stack.getD 14 (UInt256.ofNat 0)
 def dec (c : UInt256) : UInt256 := c - UInt256.ofNat 1
 def initial (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 7619, stack := frame a n (n 0) (n 1) (counter s :: rest)}
+  {s with pc := UInt256.ofNat 7551, stack := frame a n (n 0) (n 1) (counter s :: rest)}
 def tested (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 7651, stack := UInt256.ofNat 5711 :: counter s :: frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := UInt256.ofNat 7583, stack := UInt256.ofNat 5711 :: counter s :: frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def branched (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := if (counter s).toNat = 0 then UInt256.ofNat 7652 else UInt256.ofNat 5711, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+  {s with pc := if (counter s).toNat = 0 then UInt256.ofNat 7584 else UInt256.ofNat 5711, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def looped (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 5711, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def repeated (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 5712, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
 def completed (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   if (counter s).toNat = 0 then
-    {s with pc := UInt256.ofNat 7652, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
+    {s with pc := UInt256.ofNat 7584, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)}
   else repeated s a n rest
 
 theorem head_run (s : State) (a n : Nat → UInt256) (rest : List UInt256)
@@ -76,7 +76,7 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (rest : List UInt
   have h := decision s a n rest env hcap hact
   by_cases hz : (counter s).toNat = 0
   · have hb : branched s a n rest =
-        {s with pc := UInt256.ofNat 7652, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)} := by
+        {s with pc := UInt256.ofNat 7584, stack := frame a n (n 0) (n 1) (dec (counter s) :: rest)} := by
       simp only [branched, if_pos hz]
     rw [hb] at h
     simp only [completed, if_pos hz]

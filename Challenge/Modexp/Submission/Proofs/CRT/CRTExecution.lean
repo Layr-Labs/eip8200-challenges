@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 10000
@@ -11,16 +14,16 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 /-- Reconstruction for a column whose low digit does not need to be stored.
 The full kernel has an additional store in its output columns. -/
 def residueProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MOD,
-   .op (.Dup ⟨3, by decide⟩), .op .SUB, .op .ADD,
-   .op (.Dup ⟨2, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .MOD]
+  [.op (.Dup dA2), .op (.Dup dA2), .op .MOD,
+   .op (.Dup dA3), .op .SUB, .op .ADD,
+   .op (.Dup dA2), .op (.Swap sA0), .op .MOD]
 
 def highProgram (high : UInt256) : List Instr :=
   [.push 1 5, .op .SHR, .push 1 high, .op .SHL]
 
 def carryProgram (low : UInt256) : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 1 low, .op .SHR, .op .ADD,
-   .op (.Swap ⟨0, by decide⟩), .op .POP]
+  [.op (.Dup dA1), .push 1 low, .op .SHR, .op .ADD,
+   .op (.Swap sA0), .op .POP]
 
 def program (low high : UInt256) : List Instr :=
   residueProgram ++ highProgram high ++ carryProgram low

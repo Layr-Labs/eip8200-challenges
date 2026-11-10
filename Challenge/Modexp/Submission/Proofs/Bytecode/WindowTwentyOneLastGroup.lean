@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 
@@ -13,13 +16,13 @@ def outState (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
     ([accumulator, exponent, UInt256.ofNat 480, counter] ++ rest)
 
 def reducedStageProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩)] ++
-    List.replicate 13 (.op (.Dup ⟨0, by decide⟩)) ++
-    [.op (.Swap ⟨13, by decide⟩)]
+  [.op (.Dup dA1)] ++
+    List.replicate 13 (.op (.Dup dA0)) ++
+    [.op (.Swap sA13)]
 
 def lookupLastProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .push 1 4, .op .SHL,
-   .op (.Dup ⟨4, by decide⟩), .op .AND,
+  [.op (.Dup dA2), .push 1 4, .op .SHL,
+   .op (.Dup dA4), .op .AND,
    .op .MLOAD, .op .MULMOD]
 
 def program (l0 l1 : Nat) : List Instr :=
@@ -31,7 +34,7 @@ def program (l0 l1 : Nat) : List Instr :=
 private theorem run_liftModulus (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions [.op (.Dup ⟨1, by decide⟩)]
+    runInstructions [.op (.Dup dA1)]
       (WindowTwentyOneStage.framed template pc
         ([accumulator, modulus, exponent, mask, counter] ++ rest)) =
     some (WindowTwentyOneStage.framed template pc.succ
@@ -43,7 +46,7 @@ private theorem run_liftModulus (template : State)
 private theorem run_swap14 (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions [.op (.Swap ⟨13, by decide⟩)]
+    runInstructions [.op (.Swap sA13)]
       (WindowTwentyOneStage.framed template pc
         (List.replicate 14 modulus ++
           [accumulator, modulus, exponent, mask, counter] ++ rest)) =

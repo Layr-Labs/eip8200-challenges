@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option linter.unnecessarySimpa false
 set_option linter.unusedSimpArgs false
@@ -47,10 +50,10 @@ theorem eqC (a b : W) : UInt256.eq a b = UInt256.eq b a := by
   simp [UInt256.eq, eq_comm]
 def newpart0Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD,
    .push 1 96,
@@ -78,12 +81,12 @@ theorem newpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 
 def newpart1Program : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩),
+  [.op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD]
 
@@ -110,11 +113,11 @@ theorem newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 def newpart2Program : List Instr :=
   [.push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
    .op .MUL]
 
 def newpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
@@ -138,12 +141,12 @@ theorem newpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 def newpart3Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA3),
    .op .MUL]
 
 def newpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -165,12 +168,12 @@ theorem newpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 def newpart4Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD]
 
@@ -194,13 +197,13 @@ theorem newpart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 
 def newpart5Program : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩),
+  [.op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD]
 
 def newpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
@@ -224,13 +227,13 @@ theorem newpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 def newpart6Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 
 def newpart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -254,12 +257,12 @@ theorem newpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 def newpart7Program : List Instr :=
   [.push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA6)]
 
 def newpart7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 32
@@ -282,12 +285,12 @@ theorem newpart7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 def newpart8Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 
 def newpart8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x0 x1 x2
@@ -307,13 +310,13 @@ theorem newpart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 
 def newpart9Program : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA12),
+   .op (.Dup dA7),
    .op .MULMOD]
 
 def newpart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -334,13 +337,13 @@ theorem newpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
 
 def newpart10Program : List Instr :=
   [.op .ADD,
-   .op (.Swap ⟨5, by decide⟩),
+   .op (.Swap sA5),
    .op .POP,
    .push 2 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩)]
+   .op (.Dup dA0),
+   .op (.Swap sA5)]
 
 def newpart10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -362,13 +365,13 @@ theorem newpart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 def newpart11Program : List Instr :=
   [.op .SUB,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .ADD,
    .push 2 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Swap sA1),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩)]
+   .op (.Dup dA0)]
 
 def newpart11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := x0 - x1
@@ -389,12 +392,12 @@ theorem newpart11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 def newpart12Program : List Instr :=
   [.push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩)]
+   .op (.Dup dA10)]
 
 def newpart12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 128
@@ -422,10 +425,10 @@ def newpart13Program : List Instr :=
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA14)]
 
 def newpart13Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
@@ -448,14 +451,14 @@ theorem newpart13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart14Program : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩)]
+   .op (.Dup dA12)]
 
 def newpart14Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x4 * x0
@@ -475,14 +478,14 @@ theorem newpart14_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart15Program : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩),
+  [.op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩)]
+   .op (.Dup dA10)]
 
 def newpart15Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x6 * x0
@@ -505,10 +508,10 @@ theorem newpart15_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 def newpart16Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD]
 
@@ -533,14 +536,14 @@ theorem newpart16_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart17Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
+  [.op (.Dup dA15),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA15)]
 
 def newpart17Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 64
@@ -561,12 +564,12 @@ theorem newpart17_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart18Program : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
+  [.op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD]
 
@@ -588,12 +591,12 @@ theorem newpart18_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart19Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Swap sA6),
    .op .POP,
    .push 2 224,
    .op .MLOAD]
@@ -618,13 +621,13 @@ theorem newpart19_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 def newpart20Program : List Instr :=
   [.op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Swap sA6),
    .op .SUB,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .ADD,
    .push 2 2048,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 
 def newpart20Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := UInt256.land x0 x1
@@ -643,12 +646,12 @@ theorem newpart20_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart21Program : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩),
+  [.op (.Swap sA1),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD]
 
@@ -674,11 +677,11 @@ theorem newpart21_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 def newpart22Program : List Instr :=
   [.push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA3),
    .op .MUL]
 
 def newpart22Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
@@ -702,12 +705,12 @@ theorem newpart22_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 def newpart23Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD]
 
@@ -731,13 +734,13 @@ theorem newpart23_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart24Program : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩),
+  [.op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD]
 
 def newpart24Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
@@ -761,13 +764,13 @@ theorem newpart24_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 def newpart25Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA14)]
 
 def newpart25Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -786,10 +789,10 @@ theorem newpart25_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart26Program : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨7, by decide⟩),
+   .op (.Swap sA7),
    .op .POP,
    .push 2 224,
    .op .MLOAD,
@@ -815,14 +818,14 @@ theorem newpart26_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart27Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨7, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Swap sA7),
    .op .SUB,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .ADD,
    .push 2 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Swap sA1)]
 
 def newpart27Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : W) (rest : List W) : State :=
   let v0 : W := x7 - x0
@@ -843,11 +846,11 @@ def newpart28Program : List Instr :=
   [.op .MULMOD,
    .push 2 128,
    .op .MLOAD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA1),
+   .op (.Dup dA12),
    .op .MULMOD,
-   .op (.Swap ⟨9, by decide⟩)]
+   .op (.Swap sA9)]
 
 def newpart28Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x0 x1 x2
@@ -869,12 +872,12 @@ theorem newpart28_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 def newpart29Program : List Instr :=
   [.op .POP,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA5),
+   .op (.Dup dA15),
    .op .MUL]
 
 def newpart29Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -898,10 +901,10 @@ def newpart30Program : List Instr :=
    .push 2 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap sA8),
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩)]
+   .op (.Dup dA14),
+   .op (.Dup dA5)]
 
 def newpart30Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -923,14 +926,14 @@ theorem newpart30_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13
 
 
 def newpart31Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
+  [.op (.Dup dA15),
    .op .MULMOD,
    .op .ADD,
    .push 7 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Swap ⟨3, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA10),
+   .op (.Dup dA1),
+   .op (.Swap sA3)]
 
 def newpart31Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x15 x0 x1
@@ -951,7 +954,7 @@ def newpart32Program : List Instr :=
   [.op .SUB,
    .op .ADD,
    .op .MULMOD,
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap sA8),
    .op .POP,
    .op .POP,
    .op .POP,
@@ -991,269 +994,269 @@ theorem newpart33_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : W) (rest 
 
 def newProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA12),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨5, by decide⟩),
+   .op (.Swap sA5),
    .op .POP,
    .push 2 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨5, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Swap sA5),
    .op .SUB,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .ADD,
    .push 2 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Swap sA1),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Swap sA6),
    .op .POP,
    .push 2 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Swap sA6),
    .op .SUB,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .ADD,
    .push 2 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Swap sA1),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨7, by decide⟩),
+   .op (.Swap sA7),
    .op .POP,
    .push 2 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨7, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Swap sA7),
    .op .SUB,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .ADD,
    .push 2 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Swap sA1),
    .op .MULMOD,
    .push 2 128,
    .op .MLOAD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA1),
+   .op (.Dup dA12),
    .op .MULMOD,
-   .op (.Swap ⟨9, by decide⟩),
+   .op (.Swap sA9),
    .op .POP,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA5),
+   .op (.Dup dA15),
    .op .MUL,
    .op .ADD,
    .push 2 224,
    .op .MLOAD,
    .op .AND,
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap sA8),
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
+   .op (.Dup dA15),
    .op .MULMOD,
    .op .ADD,
    .push 7 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA10),
+   .op (.Dup dA1),
+   .op (.Swap sA3),
    .op .SUB,
    .op .ADD,
    .op .MULMOD,
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap sA8),
    .op .POP,
    .op .POP,
    .op .POP,

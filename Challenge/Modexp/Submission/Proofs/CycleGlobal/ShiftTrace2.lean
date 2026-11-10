@@ -1,7 +1,10 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftTrace1
+
+open CycleSubmission.SharedStackArgs
 
 noncomputable section
 set_option warningAsError false
@@ -207,7 +210,7 @@ theorem run_shiftBody_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
   have hu1568 := huv 1568 (by omega)
   have hu1536 := huv 1536 (by omega)
   have hu32 := huv 32 (by omega)
-  have hpc : headPC n = 10726 := by simp [headPC, hw]
+  have hpc : headPC n = 10658 := by simp [headPC, hw]
   have hlit : UInt256.ofNat 2208 = UInt256.ofNat (2080 + 32 * n) := by rw [hlimb]
   simp (config := { maxSteps := 400000 })
     [blk3018h, opAt, pushAt, wfOp,
@@ -358,10 +361,10 @@ theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
 private def estimateRawPart0 : List YulEvmCompiler.Instr :=
   [.push 2 2080,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA14),
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .push 2 1600,
    .op .MLOAD]
 
@@ -369,30 +372,30 @@ private def estimateRawPart1 : List YulEvmCompiler.Instr :=
   [.op .SHL,
    .push 2 2112,
    .op .MLOAD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .op .SHR,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩)]
+   .op (.Dup dA13),
+   .op (.Dup dA0)]
 
 private def estimateRawPart2 : List YulEvmCompiler.Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MULMOD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .ADDMOD,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩)]
+   .op (.Dup dA12)]
 
 private def estimateRawPart3 : List YulEvmCompiler.Instr :=
   [.op .MUL,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA1),
    .push 1 128,
    .op .SHR,
    .op .MUL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 0 0]
 
 private def estimateRawPart4 : List YulEvmCompiler.Instr :=
@@ -402,15 +405,15 @@ private def estimateRawPart4 : List YulEvmCompiler.Instr :=
    .op .MLOAD,
    .op .SUB,
    .op .LT,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .op .SUB]
 
 private def estimateRawPart5 : List YulEvmCompiler.Instr :=
   [.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Swap sA1),
+   .op (.Dup dA14),
    .op .GT,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .ADD,
    .op .OR]
 
@@ -496,7 +499,7 @@ private theorem run_estimate_h4_part0 (z : UInt256) (s : State) (mem : ByteArray
     WindowNibbleKernel.runInstructions estimateRawPart0
       (estimateState z s mem n bsize esize msize k) = some (estimate8 z s mem n bsize esize msize k) := by
   have hn2 : 2 ≤ n := by omega
-  have hhead : headPC n = 10726 := by simp [headPC, hw]
+  have hhead : headPC n = 10658 := by simp [headPC, hw]
   have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
@@ -534,7 +537,7 @@ private theorem run_estimate_h4_part1 (z : UInt256) (s : State) (mem : ByteArray
     WindowNibbleKernel.runInstructions estimateRawPart1
       (estimate8 z s mem n bsize esize msize k) = some (estimate16 z s mem n bsize esize msize k) := by
   have hn2 : 2 ≤ n := by omega
-  have hhead : headPC n = 10726 := by simp [headPC, hw]
+  have hhead : headPC n = 10658 := by simp [headPC, hw]
   have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
@@ -572,7 +575,7 @@ private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray
     WindowNibbleKernel.runInstructions estimateRawPart2
       (estimate16 z s mem n bsize esize msize k) = some (estimateMid z s mem n bsize esize msize k) := by
   have hn2 : 2 ≤ n := by omega
-  have hhead : headPC n = 10726 := by simp [headPC, hw]
+  have hhead : headPC n = 10658 := by simp [headPC, hw]
   simp (config := { maxSteps := 600000 })
     [estimateRawPart2, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -597,7 +600,7 @@ private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray
     WindowNibbleKernel.runInstructions estimateRawPart3
       (estimateMid z s mem n bsize esize msize k) = some (estimate32 z s mem n bsize esize msize k) := by
   have hn2 : 2 ≤ n := by omega
-  have hhead : headPC n = 10726 := by simp [headPC, hw]
+  have hhead : headPC n = 10658 := by simp [headPC, hw]
   simp (config := { maxSteps := 600000 })
     [estimateRawPart3, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -622,7 +625,7 @@ private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray
     WindowNibbleKernel.runInstructions estimateRawPart4
       (estimate32 z s mem n bsize esize msize k) = some (estimate40 z s mem n bsize esize msize k) := by
   have hn2 : 2 ≤ n := by omega
-  have hhead : headPC n = 10726 := by simp [headPC, hw]
+  have hhead : headPC n = 10658 := by simp [headPC, hw]
   have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hC : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1600 32) =
@@ -660,7 +663,7 @@ private theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray
     WindowNibbleKernel.runInstructions estimateRawPart5
       (estimate40 z s mem n bsize esize msize k) = some (macSetupState z s mem n bsize esize msize k) := by
   have hn2 : 2 ≤ n := by omega
-  have hhead : headPC n = 10726 := by simp [headPC, hw]
+  have hhead : headPC n = 10658 := by simp [headPC, hw]
   simp (config := { maxSteps := 600000 })
     [estimateRawPart5, WindowNibbleKernel.runInstructions, estimateMid, estimate8, estimate16, estimate32, estimate40, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -682,7 +685,7 @@ private theorem estimate_h4_program :
       estimateRawPart0 ++ (estimateRawPart1 ++ (estimateRawPart2 ++ (estimateRawPart3 ++ (estimateRawPart4 ++ (estimateRawPart5))))) := by rfl
 
 private theorem estimate_h4_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10735) blk3026h := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10667) blk3026h := by
   dsimp only [blk3026h, opAt, pushAt, wfOp,
     WindowTwentyOneLocated.LinearPath, WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push, YulEvmCompiler.Instr.size_op,
@@ -702,7 +705,7 @@ theorem run_estimate_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esi
       (run_estimate_h4_part2 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
       (run_estimate_h4_part3 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
       (run_estimate_h4_part4 z s mem n bsize esize msize k hw hact hcode hrun) (run_estimate_h4_part5 z s mem n bsize esize msize k hw hact hcode hrun))))))
-  refine WindowTwentyOneLocated.run_linear blk3026h (UInt256.ofNat 10735)
+  refine WindowTwentyOneLocated.run_linear blk3026h (UInt256.ofNat 10667)
     (estimateState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
     ?_ estimate_h4_layout ?_ hrun ?_
   · change CycleSubmission.Artifact.bytecode.size < 2 ^ 256

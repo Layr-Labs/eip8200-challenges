@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftPaths
+open CycleSubmission.SharedStackArgs
+
 noncomputable section
 set_option warningAsError false
 set_option maxRecDepth 40000
@@ -22,26 +25,26 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2396 .JUMPDEST,
-   opAt 2397 (.Dup ⟨0, by decide⟩),
+   opAt 2397 (.Dup dA0),
    opAt 2398 .MLOAD,
    pushAt 2399 2 2112,
-   opAt 2400 (.Dup ⟨2, by decide⟩),
+   opAt 2400 (.Dup dA2),
    opAt 2401 .SUB,
    opAt 2402 .MLOAD,
-   opAt 2403 (.Dup ⟨1, by decide⟩),
+   opAt 2403 (.Dup dA1),
    opAt 2404 .ADD,
-   opAt 2405 (.Swap ⟨0, by decide⟩),
-   opAt 2406 (.Dup ⟨1, by decide⟩),
+   opAt 2405 (.Swap sA0),
+   opAt 2406 (.Dup dA1),
    opAt 2407 .LT,
-   opAt 2408 (.Swap ⟨0, by decide⟩),
-   opAt 2409 (.Dup ⟨3, by decide⟩),
+   opAt 2408 (.Swap sA0),
+   opAt 2409 (.Dup dA3),
    opAt 2410 .ADD,
-   opAt 2411 (.Swap ⟨2, by decide⟩),
-   opAt 2412 (.Dup ⟨3, by decide⟩),
+   opAt 2411 (.Swap sA2),
+   opAt 2412 (.Dup dA3),
    opAt 2413 .LT,
    opAt 2414 .OR,
-   opAt 2415 (.Swap ⟨1, by decide⟩),
-   opAt 2416 (.Dup ⟨1, by decide⟩),
+   opAt 2415 (.Swap sA1),
+   opAt 2416 (.Dup dA1),
    opAt 2417 .MSTORE]
 
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
@@ -51,7 +54,7 @@ def blk3157b :
    opAt 2419 .NOT,
    opAt 2420 .ADD,
    pushAt 2421 2 2111,
-   opAt 2422 (.Dup ⟨1, by decide⟩),
+   opAt 2422 (.Dup dA1),
    opAt 2423 .GT,
    pushAt 2424 2 3133,
    opAt 2425 .JUMPI]

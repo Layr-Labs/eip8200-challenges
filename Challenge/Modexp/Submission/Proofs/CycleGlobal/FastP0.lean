@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
+open CycleSubmission.SharedStackArgs
+
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -23,7 +26,7 @@ def blk977 :
    pushAt 401 1 64,
    opAt 402 .CALLDATALOAD,
    pushAt 403 1 33,
-   opAt 404 (.Dup ⟨1, by decide⟩),
+   opAt 404 (.Dup dA1),
    opAt 405 .SUB,
    pushAt 406 1 223,
    opAt 407 .LT,
@@ -48,37 +51,37 @@ padding `JUMPDEST`). -/
 def blk1003 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [pushAt 414 1 31,
-   opAt 415 (.Dup ⟨3, by decide⟩),
+   opAt 415 (.Dup dA3),
    opAt 416 .ADD,
    pushAt 417 1 5,
    opAt 418 .SHR,
-   opAt 419 (.Dup ⟨0, by decide⟩),
+   opAt 419 (.Dup dA0),
    pushAt 420 1 5,
    opAt 421 .SHL,
    pushAt 422 1 96,
-   opAt 423 (.Dup ⟨3, by decide⟩),
+   opAt 423 (.Dup dA3),
    opAt 424 .ADD,
-   opAt 425 (.Dup ⟨4, by decide⟩),
+   opAt 425 (.Dup dA4),
    opAt 426 .ADD,
-   opAt 427 (.Dup ⟨0, by decide⟩),
+   opAt 427 (.Dup dA0),
    opAt 428 .CALLDATALOAD,
    pushAt 429 0 0,
    opAt 430 .SGT,
    opAt 431 .ISZERO,
    pushAt 432 3 32,
-   opAt 433 (.Dup ⟨7, by decide⟩),
-   opAt 434 (.Dup ⟨3, by decide⟩),
+   opAt 433 (.Dup dA7),
+   opAt 434 (.Dup dA3),
    opAt 435 .ADD,
    opAt 436 .SUB,
    opAt 437 .CALLDATALOAD,
    opAt 438 .NOT,
-   opAt 439 (.Dup ⟨0, by decide⟩),
+   opAt 439 (.Dup dA0),
    pushAt 440 0 0,
    opAt 441 .SUB,
    opAt 442 .AND,
    pushAt 443 2 2,
    opAt 444 .GT,
-   opAt 445 (.Dup ⟨7, by decide⟩),
+   opAt 445 (.Dup dA7),
    pushAt 446 2 127,
    opAt 447 .AND,
    opAt 448 .OR,

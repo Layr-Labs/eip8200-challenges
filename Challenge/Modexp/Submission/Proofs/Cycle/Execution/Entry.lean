@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
@@ -12,8 +15,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def entrypart0Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA6),
    .push 1 16,
    .op .SHR,
    .push 2 2368,
@@ -42,7 +45,7 @@ def entrypart1Program : List Instr :=
    .op .SHR,
    .push 1 134,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .AND,
    .push 1 224,
    .op .MLOAD]
@@ -69,14 +72,14 @@ theorem entrypart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 
 
 def entrypart2Program : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup dA3),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1344,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Swap ⟨2, by decide⟩)]
+   .op (.Swap sA0),
+   .op (.Swap sA1),
+   .op (.Swap sA2)]
 
 def entrypart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x3 x0
@@ -98,9 +101,9 @@ theorem entrypart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 def entrypart3Program : List Instr :=
   [.push 1 194,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1376,
    .op .MSTORE,
    .push 0 0,
@@ -132,7 +135,7 @@ theorem entrypart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 def entrypart4Program : List Instr :=
   [.push 1 128,
    .op .SHR,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1600,
    .op .MSTORE,
    .push 32 3618502788666131106986593281521497120414687020801267626233049500247285301247,
@@ -160,14 +163,14 @@ theorem entrypart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 
 
 def entrypart5Program : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1568,
    .op .MSTORE,
    .push 1 74,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩)]
+   .op (.Dup dA5)]
 
 def entrypart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x4 x0
@@ -193,11 +196,11 @@ def entrypart6Program : List Instr :=
   [.op .AND,
    .push 2 2546,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .AND,
    .push 2 2576,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩)]
+   .op (.Dup dA7)]
 
 def entrypart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x0 x1
@@ -224,11 +227,11 @@ def entrypart7Program : List Instr :=
   [.op .AND,
    .push 1 104,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .AND,
    .push 1 44,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩)]
+   .op (.Dup dA9)]
 
 def entrypart7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x0 x1
@@ -255,7 +258,7 @@ def entrypart8Program : List Instr :=
   [.op .AND,
    .push 1 164,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .AND,
    .push 2 2592,
    .op .MLOAD,
@@ -284,13 +287,13 @@ theorem entrypart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
 
 def entrypart9Program : List Instr :=
   [.op .SHL,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 2 768,
    .op .MSTORE,
    .push 2 2516,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩)]
+   .op (.Dup dA11)]
 
 def entrypart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 x31 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftLeft x1 x0
@@ -319,7 +322,7 @@ def entrypart10Program : List Instr :=
    .op .MSTORE,
    .push 2 2486,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 64,
    .op .MSTORE]
@@ -351,7 +354,7 @@ theorem entrypart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 def entrypart11Program : List Instr :=
   [.push 2 2456,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 96,
    .op .MSTORE,
@@ -382,13 +385,13 @@ theorem entrypart11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 
 
 def entrypart12Program : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩),
+  [.op (.Dup dA11),
    .op .AND,
    .push 1 128,
    .op .MSTORE,
    .push 2 2396,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND]
 
 def entrypart12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 x29 x30 : UInt256) (rest : List UInt256) : State :=
@@ -434,8 +437,8 @@ theorem entrypart13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x
 
 def entryProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA6),
    .push 1 16,
    .op .SHR,
    .push 2 2368,
@@ -444,99 +447,99 @@ def entryProgram : List Instr :=
    .op .SHR,
    .push 1 134,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .AND,
    .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1344,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Swap ⟨2, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Swap sA1),
+   .op (.Swap sA2),
    .push 1 194,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1376,
    .op .MSTORE,
    .push 0 0,
    .op .MLOAD,
    .push 1 128,
    .op .SHR,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1600,
    .op .MSTORE,
    .push 32 3618502788666131106986593281521497120414687020801267626233049500247285301247,
    .push 1 14,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 1568,
    .op .MSTORE,
    .push 1 74,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .AND,
    .push 2 2546,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .AND,
    .push 2 2576,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .AND,
    .push 1 104,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .AND,
    .push 1 44,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .AND,
    .push 1 164,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .AND,
    .push 2 2592,
    .op .MLOAD,
    .push 1 112,
    .op .SHL,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 2 768,
    .op .MSTORE,
    .push 2 2516,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 32,
    .op .MSTORE,
    .push 2 2486,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 64,
    .op .MSTORE,
    .push 2 2456,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 96,
    .op .MSTORE,
    .push 2 2426,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 128,
    .op .MSTORE,
    .push 2 2396,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .AND,
    .push 1 160,
    .op .MSTORE]

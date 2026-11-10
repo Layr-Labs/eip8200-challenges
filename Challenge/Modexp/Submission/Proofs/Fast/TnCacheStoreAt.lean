@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacWords
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFrames
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -13,9 +16,9 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open CiosCachedMacCore CiosCached Monpro
 
 def middle : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨6, by decide⟩), .op .GT,
-   .op (.Swap ⟨0, by decide⟩), .op .POP]
+  [.op (.Dup dA6), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA6), .op .GT,
+   .op (.Swap sA0), .op .POP]
 
 theorem carry_gt (a b : UInt256) :
     UInt256.gt a (a+b) = UInt256.lt (a+b) b := by
@@ -27,9 +30,9 @@ theorem carry_gt (a b : UInt256) :
   simp only [UInt256.gt, UInt256.lt, he]
 
 def tail : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 2112, .op .MSTORE,
-   .op .LT, .op .ADD, .op (.Swap ⟨4, by decide⟩), .op .POP]
+  [.op (.Dup dA0), .op (.Dup dA7), .op .ADD,
+   .op (.Dup dA0), .push 2 2112, .op .MSTORE,
+   .op .LT, .op .ADD, .op (.Swap sA4), .op .POP]
 
 theorem run_middle (pc0 : Nat) (s : State) (c bi pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
@@ -78,14 +81,14 @@ theorem run_tail (pc0 : Nat) (s : State) (c f pbi hd pb ent tn target inv : UInt
      Challenge.EvmProof.Word.ofNat_add_mod]
 
 def middle15 : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .op .GT,
-   .op (.Swap ⟨0, by decide⟩), .op .POP]
+  [.op (.Dup dA14), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA14), .op .GT,
+   .op (.Swap sA0), .op .POP]
 
 def tail16 : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨15, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 2112, .op .MSTORE,
-   .op .LT, .op .ADD, .op (.Swap ⟨12, by decide⟩), .op .POP]
+  [.op (.Dup dA0), .op (.Dup dA15), .op .ADD,
+   .op (.Dup dA0), .push 2 2112, .op .MSTORE,
+   .op .LT, .op .ADD, .op (.Swap sA12), .op .POP]
 
 theorem run_middle15 (pc0 : Nat) (s : State)
     (c bi pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)
@@ -110,8 +113,8 @@ theorem run_middle15 (pc0 : Nat) (s : State)
      Challenge.EvmProof.Word.ofNat_add_mod]
 
 def middle14 : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨13, by decide⟩), .op .GT]
+  [.op (.Dup dA13), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA13), .op .GT]
 
 theorem run_middle14 (pc0 : Nat) (s : State)
     (c pbi hd pb ent w7 target w10 r0 r1 r2 r3 tn : UInt256)

@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.TnCacheL2Trace
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -13,11 +16,11 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 
 def loadProgram : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨9, by decide⟩)]
+  [.op (.Dup dA9), .op (.Dup dA9)]
 
 def fusedHead : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨10, by decide⟩), .op .MUL,
-   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA1), .op (.Dup dA10), .op .MUL,
+   .op (.Dup dA9), .op (.Dup dA11), .op (.Dup dA4), .op .MULMOD]
 
 def program : List Instr := fusedHead ++ CiosCached.macFusedPostProgram 2240 2272
 
@@ -95,8 +98,8 @@ theorem run_step (s : State) (pc : UInt256) (mem : ByteArray)
 /-! Layout V1: for eight limbs the `m0` frame slot (twelfth word) caches modulus[160],
 so the second reduction cell multiplies from the stack instead of loading memory. -/
 def fusedHead160 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op .MUL,
-   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨13, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA1), .op (.Dup dA12), .op .MUL,
+   .op (.Dup dA9), .op (.Dup dA13), .op (.Dup dA4), .op .MULMOD]
 
 def program160 : List Instr := fusedHead160 ++ CiosCached.macFusedPostProgram 2272 2304
 
@@ -169,8 +172,8 @@ theorem run_step160 (s : State) (pc : UInt256) (mem : ByteArray)
 /-! P1a: the setup puts modulus[64] in the eleventh frame word (the Montgomery inverse rides in
 the fifteenth), so the fifth reduction cell multiplies from the stack like the third. -/
 def fusedHead64 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MUL,
-   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨12, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA1), .op (.Dup dA11), .op .MUL,
+   .op (.Dup dA9), .op (.Dup dA12), .op (.Dup dA4), .op .MULMOD]
 
 def program64 : List Instr := fusedHead64 ++ CiosCached.macFusedPostProgram 2176 2208
 
@@ -246,8 +249,8 @@ theorem run_step64 (s : State) (pc : UInt256) (mem : ByteArray)
 /-! P1b: the setup puts modulus[32] in the eighth cell-frame word (the carry cache rides in the
 sixteenth), so the sixth reduction cell also multiplies from the stack. -/
 def fusedHead32 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨8, by decide⟩), .op .MUL,
-   .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨9, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA1), .op (.Dup dA8), .op .MUL,
+   .op (.Dup dA9), .op (.Dup dA9), .op (.Dup dA4), .op .MULMOD]
 
 def program32 : List Instr := fusedHead32 ++ CiosCached.macFusedPostProgram 2144 2176
 

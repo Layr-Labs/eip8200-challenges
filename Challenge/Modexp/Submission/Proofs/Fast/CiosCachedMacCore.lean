@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacWords
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -22,23 +25,23 @@ theorem pc_add_add (pc : UInt256) (a b : Nat) :
 namespace L1
 
 def multiplyProgram : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL,
-   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨5, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA4), .op (.Dup dA2), .op .MUL,
+   .op (.Swap sA1), .op (.Dup dA5), .op .MULMOD]
 
 def borrowProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB]
+  [.op (.Dup dA1), .op (.Dup dA1), .op .LT, .op .SUB]
 
 def carryProgram : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨4, by decide⟩),
+  [.op (.Dup dA3), .op (.Dup dA2), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA4),
    .op .GT, .op .SUB, .op .SUB]
 
 def loadProgram (t : UInt256) : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .push 2 t, .op .MLOAD]
+  [.op (.Dup dA2), .push 2 t, .op .MLOAD]
 
 def sumProgram : List Instr :=
-  [.op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨3, by decide⟩),
-   .op .GT, .op .ADD, .op (.Swap ⟨1, by decide⟩)]
+  [.op .ADD, .op (.Dup dA0), .op (.Swap sA3),
+   .op .GT, .op .ADD, .op (.Swap sA1)]
 
 def productProgram : List Instr := (multiplyProgram ++ borrowProgram) ++ carryProgram
 def accumulateProgram (t : UInt256) : List Instr := loadProgram t ++ sumProgram
@@ -153,23 +156,23 @@ end L1
 namespace L2
 
 def multiplyProgram : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL,
-   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA3), .op (.Dup dA2), .op .MUL,
+   .op (.Swap sA1), .op (.Dup dA4), .op .MULMOD]
 
 def borrowProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB]
+  [.op (.Dup dA1), .op (.Dup dA1), .op .LT, .op .SUB]
 
 def carryProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨3, by decide⟩),
+  [.op (.Dup dA2), .op (.Dup dA2), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA3),
    .op .GT, .op .SUB, .op .SUB]
 
 def loadProgram (t : UInt256) : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 t, .op .MLOAD]
+  [.op (.Dup dA1), .push 2 t, .op .MLOAD]
 
 def sumProgram : List Instr :=
-  [.op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨2, by decide⟩),
-   .op .GT, .op .ADD, .op (.Swap ⟨0, by decide⟩)]
+  [.op .ADD, .op (.Dup dA0), .op (.Swap sA2),
+   .op .GT, .op .ADD, .op (.Swap sA0)]
 
 def productProgram : List Instr := (multiplyProgram ++ borrowProgram) ++ carryProgram
 def accumulateProgram (t : UInt256) : List Instr := loadProgram t ++ sumProgram
@@ -280,9 +283,9 @@ theorem run_mac (template : State) (pc x y c t : UInt256)
 /-! ## Zero incoming carry and shared early-store suffix -/
 
 def zeroCarryProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩),
-   .op .LT, .op .SUB, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Swap ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .SUB]
+  [.op (.Dup dA1), .op (.Dup dA1),
+   .op .LT, .op .SUB, .op (.Dup dA1), .op .ADD,
+   .op (.Swap sA0), .op (.Swap sA1), .op .SUB]
 
 def zeroProductProgram : List Instr := multiplyProgram ++ zeroCarryProgram
 
@@ -328,11 +331,11 @@ theorem run_product_zero (template : State) (pc x y : UInt256)
     runInstructions_append_some _ _ _ _ _ hm hc
 
 def finishLoadProgram (tl : UInt256) : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+  [.op (.Swap sA0), .op (.Dup dA0),
    .push 2 tl, .op .MLOAD, .op .ADD]
 
 def finishStoreProgram (ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE, .op .LT, .op .ADD]
+  [.op (.Dup dA0), .push 2 ts, .op .MSTORE, .op .LT, .op .ADD]
 
 def finishProgram (tl ts : UInt256) : List Instr :=
   finishLoadProgram tl ++ finishStoreProgram ts

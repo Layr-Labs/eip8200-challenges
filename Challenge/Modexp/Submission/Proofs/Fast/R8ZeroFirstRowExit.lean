@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRowModel
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -12,11 +15,11 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 def quotientA : List Instr :=
-  [.op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨11, by decide⟩), .op .MLOAD, .op .MUL]
+  [.op (.Dup dA8), .op (.Dup dA11), .op .MLOAD, .op .MUL]
 def quotientB : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩), .op .MULMOD, .op (.Dup ⟨13, by decide⟩), .op .MLOAD, .op .ADDMOD]
-def quotientJump : List Instr := [.op (.Dup ⟨9, by decide⟩), .op .JUMP]
+  [.op (.Dup dA7), .op (.Dup dA0), .op (.Dup dA2),
+   .op (.Dup dA13), .op .MULMOD, .op (.Dup dA13), .op .MLOAD, .op .ADDMOD]
+def quotientJump : List Instr := [.op (.Dup dA9), .op .JUMP]
 def exitProgram : List Instr := (quotientA ++ quotientB) ++ quotientJump
 
 def endFrame (flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)

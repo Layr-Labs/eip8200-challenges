@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPrograms
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 
@@ -26,7 +29,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def loadProgram (a : UInt256) : List Instr :=
-  [.push 2 a, .op .MLOAD, .op (.Dup ⟨3, by decide⟩)]
+  [.push 2 a, .op .MLOAD, .op (.Dup dA3)]
 
 def blockProgram (a t : UInt256) : List Instr :=
   loadProgram a ++ CiosCached.macFusedProgram t t
@@ -37,41 +40,41 @@ def headProgram (a t : UInt256) : List Instr :=
 
 def rideHead (d : Fin 16) : List Instr :=
   if h : d.val ≤ 13 then
-    [.op (.Dup ⟨1, by decide⟩),
+    [.op (.Dup dA1),
      .op (.Dup ⟨d.val + 1, by omega⟩),
      .op .MUL,
-     .op (.Dup ⟨3, by decide⟩),
+     .op (.Dup dA3),
      .op (.Dup ⟨d.val + 2, by omega⟩),
-     .op (.Dup ⟨4, by decide⟩),
+     .op (.Dup dA4),
      .op .MULMOD]
   else
-    [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macProductProgram.take 6
+    [.op (.Dup { idx := d }), .op (.Dup dA3)] ++ CiosCached.macProductProgram.take 6
 
 def rideProgram (d : Fin 16) (t : UInt256) : List Instr :=
   rideHead d ++ CiosCached.macFusedPostProgram t t
 
 def rideZeroProgram (d : Fin 16) (t : UInt256) : List Instr :=
-  [.op (.Dup { idx := d }), .op (.Dup ⟨3, by decide⟩)] ++ CiosCached.macFusedZeroProgram t t
+  [.op (.Dup { idx := d }), .op (.Dup dA3)] ++ CiosCached.macFusedZeroProgram t t
 
 def rideTopHead (d : Fin 16) : List Instr :=
   if h : d.val ≤ 13 then
     [.op .POP,
-     .op (.Dup ⟨0, by decide⟩),
+     .op (.Dup dA0),
      .op (.Dup ⟨d.val + 1, by omega⟩),
      .op .MUL,
-     .op (.Dup ⟨2, by decide⟩),
+     .op (.Dup dA2),
      .op (.Dup ⟨d.val + 2, by omega⟩),
-     .op (.Dup ⟨3, by decide⟩),
+     .op (.Dup dA3),
      .op .MULMOD]
   else
-    [.op .POP, .op (.Dup { idx := d }), .op (.Dup ⟨2, by decide⟩)] ++ CiosCached.topProductProgram
+    [.op .POP, .op (.Dup { idx := d }), .op (.Dup dA2)] ++ CiosCached.topProductProgram
 
 def rideTopStore (ts : UInt256) : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .push 2 ts, .op .MSTORE]
+  [.op (.Dup dA1), .push 2 ts, .op .MSTORE]
 
 def rideTopCarry : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT,
-   .op (.Swap ⟨0, by decide⟩), .op .SUB, .op .SUB]
+  [.op (.Dup dA0), .op (.Dup dA2), .op .GT,
+   .op (.Swap sA0), .op .SUB, .op .SUB]
 
 def rideTopFill : List Instr := []
 
@@ -82,6 +85,6 @@ def exitProgram : List Instr :=
   []
 
 def entryProgram : List Instr :=
-  [.push 0 0, .op (.Dup ⟨4, by decide⟩), .op .JUMP]
+  [.push 0 0, .op (.Dup dA4), .op .JUMP]
 
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac

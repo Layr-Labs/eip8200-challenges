@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Challenge.Modexp.Submission.Proofs.R5.ExecPrologue
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -66,11 +69,11 @@ open CycleSubmission.Prepared.Arithmetic
 
 def preparedProloguepart0Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA12),
    .push 6 16,
    .op .SHL,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 192,
    .op .MSTORE]
 
@@ -95,7 +98,7 @@ private theorem directMax_eq : UInt256.ofNat 11579208923731619542357098500868790
 
 def preparedProloguepart1Program : List Instr :=
   [.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 16,
    .op .SHR,
    .push 1 224,
@@ -128,7 +131,7 @@ def preparedProloguepart2Program : List Instr :=
    .op .SHR,
    .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩)]
+   .op (.Dup dA0)]
 
 def preparedProloguepart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftRight x1 x0
@@ -154,11 +157,11 @@ theorem preparedProloguepart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10
 def preparedProloguepart3Program : List Instr :=
   [.push 1 36,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .AND,
    .push 1 66,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND]
 
 def preparedProloguepart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 : UInt256) (rest : List UInt256) : State :=
@@ -187,9 +190,9 @@ def preparedProloguepart4Program : List Instr :=
    .op .MLOAD,
    .push 1 6,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .AND,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .AND]
 
 def preparedProloguepart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 : UInt256) (rest : List UInt256) : State :=
@@ -218,7 +221,7 @@ def preparedProloguepart5Program : List Instr :=
    .op .MSTORE,
    .push 2 352,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
    .push 0 0,
    .op .MSTORE]
@@ -249,7 +252,7 @@ theorem preparedProloguepart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10
 def preparedProloguepart6Program : List Instr :=
   [.push 2 322,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
    .push 1 32,
    .op .MSTORE,
@@ -280,12 +283,12 @@ theorem preparedProloguepart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10
 
 
 def preparedProloguepart7Program : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup dA3),
    .op .AND,
    .push 1 64,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Swap sA1),
    .push 3 262,
    .op .MLOAD]
 
@@ -349,7 +352,7 @@ def preparedProloguepart9Program : List Instr :=
    .op .MLOAD,
    .push 1 16,
    .op .SHR,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 200,
    .op .SHR,
    .push 5 1099511627775]
@@ -391,15 +394,15 @@ theorem preparedProloguepart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x1
 
 def preparedPrologueProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA12),
    .push 6 16,
    .op .SHL,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 192,
    .op .MSTORE,
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 16,
    .op .SHR,
    .push 1 224,
@@ -412,45 +415,45 @@ def preparedPrologueProgram : List Instr :=
    .op .SHR,
    .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 36,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .AND,
    .push 1 66,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
    .push 1 96,
    .op .MLOAD,
    .push 1 6,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .AND,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .AND,
    .push 1 160,
    .op .MSTORE,
    .push 2 352,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
    .push 0 0,
    .op .MSTORE,
    .push 2 322,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
    .push 1 32,
    .op .MSTORE,
    .push 2 292,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .AND,
    .push 1 64,
    .op .MSTORE,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Swap sA1),
    .push 3 262,
    .op .MLOAD,
    .op .AND,
@@ -466,7 +469,7 @@ def preparedPrologueProgram : List Instr :=
    .op .MLOAD,
    .push 1 16,
    .op .SHR,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 200,
    .op .SHR,
    .push 5 1099511627775,

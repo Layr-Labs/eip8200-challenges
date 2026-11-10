@@ -360,4 +360,51 @@ structure Memory15 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) :
   at800 : MachineState.readWord mem 800 = (squareD1 inv a b n)
   at832 : MachineState.readWord mem 832 = (squareD2 inv a b n)
 
+
+def cells0 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  []
+
+def cells1 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(192, (squareQ2 inv a b n)), (0, (squareQ3 inv a b n))]
+
+def cells2 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(224, (squareQ4 inv a b n))]
+
+def cells3 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(1216, (squareQ5 inv a b n))]
+
+def cells4 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(1248, (squareQ6 inv a b n))]
+
+def cells5 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(1088, (squareQ1 inv a b n))]
+
+def cells6 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(1280, (squareQ7 inv a b n))]
+
+def cells7 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  []
+
+def cells8 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  []
+
+def cells9 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(768, (squareD0 inv a b n))]
+
+def cells10 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(800, (squareD1 inv a b n))]
+
+def cells11 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(832, (squareD2 inv a b n))]
+
+def cells12 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(32, (squareD3 inv a b n))]
+
+def cells13 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(64, (squareD4 inv a b n)), (96, (squareD5 inv a b n))]
+
+def cells14 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
+  [(128, (squareD6 inv a b n)), (160, (squareD7 inv a b n))]
+
+
 end CycleSubmission.SquareMeaning

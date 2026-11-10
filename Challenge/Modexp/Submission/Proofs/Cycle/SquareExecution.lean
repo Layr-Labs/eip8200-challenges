@@ -1,20 +1,7 @@
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square01
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square2
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square3
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square4
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square5
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square6
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square7
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square8
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square9
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square10
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square11
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square12
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square13
-import Challenge.Modexp.Submission.Proofs.Cycle.Meaning.Square14
+import Challenge.Modexp.Submission.Proofs.Cycle.NormalizeMeaning
+import Challenge.Modexp.Submission.Proofs.Prepared.R9Shared.Complete
 
 import Challenge.Modexp.Submission.Proofs.Cycle.Artifact
-import Challenge.Modexp.Submission.Proofs.Cycle.TripleColumns
 set_option warningAsError true
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
@@ -22,7 +9,7 @@ set_option maxRecDepth 50000
 set_option maxHeartbeats 16000000
 namespace CycleSubmission.SquareExecution
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-open CycleSubmission.Execution CycleSubmission.SquareMeaning
+open CycleSubmission.SquareMeaning
 open CycleSubmission.WordHistory CycleSubmission.WordArithmetic
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOneSlice
@@ -33,41 +20,40 @@ theorem reset_self (s : State) (pc : UInt256) (stack : List UInt256)
     {s with pc := pc, stack := stack} = s := by
   rw [← hp, ← hs]
 
-def program : List Instr :=
-  squareColumn0Program ++ (squareColumn1Program ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (TripleColumns.program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program)))))))))))))
+def program : List Instr := R9SharedComplete.program
 
 def memory0 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := mem
 def state0 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := s
 def memory1 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory0 mem inv a b n) (cells0 inv a b n)
-def state1 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 5840, memory := memory1 s.memory inv a b n, stack := frame1 inv a b n rest}
+def state1 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 5834, memory := memory1 s.memory inv a b n, stack := frame1 inv a b n rest}
 def memory2 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory1 mem inv a b n) (cells1 inv a b n)
-def state2 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 5968, memory := memory2 s.memory inv a b n, stack := frame2 inv a b n rest}
+def state2 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 5962, memory := memory2 s.memory inv a b n, stack := frame2 inv a b n rest}
 def memory3 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory2 mem inv a b n) (cells2 inv a b n)
-def state3 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6096, memory := memory3 s.memory inv a b n, stack := frame3 inv a b n rest}
+def state3 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6090, memory := memory3 s.memory inv a b n, stack := frame3 inv a b n rest}
 def memory4 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory3 mem inv a b n) (cells3 inv a b n)
-def state4 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6224, memory := memory4 s.memory inv a b n, stack := frame4 inv a b n rest}
+def state4 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6218, memory := memory4 s.memory inv a b n, stack := frame4 inv a b n rest}
 def memory5 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory4 mem inv a b n) (cells4 inv a b n)
-def state5 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6352, memory := memory5 s.memory inv a b n, stack := frame5 inv a b n rest}
+def state5 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6346, memory := memory5 s.memory inv a b n, stack := frame5 inv a b n rest}
 def memory6 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory5 mem inv a b n) (cells5 inv a b n)
-def state6 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6480, memory := memory6 s.memory inv a b n, stack := frame6 inv a b n rest}
+def state6 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6474, memory := memory6 s.memory inv a b n, stack := frame6 inv a b n rest}
 def memory7 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory6 mem inv a b n) (cells6 inv a b n)
 def state7 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6608, memory := memory7 s.memory inv a b n, stack := frame7 inv a b n rest}
 def memory8 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory7 mem inv a b n) (cells7 inv a b n)
-def state8 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6736, memory := memory8 s.memory inv a b n, stack := frame8 inv a b n rest}
+def state8 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6729, memory := memory8 s.memory inv a b n, stack := frame8 inv a b n rest}
 def memory9 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory8 mem inv a b n) (cells8 inv a b n)
-def state9 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6865, memory := memory9 s.memory inv a b n, stack := frame9 inv a b n rest}
+def state9 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6858, memory := memory9 s.memory inv a b n, stack := frame9 inv a b n rest}
 def memory10 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory9 mem inv a b n) (cells9 inv a b n)
-def state10 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6987, memory := memory10 s.memory inv a b n, stack := frame10 inv a b n rest}
+def state10 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 6980, memory := memory10 s.memory inv a b n, stack := frame10 inv a b n rest}
 def memory11 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory10 mem inv a b n) (cells10 inv a b n)
-def state11 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7110, memory := memory11 s.memory inv a b n, stack := frame11 inv a b n rest}
+def state11 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7097, memory := memory11 s.memory inv a b n, stack := frame11 inv a b n rest}
 def memory12 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory11 mem inv a b n) (cells11 inv a b n)
-def state12 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7235, memory := memory12 s.memory inv a b n, stack := frame12 inv a b n rest}
+def state12 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7218, memory := memory12 s.memory inv a b n, stack := frame12 inv a b n rest}
 def memory13 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory12 mem inv a b n) (cells12 inv a b n)
-def state13 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7363, memory := memory13 s.memory inv a b n, stack := frame13 inv a b n rest}
+def state13 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7337, memory := memory13 s.memory inv a b n, stack := frame13 inv a b n rest}
 def memory14 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory13 mem inv a b n) (cells13 inv a b n)
-def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7498, memory := memory14 s.memory inv a b n, stack := frame14 inv a b n rest}
+def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7457, memory := memory14 s.memory inv a b n, stack := frame14 inv a b n rest}
 def memory15 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory14 mem inv a b n) (cells14 inv a b n)
-def state15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7619, memory := memory15 s.memory inv a b n, stack := frame15 inv a b n rest}
+def state15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7551, memory := memory15 s.memory inv a b n, stack := frame15 inv a b n rest}
 theorem memory0_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
     (start count : Nat) (hs : (256 ≤ start ∧ start+count ≤ 768) ∨ 1312 ≤ start) :
     MachineState.readPadded (memory0 mem inv a b n) start count =
@@ -254,111 +240,16 @@ theorem memory15_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt25
 theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
-    (ha0 : (a 0).toNat < radix) (ha6 : (a 6).toNat < radix) (ha7 : (a 7).toNat < radix) :
+    (ha : ∀ i < 8, (a i).toNat < radix) :
     runInstructions program
       {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} =
       some (state15 s inv a b n rest) := by
-  have h01 : runInstructions DoubleInput01.mergedProgram
-      {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest} =
-      some (state2 s inv a b n rest) :=
-    run01 s inv a b n rest h hcap hact ha0
-  have m2 : Memory2 (state2 s inv a b n rest).memory inv a b n :=
-    memory01_output s inv a b n rest h
-  have m3 := memory2_output (state2 s inv a b n rest) inv a b n rest m2
-  have h2 : runInstructions squareColumn2Program (state2 s inv a b n rest) = some (state3 s inv a b n rest) := by
-    have hx := run2 (state2 s inv a b n rest) inv a b n rest m2 hcap hact
-    rw [reset_self (state2 s inv a b n rest) (UInt256.ofNat 5968) (frame2 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m4 := memory3_output (state3 s inv a b n rest) inv a b n rest m3
-  have h3 : runInstructions squareColumn3Program (state3 s inv a b n rest) = some (state4 s inv a b n rest) := by
-    have hx := run3 (state3 s inv a b n rest) inv a b n rest m3 hcap hact
-    rw [reset_self (state3 s inv a b n rest) (UInt256.ofNat 6096) (frame3 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m5 := memory4_output (state4 s inv a b n rest) inv a b n rest m4
-  have h4 : runInstructions squareColumn4Program (state4 s inv a b n rest) = some (state5 s inv a b n rest) := by
-    have hx := run4 (state4 s inv a b n rest) inv a b n rest m4 hcap hact
-    rw [reset_self (state4 s inv a b n rest) (UInt256.ofNat 6224) (frame4 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m6 := memory5_output (state5 s inv a b n rest) inv a b n rest m5
-  have h5 : runInstructions squareColumn5Program (state5 s inv a b n rest) = some (state6 s inv a b n rest) := by
-    have hx := run5 (state5 s inv a b n rest) inv a b n rest m5 hcap hact
-    rw [reset_self (state5 s inv a b n rest) (UInt256.ofNat 6352) (frame5 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m7 := memory6_output (state6 s inv a b n rest) inv a b n rest m6
-  have h6 : runInstructions squareColumn6Program (state6 s inv a b n rest) = some (state7 s inv a b n rest) := by
-    have hx := run6 (state6 s inv a b n rest) inv a b n rest m6 hcap hact
-    rw [reset_self (state6 s inv a b n rest) (UInt256.ofNat 6480) (frame6 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m8 := memory7_output (state7 s inv a b n rest) inv a b n rest m7
-  have h7 : runInstructions squareColumn7Program (state7 s inv a b n rest) = some (state8 s inv a b n rest) := by
-    have hx := run7 (state7 s inv a b n rest) inv a b n rest m7 hcap hact
-    rw [reset_self (state7 s inv a b n rest) (UInt256.ofNat 6608) (frame7 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m9 := memory8_output (state8 s inv a b n rest) inv a b n rest m8
-  have h8 : runInstructions squareColumn8Program (state8 s inv a b n rest) = some (state9 s inv a b n rest) := by
-    have hx := run8 (state8 s inv a b n rest) inv a b n rest m8 hcap hact
-    rw [reset_self (state8 s inv a b n rest) (UInt256.ofNat 6736) (frame8 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m10 := memory9_output (state9 s inv a b n rest) inv a b n rest m9
-  have h9 : runInstructions squareColumn9Program (state9 s inv a b n rest) = some (state10 s inv a b n rest) := by
-    have hx := run9 (state9 s inv a b n rest) inv a b n rest m9 hcap hact
-    rw [reset_self (state9 s inv a b n rest) (UInt256.ofNat 6865) (frame9 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m11 := memory10_output (state10 s inv a b n rest) inv a b n rest m10
-  have h10 : runInstructions squareColumn10Program (state10 s inv a b n rest) = some (state11 s inv a b n rest) := by
-    have hx := run10 (state10 s inv a b n rest) inv a b n rest m10 hcap hact
-    rw [reset_self (state10 s inv a b n rest) (UInt256.ofNat 6987) (frame10 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m12 := memory11_output (state11 s inv a b n rest) inv a b n rest m11
-  have h11 : runInstructions squareColumn11Program (state11 s inv a b n rest) = some (state12 s inv a b n rest) := by
-    have hx := run11 (state11 s inv a b n rest) inv a b n rest m11 hcap hact
-    rw [reset_self (state11 s inv a b n rest) (UInt256.ofNat 7110) (frame11 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have h1011 : runInstructions TripleColumns.program (state10 s inv a b n rest) = some (state12 s inv a b n rest) := by
-    have he := TripleColumns.run_eq (state10 s inv a b n rest) ((squareQ5 inv a b n)) ((n 5)) ((((squareQ4 inv a b n) * (n 6)) + (((n 7) * (squareQ3 inv a b n)) + (((n 8) * (squareQ2 inv a b n)) + (((a 5) * (a 5)) + ((squareC10 inv a b n) + ((((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2)))) + (((a 4) * (a 6)) + (((a 3) * (a 7)) + ((a 8) * (a 2))))))))))) (((squareC10 inv a b n) + (((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P))) + ((UInt256.mulMod (a 4) (a 6) P) + ((UInt256.mulMod (a 3) (a 7) P) + (UInt256.mulMod (a 8) (a 2) P)))))) ((n 2)) ((n 6)) ((n 4)) ((squareQ6 inv a b n)) ((squareQ5 inv a b n)) ((n 5)) ((n 7)) (P) ((n 8)) ((squareQ7 inv a b n)) ((UInt256.ofNat (2^240-1))) ((squareQ8 inv a b n)) ((n 3)) ((a 8)) rest hcap hact
-    change runInstructions TripleColumns.program (state10 s inv a b n rest) =
-      runInstructions (squareColumn10Program ++ squareColumn11Program) (state10 s inv a b n rest) at he
-    exact he.trans (runInstructions_append_some _ _ _ _ _ h10 h11)
-  have m13 := memory12_output (state12 s inv a b n rest) inv a b n rest m12
-  have h12 : runInstructions squareColumn12Program (state12 s inv a b n rest) = some (state13 s inv a b n rest) := by
-    have hx := run12 (state12 s inv a b n rest) inv a b n rest m12 hcap hact
-    rw [reset_self (state12 s inv a b n rest) (UInt256.ofNat 7235) (frame12 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m14 := memory13_output (state13 s inv a b n rest) inv a b n rest m13
-  have h13 : runInstructions squareColumn13Program (state13 s inv a b n rest) = some (state14 s inv a b n rest) := by
-    have hx := run13 (state13 s inv a b n rest) inv a b n rest m13 hcap hact ha6
-    rw [reset_self (state13 s inv a b n rest) (UInt256.ofNat 7363) (frame13 inv a b n rest) rfl rfl] at hx
-    exact hx
-  have m15 := memory14_output (state14 s inv a b n rest) inv a b n rest m14
-  have h14 : runInstructions squareColumn14Program (state14 s inv a b n rest) = some (state15 s inv a b n rest) := by
-    have hx := run14 (state14 s inv a b n rest) inv a b n rest m14 hcap hact ha7
-    rw [reset_self (state14 s inv a b n rest) (UInt256.ofNat 7498) (frame14 inv a b n rest) rfl rfl] at hx
-    exact hx
-  -- The two aliases retain their existing slots in `program`; after they are
-  -- rewired, this is the exact fused bytecode, not a transient-frame equality.
-  change runInstructions (DoubleInput01.program0 ++ (DoubleInput01.program1 ++ (squareColumn2Program ++ (squareColumn3Program ++ (squareColumn4Program ++ (squareColumn5Program ++ (squareColumn6Program ++ (squareColumn7Program ++ (squareColumn8Program ++ (squareColumn9Program ++ (TripleColumns.program ++ (squareColumn12Program ++ (squareColumn13Program ++ (squareColumn14Program)))))))))))))) _ = _
-  simpa only [DoubleInput01.mergedProgram, List.append_assoc] using
-    runInstructions_append_some _ _ _ _ _ h01 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h1011 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14)))))))))))
+  have hh := R9SharedComplete.run s inv a b n rest hcap hact h ha
+  simpa only [program, R9SharedComplete.historyMemory, state15, memory0, memory1, memory2, memory3, memory4, memory5, memory6, memory7, memory8, memory9, memory10, memory11, memory12, memory13, memory14, memory15, cells0, cells1, cells2, cells3, cells4, cells5, cells6, cells7, cells8, cells9, cells10, cells11, cells12, cells13, cells14, HistoricalSearch.CRTMemoryCells.storeCells, HistoricalSearch.CRTMemoryCells.writeCell] using hh
 
 theorem memory_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) (h : Memory0 s.memory inv a b n) :
     Memory15 (state15 s inv a b n rest).memory inv a b n := by
-  have m0 := h
-  have m1 := memory0_output (state0 s inv a b n rest) inv a b n rest m0
-  have m2 := memory1_output (state1 s inv a b n rest) inv a b n rest m1
-  have m3 := memory2_output (state2 s inv a b n rest) inv a b n rest m2
-  have m4 := memory3_output (state3 s inv a b n rest) inv a b n rest m3
-  have m5 := memory4_output (state4 s inv a b n rest) inv a b n rest m4
-  have m6 := memory5_output (state5 s inv a b n rest) inv a b n rest m5
-  have m7 := memory6_output (state6 s inv a b n rest) inv a b n rest m6
-  have m8 := memory7_output (state7 s inv a b n rest) inv a b n rest m7
-  have m9 := memory8_output (state8 s inv a b n rest) inv a b n rest m8
-  have m10 := memory9_output (state9 s inv a b n rest) inv a b n rest m9
-  have m11 := memory10_output (state10 s inv a b n rest) inv a b n rest m10
-  have m12 := memory11_output (state11 s inv a b n rest) inv a b n rest m11
-  have m13 := memory12_output (state12 s inv a b n rest) inv a b n rest m12
-  have m14 := memory13_output (state13 s inv a b n rest) inv a b n rest m13
-  have m15 := memory14_output (state14 s inv a b n rest) inv a b n rest m14
-  exact m15
+  constructor <;> simp (disch := decide) only [state15, memory0, memory1, memory2, memory3, memory4, memory5, memory6, memory7, memory8, memory9, memory10, memory11, memory12, memory13, memory14, memory15, cells0, cells1, cells2, cells3, cells4, cells5, cells6, cells7, cells8, cells9, cells10, cells11, cells12, cells13, cells14, HistoricalSearch.CRTMemoryCells.storeCells, HistoricalSearch.CRTMemoryCells.writeCell, Challenge.EvmProof.Memory.readWord_writeWord, CycleSubmission.Prepared.Arithmetic.read_disjoint, h.at768, h.at1344, h.at1376, h.at2720, h.at1568, h.at1600, h.at32, h.at64, h.at96, h.at128, h.at160]
 
 theorem normalizer_input (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (h : Memory0 s.memory inv a b n) :
@@ -412,8 +303,8 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 5712 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4291 1598 5712 program
-    (by change 4291 + 1598 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4291 1578 5712 program
+    (by change 4291 + 1578 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -422,12 +313,12 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
-    (ha0 : (a 0).toNat < radix) (ha6 : (a 6).toNat < radix) (ha7 : (a 7).toNat < radix) :
+    (ha : ∀ i < 8, (a i).toNat < radix) :
     GasSteps {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest}
       (state15 s inv a b n rest) :=
   block.steps
     (s := {s with pc := UInt256.ofNat 5712, stack := frame0 inv a b n rest})
-    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact ha0 ha6 ha7)
+    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact ha)
 
 noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
@@ -447,7 +338,7 @@ noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (a i).toNat) +
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (squareq inv a b n i).toNat) *
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (n i).toNat)) := by
-  refine ⟨gasSteps s inv a b n rest env h hcap hact (ha 0 (by decide)) (ha 6 (by decide)) (ha 7 (by decide)), ?_⟩
+  refine ⟨gasSteps s inv a b n rest env h hcap hact (fun i hi => ha i (by omega)), ?_⟩
   rw [output_value s inv a b n rest h]
   exact (squareTrace inv a b n).exact_product ha hb hn N hn0 hinv
 

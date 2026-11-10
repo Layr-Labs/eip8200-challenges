@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareSteps
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -29,25 +32,25 @@ def frameAt (tn m128 : UInt256) (pc : Nat) (s : State) (mem : ByteArray) (n : Na
     (frameStack tn m128 n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
 
 def cProgram : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .ADD,
-   .op (.Swap ⟨15, by decide⟩), .push 2 2368, .op (.Swap ⟨0, by decide⟩),
+  [.op (.Dup dA15), .op (.Dup dA7), .op .ADD,
+   .op (.Swap sA15), .push 2 2368, .op (.Swap sA0),
    .push 2 4214, .op .JUMPI]
 
 def n8aProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Swap ⟨11, by decide⟩), .push 2 3973, .op .JUMPI]
+  [.op .JUMPDEST, .op (.Swap sA11), .push 2 3973, .op .JUMPI]
 
 def n8bProgram : List Instr :=
   [.push 1 255, .op .NOT, .push 2 256, .push 2 2112, .push 2 2368, .op .MCOPY,
-   .op (.Dup ⟨14, by decide⟩), .op (.Dup ⟨6, by decide⟩), .op .ADD, .op (.Swap ⟨14, by decide⟩),
+   .op (.Dup dA14), .op (.Dup dA6), .op .ADD, .op (.Swap sA14),
    .push 2 4816, .op .JUMPI]
 
 def n8cProgram : List Instr := [.push 2 3256, .op .JUMP]
 
 def rareProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2080, .op .MSTORE,
+  [.op .JUMPDEST, .op (.Dup dA0), .push 2 2080, .op .MSTORE,
    .push 1 255, .op .NOT, .push 2 4816,
-   .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨7, by decide⟩), .op .ADD,
-   .op (.Swap ⟨15, by decide⟩), .push 2 2368, .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA15), .op (.Dup dA7), .op .ADD,
+   .op (.Swap sA15), .push 2 2368, .op (.Swap sA0),
    .push 2 4037, .op .JUMPI]
 
 def m4jProgram : List Instr :=

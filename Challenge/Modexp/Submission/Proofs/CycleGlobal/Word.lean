@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Algorithm
@@ -5,6 +6,8 @@ import Challenge.Modexp.Submission.Proofs.Bytecode.Accessors
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Dispatch
 import Challenge.EvmProof.Bytes
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.WordEnds
+open CycleSubmission.SharedStackArgs
+
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -53,21 +56,21 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def startPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 74 .JUMPDEST,
-   opAt 75 (.Dup ⟨5, by decide⟩),
+   opAt 75 (.Dup dA5),
    opAt 76 .CALLDATALOAD,
-   opAt 77 (.Dup ⟨3, by decide⟩),
+   opAt 77 (.Dup dA3),
    pushAt 78 1 32,
    opAt 79 .SUB,
    pushAt 80 1 3,
    opAt 81 .SHL,
    opAt 82 .SHR,
-   opAt 83 (.Dup ⟨0, by decide⟩),
+   opAt 83 (.Dup dA0),
    pushAt 84 1 154,
    opAt 85 .JUMPI]
 
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 86 (.Dup ⟨3, by decide⟩),
+  [opAt 86 (.Dup dA3),
    pushAt 87 0 0,
    opAt 88 .RETURN]
 
@@ -87,8 +90,8 @@ def baseSetupPath :
 def baseGuardPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 92 .JUMPDEST,
-   opAt 93 (.Dup ⟨3, by decide⟩),
-   opAt 94 (.Dup ⟨1, by decide⟩),
+   opAt 93 (.Dup dA3),
+   opAt 94 (.Dup dA1),
    opAt 95 .EQ,
    pushAt 96 2 187,
    opAt 97 .JUMPI]
@@ -97,9 +100,9 @@ def baseGuardPath :
 CALLDATALOAD PUSH0 BYTE` at program counters 165..171 (indices 99..105). -/
 def baseCallPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 98 (.Dup ⟨2, by decide⟩),
-   opAt 99 (.Dup ⟨1, by decide⟩),
-   opAt 100 (.Dup ⟨8, by decide⟩),
+  [opAt 98 (.Dup dA2),
+   opAt 99 (.Dup dA1),
+   opAt 100 (.Dup dA8),
    opAt 101 .ADD,
    opAt 102 .CALLDATALOAD,
    pushAt 103 0 0,
@@ -107,13 +110,13 @@ def baseCallPath :
 
 def baseTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 105 (.Dup ⟨4, by decide⟩),
+  [opAt 105 (.Dup dA4),
    pushAt 106 2 256,
    pushAt 107 2 1,
-   opAt 108 (.Swap ⟨5, by decide⟩),
+   opAt 108 (.Swap sA5),
    opAt 109 .MULMOD,
    opAt 110 .ADDMOD,
-   opAt 111 (.Swap ⟨1, by decide⟩),
+   opAt 111 (.Swap sA1),
    opAt 112 .ADD,
    pushAt 113 1 157,
    opAt 114 .JUMP]
@@ -122,7 +125,7 @@ def baseFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 115 .JUMPDEST,
    opAt 116 .POP,
-   opAt 117 (.Dup ⟨1, by decide⟩),
+   opAt 117 (.Dup dA1),
    pushAt 118 0 0,
    opAt 119 .ISZERO,
    opAt 120 .LT,
@@ -131,18 +134,18 @@ def baseFinishTailPath :
 def expGuardPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 122 .JUMPDEST,
-   opAt 123 (.Dup ⟨5, by decide⟩),
-   opAt 124 (.Dup ⟨1, by decide⟩),
+   opAt 123 (.Dup dA5),
+   opAt 124 (.Dup dA1),
    opAt 125 .EQ,
    pushAt 126 2 4018,
    opAt 127 .JUMPI]
 
 def expLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 128 (.Dup ⟨0, by decide⟩),
-   opAt 129 (.Dup ⟨9, by decide⟩),
+  [opAt 128 (.Dup dA0),
+   opAt 129 (.Dup dA9),
    opAt 130 .ADD,
-   opAt 131 (.Dup ⟨0, by decide⟩),
+   opAt 131 (.Dup dA0),
    opAt 132 .CALLDATALOAD,
    pushAt 133 0 0,
    opAt 134 .BYTE,
@@ -157,7 +160,7 @@ def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 3065 .JUMPDEST,
    pushAt 3066 1 1,
-   opAt 3067 (.Dup ⟨6, by decide⟩),
+   opAt 3067 (.Dup dA6),
    opAt 3068 .SUB]
 
 /-- Its tail drops `base - 1` and rejoins the byte loop. -/

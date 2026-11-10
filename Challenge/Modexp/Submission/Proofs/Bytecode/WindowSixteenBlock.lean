@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMath
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 
@@ -18,20 +21,20 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 namespace Stage
 
 def stage16Program : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨15, by decide⟩)]
+  [.op (.Dup dA1),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Dup dA0),
+   .op (.Dup dA0), .op (.Swap sA15)]
 
 private theorem run_liftModulus (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions [.op (.Dup ⟨1, by decide⟩)]
+    runInstructions [.op (.Dup dA1)]
       (WindowTwentyOneStage.framed template pc
         ([accumulator, modulus, exponent, mask, counter] ++ rest)) =
     some (WindowTwentyOneStage.framed template pc.succ
@@ -43,7 +46,7 @@ private theorem run_liftModulus (template : State)
 private theorem run_swap16 (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions [.op (.Swap ⟨15, by decide⟩)]
+    runInstructions [.op (.Swap sA15)]
       (WindowTwentyOneStage.framed template pc
         (List.replicate 16 modulus ++
           ([accumulator, modulus, exponent, mask, counter] ++ rest))) =

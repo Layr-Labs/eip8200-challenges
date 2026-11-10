@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
@@ -49,12 +52,12 @@ theorem oldpart0_run (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256
 def oldpart1Program : List Instr :=
   [.push 1 128,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨10, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Swap sA10),
    .push 0 0,
    .op .NOT,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨10, by decide⟩)]
+   .op (.Swap sA3),
+   .op (.Swap sA10)]
 
 def oldpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -91,11 +94,11 @@ theorem oldpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : UI
 def oldpart2Program : List Instr :=
   [.push 2 2720,
    .op .MLOAD,
-   .op (.Swap ⟨10, by decide⟩),
+   .op (.Swap sA10),
    .push 2 2688,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨2, by decide⟩)]
+   .op (.Dup dA0),
+   .op (.Swap sA2)]
 
 def oldpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 2720
@@ -143,19 +146,19 @@ def oldProgram : List Instr :=
    .push 22 3347,
    .push 1 128,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨10, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Swap sA10),
    .push 0 0,
    .op .NOT,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨10, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Swap sA10),
    .push 2 2720,
    .op .MLOAD,
-   .op (.Swap ⟨10, by decide⟩),
+   .op (.Swap sA10),
    .push 2 2688,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨2, by decide⟩)]
+   .op (.Dup dA0),
+   .op (.Swap sA2)]
 
 def oldModel (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -225,8 +228,8 @@ def newpart1Program : List Instr :=
   [.push 0 0,
    .push 2 3347,
    .push 0 0,
-   .op (.Swap ⟨10, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA10),
+   .op (.Dup dA15),
    .push 3 2720,
    .op .MLOAD]
 
@@ -274,10 +277,10 @@ theorem newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (
 
 
 def newpart2Program : List Instr :=
-  [.op (.Swap ⟨10, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+  [.op (.Swap sA10),
+   .op (.Dup dA1),
    .push 0 0,
-   .op (.Swap ⟨13, by decide⟩)]
+   .op (.Swap sA13)]
 
 def newpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   {s with pc := UInt256.ofNat 3259, memory := s.memory, stack := x12 :: x1 :: x11 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x0 :: (UInt256.ofNat 0) :: x13 :: x14 :: x15 :: rest}
@@ -321,14 +324,14 @@ def newProgram : List Instr :=
    .push 0 0,
    .push 2 3347,
    .push 0 0,
-   .op (.Swap ⟨10, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Swap sA10),
+   .op (.Dup dA15),
    .push 3 2720,
    .op .MLOAD,
-   .op (.Swap ⟨10, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Swap sA10),
+   .op (.Dup dA1),
    .push 0 0,
-   .op (.Swap ⟨13, by decide⟩)]
+   .op (.Swap sA13)]
 
 def newModel (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128

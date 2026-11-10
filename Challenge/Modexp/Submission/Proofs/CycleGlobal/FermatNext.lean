@@ -1,6 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FermatProgram
 import Challenge.Modexp.Submission.Proofs.Bytecode.FixedExponentProgram
+
+open CycleSubmission.SharedStackArgs
 
 noncomputable section
 set_option warningAsError true
@@ -28,7 +31,7 @@ def fastProgram : List Instr :=
 a 32-byte base and at least 256 for any other valid base size, so a nonzero word means a
 32-byte base and `modulus - exponent ∉ {0, 1}`, and goes straight to the window core at 745. -/
 def mergeProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .SUB,
+  [.op (.Dup dA1), .op (.Dup dA1), .op .SUB,
    .push 2 8191, .push 1 1, .op .CALLDATALOAD, .op .SUB, .op .SHR, .push 2 745, .op .JUMPI]
 
 /-- 40: a base size other than 32 goes to the general-width entry at 101. -/
@@ -38,25 +41,25 @@ def recheckProgram : List Instr :=
 /-- Join point at 48 (also the general-width entry's join): jump to the window core at 745
 unless `exponent = modulus - 1`, in which case fall through to the jump to the prime test. -/
 def joinProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨1, by decide⟩), .op .NOT, .op (.Dup ⟨1, by decide⟩), .op .ADD,
+  [.op .JUMPDEST, .op (.Dup dA1), .op .NOT, .op (.Dup dA1), .op .ADD,
    .push 2 745, .op .JUMPI]
 
-/-- 57: the special-prime test lives at the end of the image (10643). -/
-def toPrimeProgram : List Instr := [.push 2 10643, .op .JUMP]
+/-- 57: the special-prime test lives at the end of the image (10575). -/
+def toPrimeProgram : List Instr := [.push 2 10575, .op .JUMP]
 
 /-- General-width entry at 103 (exponent and modulus sizes 32, base size not 32):
 a base size above 32 leaves for the wide fallback at 238. -/
 def genCheckProgram : List Instr :=
   [.op .JUMPDEST, .push 1 32, .push 0 0, .op .CALLDATALOAD,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .GT, .push 1 219, .op .JUMPI]
+   .op (.Dup dA1), .op (.Dup dA1), .op .GT, .push 1 219, .op .JUMPI]
 
 /-- 112: with `k = 32 - baseSize`, push `k`, the base word shifted right by `8 k`, the exponent
 word at `128 - k` and the modulus word at `160 - k`, then join at 48. -/
 def genLoadProgram : List Instr :=
-  [.op (.Swap ⟨0, by decide⟩), .op .SUB,
-   .push 1 96, .op .CALLDATALOAD, .op (.Dup ⟨1, by decide⟩), .push 1 3, .op .SHL, .op .SHR,
-   .op (.Dup ⟨1, by decide⟩), .push 1 128, .op .SUB, .op .CALLDATALOAD,
-   .op (.Dup ⟨2, by decide⟩), .push 1 160, .op .SUB, .op .CALLDATALOAD,
+  [.op (.Swap sA0), .op .SUB,
+   .push 1 96, .op .CALLDATALOAD, .op (.Dup dA1), .push 1 3, .op .SHL, .op .SHR,
+   .op (.Dup dA1), .push 1 128, .op .SUB, .op .CALLDATALOAD,
+   .op (.Dup dA2), .push 1 160, .op .SUB, .op .CALLDATALOAD,
    .push 1 48, .op .JUMP]
 
 /-- `modulus + ~exponent`, zero exactly when `exponent = modulus - 1` (mod 2^256). -/
@@ -135,11 +138,11 @@ def tailProgram : List Instr :=
   [.op .JUMPDEST]
 
 def primeValueProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 32 FermatProgram.bn, .op .EQ,
-   .op (.Dup ⟨1, by decide⟩), .push 32 FermatProgram.secp,
+  [.op (.Dup dA0), .push 32 FermatProgram.bn, .op .EQ,
+   .op (.Dup dA1), .push 32 FermatProgram.secp,
    .op .EQ, .op .OR]
 
-/-- The special-prime test at 10643: BN254 or secp256k1 modulus goes to the Fermat result. -/
+/-- The special-prime test at 10575: BN254 or secp256k1 modulus goes to the Fermat result. -/
 def primeProgram : List Instr :=
   [.op .JUMPDEST] ++ primeValueProgram ++ [.push 2 4864, .op .JUMPI]
 
@@ -249,9 +252,9 @@ theorem run_join (template : State) (modulus exponent : UInt256) (rest : List UI
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_toPrime (template : State) (rest : List UInt256) (hrest : rest.length < 1023)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 10643 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 10575 = true) :
     runInstructions toPrimeProgram (framed template (UInt256.ofNat 57) rest) =
-    some (framed template (UInt256.ofNat 10643) rest) := by
+    some (framed template (UInt256.ofNat 10575) rest) := by
   have hc : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega
   simp [toPrimeProgram,runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,hc,hc1,
@@ -316,10 +319,10 @@ theorem run_gen_load (template : State) (b : UInt256) (rest : List UInt256)
 theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 4864 = true) :
-    runInstructions primeProgram (framed template (UInt256.ofNat 10643) (modulus :: rest)) =
+    runInstructions primeProgram (framed template (UInt256.ofNat 10575) (modulus :: rest)) =
     some (framed template
       (if (FermatProgram.primeValue modulus).toNat = 0
-        then UInt256.ofNat 10719 else UInt256.ofNat 4864)
+        then UInt256.ofNat 10651 else UInt256.ofNat 4864)
       (modulus :: rest)) := by
   have hc0 : rest.length + 1 < 1024 := by omega
   have hc1 : rest.length + 1 < 1024 := by omega
@@ -327,24 +330,24 @@ theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
   have hc3 : rest.length + 3 < 1024 := by omega
   have hc4 : rest.length + 4 < 1024 := by omega
   have hd : runInstructions [.op .JUMPDEST]
-      (framed template (UInt256.ofNat 10643) (modulus :: rest)) =
-      some (framed template (UInt256.ofNat 10644) (modulus :: rest)) := by
+      (framed template (UInt256.ofNat 10575) (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 10576) (modulus :: rest)) := by
     simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr, hc0,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   have hv : runInstructions primeValueProgram
-      (framed template (UInt256.ofNat 10644) (modulus :: rest)) =
-      some (framed template (UInt256.ofNat 10715)
+      (framed template (UInt256.ofNat 10576) (modulus :: rest)) =
+      some (framed template (UInt256.ofNat 10647)
         (FermatProgram.primeValue modulus :: modulus :: rest)) := by
     simp (config := { maxSteps := 500000 })
       [primeValueProgram, FermatProgram.primeValue, runInstructions, framed,
         Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hc3, hc4,
         Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
   have ht : runInstructions [.push 2 4864, .op .JUMPI]
-      (framed template (UInt256.ofNat 10715)
+      (framed template (UInt256.ofNat 10647)
         (FermatProgram.primeValue modulus :: modulus :: rest)) =
       some (framed template
         (if (FermatProgram.primeValue modulus).toNat = 0
-          then UInt256.ofNat 10719 else UInt256.ofNat 4864)
+          then UInt256.ofNat 10651 else UInt256.ofNat 4864)
         (modulus :: rest)) := by
     by_cases hp : (FermatProgram.primeValue modulus).toNat = 0 <;>
       simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
@@ -356,7 +359,7 @@ theorem run_prime (template : State) (modulus : UInt256) (rest : List UInt256)
 
 theorem run_jumpTail (template : State) (rest : List UInt256) (hrest : rest.length < 1023)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 745 = true) :
-    runInstructions jumpTailProgram (framed template (UInt256.ofNat 10719) rest) =
+    runInstructions jumpTailProgram (framed template (UInt256.ofNat 10651) rest) =
     some (framed template (UInt256.ofNat 745) rest) := by
   have hc : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega
@@ -383,8 +386,8 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   recheck : WindowTwentyOneBinding.Block artifact fork 40 recheckProgram
   join : WindowTwentyOneBinding.Block artifact fork 48 joinProgram
   toPrime : WindowTwentyOneBinding.Block artifact fork 57 toPrimeProgram
-  prime : WindowTwentyOneBinding.Block artifact fork 10643 primeProgram
-  jumpTail : WindowTwentyOneBinding.Block artifact fork 10719 jumpTailProgram
+  prime : WindowTwentyOneBinding.Block artifact fork 10575 primeProgram
+  jumpTail : WindowTwentyOneBinding.Block artifact fork 10651 jumpTailProgram
   tail : WindowTwentyOneBinding.Block artifact fork 4864 tailProgram
   result : WindowTwentyOneBinding.Block artifact fork 4865 FermatProgram.returnProgram
   genCheck : WindowTwentyOneBinding.Block artifact fork 101 genCheckProgram
@@ -393,7 +396,7 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   joinJump : Decode.isValidJumpDest artifact.code 48 = true
   bigJump : Decode.isValidJumpDest artifact.code 219 = true
   tailJump : Decode.isValidJumpDest artifact.code 4864 = true
-  primeJump : Decode.isValidJumpDest artifact.code 10643 = true
+  primeJump : Decode.isValidJumpDest artifact.code 10575 = true
   genJump : Decode.isValidJumpDest artifact.code 101 = true
 
 end CycleSubmission.Global.FermatNext

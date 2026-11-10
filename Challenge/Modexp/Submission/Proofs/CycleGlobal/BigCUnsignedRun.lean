@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.BigCUnsigned
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -33,19 +36,19 @@ def cellProgram : List Instr :=
    .push 0 0,
    .op .NOT,
    .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA5),
    .op .ADD,
    .op .MLOAD,
    .push 0 0,
    .op .BYTE,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .MLOAD,
    .push 0 0,
    .op .BYTE,
    .op .ADD,
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA3),
+   .op (.Dup dA2),
    .op .ADD,
    .op .MLOAD,
    .op .NOT,
@@ -53,19 +56,19 @@ def cellProgram : List Instr :=
    .op .BYTE,
    .op .JUMPDEST,
    .op .ADD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .MSTORE8,
    .push 1 8,
    .op .SHR,
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA1),
    .op .POP]
 
 /-- Exact U bytes [527,532). -/
 def guardProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA0),
    .push 2 474,
    .op .JUMPI]
 
@@ -77,7 +80,7 @@ def decideProgram : List Instr :=
 
 /-- Exact U bytes [537,546). -/
 def retryProgram : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩),
+  [.op (.Swap sA1),
    .op .POP,
    .push 2 8192,
    .push 2 468,
@@ -87,7 +90,7 @@ def retryProgram : List Instr :=
 def finishProgram : List Instr :=
   [.op .JUMPDEST,
    .op .POP,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .op .POP,
    .op .JUMP]
 

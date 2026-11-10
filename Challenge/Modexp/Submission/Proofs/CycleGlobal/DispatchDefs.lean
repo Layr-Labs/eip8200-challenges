@@ -1,6 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Main
+open CycleSubmission.SharedStackArgs
+
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 10000
@@ -44,7 +47,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 373 (.Dup ⟨0, by decide⟩),
+  [opAt 373 (.Dup dA0),
    pushAt 374 2 550,
    opAt 375 .JUMPI,
    pushAt 376 0 0,
@@ -53,28 +56,28 @@ def zeroSizePath :
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 373 (.Dup ⟨0, by decide⟩),
+  [opAt 373 (.Dup dA0),
    pushAt 374 2 550,
    opAt 375 .JUMPI,
    opAt 379 .JUMPDEST,
-   opAt 380 (.Dup ⟨2, by decide⟩),
+   opAt 380 (.Dup dA2),
    pushAt 381 1 96,
    opAt 382 .ADD,
-   opAt 383 (.Dup ⟨2, by decide⟩),
-   opAt 384 (.Dup ⟨1, by decide⟩),
+   opAt 383 (.Dup dA2),
+   opAt 384 (.Dup dA1),
    opAt 385 .ADD,
    pushAt 386 1 32,
-   opAt 387 (.Dup ⟨3, by decide⟩),
+   opAt 387 (.Dup dA3),
    opAt 388 .GT,
    pushAt 389 1 219,
    opAt 390 .JUMPI,
    pushAt 391 2 1186,
-   opAt 392 (.Dup ⟨1, by decide⟩),
-   opAt 393 (.Dup ⟨3, by decide⟩),
+   opAt 392 (.Dup dA1),
+   opAt 393 (.Dup dA3),
    pushAt 394 1 96,
-   opAt 395 (.Dup ⟨6, by decide⟩),
-   opAt 396 (.Dup ⟨8, by decide⟩),
-   opAt 397 (.Dup ⟨10, by decide⟩),
+   opAt 395 (.Dup dA6),
+   opAt 396 (.Dup dA8),
+   opAt 397 (.Dup dA10),
    pushAt 398 1 136,
    opAt 399 .JUMP]
 

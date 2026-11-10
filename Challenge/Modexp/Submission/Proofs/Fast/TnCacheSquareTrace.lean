@@ -1,9 +1,12 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.DiagonalSchedule
 import Challenge.Modexp.Submission.Proofs.Fast.SgtStep
 import Challenge.Modexp.Submission.Proofs.Fast.SquareModel
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
 import Mathlib.Algebra.Group.Fin.Basic
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -41,20 +44,20 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached SquareModel
 /-! ## Programs -/
 
 def programA : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2336, .op .SUB, .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨14, by decide⟩), .push 0 0]
+  [.op .JUMPDEST, .op (.Dup dA0), .push 2 2336, .op .SUB, .op .MLOAD,
+   .op (.Dup dA0), .op (.Swap sA14), .push 0 0]
 
 def programB1 : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op (.Dup ⟨8, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .ADD, .op (.Swap ⟨3, by decide⟩), .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA1), .op .ADD, .op (.Dup dA0), .op (.Dup dA2), .op .GT, .op (.Dup dA8), .op (.Dup dA2), .op (.Dup dA4), .op .ADD, .op (.Swap sA3), .op (.Dup dA0), .op (.Dup dA4), .op .MUL, .op (.Swap sA3), .op .MULMOD]
 
 
 
 
 def programB4 : List Instr :=
-  [.push 1 37, .op (.Dup ⟨6, by decide⟩), .op .ADD, .op (.Swap ⟨5, by decide⟩), .op .JUMP]
+  [.push 1 37, .op (.Dup dA6), .op .ADD, .op (.Swap sA5), .op .JUMP]
 
 def programB23 : List Instr :=
-  [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB, .op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE, .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+  [.op .SUB, .op (.Dup dA1), .op (.Dup dA1), .op .LT, .op .SUB, .op (.Dup dA3), .push 2 2080, .op .SUB, .op (.Dup dA0), .op .MLOAD, .op (.Dup dA3), .op .ADD, .op (.Dup dA0), .op (.Swap sA1), .op .MSTORE, .op (.Dup dA2), .op .GT, .op .SUB, .op .SUB]
 
 def programB : List Instr :=
   (programB1 ++ programB23) ++ programB4
@@ -110,12 +113,12 @@ theorem run_B4 (s : State) (C b2 P hd w3 ent : UInt256)
   rfl
 
 def programB23a : List Instr :=
-  [.op .SUB, .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .LT, .op .SUB, .op (.Dup ⟨3, by decide⟩), .push 2 2080, .op .SUB]
+  [.op .SUB, .op (.Dup dA1), .op (.Dup dA1), .op .LT, .op .SUB, .op (.Dup dA3), .push 2 2080, .op .SUB]
 
 def programB23b : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op .MLOAD, .op (.Dup ⟨3, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨1, by decide⟩), .op .MSTORE,
-   .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+  [.op (.Dup dA0), .op .MLOAD, .op (.Dup dA3), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA1), .op .MSTORE,
+   .op (.Dup dA2), .op .GT, .op .SUB, .op .SUB]
 
 theorem programB23_split : programB23 = programB23a ++ programB23b := rfl
 

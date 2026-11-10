@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.TnCacheMemory
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacWords
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -14,16 +17,16 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 def frame (pbi hd pb ent tn target inv : UInt256) (rest : List UInt256) : List UInt256 :=
   [pbi,hd,pb,ent,tn,allOnes,target,inv] ++ rest
 
-def reset : List Instr := [.push 0 0, .op (.Swap ⟨4, by decide⟩), .op .POP]
+def reset : List Instr := [.push 0 0, .op (.Swap sA4), .op .POP]
 
-def flush : List Instr := [.op (.Dup ⟨4, by decide⟩), .push 2 2080, .op .MSTORE]
+def flush : List Instr := [.op (.Dup dA4), .push 2 2080, .op .MSTORE]
 
 def advanceShort : List Instr :=
-  [.push 1 31, .op .NOT, .op .ADD, .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩), .op .GT, .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
+  [.push 1 31, .op .NOT, .op .ADD, .op (.Dup dA2),
+   .op (.Dup dA1), .op .GT, .op (.Dup dA2), .op .JUMPI]
 
 def advance : List Instr :=
-  [.push 1 32, .op .ADD, .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .JUMPI]
+  [.push 1 32, .op .ADD, .op (.Dup dA0), .op (.Dup dA2), .op .JUMPI]
 
 theorem run_reset (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
@@ -86,9 +89,9 @@ theorem run_advanceShort (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : 
       Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
 
-def reset13 : List Instr := [.push 0 0, .op (.Swap ⟨12, by decide⟩), .op .POP]
+def reset13 : List Instr := [.push 0 0, .op (.Swap sA12), .op .POP]
 
-def flush13 : List Instr := [.op (.Dup ⟨12, by decide⟩), .push 2 2080, .op .MSTORE]
+def flush13 : List Instr := [.op (.Dup dA12), .push 2 2080, .op .MSTORE]
 
 theorem run_reset13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1001) :

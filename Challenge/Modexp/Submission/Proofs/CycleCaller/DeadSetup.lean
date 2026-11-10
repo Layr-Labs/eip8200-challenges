@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Prepared.SetupPrefix
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SetupEntry
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -102,20 +105,20 @@ theorem old_run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n :
   exact runInstructions_append_some _ _ _ _ _ hmasked hbody
 
 def newTailProgram : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA1),
+   .op (.Dup dA0),
    .op .ADD,
    .push 2 1856,
    .op .ADD,
    .op .MCOPY,
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA1),
    .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
    .op .ADD,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Swap sA1),
+   .op (.Swap sA0),
+   .op (.Dup dA2),
    .op .ADD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .JUMP]
 
 def fullEntryProgram : List Instr :=

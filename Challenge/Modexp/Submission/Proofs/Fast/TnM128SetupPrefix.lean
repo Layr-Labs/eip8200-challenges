@@ -1,8 +1,12 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
+
+
 /- Kernel `setup` (pc 4123, 0x0f6c) of sqCP1m: the 3-slot variant of the entry permutation
 inherited from ercumentyildirim submission 9294f30d; the row head `hd` stays on top of the
 call frame and becomes frame slot 2.  The 292 literal uses PUSH2 to fund the operand snapshot. -/
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SetupFrames
 import Challenge.Modexp.Submission.Proofs.Fast.CapDispatch
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -18,24 +22,24 @@ open Challenge.Modexp.Submission.Proofs.Fast.CiosCached
 def loadProgram : List Instr :=
   [.push 1 96, .op .MLOAD,
    .push 1 224, .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩), .push 1 1, .op .SHR, .push 1 32, .op .ADD, .op .MLOAD,
+   .op (.Dup dA8), .push 1 1, .op .SHR, .push 1 32, .op .ADD, .op .MLOAD,
    .push 1 64, .op .MLOAD,
-   .push 2 2752, .op .MLOAD, .op (.Dup ⟨6, by decide⟩), .op .ADD,
+   .push 2 2752, .op .MLOAD, .op (.Dup dA6), .op .ADD,
    .push 0 0, .push 1 32, .op .MLOAD, .push 2 3347]
 
 def shuffleProgram : List Instr :=
   [
    .push 1 128,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨10, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Swap sA10),
    .push 0 0,
    .op .NOT,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Swap ⟨10, by decide⟩)]
+   .op (.Swap sA3),
+   .op (.Swap sA10)]
 
 def lowProgram : List Instr :=
-  [.push 2 2720, .op .MLOAD, .op (.Swap ⟨10, by decide⟩)]
+  [.push 2 2720, .op .MLOAD, .op (.Swap sA10)]
 
 def readsProgram : List Instr := loadProgram.take 16
 def setupProgram : List Instr := loadProgram.drop 16

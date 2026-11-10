@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.NewtonSeed
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 import Challenge.Modexp.Submission.Proofs.Fast.Paths.P0
@@ -6,6 +7,8 @@ import Challenge.Modexp.Submission.Proofs.Fast.Paths.P6
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.Modexp.Submission.Proofs.Bytecode.MainDefs
 import Challenge.EvmProof.Memory
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -1224,27 +1227,27 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
 
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  [opAt 459 (.Dup ⟨1, by decide⟩),
+  [opAt 459 (.Dup dA1),
    pushAt 460 2 2688,
    opAt 461 .MSTORE,
-   opAt 462 (.Dup ⟨3, by decide⟩),
+   opAt 462 (.Dup dA3),
    pushAt 463 1 96,
    opAt 464 .ADD,
    pushAt 465 2 2656,
    opAt 466 .MSTORE,
    pushAt 467 1 32,
-   opAt 468 (.Dup ⟨2, by decide⟩),
+   opAt 468 (.Dup dA2),
    opAt 469 .SUB,
-   opAt 470 (.Dup ⟨0, by decide⟩),
+   opAt 470 (.Dup dA0),
    pushAt 471 2 2752,
    opAt 472 .MSTORE,
-   opAt 473 (.Dup ⟨2, by decide⟩),
+   opAt 473 (.Dup dA2),
    pushAt 474 2 2080,
    opAt 475 .ADD,
    pushAt 476 2 2784,
    opAt 477 .MSTORE,
-   opAt 478 (.Dup ⟨6, by decide⟩),
-   opAt 479 (.Dup ⟨2, by decide⟩),
+   opAt 478 (.Dup dA6),
+   opAt 479 (.Dup dA2),
    pushAt 480 0 0,
    opAt 481 .CALLDATACOPY,
    opAt 482 .POP,

@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -25,9 +28,9 @@ private theorem hzn : ({val := 0} : W).toNat = 0 := rfl
 def p0c0P : List Instr :=
   [.push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .MUL,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .push 2 16,
    .op .SHR]
@@ -50,13 +53,13 @@ theorem p0c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 : W) (rest :
   simp [hz, hzn, p0c0P, p0c0M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0]
 
 def p0c1P : List Instr :=
-  [.op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
+  [.op (.Dup dA10),
+   .op (.Dup dA11),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MULMOD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .push 1 160,
    .op .MLOAD]
 
@@ -79,7 +82,7 @@ theorem p0c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 : W) (re
   simp [hz, hzn, p0c1P, p0c1M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0, ha160, hf160]
 
 def p0c2P : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
    .push 4 2048,
@@ -102,22 +105,22 @@ theorem p0c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def prCol0Program : List Instr :=
   [.push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .MUL,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA11),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MULMOD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
    .push 4 2048,
@@ -174,10 +177,10 @@ theorem prCol0_eq (s : State) (x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 n0 : W) 
 /-! ## prCol1: pc 4745..4800, 47 instructions -/
 
 def p1c0P : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA0),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
    .push 0 0,
@@ -203,14 +206,14 @@ theorem p1c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : W)
   simp [hz, hzn, p1c0P, p1c0M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha32, hf32, ha0, hf0]
 
 def p1c1P : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
+  [.op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩)]
+   .op (.Dup dA13)]
 
 def p1c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := x5 * x0
@@ -231,11 +234,11 @@ def p1c2P : List Instr :=
   [.op .MUL,
    .push 1 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA12),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩)]
+   .op (.Dup dA5)]
 
 def p1c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
@@ -256,10 +259,10 @@ theorem p1c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p1c3P : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD]
 
@@ -282,12 +285,12 @@ theorem p1c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p1c3P, p1c3M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0]
 
 def p1c4P : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA12),
+   .op (.Dup dA9),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .push 1 160,
    .op .MLOAD]
 
@@ -308,11 +311,11 @@ theorem p1c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p1c4P, p1c4M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha160, hf160]
 
 def p1c5P : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Swap sA0),
    .push 4 2048,
    .op .MULMOD]
 
@@ -331,51 +334,51 @@ theorem p1c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p1c5P, p1c5M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def prCol1Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA0),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .MUL,
    .push 1 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA12),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA9),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Swap sA0),
    .push 4 2048,
    .op .MULMOD]
 
@@ -462,10 +465,10 @@ theorem prCol1_eq (s : State) (c q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 
 
 def p2c0P : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD]
 
@@ -488,12 +491,12 @@ theorem p2c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p2c1P : List Instr :=
   [.push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩)]
+   .op (.Dup dA7)]
 
 def p2c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 32
@@ -517,12 +520,12 @@ theorem p2c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p2c2P : List Instr :=
   [.op .MUL,
    .op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩)]
+   .op (.Dup dA9),
+   .op (.Dup dA3)]
 
 def p2c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
@@ -542,12 +545,12 @@ theorem p2c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p2c3P : List Instr :=
   [.op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩)]
+   .op (.Swap sA0),
+   .op (.Dup dA13)]
 
 def p2c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
@@ -567,10 +570,10 @@ theorem p2c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p2c4P : List Instr :=
   [.push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 1 32,
    .op .MLOAD]
 
@@ -594,13 +597,13 @@ theorem p2c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p2c4P, p2c4M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha64, hf64, ha32, hf32]
 
 def p2c5P : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MULMOD]
 
 def p2c5M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
@@ -622,13 +625,13 @@ theorem p2c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p2c6P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA11),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩)]
+   .op (.Dup dA13),
+   .op (.Dup dA10)]
 
 def p2c6M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -645,13 +648,13 @@ theorem p2c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p2c6P, p2c6M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def p2c7P : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 2 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD]
 
 def p2c7M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
@@ -673,8 +676,8 @@ theorem p2c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p2c8P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Swap sA0),
    .push 2 2048,
    .op .MULMOD]
 
@@ -693,71 +696,71 @@ theorem p2c8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def prCol2Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA13),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA11),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA10),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 2 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Swap sA0),
    .push 2 2048,
    .op .MULMOD]
 
@@ -870,10 +873,10 @@ theorem prCol2_eq (s : State) (c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 
 /-! ## prCol3: pc 3334..3433, 87 instructions -/
 
 def p3c0P : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA0),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
    .push 1 64,
@@ -899,12 +902,12 @@ theorem p3c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p3c0P, p3c0M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96, ha64, hf64]
 
 def p3c1P : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA7),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD]
 
@@ -929,11 +932,11 @@ theorem p3c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p3c2P : List Instr :=
   [.push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA5),
    .op .MUL]
 
 def p3c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
@@ -955,12 +958,12 @@ theorem p3c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p3c3P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA3),
    .op .MUL]
 
 def p3c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
@@ -980,12 +983,12 @@ theorem p3c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p3c4P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Swap sA0),
+   .op (.Dup dA14)]
 
 def p3c4M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -1004,10 +1007,10 @@ theorem p3c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p3c5P : List Instr :=
   [.push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 64,
    .op .MLOAD]
 
@@ -1031,13 +1034,13 @@ theorem p3c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p3c5P, p3c5M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha96, hf96, ha64, hf64]
 
 def p3c6P : List Instr :=
-  [.op (.Dup ⟨8, by decide⟩),
+  [.op (.Dup dA8),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MULMOD]
 
 def p3c6M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
@@ -1059,13 +1062,13 @@ theorem p3c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p3c7P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA14)]
 
 def p3c7M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -1085,13 +1088,13 @@ theorem p3c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p3c7P, p3c7M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0]
 
 def p3c8P : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+  [.op (.Dup dA13),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA12),
+   .op (.Dup dA5),
    .op .MULMOD]
 
 def p3c8M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
@@ -1110,12 +1113,12 @@ theorem p3c8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p3c9P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA11),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA14)]
 
 def p3c9M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -1134,11 +1137,11 @@ theorem p3c9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p3c10P : List Instr :=
   [.push 2 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Dup dA14),
+   .op (.Swap sA0)]
 
 def p3c10M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 160
@@ -1173,91 +1176,91 @@ theorem p3c11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
   simp [hz, hzn, p3c11P, p3c11M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def prCol3Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA0),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA14),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA13),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA12),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA11),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 2 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Swap sA0),
    .push 2 2048,
    .op .MULMOD]
 
@@ -1398,11 +1401,11 @@ theorem prCol3_eq (s : State) (c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp 
 
 def p4c0P : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MULMOD,
    .op .ADD]
 
@@ -1423,13 +1426,13 @@ theorem p4c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p4c0P, p4c0M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
 
 def p4c1P : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
+  [.op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 
 def p4c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 96
@@ -1450,10 +1453,10 @@ theorem p4c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p4c2P : List Instr :=
   [.push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 32,
    .op .MLOAD]
 
@@ -1477,13 +1480,13 @@ theorem p4c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p4c2P, p4c2M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha64, hf64, ha32, hf32]
 
 def p4c3P : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩),
+  [.op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD]
 
 def p4c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
@@ -1505,13 +1508,13 @@ theorem p4c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 
 def p4c4P : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA14)]
 
 def p4c4M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
@@ -1528,12 +1531,12 @@ theorem p4c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p4c4P, p4c4M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def p4c5P : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩),
+  [.op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD]
 
@@ -1553,12 +1556,12 @@ theorem p4c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p4c5P, p4c5M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def p4c6P : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA15),
+   .op (.Dup dA12),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .push 1 128,
    .op .MLOAD]
 
@@ -1579,12 +1582,12 @@ theorem p4c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p4c6P, p4c6M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha128, hf128]
 
 def p4c7P : List Instr :=
-  [.op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA7),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD]
 
@@ -1609,12 +1612,12 @@ theorem p4c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p4c8P : List Instr :=
   [.push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩)]
+   .op (.Dup dA10)]
 
 def p4c8M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 64
@@ -1640,10 +1643,10 @@ def p4c9P : List Instr :=
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA14)]
 
 def p4c9M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
@@ -1664,14 +1667,14 @@ theorem p4c9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
   simp [hz, hzn, p4c9P, p4c9M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr, ha0, hf0]
 
 def p4c10P : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩),
+  [.op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩)]
+   .op (.Dup dA12)]
 
 def p4c10M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
   let v0 : W := x6 * x0
@@ -1689,11 +1692,11 @@ theorem p4c10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
   simp [hz, hzn, p4c10P, p4c10M, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, ofNat_sub_ofNat, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, hc, hcr]
 
 def p4c11P : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD]
 
@@ -1718,9 +1721,9 @@ def p4c12P : List Instr :=
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .POP,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op (.Dup dA14)]
 
 def p4c12M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 192
@@ -1741,11 +1744,11 @@ theorem p4c12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
 def p4c13P : List Instr :=
   [.push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Dup dA14),
+   .op (.Swap sA0)]
 
 def p4c13M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 160
@@ -1781,97 +1784,97 @@ theorem p4c14_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14
 
 def prCol4Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA15),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA12),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
    .push 2 192,
@@ -1879,16 +1882,16 @@ def prCol4Program : List Instr :=
    .op .MUL,
    .push 2 16,
    .op .SHR,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .POP,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Swap sA0),
    .push 2 2048,
    .op .MULMOD]
 

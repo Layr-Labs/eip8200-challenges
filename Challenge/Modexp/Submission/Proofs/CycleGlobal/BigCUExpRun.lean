@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.BigCUMul
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option maxRecDepth 40000
@@ -17,19 +20,19 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC.Unsigned
 /-- Exact U raw interval [310,321). -/
 def eGuardProgram : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 1 3,
    .op .SHL,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .EQ,
    .push 2 376,
    .op .JUMPI]
 
 /-- Exact U raw interval [321,333). -/
 def eSquareProgram : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
+  [.op (.Dup dA2),
    .push 2 3072,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 2 315,
    .push 2 393,
    .op .JUMP]
@@ -37,11 +40,11 @@ def eSquareProgram : List Instr :=
 /-- Exact U raw interval [333,364). -/
 def e2Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 0 0,
    .push 2 3072,
    .op .MCOPY,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .push 1 3,
    .op .SHR,
    .push 0 0,
@@ -50,7 +53,7 @@ def e2Program : List Instr :=
    .push 1 96,
    .op .ADD,
    .op .CALLDATALOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .push 1 7,
    .op .AND,
    .op .SHL,
@@ -73,7 +76,7 @@ def eMulProgram : List Instr :=
 /-- Exact U raw interval [379,386). -/
 def e4Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 0 0,
    .push 2 3072,
    .op .MCOPY]
@@ -89,7 +92,7 @@ def e3Program : List Instr :=
 /-- Exact U raw interval [394,411). -/
 def e9Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .push 2 3072,
    .push 0 0,
    .op .MCOPY,

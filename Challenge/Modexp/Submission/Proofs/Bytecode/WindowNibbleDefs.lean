@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTableMemory
 import Challenge.EvmProof.Stepper
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 
@@ -16,9 +19,9 @@ def runInstructions : List Instr → State → Option State
       runInstructions rest next
 
 def squareProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD,
-   .op (.Swap ⟨4, by decide⟩), .op .POP]
+  [.op (.Dup dA5), .op (.Dup dA5),
+   .op (.Dup dA0), .op .MULMOD,
+   .op (.Swap sA4), .op .POP]
 
 /-- The table lookup and multiply.  `DUP6 DUP6` lift the modulus and the
 accumulator into `MULMOD` order *before* the table word is loaded, so the
@@ -33,42 +36,42 @@ the load-first form produced `mulMod acc (tableWord ..) m`.  Those are equal but
 NOT definitionally equal; `mulMod_comm` below is what bridges them, and every
 statement downstream keeps the accumulator-first spelling. -/
 def lookupProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩), .push 1 5, .op .SHL, .op .MLOAD,
-   .op .MULMOD, .op (.Swap ⟨4, by decide⟩), .op .POP]
+  [.op (.Dup dA5), .op (.Dup dA5),
+   .op (.Dup dA2), .push 1 5, .op .SHL, .op .MLOAD,
+   .op .MULMOD, .op (.Swap sA4), .op .POP]
 
 def beginSquareProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA5), .op (.Dup dA5),
+   .op (.Dup dA0), .op .MULMOD]
 
 def topSquareProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA6), .op (.Swap sA0),
+   .op (.Dup dA0), .op .MULMOD]
 
 /-- Consume the no-longer-needed nibble while loading the table word.
 This eight-instruction block is twenty-three bytes; it also replaces the following
 external POP. The square-state and final word-state interfaces are unchanged. -/
 def fusedSquareLookupProgram : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩), .op (.Swap ⟨1, by decide⟩),
+  [.op (.Dup dA6), .op (.Swap sA1),
    .push 1 5, .op .SHL, .op .MLOAD, .op .MULMOD,
-   .op (.Swap ⟨3, by decide⟩), .op .POP]
+   .op (.Swap sA3), .op .POP]
 
 /-- Keep the accumulator at the top between squarings: four pure squarings
 (thirteen instructions, thirteen bytes) ending on the seven-slot square state.
 The cleanup and table lookup are fused separately. -/
 def fourSquareProgram : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA5),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
+   .op (.Dup dA8),
+   .op (.Dup dA0),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
    .op .MULMOD]
 
 def squareLookupProgram : List Instr :=

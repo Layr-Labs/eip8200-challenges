@@ -1,6 +1,9 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Challenge.Modexp.Submission.Proofs.Fast.Exp
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -81,7 +84,7 @@ def preparedpart0Program : List Instr :=
    .op .MLOAD,
    .push 2 2170,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .AND,
    .push 2 2200,
    .op .MLOAD]
@@ -110,7 +113,7 @@ theorem preparedpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
 
 
 def preparedpart1Program : List Instr :=
-  [.op (.Dup ⟨2, by decide⟩),
+  [.op (.Dup dA2),
    .op .AND,
    .push 2 2208,
    .op .MLOAD,
@@ -141,9 +144,9 @@ theorem preparedpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
 
 
 def preparedpart2Program : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .AND,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .AND]
 
 def preparedpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 : W) (rest : List W) : State :=
@@ -166,11 +169,11 @@ def preparedProgram : List Instr :=
    .op .MLOAD,
    .push 2 2170,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .AND,
    .push 2 2200,
    .op .MLOAD,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .AND,
    .push 2 2208,
    .op .MLOAD,
@@ -178,9 +181,9 @@ def preparedProgram : List Instr :=
    .op .SHL,
    .push 2 2140,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .AND,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .AND]
 
 def preparedModel (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 : W) (rest : List W) : State :=

@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Mathlib.Algebra.Group.Fin.Basic
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 10000
@@ -9,20 +12,20 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 
 def diagonalPrefix : List Instr :=
-  [.op (.Dup ⟨1, by decide⟩),
+  [.op (.Dup dA1),
    .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .GT,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA2),
+   .op (.Dup dA4),
    .op .ADD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Dup dA0),
+   .op (.Dup dA4),
    .op .MUL,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .MULMOD]
 
 theorem diagonalPrefix_run (s : State) (pc tb x P hd w3 ent stride M : UInt256)

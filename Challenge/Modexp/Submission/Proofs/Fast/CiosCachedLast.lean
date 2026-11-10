@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL2
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
+
+open CycleSubmission.SharedStackArgs
 
 /-!
 # The last second-loop cell consumes `mu`
@@ -25,21 +28,21 @@ open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast CiosCached CiosCachedMacCore
 
 def entryProgram (w : Fin 33) (x : UInt256) : List Instr :=
-  [.op (.Dup ⟨8, by decide⟩), .push w x, .op .MLOAD, .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩), .op .MUL, .op (.Swap ⟨3, by decide⟩), .op .MULMOD]
+  [.op (.Dup dA8), .push w x, .op .MLOAD, .op (.Dup dA0),
+   .op (.Dup dA4), .op .MUL, .op (.Swap sA3), .op .MULMOD]
 
 def headProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩),
-   .op .GT, .op .SUB, .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩), .op .ADD]
+  [.op (.Dup dA0), .op (.Dup dA3),
+   .op .GT, .op .SUB, .op (.Dup dA1),
+   .op (.Dup dA3), .op .ADD]
 
 def memoryProgram (tl ts : UInt256) : List Instr :=
-  [.push 2 tl, .op .MLOAD, .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩), .op .GT]
+  [.push 2 tl, .op .MLOAD, .op (.Dup dA1), .op .ADD,
+   .op (.Dup dA0), .push 2 ts, .op .MSTORE,
+   .op (.Dup dA1), .op .GT]
 
 def tailProgram : List Instr :=
-  [.op (.Swap ⟨2, by decide⟩), .op .GT, .op .SUB, .op .ADD, .op .SUB]
+  [.op (.Swap sA2), .op .GT, .op .SUB, .op .ADD, .op .SUB]
 
 def restProgram (tl ts : UInt256) : List Instr :=
   (headProgram ++ memoryProgram tl ts) ++ tailProgram
@@ -119,7 +122,7 @@ private theorem run_load_word (template : State) (pc sum borrow c lo tl : UInt25
 
 private theorem run_form_sum (template : State) (pc t sum borrow c lo : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
-    runInstructions [.op (.Dup ⟨1, by decide⟩), .op .ADD]
+    runInstructions [.op (.Dup dA1), .op .ADD]
       (framed template pc ([t, sum, borrow, c, lo] ++ rest)) =
     some (framed template (pc + UInt256.ofNat 2)
       ([sum + t, sum, borrow, c, lo] ++ rest)) := by
@@ -133,8 +136,8 @@ private theorem run_store_word (template : State) (pc value sum borrow c lo ts :
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat ts.toNat 32) = template.activeWords) :
-    runInstructions [.op (.Dup ⟨0, by decide⟩), .push 2 ts, .op .MSTORE,
-        .op (.Dup ⟨1, by decide⟩), .op .GT]
+    runInstructions [.op (.Dup dA0), .push 2 ts, .op .MSTORE,
+        .op (.Dup dA1), .op .GT]
       (framed template pc ([value, sum, borrow, c, lo] ++ rest)) =
     some (framed
       { template with

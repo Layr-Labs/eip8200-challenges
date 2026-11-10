@@ -1,8 +1,11 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Challenge.Modexp.Submission.Proofs.Cycle.DoubleInput
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Challenge.Modexp.Submission.Proofs.R5.ExecSquare
+open CycleSubmission.SharedStackArgs
+
 set_option maxRecDepth 40000
 set_option maxHeartbeats 8000000
 set_option linter.unusedVariables false
@@ -18,10 +21,10 @@ local notation "N" => UInt256.ofNat
 
 def stage0Part0Program : List Instr :=
   [.op .JUMPDEST,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
    .op .MUL,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .push 1 16,
    .op .SHR]
@@ -40,13 +43,13 @@ theorem stage0Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 : W) 
   simp [hz, hzn, stage0Part0Program, stage0Part0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage0Part1Program : List Instr :=
-  [.op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA10),
+   .op (.Dup dA11),
+   .op (.Dup dA3),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
    .op .ADD,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .MULMOD]
 def stage0Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 : W) (rest : List W) : State :=
   let v0 : W := (w1) + (w1)
@@ -62,10 +65,10 @@ theorem stage0Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 :
   simp [hz, hzn, stage0Part1Program, stage0Part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage0Part2Program : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩),
+  [.op (.Dup dA12),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
    .push 3 2048,
@@ -120,13 +123,13 @@ theorem stage0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 : W) (rest
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 h2))
 
 def stage1Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA4),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA3),
    .op .MUL]
 def stage1Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 : W) (rest : List W) : State :=
   let v0 : W := (w2) * (w3)
@@ -144,13 +147,13 @@ theorem stage1Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage1Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .MUL,
    .push 17 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩)]
+   .op (.Swap sA0),
+   .op (.Dup dA12),
+   .op (.Dup dA5)]
 def stage1Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := (w14) * (v0)
@@ -166,12 +169,12 @@ theorem stage1Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage1Part1Program, stage1Part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage1Part2Program : List Instr :=
-  [.op (.Dup ⟨5, by decide⟩),
+  [.op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA9),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD]
 def stage1Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
@@ -190,14 +193,14 @@ theorem stage1Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage1Part2Program, stage1Part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage1Part3Program : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩),
+  [.op (.Dup dA12),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Dup dA12),
+   .op (.Swap sA0)]
 def stage1Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 160
   let v1 : W := UInt256.mulMod (w1) (v0) (w12)
@@ -276,13 +279,13 @@ theorem stage1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 : 
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 h4))))
 
 def stage2Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA6),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA5),
+   .op (.Dup dA0),
    .op .MUL]
 def stage2Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := (w3) * (w5)
@@ -300,12 +303,12 @@ theorem stage2Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage2Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA3),
    .op .MUL]
 def stage2Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
@@ -324,13 +327,13 @@ theorem stage2Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage2Part2Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .op .MUL,
    .push 1 16,
    .op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩)]
+   .op (.Swap sA0),
+   .op (.Dup dA13),
+   .op (.Dup dA7)]
 def stage2Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := (w15) * (v0)
@@ -346,13 +349,13 @@ theorem stage2Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage2Part2Program, stage2Part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage2Part3Program : List Instr :=
-  [.op (.Dup ⟨6, by decide⟩),
+  [.op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA6),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
    .op .ADD]
 def stage2Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w6) (w0) (w1)
@@ -369,12 +372,12 @@ theorem stage2Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage2Part3Program, stage2Part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage2Part4Program : List Instr :=
-  [.op (.Swap ⟨7, by decide⟩),
+  [.op (.Swap sA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA11),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD]
 def stage2Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
@@ -393,12 +396,12 @@ theorem stage2Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage2Part4Program, stage2Part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage2Part5Program : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA13),
+   .op (.Dup dA10),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .push 1 160,
    .op .MLOAD]
 def stage2Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
@@ -418,11 +421,11 @@ theorem stage2Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage2Part5Program, stage2Part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha160, hf160]
 
 def stage2Part6Program : List Instr :=
-  [.op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup dA3),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Swap sA0),
    .push 2 2048,
    .op .MULMOD]
 def stage2Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
@@ -508,12 +511,12 @@ theorem stage2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 h6))))))
 
 def stage3Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA8),
+   .op (.Dup dA6),
    .op .MUL,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA8),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD]
 def stage3Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
@@ -532,12 +535,12 @@ theorem stage3Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage3Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA4),
    .op .MUL]
 def stage3Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
@@ -556,11 +559,11 @@ theorem stage3Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage3Part2Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
    .op .MUL,
    .push 1 16]
 def stage3Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
@@ -580,13 +583,13 @@ theorem stage3Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage3Part3Program : List Instr :=
   [.op .SHR,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA14),
+   .op (.Dup dA9),
+   .op (.Dup dA7),
    .op .MULMOD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA9)]
 def stage3Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.shiftRight (w1) (w0)
   let v1 : W := UInt256.mulMod (w6) (w9) (w15)
@@ -601,13 +604,13 @@ theorem stage3Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage3Part3Program, stage3Part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage3Part4Program : List Instr :=
-  [.op (.Dup ⟨9, by decide⟩),
+  [.op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA13),
+   .op (.Dup dA6),
    .op .MULMOD]
 def stage3Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w9) (w0) (w1)
@@ -626,13 +629,13 @@ theorem stage3Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage3Part5Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA12),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩)]
+   .op (.Dup dA14),
+   .op (.Dup dA11)]
 def stage3Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.mulMod (w4) (w12) (w15)
@@ -648,13 +651,13 @@ theorem stage3Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage3Part5Program, stage3Part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage3Part6Program : List Instr :=
-  [.op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .MULMOD]
 def stage3Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w4) (w0) (w1)
@@ -675,8 +678,8 @@ theorem stage3Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage3Part7Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Swap sA0),
    .push 3 2048,
    .op .MULMOD]
 def stage3Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
@@ -769,13 +772,13 @@ theorem stage3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 h7)))))))
 
 def stage4Part0Program : List Instr :=
-  [.op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
+  [.op (.Dup dA14),
+   .op (.Dup dA6),
+   .op (.Dup dA11),
    .op .MULMOD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA8),
+   .op (.Dup dA11),
    .op .MULMOD]
 def stage4Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w9) (w5) (w14)
@@ -792,11 +795,11 @@ theorem stage4Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage4Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA9),
+   .op (.Dup dA0),
    .op .MULMOD,
    .op .ADD]
 def stage4Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
@@ -815,14 +818,14 @@ theorem stage4Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage4Part1Program, stage4Part1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage4Part2Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+  [.op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA7),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA6)]
 def stage4Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w5) (w14) (w15)
   let v1 : W := (v0) + (w0)
@@ -839,12 +842,12 @@ theorem stage4Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 def stage4Part3Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 def stage4Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w0) (w1) (w2)
   let v1 : W := (v0) + (w3)
@@ -861,13 +864,13 @@ theorem stage4Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage4Part3Program, stage4Part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage4Part4Program : List Instr :=
-  [.op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA12),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA10),
+   .op (.Dup dA7),
    .op .MUL]
 def stage4Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w3) (w12) (w0)
@@ -884,14 +887,14 @@ theorem stage4Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage4Part4Program, stage4Part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage4Part5Program : List Instr :=
-  [.op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+  [.op (.Dup dA10),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .op .ADD,
-   .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩)]
+   .op (.Dup dA8),
+   .op (.Dup dA0),
+   .op (.Dup dA0)]
 def stage4Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w8) * (w10)
   let v1 : W := (v0) + (w0)
@@ -908,11 +911,11 @@ theorem stage4Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage4Part6Program : List Instr :=
   [.op .ADD,
-   .op (.Swap ⟨9, by decide⟩),
+   .op (.Swap sA9),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD]
 def stage4Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W) : State :=
@@ -932,12 +935,12 @@ theorem stage4Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage4Part6Program, stage4Part6Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage4Part7Program : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+  [.op (.Dup dA13),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD]
 def stage4Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
@@ -956,8 +959,8 @@ theorem stage4Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage4Part7Program, stage4Part7Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage4Part8Program : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+  [.op (.Dup dA11),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
    .push 4 192,
@@ -983,12 +986,12 @@ theorem stage4Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage4Part9Program : List Instr :=
   [.op .SHR,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .POP,
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .MULMOD]
 def stage4Part9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.shiftRight (w1) (w0)
@@ -1008,8 +1011,8 @@ theorem stage4Part9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage4Part10Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Swap sA0),
    .push 2 2048,
    .op .MULMOD]
 def stage4Part10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
@@ -1128,12 +1131,12 @@ theorem stage4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 h10))))))))))
 
 def stage5Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA10),
+   .op (.Dup dA8),
    .op .MUL,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD]
 def stage5Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
@@ -1152,12 +1155,12 @@ theorem stage5Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage5Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MUL]
 def stage5Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
@@ -1176,12 +1179,12 @@ theorem stage5Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage5Part2Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA6),
    .op .MUL]
 def stage5Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
@@ -1200,13 +1203,13 @@ theorem stage5Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage5Part3Program : List Instr :=
   [.op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
+   .op (.Dup dA0),
+   .op (.Dup dA12),
+   .op (.Dup dA10),
    .op .MULMOD,
-   .op (.Swap ⟨0, by decide⟩)]
+   .op (.Swap sA0)]
 def stage5Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.mulMod (w8) (w11) (w16)
@@ -1221,14 +1224,14 @@ theorem stage5Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage5Part3Program, stage5Part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage5Part4Program : List Instr :=
-  [.op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
+  [.op (.Dup dA11),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA6)]
 def stage5Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w10) (w11) (w0)
   let v1 : W := (v0) + (w1)
@@ -1246,12 +1249,12 @@ theorem stage5Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 def stage5Part5Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 def stage5Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w0) (w1) (w2)
   let v1 : W := (v0) + (w3)
@@ -1268,13 +1271,13 @@ theorem stage5Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage5Part5Program, stage5Part5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage5Part6Program : List Instr :=
-  [.op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA13),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA12),
+   .op (.Dup dA7),
    .op .MULMOD]
 def stage5Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w3) (w13) (w0)
@@ -1292,13 +1295,13 @@ theorem stage5Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage5Part7Program : List Instr :=
   [.op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .push 30 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨6, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Swap sA6),
    .op .POP,
-   .op (.Dup ⟨15, by decide⟩)]
+   .op (.Dup dA15)]
 def stage5Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (w2)
@@ -1313,9 +1316,9 @@ theorem stage5Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage5Part7Program, stage5Part7Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage5Part8Program : List Instr :=
-  [.op (.Swap ⟨1, by decide⟩),
+  [.op (.Swap sA1),
    .op .SUB,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .ADD,
    .push 2 2048,
    .op .MULMOD]
@@ -1416,13 +1419,13 @@ theorem stage5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 h8))))))))
 
 def stage6Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA10),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA0),
    .op .MUL]
 def stage6Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := (w7) * (w9)
@@ -1440,12 +1443,12 @@ theorem stage6Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage6Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA3),
    .op .MUL]
 def stage6Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
@@ -1464,13 +1467,13 @@ theorem stage6Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage6Part2Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨12, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA12),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩)]
+   .op (.Swap sA0),
+   .op (.Dup dA15),
+   .op (.Dup dA11)]
 def stage6Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := (w6) * (w13)
@@ -1486,13 +1489,13 @@ theorem stage6Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage6Part2Program, stage6Part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage6Part3Program : List Instr :=
-  [.op (.Dup ⟨10, by decide⟩),
+  [.op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA10),
+   .op (.Dup dA0),
+   .op (.Dup dA0),
    .op .ADD]
 def stage6Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w10) (w0) (w1)
@@ -1509,12 +1512,12 @@ theorem stage6Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage6Part3Program, stage6Part3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage6Part4Program : List Instr :=
-  [.op (.Swap ⟨11, by decide⟩),
+  [.op (.Swap sA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA15),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD]
 def stage6Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W) : State :=
@@ -1533,14 +1536,14 @@ theorem stage6Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage6Part4Program, stage6Part4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage6Part5Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨4, by decide⟩),
+  [.op (.Dup dA15),
+   .op (.Dup dA14),
+   .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩)]
+   .op (.Dup dA15),
+   .op (.Dup dA13),
+   .op (.Dup dA7)]
 def stage6Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w2) (w13) (w15)
   let v1 : W := (v0) + (w0)
@@ -1557,11 +1560,11 @@ theorem stage6Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 def stage6Part6Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
+   .op (.Swap sA0),
    .push 30 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op .AND,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨7, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Swap sA7),
    .op .POP]
 def stage6Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w0) (w1) (w2)
@@ -1578,10 +1581,10 @@ theorem stage6Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage6Part6Program, stage6Part6Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage6Part7Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Swap ⟨1, by decide⟩),
+  [.op (.Dup dA15),
+   .op (.Swap sA1),
    .op .SUB,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .ADD,
    .push 2 2048,
    .op .MULMOD]
@@ -1674,13 +1677,13 @@ theorem stage6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 h7)))))))
 
 def stage7Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA10),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA3),
    .op .MUL]
 def stage7Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := (w8) * (w9)
@@ -1698,13 +1701,13 @@ theorem stage7Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage7Part1Program : List Instr :=
   [.op .ADD,
-   .op (.Dup ⟨13, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA13),
+   .op (.Dup dA6),
    .op .MUL,
    .op .ADD,
    .push 32 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op .AND,
-   .op (.Swap ⟨7, by decide⟩)]
+   .op (.Swap sA7)]
 def stage7Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := (w6) * (w14)
@@ -1722,13 +1725,13 @@ theorem stage7Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage7Part2Program : List Instr :=
   [.op .POP,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA9),
+   .op (.Dup dA11),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩)]
+   .op (.Dup dA14),
+   .op (.Dup dA2)]
 def stage7Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w10) (w9) (w15)
   let v1 : W := (v0) + (w1)
@@ -1743,12 +1746,12 @@ theorem stage7Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage7Part2Program, stage7Part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage7Part3Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
+  [.op (.Dup dA15),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
+   .op (.Dup dA14),
    .op .MULMOD,
    .op .ADD]
 def stage7Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
@@ -1768,10 +1771,10 @@ theorem stage7Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage7Part4Program : List Instr :=
   [.push 2 2048,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA9),
+   .op (.Dup dA1),
+   .op (.Swap sA3),
    .op .SUB,
    .op .ADD,
    .op .MULMOD]
@@ -1840,13 +1843,13 @@ theorem stage7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 h4))))
 
 def stage8Part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩),
+  [.op (.Dup dA0),
+   .op (.Dup dA10),
+   .op (.Dup dA0),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA5),
+   .op (.Dup dA15),
    .op .MUL]
 def stage8Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := (w9) * (w9)
@@ -1866,11 +1869,11 @@ def stage8Part1Program : List Instr :=
   [.op .ADD,
    .push 32 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op .AND,
-   .op (.Swap ⟨8, by decide⟩),
+   .op (.Swap sA8),
    .op .POP,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨0, by decide⟩)]
+   .op (.Dup dA14),
+   .op (.Dup dA10),
+   .op (.Dup dA0)]
 def stage8Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (v0)
@@ -1887,9 +1890,9 @@ theorem stage8Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 def stage8Part2Program : List Instr :=
   [.op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA14),
+   .op (.Dup dA5),
+   .op (.Dup dA15),
    .op .MULMOD,
    .op .ADD,
    .push 2 2048]
@@ -1909,10 +1912,10 @@ theorem stage8Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
   simp [hz, hzn, stage8Part2Program, stage8Part2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage8Part3Program : List Instr :=
-  [.op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Swap ⟨3, by decide⟩),
+  [.op (.Dup dA15),
+   .op (.Dup dA10),
+   .op (.Dup dA1),
+   .op (.Swap sA3),
    .op .SUB,
    .op .ADD,
    .op .MULMOD]
@@ -1971,14 +1974,14 @@ theorem stage8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 h3)))
 
 def stage9Part0Program : List Instr :=
-  [.op (.Swap ⟨8, by decide⟩),
+  [.op (.Swap sA8),
    .op .POP,
    .op .POP,
    .op .POP,
    .op .POP,
    .op .POP,
    .push 1 1,
-   .op (.Dup ⟨12, by decide⟩)]
+   .op (.Dup dA12)]
 def stage9Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   {s with pc := N 4725, stack := (w16) :: (N 1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w0) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
@@ -1992,7 +1995,7 @@ theorem stage9Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w
 
 def stage9Part1Program : List Instr :=
   [.op .SUB,
-   .op (.Swap ⟨11, by decide⟩)]
+   .op (.Swap sA11)]
 def stage9Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 : W) (rest : List W) : State :=
   let v0 : W := (w0) - (w1)
   {s with pc := N 4727, stack := (w13) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (v0) :: rest}

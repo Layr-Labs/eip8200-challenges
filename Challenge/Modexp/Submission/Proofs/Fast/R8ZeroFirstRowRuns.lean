@@ -1,5 +1,8 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRowModel
 import Mathlib.Algebra.Group.Fin.Basic
+
+open CycleSubmission.SharedStackArgs
 
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
@@ -13,13 +16,13 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwenty
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 def cellProgram (a t : UInt256) : List Instr :=
-  [.push 2 a, .op .MLOAD, .op (.Dup ⟨8, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .MUL,
-   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨4, by decide⟩), .op .MULMOD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
-   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨3, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .op (.Swap ⟨3, by decide⟩), .op .GT,
-   .op .SUB, .op .SUB, .op (.Swap ⟨0, by decide⟩), .push 2 t, .op .MSTORE]
+  [.push 2 a, .op .MLOAD, .op (.Dup dA8),
+   .op (.Dup dA3), .op (.Dup dA2), .op .MUL,
+   .op (.Swap sA1), .op (.Dup dA4), .op .MULMOD,
+   .op (.Dup dA0), .op (.Dup dA2), .op .GT, .op .SUB,
+   .op (.Dup dA1), .op (.Dup dA3), .op .ADD,
+   .op (.Dup dA0), .op (.Swap sA3), .op .GT,
+   .op .SUB, .op .SUB, .op (.Swap sA0), .push 2 t, .op .MSTORE]
 
 def cellA (a : UInt256) : List Instr := (cellProgram a 0).take 9
 def cellB : List Instr := ((cellProgram 0 0).drop 9).take 12
@@ -151,10 +154,10 @@ private theorem gt_add_comm_word (c lo : UInt256) : UInt256.gt lo (lo + c) = UIn
   exact (R4Math.lt_add_left_eq c lo).symm
 
 def cellFastBC (t : UInt256) : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨2, by decide⟩), .op .GT, .op .SUB,
-   .op (.Swap ⟨1, by decide⟩), .op (.Dup ⟨1, by decide⟩), .op .ADD,
-   .op (.Dup ⟨0, by decide⟩), .push 2 t, .op .MSTORE,
-   .op (.Dup ⟨1, by decide⟩), .op .GT, .op .SUB, .op .SUB]
+  [.op (.Dup dA0), .op (.Dup dA2), .op .GT, .op .SUB,
+   .op (.Swap sA1), .op (.Dup dA1), .op .ADD,
+   .op (.Dup dA0), .push 2 t, .op .MSTORE,
+   .op (.Dup dA1), .op .GT, .op .SUB, .op .SUB]
 
 def cellProgramM128 (a t : UInt256) : List Instr :=
   cellA a ++ cellFastBC t

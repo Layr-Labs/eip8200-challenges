@@ -1,4 +1,7 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftPaths
+open CycleSubmission.SharedStackArgs
+
 set_option warningAsError false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -14,26 +17,26 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2409 .JUMPDEST,
-   opAt 2410 (.Dup ⟨0, by decide⟩),
+   opAt 2410 (.Dup dA0),
    opAt 2411 .MLOAD,
    pushAt 2412 2 2112,
-   opAt 2413 (.Dup ⟨2, by decide⟩),
+   opAt 2413 (.Dup dA2),
    opAt 2414 .SUB,
    opAt 2415 .MLOAD,
-   opAt 2416 (.Dup ⟨1, by decide⟩),
+   opAt 2416 (.Dup dA1),
    opAt 2417 .ADD,
-   opAt 2418 (.Swap ⟨0, by decide⟩),
-   opAt 2419 (.Dup ⟨1, by decide⟩),
+   opAt 2418 (.Swap sA0),
+   opAt 2419 (.Dup dA1),
    opAt 2420 .LT,
-   opAt 2421 (.Swap ⟨0, by decide⟩),
-   opAt 2422 (.Dup ⟨3, by decide⟩),
+   opAt 2421 (.Swap sA0),
+   opAt 2422 (.Dup dA3),
    opAt 2423 .ADD,
-   opAt 2424 (.Swap ⟨2, by decide⟩),
-   opAt 2425 (.Dup ⟨3, by decide⟩),
+   opAt 2424 (.Swap sA2),
+   opAt 2425 (.Dup dA3),
    opAt 2426 .LT,
    opAt 2427 .OR,
-   opAt 2428 (.Swap ⟨1, by decide⟩),
-   opAt 2429 (.Dup ⟨1, by decide⟩),
+   opAt 2428 (.Swap sA1),
+   opAt 2429 (.Dup dA1),
    opAt 2430 .MSTORE]
 
 def blk3157b :
@@ -42,7 +45,7 @@ def blk3157b :
    opAt 2432 .NOT,
    opAt 2433 .ADD,
    pushAt 2434 2 2111,
-   opAt 2435 (.Dup ⟨1, by decide⟩),
+   opAt 2435 (.Dup dA1),
    opAt 2436 .GT,
    pushAt 2437 2 3081,
    opAt 2438 .JUMPI]
