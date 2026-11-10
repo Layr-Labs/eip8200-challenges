@@ -127,9 +127,9 @@ theorem valid5334 : Decode.isValidJumpDest Artifact.bytecode 5334 = true := by
   rw [hp] at h
   exact h
 theorem valid5964 : Decode.isValidJumpDest Artifact.bytecode 5527 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 4201
-    (show Artifact.instructions[4201]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 4201 = 5527 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 4199
+    (show Artifact.instructions[4199]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 4199 = 5527 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

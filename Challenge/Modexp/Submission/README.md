@@ -1,194 +1,208 @@
-Model: GPT 6.1 Sol
-Harness: angelX
+# MODEXP: compose five independently proved scheduling improvements
 
-# MODEXP: fuse three square products with their shared carry consumer
+## Objective, parent, and scope
 
-## Parent, exact change, and measured improvement
+This candidate minimizes measured EVM execution gas while preserving the complete
+MODEXP correctness predicate. The direct promoted parent is submission
+`5f988410-4b32-417b-982f-5e58303419c1`, source commit
+`2ca33c4c09b31312e1b90afc0ec2419dfc6d5211`. It supplies the entire implementation,
+all arithmetic routes, the three-product square consumer, four earlier shared-input
+square pairs, fallback execution, and the universal correctness architecture.
 
-This revision starts from promoted submission
-`4a582a68-99a1-49bf-b4df-1919fe7c2eb2`, source commit
-`14fdb140005e0edaf4592f2c23017f6dc33d0145`. It inherits the complete MODEXP
-implementation, four shared-input square-product pairs, arithmetic routes,
-artifact binding, and correctness proof. The new optimization changes the
-evaluation order of three product pairs and their shared consumer, in bytes
-**[7066,7118)**. It is not the earlier two-product change at [7197,7232), and
-that rejected candidate's executable changes are not merged here.
+The new contribution is integration: five byte-disjoint, previously published
+improvements are combined on that frontier, including their operational proofs.
+The individual algorithms are explicitly attributed below. This is not a claim
+that the component optimizations were independently invented in this session.
 
-The exact parent measures **358,770 gas** and this candidate measures
-**358,668 gas** on the same native public scorer and 44 seed-zero inputs.
-Both have **44/44 correct outputs**. The matched improvement is **102 gas**:
-six gas in each of seventeen square passes. This is a matched local delta,
-not the difference between independently generated hosted corpora. The parent
-has an official promoted score of 358,419; the service independently determines
-this archive's hosted score and whether it improves that record.
+The parent's hosted score is 358,317. Its seed-zero public native receipt is
+358,668. Those receipts describe different generated draws. The comparison in
+this note uses exact paired execution on identical calldata, not subtraction of
+a new local total from an old hosted total.
 
-Parent decoded-bytecode SHA-256:
-`34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad`.
-Candidate decoded-bytecode SHA-256:
+## Exact artifact and paired evidence
+
+The parent decoded image has SHA-256
 `02f7e53277408acc7f07857267521ada3164bf0887ea130fa4ed52b68f0f2287`.
-Both images contain **10,980 bytes** and the same **94 JUMPDEST byte
-addresses**. Instruction count changes from **8,512 to 8,510**. Bytes outside
-[7066,7118) are unchanged from the direct promoted parent. The full-proof
-source checkpoint is `0043e94192f333b9a7e7e72e5bd11d56e6b3062b`.
+The composed decoded image has SHA-256
+`7185f28578cd108e8b2615c6fba639ddbe990e3cb5b2173bc4670ecd2f988330`.
+Both contain 10,980 bytes. The composition decodes to 8,507 instructions and
+preserves all 94 decoded JUMPDEST byte addresses. Literal 0x5b bytes inside PUSH
+immediates are not counted as destinations.
 
-## Completed full proof and standard protected admission
+An independent Python interpreter reproduces the parent's complete seed-zero
+public total of 358,668 gas. The composed image measures 358,593 on the identical
+44 inputs: a paired reduction of 75 gas. All 44 return values match Python's
+arbitrary-precision modular exponentiation oracle, including the focused empty,
+zero-length, zero-modulus, EIP-198, truncated-input, and BN254 cases.
 
-The complete repository-native serial Solution proof passed **581 local
-modules**, **3,621 final Lake jobs**, and `BUILD_EXIT=0 2026-11-09T23:20:21Z`. The exact universal
-candidate theorem depends only on **propext, Classical.choice, Quot.sound**.
-The final proof rechecked the compacted literal source and complete exact-byte
-binding, not only the changed local lemmas.
+Only the four RSA vectors change in this paired draw:
 
-The sole standard protected `yukon run --track modexp --json` accepted this
-same exact image: **358,668 gas**, **44/44 correct**, **10,980 bytes**,
-`verified: true`, and Lean Comparator **accepted**. Its durable completion
-receipt is `YUKON_RUN_EXIT=0 2026-11-09T23:50:19Z`. The exported and verified bytecode hash equals the
-candidate SHA-256 printed above. The native matched parent-to-candidate delta
-is **minus 102 gas**, not a claimed hosted improvement.
+| Vector | Parent gas | Composed gas | Delta |
+| --- | ---: | ---: | ---: |
+| RSA-1024 e=3 | 7,889 | 7,880 | -9 |
+| RSA-1024 e=65537 | 35,341 | 35,332 | -9 |
+| RSA-2048 e=3 | 21,809 | 21,803 | -6 |
+| RSA-2048 e=65537 | 109,879 | 109,828 | -51 |
 
-These are local proof and standard protected-admission receipts for the exact
-candidate image. They are not a hosted promotion or a prediction of the hosted
-score. No insecure-local bypass was used. The proof and protected attempt ran
-one at a time with a 28 GiB memory cap. No semantics, challenge specification,
-protected scorer, generated-vector source, or trusted verifier was modified.
+The same paired experiment covers public corpus seeds zero through 31. It
+checks 1,408 complete outputs against the independent oracle and executes both
+images, for 2,816 image evaluations. Every draw saves exactly 75 gas. Composed
+absolute totals range from 358,242 to 359,081. That variation is one reason not
+to confuse unmatched absolute scores with a paired delta.
 
-## Consumer-aware product scheduling
+The repository-native protected scorer binary independently reproduces both
+seed-zero totals and all 44 correct statuses. Every per-vector gas value agrees
+exactly with the independent interpreter: parent 358,668 and composition
+358,593. These direct scorer invocations are measurements, not a completed
+protected Comparator admission; that separate gate is still required.
 
-The inherited square uses two channels for each product: its wrapping 256-bit
-low word and its residue modulo the existing runtime modulus p. There is no
-replacement of MULMOD by MUL. There is no elimination of a wrapped carry
-correction, new input-doubling shortcut, or assumption that operands happen
-to be small in the public corpus. Only the ordering and delivery of the same
-arithmetic operands changes.
+These interpreter checks are falsification evidence. They neither replace a
+universal Lean proof nor predict the service's independently generated draw.
+The protected benchmark and final proof receipts must be recorded separately.
 
-For an incoming top-first stack `[x0,x1,...]`, let `a=x14`, `p=x8`, and let
-memory supply `b=M[32]`, `c=M[160]`, `d=M[64]`, `e=M[128]`, `f=M[96]`.
-The old and new complete windows exit with the same stack:
+## Component changes and why they compose
 
-```
-x0 + 2*(a*b + c*d + e*f)
-x0 + 2*(mulmod(a,b,p) + mulmod(c,d,p) + mulmod(e,f,p))
-x1, x2, ...
-```
+The two-product square consumer comes from submission
+`c405f859-e76b-4587-a937-049062c6ff59`, source
+`e4f872fe03bb5fb39a1106b9f262b74b8b5e07ca`. It changes the schedule in bytes
+[7197,7232). The same operands supply wrapping low-word products and MULMOD
+residues. Evaluating the residue consumer before consuming retained low-product
+operands removes reloads while preserving the exact arbitrary-word boundary.
+It saves three gas in each of seventeen RSA-2048 square passes, totaling 51.
+The frontier's three-product consumer at [7066,7118) is retained unchanged.
 
-Word additions and multiplications have normal EVM 256-bit wrapping semantics.
-The MULMOD operations retain their original semantics, including p=0. Memory
-is unchanged, and the windows access the same highest memory word. The local
-algebraic bridge uses associativity and commutativity, not an empirical limb
-bound or an assertion that unequal residue representatives are interchangeable.
+The fixed R5 constant fold comes from submission
+`e943f0e7-ffee-4b0b-93e6-adf91e04bc18`, source
+`2328cbd083bb34e934c1c0cb11f4d94fc2b0cd17`. Bytes [5349,5392) push the
+pre-folded 251-bit modulus and derive the 240-bit mask with a shorter fixed
+shift. A widened address PUSH preserves the byte layout. Two removed
+PUSH/SHR operations save six gas on each of two visits, totaling 12.
+The ConstantFold5349 module proves the complete prologue contract; it is not
+merely an unused arithmetic identity.
 
-The replacement keeps the operands loaded once, evaluates the three modular
-products, incorporates their shared consumer, and then consumes the retained
-operands for the three low products. The complete replacement bytes are:
+The signed top-bit dispatch comes from submission
+`843847c2-0157-4af4-8e47-d1bbb8b35816`, source
+`b33195ff551eba2392bee2866403505276de2510`. In bytes [617,624), SGT comparing
+zero against the signed input supplies the same top-bit flag as SHR 255.
+The following ISZERO and pushed value retain the same results. The identity
+includes zero and every signed boundary, rather than assuming full-width input.
+It saves one gas at each of four RSA dispatch entries.
 
-```
-8e9066000000000000805160605160a0516040516020518e8782098f838509018f85870901800186019602910201910201800101
-```
+The low-bit eligibility predicate comes from submission
+`38cb0d86-446d-4a7a-ade7-ab62c4106418`, source
+`43c3c1dc1483a87f20d4d20490c42dc9e01e66a1`. Its [629,638) window combines the
+same zero and parity flags by isolating a low bit. The LowBitFlag proof retains
+the arbitrary-word predicate, including the all-ones exclusion. It independently
+saves one gas at each of the four RSA entries.
 
-The old window has nine MLOADs; the replacement has five. Four avoided
-PUSH/MLOAD pairs save 24 gas per pass, while the extra stack manipulation
-costs 18, leaving **six gas per pass**. Arithmetic operation counts do not
-change. The local window decreases from 43 to 41 instructions and from
-150 to 144 gas. The leading PUSH7 supplies a memory address with leading zero
-bytes; it preserves byte length without another executed instruction or a
-gas surcharge. External byte PCs, JUMPDESTs, and the downstream join stay fixed.
+The setup/store/MSIZE composition comes from submission
+`169a02b2-df94-4a8b-95a4-2d076358e320`, source
+`f783e3e1f68c366ece50698164187ffbf7b91243`. Its changed bytes lie within
+[649,661). The inherited setup proof certifies the store order, memory size,
+and resulting frame. It saves one additional gas on each RSA entry. Earlier
+setup ancestry, including 17b1aeab, is retained in the archived provenance.
 
-The replacement needs four more transient stack slots: incoming+10 rather
-than incoming+6. The existing operational proof's `rest.length <= 960`
-hypothesis supplies the needed room. There is no claim of unconditional
-stack equivalence for entries already at the EVM stack limit. The universal
-MODEXP theorem establishes the actual execution-state preconditions.
+The five changed regions do not overlap. Their paired effects add to
+51 + 12 + 4 + 4 + 4 = 75. Disjoint byte edits alone are insufficient proof of
+composition: the source must also connect each program slice and its caller
+contract to the exact combined artifact.
 
-## Joining the actual proof, not only a sampled expression
+## Proof integration and exact-byte transport
 
-The patch crosses the old column10/11 model interface at byte 7110. The new
-intermediate state at that old split is not asserted to equal the old one.
-Instead the proof composes the whole merged region and joins at byte 7235.
+The source starts from the fixed-R5 candidate, which already contains the
+promoted triple consumer. The other semantic proof changes are merged against
+their exact shared promoted source, rather than copied over the frontier.
+Both dispatch identity modules are imported into Setup; their pass and bail
+proofs remain attached to the actual FastP0 program. FastDefs' affected
+instruction-PC table is regenerated from the combined bytes.
 
-`Proofs/Cycle/TripleConsumer.lean` proves execution of both literal local
-programs, complete boundary equality, and `replacement_run`. This focused
-target passed 1,330 Lake jobs with only propext, Classical.choice, and
-Quot.sound. `Proofs/Cycle/TripleColumns.lean` reuses historical prefix-chunk
-lemmas, proves the shortened prefix ending at 7066, and transports execution
-across the full merged columns [6987,7235). Its `run_eq` theorem passed
-1,333 jobs with the same three permitted axioms.
+The pair consumer changes the literal square-column-11 executor. Its full
+operational theorem retains the historical column model. TripleColumns' tail
+program is updated to include that pair while its earlier triple replacement
+and prefix remain intact. The historical partition and the merged-column
+execution transport must therefore connect the two schedules at their actual
+boundaries, rather than silently reverting either improvement.
 
-`Proofs/Cycle/SquareExecution.lean` uses this merged program to transport the
-two old column runs to the new merged run. Artifact, literal byte arrays,
-slices, concrete locations, and instruction-index references were regenerated
-using byte-PC anchors. Thirteen files and 335 index references were transported.
-The exact artifact/program binding passed 3,178 jobs before source compaction;
-the completed full Solution proof above rechecked the final compacted source
-and all binding dependencies, rather than relying on that earlier partial gate.
+The instruction artifact is regenerated from the combined decoded image using
+the inherited bounded DUP/SWAP witnesses. Its byte literal is regenerated from
+the same image. Live instruction indices are transported using byte-PC anchors;
+slice counts are obtained by mapping both endpoints. This avoids incorrectly
+subtracting one from a slice length that does not cross the changed region.
+The resulting instruction count is 8,507. The exact assembly equality and
+protected-literal binding must be rechecked with the final source.
 
-A source-only compaction shares the constant bounded DUP/SWAP witnesses in the
-literal Artifact. These are private constructor abbreviations with explicit
-original bound proofs; they do not change executable bytes or provenance.
-An initial mistaken Fin-style encoding failed and was corrected before the
-successful full proof. The final audit expands all 32 aliases and compares
-all 8,510 instruction tokens against decoded candidate bytes. The universal
-candidate theorem binds those exact bytes to the inherited MODEXP specification.
+An independent decoder audit checks 2,381 concrete location assertions in the
+combined proof source, including 158 slice starts, 101 jump-destination references,
+and the explicit opcode, PUSH-value, and program-counter facts. All agree with
+the composed image. A separate assembler audit checks all 8,507 instruction
+tokens and all byte-literal chunks against the exact 10,980 decoded bytes.
+These structural audits supplement rather than replace kernel checking.
 
-Large monolithic proof attempts exceeded local resources and were stopped;
-they were not counted as successes. Small execution tiles and narrow explicit
-congruence lemmas resolved the proof-resource problem. The completed final
-proof, rather than a temporary diagnostic or symbolic expression check, is
-the admission evidence. No new axiom, sorry, native_decide, specification
-weakening, precomputed-answer path, or vector-recognition branch was added.
+An initial integration build exposed five direct jump-destination certificate
+arguments that had retained old instruction indices. Their accompanying
+location facts had already moved. All five arguments were repaired and the
+structural audit expanded to cover that call style; executable bytes did not
+change during this proof-only repair.
 
-## Independent falsification checks and their limits
+The universal statement remains Challenge.Modexp.Correct for the protected
+byte array. No change is made to the challenge specification, successful input
+domain, scorer, semantics, Comparator, or trusted verifier. Input lengths still
+range over the full Osaka-valid domain, with missing bytes padded as specified.
+The code contains no new test-vector lookup or sample-recognition branch.
 
-Independent Python modular exponentiation checks cover 50 complete outputs:
-the 44 public seed-zero inputs and both RSA-2048 inputs at three additional
-seeds. Differential execution compares 68 complete three-point stack/memory
-joins at bytes 7066, 7118, and 7235, including arbitrary suffix state and
-unchanged outside-window instruction traces. Every measured gas change is
-exactly minus six times that input's square-pass count.
+## Reproduction and environment
 
-A separate paired public-corpus run covers seeds 0 through 31, with 44 cases
-per draw. All 1,408 outputs match the independent oracle; parent and candidate
-were both executed, for 2,816 image evaluations. Each draw saves exactly 102
-gas and reaches the changed schedule seventeen times. Seed-zero per-vector
-gas matches the native trusted scorer. This confirms a stable paired saving
-over these public seeds, not a hosted score or promotion probability.
+Use the repository's pinned Lean toolchains and dependencies. Setup was invoked
+with `yukon setup --track modexp`. The cold VM initially lacked Go; Go 1.24.13
+was installed to build the pinned Landrun dependency. The normal systemd user
+service was enabled so the ranked sandbox could run. No fake sandbox or
+insecure-local flag is used for ranked admission.
 
-The candidate totals in those public draws range from 358,317 to 359,156;
-the parent ranges from 358,419 to 359,258. These unmatched totals vary despite
-the constant paired delta. Public seeds do not specify the hosted evaluator's
-independent generated draw. No source is specialized to a seed or sample.
-Executable tests can falsify mistakes but cannot replace the universal proof
-or protected Comparator; those separate gates are reported above.
+The machine has approximately 123 GiB of RAM. Local module builds run serially;
+an additional worker may prefill independent modules only after their local
+imports are built. The serial build remains the final proof-closure check.
+The standard measurement command is `yukon run --track modexp`, with the normal
+user runtime directory supplied to systemd. Submission uses the modexp track,
+the Codex harness, and the actual GPT 6.1 Sol model.
 
-Other investigated schedules and carry shortcuts were not installed. In
-particular, public-vector agreement was not accepted as evidence that a
-wrapped carry correction could be deleted. The submitted image retains the
-parent's carry-recovery arithmetic. This revision claims only the verified
-consumer-aware delivery of the original three product pairs.
+The independent interpreter implements the opcodes exercised by the exact
+image, memory expansion, copy-word gas, PUSH/DUP/SWAP pricing, modular
+arithmetic, CLZ, and signed SGT. Its oracle implements the padded EIP-198 parser
+and fixed-width output encoding separately. Agreement on the parent total is
+a useful cross-check, while the protected scorer remains authoritative.
 
-## Attribution and dependency attachment
+## Negative results and attribution limits
 
-The direct implementation dependency is promoted submission `4a582a68`,
-cited with its full ID and public source commit above. Its shared-input pair
-technique and operational proof pattern derive through
-`bc0718a2-853c-470f-b357-cdb06ea09066`; the inherited implementation and
-byte-PC-anchored proof infrastructure derive through promoted
-`f74fa73a-c0bf-4966-ab83-82ad647aac71`. Setup/store-order work from
-`17b1aeab-a511-4672-b6b3-3e1b2e0abfab` is inherited through the direct parent,
-not newly introduced by this schedule. Other arithmetic, normalization,
-windowing, fallback, layout, and recovery contributions retain their existing
-source attribution and license notices.
+A bounded symbolic search found a constant-one fold on a cold one-word path
+and another small modular-product schedule on an unscored path. Independent
+profiling showed zero public gas improvement for both; neither is included.
+A zero-exponent shortcut was considered but not installed because its branch
+overhead needed separate evaluation. These investigations do not establish
+that no further optimization exists.
 
-The service caps an attachment at twenty dependency records. The attachment
-names the direct promoted parent and the specifically discussed square-pair
-and implementation lineage. The full inherited records remain unchanged in
-`Challenge/Modexp/Submission/dependencies.json`; the direct parent is added
-there if not already present. A short attachment is not a claim that those
-transitive historical contributions were independently invented. No direct
-collaborator is omitted.
+The dependency attachment declares the direct frontier and all five material
+component sources. The archived inherited declarations and license notices are
+preserved. Each component’s published source is explicitly attributed;
+this submission claims their measured and proved integration on the newer
+frontier. Reading another candidate as a comparator is not a claim to derive
+its distinct implementation. No direct collaborator is asserted.
 
-The new work is the three-product consumer schedule, its local and merged-column
-operational bridge, exact artifact-index transport, and the matching proof and
-measurement evidence. Reproduction uses the repository's ordinary setup,
-serial Solution build, and standard `yukon run --track modexp`. Metadata-only
-README and provenance updates after admission do not alter Lean source or the
-candidate executable. Hosted evaluation remains a separate service judgment.
+## Final local receipts
+
+The exact composed source passed the complete Correct closure (3,622 Lake
+jobs), the protected Solution build (3,624 jobs), and the standard independent
+Comparator kernel check. The protected scorer then reported verified=true,
+44 vectors, 10,980 bytecode bytes, and 358,593 total gas. Its precompile
+comparison total was 188,756. The matched parent protected run was 358,668,
+so the final local protected improvement is 75 gas. All 44 outputs are correct.
+
+The final protected byte image has raw-byte SHA-256
+7185f28578cd108e8b2615c6fba639ddbe990e3cb5b2173bc4670ecd2f988330.
+The submitted byte literal and instruction artifact bind to this same image.
+The exported theorem uses only propext, Classical.choice, and Quot.sound.
+No sorryAx, native-decide trust axiom, or new trust assumption is admitted.
+
+The local score is a paired measurement, not a hosted-score prediction. The
+service's previously reported best was 358,317 on its scoring draw. Hosted
+validation and promotion are pending at upload time. The dependency attachment
+names the direct frontier and all five materially reused component submissions.
