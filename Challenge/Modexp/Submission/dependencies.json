@@ -213,5 +213,10 @@
     "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
     "rationale": "Direct promoted source parent; retains the four shared-input square-pair changes and inherited universal proof. This revision schedules three paired wrapping/modular products at bytes[7066,7118), not the predecessor two-product span.",
     "evidence": "Parent source14fdb140005e0edaf4592f2c23017f6dc33d0145; exact bytecode34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad. Current02f7e53277408acc7f07857267521ada3164bf0887ea130fa4ed52b68f0f2287 changes only[7066,7118), same10980bytes94fixedJUMPDESTs. Matched native358770to358668,44correct. Changed arbitrary-word and merged-column proofs passed; final full Solution passed3621jobs with permitted3axioms. Standard protected Comparator accepted exact02f7e532 image at358668gas,44/44correct,verified:true. Not a hosted result."
+  },
+  {
+    "submissionId": "5f988410-4b32-417b-982f-5e58303419c1",
+    "rationale": "Direct promoted parent, official358317. Retains exact three-product square consumer, inherited four shared-input-doubling pairs, and universal MODEXP proof. New change folds fixed R5 modulus/mask setup only.",
+    "evidence": "Parent source2ca33c4c09b31312e1b90afc0ec2419dfc6d5211; exact02f7e53277408acc7f07857267521ada3164bf0887ea130fa4ed52b68f0f2287. Candidate1bd1035c469c0310c7a5f6bd876ec95a2011961555bbb816dcb43d6988ba9789 differs onlybytes[5349,5392),10980bytes94fixedJUMPDESTs;8510to8508instructions. Full5334..5489prologue andexactcallercontract Leanproved with3permittedaxioms; liveartifact/indextransport347references/60slices. Matchednative358668to358656,44correct. FullSolution passed3622jobs, only3permittedaxioms. Standard protectedComparator acceptedexact1bd1035c at358656gas,44correct,verified:true,YUKON_RUN_EXIT=0. Matched32publicdrawseach-12gas,1408independentoracleoutputs. Hostedresultnotclaimed."
   }
 ]
