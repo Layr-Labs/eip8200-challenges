@@ -98,32 +98,32 @@ def blkZeroExpHit :
    pushAt 2648 1 64,
    pushAt 2649 2 4819,
    opAt 2650 .JUMP,
-   opAt 3662 .JUMPDEST,
-   opAt 3663 .CALLDATALOAD,
-   pushAt 3664 0 0,
-   opAt 3665 .CALLDATALOAD,
-   pushAt 3666 1 96,
-   opAt 3667 .ADD,
-   opAt 3668 .CALLDATALOAD,
-   opAt 3669 (.Dup ⟨1, by decide⟩),
-   pushAt 3670 1 32,
-   opAt 3671 .SUB,
-   pushAt 3672 2 3,
-   opAt 3673 .SHL,
-   opAt 3674 .SHR,
-   pushAt 3675 1 1,
-   opAt 3676 .LT,
-   pushAt 3677 0 0,
-   opAt 3678 .MSTORE]
+   opAt 3646 .JUMPDEST,
+   opAt 3647 .CALLDATALOAD,
+   pushAt 3648 0 0,
+   opAt 3649 .CALLDATALOAD,
+   pushAt 3650 1 96,
+   opAt 3651 .ADD,
+   opAt 3652 .CALLDATALOAD,
+   opAt 3653 (.Dup ⟨1, by decide⟩),
+   pushAt 3654 1 32,
+   opAt 3655 .SUB,
+   pushAt 3656 2 3,
+   opAt 3657 .SHL,
+   opAt 3658 .SHR,
+   pushAt 3659 1 1,
+   opAt 3660 .LT,
+   pushAt 3661 0 0,
+   opAt 3662 .MSTORE]
 
 /-- The return of the zero-exponent hit: `DUP1 PUSH1 32 SUB RETURN` returns the low
 `msize` bytes of word 0 (instructions 8666..8669). -/
 def blkZeroExpReturn :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3679 (.Dup ⟨0, by decide⟩),
-   opAt 3680 .MSIZE,
-   opAt 3681 .SUB,
-   opAt 3682 .RETURN]
+  [opAt 3663 (.Dup ⟨0, by decide⟩),
+   opAt 3664 .MSIZE,
+   opAt 3665 .SUB,
+   opAt 3666 .RETURN]
 
 
 
@@ -142,13 +142,13 @@ theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.byteco
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem packedTailPCs (i : Nat) (hi : 3662 ≤ i) (hii : i ≤ 3682) :
+@[simp] theorem packedTailPCs (i : Nat) (hi : 3646 ≤ i) (hii : i ≤ 3666) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4819, 4820, 4821, 4822, 4823, 4825, 4826, 4827, 4828, 4830, 4831, 4834, 4835, 4836, 4838, 4839, 4840, 4841, 4842, 4843, 4844] : List Nat)[i - 3662]! := by
+      ([4819, 4820, 4821, 4822, 4823, 4825, 4826, 4827, 4828, 4830, 4831, 4834, 4835, 4836, 4838, 4839, 4840, 4841, 4842, 4843, 4844] : List Nat)[i - 3646]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 theorem jumpDestZeroExpTail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4819 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3662 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 3646 (by rfl)
 
 end CycleSubmission.Global.Fast

@@ -234,7 +234,8 @@ theorem from_head (s : State) (env : Environment CycleSubmission.Artifact.artifa
   have h4 : 4*N ≤ RouteMath.R := by unfold RouteMath.R; omega
   have hn4' : n4.toNat < 2^65 := top65 ⟨n0, n1, n2, n3, n4⟩ N (by rw [← hNval]; omega) hNlt
   have hn0' : n0.toNat < radix := by rw [hn0]; exact Nat.mod_lt _ (by norm_num [radix])
-  have gl := loop s n1 n2 n3 n4 P inv n0 rest env hcap hact h_n0 h_inv (k-1) x c hc
+  have gl := loop s n1 n2 n3 n4 P inv n0 rest env hcap hact h_n0 h_inv hP (k-1) x c hc
+    ⟨hx.1, hx.2.1, hx.2.2.1, hx.2.2.2.1⟩
   obtain ⟨hXok, hXb, hXw⟩ := iter_spec n0 n1 n2 n3 n4 P inv ninv N hinv hP hn1 hn2 hn3 hn4 hn0 hN hNval
     hodd h4 (k-1+1) x c w hx hxb hw
   set X := (iter n1 n2 n3 n4 P inv n0 (k - 1 + 1) x c).1 with hX

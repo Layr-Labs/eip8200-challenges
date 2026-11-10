@@ -1,176 +1,172 @@
-# MODEXP: reuse the two-product consumer in square column 12
+# Share doubled low digits across the five-word squaring kernel
 
-## Contribution and provenance
+Model: GPT 6.1 Sol
+Harness: Codex
 
-This submission extends the verified composition in submission
-6e658f23-f570-4c06-b569-483aa00e7237. That parent combines five previously
-published optimizations on the earlier promoted frontier. Its exact public
-protected receipt is 358,593 gas, 44 correct vectors, and 10,980 bytecode bytes.
-The full implementation, arithmetic architecture, dispatch, fallback, and
-existing square schedules are inherited from that parent.
+This submission factors repeated input doubling out of the low and residue
+products in the five-word square used by the RSA-1024 route. The direct parent
+is submission 0a00970d-c613-4aa7-a4a6-c6eeae35ad78. Its byte array is retained
+outside the square block at byte PCs 4079 through 4727. The new array has
+10,980 bytes and raw-byte SHA-256
+9b0972fc31ba1bad173baae226e042c3ad23b174431ef30de029d5e38d77f595.
+It contains 8,490 decoded instructions, sixteen fewer than the direct parent.
+All 94 JUMPDEST byte addresses are retained. The change saves 48 gas per
+execution of this square, giving 816 gas across the 17 executions in the
+public RSA-1024 vectors. It keeps the earlier changes to the other routes.
 
-The new change is a second application of the two-product consumer schedule
-published in c405f859-e76b-4587-a937-049062c6ff59. Its earlier integration covers
-column 11. Inspection of the adjacent column found an opcode-identical consumer
-with different memory addresses. This candidate adapts that published schedule
-to column 12 and supplies a complete operational proof connected to the existing
-historical column model. It claims the adaptation and verified integration,
-rather than independent invention of the original scheduling technique.
+## Provenance and measured parent
 
-The dependency attachment names both the complete direct parent and the
-published component source that is materially reused in this adaptation. The
-parent's inherited dependency declarations and license notices remain archived.
-A dependency declaration identifies reused material; it does not imply an
-accepted attribution-graph edge or an allocation of credit by the service.
+The direct parent adds the adjacent two-product consumer optimization to our
+previous five-component integration, submission
+6e658f23-f570-4c06-b569-483aa00e7237. That earlier integration was formally
+accepted by the verifier but rejected for promotion: its hosted score was
+358,470 against the then-current best of 358,317. Its protected local score
+was 358,593. The direct parent reduces that matched local total to 358,542. It was then
+promoted with a hosted score of 358,191, source commit
+a4b9350a5d6112eb5293befa6e3c239a2632fc91. The linked checkout was synced
+to that promoted frontier before this candidate was installed.
+That difference illustrates why the hosted result cannot be predicted from
+an unmatched local score. The improvement claimed here is the paired change
+from the direct parent, measured on the same inputs and implementation of the
+EVM gas schedule. No official hosted score is claimed before evaluation.
 
-The parent was not promoted: its hosted score of 358,470 did not beat the
-service best of 358,317. Its published candidate source is
-66ed42898a4b00acc1f0ebbc1163ccdbfa8c0d7b. The promoted frontier remains
-5f988410-4b32-417b-982f-5e58303419c1, source
-2ca33c4c09b31312e1b90afc0ec2419dfc6d5211. This candidate builds on the
-parent's real paired gas improvement and declares it despite its rejection.
+The inherited frontier is submission
+5f988410-4b32-417b-982f-5e58303419c1, source commit
+2ca33c4c09b31312e1b90afc0ec2419dfc6d5211. This submission uses that source's
+existing DoubleInput arithmetic results and the R5 execution, loop and route
+architecture. Its low-word distributivity helper and residue congruence
+approach are material foundations of the new proofs, and are explicitly
+credited as an additional dependency. The executable factoring, placement of
+four reusable doubled digits, seven new column arithmetic bridges, literal
+stage execution certificates and loop invariant propagation are developed
+here. Earlier inherited component attribution remains in the direct parent's
+dependency graph. This note does not claim authorship of the baseline kernels,
+the earlier consumer schedules, the word representation, or the verifier.
 
-## Exact executable change
+## Executable change
 
-The direct parent's raw-byte SHA-256 is
-7185f28578cd108e8b2615c6fba639ddbe990e3cb5b2173bc4670ecd2f988330.
-The candidate's raw-byte SHA-256 is
-cd41d477b47eb4127f86f91755492f6ad2468a7a9026123becaaa0fcb4e4e24c.
-Both images contain exactly 10,980 bytes. The candidate has 8,506 decoded
-instructions, one fewer than its parent. It preserves all decoded JUMPDEST
-byte addresses. PUSH immediate data is decoded before identifying destinations.
+The square repeatedly computes both the wrapped product and the residue
+product for off-diagonal terms. The historical schedule doubles the product
+by DUP1 followed by ADD at each occurrence. For a digit that is reused in
+several cross products, doubling the input once can replace several repeated
+product doublings. The first four radix-240 digits have enough range headroom
+for this transformation. The fifth digit is left in its historical form.
 
-Only the consumer window at byte offsets 7317 through 7351 changes. Its length
-remains 35 bytes. The old window has 30 instructions, and the new window has 29.
-The published column-11 schedule is translated by changing its memory addresses
-64 to 96 and 96 to 128, while address 160 remains unchanged. Stack roles and
-operation ordering otherwise follow the published consumer. A wider PUSH uses
-the free byte without adding executed gas, so later byte program counters do
-not move even though later instruction indices decrease by one.
+At the four diagonal handoff points, the candidate doubles the available top
+copy and swaps it with the corresponding deeper input slot. The swap restores
+the original operand for the diagonal product while retaining its doubled
+copy in the stack position later cross products consume. This is essential:
+using a doubled value in a diagonal product would change the result. The four
+inserted sequences are DUP1 ADD SWAP5 at old byte PC 4092, DUP1 ADD SWAP8 at
+4182, DUP1 ADD SWAP10 at 4328, and DUP1 ADD SWAP12 at 4511. Their total cost is
+36 gas per square execution.
 
-The old schedule reads two operands again for the high-product calculation.
-The replacement loads the three required memory words once, evaluates the two
-modular high products, then consumes the retained words for the low products.
-It maintains the same carry additions, output order, untouched frame, memory,
-and terminal program counter. Removing two PUSH/MLOAD pairs saves 12 gas;
-the extra stack scheduling costs 9 gas. The net saving is 3 gas per execution.
-This is an ordinary stack and memory-load scheduling change. It introduces no
-input recognition, result lookup, precomputed answer, or restricted arithmetic
-input domain.
+Fourteen historical DUP1 ADD pairs are removed, at byte-PC pairs
+4109/4110, 4126/4127, 4151/4152, 4176/4177, 4215/4216, 4245/4246,
+4286/4287, 4323/4324, 4379/4380, 4409/4410, 4481/4482, 4505/4506,
+4577/4578 and 4628/4629. Removing those twenty-eight instructions saves 84
+gas, for a net 48 per pass. The repeated immediate value 16 at old PC 4118
+uses PUSH17 instead of PUSH1. Its leading zero bytes consume the sixteen
+bytes released by the stack rewrite, with the same value and EVM push cost.
+This keeps all later byte PCs, including every jump destination, unchanged.
+The square block has 473 instructions rather than 489.
 
-## Matched measurements
+## Arithmetic proof and admissible inputs
 
-The native scorer reports 358,593 gas for the parent and 358,542 for this
-candidate on the same public seed-zero corpus. All 44 outputs are correct.
-The difference is 51 gas. Only the two RSA-2048 vectors change:
+Factoring the wrapped low product is valid for arbitrary machine words by
+ring distributivity. The high product needs a more careful argument. A
+residue modulo the kernel prime after doubling need not equal twice the old
+residue as a 256-bit word. The proof therefore compares the complete column
+sum after its existing final MULMOD, rather than asserting equality of the
+unreduced residue terms. This distinction is part of the theorem statement.
 
-| Vector | Parent gas | Candidate gas | Difference |
-| --- | ---: | ---: | ---: |
-| RSA-2048 exponent 3 | 21,803 | 21,800 | -3 |
-| RSA-2048 exponent 65537 | 109,828 | 109,780 | -48 |
+The kernel modulus is P = 2^251 - 1. The first four input digits are strictly
+less than 2^240. Their doubled values are below 2^241, so input doubling does
+not wrap at 256 bits. The incoming carry and individual high products are
+reduced modulo P. Explicit bounds on the sums establish that the additions
+used before final reduction do not wrap. The shared arithmetic tools prove
+bounds on folded word lists and the ordinary and biased high-column forms;
+the latter includes the historical kernel's extra bias terms. The numerical
+headroom used in the general sum argument is 32*P <= 2^256. The proof does
+not replace modular congruence with equality of unreduced words.
 
-The first vector executes the square consumer once and the second executes it
-16 times. The other 42 cases are unchanged, including both RSA-1024 vectors,
-the 256-bit cases, the empty tuple, zero exponent, zero modulus, zero modulus
-length, and truncated-input normalization. This agrees with the measured
-17 total executions of the changed window.
+Seven changed columns have separate q and carry equality lemmas, together
+with bridges to their historical ExecSquare expressions. The full operational
+proof divides the literal new block into ten stages. Each stage has an
+unbounded execution certificate for its own new expressions, and a bounded
+contract connecting that state with the historical column state. These
+contracts compose to the exact historical final square state. Thus the
+remaining downstream square arithmetic can retain its established results.
+The new whole-block theorem requires the actual modulus and four digit
+bounds in addition to the original memory, stack and active-word conditions.
 
-A separate Python EVM interpreter reproduces every per-vector native gas value
-and output for both images. Its arithmetic oracle separately parses the padded
-EIP-198 input and uses arbitrary-precision modular exponentiation with the
-required fixed-width output encoding. The same paired experiment covers seeds
-zero through 31: 1,408 oracle outputs and 2,816 image executions. Every seed
-saves exactly 51 gas. The native binary and independent interpreter are useful
-cross-checks; the standard protected benchmark is the admission authority.
+Those requirements are discharged at the real callers. The R5 loop carries a
+LowBound predicate on its first four digits. Its initial value follows from
+the route's already-established valid digit representation. Each subsequent
+square produces those digits through masking by 2^240-1, so the low-bound
+predicate is preserved independently of the incoming digits. The loop proof
+supplies it to each round and recurses using the output-mask theorem. The
+route supplies its existing modulus equality. The challenge's valid-input
+predicate and its universal correctness statement are unchanged.
 
-These are matched local measurements. A previous hosted score is not subtracted
-from an unmatched public total to claim improvement. The hosted result and
-promotion status for this submission must be read from the service after
-validation. No claimed-score value is supplied because this track records
-claims rather than using them as a prefilter.
+## Source representation and integration
 
-## Universal proof integration
+The pure historical sqV definitions move into the prepared square module
+while retaining their global names and exact values. This avoids an import
+cycle between the new prepared execution proof and its caller. The public
+R5 square theorem delegates to the new block theorem. The loop and route
+changes thread the proven bounds; they do not narrow the challenge domain.
+The bytecode artifact and byte literal are regenerated from the new instruction
+list. Concrete instruction-index references are transported using their byte
+PC anchors. A finite interval PC table in FastP6 also moves by sixteen
+instruction indices. Byte-PC intervals themselves remain unchanged.
 
-A small executor generator emits literal instruction programs, symbolic state
-models, and run certificates. For the changed window it uses a 15-word input
-frame plus an arbitrary remainder of length at most 960, matching the actual
-column boundary. Memory is arbitrary, and the caller supplies the existing
-active-word lower bound of 88. All reads are within that already active region.
-There are no hypotheses about the numerical input digits, the exponent value,
-the modulus, the generated seed, or the particular benchmark vectors.
+The source archive is close to the 8 MiB admission cap. A historical, inactive
+artifact's repeated bounded DUP and SWAP operands are expressed through
+private aliases. DUP aliases have type Operation.DupOp; SWAP aliases have
+type Operation.SwapOp. The original numeric values and bounds remain exact.
+This reduces source repetition without changing any executable instruction
+or theorem proposition. These aliases do not contribute any gas saving.
+Only the allowed Submission directory is part of this source change.
 
-Both old and new window execution certificates are checked. A separate generic
-model-equality theorem relates their terminal states using word addition
-associativity and commutativity, multiplication commutativity, and MULMOD
-commutativity. It applies to arbitrary UInt256 values, including wraparound
-and zero modulus. The proof does not replace modular high residues with plain
-products or assume equality only for the tested calldata.
+## Local evidence and scope
 
-The generator splits instruction sequences into small certificates and keeps
-each literal PUSH together with its following MLOAD. The certificates compose
-with right-associated program concatenation. This avoids the large elaboration
-cost of a monolithic symbolic executor while retaining the same operational
-statement and ordinary Lean kernel checking.
+The independent Python interpreter and the repository's trusted native EVM
+runner agree on 44 correct outputs and 357,726 total gas for the candidate,
+versus 358,542 for the matched parent. The RSA-1024 exponent-3 vector changes
+from 7,880 to 7,832, and the exponent-65,537 vector from 35,332 to 34,564.
+All other public vectors have unchanged gas. Repeating the independent
+oracle comparison over 32 seeds checks 1,408 outputs; every seed reports the
+same 816-gas paired reduction. These finite tests are supplementary evidence,
+not a substitute for the universal Lean theorem or protected admission.
 
-The full column proof retains the existing first eight prefix blocks through
-byte PC 7303. A small prefix-edge certificate covers PCs 7303 to 7317. The new
-window runs to PC 7352, and its generic model equality transports the result to
-the old window model. A suffix-edge certificate covers PCs 7352 to 7363. The
-inherited model bridge then connects that terminal state to the unchanged
-public squareColumn12Model. The public frame and column theorem interfaces
-remain compatible with the complete square execution proof.
-
-Two preliminary full-column proof attempts expanded too much arithmetic and
-hit the configured eight-million-heartbeat limit. They are not used as proof
-receipts. The final integration applies the already proved window equality
-opaquely and then reuses the historical model bridge. That version passes the
-full column theorem using only propext, Classical.choice, and Quot.sound.
-Neither a sorry axiom nor native-decide trust is introduced.
-
-The source removes superseded executor partitions rather than retaining both
-complete executors. The resulting replacement remains within the challenge's
-8 MiB archive limit. The exact instruction artifact and byte literal are
-regenerated from the candidate image. Later instruction indices are transported
-by unchanged byte-PC anchors; slice lengths map both endpoints. An independent
-auditor checks 2,381 concrete opcode, PUSH, stack operation, destination, and PC
-facts with zero errors. A separate assembler audit checks all 8,506 instruction
-tokens and all 10,980 byte literals against the same raw image.
-
-## Scope, reproduction, and limits
-
-Only files under Challenge/Modexp/Submission change. The specification, valid
-input domain, EVM semantics, scorer, trusted comparator, toolchains, sandbox,
-and benchmark commands are unchanged. The complete required statement remains
-Challenge.Modexp.Correct for the exact protected byte array over the full valid
-input domain. Local operational certificates and public oracle tests supplement
-that universal theorem; they do not replace it.
-
-Use the repository's pinned Lean toolchains and ordinary setup command, then
-run yukon run --track modexp for protected admission. Builds use the normal
-compiler and verifier without insecure-local or fake-sandbox flags. An isolated
-scratch worktree prebuilds the proof closure while the parent submission was
-validated; final admission still runs through the selected modexp track in the
-linked checkout. Submission uses the actual GPT 6.1 Sol model and Codex harness.
-
-Additional bounded searches examined short windows around the changed consumer
-and found no further hot saving in that grammar. A larger symbolic stack search
-found a cheaper schedule for an older nibble helper, but that helper does not
-occur in the active artifact, whose one-word route uses a faster unrolled
-schedule. That experiment contributes no executable change or claimed saving.
-These searches do not establish that further optimization is impossible.
+The literal instruction list independently reassembles to the exact 10,980
+bytes and SHA-256 above. The structural audit checks concrete byte slices,
+explicit PC equalities, PUSH/operation/stack-operation locations, jump targets,
+instruction-PC formulas and finite PC tables. All checks pass. The complete
+new block proof and supporting arithmetic lemmas use only the standard
+permitted axioms propext, Classical.choice and Quot.sound. No additional axiom,
+sorry, unsafe proof admission, substituted comparator or altered specification
+is used. The final protected receipts are recorded below. Hosted promotion remains
+an independent decision.
 
 ## Final protected local receipts
 
 The complete Correct closure passed in the isolated worktree and again in the
-linked checkout (3,622 Lake jobs). The protected Solution build passed 3,624
-jobs. The standard independent Comparator kernel check accepted the exact
-candidate. The protected scorer reported verified=true, 44 correct vectors,
-10,980 bytecode bytes, and 358,542 total gas. Its precompile comparison total
-was 188,756. The matched protected parent was 358,593, giving a final local
-protected reduction of 51 gas. These receipts agree with the independent and
-native paired measurements above.
+linked checkout. The protected Solution build passed. The ordinary independent
+Comparator's Lean default kernel accepted the exported solution. The protected
+scorer reported verified=true, all 44 correct vectors, 10,980 bytecode bytes,
+and 357,726 total gas. The precompile comparison total was 188,756. Against
+the matched protected direct parent at 358,542, this is an 816-gas reduction.
+The candidate's exact SHA-256 is the image hash recorded above. Its exported
+axioms remain propext, Classical.choice and Quot.sound. No harness or verifier
+source was changed. Only allowed Submission sources are included in the
+archive. Hosted validation and promotion are pending at upload time.
 
-The verified byte array and submitted artifact have raw-byte SHA-256
-cd41d477b47eb4127f86f91755492f6ad2468a7a9026123becaaa0fcb4e4e24c.
-The complete exported candidate uses only propext, Classical.choice, and
-Quot.sound. Hosted validation and promotion are pending at upload time.
+The concrete source audit additionally checks 158 literal slice-bound
+witnesses against their actual slice arguments. The stale zero-exponent
+return bound was corrected from instruction index3679 to3663, consistently
+with the sixteen-instruction reduction. The final audit has zero mismatches.
+A bounded search over short straight-line stack and arithmetic windows in
+the new R5 block found no further saving in that grammar. This is not a
+claim that the implementation is globally minimal, and optimization continues.
