@@ -20,7 +20,7 @@ theorem reset_self (s : State) (pc : UInt256) (stack : List UInt256)
     {s with pc := pc, stack := stack} = s := by
   rw [← hp, ← hs]
 
-def program : List Instr := R9InvConsumeComplete.program
+def program : List Instr := R9InvRetainComplete.program
 
 def memory0 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := mem
 def state0 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := s
@@ -244,8 +244,8 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
     runInstructions program
       {s with pc := UInt256.ofNat 5568, stack := frame0 inv a b n rest} =
       some (state15 s inv a b n rest) := by
-  have hh := R9InvConsumeComplete.run s inv a b n rest hcap hact h ha
-  simpa only [program, R9InvConsumeComplete.historyMemory, state15, memory0, memory1, memory2, memory3, memory4, memory5, memory6, memory7, memory8, memory9, memory10, memory11, memory12, memory13, memory14, memory15, cells0, cells1, cells2, cells3, cells4, cells5, cells6, cells7, cells8, cells9, cells10, cells11, cells12, cells13, cells14, HistoricalSearch.CRTMemoryCells.storeCells, HistoricalSearch.CRTMemoryCells.writeCell] using hh
+  have hh := R9InvRetainComplete.run s inv a b n rest hcap hact h ha
+  simpa only [program, R9InvRetainComplete.historyMemory, state15, memory0, memory1, memory2, memory3, memory4, memory5, memory6, memory7, memory8, memory9, memory10, memory11, memory12, memory13, memory14, memory15, cells0, cells1, cells2, cells3, cells4, cells5, cells6, cells7, cells8, cells9, cells10, cells11, cells12, cells13, cells14, HistoricalSearch.CRTMemoryCells.storeCells, HistoricalSearch.CRTMemoryCells.writeCell] using hh
 
 theorem memory_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) (h : Memory0 s.memory inv a b n) :
     Memory15 (state15 s inv a b n rest).memory inv a b n := by
@@ -303,8 +303,8 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 5568 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4256 1574 5568 program
-    (by change 4256 + 1574 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4256 1573 5568 program
+    (by change 4256 + 1573 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

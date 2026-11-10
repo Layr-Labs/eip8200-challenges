@@ -14,20 +14,20 @@ open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 def counterBlock : Block Artifact.artifact .Osaka 7657 counterHeadProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5830 5 7657 counterHeadProgram
-    (by change 5830 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5829 5 7657 counterHeadProgram
+    (by change 5829 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def counterJumpBlock : Block Artifact.artifact .Osaka 7665 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5835 1 7665 jumpiProgram
-    (by change 5835 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5834 1 7665 jumpiProgram
+    (by change 5834 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def normalizesquareBlock : Block Artifact.artifact .Osaka 10484 normalizesquareProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8126 4 10484 normalizesquareProgram
-    (by change 8126 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8125 4 10484 normalizesquareProgram
+    (by change 8125 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -39,9 +39,9 @@ theorem validJump6152 : Decode.isValidJumpDest Artifact.bytecode 5567 = true := 
   rw [hp] at h
   exact h
 theorem validJump11008 : Decode.isValidJumpDest Artifact.bytecode 10484 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8126
-    (show Artifact.instructions[8126]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8126 = 10484 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8125
+    (show Artifact.instructions[8125]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8125 = 10484 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
