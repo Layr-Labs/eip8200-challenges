@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.DifferenceBranch
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftTrace2
@@ -83,17 +84,17 @@ theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n 
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 2080
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
       Monpro.readWord_l1Step um q NEG n a n hn32 (Or.inl ha)]
-  have hor1 : UInt256.isTrue (UInt256.lor (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor
-  have hor2 : UInt256.isTrue (UInt256.lor (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor.symm
-  unfold negOf bwOf cwOf tnOf wN at hor1 hor2
-  simp only [midGtSwap] at hor1 hor2
+  have htnTrue : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) := by
+    exact CycleSubmission.DifferenceBranch.difference_nonzero_of_flags
+      (wN (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) q (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) hor
+  unfold tnOf wN at htnTrue
   simp (config := { maxSteps := 500000 })
     [blk3125, midGtSwap, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, midPC, hw, uncState, pcMid, pcUnc, midMem, negOf, bwOf, cwOf, tnOf, wN, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hor1, hor2, jumpDestUnc,
+      outer, Exp.outer, hcode, hrun, hTN, htnTrue, jumpDestUnc,
       hslot, entrySlots, rideSlots,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -122,10 +123,10 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 2080
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
       Monpro.readWord_l1Step um q NEG n a n hn32 (Or.inl ha)]
-  have hor1 : UInt256.isTrue (UInt256.lor (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor
-  have hor2 : UInt256.isTrue (UInt256.lor (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q)) := isTrue_lor_of _ _ hor.symm
-  unfold negOf bwOf cwOf tnOf wN at hor1 hor2
-  simp only [midGtSwap] at hor1 hor2
+  have htnTrue : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) := by
+    exact CycleSubmission.DifferenceBranch.difference_nonzero_of_flags
+      (wN (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) q (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) hor
+  unfold tnOf wN at htnTrue
   have hpc : midPC n = 10907 := by simp [midPC, hw]
   simp (config := { maxSteps := 500000 })
     [blk3125h, midGtSwap, opAt, pushAt, wfOp,
@@ -133,7 +134,7 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState, hpc, uncState, pcMid, pcUnc, midMem, negOf, bwOf, cwOf, tnOf, wN, Exp.storeWord,
-      outer, Exp.outer, hcode, hrun, hTN, hor1, hor2, jumpDestUnc,
+      outer, Exp.outer, hcode, hrun, hTN, htnTrue, jumpDestUnc,
       hslot, entrySlots, rideSlots,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
