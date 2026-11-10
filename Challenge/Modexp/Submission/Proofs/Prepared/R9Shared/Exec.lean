@@ -8,7 +8,7 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 8000000
 set_option linter.unusedVariables false
 set_option linter.unusedSimpArgs false
-namespace R9InvCompactExec
+namespace R9InvConsumeExec
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof.Word Challenge.EvmProof.Stepper
 open CycleSubmission.Prepared.Arithmetic
@@ -3466,12 +3466,12 @@ def stage8Part19Program : List Instr :=
    .op (.Dup dA9),
    .push 30 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op (.Dup dA3),
-   .op (.Dup dA15)]
+   .op (.Dup dA1)]
 def stage8Part19Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 1280
   let v1 : W := UInt256.mulMod (v0) (w0) (w1)
   let v2 : W := (v1) + (w2)
-  {s with pc := N 6799, memory := s.memory, stack := (w14) :: (w3) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w11) :: (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 6799, memory := s.memory, stack := (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w3) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w11) :: (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage8Part19_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions stage8Part19Program {s with pc := N 6759, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage8Part19Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
@@ -3483,19 +3483,20 @@ theorem stage8Part19_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 
   simp [hz, hzn, stage8Part19Program, stage8Part19Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha1280, hf1280]
 
 def stage8Part20Program : List Instr :=
-  [.op .MUL,
-   .op (.Dup dA1),
-   .op (.Swap sA15),
-   .op .POP,
+  [.op (.Swap sA15),
+   .op .MUL,
    .op .AND,
    .op (.Dup dA0),
    .op (.Swap sA15),
-   .op .MULMOD]
+   .op .MULMOD,
+   .op .ADD,
+   .push 2 2048]
 def stage8Part20Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W) : State :=
-  let v0 : W := (w0) * (w1)
+  let v0 : W := (w16) * (w1)
   let v1 : W := UInt256.land (v0) (w2)
   let v2 : W := UInt256.mulMod (w17) (v1) (w3)
-  {s with pc := N 6807, memory := s.memory, stack := (v2) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w2) :: (v1) :: (w18) :: (w19) :: rest}
+  let v3 : W := (v2) + (w4)
+  {s with pc := N 6809, memory := s.memory, stack := (N 2048) :: (v3) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w0) :: (v1) :: (w18) :: (w19) :: rest}
 theorem stage8Part20_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions stage8Part20Program {s with pc := N 6799, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage8Part20Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
@@ -3505,19 +3506,16 @@ theorem stage8Part20_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 
   simp [hz, hzn, stage8Part20Program, stage8Part20Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
 
 def stage8Part21Program : List Instr :=
-  [.op .ADD,
-   .push 2 2048,
-   .op (.Dup dA10),
+  [.op (.Dup dA10),
    .op (.Swap sA2),
    .op .POP,
    .op .MULMOD]
 def stage8Part21Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
-  let v0 : W := (w0) + (w1)
-  let v1 : W := UInt256.mulMod (N 2048) (v0) (w10)
-  {s with pc := N 6815, memory := s.memory, stack := (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  let v0 : W := UInt256.mulMod (w0) (w1) (w10)
+  {s with pc := N 6813, memory := s.memory, stack := (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage8Part21_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage8Part21Program {s with pc := N 6807, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage8Part21Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage8Part21Program {s with pc := N 6809, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage8Part21Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3610,7 +3608,7 @@ def stage8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 :
   let v82 : W := UInt256.mulMod (w12) (v81) (w8)
   let v83 : W := (v82) + (v79)
   let v84 : W := UInt256.mulMod (N 2048) (v83) (w8)
-  {s with pc := N 6815, memory := v56, stack := (v84) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest}
+  {s with pc := N 6813, memory := v56, stack := (v84) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest}
 theorem stage8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions stage8Program {s with pc := N 6575, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
@@ -3737,12 +3735,12 @@ theorem stage8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
     simpa only [stage8Part17Model, v69, v70, v71, v72, v73] using stage8Part17_run ({s with memory := v56}) (v68) (w3) (w8) (v67) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   have h18 : runInstructions stage8Part18Program {s with pc := N 6749, memory := v56, stack := (v73) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6759, memory := v56, stack := (w10) :: (w8) :: (v76) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage8Part18Model, v74, v75, v76] using stage8Part18_run ({s with memory := v56}) (v73) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h19 : runInstructions stage8Part19Program {s with pc := N 6759, memory := v56, stack := (w10) :: (w8) :: (v76) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6799, memory := v56, stack := (w11) :: (v53) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w8) :: (v79) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h19 : runInstructions stage8Part19Program {s with pc := N 6759, memory := v56, stack := (w10) :: (w8) :: (v76) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6799, memory := v56, stack := (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v53) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w8) :: (v79) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage8Part19Model, v77, v78, v79] using stage8Part19_run ({s with memory := v56}) (w10) (w8) (v76) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h20 : runInstructions stage8Part20Program {s with pc := N 6799, memory := v56, stack := (w11) :: (v53) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w8) :: (v79) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6807, memory := v56, stack := (v82) :: (v79) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest} := by
-    simpa only [stage8Part20Model, v80, v81, v82] using stage8Part20_run ({s with memory := v56}) (w11) (v53) (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (w8) (v79) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h21 : runInstructions stage8Part21Program {s with pc := N 6807, memory := v56, stack := (v82) :: (v79) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest} = some {s with pc := N 6815, memory := v56, stack := (v84) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest} := by
-    simpa only [stage8Part21Model, v83, v84] using stage8Part21_run ({s with memory := v56}) (v82) (v79) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (v81) (w13) (w14) rest hcap hact
+  have h20 : runInstructions stage8Part20Program {s with pc := N 6799, memory := v56, stack := (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v53) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (w8) :: (v79) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6809, memory := v56, stack := (N 2048) :: (v83) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest} := by
+    simpa only [stage8Part20Model, v80, v81, v82, v83] using stage8Part20_run ({s with memory := v56}) (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (v53) (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (w8) (v79) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (w11) (w12) (w13) (w14) rest hcap hact
+  have h21 : runInstructions stage8Part21Program {s with pc := N 6809, memory := v56, stack := (N 2048) :: (v83) :: (v53) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest} = some {s with pc := N 6813, memory := v56, stack := (v84) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (v28) :: (w10) :: (N 1766847064778384329583297500742918515827483896875618958121606201292619775) :: (v81) :: (w13) :: (w14) :: rest} := by
+    simpa only [stage8Part21Model, v84] using stage8Part21_run ({s with memory := v56}) (N 2048) (v83) (v53) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (v28) (w10) (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (v81) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 (runInstructions_append_some _ _ _ _ _ h17 (runInstructions_append_some _ _ _ _ _ h18 (runInstructions_append_some _ _ _ _ _ h19 (runInstructions_append_some _ _ _ _ _ h20 h21)))))))))))))))))))))
 
 def stage9Part0Program : List Instr :=
@@ -3757,10 +3755,10 @@ def stage9Part0Program : List Instr :=
 def stage9Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 1248
   let v1 : W := (w14) * (w4)
-  {s with pc := N 6825, memory := s.memory, stack := (v1) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 6823, memory := s.memory, stack := (v1) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage9Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part0Program {s with pc := N 6815, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage9Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage9Part0Program {s with pc := N 6813, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage9Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3781,10 +3779,10 @@ def stage9Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v1 : W := (w9) * (v0)
   let v2 : W := (v1) + (w0)
   let v3 : W := MachineState.readWord (s.memory) 128
-  {s with pc := N 6834, memory := s.memory, stack := (v3) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 6832, memory := s.memory, stack := (v3) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage9Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part1Program {s with pc := N 6825, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage9Part1Program {s with pc := N 6823, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3809,10 +3807,10 @@ def stage9Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v2 : W := (v1) + (w1)
   let v3 : W := MachineState.readWord (s.memory) 96
   let v4 : W := MachineState.readWord (s.memory) 64
-  {s with pc := N 6845, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
+  {s with pc := N 6843, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
 theorem stage9Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part2Program {s with pc := N 6834, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage9Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
+    runInstructions stage9Part2Program {s with pc := N 6832, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage9Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3838,10 +3836,10 @@ def stage9Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v1 : W := (v0) + (w2)
   let v2 : W := UInt256.mulMod (w5) (w3) (w4)
   let v3 : W := MachineState.readWord (s.memory) 160
-  {s with pc := N 6854, memory := s.memory, stack := (w11) :: (v3) :: (w14) :: (v2) :: (v1) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest}
+  {s with pc := N 6852, memory := s.memory, stack := (w11) :: (v3) :: (w14) :: (v2) :: (v1) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest}
 theorem stage9Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part3Program {s with pc := N 6845, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest} = some (stage9Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
+    runInstructions stage9Part3Program {s with pc := N 6843, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest} = some (stage9Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3864,10 +3862,10 @@ def stage9Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v2 : W := MachineState.readWord (s.memory) 128
   let v3 : W := MachineState.readWord (s.memory) 32
   let v4 : W := UInt256.mulMod (v3) (v2) (w13)
-  {s with pc := N 6864, memory := s.memory, stack := (v4) :: (v1) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
+  {s with pc := N 6862, memory := s.memory, stack := (v4) :: (v1) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
 theorem stage9Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part4Program {s with pc := N 6854, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage9Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
+    runInstructions stage9Part4Program {s with pc := N 6852, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage9Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3892,10 +3890,10 @@ def stage9Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v2 : W := MachineState.readWord (s.memory) 64
   let v3 : W := UInt256.mulMod (v2) (v1) (w11)
   let v4 : W := (v3) + (v0)
-  {s with pc := N 6874, memory := s.memory, stack := (v4) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 6872, memory := s.memory, stack := (v4) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage9Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part5Program {s with pc := N 6864, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage9Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage9Part5Program {s with pc := N 6862, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage9Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3919,10 +3917,10 @@ def stage9Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v1 : W := (w2) + (w1)
   let v2 : W := MachineState.readWord (s.memory) 1088
   let v3 : W := (w11) * (v2)
-  {s with pc := N 6884, memory := s.memory, stack := (v3) :: (v1) :: (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 6882, memory := s.memory, stack := (v3) :: (v1) :: (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part6Program {s with pc := N 6874, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage9Part6Program {s with pc := N 6872, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3943,10 +3941,10 @@ def stage9Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v1 : W := MachineState.readWord (s.memory) 192
   let v2 : W := (w9) * (v1)
   let v3 : W := (v2) + (v0)
-  {s with pc := N 6892, memory := s.memory, stack := (w4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 6890, memory := s.memory, stack := (w4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part7Program {s with pc := N 6884, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage9Part7Program {s with pc := N 6882, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3969,10 +3967,10 @@ def stage9Part8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v2 : W := (v1) + (w1)
   let v3 : W := MachineState.readWord (s.memory) 224
   let v4 : W := (v3) * (w8)
-  {s with pc := N 6901, memory := s.memory, stack := (v4) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 6899, memory := s.memory, stack := (v4) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part8Program {s with pc := N 6892, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage9Part8Program {s with pc := N 6890, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -3996,10 +3994,10 @@ def stage9Part9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 
   let v1 : W := MachineState.readWord (s.memory) 1216
   let v2 : W := (v1) * (w5)
   let v3 : W := (v2) + (v0)
-  {s with pc := N 6911, memory := s.memory, stack := (w6) :: (w15) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 6909, memory := s.memory, stack := (w6) :: (w15) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part9Program {s with pc := N 6901, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage9Part9Program {s with pc := N 6899, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4022,10 +4020,10 @@ def stage9Part10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 1280
   let v3 : W := (v2) * (w4)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 6921, memory := s.memory, stack := (w13) :: (v4) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 6919, memory := s.memory, stack := (w13) :: (v4) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage9Part10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part10Program {s with pc := N 6911, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage9Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage9Part10Program {s with pc := N 6909, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage9Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4046,10 +4044,10 @@ def stage9Part11Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w14) * (w0)
   let v1 : W := (v0) + (w1)
   let v2 : W := MachineState.readWord (s.memory) 1088
-  {s with pc := N 6931, memory := s.memory, stack := (w11) :: (v2) :: (w10) :: (w2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 6929, memory := s.memory, stack := (w11) :: (v2) :: (w10) :: (w2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part11Program {s with pc := N 6921, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage9Part11Program {s with pc := N 6919, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4072,10 +4070,10 @@ def stage9Part12Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 192
   let v3 : W := UInt256.mulMod (w11) (v2) (w12)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 6940, memory := s.memory, stack := (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 6938, memory := s.memory, stack := (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage9Part12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part12Program {s with pc := N 6931, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage9Part12Program {s with pc := N 6929, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4096,10 +4094,10 @@ def stage9Part13Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 0
   let v1 : W := UInt256.mulMod (v0) (w3) (w9)
   let v2 : W := (v1) + (w0)
-  {s with pc := N 6948, memory := s.memory, stack := (w7) :: (w9) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 6946, memory := s.memory, stack := (w7) :: (w9) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage9Part13_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part13Program {s with pc := N 6940, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage9Part13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage9Part13Program {s with pc := N 6938, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage9Part13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4121,10 +4119,10 @@ def stage9Part14Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := UInt256.mulMod (v0) (w0) (w1)
   let v2 : W := (v1) + (w2)
   let v3 : W := MachineState.readWord (s.memory) 1216
-  {s with pc := N 6959, memory := s.memory, stack := (v3) :: (w6) :: (w11) :: (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 6957, memory := s.memory, stack := (v3) :: (w6) :: (w11) :: (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage9Part14_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part14Program {s with pc := N 6948, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage9Part14Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage9Part14Program {s with pc := N 6946, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage9Part14Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4148,10 +4146,10 @@ def stage9Part15Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w3)
   let v2 : W := UInt256.mulMod (w8) (w17) (w12)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 6967, memory := s.memory, stack := (w12) :: (v3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 6965, memory := s.memory, stack := (w12) :: (v3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage9Part15_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part15Program {s with pc := N 6959, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part15Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage9Part15Program {s with pc := N 6957, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part15Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4170,10 +4168,10 @@ def stage9Part16Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 1280
   let v1 : W := UInt256.mulMod (v0) (w3) (w0)
   let v2 : W := (v1) + (w1)
-  {s with pc := N 6977, memory := s.memory, stack := (w14) :: (w12) :: (w10) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 6975, memory := s.memory, stack := (w14) :: (w12) :: (w10) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage9Part16_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part16Program {s with pc := N 6967, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part16Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage9Part16Program {s with pc := N 6965, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage9Part16Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4195,10 +4193,10 @@ def stage9Part17Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w3)
   let v2 : W := UInt256.land (w15) (w4)
   let v3 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (v2).toNat 32) 768
-  {s with pc := N 6987, memory := v3, stack := (v2) :: (v1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 6985, memory := v3, stack := (v2) :: (v1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage9Part17_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part17Program {s with pc := N 6977, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part17Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage9Part17Program {s with pc := N 6975, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage9Part17Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4218,10 +4216,10 @@ def stage9Part18Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w1) - (w0)
   let v1 : W := (w9) + (v0)
   let v2 : W := UInt256.mulMod (N 2048) (v1) (w9)
-  {s with pc := N 6996, memory := s.memory, stack := (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 6994, memory := s.memory, stack := (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage9Part18_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Part18Program {s with pc := N 6987, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage9Part18Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage9Part18Program {s with pc := N 6985, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage9Part18Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4305,10 +4303,10 @@ def stage9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 :
   let v73 : W := (v70) - (v71)
   let v74 : W := (w8) + (v73)
   let v75 : W := UInt256.mulMod (N 2048) (v74) (w8)
-  {s with pc := N 6996, memory := v72, stack := (v75) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 6994, memory := v72, stack := (v75) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage9Program {s with pc := N 6815, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage9Program {s with pc := N 6813, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 1248
   let v1 : W := (w14) * (w4)
   let v2 : W := MachineState.readWord (s.memory) 160
@@ -4385,43 +4383,43 @@ theorem stage9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w1
   let v73 : W := (v70) - (v71)
   let v74 : W := (w8) + (v73)
   let v75 : W := UInt256.mulMod (N 2048) (v74) (w8)
-  have h0 : runInstructions stage9Part0Program {s with pc := N 6815, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6825, memory := s.memory, stack := (v1) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage9Part0Program {s with pc := N 6813, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6823, memory := s.memory, stack := (v1) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part0Model, v0, v1] using stage9Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage9Part1Program {s with pc := N 6825, memory := s.memory, stack := (v1) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6834, memory := s.memory, stack := (v5) :: (v4) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage9Part1Program {s with pc := N 6823, memory := s.memory, stack := (v1) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6832, memory := s.memory, stack := (v5) :: (v4) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part1Model, v2, v3, v4, v5] using stage9Part1_run ({s with memory := s.memory}) (v1) (w4) (w8) (w14) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage9Part2Program {s with pc := N 6834, memory := s.memory, stack := (v5) :: (v4) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6845, memory := s.memory, stack := (v10) :: (v9) :: (v8) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage9Part2Program {s with pc := N 6832, memory := s.memory, stack := (v5) :: (v4) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6843, memory := s.memory, stack := (v10) :: (v9) :: (v8) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part2Model, v6, v7, v8, v9, v10] using stage9Part2_run ({s with memory := s.memory}) (v5) (v4) (w4) (w8) (w14) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage9Part3Program {s with pc := N 6845, memory := s.memory, stack := (v10) :: (v9) :: (v8) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6854, memory := s.memory, stack := (w5) :: (v14) :: (w8) :: (v13) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage9Part3Program {s with pc := N 6843, memory := s.memory, stack := (v10) :: (v9) :: (v8) :: (w4) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6852, memory := s.memory, stack := (w5) :: (v14) :: (w8) :: (v13) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part3Model, v11, v12, v13, v14] using stage9Part3_run ({s with memory := s.memory}) (v10) (v9) (v8) (w4) (w8) (w14) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage9Part4Program {s with pc := N 6854, memory := s.memory, stack := (w5) :: (v14) :: (w8) :: (v13) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6864, memory := s.memory, stack := (v19) :: (v16) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage9Part4Program {s with pc := N 6852, memory := s.memory, stack := (w5) :: (v14) :: (w8) :: (v13) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6862, memory := s.memory, stack := (v19) :: (v16) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part4Model, v15, v16, v17, v18, v19] using stage9Part4_run ({s with memory := s.memory}) (w5) (v14) (w8) (v13) (v12) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage9Part5Program {s with pc := N 6864, memory := s.memory, stack := (v19) :: (v16) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6874, memory := s.memory, stack := (v24) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage9Part5Program {s with pc := N 6862, memory := s.memory, stack := (v19) :: (v16) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6872, memory := s.memory, stack := (v24) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part5Model, v20, v21, v22, v23, v24] using stage9Part5_run ({s with memory := s.memory}) (v19) (v16) (v12) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage9Part6Program {s with pc := N 6874, memory := s.memory, stack := (v24) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6884, memory := s.memory, stack := (v28) :: (v26) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage9Part6Program {s with pc := N 6872, memory := s.memory, stack := (v24) :: (v12) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6882, memory := s.memory, stack := (v28) :: (v26) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part6Model, v25, v26, v27, v28] using stage9Part6_run ({s with memory := s.memory}) (v24) (v12) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h7 : runInstructions stage9Part7Program {s with pc := N 6884, memory := s.memory, stack := (v28) :: (v26) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6892, memory := s.memory, stack := (w2) :: (v32) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h7 : runInstructions stage9Part7Program {s with pc := N 6882, memory := s.memory, stack := (v28) :: (v26) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6890, memory := s.memory, stack := (w2) :: (v32) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part7Model, v29, v30, v31, v32] using stage9Part7_run ({s with memory := s.memory}) (v28) (v26) (v25) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h8 : runInstructions stage9Part8Program {s with pc := N 6892, memory := s.memory, stack := (w2) :: (v32) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6901, memory := s.memory, stack := (v37) :: (v35) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h8 : runInstructions stage9Part8Program {s with pc := N 6890, memory := s.memory, stack := (w2) :: (v32) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6899, memory := s.memory, stack := (v37) :: (v35) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part8Model, v33, v34, v35, v36, v37] using stage9Part8_run ({s with memory := s.memory}) (w2) (v32) (v25) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h9 : runInstructions stage9Part9Program {s with pc := N 6901, memory := s.memory, stack := (v37) :: (v35) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6911, memory := s.memory, stack := (v0) :: (w13) :: (v41) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h9 : runInstructions stage9Part9Program {s with pc := N 6899, memory := s.memory, stack := (v37) :: (v35) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6909, memory := s.memory, stack := (v0) :: (w13) :: (v41) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part9Model, v38, v39, v40, v41] using stage9Part9_run ({s with memory := s.memory}) (v37) (v35) (v25) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h10 : runInstructions stage9Part10Program {s with pc := N 6911, memory := s.memory, stack := (v0) :: (w13) :: (v41) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6921, memory := s.memory, stack := (w10) :: (v46) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h10 : runInstructions stage9Part10Program {s with pc := N 6909, memory := s.memory, stack := (v0) :: (w13) :: (v41) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6919, memory := s.memory, stack := (w10) :: (v46) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part10Model, v42, v43, v44, v45, v46] using stage9Part10_run ({s with memory := s.memory}) (v0) (w13) (v41) (v25) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h11 : runInstructions stage9Part11Program {s with pc := N 6921, memory := s.memory, stack := (w10) :: (v46) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6931, memory := s.memory, stack := (w9) :: (v49) :: (w8) :: (v25) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h11 : runInstructions stage9Part11Program {s with pc := N 6919, memory := s.memory, stack := (w10) :: (v46) :: (v25) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6929, memory := s.memory, stack := (w9) :: (v49) :: (w8) :: (v25) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part11Model, v47, v48, v49] using stage9Part11_run ({s with memory := s.memory}) (w10) (v46) (v25) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h12 : runInstructions stage9Part12Program {s with pc := N 6931, memory := s.memory, stack := (w9) :: (v49) :: (w8) :: (v25) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6940, memory := s.memory, stack := (v54) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h12 : runInstructions stage9Part12Program {s with pc := N 6929, memory := s.memory, stack := (w9) :: (v49) :: (w8) :: (v25) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6938, memory := s.memory, stack := (v54) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part12Model, v50, v51, v52, v53, v54] using stage9Part12_run ({s with memory := s.memory}) (w9) (v49) (w8) (v25) (v48) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h13 : runInstructions stage9Part13Program {s with pc := N 6940, memory := s.memory, stack := (v54) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6948, memory := s.memory, stack := (w6) :: (w8) :: (v57) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h13 : runInstructions stage9Part13Program {s with pc := N 6938, memory := s.memory, stack := (v54) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6946, memory := s.memory, stack := (w6) :: (w8) :: (v57) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part13Model, v55, v56, v57] using stage9Part13_run ({s with memory := s.memory}) (v54) (v48) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h14 : runInstructions stage9Part14Program {s with pc := N 6948, memory := s.memory, stack := (w6) :: (w8) :: (v57) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6959, memory := s.memory, stack := (v61) :: (w3) :: (w8) :: (v60) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h14 : runInstructions stage9Part14Program {s with pc := N 6946, memory := s.memory, stack := (w6) :: (w8) :: (v57) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6957, memory := s.memory, stack := (v61) :: (w3) :: (w8) :: (v60) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part14Model, v58, v59, v60, v61] using stage9Part14_run ({s with memory := s.memory}) (w6) (w8) (v57) (v48) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h15 : runInstructions stage9Part15Program {s with pc := N 6959, memory := s.memory, stack := (v61) :: (w3) :: (w8) :: (v60) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6967, memory := s.memory, stack := (w8) :: (v65) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h15 : runInstructions stage9Part15Program {s with pc := N 6957, memory := s.memory, stack := (v61) :: (w3) :: (w8) :: (v60) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6965, memory := s.memory, stack := (w8) :: (v65) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part15Model, v62, v63, v64, v65] using stage9Part15_run ({s with memory := s.memory}) (v61) (w3) (w8) (v60) (v48) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h16 : runInstructions stage9Part16Program {s with pc := N 6967, memory := s.memory, stack := (w8) :: (v65) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6977, memory := s.memory, stack := (w12) :: (w10) :: (w8) :: (v68) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h16 : runInstructions stage9Part16Program {s with pc := N 6965, memory := s.memory, stack := (w8) :: (v65) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6975, memory := s.memory, stack := (w12) :: (w10) :: (w8) :: (v68) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part16Model, v66, v67, v68] using stage9Part16_run ({s with memory := s.memory}) (w8) (v65) (v48) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h17 : runInstructions stage9Part17Program {s with pc := N 6977, memory := s.memory, stack := (w12) :: (w10) :: (w8) :: (v68) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6987, memory := v72, stack := (v71) :: (v70) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h17 : runInstructions stage9Part17Program {s with pc := N 6975, memory := s.memory, stack := (w12) :: (w10) :: (w8) :: (v68) :: (v48) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6985, memory := v72, stack := (v71) :: (v70) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part17Model, v69, v70, v71, v72] using stage9Part17_run ({s with memory := s.memory}) (w12) (w10) (w8) (v68) (v48) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h18 : runInstructions stage9Part18Program {s with pc := N 6987, memory := v72, stack := (v71) :: (v70) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6996, memory := v72, stack := (v75) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h18 : runInstructions stage9Part18Program {s with pc := N 6985, memory := v72, stack := (v71) :: (v70) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 6994, memory := v72, stack := (v75) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage9Part18Model, v73, v74, v75] using stage9Part18_run ({s with memory := v72}) (v71) (v70) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 (runInstructions_append_some _ _ _ _ _ h17 h18))))))))))))))))))
 
@@ -4437,10 +4435,10 @@ def stage10Part0Program : List Instr :=
 def stage10Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 1216
   let v1 : W := MachineState.readWord (s.memory) 1280
-  {s with pc := N 7008, memory := s.memory, stack := (v0) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7006, memory := s.memory, stack := (v0) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage10Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part0Program {s with pc := N 6996, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage10Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage10Part0Program {s with pc := N 6994, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage10Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4463,10 +4461,10 @@ def stage10Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w2) * (w8)
   let v1 : W := MachineState.readWord (s.memory) 160
   let v2 : W := MachineState.readWord (s.memory) 32
-  {s with pc := N 7018, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w0) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7016, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w0) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage10Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part1Program {s with pc := N 7008, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage10Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage10Part1Program {s with pc := N 7006, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage10Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4492,10 +4490,10 @@ def stage10Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v3 : W := MachineState.readWord (s.memory) 64
   let v4 : W := (v3) * (v2)
   let v5 : W := (v4) + (v1)
-  {s with pc := N 7028, memory := s.memory, stack := (v5) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest}
+  {s with pc := N 7026, memory := s.memory, stack := (v5) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest}
 theorem stage10Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part2Program {s with pc := N 7018, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest} = some (stage10Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
+    runInstructions stage10Part2Program {s with pc := N 7016, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest} = some (stage10Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4519,10 +4517,10 @@ def stage10Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := MachineState.readWord (s.memory) 160
   let v2 : W := MachineState.readWord (s.memory) 32
   let v3 : W := UInt256.mulMod (v2) (v1) (w12)
-  {s with pc := N 7038, memory := s.memory, stack := (v3) :: (v0) :: (w0) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7036, memory := s.memory, stack := (v3) :: (v0) :: (w0) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage10Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part3Program {s with pc := N 7028, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage10Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage10Part3Program {s with pc := N 7026, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage10Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4547,10 +4545,10 @@ def stage10Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 64
   let v3 : W := UInt256.mulMod (v2) (v1) (w11)
   let v4 : W := (v3) + (v0)
-  {s with pc := N 7048, memory := s.memory, stack := (v4) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7046, memory := s.memory, stack := (v4) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage10Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part4Program {s with pc := N 7038, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage10Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage10Part4Program {s with pc := N 7036, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage10Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4574,10 +4572,10 @@ def stage10Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (w2) + (w1)
   let v2 : W := MachineState.readWord (s.memory) 96
   let v3 : W := (v2) * (v2)
-  {s with pc := N 7057, memory := s.memory, stack := (v3) :: (v1) :: (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7055, memory := s.memory, stack := (v3) :: (v1) :: (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage10Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part5Program {s with pc := N 7048, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage10Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage10Part5Program {s with pc := N 7046, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage10Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4600,10 +4598,10 @@ def stage10Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := (w11) * (v1)
   let v3 : W := (v2) + (v0)
   let v4 : W := MachineState.readWord (s.memory) 0
-  {s with pc := N 7066, memory := s.memory, stack := (v4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7064, memory := s.memory, stack := (v4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage10Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part6Program {s with pc := N 7057, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage10Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage10Part6Program {s with pc := N 7055, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage10Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4628,10 +4626,10 @@ def stage10Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 224
   let v3 : W := (v2) * (w4)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 7075, memory := s.memory, stack := (v4) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7073, memory := s.memory, stack := (v4) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage10Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part7Program {s with pc := N 7066, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage10Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage10Part7Program {s with pc := N 7064, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage10Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4653,10 +4651,10 @@ def stage10Part8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w0)
   let v2 : W := (w5) * (w4)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7083, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7081, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage10Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part8Program {s with pc := N 7075, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage10Part8Program {s with pc := N 7073, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4676,10 +4674,10 @@ def stage10Part9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w0)
   let v2 : W := (w13) * (w2)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7091, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7089, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage10Part9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part9Program {s with pc := N 7083, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage10Part9Program {s with pc := N 7081, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4697,10 +4695,10 @@ def stage10Part10Program : List Instr :=
 def stage10Part10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 96
   let v1 : W := (v0) + (v0)
-  {s with pc := N 7100, memory := s.memory, stack := (v1) :: (v0) :: (v0) :: (w9) :: (w1) :: (w0) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7098, memory := s.memory, stack := (v1) :: (v0) :: (v0) :: (w9) :: (w1) :: (w0) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage10Part10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part10Program {s with pc := N 7091, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage10Part10Program {s with pc := N 7089, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4722,10 +4720,10 @@ def stage10Part11Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v1 : W := UInt256.mulMod (w1) (w2) (w3)
   let v2 : W := (v1) + (w4)
   let v3 : W := MachineState.readWord (v0) 192
-  {s with pc := N 7110, memory := v0, stack := (w14) :: (v3) :: (w13) :: (v2) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
+  {s with pc := N 7108, memory := v0, stack := (w14) :: (v3) :: (w13) :: (v2) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
 theorem stage10Part11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part11Program {s with pc := N 7100, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage10Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
+    runInstructions stage10Part11Program {s with pc := N 7098, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage10Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4750,10 +4748,10 @@ def stage10Part12Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v2 : W := MachineState.readWord (s.memory) 0
   let v3 : W := UInt256.mulMod (w11) (v2) (w12)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 7118, memory := s.memory, stack := (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7116, memory := s.memory, stack := (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage10Part12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part12Program {s with pc := N 7110, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage10Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage10Part12Program {s with pc := N 7108, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage10Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4774,10 +4772,10 @@ def stage10Part13Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : W := MachineState.readWord (s.memory) 224
   let v1 : W := UInt256.mulMod (v0) (w3) (w9)
   let v2 : W := (v1) + (w0)
-  {s with pc := N 7127, memory := s.memory, stack := (w7) :: (w9) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7125, memory := s.memory, stack := (w7) :: (w9) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage10Part13_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part13Program {s with pc := N 7118, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage10Part13Program {s with pc := N 7116, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4799,10 +4797,10 @@ def stage10Part14Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v1 : W := (v0) + (w2)
   let v2 : W := UInt256.mulMod (w7) (w6) (w11)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7135, memory := s.memory, stack := (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7133, memory := s.memory, stack := (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage10Part14_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part14Program {s with pc := N 7127, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage10Part14Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage10Part14Program {s with pc := N 7125, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage10Part14Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4820,10 +4818,10 @@ def stage10Part15Program : List Instr :=
 def stage10Part15Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w11) (w14) (w9)
   let v1 : W := (v0) + (w0)
-  {s with pc := N 7143, memory := s.memory, stack := (w13) :: (w2) :: (w9) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7141, memory := s.memory, stack := (w13) :: (w2) :: (w9) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage10Part15_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part15Program {s with pc := N 7135, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part15Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage10Part15Program {s with pc := N 7133, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part15Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4843,10 +4841,10 @@ def stage10Part16Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v1 : W := (v0) + (w3)
   let v2 : W := UInt256.land (w15) (w4)
   let v3 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (v2).toNat 32) 800
-  {s with pc := N 7153, memory := v3, stack := (v2) :: (v1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7151, memory := v3, stack := (v2) :: (v1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage10Part16_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part16Program {s with pc := N 7143, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage10Part16Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage10Part16Program {s with pc := N 7141, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage10Part16Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4866,10 +4864,10 @@ def stage10Part17Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : W := (w1) - (w0)
   let v1 : W := (w9) + (v0)
   let v2 : W := UInt256.mulMod (N 2048) (v1) (w9)
-  {s with pc := N 7162, memory := s.memory, stack := (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7160, memory := s.memory, stack := (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage10Part17_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Part17Program {s with pc := N 7153, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part17Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage10Part17Program {s with pc := N 7151, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage10Part17Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -4946,10 +4944,10 @@ def stage10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v66 : W := (v63) - (v64)
   let v67 : W := (w8) + (v66)
   let v68 : W := UInt256.mulMod (N 2048) (v67) (w8)
-  {s with pc := N 7162, memory := v65, stack := (v68) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7160, memory := v65, stack := (v68) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage10Program {s with pc := N 6996, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage10Program {s with pc := N 6994, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 1216
   let v1 : W := MachineState.readWord (s.memory) 1280
   let v2 : W := (w14) * (w5)
@@ -5019,41 +5017,41 @@ theorem stage10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v66 : W := (v63) - (v64)
   let v67 : W := (w8) + (v66)
   let v68 : W := UInt256.mulMod (N 2048) (v67) (w8)
-  have h0 : runInstructions stage10Part0Program {s with pc := N 6996, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7008, memory := s.memory, stack := (v0) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage10Part0Program {s with pc := N 6994, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7006, memory := s.memory, stack := (v0) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part0Model, v0, v1] using stage10Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage10Part1Program {s with pc := N 7008, memory := s.memory, stack := (v0) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7018, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage10Part1Program {s with pc := N 7006, memory := s.memory, stack := (v0) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7016, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part1Model, v2, v3, v4] using stage10Part1_run ({s with memory := s.memory}) (v0) (w8) (w14) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage10Part2Program {s with pc := N 7018, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7028, memory := s.memory, stack := (v10) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage10Part2Program {s with pc := N 7016, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7026, memory := s.memory, stack := (v10) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part2Model, v5, v6, v7, v8, v9, v10] using stage10Part2_run ({s with memory := s.memory}) (v4) (v3) (v2) (w5) (w8) (w14) (w0) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage10Part3Program {s with pc := N 7028, memory := s.memory, stack := (v10) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7038, memory := s.memory, stack := (v14) :: (v11) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage10Part3Program {s with pc := N 7026, memory := s.memory, stack := (v10) :: (w5) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7036, memory := s.memory, stack := (v14) :: (v11) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part3Model, v11, v12, v13, v14] using stage10Part3_run ({s with memory := s.memory}) (v10) (w5) (w8) (w14) (w0) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage10Part4Program {s with pc := N 7038, memory := s.memory, stack := (v14) :: (v11) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7048, memory := s.memory, stack := (v19) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage10Part4Program {s with pc := N 7036, memory := s.memory, stack := (v14) :: (v11) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7046, memory := s.memory, stack := (v19) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part4Model, v15, v16, v17, v18, v19] using stage10Part4_run ({s with memory := s.memory}) (v14) (v11) (v10) (w0) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage10Part5Program {s with pc := N 7048, memory := s.memory, stack := (v19) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7057, memory := s.memory, stack := (v23) :: (v21) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage10Part5Program {s with pc := N 7046, memory := s.memory, stack := (v19) :: (v10) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7055, memory := s.memory, stack := (v23) :: (v21) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part5Model, v20, v21, v22, v23] using stage10Part5_run ({s with memory := s.memory}) (v19) (v10) (w0) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage10Part6Program {s with pc := N 7057, memory := s.memory, stack := (v23) :: (v21) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7066, memory := s.memory, stack := (v28) :: (v27) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage10Part6Program {s with pc := N 7055, memory := s.memory, stack := (v23) :: (v21) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7064, memory := s.memory, stack := (v28) :: (v27) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part6Model, v24, v25, v26, v27, v28] using stage10Part6_run ({s with memory := s.memory}) (v23) (v21) (v20) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h7 : runInstructions stage10Part7Program {s with pc := N 7066, memory := s.memory, stack := (v28) :: (v27) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7075, memory := s.memory, stack := (v33) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h7 : runInstructions stage10Part7Program {s with pc := N 7064, memory := s.memory, stack := (v28) :: (v27) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7073, memory := s.memory, stack := (v33) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part7Model, v29, v30, v31, v32, v33] using stage10Part7_run ({s with memory := s.memory}) (v28) (v27) (v20) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h8 : runInstructions stage10Part8Program {s with pc := N 7075, memory := s.memory, stack := (v33) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7083, memory := s.memory, stack := (v37) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h8 : runInstructions stage10Part8Program {s with pc := N 7073, memory := s.memory, stack := (v33) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7081, memory := s.memory, stack := (v37) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part8Model, v34, v35, v36, v37] using stage10Part8_run ({s with memory := s.memory}) (v33) (v20) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h9 : runInstructions stage10Part9Program {s with pc := N 7083, memory := s.memory, stack := (v37) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7091, memory := s.memory, stack := (v41) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h9 : runInstructions stage10Part9Program {s with pc := N 7081, memory := s.memory, stack := (v37) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7089, memory := s.memory, stack := (v41) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part9Model, v38, v39, v40, v41] using stage10Part9_run ({s with memory := s.memory}) (v37) (v20) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h10 : runInstructions stage10Part10Program {s with pc := N 7091, memory := s.memory, stack := (v41) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7100, memory := s.memory, stack := (v43) :: (v42) :: (v42) :: (w8) :: (v20) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h10 : runInstructions stage10Part10Program {s with pc := N 7089, memory := s.memory, stack := (v41) :: (v20) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7098, memory := s.memory, stack := (v43) :: (v42) :: (v42) :: (w8) :: (v20) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part10Model, v42, v43] using stage10Part10_run ({s with memory := s.memory}) (v41) (v20) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h11 : runInstructions stage10Part11Program {s with pc := N 7100, memory := s.memory, stack := (v43) :: (v42) :: (v42) :: (w8) :: (v20) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7110, memory := v44, stack := (w9) :: (v47) :: (w8) :: (v46) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h11 : runInstructions stage10Part11Program {s with pc := N 7098, memory := s.memory, stack := (v43) :: (v42) :: (v42) :: (w8) :: (v20) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7108, memory := v44, stack := (w9) :: (v47) :: (w8) :: (v46) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part11Model, v44, v45, v46, v47] using stage10Part11_run ({s with memory := s.memory}) (v43) (v42) (v42) (w8) (v20) (v41) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h12 : runInstructions stage10Part12Program {s with pc := N 7110, memory := v44, stack := (w9) :: (v47) :: (w8) :: (v46) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7118, memory := v44, stack := (v52) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h12 : runInstructions stage10Part12Program {s with pc := N 7108, memory := v44, stack := (w9) :: (v47) :: (w8) :: (v46) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7116, memory := v44, stack := (v52) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part12Model, v48, v49, v50, v51, v52] using stage10Part12_run ({s with memory := v44}) (w9) (v47) (w8) (v46) (v41) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h13 : runInstructions stage10Part13Program {s with pc := N 7118, memory := v44, stack := (v52) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7127, memory := v44, stack := (w6) :: (w8) :: (v55) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h13 : runInstructions stage10Part13Program {s with pc := N 7116, memory := v44, stack := (v52) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7125, memory := v44, stack := (w6) :: (w8) :: (v55) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part13Model, v53, v54, v55] using stage10Part13_run ({s with memory := v44}) (v52) (v41) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h14 : runInstructions stage10Part14Program {s with pc := N 7127, memory := v44, stack := (w6) :: (w8) :: (v55) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7135, memory := v44, stack := (v59) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h14 : runInstructions stage10Part14Program {s with pc := N 7125, memory := v44, stack := (w6) :: (w8) :: (v55) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7133, memory := v44, stack := (v59) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part14Model, v56, v57, v58, v59] using stage10Part14_run ({s with memory := v44}) (w6) (w8) (v55) (v41) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h15 : runInstructions stage10Part15Program {s with pc := N 7135, memory := v44, stack := (v59) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7143, memory := v44, stack := (w12) :: (w1) :: (w8) :: (v61) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h15 : runInstructions stage10Part15Program {s with pc := N 7133, memory := v44, stack := (v59) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7141, memory := v44, stack := (w12) :: (w1) :: (w8) :: (v61) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part15Model, v60, v61] using stage10Part15_run ({s with memory := v44}) (v59) (v41) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h16 : runInstructions stage10Part16Program {s with pc := N 7143, memory := v44, stack := (w12) :: (w1) :: (w8) :: (v61) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7153, memory := v65, stack := (v64) :: (v63) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h16 : runInstructions stage10Part16Program {s with pc := N 7141, memory := v44, stack := (w12) :: (w1) :: (w8) :: (v61) :: (v41) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7151, memory := v65, stack := (v64) :: (v63) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part16Model, v62, v63, v64, v65] using stage10Part16_run ({s with memory := v44}) (w12) (w1) (w8) (v61) (v41) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
-  have h17 : runInstructions stage10Part17Program {s with pc := N 7153, memory := v65, stack := (v64) :: (v63) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7162, memory := v65, stack := (v68) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h17 : runInstructions stage10Part17Program {s with pc := N 7151, memory := v65, stack := (v64) :: (v63) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7160, memory := v65, stack := (v68) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (v1) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage10Part17Model, v66, v67, v68] using stage10Part17_run ({s with memory := v65}) (v64) (v63) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (v1) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 h17)))))))))))))))))
 
@@ -5070,10 +5068,10 @@ def stage11Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 128
   let v1 : W := MachineState.readWord (s.memory) 96
   let v2 : W := MachineState.readWord (s.memory) 160
-  {s with pc := N 7173, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7171, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage11Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part0Program {s with pc := N 7162, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage11Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage11Part0Program {s with pc := N 7160, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage11Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5098,10 +5096,10 @@ def stage11Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 64
   let v1 : W := MachineState.readWord (s.memory) 32
   let v2 : W := UInt256.mulMod (v1) (w4) (w12)
-  {s with pc := N 7183, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7181, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage11Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part1Program {s with pc := N 7173, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage11Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage11Part1Program {s with pc := N 7171, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage11Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5123,10 +5121,10 @@ def stage11Part2Program : List Instr :=
 def stage11Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w3) (w2) (w15)
   let v1 : W := (v0) + (w0)
-  {s with pc := N 7191, memory := s.memory, stack := (w5) :: (w4) :: (w15) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest}
+  {s with pc := N 7189, memory := s.memory, stack := (w5) :: (w4) :: (w15) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest}
 theorem stage11Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part2Program {s with pc := N 7183, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest} = some (stage11Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 rest) := by
+    runInstructions stage11Part2Program {s with pc := N 7181, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest} = some (stage11Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5147,10 +5145,10 @@ def stage11Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := (w9) + (v1)
   let v3 : W := (w10) * (w4)
   let v4 : W := (w6) * (w5)
-  {s with pc := N 7199, memory := s.memory, stack := (v4) :: (v3) :: (w7) :: (w8) :: (w9) :: (v2) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: (w22) :: (w23) :: (w24) :: rest}
+  {s with pc := N 7197, memory := s.memory, stack := (v4) :: (v3) :: (w7) :: (w8) :: (w9) :: (v2) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: (w22) :: (w23) :: (w24) :: rest}
 theorem stage11Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part3Program {s with pc := N 7191, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: (w22) :: (w23) :: (w24) :: rest} = some (stage11Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 rest) := by
+    runInstructions stage11Part3Program {s with pc := N 7189, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: (w22) :: (w23) :: (w24) :: rest} = some (stage11Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 w22 w23 w24 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5171,10 +5169,10 @@ def stage11Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := (v1) + (v0)
   let v3 : W := (v2) + (w4)
   let v4 : W := MachineState.readWord (s.memory) 0
-  {s with pc := N 7207, memory := s.memory, stack := (w14) :: (v4) :: (v3) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
+  {s with pc := N 7205, memory := s.memory, stack := (w14) :: (v4) :: (v3) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest}
 theorem stage11Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part4Program {s with pc := N 7199, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage11Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
+    runInstructions stage11Part4Program {s with pc := N 7197, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: rest} = some (stage11Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5197,10 +5195,10 @@ def stage11Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 224
   let v3 : W := (w10) * (v2)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 7216, memory := s.memory, stack := (w5) :: (v4) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7214, memory := s.memory, stack := (w5) :: (v4) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage11Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part5Program {s with pc := N 7207, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage11Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage11Part5Program {s with pc := N 7205, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage11Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5222,10 +5220,10 @@ def stage11Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w1)
   let v2 : W := (w6) * (w8)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7224, memory := s.memory, stack := (w12) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7222, memory := s.memory, stack := (w12) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage11Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part6Program {s with pc := N 7216, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage11Part6Program {s with pc := N 7214, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5245,10 +5243,10 @@ def stage11Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w1)
   let v2 : W := (w14) * (w15)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7232, memory := s.memory, stack := (w2) :: (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7230, memory := s.memory, stack := (w2) :: (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage11Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part7Program {s with pc := N 7224, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage11Part7Program {s with pc := N 7222, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5266,10 +5264,10 @@ def stage11Part8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 0
   let v1 : W := UInt256.mulMod (w10) (v0) (w9)
   let v2 : W := (v1) + (w0)
-  {s with pc := N 7239, memory := s.memory, stack := (w9) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7237, memory := s.memory, stack := (w9) :: (v2) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage11Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part8Program {s with pc := N 7232, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage11Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage11Part8Program {s with pc := N 7230, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage11Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5290,10 +5288,10 @@ def stage11Part9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 224
   let v1 : W := UInt256.mulMod (w9) (v0) (w0)
   let v2 : W := (v1) + (w1)
-  {s with pc := N 7248, memory := s.memory, stack := (w7) :: (w4) :: (w10) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7246, memory := s.memory, stack := (w7) :: (w4) :: (w10) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage11Part9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part9Program {s with pc := N 7239, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage11Part9Program {s with pc := N 7237, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5315,10 +5313,10 @@ def stage11Part10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v1 : W := (v0) + (w3)
   let v2 : W := UInt256.mulMod (w8) (w10) (w12)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7256, memory := s.memory, stack := (w12) :: (v3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7254, memory := s.memory, stack := (w12) :: (v3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage11Part10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part10Program {s with pc := N 7248, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage11Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage11Part10Program {s with pc := N 7246, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage11Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5337,10 +5335,10 @@ def stage11Part11Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : W := UInt256.mulMod (w12) (w5) (w0)
   let v1 : W := (v0) + (w1)
   let v2 : W := UInt256.mulMod (w14) (w15) (w10)
-  {s with pc := N 7264, memory := s.memory, stack := (v2) :: (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7262, memory := s.memory, stack := (v2) :: (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage11Part11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part11Program {s with pc := N 7256, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage11Part11Program {s with pc := N 7254, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5359,10 +5357,10 @@ def stage11Part12Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.land (w13) (w2)
   let v2 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (v1).toNat 32) 832
-  {s with pc := N 7274, memory := v2, stack := (w10) :: (v1) :: (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7272, memory := v2, stack := (w10) :: (v1) :: (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage11Part12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part12Program {s with pc := N 7264, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage11Part12Program {s with pc := N 7262, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5381,10 +5379,10 @@ def stage11Part13Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : W := (w2) - (w1)
   let v1 : W := (w0) + (v0)
   let v2 : W := UInt256.mulMod (N 2048) (v1) (w0)
-  {s with pc := N 7282, memory := s.memory, stack := (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7280, memory := s.memory, stack := (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage11Part13_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Part13Program {s with pc := N 7274, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage11Part13Program {s with pc := N 7272, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage11Part13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5442,10 +5440,10 @@ def stage11Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v47 : W := (v44) - (v45)
   let v48 : W := (w8) + (v47)
   let v49 : W := UInt256.mulMod (N 2048) (v48) (w8)
-  {s with pc := N 7282, memory := v46, stack := (v49) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7280, memory := v46, stack := (v49) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage11Program {s with pc := N 7162, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage11Program {s with pc := N 7160, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 128
   let v1 : W := MachineState.readWord (s.memory) 96
   let v2 : W := MachineState.readWord (s.memory) 160
@@ -5496,33 +5494,33 @@ theorem stage11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v47 : W := (v44) - (v45)
   let v48 : W := (w8) + (v47)
   let v49 : W := UInt256.mulMod (N 2048) (v48) (w8)
-  have h0 : runInstructions stage11Part0Program {s with pc := N 7162, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7173, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage11Part0Program {s with pc := N 7160, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7171, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part0Model, v0, v1, v2] using stage11Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage11Part1Program {s with pc := N 7173, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7183, memory := s.memory, stack := (v5) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage11Part1Program {s with pc := N 7171, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7181, memory := s.memory, stack := (v5) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part1Model, v3, v4, v5] using stage11Part1_run ({s with memory := s.memory}) (v2) (v1) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage11Part2Program {s with pc := N 7183, memory := s.memory, stack := (v5) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7191, memory := s.memory, stack := (v0) :: (v1) :: (w8) :: (v7) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage11Part2Program {s with pc := N 7181, memory := s.memory, stack := (v5) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7189, memory := s.memory, stack := (v0) :: (v1) :: (w8) :: (v7) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part2Model, v6, v7] using stage11Part2_run ({s with memory := s.memory}) (v5) (v4) (v3) (v2) (v1) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage11Part3Program {s with pc := N 7191, memory := s.memory, stack := (v0) :: (v1) :: (w8) :: (v7) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7199, memory := s.memory, stack := (v12) :: (v11) :: (v1) :: (v0) :: (w0) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage11Part3Program {s with pc := N 7189, memory := s.memory, stack := (v0) :: (v1) :: (w8) :: (v7) :: (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7197, memory := s.memory, stack := (v12) :: (v11) :: (v1) :: (v0) :: (w0) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part3Model, v8, v9, v10, v11, v12] using stage11Part3_run ({s with memory := s.memory}) (v0) (v1) (w8) (v7) (v4) (v3) (v2) (v1) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage11Part4Program {s with pc := N 7199, memory := s.memory, stack := (v12) :: (v11) :: (v1) :: (v0) :: (w0) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7207, memory := s.memory, stack := (w9) :: (v17) :: (v16) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage11Part4Program {s with pc := N 7197, memory := s.memory, stack := (v12) :: (v11) :: (v1) :: (v0) :: (w0) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7205, memory := s.memory, stack := (w9) :: (v17) :: (v16) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part4Model, v13, v14, v15, v16, v17] using stage11Part4_run ({s with memory := s.memory}) (v12) (v11) (v1) (v0) (w0) (v10) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage11Part5Program {s with pc := N 7207, memory := s.memory, stack := (w9) :: (v17) :: (v16) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7216, memory := s.memory, stack := (w2) :: (v22) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage11Part5Program {s with pc := N 7205, memory := s.memory, stack := (w9) :: (v17) :: (v16) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7214, memory := s.memory, stack := (w2) :: (v22) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part5Model, v18, v19, v20, v21, v22] using stage11Part5_run ({s with memory := s.memory}) (w9) (v17) (v16) (v10) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage11Part6Program {s with pc := N 7216, memory := s.memory, stack := (w2) :: (v22) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7224, memory := s.memory, stack := (w10) :: (v26) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage11Part6Program {s with pc := N 7214, memory := s.memory, stack := (w2) :: (v22) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7222, memory := s.memory, stack := (w10) :: (v26) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part6Model, v23, v24, v25, v26] using stage11Part6_run ({s with memory := s.memory}) (w2) (v22) (v10) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h7 : runInstructions stage11Part7Program {s with pc := N 7224, memory := s.memory, stack := (w10) :: (v26) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7232, memory := s.memory, stack := (v10) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h7 : runInstructions stage11Part7Program {s with pc := N 7222, memory := s.memory, stack := (w10) :: (v26) :: (v10) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7230, memory := s.memory, stack := (v10) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part7Model, v27, v28, v29, v30] using stage11Part7_run ({s with memory := s.memory}) (w10) (v26) (v10) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h8 : runInstructions stage11Part8Program {s with pc := N 7232, memory := s.memory, stack := (v10) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7239, memory := s.memory, stack := (w8) :: (v33) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h8 : runInstructions stage11Part8Program {s with pc := N 7230, memory := s.memory, stack := (v10) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7237, memory := s.memory, stack := (w8) :: (v33) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part8Model, v31, v32, v33] using stage11Part8_run ({s with memory := s.memory}) (v10) (v30) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h9 : runInstructions stage11Part9Program {s with pc := N 7239, memory := s.memory, stack := (w8) :: (v33) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7248, memory := s.memory, stack := (w5) :: (w2) :: (w8) :: (v36) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h9 : runInstructions stage11Part9Program {s with pc := N 7237, memory := s.memory, stack := (w8) :: (v33) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7246, memory := s.memory, stack := (w5) :: (w2) :: (w8) :: (v36) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part9Model, v34, v35, v36] using stage11Part9_run ({s with memory := s.memory}) (w8) (v33) (v30) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h10 : runInstructions stage11Part10Program {s with pc := N 7248, memory := s.memory, stack := (w5) :: (w2) :: (w8) :: (v36) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7256, memory := s.memory, stack := (w8) :: (v40) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h10 : runInstructions stage11Part10Program {s with pc := N 7246, memory := s.memory, stack := (w5) :: (w2) :: (w8) :: (v36) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7254, memory := s.memory, stack := (w8) :: (v40) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part10Model, v37, v38, v39, v40] using stage11Part10_run ({s with memory := s.memory}) (w5) (w2) (w8) (v36) (v30) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h11 : runInstructions stage11Part11Program {s with pc := N 7256, memory := s.memory, stack := (w8) :: (v40) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7264, memory := s.memory, stack := (v43) :: (v42) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h11 : runInstructions stage11Part11Program {s with pc := N 7254, memory := s.memory, stack := (w8) :: (v40) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7262, memory := s.memory, stack := (v43) :: (v42) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part11Model, v41, v42, v43] using stage11Part11_run ({s with memory := s.memory}) (w8) (v40) (v30) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h12 : runInstructions stage11Part12Program {s with pc := N 7264, memory := s.memory, stack := (v43) :: (v42) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7274, memory := v46, stack := (w8) :: (v45) :: (v44) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h12 : runInstructions stage11Part12Program {s with pc := N 7262, memory := s.memory, stack := (v43) :: (v42) :: (v30) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7272, memory := v46, stack := (w8) :: (v45) :: (v44) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part12Model, v44, v45, v46] using stage11Part12_run ({s with memory := s.memory}) (v43) (v42) (v30) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h13 : runInstructions stage11Part13Program {s with pc := N 7274, memory := v46, stack := (w8) :: (v45) :: (v44) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7282, memory := v46, stack := (v49) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h13 : runInstructions stage11Part13Program {s with pc := N 7272, memory := v46, stack := (w8) :: (v45) :: (v44) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7280, memory := v46, stack := (v49) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage11Part13Model, v47, v48, v49] using stage11Part13_run ({s with memory := v46}) (w8) (v45) (v44) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 h13)))))))))))))
 
@@ -5539,10 +5537,10 @@ def stage12Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 160
   let v1 : W := MachineState.readWord (s.memory) 96
   let v2 : W := MachineState.readWord (s.memory) 64
-  {s with pc := N 7293, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7291, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage12Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part0Program {s with pc := N 7282, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage12Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage12Part0Program {s with pc := N 7280, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage12Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5566,10 +5564,10 @@ def stage12Part1Program : List Instr :=
 def stage12Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w0) (w4) (w12)
   let v1 : W := UInt256.mulMod (w2) (w1) (w12)
-  {s with pc := N 7301, memory := s.memory, stack := (v1) :: (v0) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7299, memory := s.memory, stack := (v1) :: (v0) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage12Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part1Program {s with pc := N 7293, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage12Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage12Part1Program {s with pc := N 7291, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage12Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5590,10 +5588,10 @@ def stage12Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := (w6) * (w2)
   let v3 : W := (w4) * (w3)
   let v4 : W := (v3) + (v2)
-  {s with pc := N 7309, memory := s.memory, stack := (v4) :: (w5) :: (v1) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest}
+  {s with pc := N 7307, memory := s.memory, stack := (v4) :: (w5) :: (v1) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest}
 theorem stage12Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part2Program {s with pc := N 7301, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest} = some (stage12Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
+    runInstructions stage12Part2Program {s with pc := N 7299, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: rest} = some (stage12Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5614,10 +5612,10 @@ def stage12Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := (v1) * (v1)
   let v3 : W := (v2) + (v0)
   let v4 : W := MachineState.readWord (s.memory) 224
-  {s with pc := N 7319, memory := s.memory, stack := (v4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7317, memory := s.memory, stack := (v4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part3Program {s with pc := N 7309, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part3Program {s with pc := N 7307, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5641,10 +5639,10 @@ def stage12Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w1)
   let v2 : W := (w9) * (w7)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7327, memory := s.memory, stack := (w4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7325, memory := s.memory, stack := (w4) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part4Program {s with pc := N 7319, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part4Program {s with pc := N 7317, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5664,10 +5662,10 @@ def stage12Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w1)
   let v2 : W := (w8) * (w12)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7335, memory := s.memory, stack := (w5) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7333, memory := s.memory, stack := (w5) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part5Program {s with pc := N 7327, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part5Program {s with pc := N 7325, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5686,10 +5684,10 @@ def stage12Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w14) * (w0)
   let v1 : W := (v0) + (w1)
   let v2 : W := MachineState.readWord (s.memory) 128
-  {s with pc := N 7344, memory := s.memory, stack := (v2) :: (v2) :: (w10) :: (w2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7342, memory := s.memory, stack := (v2) :: (v2) :: (w10) :: (w2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part6Program {s with pc := N 7335, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part6Program {s with pc := N 7333, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5712,10 +5710,10 @@ def stage12Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 224
   let v3 : W := UInt256.mulMod (w13) (v2) (w12)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 7353, memory := s.memory, stack := (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7351, memory := s.memory, stack := (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage12Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part7Program {s with pc := N 7344, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage12Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage12Part7Program {s with pc := N 7342, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage12Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5735,10 +5733,10 @@ def stage12Part8Program : List Instr :=
 def stage12Part8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w8) (w6) (w9)
   let v1 : W := (v0) + (w0)
-  {s with pc := N 7361, memory := s.memory, stack := (w5) :: (w3) :: (w9) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7359, memory := s.memory, stack := (w5) :: (w3) :: (w9) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage12Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part8Program {s with pc := N 7353, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage12Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage12Part8Program {s with pc := N 7351, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage12Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5758,10 +5756,10 @@ def stage12Part9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w3)
   let v2 : W := UInt256.mulMod (w10) (w14) (w12)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7369, memory := s.memory, stack := (w12) :: (v3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7367, memory := s.memory, stack := (w12) :: (v3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage12Part9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part9Program {s with pc := N 7361, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage12Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage12Part9Program {s with pc := N 7359, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage12Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5780,10 +5778,10 @@ def stage12Part10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : W := UInt256.mulMod (w14) (w5) (w0)
   let v1 : W := (v0) + (w1)
   let v2 : W := UInt256.land (w13) (w2)
-  {s with pc := N 7377, memory := s.memory, stack := (v2) :: (v2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7375, memory := s.memory, stack := (v2) :: (v2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part10Program {s with pc := N 7369, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part10Program {s with pc := N 7367, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part10Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5802,10 +5800,10 @@ def stage12Part11Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (w0).toNat 32) 32
   let v1 : W := (w2) - (w1)
   let v2 : W := (w10) + (v1)
-  {s with pc := N 7388, memory := v0, stack := (N 2048) :: (v2) :: (w10) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7386, memory := v0, stack := (N 2048) :: (v2) :: (w10) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part11_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part11Program {s with pc := N 7377, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part11Program {s with pc := N 7375, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5817,10 +5815,10 @@ def stage12Part12Program : List Instr :=
   [.op .MULMOD]
 def stage12Part12Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w0) (w1) (w2)
-  {s with pc := N 7389, memory := s.memory, stack := (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7387, memory := s.memory, stack := (v0) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage12Part12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Part12Program {s with pc := N 7388, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage12Part12Program {s with pc := N 7386, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage12Part12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5872,10 +5870,10 @@ def stage12Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v41 : W := (v38) - (v39)
   let v42 : W := (w8) + (v41)
   let v43 : W := UInt256.mulMod (N 2048) (v42) (w8)
-  {s with pc := N 7389, memory := v40, stack := (v43) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7387, memory := v40, stack := (v43) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage12Program {s with pc := N 7282, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage12Program {s with pc := N 7280, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage12Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 160
   let v1 : W := MachineState.readWord (s.memory) 96
   let v2 : W := MachineState.readWord (s.memory) 64
@@ -5920,31 +5918,31 @@ theorem stage12_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v41 : W := (v38) - (v39)
   let v42 : W := (w8) + (v41)
   let v43 : W := UInt256.mulMod (N 2048) (v42) (w8)
-  have h0 : runInstructions stage12Part0Program {s with pc := N 7282, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7293, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage12Part0Program {s with pc := N 7280, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7291, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part0Model, v0, v1, v2] using stage12Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage12Part1Program {s with pc := N 7293, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7301, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage12Part1Program {s with pc := N 7291, memory := s.memory, stack := (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7299, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part1Model, v3, v4] using stage12Part1_run ({s with memory := s.memory}) (v2) (v1) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage12Part2Program {s with pc := N 7301, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7309, memory := s.memory, stack := (v9) :: (w0) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage12Part2Program {s with pc := N 7299, memory := s.memory, stack := (v4) :: (v3) :: (v2) :: (v1) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7307, memory := s.memory, stack := (v9) :: (w0) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part2Model, v5, v6, v7, v8, v9] using stage12Part2_run ({s with memory := s.memory}) (v4) (v3) (v2) (v1) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage12Part3Program {s with pc := N 7309, memory := s.memory, stack := (v9) :: (w0) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7319, memory := s.memory, stack := (v14) :: (v13) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage12Part3Program {s with pc := N 7307, memory := s.memory, stack := (v9) :: (w0) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7317, memory := s.memory, stack := (v14) :: (v13) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part3Model, v10, v11, v12, v13, v14] using stage12Part3_run ({s with memory := s.memory}) (v9) (w0) (v6) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage12Part4Program {s with pc := N 7319, memory := s.memory, stack := (v14) :: (v13) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7327, memory := s.memory, stack := (w2) :: (v18) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage12Part4Program {s with pc := N 7317, memory := s.memory, stack := (v14) :: (v13) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7325, memory := s.memory, stack := (w2) :: (v18) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part4Model, v15, v16, v17, v18] using stage12Part4_run ({s with memory := s.memory}) (v14) (v13) (v6) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage12Part5Program {s with pc := N 7327, memory := s.memory, stack := (w2) :: (v18) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7335, memory := s.memory, stack := (w3) :: (v22) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage12Part5Program {s with pc := N 7325, memory := s.memory, stack := (w2) :: (v18) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7333, memory := s.memory, stack := (w3) :: (v22) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part5Model, v19, v20, v21, v22] using stage12Part5_run ({s with memory := s.memory}) (w2) (v18) (v6) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage12Part6Program {s with pc := N 7335, memory := s.memory, stack := (w3) :: (v22) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7344, memory := s.memory, stack := (v25) :: (v25) :: (w8) :: (v6) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage12Part6Program {s with pc := N 7333, memory := s.memory, stack := (w3) :: (v22) :: (v6) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7342, memory := s.memory, stack := (v25) :: (v25) :: (w8) :: (v6) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part6Model, v23, v24, v25] using stage12Part6_run ({s with memory := s.memory}) (w3) (v22) (v6) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h7 : runInstructions stage12Part7Program {s with pc := N 7344, memory := s.memory, stack := (v25) :: (v25) :: (w8) :: (v6) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7353, memory := s.memory, stack := (v30) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h7 : runInstructions stage12Part7Program {s with pc := N 7342, memory := s.memory, stack := (v25) :: (v25) :: (w8) :: (v6) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7351, memory := s.memory, stack := (v30) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part7Model, v26, v27, v28, v29, v30] using stage12Part7_run ({s with memory := s.memory}) (v25) (v25) (w8) (v6) (v24) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h8 : runInstructions stage12Part8Program {s with pc := N 7353, memory := s.memory, stack := (v30) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7361, memory := s.memory, stack := (w4) :: (w2) :: (w8) :: (v32) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h8 : runInstructions stage12Part8Program {s with pc := N 7351, memory := s.memory, stack := (v30) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7359, memory := s.memory, stack := (w4) :: (w2) :: (w8) :: (v32) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part8Model, v31, v32] using stage12Part8_run ({s with memory := s.memory}) (v30) (v24) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h9 : runInstructions stage12Part9Program {s with pc := N 7361, memory := s.memory, stack := (w4) :: (w2) :: (w8) :: (v32) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7369, memory := s.memory, stack := (w8) :: (v36) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h9 : runInstructions stage12Part9Program {s with pc := N 7359, memory := s.memory, stack := (w4) :: (w2) :: (w8) :: (v32) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7367, memory := s.memory, stack := (w8) :: (v36) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part9Model, v33, v34, v35, v36] using stage12Part9_run ({s with memory := s.memory}) (w4) (w2) (w8) (v32) (v24) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h10 : runInstructions stage12Part10Program {s with pc := N 7369, memory := s.memory, stack := (w8) :: (v36) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7377, memory := s.memory, stack := (v39) :: (v39) :: (v38) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h10 : runInstructions stage12Part10Program {s with pc := N 7367, memory := s.memory, stack := (w8) :: (v36) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7375, memory := s.memory, stack := (v39) :: (v39) :: (v38) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part10Model, v37, v38, v39] using stage12Part10_run ({s with memory := s.memory}) (w8) (v36) (v24) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h11 : runInstructions stage12Part11Program {s with pc := N 7377, memory := s.memory, stack := (v39) :: (v39) :: (v38) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7388, memory := v40, stack := (N 2048) :: (v42) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h11 : runInstructions stage12Part11Program {s with pc := N 7375, memory := s.memory, stack := (v39) :: (v39) :: (v38) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7386, memory := v40, stack := (N 2048) :: (v42) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part11Model, v40, v41, v42] using stage12Part11_run ({s with memory := s.memory}) (v39) (v39) (v38) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h12 : runInstructions stage12Part12Program {s with pc := N 7388, memory := v40, stack := (N 2048) :: (v42) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7389, memory := v40, stack := (v43) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h12 : runInstructions stage12Part12Program {s with pc := N 7386, memory := v40, stack := (N 2048) :: (v42) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7387, memory := v40, stack := (v43) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage12Part12Model, v43] using stage12Part12_run ({s with memory := v40}) (N 2048) (v42) (w8) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 h12))))))))))))
 
@@ -5961,10 +5959,10 @@ def stage13Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := MachineState.readWord (s.memory) 160
   let v1 : W := MachineState.readWord (s.memory) 128
   let v2 : W := (v1) + (v1)
-  {s with pc := N 7399, memory := s.memory, stack := (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7397, memory := s.memory, stack := (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage13Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part0Program {s with pc := N 7389, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage13Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage13Part0Program {s with pc := N 7387, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage13Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -5986,10 +5984,10 @@ def stage13Part1Program : List Instr :=
 def stage13Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 96
   let v1 : W := UInt256.mulMod (v0) (w3) (w11)
-  {s with pc := N 7408, memory := s.memory, stack := (w0) :: (w11) :: (v1) :: (v0) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7406, memory := s.memory, stack := (w0) :: (w11) :: (v1) :: (v0) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage13Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part1Program {s with pc := N 7399, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage13Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage13Part1Program {s with pc := N 7397, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage13Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6011,10 +6009,10 @@ def stage13Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w2)
   let v2 : W := (w6) + (v1)
   let v3 : W := (w7) * (w3)
-  {s with pc := N 7416, memory := s.memory, stack := (w5) :: (w4) :: (v3) :: (w6) :: (v2) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest}
+  {s with pc := N 7414, memory := s.memory, stack := (w5) :: (w4) :: (v3) :: (w6) :: (v2) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest}
 theorem stage13Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part2Program {s with pc := N 7408, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest} = some (stage13Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 rest) := by
+    runInstructions stage13Part2Program {s with pc := N 7406, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: (w19) :: (w20) :: (w21) :: rest} = some (stage13Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 w19 w20 w21 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6035,10 +6033,10 @@ def stage13Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := (v1) + (w3)
   let v3 : W := (w13) * (w9)
   let v4 : W := (v3) + (v2)
-  {s with pc := N 7424, memory := s.memory, stack := (w8) :: (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7422, memory := s.memory, stack := (w8) :: (v4) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage13Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part3Program {s with pc := N 7416, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage13Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage13Part3Program {s with pc := N 7414, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage13Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6058,10 +6056,10 @@ def stage13Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w1)
   let v2 : W := (w4) * (w12)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7432, memory := s.memory, stack := (w8) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7430, memory := s.memory, stack := (w8) :: (v3) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage13Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part4Program {s with pc := N 7424, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage13Part4Program {s with pc := N 7422, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6080,10 +6078,10 @@ def stage13Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w14) * (w0)
   let v1 : W := (v0) + (w1)
   let v2 : W := UInt256.mulMod (w11) (w7) (w10)
-  {s with pc := N 7440, memory := s.memory, stack := (v2) :: (w2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7438, memory := s.memory, stack := (v2) :: (w2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage13Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part5Program {s with pc := N 7432, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage13Part5Program {s with pc := N 7430, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6102,10 +6100,10 @@ def stage13Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.mulMod (w9) (w6) (w10)
   let v2 : W := (v1) + (v0)
-  {s with pc := N 7448, memory := s.memory, stack := (w4) :: (w10) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7446, memory := s.memory, stack := (w4) :: (w10) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage13Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part6Program {s with pc := N 7440, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage13Part6Program {s with pc := N 7438, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6125,10 +6123,10 @@ def stage13Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w2)
   let v2 : W := UInt256.mulMod (w15) (w9) (w11)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7456, memory := s.memory, stack := (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7454, memory := s.memory, stack := (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage13Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part7Program {s with pc := N 7448, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage13Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage13Part7Program {s with pc := N 7446, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage13Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6146,10 +6144,10 @@ def stage13Part8Program : List Instr :=
 def stage13Part8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := UInt256.land (w12) (w1)
   let v1 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (v0).toNat 32) 64
-  {s with pc := N 7465, memory := v1, stack := (w0) :: (v0) :: (w9) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7463, memory := v1, stack := (w0) :: (v0) :: (w9) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage13Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part8Program {s with pc := N 7456, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage13Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage13Part8Program {s with pc := N 7454, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage13Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6167,10 +6165,10 @@ def stage13Part9Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w0) - (w1)
   let v1 : W := (w2) + (v0)
   let v2 : W := UInt256.mulMod (N 2048) (v1) (w2)
-  {s with pc := N 7472, memory := s.memory, stack := (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7470, memory := s.memory, stack := (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage13Part9_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Part9Program {s with pc := N 7465, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage13Part9Program {s with pc := N 7463, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage13Part9Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6211,10 +6209,10 @@ def stage13Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v30 : W := (v27) - (v28)
   let v31 : W := (w8) + (v30)
   let v32 : W := UInt256.mulMod (N 2048) (v31) (w8)
-  {s with pc := N 7472, memory := v29, stack := (v32) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7470, memory := v29, stack := (v32) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage13_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage13Program {s with pc := N 7389, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage13Program {s with pc := N 7387, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage13Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 160
   let v1 : W := MachineState.readWord (s.memory) 128
   let v2 : W := (v1) + (v1)
@@ -6248,25 +6246,25 @@ theorem stage13_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v30 : W := (v27) - (v28)
   let v31 : W := (w8) + (v30)
   let v32 : W := UInt256.mulMod (N 2048) (v31) (w8)
-  have h0 : runInstructions stage13Part0Program {s with pc := N 7389, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7399, memory := s.memory, stack := (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage13Part0Program {s with pc := N 7387, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7397, memory := s.memory, stack := (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part0Model, v0, v1, v2] using stage13Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage13Part1Program {s with pc := N 7399, memory := s.memory, stack := (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7408, memory := s.memory, stack := (v2) :: (w8) :: (v4) :: (v3) :: (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage13Part1Program {s with pc := N 7397, memory := s.memory, stack := (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7406, memory := s.memory, stack := (v2) :: (w8) :: (v4) :: (v3) :: (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part1Model, v3, v4] using stage13Part1_run ({s with memory := s.memory}) (v2) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage13Part2Program {s with pc := N 7408, memory := s.memory, stack := (v2) :: (w8) :: (v4) :: (v3) :: (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7416, memory := s.memory, stack := (v0) :: (v2) :: (v8) :: (w0) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage13Part2Program {s with pc := N 7406, memory := s.memory, stack := (v2) :: (w8) :: (v4) :: (v3) :: (v2) :: (v0) :: (w0) :: (w14) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7414, memory := s.memory, stack := (v0) :: (v2) :: (v8) :: (w0) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part2Model, v5, v6, v7, v8] using stage13Part2_run ({s with memory := s.memory}) (v2) (w8) (v4) (v3) (v2) (v0) (w0) (w14) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage13Part3Program {s with pc := N 7416, memory := s.memory, stack := (v0) :: (v2) :: (v8) :: (w0) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7424, memory := s.memory, stack := (w4) :: (v13) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage13Part3Program {s with pc := N 7414, memory := s.memory, stack := (v0) :: (v2) :: (v8) :: (w0) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7422, memory := s.memory, stack := (w4) :: (v13) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part3Model, v9, v10, v11, v12, v13] using stage13Part3_run ({s with memory := s.memory}) (v0) (v2) (v8) (w0) (v7) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage13Part4Program {s with pc := N 7424, memory := s.memory, stack := (w4) :: (v13) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7432, memory := s.memory, stack := (w6) :: (v17) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage13Part4Program {s with pc := N 7422, memory := s.memory, stack := (w4) :: (v13) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7430, memory := s.memory, stack := (w6) :: (v17) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part4Model, v14, v15, v16, v17] using stage13Part4_run ({s with memory := s.memory}) (w4) (v13) (v7) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage13Part5Program {s with pc := N 7432, memory := s.memory, stack := (w6) :: (v17) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7440, memory := s.memory, stack := (v20) :: (v7) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage13Part5Program {s with pc := N 7430, memory := s.memory, stack := (w6) :: (v17) :: (v7) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7438, memory := s.memory, stack := (v20) :: (v7) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part5Model, v18, v19, v20] using stage13Part5_run ({s with memory := s.memory}) (w6) (v17) (v7) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage13Part6Program {s with pc := N 7440, memory := s.memory, stack := (v20) :: (v7) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7448, memory := s.memory, stack := (w2) :: (w8) :: (v23) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage13Part6Program {s with pc := N 7438, memory := s.memory, stack := (v20) :: (v7) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7446, memory := s.memory, stack := (w2) :: (w8) :: (v23) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part6Model, v21, v22, v23] using stage13Part6_run ({s with memory := s.memory}) (v20) (v7) (v19) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h7 : runInstructions stage13Part7Program {s with pc := N 7448, memory := s.memory, stack := (w2) :: (w8) :: (v23) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7456, memory := s.memory, stack := (v27) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h7 : runInstructions stage13Part7Program {s with pc := N 7446, memory := s.memory, stack := (w2) :: (w8) :: (v23) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7454, memory := s.memory, stack := (v27) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part7Model, v24, v25, v26, v27] using stage13Part7_run ({s with memory := s.memory}) (w2) (w8) (v23) (v19) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h8 : runInstructions stage13Part8Program {s with pc := N 7456, memory := s.memory, stack := (v27) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7465, memory := v29, stack := (v27) :: (v28) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h8 : runInstructions stage13Part8Program {s with pc := N 7454, memory := s.memory, stack := (v27) :: (v19) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7463, memory := v29, stack := (v27) :: (v28) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part8Model, v28, v29] using stage13Part8_run ({s with memory := s.memory}) (v27) (v19) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h9 : runInstructions stage13Part9Program {s with pc := N 7465, memory := v29, stack := (v27) :: (v28) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7472, memory := v29, stack := (v32) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h9 : runInstructions stage13Part9Program {s with pc := N 7463, memory := v29, stack := (v27) :: (v28) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7470, memory := v29, stack := (v32) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage13Part9Model, v30, v31, v32] using stage13Part9_run ({s with memory := v29}) (v27) (v28) (w8) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 h9)))))))))
 
@@ -6282,10 +6280,10 @@ def stage14Part0Program : List Instr :=
 def stage14Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 832
   let v1 : W := MachineState.readWord (s.memory) 128
-  {s with pc := N 7483, memory := s.memory, stack := (v1) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7481, memory := s.memory, stack := (v1) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage14Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part0Program {s with pc := N 7472, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage14Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage14Part0Program {s with pc := N 7470, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage14Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6308,10 +6306,10 @@ def stage14Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w0) + (w0)
   let v1 : W := (w2) * (v0)
   let v2 : W := UInt256.mulMod (w2) (v0) (w1)
-  {s with pc := N 7491, memory := s.memory, stack := (w3) :: (v2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7489, memory := s.memory, stack := (w3) :: (v2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage14Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part1Program {s with pc := N 7483, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage14Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage14Part1Program {s with pc := N 7481, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage14Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6332,10 +6330,10 @@ def stage14Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v2 : W := MachineState.readWord (s.memory) 160
   let v3 : W := (v2) * (v2)
   let v4 : W := (v3) + (v1)
-  {s with pc := N 7500, memory := s.memory, stack := (v4) :: (v0) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7498, memory := s.memory, stack := (v4) :: (v0) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage14Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part2Program {s with pc := N 7491, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage14Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage14Part2Program {s with pc := N 7489, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage14Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6357,10 +6355,10 @@ def stage14Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w0)
   let v2 : W := (w8) * (w11)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7508, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7506, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage14Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part3Program {s with pc := N 7500, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage14Part3Program {s with pc := N 7498, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6379,10 +6377,10 @@ def stage14Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w13) * (w3)
   let v1 : W := (v0) + (w0)
   let v2 : W := MachineState.readWord (s.memory) 160
-  {s with pc := N 7517, memory := s.memory, stack := (v2) :: (w9) :: (w1) :: (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7515, memory := s.memory, stack := (v2) :: (w9) :: (w1) :: (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage14Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part4Program {s with pc := N 7508, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage14Part4Program {s with pc := N 7506, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6404,10 +6402,10 @@ def stage14Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w2)
   let v2 : W := UInt256.mulMod (w12) (w7) (w11)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7525, memory := s.memory, stack := (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7523, memory := s.memory, stack := (v3) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage14Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part5Program {s with pc := N 7517, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage14Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage14Part5Program {s with pc := N 7515, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage14Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6425,10 +6423,10 @@ def stage14Part6Program : List Instr :=
 def stage14Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w8) (w11) (w9)
   let v1 : W := (v0) + (w0)
-  {s with pc := N 7533, memory := s.memory, stack := (w3) :: (w13) :: (w9) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7531, memory := s.memory, stack := (w3) :: (w13) :: (w9) :: (v1) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage14Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part6Program {s with pc := N 7525, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage14Part6Program {s with pc := N 7523, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6448,10 +6446,10 @@ def stage14Part7Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (v0) + (w3)
   let v2 : W := UInt256.land (w15) (w4)
   let v3 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (v2).toNat 32) 96
-  {s with pc := N 7542, memory := v3, stack := (v2) :: (v1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
+  {s with pc := N 7540, memory := v3, stack := (v2) :: (v1) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest}
 theorem stage14Part7_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part7Program {s with pc := N 7533, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage14Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
+    runInstructions stage14Part7Program {s with pc := N 7531, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: (w18) :: rest} = some (stage14Part7Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 w18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6471,10 +6469,10 @@ def stage14Part8Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w1) - (w0)
   let v1 : W := (w9) + (v0)
   let v2 : W := UInt256.mulMod (N 2048) (v1) (w9)
-  {s with pc := N 7551, memory := s.memory, stack := (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7549, memory := s.memory, stack := (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage14Part8_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Part8Program {s with pc := N 7542, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage14Part8Program {s with pc := N 7540, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage14Part8Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6512,10 +6510,10 @@ def stage14Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v27 : W := (v24) - (v25)
   let v28 : W := (w8) + (v27)
   let v29 : W := UInt256.mulMod (N 2048) (v28) (w8)
-  {s with pc := N 7551, memory := v26, stack := (v29) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7549, memory := v26, stack := (v29) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage14_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage14Program {s with pc := N 7472, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage14Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage14Program {s with pc := N 7470, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage14Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 832
   let v1 : W := MachineState.readWord (s.memory) 128
   let v2 : W := (v1) + (v1)
@@ -6546,23 +6544,23 @@ theorem stage14_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v27 : W := (v24) - (v25)
   let v28 : W := (w8) + (v27)
   let v29 : W := UInt256.mulMod (N 2048) (v28) (w8)
-  have h0 : runInstructions stage14Part0Program {s with pc := N 7472, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7483, memory := s.memory, stack := (v1) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage14Part0Program {s with pc := N 7470, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7481, memory := s.memory, stack := (v1) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part0Model, v0, v1] using stage14Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage14Part1Program {s with pc := N 7483, memory := s.memory, stack := (v1) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7491, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage14Part1Program {s with pc := N 7481, memory := s.memory, stack := (v1) :: (w8) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7489, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part1Model, v2, v3, v4] using stage14Part1_run ({s with memory := s.memory}) (v1) (w8) (w14) (w0) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage14Part2Program {s with pc := N 7491, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7500, memory := s.memory, stack := (v9) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage14Part2Program {s with pc := N 7489, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7498, memory := s.memory, stack := (v9) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part2Model, v5, v6, v7, v8, v9] using stage14Part2_run ({s with memory := s.memory}) (w0) (v4) (v3) (w0) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage14Part3Program {s with pc := N 7500, memory := s.memory, stack := (v9) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7508, memory := s.memory, stack := (v13) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage14Part3Program {s with pc := N 7498, memory := s.memory, stack := (v9) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7506, memory := s.memory, stack := (v13) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part3Model, v10, v11, v12, v13] using stage14Part3_run ({s with memory := s.memory}) (v9) (v5) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage14Part4Program {s with pc := N 7508, memory := s.memory, stack := (v13) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7517, memory := s.memory, stack := (v16) :: (w8) :: (v5) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage14Part4Program {s with pc := N 7506, memory := s.memory, stack := (v13) :: (v5) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7515, memory := s.memory, stack := (v16) :: (w8) :: (v5) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part4Model, v14, v15, v16] using stage14Part4_run ({s with memory := s.memory}) (v13) (v5) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage14Part5Program {s with pc := N 7517, memory := s.memory, stack := (v16) :: (w8) :: (v5) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7525, memory := s.memory, stack := (v20) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage14Part5Program {s with pc := N 7515, memory := s.memory, stack := (v16) :: (w8) :: (v5) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7523, memory := s.memory, stack := (v20) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part5Model, v17, v18, v19, v20] using stage14Part5_run ({s with memory := s.memory}) (v16) (w8) (v5) (v15) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage14Part6Program {s with pc := N 7525, memory := s.memory, stack := (v20) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7533, memory := s.memory, stack := (w2) :: (w12) :: (w8) :: (v22) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage14Part6Program {s with pc := N 7523, memory := s.memory, stack := (v20) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7531, memory := s.memory, stack := (w2) :: (w12) :: (w8) :: (v22) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part6Model, v21, v22] using stage14Part6_run ({s with memory := s.memory}) (v20) (v15) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h7 : runInstructions stage14Part7Program {s with pc := N 7533, memory := s.memory, stack := (w2) :: (w12) :: (w8) :: (v22) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7542, memory := v26, stack := (v25) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h7 : runInstructions stage14Part7Program {s with pc := N 7531, memory := s.memory, stack := (w2) :: (w12) :: (w8) :: (v22) :: (v15) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7540, memory := v26, stack := (v25) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part7Model, v23, v24, v25, v26] using stage14Part7_run ({s with memory := s.memory}) (w2) (w12) (w8) (v22) (v15) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h8 : runInstructions stage14Part8Program {s with pc := N 7542, memory := v26, stack := (v25) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7551, memory := v26, stack := (v29) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h8 : runInstructions stage14Part8Program {s with pc := N 7540, memory := v26, stack := (v25) :: (v24) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7549, memory := v26, stack := (v29) :: (w1) :: (w2) :: (w3) :: (w4) :: (v0) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage14Part8Model, v27, v28, v29] using stage14Part8_run ({s with memory := v26}) (v25) (v24) (w1) (w2) (w3) (w4) (v0) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 h8))))))))
 
@@ -6578,10 +6576,10 @@ def stage15Part0Program : List Instr :=
 def stage15Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 800
   let v1 : W := MachineState.readWord (s.memory) 160
-  {s with pc := N 7562, memory := s.memory, stack := (v1) :: (v1) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7560, memory := s.memory, stack := (v1) :: (v1) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage15Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part0Program {s with pc := N 7551, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage15Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage15Part0Program {s with pc := N 7549, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage15Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6604,10 +6602,10 @@ def stage15Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := (w0) + (w1)
   let v1 : W := UInt256.mulMod (w2) (v0) (w11)
   let v2 : W := (w2) * (v0)
-  {s with pc := N 7570, memory := s.memory, stack := (w3) :: (v2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7568, memory := s.memory, stack := (w3) :: (v2) :: (v1) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage15Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part1Program {s with pc := N 7562, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage15Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage15Part1Program {s with pc := N 7560, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage15Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6627,10 +6625,10 @@ def stage15Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (w13) * (w12)
   let v2 : W := (v1) + (v0)
   let v3 : W := (w15) * (w10)
-  {s with pc := N 7578, memory := s.memory, stack := (v3) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7576, memory := s.memory, stack := (v3) :: (v2) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage15Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part2Program {s with pc := N 7570, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage15Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage15Part2Program {s with pc := N 7568, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage15Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6650,10 +6648,10 @@ def stage15Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (w3) + (w2)
   let v2 : W := UInt256.mulMod (w13) (w12) (w11)
   let v3 : W := (v2) + (v1)
-  {s with pc := N 7586, memory := s.memory, stack := (v3) :: (v0) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
+  {s with pc := N 7584, memory := s.memory, stack := (v3) :: (v0) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest}
 theorem stage15Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part3Program {s with pc := N 7578, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage15Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
+    runInstructions stage15Part3Program {s with pc := N 7576, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: (w17) :: rest} = some (stage15Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 w17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6672,10 +6670,10 @@ def stage15Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := UInt256.mulMod (w8) (w13) (w9)
   let v1 : W := (v0) + (w0)
   let v2 : W := UInt256.land (w12) (w1)
-  {s with pc := N 7594, memory := s.memory, stack := (v2) :: (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7592, memory := s.memory, stack := (v2) :: (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage15Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part4Program {s with pc := N 7586, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage15Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage15Part4Program {s with pc := N 7584, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage15Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6694,10 +6692,10 @@ def stage15Part5Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (w0).toNat 32) 128
   let v1 : W := (w1) - (w0)
   let v2 : W := (w9) + (v1)
-  {s with pc := N 7603, memory := v0, stack := (v2) :: (w9) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7601, memory := v0, stack := (v2) :: (w9) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage15Part5_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part5Program {s with pc := N 7594, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage15Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage15Part5Program {s with pc := N 7592, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage15Part5Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6710,10 +6708,10 @@ def stage15Part6Program : List Instr :=
    .op .MULMOD]
 def stage15Part6Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (N 2048) (w0) (w1)
-  {s with pc := N 7607, memory := s.memory, stack := (v0) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7605, memory := s.memory, stack := (v0) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage15Part6_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Part6Program {s with pc := N 7603, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage15Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage15Part6Program {s with pc := N 7601, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage15Part6Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6741,10 +6739,10 @@ def stage15Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v17 : W := (v14) - (v15)
   let v18 : W := (w8) + (v17)
   let v19 : W := UInt256.mulMod (N 2048) (v18) (w8)
-  {s with pc := N 7607, memory := v16, stack := (v19) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7605, memory := v16, stack := (v19) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage15_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage15Program {s with pc := N 7551, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage15Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage15Program {s with pc := N 7549, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage15Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 800
   let v1 : W := MachineState.readWord (s.memory) 160
   let v2 : W := (v1) + (v1)
@@ -6765,19 +6763,19 @@ theorem stage15_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v17 : W := (v14) - (v15)
   let v18 : W := (w8) + (v17)
   let v19 : W := UInt256.mulMod (N 2048) (v18) (w8)
-  have h0 : runInstructions stage15Part0Program {s with pc := N 7551, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7562, memory := s.memory, stack := (v1) :: (v1) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage15Part0Program {s with pc := N 7549, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7560, memory := s.memory, stack := (v1) :: (v1) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part0Model, v0, v1] using stage15Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage15Part1Program {s with pc := N 7562, memory := s.memory, stack := (v1) :: (v1) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7570, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage15Part1Program {s with pc := N 7560, memory := s.memory, stack := (v1) :: (v1) :: (w14) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7568, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part1Model, v2, v3, v4] using stage15Part1_run ({s with memory := s.memory}) (v1) (v1) (w14) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage15Part2Program {s with pc := N 7570, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7578, memory := s.memory, stack := (v8) :: (v7) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage15Part2Program {s with pc := N 7568, memory := s.memory, stack := (w0) :: (v4) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7576, memory := s.memory, stack := (v8) :: (v7) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part2Model, v5, v6, v7, v8] using stage15Part2_run ({s with memory := s.memory}) (w0) (v4) (v3) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage15Part3Program {s with pc := N 7578, memory := s.memory, stack := (v8) :: (v7) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7586, memory := s.memory, stack := (v12) :: (v9) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage15Part3Program {s with pc := N 7576, memory := s.memory, stack := (v8) :: (v7) :: (v3) :: (w0) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7584, memory := s.memory, stack := (v12) :: (v9) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part3Model, v9, v10, v11, v12] using stage15Part3_run ({s with memory := s.memory}) (v8) (v7) (v3) (w0) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage15Part4Program {s with pc := N 7586, memory := s.memory, stack := (v12) :: (v9) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7594, memory := s.memory, stack := (v15) :: (v14) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage15Part4Program {s with pc := N 7584, memory := s.memory, stack := (v12) :: (v9) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7592, memory := s.memory, stack := (v15) :: (v14) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part4Model, v13, v14, v15] using stage15Part4_run ({s with memory := s.memory}) (v12) (v9) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h5 : runInstructions stage15Part5Program {s with pc := N 7594, memory := s.memory, stack := (v15) :: (v14) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7603, memory := v16, stack := (v18) :: (w8) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h5 : runInstructions stage15Part5Program {s with pc := N 7592, memory := s.memory, stack := (v15) :: (v14) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7601, memory := v16, stack := (v18) :: (w8) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part5Model, v16, v17, v18] using stage15Part5_run ({s with memory := s.memory}) (v15) (v14) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h6 : runInstructions stage15Part6Program {s with pc := N 7603, memory := v16, stack := (v18) :: (w8) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7607, memory := v16, stack := (v19) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h6 : runInstructions stage15Part6Program {s with pc := N 7601, memory := v16, stack := (v18) :: (w8) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7605, memory := v16, stack := (v19) :: (w1) :: (w2) :: (w3) :: (v0) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage15Part6Model, v19] using stage15Part6_run ({s with memory := v16}) (v18) (w8) (w1) (w2) (w3) (v0) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 h6))))))
 
@@ -6792,10 +6790,10 @@ def stage16Part0Program : List Instr :=
    .op (.Dup dA15)]
 def stage16Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (w12) (w9) (w8)
-  {s with pc := N 7615, memory := s.memory, stack := (w14) :: (w8) :: (v0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7613, memory := s.memory, stack := (w14) :: (w8) :: (v0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage16Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage16Part0Program {s with pc := N 7607, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage16Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage16Part0Program {s with pc := N 7605, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage16Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6815,10 +6813,10 @@ def stage16Part1Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := (w12) + (v0)
   let v2 : W := (v1) + (w2)
   let v3 : W := (w14) * (w11)
-  {s with pc := N 7623, memory := s.memory, stack := (v3) :: (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
+  {s with pc := N 7621, memory := s.memory, stack := (v3) :: (v2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest}
 theorem stage16Part1_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage16Part1Program {s with pc := N 7615, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage16Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+    runInstructions stage16Part1Program {s with pc := N 7613, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: (w16) :: rest} = some (stage16Part1Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6838,10 +6836,10 @@ def stage16Part2Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v1 : W := MachineState.readWord (s.memory) 1376
   let v2 : W := (w11) + (v0)
   let v3 : W := (v2) + (w0)
-  {s with pc := N 7633, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (v1) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7631, memory := s.memory, stack := (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (v1) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage16Part2_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage16Part2Program {s with pc := N 7623, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage16Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage16Part2Program {s with pc := N 7621, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage16Part2Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6862,10 +6860,10 @@ def stage16Part3Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   let v0 : W := UInt256.land (w12) (w0)
   let v1 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (v0).toNat 32) 160
   let v2 : W := (w1) - (v0)
-  {s with pc := N 7642, memory := v1, stack := (v2) :: (w9) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7640, memory := v1, stack := (v2) :: (w9) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage16Part3_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage16Part3Program {s with pc := N 7633, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage16Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage16Part3Program {s with pc := N 7631, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage16Part3Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6881,10 +6879,10 @@ def stage16Part4Program : List Instr :=
 def stage16Part4Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := (w1) + (w0)
   let v1 : W := UInt256.mulMod (N 2048) (v0) (w1)
-  {s with pc := N 7648, memory := s.memory, stack := (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
+  {s with pc := N 7646, memory := s.memory, stack := (v1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest}
 theorem stage16Part4_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage16Part4Program {s with pc := N 7642, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage16Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
+    runInstructions stage16Part4Program {s with pc := N 7640, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: (w15) :: rest} = some (stage16Part4Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6906,10 +6904,10 @@ def stage16Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   let v11 : W := (v3) - (v9)
   let v12 : W := (w8) + (v11)
   let v13 : W := UInt256.mulMod (N 2048) (v12) (w8)
-  {s with pc := N 7648, memory := v10, stack := (v13) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
+  {s with pc := N 7646, memory := v10, stack := (v13) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest}
 theorem stage16_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage16Program {s with pc := N 7607, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage16Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage16Program {s with pc := N 7605, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage16Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := UInt256.mulMod (w12) (w9) (w8)
   let v1 : W := UInt256.mulMod (w14) (w14) (w8)
   let v2 : W := (w0) + (v1)
@@ -6924,22 +6922,22 @@ theorem stage16_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
   let v11 : W := (v3) - (v9)
   let v12 : W := (w8) + (v11)
   let v13 : W := UInt256.mulMod (N 2048) (v12) (w8)
-  have h0 : runInstructions stage16Part0Program {s with pc := N 7607, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7615, memory := s.memory, stack := (w14) :: (w8) :: (v0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h0 : runInstructions stage16Part0Program {s with pc := N 7605, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7613, memory := s.memory, stack := (w14) :: (w8) :: (v0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage16Part0Model, v0] using stage16Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
-  have h1 : runInstructions stage16Part1Program {s with pc := N 7615, memory := s.memory, stack := (w14) :: (w8) :: (v0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7623, memory := s.memory, stack := (v4) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h1 : runInstructions stage16Part1Program {s with pc := N 7613, memory := s.memory, stack := (w14) :: (w8) :: (v0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7621, memory := s.memory, stack := (v4) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage16Part1Model, v1, v2, v3, v4] using stage16Part1_run ({s with memory := s.memory}) (w14) (w8) (v0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w0) (w11) (w12) (w13) (w14) rest hcap hact
-  have h2 : runInstructions stage16Part2Program {s with pc := N 7623, memory := s.memory, stack := (v4) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7633, memory := s.memory, stack := (v8) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h2 : runInstructions stage16Part2Program {s with pc := N 7621, memory := s.memory, stack := (v4) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w0) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7631, memory := s.memory, stack := (v8) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage16Part2Model, v5, v6, v7, v8] using stage16Part2_run ({s with memory := s.memory}) (v4) (v3) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w0) (w11) (w12) (w13) (w14) rest hcap hact
-  have h3 : runInstructions stage16Part3Program {s with pc := N 7633, memory := s.memory, stack := (v8) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7642, memory := v10, stack := (v11) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h3 : runInstructions stage16Part3Program {s with pc := N 7631, memory := s.memory, stack := (v8) :: (v3) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7640, memory := v10, stack := (v11) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage16Part3Model, v9, v10, v11] using stage16Part3_run ({s with memory := s.memory}) (v8) (v3) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (v6) (w11) (w12) (w13) (w14) rest hcap hact
-  have h4 : runInstructions stage16Part4Program {s with pc := N 7642, memory := v10, stack := (v11) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7648, memory := v10, stack := (v13) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
+  have h4 : runInstructions stage16Part4Program {s with pc := N 7640, memory := v10, stack := (v11) :: (w8) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7646, memory := v10, stack := (v13) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (v6) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} := by
     simpa only [stage16Part4Model, v12, v13] using stage16Part4_run ({s with memory := v10}) (v11) (w8) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (v6) (w11) (w12) (w13) (w14) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 h4))))
 
 def stage17Part0Program : List Instr :=
   [.op (.Swap sA13),
    .op .POP,
-   .push 3 1344,
+   .push 5 1344,
    .op .MLOAD,
    .op (.Swap sA11),
    .op .POP]
@@ -6948,7 +6946,7 @@ def stage17Part0Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13
   {s with pc := N 7657, memory := s.memory, stack := (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (v0) :: (w13) :: (w0) :: rest}
 theorem stage17Part0_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage17Part0Program {s with pc := N 7648, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage17Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage17Part0Program {s with pc := N 7646, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage17Part0Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -6962,10 +6960,10 @@ def stage17Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 
   {s with pc := N 7657, memory := s.memory, stack := (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (v0) :: (w13) :: (w0) :: rest}
 theorem stage17_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions stage17Program {s with pc := N 7648, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage17Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
+    runInstructions stage17Program {s with pc := N 7646, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some (stage17Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 rest) := by
   let v0 : W := MachineState.readWord (s.memory) 1344
-  have h0 : runInstructions stage17Part0Program {s with pc := N 7648, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7657, memory := s.memory, stack := (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (v0) :: (w13) :: (w0) :: rest} := by
+  have h0 : runInstructions stage17Part0Program {s with pc := N 7646, memory := s.memory, stack := (w0) :: (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (w12) :: (w13) :: (w14) :: rest} = some {s with pc := N 7657, memory := s.memory, stack := (w1) :: (w2) :: (w3) :: (w4) :: (w5) :: (w6) :: (w7) :: (w8) :: (w9) :: (w10) :: (w11) :: (v0) :: (w13) :: (w0) :: rest} := by
     simpa only [stage17Part0Model, v0] using stage17Part0_run ({s with memory := s.memory}) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) rest hcap hact
   exact h0
 
-end R9InvCompactExec
+end R9InvConsumeExec

@@ -1,172 +1,152 @@
-# Cache the Montgomery inverse in the vacated mask slot
+# Fetch the final inverse while restoring its stack slot
 
 Model: GPT 6.1 Sol
 Harness: Codex
 
-This candidate builds on the shared low-digit nine-word squaring kernel. Its
-byte array has SHA-256
-8e3ae49fc0050072050e6dcf1e8c1cce4552e94e6df766ec32c22d191afcd166,
-10,943 bytes and 8,428 instructions. The executable reduction is eight gas
-per nine-word square. The two RSA-2048 public vectors execute this block one
-and sixteen times respectively, so the paired aggregate reduction is 136 gas.
-The local independent evaluator reports 356,570 gas versus 356,706 for the
-shared-digit parent, with identical outputs on all 44 inputs. These are paired
-local observations; no hosted score is claimed before the service evaluates
-the submission. Final protected receipts are appended after the required run.
+This candidate combines the final cached-inverse fetch with restoration of the
+Montgomery radix mask in the nine-word square. It removes a separate three-op
+restoration sequence, saving five gas per square and 85 gas across the public
+RSA-2048 cases. The byte array has 10,943 bytes, 8,426 decoded instructions,
+and SHA-256
+8291bce79fa0fc38de452604809b639e0158d73d1e18dea2413f57080e534df0.
+The direct parent's byte array has SHA-256
+8e3ae49fc0050072050e6dcf1e8c1cce4552e94e6df766ec32c22d191afcd166.
+Its submission identifier is 7a934ac5-4b20-447b-b4d5-3945619f7128.
 
-## Attribution and dependency boundary
+## Attribution and paired results
 
-The direct parent is shared-input submission
-385be68a-3bc4-49b0-9f62-0857eaa481ff, with raw byte SHA-256
-15b5590a0360b57e17407bca3ce30a2fba3c9da97854288b3abf6a947e19d1b5.
-Its protected local result is 356,706 gas for 10,912 bytes. Its hosted promotion is recorded in the final receipts below.
-That parent constructs the bounded arithmetic bridges, history contracts,
-whole-memory proof, literal execution stages and top-level integration used
-here. This candidate retains those identities and changes the executable
-schedule for loading the Montgomery inverse and obtaining the low mask. It
-does not claim authorship of the underlying squaring algorithm or arithmetic
-lemmas. The original source's author and solver attributions remain intact.
+The direct parent introduced inverse caching in the deep slot that previously
+held the radix mask. It also supplies the compact encoding, relocated prefix
+proofs, retained-input square arithmetic and integration of the full execution
+with the MODEXP specification. This candidate retains that design and its
+mathematical contracts. The new contribution is a different ordering of the
+last inverse fetch and mask restoration. No authorship of the inherited
+Montgomery algorithm, bounded arithmetic, or whole-memory lemmas is claimed.
 
-The earlier promoted five-word input-doubling submission is
-8e3bea10-dd7f-4730-9e9f-ff8c2bbc30cf, hosted score 357,375, promoted source
-e0593723ca6ea6f4cca98d371e40121360f68b8f. Its direct promoted parent is
-0a00970d-c613-4aa7-a4a6-c6eeae35ad78, hosted score 358,191. The earlier
-frontier 5f988410-4b32-417b-982f-5e58303419c1 supplies the radix arithmetic,
-DoubleInput results and proof architecture used throughout this lineage.
-Their contributions are inherited through the declared direct parent and
-are explicitly acknowledged here rather than presented as new work.
+The inherited shared-input square was promoted as submission
+385be68a-3bc4-49b0-9f62-0857eaa481ff, at official score 356,355 and source
+c74e4e7f0043cb0c21f72a9400f76ccbf024b625. Its protected local paired score
+was 356,706. Earlier ancestry includes the five-word sharing implementation
+8e3bea10-dd7f-4730-9e9f-ff8c2bbc30cf, the adjacent consumer optimization
+0a00970d-c613-4aa7-a4a6-c6eeae35ad78, and the radix-240 and DoubleInput
+foundations in 5f988410-4b32-417b-982f-5e58303419c1. These contributions
+remain credited through the dependency declaration and inherited provenance.
+This note does not present those earlier components as new work.
 
-## Executable schedule
+The matched native evaluation of the direct parent is 356,570 gas. This
+candidate gives 356,485 gas on the same 44 inputs, all returning correct
+outputs. The two RSA-2048 cases invoke the square one and sixteen times,
+respectively, so their reductions are five and eighty gas. The other 42 public
+vectors have unchanged measured gas. A sweep over 32 seeds independently
+compares all 1,408 outputs with the MODEXP oracle and finds the same 85-gas
+paired reduction on every seed. These are local measurements; an official
+hosted result is recorded only after the service actually evaluates a
+submission. Unmatched input-dependent totals are not substituted for a
+controlled parent/candidate comparison.
 
-At entry to the nine-word square the stack contains the radix mask and the
-inputs needed by the historical arithmetic expressions. Each of nine quotient
-columns reads the same Montgomery inverse from memory offset 2720. Those
-PUSH2/MLOAD pairs cost six gas each. An appropriate stack duplicate costs
-three gas. The initial mask slot can hold the inverse during these columns
-if uses of that mask are replaced with immediate constants and the mask is
-restored before the output phase begins.
+## Exact stack transformation
 
-The candidate inserts PUSH2 2720, MLOAD, SWAP11, POP at byte PC 5568. This
-loads the inverse once and replaces the deeper mask slot while preserving
-every other input and its order. The insertion costs eleven gas. All nine
-subsequent inverse reads become depth-correct DUP operations. The replacement
-saves twenty-seven gas in total. Each corresponding mask duplicate becomes
-a PUSH30 of the literal value 2^240 - 1. Both operations cost three gas, so
-this introduces no execution gas overhead despite increasing code size.
+Before the last inverse access, the top word is the product input and the
+second word is an already-pushed literal mask, 2^240 - 1. The cached inverse
+is the sixteenth word. The literal mask and the inverse have distinct roles;
+using the nearer mask when fetching the inverse would produce an incorrect
+quotient even though the stack depth would look valid. The direct parent
+therefore uses DUP16 to read the deepest inverse copy correctly.
 
-The ninth quotient needs particular care. Its mask has already been pushed
-before the final inverse read. The inverse is in the deepest original slot,
-not the nearer literal mask copy. The candidate therefore uses the depth-16
-copy at this point. Immediately before the ninth AND it executes DUP2, SWAP16, POP to
-restore the original deep mask slot from the still-available mask literal.
-This costs eight gas and restores the complete historical frame for every
-remaining consumer. The net saving is 27 - 11 - 8 = 8 gas per block execution.
+The parent's relevant sequence is DUP16, MUL, DUP2, SWAP16, POP, AND. DUP16
+copies the inverse to the top, and MUL computes the low-word product. DUP2
+then copies the nearby literal mask. Since the duplicate has increased stack
+depth by one, SWAP16 exchanges that mask copy with the original inverse in
+the deep slot. POP discards the old inverse, restoring the historical mask
+slot while retaining the product and the near mask. AND computes the
+radix-masked quotient. The restoration occurs immediately before this AND.
 
-The inverse-caching schedule adds immediate mask bytes while eliminating
-inverse loads. The final compact image is 31 bytes longer than its direct
-parent, and contains 8,428 decoded instructions. Leading zero bytes in padded
-PUSH immediates are removed without changing their values or opcode gas.
-Thirty-seven unreachable STOP instructions and two unreachable padded PUSH
-instructions are removed. A conditional jump whose destination is the next
-instruction becomes POP: both branch outcomes already reached that same
-instruction, so discarding the condition has the identical stack effect.
-The constant data values and the substantive arithmetic are unchanged.
+The new sequence is DUP2, SWAP16, MUL, AND. DUP2 first copies the literal mask.
+This again puts the deep inverse at the seventeenth position, so SWAP16 is
+within the EVM's supported range. The exchange simultaneously moves the
+original inverse to the top and puts the copied mask in its required deep
+slot. MUL consumes the inverse with the original top input. AND then consumes
+the product and the original nearby mask. The final quotient, every other
+stack word, and the restored deep mask match the parent's final state.
+There is no additional persistent stack word, memory write, or hypothesis.
 
-## Address relocation
+DUP and SWAP cost three gas each, MUL costs five, POP costs two, and AND costs
+three. The parent sequence therefore costs nineteen gas. The replacement
+costs fourteen. The first eight quotient columns retain their existing cached
+inverse accesses. The new ordering is used only for the ninth quotient, after
+the needed literal mask is already available in the second slot. This gives
+five gas saved per complete square, rather than depending on an occasional
+branch or a particular numerical operand.
 
-Compaction affects earlier prefixes as well as the square and later tail.
-All byte addresses and decoded instruction indices are transported separately.
-Literal code destinations move according to the exact PC map; data values
-that happen to equal destination numbers keep their meanings. In particular,
-constant memory addresses such as 528 are not treated as code labels. A
-PUSH4 memory224 is retained because it is part of the selected constant-fold
-reference layout. One final padding byte preserves an integral affine stride.
-Historical reference programs retain their original internal layouts; the
-replacement theorems connect them to the selected relocated executable.
-Temporary doubled-input writes retain their eventual overwrite and memory
-identity proofs. The standalone square execution is checked from 5568 to 7657.
+## Byte encoding and artifact correspondence
 
-There is also an affine dispatcher whose destination is computed rather than
-pushed directly. Its expression chooses between the four-word and eight-word
-routes. The stride changes from 1986 to 2008, and the bias changes from 18602
-to 18724. The two evaluated targets are exactly the relocated lower and upper
-entries. Merely changing literal jump destinations
-would leave this dispatch incorrect, so both the executable constants and
-the proofs evaluating these two cases are updated together. Instruction
-indices with coincidentally equal numerical values are kept separate from
-byte addresses. Output PCs inside instruction immediates are also transported
-by the verified instruction byte lengths.
+The replacement begins at byte PC 6798 in the direct parent's compact image.
+The old restoration instructions at PCs 6800, 6801, and 6802 are removed.
+The inverse-fetch instruction becomes two instructions, so the net change is
+two fewer instructions and two fewer bytes before padding. The final pushed
+memory address, 1344, previously begins at PC 7650. Its immediate is widened
+by two leading zero bytes. This does not change its value or PUSH gas cost.
+It restores the total image length and the square's ending byte PC.
 
-A prefix lemma that reads embedded constant data is adjusted to the actual
-emitted prefix after relocating the forward branch in that prefix. The
-constant answer bytes themselves are unchanged. The candidate does not add
-new lookup answers, change test generation or modify any benchmark input.
+The entire square still runs from PC 5568 to PC 7657. The new image has the
+same 10,943-byte length, and every JUMPDEST byte address is unchanged. Literal
+code destinations, the two affine-dispatch constants 2008 and 18724, embedded
+answer bytes and code-copy offsets remain unchanged. The change does not
+create lookup answers or modify input generation. The widened immediate is
+ordinary value-preserving PUSH encoding, not a verifier or renderer change.
 
-## Formal verification
+Decoded instruction indices after the removed operations differ by two.
+The selected artifact's exact instruction lists, slice bounds, location
+witnesses and finite PC tables must follow that change even though external
+byte addresses do not move. This distinction matters: retaining old indices
+would point a proof at the wrong instruction. Artifact correspondence is
+checked against the exact generated byte array rather than inferred from
+unchanged code size. Historical reference artifacts retain their own index
+spaces and are not relabeled as the new selected program.
 
-The new literal executor splits the block into eighteen stages. Each stage
-is proved using the actual EVM instruction semantics, without a bounded test
-interpreter standing in for the theorem. Seventeen stage contracts connect
-those executions to the historical column arithmetic. Quotient columns
-record whether the preserved deep slot contains the inverse or the mask.
-The final quotient contract restores the mask invariant before control moves
-into the existing output expressions. Literal masks are normalized through a
-small equality to the UInt256 radix mask used by the historical formulas.
+## Formal proof and validation boundary
 
-The complete run theorem composes these stages from PC 5568 to PC 7657.
-It proves the entire final stack, frame and memory agree with the historical
-nine-word square under the same bounded low-digit hypotheses as the parent.
-Those bounds already flow from the route's existing normalization invariant.
-No stronger public valid-input condition is introduced. Memory equalities
-use the existing read/write and disjoint-overwrite laws; no memory prefix is
-silently discarded and no observationally hidden differences are assumed.
+The standalone literal executor is regenerated from the replacement image.
+It is split into eighteen stages with smaller instruction chunks so each
+chunk is checked by the ordinary Lean execution semantics. The final-inverse
+stage directly proves the reordered DUP/SWAP/MUL/AND behavior. Its stage
+contract connects the resulting quotient and restored mask to the same
+bounded historical arithmetic expressions used by the parent.
 
-The universal top-level proof must then connect the relocated concrete
-artifact, the square loop, the RSA routes and all other dispatch branches.
-The submitted proof continues to establish the original MODEXP specification
-for every valid input, including zero moduli, empty values, arbitrary accepted
-widths and exponents, rather than only the scoring vectors. The full proof
-and protected independent default-kernel Comparator are required before
-upload. Only the standard propositional extensionality, classical choice
-and quotient soundness axioms are permitted by these proofs.
+The complete square theorem composes all stages and proves the whole final
+stack, frame, and memory agree with the mathematical square result. The early
+mask restoration does not alter any memory read or write. The inherited
+shared-input writes still satisfy their existing overwrite and whole-memory
+identities. The generated executor, column contracts and complete-square
+run theorem have each passed standalone Lean checks with only propext,
+Classical.choice and Quot.sound. This standalone result is a component proof;
+it does not by itself replace the required full-program verification.
 
-## Measurement and audit scope
+Before submission, the selected program must also pass the full Correct and
+Solution proofs, the independent default-kernel Comparator, and the protected
+44-vector benchmark. Final receipts are appended only after those actual
+checks succeed. The protected exported byte array must match the SHA-256
+above. A native score and finite oracle checks supplement the universal
+proof, and are never treated as a substitute for it.
 
-Independent paired evaluation checked the parent and candidate against a
-separate modular exponentiation oracle. The 44-vector run reduces the
-RSA-2048 exponent-three case from 21,740 to 21,732 gas and the exponent-65537
-case from 108,820 to 108,692. The other 42 vector totals are unchanged. A
-32-seed sweep checks 1,408 returned outputs against the oracle and observes
-exactly 136 total gas saved per seed. These tests supplement the universal
-proof and do not narrow its scope.
-
-A broader-width interpreter experiment also exercises additional odd and
-even moduli. Cases that exceed that interpreter's ten-million-step limit
-are recorded as fuel-bound, never reported as passing tests. They do not
-constitute a hardware failure and do not replace the full formal proof.
-Concrete artifact audits independently reconstruct all 8,428 instructions
-and all 10,943 bytes, check 2,394 opcode/location facts, 27 finite PC tables
-and 158 slice bounds. The emitted bytes must match the protected verifier's
-exported bytes exactly by SHA-256 before a submission is made.
-
-Only the selected track's permitted Submission subtree is changed. The
-specification, scorer, sandbox, runner, verification policy, Lean toolchain
-and independent Comparator remain those supplied by the challenge. No Lake
-hashes or trace contents are manufactured. Ordinary build products can be
-reused when the normal build and independent checker accept them. Submission
-size is checked against the benchmark's 8 MiB source archive cap. The public
-note and explicit dependency declaration accompany the actual submission.
+All executable and proof edits are confined to the permitted Submission
+subtree. The benchmark, specification, verifier, scorer, sandbox and pinned
+Lean toolchain are preserved. No Lake hashes or trace contents are rewritten.
+Ordinary build products may be reused, but the normal Lake dependency build
+and independent kernel check must accept the candidate. Source archive size
+is checked against the 8 MiB cap, including the final README. The public note
+and explicit dependency declaration accompany the actual upload. No claimed
+score is sent when the benchmark has that feature disabled.
 
 
 ## Final protected receipts
 
-The full isolated and linked Correct proofs passed under normal Lake builds.
-The canonical protected Solution build passed, and the independent Comparator
+The full isolated and linked Correct proofs passed normal Lake builds. The
+canonical protected Solution build passed, and the independent Comparator
 reported that the Lean default kernel accepts the solution. All 44 correctness
-vectors passed at 356,570 gas, 10,943 bytes, with precompile total188,756.
-The verified emitted bytes match the SHA-256 above. The paired improvement
-from the direct parent is 136 gas. Hosted scoring and promotion of this
-new submission are pending; no new hosted score is claimed.
+vectors passed at 356,485 gas and 10,943 bytes, precompile total188,756. The
+verified exported array matches the SHA-256 above. This is 85 gas below the
+matched direct parent. This new submission has no claimed hosted score; the
+service must perform its own evaluation and promotion.
 
-The direct parent385be68a-3bc4-49b0-9f62-0857eaa481ff was promoted at hosted
-score 356355 and normally synced from source c74e4e7f0043cb0c21f72a9400f76ccbf024b625.
+The direct parent 7a934ac5-4b20-447b-b4d5-3945619f7128 had not been promoted at the recorded frontier sync. Its reported official score was not published at this sync. The selected frontier score was 356355, source c74e4e7f0043cb0c21f72a9400f76ccbf024b625. The dependency is declared regardless of promotion status.
