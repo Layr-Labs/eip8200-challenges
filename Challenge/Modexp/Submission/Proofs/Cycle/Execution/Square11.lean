@@ -277,14 +277,13 @@ def sq11Newpart9Program : List Instr :=
    .op (.Dup ⟨1, by decide⟩),
    .op .ADD,
    .push 3 2048,
-   .op .MULMOD,
-   .op (.Dup ⟨14, by decide⟩)]
+   .op .MULMOD]
 
 def sq11Newpart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := x1 - x0
   let v1 : W := x9 + v0
   let v2 : W := UInt256.mulMod (N 2048) v1 x9
-  {s with pc := N 7198, memory := s.memory, stack := x15 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := N 7197, memory := s.memory, stack := v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem sq11Newpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -415,6 +414,274 @@ theorem sq11Newpart13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12
   simp [hz, hzn, sq11Newpart13Program, sq11Newpart13Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha128, hf128]
 
 
+def sq11ConsumerPart0Program : List Instr :=
+  [.op (.Dup ⟨14, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .push 4 160,
+   .op .MLOAD,
+   .push 1 96,
+   .op .MLOAD,
+   .push 1 64,
+   .op .MLOAD]
+
+def sq11ConsumerPart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := MachineState.readWord s.memory 160
+  let v1 : UInt256 := MachineState.readWord s.memory 96
+  let v2 : UInt256 := MachineState.readWord s.memory 64
+  {s with pc := UInt256.ofNat 7211, memory := s.memory, stack := v2 :: v1 :: v0 :: x0 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
+
+theorem sq11ConsumerPart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions sq11ConsumerPart0Program {s with pc := UInt256.ofNat 7197, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+      some (sq11ConsumerPart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have ha160 : (160 : UInt256).toNat = 160 := rfl
+  have hf160 := Monpro.activeWords_fix s 160 32 (by decide) (by norm_num) hact
+  have ha96 : (96 : UInt256).toNat = 96 := rfl
+  have hf96 := Monpro.activeWords_fix s 96 32 (by decide) (by norm_num) hact
+  have ha64 : (64 : UInt256).toNat = 64 := rfl
+  have hf64 := Monpro.activeWords_fix s 64 32 (by decide) (by norm_num) hact
+  simp [sq11ConsumerPart0Program, sq11ConsumerPart0Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20, ha160, ha96, ha64, hf160, hf96, hf64]
+
+def sq11ConsumerPart1Program : List Instr :=
+  [.op (.Dup ⟨12, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op .MULMOD]
+
+def sq11ConsumerPart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := UInt256.mulMod x0 x4 x12
+  let v1 : UInt256 := UInt256.mulMod x2 x1 x12
+  {s with pc := UInt256.ofNat 7219, memory := s.memory, stack := v1 :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+
+theorem sq11ConsumerPart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions sq11ConsumerPart1Program {s with pc := UInt256.ofNat 7211, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (sq11ConsumerPart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have hc21 : rest.length + 21 < 1024 := by omega
+  have hc22 : rest.length + 22 < 1024 := by omega
+  have hc23 : rest.length + 23 < 1024 := by omega
+  have hc24 : rest.length + 24 < 1024 := by omega
+  simp [sq11ConsumerPart1Program, sq11ConsumerPart1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20, hc21, hc22, hc23, hc24]
+
+def sq11ConsumerPart2Program : List Instr :=
+  [.op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨4, by decide⟩),
+   .op .ADD,
+   .op (.Swap ⟨4, by decide⟩),
+   .op .MUL,
+   .op (.Swap ⟨1, by decide⟩)]
+
+def sq11ConsumerPart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := x0 + x1
+  let v1 : UInt256 := v0 + v0
+  let v2 : UInt256 := x5 + v1
+  let v3 : UInt256 := x6 * x2
+  {s with pc := UInt256.ofNat 7227, memory := s.memory, stack := x4 :: x3 :: v3 :: x5 :: v2 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest}
+
+theorem sq11ConsumerPart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions sq11ConsumerPart2Program {s with pc := UInt256.ofNat 7219, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: rest} =
+      some (sq11ConsumerPart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 rest) := by
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have hc21 : rest.length + 21 < 1024 := by omega
+  have hc22 : rest.length + 22 < 1024 := by omega
+  simp [sq11ConsumerPart2Program, sq11ConsumerPart2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20, hc21, hc22]
+
+def sq11ConsumerPart3Program : List Instr :=
+  [.op .MUL,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
+   .op .ADD,
+   .push 1 128,
+   .op .MLOAD]
+
+def sq11ConsumerPart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := x0 * x1
+  let v1 : UInt256 := v0 + x2
+  let v2 : UInt256 := v1 + v1
+  let v3 : UInt256 := v2 + x3
+  let v4 : UInt256 := MachineState.readWord s.memory 128
+  {s with pc := UInt256.ofNat 7235, memory := s.memory, stack := v4 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+
+theorem sq11ConsumerPart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions sq11ConsumerPart3Program {s with pc := UInt256.ofNat 7227, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+      some (sq11ConsumerPart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hc0 : rest.length + 0 < 1024 := by omega
+  have hc1 : rest.length + 1 < 1024 := by omega
+  have hc2 : rest.length + 2 < 1024 := by omega
+  have hc3 : rest.length + 3 < 1024 := by omega
+  have hc4 : rest.length + 4 < 1024 := by omega
+  have hc5 : rest.length + 5 < 1024 := by omega
+  have hc6 : rest.length + 6 < 1024 := by omega
+  have hc7 : rest.length + 7 < 1024 := by omega
+  have hc8 : rest.length + 8 < 1024 := by omega
+  have hc9 : rest.length + 9 < 1024 := by omega
+  have hc10 : rest.length + 10 < 1024 := by omega
+  have hc11 : rest.length + 11 < 1024 := by omega
+  have hc12 : rest.length + 12 < 1024 := by omega
+  have hc13 : rest.length + 13 < 1024 := by omega
+  have hc14 : rest.length + 14 < 1024 := by omega
+  have hc15 : rest.length + 15 < 1024 := by omega
+  have hc16 : rest.length + 16 < 1024 := by omega
+  have hc17 : rest.length + 17 < 1024 := by omega
+  have hc18 : rest.length + 18 < 1024 := by omega
+  have hc19 : rest.length + 19 < 1024 := by omega
+  have hc20 : rest.length + 20 < 1024 := by omega
+  have ha128 : (128 : UInt256).toNat = 128 := rfl
+  have hf128 := Monpro.activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  simp [sq11ConsumerPart3Program, sq11ConsumerPart3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, hc0, hc1, hc2, hc3, hc4, hc5, hc6, hc7, hc8, hc9, hc10, hc11, hc12, hc13, hc14, hc15, hc16, hc17, hc18, hc19, hc20, ha128, hf128]
+
+def sq11ConsumerProgram : List Instr :=
+  [.op (.Dup ⟨14, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .push 4 160,
+   .op .MLOAD,
+   .push 1 96,
+   .op .MLOAD,
+   .push 1 64,
+   .op .MLOAD,
+   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup ⟨2, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨4, by decide⟩),
+   .op .ADD,
+   .op (.Swap ⟨4, by decide⟩),
+   .op .MUL,
+   .op (.Swap ⟨1, by decide⟩),
+   .op .MUL,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
+   .op .ADD,
+   .push 1 128,
+   .op .MLOAD]
+
+def sq11ConsumerModel (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
+  let v0 : UInt256 := MachineState.readWord s.memory 160
+  let v1 : UInt256 := MachineState.readWord s.memory 96
+  let v2 : UInt256 := MachineState.readWord s.memory 64
+  let v3 : UInt256 := UInt256.mulMod v2 x14 x8
+  let v4 : UInt256 := UInt256.mulMod v0 v1 x8
+  let v5 : UInt256 := v4 + v3
+  let v6 : UInt256 := v5 + v5
+  let v7 : UInt256 := x0 + v6
+  let v8 : UInt256 := x14 * v2
+  let v9 : UInt256 := v0 * v1
+  let v10 : UInt256 := v9 + v8
+  let v11 : UInt256 := v10 + v10
+  let v12 : UInt256 := v11 + x0
+  let v13 : UInt256 := MachineState.readWord s.memory 128
+  {s with pc := UInt256.ofNat 7235, memory := s.memory, stack := v13 :: v12 :: v7 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
+
+theorem sq11Consumer_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions sq11ConsumerProgram {s with pc := UInt256.ofNat 7197, memory := s.memory, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+      some (sq11ConsumerModel s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
+  let v0 : UInt256 := MachineState.readWord s.memory 160
+  let v1 : UInt256 := MachineState.readWord s.memory 96
+  let v2 : UInt256 := MachineState.readWord s.memory 64
+  let v3 : UInt256 := UInt256.mulMod v2 x14 x8
+  let v4 : UInt256 := UInt256.mulMod v0 v1 x8
+  let v5 : UInt256 := v4 + v3
+  let v6 : UInt256 := v5 + v5
+  let v7 : UInt256 := x0 + v6
+  let v8 : UInt256 := x14 * v2
+  let v9 : UInt256 := v0 * v1
+  let v10 : UInt256 := v9 + v8
+  let v11 : UInt256 := v10 + v10
+  let v12 : UInt256 := v11 + x0
+  let v13 : UInt256 := MachineState.readWord s.memory 128
+  have h0 : runInstructions sq11ConsumerPart0Program {s with pc := UInt256.ofNat 7197, memory := s.memory, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} = some {s with pc := UInt256.ofNat 7211, memory := s.memory, stack := v2 :: v1 :: v0 :: x0 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} := by
+    simpa only [sq11ConsumerPart0Model, v0, v1, v2] using sq11ConsumerPart0_run s (x0) (x1) (x2) (x3) (x4) (x5) (x6) (x7) (x8) (x9) (x10) (x11) (x12) (x13) (x14) rest hcap hact
+  have h1 : runInstructions sq11ConsumerPart1Program {s with pc := UInt256.ofNat 7211, memory := s.memory, stack := v2 :: v1 :: v0 :: x0 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} = some {s with pc := UInt256.ofNat 7219, memory := s.memory, stack := v4 :: v3 :: v2 :: v1 :: v0 :: x0 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} := by
+    simpa only [sq11ConsumerPart1Model, v3, v4] using sq11ConsumerPart1_run s (v2) (v1) (v0) (x0) (x14) (x1) (x2) (x3) (x4) (x5) (x6) (x7) (x8) (x9) (x10) (x11) (x12) (x13) (x14) rest hcap hact
+  have h2 : runInstructions sq11ConsumerPart2Program {s with pc := UInt256.ofNat 7219, memory := s.memory, stack := v4 :: v3 :: v2 :: v1 :: v0 :: x0 :: x14 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} = some {s with pc := UInt256.ofNat 7227, memory := s.memory, stack := v0 :: v1 :: v8 :: x0 :: v7 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} := by
+    simpa only [sq11ConsumerPart2Model, v5, v6, v7, v8] using sq11ConsumerPart2_run s (v4) (v3) (v2) (v1) (v0) (x0) (x14) (x1) (x2) (x3) (x4) (x5) (x6) (x7) (x8) (x9) (x10) (x11) (x12) (x13) (x14) rest hcap hact
+  have h3 : runInstructions sq11ConsumerPart3Program {s with pc := UInt256.ofNat 7227, memory := s.memory, stack := v0 :: v1 :: v8 :: x0 :: v7 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} = some {s with pc := UInt256.ofNat 7235, memory := s.memory, stack := v13 :: v12 :: v7 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} := by
+    simpa only [sq11ConsumerPart3Model, v9, v10, v11, v12, v13] using sq11ConsumerPart3_run s (v0) (v1) (v8) (x0) (v7) (x1) (x2) (x3) (x4) (x5) (x6) (x7) (x8) (x9) (x10) (x11) (x12) (x13) (x14) rest hcap hact
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 h3)))
+
+#print axioms sq11Consumer_run
+
+
 def sq11NewProgram : List Instr :=
   [.op .MULMOD,
    .op .ADD,
@@ -497,34 +764,33 @@ def sq11NewProgram : List Instr :=
    .push 3 2048,
    .op .MULMOD,
    .op (.Dup ⟨14, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Swap ⟨0, by decide⟩),
+   .push 4 160,
+   .op .MLOAD,
+   .push 1 96,
+   .op .MLOAD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op .MUL,
-   .push 1 160,
-   .op .MLOAD,
-   .push 1 96,
-   .op .MLOAD,
-   .op .MUL,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op .ADD,
-   .op (.Swap ⟨2, by decide⟩),
-   .op .MULMOD,
-   .op (.Dup ⟨10, by decide⟩),
-   .push 1 160,
-   .op .MLOAD,
-   .push 1 96,
-   .op .MLOAD,
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op .ADD,
+   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
    .op (.Dup ⟨2, by decide⟩),
+   .op .MULMOD,
+   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup ⟨5, by decide⟩),
+   .op .MULMOD,
    .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
+   .op (.Dup ⟨4, by decide⟩),
+   .op .ADD,
+   .op (.Swap ⟨4, by decide⟩),
+   .op .MUL,
    .op (.Swap ⟨1, by decide⟩),
+   .op .MUL,
+   .op .ADD,
+   .op (.Dup ⟨0, by decide⟩),
+   .op .ADD,
    .op .ADD,
    .push 1 128,
    .op .MLOAD]
@@ -662,17 +928,20 @@ theorem sq11New_run (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12
     simpa only [sq11Newpart7Model, v28, v29, v30] using sq11Newpart7_run (s) (v27) (v26) (v18) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
   have h8 : runInstructions sq11Newpart8Program {s with pc := N 7176, memory := s.memory, stack := w17 :: w12 :: v30 :: v18 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7187, memory := v34, stack := v33 :: v32 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
     simpa only [sq11Newpart8Model, v31, v32, v33, v34] using sq11Newpart8_run (s) (w17) (w12) (v30) (v18) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
-  have h9 : runInstructions sq11Newpart9Program {s with pc := N 7187, memory := v34, stack := v33 :: v32 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7198, memory := v34, stack := w18 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
+  have h9 : runInstructions sq11Newpart9Program {s with pc := N 7187, memory := v34, stack := v33 :: v32 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7197, memory := v34, stack := v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
     simpa only [sq11Newpart9Model, v35, v36, v37] using sq11Newpart9_run ({s with memory := v34}) (v33) (v32) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
-  have h10 : runInstructions sq11Newpart10Program {s with pc := N 7198, memory := v34, stack := w18 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7208, memory := v34, stack := v40 :: v39 :: v38 :: w12 :: w18 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
-    simpa only [sq11Newpart10Model, v38, v39, v40] using sq11Newpart10_run ({s with memory := v34}) (w18) (v37) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
-  have h11 : runInstructions sq11Newpart11Program {s with pc := N 7208, memory := v34, stack := v40 :: v39 :: v38 :: w12 :: w18 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7217, memory := v34, stack := v45 :: v44 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
-    simpa only [sq11Newpart11Model, v41, v42, v43, v44, v45] using sq11Newpart11_run ({s with memory := v34}) (v40) (v39) (v38) (w12) (w18) (v37) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
-  have h12 : runInstructions sq11Newpart12Program {s with pc := N 7217, memory := v34, stack := v45 :: v44 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7227, memory := v34, stack := v49 :: v49 :: v44 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
-    simpa only [sq11Newpart12Model, v46, v47, v48, v49] using sq11Newpart12_run ({s with memory := v34}) (v45) (v44) (v37) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
-  have h13 : runInstructions sq11Newpart13Program {s with pc := N 7227, memory := v34, stack := v49 :: v49 :: v44 :: v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7235, memory := v34, stack := v53 :: v52 :: v51 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
-    simpa only [sq11Newpart13Model, v50, v51, v52, v53] using sq11Newpart13_run ({s with memory := v34}) (v49) (v49) (v44) (v37) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 h13)))))))))))))
+  have h10 : runInstructions sq11ConsumerProgram {s with pc := N 7197, memory := v34, stack := v37 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} = some {s with pc := N 7235, memory := v34, stack := v53 :: v52 :: v51 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: w17 :: w18 :: rest} := by
+    have hx := sq11Consumer_run ({s with memory := v34}) (v37) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) (w17) (w18) rest hcap hact
+    simp only [sq11ConsumerModel] at hx
+    rw [mmC (MachineState.readWord v34 64) w18 w12,
+      mmC (MachineState.readWord v34 160) (MachineState.readWord v34 96) w12,
+      mulC (MachineState.readWord v34 160) (MachineState.readWord v34 96)] at hx
+    rw [addC (((MachineState.readWord v34 96 * MachineState.readWord v34 160) +
+      (w18 * MachineState.readWord v34 64)) +
+      ((MachineState.readWord v34 96 * MachineState.readWord v34 160) +
+      (w18 * MachineState.readWord v34 64))) v37] at hx
+    simpa only [v38, v39, v40, v41, v42, v43, v44, v45, v46, v47, v48, v49, v50, v51, v52, v53] using hx
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 h10))))))))))
 
 #print axioms sq11New_run
 

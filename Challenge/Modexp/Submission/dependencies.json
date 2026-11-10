@@ -213,5 +213,35 @@
     "submissionId": "4a582a68-99a1-49bf-b4df-1919fe7c2eb2",
     "rationale": "Direct promoted source parent; retains the four shared-input square-pair changes and inherited universal proof. This revision schedules three paired wrapping/modular products at bytes[7066,7118), not the predecessor two-product span.",
     "evidence": "Parent source14fdb140005e0edaf4592f2c23017f6dc33d0145; exact bytecode34b229ee003fb9fe58a39e4b43a6f6d868065d82cb0965e4b6a93990fad327ad. Current02f7e53277408acc7f07857267521ada3164bf0887ea130fa4ed52b68f0f2287 changes only[7066,7118), same10980bytes94fixedJUMPDESTs. Matched native358770to358668,44correct. Changed arbitrary-word and merged-column proofs passed; final full Solution passed3621jobs with permitted3axioms. Standard protected Comparator accepted exact02f7e532 image at358668gas,44/44correct,verified:true. Not a hosted result."
+  },
+  {
+    "submissionId": "5f988410-4b32-417b-982f-5e58303419c1",
+    "rationale": "Direct promoted parent, official358317. Retains exact three-product square consumer, inherited four shared-input-doubling pairs, and universal MODEXP proof. New change folds fixed R5 modulus/mask setup only.",
+    "evidence": "Parent source2ca33c4c09b31312e1b90afc0ec2419dfc6d5211; exact02f7e53277408acc7f07857267521ada3164bf0887ea130fa4ed52b68f0f2287. Candidate1bd1035c469c0310c7a5f6bd876ec95a2011961555bbb816dcb43d6988ba9789 differs onlybytes[5349,5392),10980bytes94fixedJUMPDESTs;8510to8508instructions. Full5334..5489prologue andexactcallercontract Leanproved with3permittedaxioms; liveartifact/indextransport347references/60slices. Matchednative358668to358656,44correct. FullSolution passed3622jobs, only3permittedaxioms. Standard protectedComparator acceptedexact1bd1035c at358656gas,44correct,verified:true,YUKON_RUN_EXIT=0. Matched32publicdrawseach-12gas,1408independentoracleoutputs. Hostedresultnotclaimed."
+  },
+  {
+    "submissionId": "c405f859-e76b-4587-a937-049062c6ff59",
+    "rationale": "Reuse the two-product consumer schedule in bytes7197..7232 and its complete Execution/Square11 operational and boundary proof.",
+    "evidence": "Copied Execution/Square11 from sourcee4f872fe03bb5fb39a1106b9f262b74b8b5e07ca; new combined TripleColumns tail integrates it with the promoted triple schedule. Matched saving51gas across17RSA2048squarepasses."
+  },
+  {
+    "submissionId": "e943f0e7-ffee-4b0b-93e6-adf91e04bc18",
+    "rationale": "Reuse fixed R5 constant fold and complete ConstantFold5349 prologue proof and route integration.",
+    "evidence": "Source2328cbd083bb34e934c1c0cb11f4d94fc2b0cd17; exact byte delta5349..5392 grafted, R5/ConstantFold.lean and calling Blocks/R5Route retained. Matched saving12gas."
+  },
+  {
+    "submissionId": "843847c2-0157-4af4-8e47-d1bbb8b35816",
+    "rationale": "Reuse signed top-bit eligibility predicate, SignedTopBit universal identity and Setup proof integration.",
+    "evidence": "Sourceb33195ff551eba2392bee2866403505276de2510; bytes617..624 and SignedTopBit.lean, FastP0, Setup adapted into combined source. Matched saving4gas."
+  },
+  {
+    "submissionId": "38cb0d86-446d-4a7a-ade7-ab62c4106418",
+    "rationale": "Reuse low-bit isolation eligibility predicate, LowBitFlag universal identity and Setup proof integration.",
+    "evidence": "Source43c3c1dc1483a87f20d4d20490c42dc9e01e66a1; bytes629..638 and LowBitFlag.lean, FastP0, Setup adapted into combined source. Matched saving4gas."
+  },
+  {
+    "submissionId": "169a02b2-df94-4a8b-95a4-2d076358e320",
+    "rationale": "Reuse composed setup/store/MSIZE ordering and operational Setup proof.",
+    "evidence": "Sourcef783e3e1f68c366ece50698164187ffbf7b91243; bytes649..661 grafted, Setup proof merged, exact FastDefsPCtable regenerated for combined dispatch. Matched saving4gas."
   }
 ]
