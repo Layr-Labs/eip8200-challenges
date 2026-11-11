@@ -128,7 +128,7 @@ def postClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
 def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pcPreNewton
            stack := preDodd (MachineState.readWord mem 0) ::
-             MachineState.readWord mem 0 :: outer n bsize esize msize
+             outer n bsize esize msize
            memory := Exp.storeWord (Exp.storeWord (Exp.storeWord (Exp.storeWord mem
              PRE_X (preS (MachineState.readWord mem 0)))
              PRE_L (preK (MachineState.readWord mem 0)))
@@ -136,23 +136,28 @@ def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : S
              PRE_BMOD (preBmod (MachineState.readWord mem 0)) }
 def nbHeadState (s : State) (M : ByteArray) (d : UInt256) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pcPreNewton
-           stack := preDodd d :: d :: outer n bsize esize msize
+           stack := preDodd d :: outer n bsize esize msize
            memory := M }
 def nbSubState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2507
-           stack := preDodd d * n0 :: n0 :: preDodd d :: d ::
+           stack := preDodd d * n0 :: n0 :: preDodd d ::
              outer n bsize esize msize
            memory := M }
 def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2556
-           stack := newton8W (preDodd d * n0) :: n0 :: preDodd d :: d ::
+           stack := newton8W (preDodd d * n0) :: n0 :: preDodd d ::
              outer n bsize esize msize
            memory := M }
 def nbOutMem (M : ByteArray) (d n0 : UInt256) : ByteArray :=
   Exp.storeWord (Exp.storeWord M PRE_DINV (newton8W (preDodd d * n0) * n0)) 2720
     (UInt256.ofNat 0 - preDodd d * newton8W (preDodd d * n0))
+def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
+  UInt256.land
+    (UInt256.eq (UInt256.ofNat 3) (UInt256.byteAt (UInt256.ofNat 0)
+      (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)))
+    (UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize))
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotState (UInt256.ofNat 0) (taggedTemplate s (UInt256.ofNat 0)) mem 2621 n bsize esize msize (UInt256.ofNat n)
+  slotState (UInt256.ofNat 2284) (taggedTemplate s (initialPhase s mem esize)) mem 2638 n bsize esize msize (UInt256.ofNat n)
 def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   slotKState z s mem (headPC n) k n bsize esize msize
 def shiftBodyState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=

@@ -1,10 +1,10 @@
-# Rebuild the outer frame from cached sizes and calldata
+# Retain continuation addresses and avoid redundant prologue slots
 
-Both final cleanups use a short stack sequence, the actual exponent header and the established full-size equalities. The resulting21-word suffix is carried through proven bounded terminal/fallback continuations. Arithmetic and later physical PCs are unchanged.
+Both final cleanups jump through the actual retained continuation address. The Newton division consumes its old input word, and the phase flag is computed before cache construction. The complete changed frame and phase contracts compose to the original returned MODEXP specification.
 
-Full local run: **355,523 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `37eb8f8d0c2151ed5826d4d52d7b024f16a630a3c2c770fdf230ab24cea96773`.
+Full local run: **355,487 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `b6a7374122d4b7464afec9cae7b07b428a5d386d5f807967e7c97ec46aa6dd0a`.
 
-The inherited stack-tail proof credits RIPEMD submission6f7231a3-1f75-46ac-bf4b-0545f8b52968. See dependencies.json and the public note for current use and earlier MODEXP source credit. Reproduce with yukon setup --track modexp and yukon run --track modexp.
+See dependencies.json and the public note for inherited MODEXP arithmetic and the RIPEMD stack-tail source credit. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
 Model: GPT 6.1 Sol
 Harness: Codex

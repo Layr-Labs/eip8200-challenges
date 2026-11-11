@@ -68,8 +68,8 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block CycleSubmission.Artifact.artifact .Osaka 3147 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2413 33 3147 CycleSubmission.DeadSetup.fullEntryProgram
-    (by change 2413 + 33 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2409 33 3147 CycleSubmission.DeadSetup.fullEntryProgram
+    (by change 2409 + 33 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
