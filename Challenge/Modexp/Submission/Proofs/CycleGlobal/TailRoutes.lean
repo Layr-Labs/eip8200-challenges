@@ -1,3 +1,5 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.Terminal
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimCallerFixed
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.StackPeak
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FixedRoute
 noncomputable section
@@ -16,14 +18,14 @@ noncomputable def fixed_head (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (rho : List UInt256) (hrho : rho.length ≤ 32)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s) :
-    GasSteps (append (FixedDirectStates.special s mem 8 bsize esize 256 k) rho)
-      (CallerPrefix.call s mem k (UInt256.ofNat 0)
-        ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho)) := by
+    GasSteps (append (SlimFrames.special s mem 8 bsize esize 256 k) rho)
+      (CallerPrefix.call s mem k (UInt256.ofNat (k-1))
+        ((SlimFrames.outer 8 bsize esize 256) ++ rho)) := by
   have h := blockSteps_append CallerBlocks.fixedBlock
-    (s := FixedDirectStates.special s mem 8 bsize esize 256 k) (env.transfer rfl rfl) rfl
-    (CallerFixed.call_run s mem bsize esize k hk hk16
+    (s := SlimFrames.special s mem 8 bsize esize 256 k) (env.transfer rfl rfl) rfl
+    (SlimCallerFixed.call_run s mem bsize esize k hk hk16
       (by rw [env.code]; exact CallerBlocks.valid3181)) rho
-    (by simp [FixedDirectStates.special, Exp.outer, peakInstructions, CallerBlocks.fixedProgram,
+    (by simp [SlimFrames.special, SlimFrames.outer, peakInstructions, CallerBlocks.fixedProgram,
       pops, pushes, Operation.popArity, Operation.pushArity]; omega)
   simpa [append, CallerPrefix.call, List.append_assoc] using h
 
@@ -38,14 +40,14 @@ noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B m
     (ha : Model.FastRepresents mem 2112 8 A) (hb : Model.FastRepresents mem 256 8 B)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hg : (CallerPrefix.guardWord mem).toNat ≠ 0) :
-    Finish.Outcome (append (FixedDirectStates.special s mem 8 bsize esize 256 k) rho)
+    Finish.Outcome (append (SlimFrames.special s mem 8 bsize esize 256 k) rho)
       (Precompile.natToBytes (CallerTerminal.result N A B k) 256) := by
   have head := fixed_head s mem bsize esize k rho hrho hk hk16 env
-  obtain ⟨done, tr, halt, bytes, calls⟩ := CallerTerminal.run s mem k (UInt256.ofNat 0)
-    ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) N A B hk hk16 env
-    (by simp [Exp.outer]; omega) hact hcds hf.s32 hf.ml
-    (by simp [Exp.outer]) (by simp [Exp.outer]) hmod ha hb
-    (CallerFixed.inverse_from_frame mem bsize N mi hf hmi hinv) hN hodd hB hg
+  obtain ⟨done, tr, halt, bytes, calls⟩ := CallerTerminal.run s mem k (UInt256.ofNat (k-1))
+    ((SlimFrames.outer 8 bsize esize 256) ++ rho) N A B hk hk16 env
+    (by simp [SlimFrames.outer]; omega) hact hcds hf.s32 hf.ml
+    (by simp [SlimFrames.outer]) hmod ha hb
+    (SlimCallerFixed.inverse_from_frame mem bsize N mi hf hmi hinv) hN hodd hB hg
   exact ⟨done, head.trans tr, halt, bytes, calls⟩
 
 noncomputable def bail8 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
@@ -55,14 +57,14 @@ noncomputable def bail8 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (hf : Exp.Frame mem 8 bsize mi)
     (hg : (CallerPrefix.guardWord mem).toNat = 0) :
-    GasSteps (append (FixedDirectStates.special s mem 8 bsize esize 256 k) rho)
-      (CallerPrefix.stateAt s mem k (UInt256.ofNat 0)
-        ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) 207) := by
+    GasSteps (append (SlimFrames.special s mem 8 bsize esize 256 k) rho)
+      (CallerPrefix.stateAt s mem k (UInt256.ofNat (k-1))
+        ((SlimFrames.outer 8 bsize esize 256) ++ rho) 207) := by
   have head := fixed_head s mem bsize esize k rho hrho hk hk16 env
-  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat 0)
-    ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) env
-    (by simp [Exp.outer]; omega) hact hcds hf.s32 hf.ml
-    (by simp [Exp.outer]) (by simp [Exp.outer]) hg)
+  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat (k-1))
+    ((SlimFrames.outer 8 bsize esize 256) ++ rho) env
+    (by simp [SlimFrames.outer]; omega) hact hcds hf.s32 hf.ml
+    (by simp [SlimFrames.outer]) hg)
 
 #print axioms fixed_head
 #print axioms terminal8

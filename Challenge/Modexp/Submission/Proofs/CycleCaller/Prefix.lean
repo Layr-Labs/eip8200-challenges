@@ -125,8 +125,8 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (_hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (_hw : tail[1]? = some (UInt256.ofNat 256))
-    (_hn : tail[2]? = some (UInt256.ofNat 8)) :
+    (_hw : tail[0]? = some (UInt256.ofNat 256))
+    :
     GasSteps (call s mem k ret tail) (staged s mem k ret tail) := by
   have hcommon := commonBlock.steps (s := call s mem k ret tail)
     (env.transfer rfl rfl) rfl (jumpDest_run _ (by
@@ -211,11 +211,10 @@ noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (t
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (hw : tail[1]? = some (UInt256.ofNat 256))
-    (hn : tail[2]? = some (UInt256.ofNat 8))
+    (hw : tail[0]? = some (UInt256.ofNat 256))
     (hg : (guardWord mem).toNat ≠ 0) :
     GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5383) :=
-  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw hn).trans
+  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw).trans
     (suffixTrace s mem k ret tail env hcap hact hg)
 
 noncomputable def bail (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
@@ -224,11 +223,10 @@ noncomputable def bail (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (hw : tail[1]? = some (UInt256.ofNat 256))
-    (hn : tail[2]? = some (UInt256.ofNat 8))
+    (hw : tail[0]? = some (UInt256.ofNat 256))
     (hg : (guardWord mem).toNat = 0) :
     GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 207) :=
-  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw hn).trans
+  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw).trans
     (bailTrace s mem k ret tail env hcap hact hg)
 
 set_option exponentiation.threshold 4096 in

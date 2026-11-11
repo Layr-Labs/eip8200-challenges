@@ -229,7 +229,7 @@ def newpart1Program : List Instr :=
    .push 2 3347,
    .push 0 0,
    .op (.Swap sA10),
-   .op (.Dup dA15),
+   .op (.Dup ⟨14, by decide⟩),
    .push 2 2720,
    .op .MLOAD]
 
@@ -240,11 +240,10 @@ def newpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (res
 
 theorem newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
+    (hw : rest[0]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions newpart1Program {s with pc := UInt256.ofNat 3187, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest} =
       some (newpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 rest) := by
-  rcases rest with _ | ⟨r0, _ | ⟨r1, rest⟩⟩
-  · simp at hw
+  rcases rest with _ | ⟨r1, rest⟩
   · simp at hw
   · simp only [List.getElem?_cons_succ, List.getElem?_cons_zero, Option.some.injEq] at hw
     subst hw
@@ -325,7 +324,7 @@ def newProgram : List Instr :=
    .push 2 3347,
    .push 0 0,
    .op (.Swap sA10),
-   .op (.Dup dA15),
+   .op (.Dup ⟨14, by decide⟩),
    .push 2 2720,
    .op .MLOAD,
    .op (.Swap sA10),
@@ -342,7 +341,7 @@ def newModel (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256) : St
 
 theorem new_run (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
+    (hw : rest[0]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions newProgram {s with pc := UInt256.ofNat 3147, stack := hd :: pa :: pb :: dst :: ret :: rest} =
       some (newModel s hd pa pb dst ret rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 128
@@ -365,7 +364,7 @@ theorem same_state (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256
 
 theorem replacement_run (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
+    (hw : rest[0]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions newProgram {s with pc := UInt256.ofNat 3147, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     Option.map (fun state => {state with pc := UInt256.ofNat 3202})
       (runInstructions oldProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest}) := by

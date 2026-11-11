@@ -140,7 +140,7 @@ private theorem run_tail_eq (s : State) (hd pa pb dst ret : UInt256) (rest : Lis
 
 theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
-    (hw : rest[1]? = some (MachineState.readWord s.memory 2688)) :
+    (hw : rest[0]? = some (MachineState.readWord s.memory 2688)) :
     runInstructions fullEntryProgram {s with pc := UInt256.ofNat 3147, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     runInstructions oldFullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} := by
   change runInstructions (Prepared.SetupPrefix.newProgram ++ newTailProgram) _ =
@@ -157,7 +157,7 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
-    (hw : rest[1]? = some (UInt256.ofNat (32*n)))
+    (hw : rest[0]? = some (UInt256.ofNat (32*n)))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
     runInstructions fullEntryProgram ({ TnM128Setup.setupState s mem hd pa pb dst ret rest with pc := UInt256.ofNat 3147 }) =
     some (TnM128Setup.outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3347)

@@ -32,6 +32,4 @@ namespace CycleSubmission.DifferenceBranch
   have ha : a.toNat < 2^256 := a.val.isLt
   have hq : q.toNat < 2^256 := q.val.isLt
   split_ifs <;> omega
- theorem not_all_ones : UInt256.lnot (UInt256.ofNat (2^256-1)) = UInt256.ofNat 0 := by
-  decide
 end CycleSubmission.DifferenceBranch
