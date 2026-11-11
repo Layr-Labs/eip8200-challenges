@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.LazyTopMath
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftTrace4
 
@@ -52,36 +53,36 @@ theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
 
 /-- The configuration words survive a step. -/
 theorem frame_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (hf : Exp.Frame mem n bsize minv) : Exp.Frame (stepMem mem n mm) n bsize minv where
+    (hf : Exp.Frame mem n bsize minv) : Exp.Frame (LazyTopStep.next mem n mm) n bsize minv where
   s32 := by
-    rw [stepMem_readWord_disjoint mem n mm 2688 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2688 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.s32
   minvW := by
-    rw [stepMem_readWord_disjoint mem n mm 2720 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2720 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.minvW
   ml := by
-    rw [stepMem_readWord_disjoint mem n mm 2752 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2752 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.ml
   tl := by
-    rw [stepMem_readWord_disjoint mem n mm 2784 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2784 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.tl
   eoff := by
-    rw [stepMem_readWord_disjoint mem n mm 2656 hn
+    rw [LazyTopMath.stepMem_readWord_disjoint mem n mm 2656 hn
       ⟨Or.inr (by omega), Or.inr (by omega), Or.inr (by omega)⟩]; exact hf.eoff
 
 theorem stepInv_stepMem {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
-    (inv : StepInv mem n bsize mm minv) : StepInv (stepMem mem n mm) n bsize mm minv where
-  pre := PreOK_stepMem mem n mm hn hn32 inv.pre
+    (inv : StepInv mem n bsize mm minv) : StepInv (LazyTopStep.next mem n mm) n bsize mm minv where
+  pre := LazyTopMath.PreOK_stepMem mem n mm hn hn32 inv.pre
   frame := frame_stepMem hn hn32 inv.frame
-  modulus := fastRepresents_stepMem mem n mm 0 n mm hn
+  modulus := LazyTopMath.fastRepresents_stepMem mem n mm 0 n mm hn
     ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩ inv.modulus
-  neg := fastRepresents_stepMem mem n mm NEG n _ hn
+  neg := LazyTopMath.fastRepresents_stepMem mem n mm NEG n _ hn
     ⟨Or.inr (by unfold NEG; omega), Or.inl (by unfold NEG; omega), Or.inl (by unfold NEG; omega)⟩
     inv.neg
 
 theorem stepInv_stepMems {mem : ByteArray} {n bsize mm minv : Nat} (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (inv : StepInv mem n bsize mm minv) :
-    ∀ i, StepInv (stepMems mem n mm i) n bsize mm minv := by
+    ∀ i, StepInv (LazyTopStep.iter mem n mm i) n bsize mm minv := by
   intro i
   induction i with
   | zero => exact inv
@@ -111,7 +112,7 @@ def m2Of (mem input : ByteArray) (n : Nat) : ByteArray :=
 
 /-- Memory at `BDONE`. -/
 def hitFinalMem (mem input : ByteArray) (n mm : Nat) : ByteArray :=
-  stepMems (m2Of mem input n) n mm n
+  LazyTopStep.iter (m2Of mem input n) n mm n
 
 /-- The shift-reduce route leaves `NEG` holding `radix^n - mm`: the loop never writes it.
 The `MCOPY` at the loop exit copies that word block into `R1`, and on this route
@@ -130,7 +131,7 @@ theorem hitFinal_neg (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
     exact fastRepresents_preMem _ NEG n _ (Or.inl (by unfold NEG PRE_L; omega))
       (by unfold NEG; omega)
       (neg_represents (m1Of mem input n) n mm (by omega) (by omega) hmpos hodd hmod1)
-  exact stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
+  exact LazyTopMath.stepMems_neg (m2Of mem input n) n mm (by omega) hn32 hneg2 n
 
 /-- The base value the first `CSUB` leaves in the retained `TS`: `b mod m`. -/
 theorem m1_base (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)

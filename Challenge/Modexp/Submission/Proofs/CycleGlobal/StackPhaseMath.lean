@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.LazyTopMath
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftTrace5
 
 set_option warningAsError true
@@ -63,29 +64,29 @@ theorem phaseSwitch_inv (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8
 
 theorem represents_acc_after_steps (mem : ByteArray) (n mm value k : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) (hrep : Model.FastRepresents mem 256 n value) :
-    Model.FastRepresents (stepMems mem n mm k) 256 n value := by
-  refine (Model.fastRepresents_congr (a := stepMems mem n mm k) (b := mem)
+    Model.FastRepresents (LazyTopStep.iter mem n mm k) 256 n value := by
+  refine (Model.fastRepresents_congr (a := LazyTopStep.iter mem n mm k) (b := mem)
     (ptr := 256) (count := n) ?_ value).2 hrep
   intro i hi
-  exact stepMems_readWord_disjoint mem n mm (256 + 32 * i) hn
+  exact LazyTopMath.stepMems_readWord_disjoint mem n mm (256 + 32 * i) hn
     ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩ k
 
 theorem two_phase_values (mem : ByteArray) (n bsize mm minv r k : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hm : 0 < mm) (hmm : mm < Limbs.radix ^ n)
     (htop : Limbs.radix ^ n < 2 * mm) (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm) :
-    let first := stepMems mem n mm (2 * k)
-    let second := stepMems (phaseSwitch first n) n mm k
+    let first := LazyTopStep.iter mem n mm (2 * k)
+    let second := LazyTopStep.iter (phaseSwitch first n) n mm k
     Model.FastRepresents second 2112 n (r * Limbs.radix ^ (3 * k) % mm) ∧
       Model.FastRepresents second 256 n (r * Limbs.radix ^ (2 * k) % mm) := by
   dsimp only
-  have invFirst := stepInv_stepMems (by omega) hn8 inv (2 * k)
-  have firstBase := stepMems_represents mem n mm r hn hn8 hm hmm htop inv.modulus inv.neg
+  have invFirst := LazyTopMath.stepInv_stepMems (by omega) hn8 inv (2 * k)
+  have firstBase := LazyTopMath.stepMems_represents mem n mm r hn hn8 hm hmm htop inv.modulus inv.neg
     hbase hr inv.pre (2 * k)
   have invBetween := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
   have baseBetween := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) firstBase
-  have hsecond := stepMems_represents _ n mm _ hn hn8 hm hmm htop invBetween.modulus
+  have hsecond := LazyTopMath.stepMems_represents _ n mm _ hn hn8 hm hmm htop invBetween.modulus
     invBetween.neg baseBetween (Nat.mod_lt _ hm) invBetween.pre k
   have hvalue : r * Limbs.radix ^ (2 * k) % mm * Limbs.radix ^ k % mm =
       r * Limbs.radix ^ (3 * k) % mm := by
@@ -132,8 +133,8 @@ def e3Prepared (mem input : ByteArray) (n : Nat) : ByteArray :=
   prepareMemory (m2Of mem input n) (UInt256.ofNat 1)
 
 def e3Final (mem input : ByteArray) (n mm k : Nat) : ByteArray :=
-  let first := stepMems (e3Prepared mem input n) n mm (2 * k)
-  stepMems (phaseSwitch first n) n mm k
+  let first := LazyTopStep.iter (e3Prepared mem input n) n mm (2 * k)
+  LazyTopStep.iter (phaseSwitch first n) n mm k
 
 
 theorem m2_base_value (mem input : ByteArray) (n mm : Nat)
@@ -150,11 +151,11 @@ theorem m2_base_value (mem input : ByteArray) (n mm : Nat)
 
 theorem keep_one_steps (mem : ByteArray) (n mm value k : Nat)
     (hn : 1 ≤ n) (hn8 : n ≤ 8) (hr : Model.FastRepresents mem 768 n value) :
-    Model.FastRepresents (stepMems mem n mm k) 768 n value := by
-  refine (Model.fastRepresents_congr (a := stepMems mem n mm k) (b := mem)
+    Model.FastRepresents (LazyTopStep.iter mem n mm k) 768 n value := by
+  refine (Model.fastRepresents_congr (a := LazyTopStep.iter mem n mm k) (b := mem)
     (ptr := 768) (count := n) ?_ value).2 hr
   intro i hi
-  exact stepMems_readWord_disjoint mem n mm (768 + 32 * i) hn
+  exact LazyTopMath.stepMems_readWord_disjoint mem n mm (768 + 32 * i) hn
     ⟨Or.inr (by omega), Or.inl (by omega), Or.inl (by omega)⟩ k
 theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hm : 0 < mm) (hodd : mm % 2 = 1)
@@ -177,9 +178,9 @@ theorem e3_output_facts (mem input : ByteArray) (n bsize mm minv k : Nat)
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
   have vals := two_phase_values (e3Prepared mem input n) n bsize mm minv _ k hn hn8 hm
     (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm)
-  have invFirst := stepInv_stepMems (by omega) hn8 invPrep (2 * k)
+  have invFirst := LazyTopMath.stepInv_stepMems (by omega) hn8 invPrep (2 * k)
   have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
-  have invFinal := stepInv_stepMems (by omega) hn8 invSwitch k
+  have invFinal := LazyTopMath.stepInv_stepMems (by omega) hn8 invSwitch k
   have hone2 : Model.FastRepresents (m2Of mem input n) 768 n 0 := by
     refine (Model.fastRepresents_congr (a := m2Of mem input n) (b := mem)
       (ptr := 768) (count := n) ?_ 0).2 hone
@@ -211,7 +212,7 @@ theorem m2_acc_value (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
     (fastRepresents_negStep _ n 256 n _ (Or.inl (by unfold NEG; omega)) h1 n le_rfl)
 
 def ordinaryFinal (mem input : ByteArray) (n mm : Nat) : ByteArray :=
-  stepMems (prepareMemory (m2Of mem input n) (UInt256.ofNat 0)) n mm n
+  LazyTopStep.iter (prepareMemory (m2Of mem input n) (UInt256.ofNat 0)) n mm n
 
 
 theorem m2_one_value (mem input : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn8 : n ≤ 8)
@@ -241,11 +242,11 @@ theorem ordinary_output_facts (mem input : ByteArray) (n bsize mm minv : Nat)
   dsimp only
   have inv0 := m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have invPrep := prepareMemory_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
-  have invFinal := stepInv_stepMems (by omega) hn8 invPrep n
+  have invFinal := LazyTopMath.stepInv_stepMems (by omega) hn8 invPrep n
   have hbase2 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
   have hbasePrep := prepareMemory_preserves _ (UInt256.ofNat 0) 2112 n _ (Or.inr (by omega)) hbase2
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
-  have hbaseFinal := stepMems_represents (prepareMemory (m2Of mem input n) (UInt256.ofNat 0))
+  have hbaseFinal := LazyTopMath.stepMems_represents (prepareMemory (m2Of mem input n) (UInt256.ofNat 0))
     n mm _ hn hn8 hm (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg
     hbasePrep (Nat.mod_lt _ hm) invPrep.pre n
   have hacc2 := m2_acc_value mem input n mm hn hn8 hm hodd hmod htop htn0

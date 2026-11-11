@@ -32,9 +32,9 @@ def normalizesquareBlock : Block Artifact.artifact .Osaka 10484 normalizesquareP
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 theorem validJump6152 : Decode.isValidJumpDest Artifact.bytecode 5567 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 4262
-    (show Artifact.instructions[4262]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 4262 = 5567 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 4261
+    (show Artifact.instructions[4261]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 4261 = 5567 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

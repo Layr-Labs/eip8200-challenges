@@ -406,8 +406,8 @@ def zeroExpReturnProgram80 : List Instr :=
   [.op (.Dup dA0), .op .MSIZE, .op .SUB, .op .RETURN]
 
 def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4738 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3647 4 4738 zeroExpReturnProgram80
-    (by change 3647 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block Artifact.wellFormed 3646 4 4738 zeroExpReturnProgram80
+    (by change 3646 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

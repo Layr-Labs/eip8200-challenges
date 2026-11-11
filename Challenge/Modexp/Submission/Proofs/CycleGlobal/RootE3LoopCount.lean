@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.LazyTopMath
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftTrace5
 noncomputable section
@@ -25,38 +26,38 @@ def gasSteps_shiftLoop_count (z : UInt256) (s : State) (mem : ByteArray) (n bsiz
     (hfast : n = 4 ∨ n = 8) :
     Σ isInline : Bool, Challenge.EvmProof.GasSteps
       (shiftLoopState z s mem n bsize esize msize k)
-      (if isInline then csubExit4State z s (stepMems mem n mm k) n bsize esize msize
-       else shiftDoneState z s (stepMems mem n mm k) n bsize esize msize) := by
+      (if isInline then csubExit4State z s (LazyTopStep.iter mem n mm k) n bsize esize msize
+       else shiftDoneState z s (LazyTopStep.iter mem n mm k) n bsize esize msize) := by
   have loop : Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
-      (shiftLoopState z s (stepMems mem n mm (k - 1)) n bsize esize msize 1) :=
+      (shiftLoopState z s (LazyTopStep.iter mem n mm (k - 1)) n bsize esize msize 1) :=
     Challenge.EvmProof.GasSteps.cast
       (Challenge.EvmProof.GasSteps.iterateBounded
-        (I := fun i => shiftLoopState z s (stepMems mem n mm i) n bsize esize msize (k - i)) (k - 1)
+        (I := fun i => shiftLoopState z s (LazyTopStep.iter mem n mm i) n bsize esize msize (k - i)) (k - 1)
         (fun i hi =>
           have invI := stepInv_stepMems (by omega) hn32 inv i
-          have hbaseI := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
+          have hbaseI := LazyTopMath.stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
             hbase hr inv.pre i
           Challenge.EvmProof.GasSteps.cast
-            (gasSteps_step z s (stepMems mem n mm i) n bsize esize msize (k - i) mm minv
+            (gasSteps_step z s (LazyTopStep.iter mem n mm i) n bsize esize msize (k - i) mm minv
               (by omega) (by omega) hn hn32 hbs hmpos hmm htop e invI hbaseI (Nat.mod_lt _ hmpos)
-              (repairFacts_of (stepMems mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
+              (repairFacts_of (LazyTopStep.iter mem n mm i) n mm _ hn hn32 hmpos hmm htop invI.modulus
                 invI.neg hbaseI (Nat.mod_lt _ hmpos) invI.pre) hfast)
             rfl (by
-              show shiftLoopState z s (stepMem (stepMems mem n mm i) n mm) n bsize esize msize
-                (k - i - 1) = shiftLoopState z s (stepMems mem n mm (i + 1)) n bsize esize msize
+              show shiftLoopState z s (LazyTopStep.next (LazyTopStep.iter mem n mm i) n mm) n bsize esize msize
+                (k - i - 1) = shiftLoopState z s (LazyTopStep.iter mem n mm (i + 1)) n bsize esize msize
                 (k - (i + 1))
               rw [show k - i - 1 = k - (i + 1) from by omega]
               rfl)))
-      (by simp [stepMems]) (by rw [show k - (k - 1) = 1 from by omega])
+      (by simp [LazyTopStep.iter]) (by rw [show k - (k - 1) = 1 from by omega])
   have invL := stepInv_stepMems (by omega) hn32 inv (k - 1)
-  have hbaseL := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
+  have hbaseL := LazyTopMath.stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
     hbase hr inv.pre (k - 1)
-  obtain ⟨isInline, last⟩ := gasSteps_stepLast z s (stepMems mem n mm (k - 1)) n bsize esize msize mm minv
+  obtain ⟨isInline, last⟩ := gasSteps_stepLast z s (LazyTopStep.iter mem n mm (k - 1)) n bsize esize msize mm minv
     hn hn32 hbs hmpos hmm htop e invL hbaseL (Nat.mod_lt _ hmpos)
-    (repairFacts_of (stepMems mem n mm (k - 1)) n mm _ hn hn32 hmpos hmm htop invL.modulus
+    (repairFacts_of (LazyTopStep.iter mem n mm (k - 1)) n mm _ hn hn32 hmpos hmm htop invL.modulus
       invL.neg hbaseL (Nat.mod_lt _ hmpos) invL.pre) hfast
-  have hlast : stepMem (stepMems mem n mm (k - 1)) n mm = stepMems mem n mm k := by
-    rw [show stepMems mem n mm k = stepMems mem n mm (k - 1 + 1) from by rw [Nat.sub_add_cancel hk1]]
+  have hlast : LazyTopStep.next (LazyTopStep.iter mem n mm (k - 1)) n mm = LazyTopStep.iter mem n mm k := by
+    rw [show LazyTopStep.iter mem n mm k = LazyTopStep.iter mem n mm (k - 1 + 1) from by rw [Nat.sub_add_cancel hk1]]
     rfl
   exact ⟨isInline, loop.trans (Challenge.EvmProof.GasSteps.cast last rfl (by rw [hlast]))⟩
 

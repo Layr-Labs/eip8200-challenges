@@ -41,14 +41,14 @@ def headPC (n : Nat) : Nat := if n = 4 then 10692 else 2660
 def headWord (n : Nat) : UInt256 := UInt256.ofNat (headPC n)
 def pcMid : Nat := 3003   -- the fall-through after the eight straight blocks
 def midPC (n : Nat) : Nat := if n = 4 then 10907 else 3003
-def pcAddLoop : Nat := 3071
-def pcAddInner : Nat := 3077
-def pcAddTail : Nat := 3114
-def pcAddMid : Nat := 3101
-def pcAddPad : Nat := 3114
-def pcSubCheck : Nat := 3132
+def pcAddLoop : Nat := 3073
+def pcAddInner : Nat := 3079
+def pcAddTail : Nat := 3116
+def pcAddMid : Nat := 3103
+def pcAddPad : Nat := 3116
+def pcSubCheck : Nat := 3134
 def pcCsubCall : Nat := 3046
-def pcUnc : Nat := 3069
+def pcUnc : Nat := 3072
 def pcAfterCsub : Nat := 2660
 def pcCsubExit : Nat := 3053
 def pcShiftDone : Nat := 3053
@@ -210,7 +210,7 @@ def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
            memory := mem }
 def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 10952
+  { s with pc := UInt256.ofNat 10949
            stack := Monpro.maxWord :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize
            memory := mem }
@@ -228,7 +228,7 @@ def csubExitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   slotKState z s mem pcCsubExit 0 n bsize esize msize
 def csubExit4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotKState z s mem 10956 0 n bsize esize msize
+  slotKState z s mem 10953 0 n bsize esize msize
 def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   slotKState z s mem pcShiftDone 0 n bsize esize msize

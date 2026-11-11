@@ -199,29 +199,29 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pc3178 : IPC 2344 = 3010 := by pc_by_len
 
-@[simp] theorem pc3179 : IPC 2345 = 3013 := by pc_by_len
+@[simp] theorem pc3179 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3180 : IPC 2346 = 3014 := by pc_by_len
+@[simp] theorem pc3180 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3181 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3181 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3182 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3182 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3183 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3183 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3184 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3184 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3185 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3185 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3186 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3186 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3187 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3187 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3188 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3188 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3191 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3191 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pc3192 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pc3192 : IPC 2345 = 3043 := by pc_by_len
 
 
 
@@ -230,72 +230,72 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pcSaturate2993 : IPC 2288 = 2942 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2883 : IPC 2620 = 3414 := by pc_by_len
+@[simp] theorem earlyExtraPC2883 : IPC 2619 = 3414 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2884 : IPC 2621 = 3415 := by pc_by_len
+@[simp] theorem earlyExtraPC2884 : IPC 2620 = 3415 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2885 : IPC 2622 = 3416 := by pc_by_len
+@[simp] theorem earlyExtraPC2885 : IPC 2621 = 3416 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2886 : IPC 2623 = 3417 := by pc_by_len
+@[simp] theorem earlyExtraPC2886 : IPC 2622 = 3417 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2888 : IPC 2624 = 3418 := by pc_by_len
+@[simp] theorem earlyExtraPC2888 : IPC 2623 = 3418 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2889 : IPC 2625 = 3419 := by pc_by_len
+@[simp] theorem earlyExtraPC2889 : IPC 2624 = 3419 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2890 : IPC 2626 = 3420 := by pc_by_len
+@[simp] theorem earlyExtraPC2890 : IPC 2625 = 3420 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2891 : IPC 2627 = 3423 := by pc_by_len
+@[simp] theorem earlyExtraPC2891 : IPC 2626 = 3423 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2892 : IPC 2628 = 3424 := by pc_by_len
+@[simp] theorem earlyExtraPC2892 : IPC 2627 = 3424 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2893 : IPC 2628 = 3424 := by pc_by_len
+@[simp] theorem earlyExtraPC2893 : IPC 2627 = 3424 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2894 : IPC 2629 = 3427 := by pc_by_len
+@[simp] theorem earlyExtraPC2894 : IPC 2628 = 3427 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2895 : IPC 2630 = 3428 := by pc_by_len
+@[simp] theorem earlyExtraPC2895 : IPC 2629 = 3428 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2896 : IPC 2642 = 3448 := by pc_by_len
+@[simp] theorem earlyExtraPC2896 : IPC 2641 = 3448 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2930 : IPC 2642 = 3448 := by pc_by_len
+@[simp] theorem earlyExtraPC2930 : IPC 2641 = 3448 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2931 : IPC 2642 = 3448 := by pc_by_len
+@[simp] theorem earlyExtraPC2931 : IPC 2641 = 3448 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2932 : IPC 2643 = 3451 := by pc_by_len
+@[simp] theorem earlyExtraPC2932 : IPC 2642 = 3451 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2933 : IPC 2644 = 3452 := by pc_by_len
+@[simp] theorem earlyExtraPC2933 : IPC 2643 = 3452 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2934 : IPC 2645 = 3453 := by pc_by_len
+@[simp] theorem earlyExtraPC2934 : IPC 2644 = 3453 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2935 : IPC 2646 = 3454 := by pc_by_len
+@[simp] theorem earlyExtraPC2935 : IPC 2645 = 3454 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2936 : IPC 2647 = 3457 := by pc_by_len
+@[simp] theorem earlyExtraPC2936 : IPC 2646 = 3457 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2937 : IPC 2648 = 3458 := by pc_by_len
+@[simp] theorem earlyExtraPC2937 : IPC 2647 = 3458 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2938 : IPC 2649 = 3460 := by pc_by_len
+@[simp] theorem earlyExtraPC2938 : IPC 2648 = 3460 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2939 : IPC 2650 = 3461 := by pc_by_len
+@[simp] theorem earlyExtraPC2939 : IPC 2649 = 3461 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2940 : IPC 2651 = 3462 := by pc_by_len
+@[simp] theorem earlyExtraPC2940 : IPC 2650 = 3462 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2941 : IPC 2652 = 3463 := by pc_by_len
+@[simp] theorem earlyExtraPC2941 : IPC 2651 = 3463 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2942 : IPC 2653 = 3464 := by pc_by_len
+@[simp] theorem earlyExtraPC2942 : IPC 2652 = 3464 := by pc_by_len
 
-@[simp] theorem earlyExtraPC2943 : IPC 2654 = 3467 := by pc_by_len
+@[simp] theorem earlyExtraPC2943 : IPC 2653 = 3467 := by pc_by_len
 
 
 @[simp] theorem pcC3009 : IPC 2344 = 3010 := by pc_by_len
 
-@[simp] theorem pcC3010 : IPC 2345 = 3013 := by pc_by_len
+@[simp] theorem pcC3010 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pcC3011 : IPC 2346 = 3014 := by pc_by_len
+@[simp] theorem pcC3011 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pcC3019 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcC3019 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pcC3020 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcC3020 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pcC3021 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcC3021 : IPC 2345 = 3043 := by pc_by_len
 
 
 
@@ -385,7 +385,7 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pcT2372 : IPC 2333 = 2997 := by pc_by_len
 
-@[simp] theorem pcT2522 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcT2522 : IPC 2345 = 3043 := by pc_by_len
 
 @[simp] theorem pcI2013 : IPC 1813 = 2284 := by pc_by_len
 
@@ -887,7 +887,7 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pcI2566 : IPC 2340 = 3006 := by pc_by_len
 
-@[simp] theorem pcI2585 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcI2585 : IPC 2345 = 3043 := by pc_by_len
 
 /-! ## The straight-line negation and the inline Newton chain (negun, inl693) -/
 
@@ -1073,175 +1073,175 @@ loop head (8548 .. 8610). -/
 
 @[simp] theorem pcDual2146 : IPC 2124 = 2756 := by pc_by_len
 
-@[simp] theorem pcDual2381 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcDual2381 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pcDual2382 : IPC 2347 = 3043 := by pc_by_len
+@[simp] theorem pcDual2382 : IPC 2345 = 3043 := by pc_by_len
 
-@[simp] theorem pcDual2383 : IPC 2350 = 3046 := by pc_by_len
+@[simp] theorem pcDual2383 : IPC 2348 = 3046 := by pc_by_len
 
-@[simp] theorem pcDual2384 : IPC 2352 = 3048 := by pc_by_len
+@[simp] theorem pcDual2384 : IPC 2350 = 3048 := by pc_by_len
 
-@[simp] theorem pcDual2385 : IPC 2353 = 3049 := by pc_by_len
+@[simp] theorem pcDual2385 : IPC 2351 = 3049 := by pc_by_len
 
-@[simp] theorem pcDual2386 : IPC 2354 = 3050 := by pc_by_len
+@[simp] theorem pcDual2386 : IPC 2352 = 3050 := by pc_by_len
 
-@[simp] theorem pcDual2387 : IPC 2355 = 3051 := by pc_by_len
+@[simp] theorem pcDual2387 : IPC 2353 = 3051 := by pc_by_len
 
-@[simp] theorem pcDual2388 : IPC 2357 = 3053 := by pc_by_len
+@[simp] theorem pcDual2388 : IPC 2355 = 3053 := by pc_by_len
 
-@[simp] theorem pcDual2389 : IPC 2357 = 3053 := by pc_by_len
+@[simp] theorem pcDual2389 : IPC 2355 = 3053 := by pc_by_len
 
-@[simp] theorem pcDual2390 : IPC 2358 = 3054 := by pc_by_len
+@[simp] theorem pcDual2390 : IPC 2356 = 3054 := by pc_by_len
 
-@[simp] theorem pcDual2391 : IPC 2359 = 3055 := by pc_by_len
+@[simp] theorem pcDual2391 : IPC 2357 = 3055 := by pc_by_len
 
-@[simp] theorem pcDual2392 : IPC 2359 = 3055 := by pc_by_len
+@[simp] theorem pcDual2392 : IPC 2357 = 3055 := by pc_by_len
 
-@[simp] theorem pcDual2393 : IPC 2359 = 3055 := by pc_by_len
+@[simp] theorem pcDual2393 : IPC 2357 = 3055 := by pc_by_len
 
-@[simp] theorem pcDual2394 : IPC 2359 = 3055 := by pc_by_len
+@[simp] theorem pcDual2394 : IPC 2357 = 3055 := by pc_by_len
 
-@[simp] theorem pcDual2395 : IPC 2360 = 3064 := by pc_by_len
+@[simp] theorem pcDual2395 : IPC 2358 = 3064 := by pc_by_len
 
-@[simp] theorem pcDual2396 : IPC 8424 = 10972 := by pc_by_len
+@[simp] theorem pcDual2396 : IPC 8423 = 10969 := by pc_by_len
 
-@[simp] theorem pcDual2397 : IPC 8425 = 10973 := by pc_by_len
+@[simp] theorem pcDual2397 : IPC 8424 = 10970 := by pc_by_len
 
-@[simp] theorem pcDual2398 : IPC 8426 = 10974 := by pc_by_len
+@[simp] theorem pcDual2398 : IPC 8425 = 10971 := by pc_by_len
 
-@[simp] theorem pcDual2399 : IPC 8426 = 10974 := by pc_by_len
+@[simp] theorem pcDual2399 : IPC 8425 = 10971 := by pc_by_len
 
-@[simp] theorem pcDual2400 : IPC 8427 = 10979 := by pc_by_len
+@[simp] theorem pcDual2400 : IPC 8426 = 10976 := by pc_by_len
 
-@[simp] theorem pcDual2401 : IPC 8428 = 10980 := by pc_by_len
+@[simp] theorem pcDual2401 : IPC 8427 = 10977 := by pc_by_len
 
-@[simp] theorem pcDual2402 : IPC 8429 = 10981 := by pc_by_len
+@[simp] theorem pcDual2402 : IPC 8428 = 10978 := by pc_by_len
 
-@[simp] theorem pcDual2403 : IPC 8430 = 10984 := by pc_by_len
+@[simp] theorem pcDual2403 : IPC 8429 = 10981 := by pc_by_len
 
-@[simp] theorem pcDual2404 : IPC 8431 = 10987 := by pc_by_len
+@[simp] theorem pcDual2404 : IPC 8430 = 10984 := by pc_by_len
 
-@[simp] theorem pcDual2405 : IPC 8432 = 10988 := by pc_by_len
+@[simp] theorem pcDual2405 : IPC 8431 = 10985 := by pc_by_len
 
-@[simp] theorem pcDual2406 : IPC 8433 = 10989 := by pc_by_len
+@[simp] theorem pcDual2406 : IPC 8432 = 10986 := by pc_by_len
 
-@[simp] theorem pcDual2407 : IPC 8434 = 10991 := by pc_by_len
+@[simp] theorem pcDual2407 : IPC 8433 = 10988 := by pc_by_len
 
-@[simp] theorem pcDual2408 : IPC 8435 = 10992 := by pc_by_len
+@[simp] theorem pcDual2408 : IPC 8434 = 10989 := by pc_by_len
 
-@[simp] theorem pcDual2409 : IPC 8436 = 10993 := by pc_by_len
+@[simp] theorem pcDual2409 : IPC 8435 = 10990 := by pc_by_len
 
-@[simp] theorem pcDual2410 : IPC 2364 = 3069 := by pc_by_len
+@[simp] theorem pcDual2410 : IPC 2361 = 3067 := by pc_by_len
 
-@[simp] theorem pcDual2411 : IPC 2365 = 3070 := by pc_by_len
+@[simp] theorem pcDual2411 : IPC 2364 = 3072 := by pc_by_len
 
-@[simp] theorem pcDual2412 : IPC 2366 = 3071 := by pc_by_len
+@[simp] theorem pcDual2412 : IPC 2365 = 3073 := by pc_by_len
 
-@[simp] theorem pcDual2413 : IPC 2367 = 3072 := by pc_by_len
+@[simp] theorem pcDual2413 : IPC 2366 = 3074 := by pc_by_len
 
-@[simp] theorem pcDual2414 : IPC 2368 = 3073 := by pc_by_len
+@[simp] theorem pcDual2414 : IPC 2367 = 3075 := by pc_by_len
 
-@[simp] theorem pcDual2415 : IPC 2369 = 3076 := by pc_by_len
+@[simp] theorem pcDual2415 : IPC 2368 = 3078 := by pc_by_len
 
-@[simp] theorem pcDual2416 : IPC 2370 = 3077 := by pc_by_len
+@[simp] theorem pcDual2416 : IPC 2369 = 3079 := by pc_by_len
 
-@[simp] theorem pcDual2417 : IPC 2371 = 3078 := by pc_by_len
+@[simp] theorem pcDual2417 : IPC 2370 = 3080 := by pc_by_len
 
-@[simp] theorem pcDual2418 : IPC 2372 = 3079 := by pc_by_len
+@[simp] theorem pcDual2418 : IPC 2371 = 3081 := by pc_by_len
 
-@[simp] theorem pcDual2419 : IPC 2373 = 3080 := by pc_by_len
+@[simp] theorem pcDual2419 : IPC 2372 = 3082 := by pc_by_len
 
-@[simp] theorem pcDual2420 : IPC 2374 = 3083 := by pc_by_len
+@[simp] theorem pcDual2420 : IPC 2373 = 3085 := by pc_by_len
 
-@[simp] theorem pcDual2421 : IPC 2375 = 3084 := by pc_by_len
+@[simp] theorem pcDual2421 : IPC 2374 = 3086 := by pc_by_len
 
-@[simp] theorem pcDual2422 : IPC 2376 = 3085 := by pc_by_len
+@[simp] theorem pcDual2422 : IPC 2375 = 3087 := by pc_by_len
 
-@[simp] theorem pcDual2423 : IPC 2377 = 3086 := by pc_by_len
+@[simp] theorem pcDual2423 : IPC 2376 = 3088 := by pc_by_len
 
-@[simp] theorem pcDual2424 : IPC 2378 = 3087 := by pc_by_len
+@[simp] theorem pcDual2424 : IPC 2377 = 3089 := by pc_by_len
 
-@[simp] theorem pcDual2425 : IPC 2379 = 3088 := by pc_by_len
+@[simp] theorem pcDual2425 : IPC 2378 = 3090 := by pc_by_len
 
-@[simp] theorem pcDual2426 : IPC 2380 = 3089 := by pc_by_len
+@[simp] theorem pcDual2426 : IPC 2379 = 3091 := by pc_by_len
 
-@[simp] theorem pcDual2427 : IPC 2381 = 3090 := by pc_by_len
+@[simp] theorem pcDual2427 : IPC 2380 = 3092 := by pc_by_len
 
-@[simp] theorem pcDual2428 : IPC 2382 = 3091 := by pc_by_len
+@[simp] theorem pcDual2428 : IPC 2381 = 3093 := by pc_by_len
 
-@[simp] theorem pcDual2429 : IPC 2383 = 3092 := by pc_by_len
+@[simp] theorem pcDual2429 : IPC 2382 = 3094 := by pc_by_len
 
-@[simp] theorem pcDual2430 : IPC 2384 = 3093 := by pc_by_len
+@[simp] theorem pcDual2430 : IPC 2383 = 3095 := by pc_by_len
 
-@[simp] theorem pcDual2431 : IPC 2385 = 3094 := by pc_by_len
+@[simp] theorem pcDual2431 : IPC 2384 = 3096 := by pc_by_len
 
-@[simp] theorem pcDual2432 : IPC 2386 = 3095 := by pc_by_len
+@[simp] theorem pcDual2432 : IPC 2385 = 3097 := by pc_by_len
 
-@[simp] theorem pcDual2433 : IPC 2387 = 3096 := by pc_by_len
+@[simp] theorem pcDual2433 : IPC 2386 = 3098 := by pc_by_len
 
-@[simp] theorem pcDual2434 : IPC 2388 = 3097 := by pc_by_len
+@[simp] theorem pcDual2434 : IPC 2387 = 3099 := by pc_by_len
 
-@[simp] theorem pcDual2435 : IPC 2389 = 3098 := by pc_by_len
+@[simp] theorem pcDual2435 : IPC 2388 = 3100 := by pc_by_len
 
-@[simp] theorem pcDual2436 : IPC 2390 = 3099 := by pc_by_len
+@[simp] theorem pcDual2436 : IPC 2389 = 3101 := by pc_by_len
 
-@[simp] theorem pcDual2437 : IPC 2391 = 3100 := by pc_by_len
+@[simp] theorem pcDual2437 : IPC 2390 = 3102 := by pc_by_len
 
-@[simp] theorem pcDual2438 : IPC 2392 = 3101 := by pc_by_len
+@[simp] theorem pcDual2438 : IPC 2391 = 3103 := by pc_by_len
 
-@[simp] theorem pcDual2439 : IPC 2393 = 3103 := by pc_by_len
+@[simp] theorem pcDual2439 : IPC 2392 = 3105 := by pc_by_len
 
-@[simp] theorem pcDual2440 : IPC 2394 = 3104 := by pc_by_len
+@[simp] theorem pcDual2440 : IPC 2393 = 3106 := by pc_by_len
 
-@[simp] theorem pcDual2441 : IPC 2395 = 3105 := by pc_by_len
+@[simp] theorem pcDual2441 : IPC 2394 = 3107 := by pc_by_len
 
-@[simp] theorem pcDual2442 : IPC 2396 = 3108 := by pc_by_len
+@[simp] theorem pcDual2442 : IPC 2395 = 3110 := by pc_by_len
 
-@[simp] theorem pcDual2443 : IPC 2397 = 3109 := by pc_by_len
+@[simp] theorem pcDual2443 : IPC 2396 = 3111 := by pc_by_len
 
-@[simp] theorem pcDual2444 : IPC 2398 = 3110 := by pc_by_len
+@[simp] theorem pcDual2444 : IPC 2397 = 3112 := by pc_by_len
 
-@[simp] theorem pcDual2445 : IPC 2399 = 3113 := by pc_by_len
+@[simp] theorem pcDual2445 : IPC 2398 = 3115 := by pc_by_len
 
-@[simp] theorem pcDual2446 : IPC 2400 = 3114 := by pc_by_len
+@[simp] theorem pcDual2446 : IPC 2399 = 3116 := by pc_by_len
 
-@[simp] theorem pcDual2447 : IPC 2401 = 3115 := by pc_by_len
+@[simp] theorem pcDual2447 : IPC 2400 = 3117 := by pc_by_len
 
-@[simp] theorem pcDual2448 : IPC 2402 = 3118 := by pc_by_len
+@[simp] theorem pcDual2448 : IPC 2401 = 3120 := by pc_by_len
 
-@[simp] theorem pcDual2449 : IPC 2403 = 3119 := by pc_by_len
+@[simp] theorem pcDual2449 : IPC 2402 = 3121 := by pc_by_len
 
-@[simp] theorem pcDual2450 : IPC 2404 = 3120 := by pc_by_len
+@[simp] theorem pcDual2450 : IPC 2403 = 3122 := by pc_by_len
 
-@[simp] theorem pcDual2451 : IPC 2405 = 3121 := by pc_by_len
+@[simp] theorem pcDual2451 : IPC 2404 = 3123 := by pc_by_len
 
-@[simp] theorem pcDual2452 : IPC 2406 = 3122 := by pc_by_len
+@[simp] theorem pcDual2452 : IPC 2405 = 3124 := by pc_by_len
 
-@[simp] theorem pcDual2453 : IPC 2407 = 3125 := by pc_by_len
+@[simp] theorem pcDual2453 : IPC 2406 = 3127 := by pc_by_len
 
-@[simp] theorem pcDual2454 : IPC 2408 = 3126 := by pc_by_len
+@[simp] theorem pcDual2454 : IPC 2407 = 3128 := by pc_by_len
 
-@[simp] theorem pcDual2455 : IPC 2409 = 3127 := by pc_by_len
+@[simp] theorem pcDual2455 : IPC 2408 = 3129 := by pc_by_len
 
-@[simp] theorem pcDual2456 : IPC 2410 = 3128 := by pc_by_len
+@[simp] theorem pcDual2456 : IPC 2409 = 3130 := by pc_by_len
 
-@[simp] theorem pcDual2457 : IPC 2411 = 3131 := by pc_by_len
+@[simp] theorem pcDual2457 : IPC 2410 = 3133 := by pc_by_len
 
-@[simp] theorem pcDual2458 : IPC 2412 = 3132 := by pc_by_len
+@[simp] theorem pcDual2458 : IPC 2411 = 3134 := by pc_by_len
 
-@[simp] theorem pcDual2459 : IPC 2413 = 3135 := by pc_by_len
+@[simp] theorem pcDual2459 : IPC 2412 = 3137 := by pc_by_len
 
-@[simp] theorem pcDual2460 : IPC 2416 = 3138 := by pc_by_len
+@[simp] theorem pcDual2460 : IPC 2415 = 3140 := by pc_by_len
 
-@[simp] theorem pcDual2461 : IPC 2417 = 3141 := by pc_by_len
+@[simp] theorem pcDual2461 : IPC 2416 = 3143 := by pc_by_len
 
-@[simp] theorem pcDual2462 : IPC 2417 = 3141 := by pc_by_len
+@[simp] theorem pcDual2462 : IPC 2416 = 3143 := by pc_by_len
 
-@[simp] theorem pcDual2463 : IPC 2417 = 3141 := by pc_by_len
+@[simp] theorem pcDual2463 : IPC 2416 = 3143 := by pc_by_len
 
-@[simp] theorem pcDual2464 : IPC 2418 = 3142 := by pc_by_len
+@[simp] theorem pcDual2464 : IPC 2416 = 3143 := by pc_by_len
 
-@[simp] theorem pcDual2465 : IPC 2419 = 3145 := by pc_by_len
+@[simp] theorem pcDual2465 : IPC 2418 = 3145 := by pc_by_len
 
 @[simp] theorem pcDual8548 : IPC 8250 = 10692 := by pc_by_len
 
@@ -1567,49 +1567,49 @@ loop head (8548 .. 8610). -/
 
 @[simp] theorem pcDual8713 : IPC 8409 = 10914 := by pc_by_len
 
-@[simp] theorem pcDual8714 : IPC 8410 = 10917 := by pc_by_len
+@[simp] theorem pcDual8714 : IPC 8410 = 10947 := by pc_by_len
 
-@[simp] theorem pcDual8715 : IPC 8411 = 10918 := by pc_by_len
+@[simp] theorem pcDual8715 : IPC 8410 = 10947 := by pc_by_len
 
-@[simp] theorem pcDual8716 : IPC 8412 = 10951 := by pc_by_len
+@[simp] theorem pcDual8716 : IPC 8414 = 10951 := by pc_by_len
 
-@[simp] theorem pcDual8717 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8717 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8718 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8718 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8719 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8719 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8720 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8720 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8721 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8721 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8722 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8722 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8723 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8723 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8724 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8724 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8725 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8725 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8726 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8726 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8727 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8727 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8728 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8728 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8729 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8729 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8730 : IPC 8413 = 10952 := by pc_by_len
+@[simp] theorem pcDual8730 : IPC 8412 = 10949 := by pc_by_len
 
-@[simp] theorem pcDual8731 : IPC 8414 = 10953 := by pc_by_len
+@[simp] theorem pcDual8731 : IPC 8413 = 10950 := by pc_by_len
 
-@[simp] theorem pcDual8732 : IPC 8415 = 10954 := by pc_by_len
+@[simp] theorem pcDual8732 : IPC 8414 = 10951 := by pc_by_len
 
-@[simp] theorem pcDual8733 : IPC 8416 = 10955 := by pc_by_len
+@[simp] theorem pcDual8733 : IPC 8415 = 10952 := by pc_by_len
 
-@[simp] theorem pcDual8734 : IPC 8417 = 10956 := by pc_by_len
+@[simp] theorem pcDual8734 : IPC 8416 = 10953 := by pc_by_len
 
-@[simp] theorem pcDual8735 : IPC 8418 = 10957 := by pc_by_len
+@[simp] theorem pcDual8735 : IPC 8417 = 10954 := by pc_by_len
 
 @[simp] theorem restoredGeneralPC2339 : CycleSubmission.Artifact.artifact.instructionPC 2339 = 3003 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
@@ -1623,41 +1623,273 @@ loop head (8548 .. 8610). -/
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem restoredGeneralPC2344 : CycleSubmission.Artifact.artifact.instructionPC 2344 = 3010 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2345 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3013 := by
+@[simp] theorem restoredGeneralPC2345 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3043 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2346 : CycleSubmission.Artifact.artifact.instructionPC 2346 = 3014 := by
+@[simp] theorem restoredGeneralPC2346 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3043 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2347 : CycleSubmission.Artifact.artifact.instructionPC 2347 = 3043 := by
+@[simp] theorem restoredGeneralPC2347 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3043 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2348 : CycleSubmission.Artifact.artifact.instructionPC 2348 = 3044 := by
+@[simp] theorem restoredGeneralPC2348 : CycleSubmission.Artifact.artifact.instructionPC 2346 = 3044 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2349 : CycleSubmission.Artifact.artifact.instructionPC 2349 = 3045 := by
+@[simp] theorem restoredGeneralPC2349 : CycleSubmission.Artifact.artifact.instructionPC 2347 = 3045 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2350 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3046 := by
+@[simp] theorem restoredGeneralPC2350 : CycleSubmission.Artifact.artifact.instructionPC 2348 = 3046 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2351 : CycleSubmission.Artifact.artifact.instructionPC 2351 = 3047 := by
+@[simp] theorem restoredGeneralPC2351 : CycleSubmission.Artifact.artifact.instructionPC 2349 = 3047 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2352 : CycleSubmission.Artifact.artifact.instructionPC 2352 = 3048 := by
+@[simp] theorem restoredGeneralPC2352 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3048 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2353 : CycleSubmission.Artifact.artifact.instructionPC 2353 = 3049 := by
+@[simp] theorem restoredGeneralPC2353 : CycleSubmission.Artifact.artifact.instructionPC 2351 = 3049 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2354 : CycleSubmission.Artifact.artifact.instructionPC 2354 = 3050 := by
+@[simp] theorem restoredGeneralPC2354 : CycleSubmission.Artifact.artifact.instructionPC 2352 = 3050 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2355 : CycleSubmission.Artifact.artifact.instructionPC 2355 = 3051 := by
+@[simp] theorem restoredGeneralPC2355 : CycleSubmission.Artifact.artifact.instructionPC 2353 = 3051 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2356 : CycleSubmission.Artifact.artifact.instructionPC 2356 = 3052 := by
+@[simp] theorem restoredGeneralPC2356 : CycleSubmission.Artifact.artifact.instructionPC 2354 = 3052 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2412 : CycleSubmission.Artifact.artifact.instructionPC 2412 = 3132 := by
+@[simp] theorem restoredGeneralPC2412 : CycleSubmission.Artifact.artifact.instructionPC 2411 = 3134 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2413 : CycleSubmission.Artifact.artifact.instructionPC 2413 = 3135 := by
+@[simp] theorem restoredGeneralPC2413 : CycleSubmission.Artifact.artifact.instructionPC 2412 = 3137 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2414 : CycleSubmission.Artifact.artifact.instructionPC 2414 = 3136 := by
+@[simp] theorem restoredGeneralPC2414 : CycleSubmission.Artifact.artifact.instructionPC 2413 = 3138 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2415 : CycleSubmission.Artifact.artifact.instructionPC 2415 = 3137 := by
+@[simp] theorem restoredGeneralPC2415 : CycleSubmission.Artifact.artifact.instructionPC 2414 = 3139 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2416 : CycleSubmission.Artifact.artifact.instructionPC 2416 = 3138 := by
+@[simp] theorem restoredGeneralPC2416 : CycleSubmission.Artifact.artifact.instructionPC 2415 = 3140 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem restoredGeneralPC2417 : CycleSubmission.Artifact.artifact.instructionPC 2417 = 3141 := by
+@[simp] theorem restoredGeneralPC2417 : CycleSubmission.Artifact.artifact.instructionPC 2416 = 3143 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+
+@[simp] theorem lazyTopPC2339 : CycleSubmission.Artifact.artifact.instructionPC 2339 = 3003 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2340 : CycleSubmission.Artifact.artifact.instructionPC 2340 = 3006 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2341 : CycleSubmission.Artifact.artifact.instructionPC 2341 = 3007 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2342 : CycleSubmission.Artifact.artifact.instructionPC 2342 = 3008 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2343 : CycleSubmission.Artifact.artifact.instructionPC 2343 = 3009 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2344 : CycleSubmission.Artifact.artifact.instructionPC 2344 = 3010 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2345 : CycleSubmission.Artifact.artifact.instructionPC 2345 = 3043 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2346 : CycleSubmission.Artifact.artifact.instructionPC 2346 = 3044 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2347 : CycleSubmission.Artifact.artifact.instructionPC 2347 = 3045 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2348 : CycleSubmission.Artifact.artifact.instructionPC 2348 = 3046 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2349 : CycleSubmission.Artifact.artifact.instructionPC 2349 = 3047 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2350 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3048 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2351 : CycleSubmission.Artifact.artifact.instructionPC 2351 = 3049 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2352 : CycleSubmission.Artifact.artifact.instructionPC 2352 = 3050 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2353 : CycleSubmission.Artifact.artifact.instructionPC 2353 = 3051 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2354 : CycleSubmission.Artifact.artifact.instructionPC 2354 = 3052 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2355 : CycleSubmission.Artifact.artifact.instructionPC 2355 = 3053 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2451 : CycleSubmission.Artifact.artifact.instructionPC 2452 = 3231 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2452 : CycleSubmission.Artifact.artifact.instructionPC 2453 = 3232 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2453 : CycleSubmission.Artifact.artifact.instructionPC 2456 = 3235 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2454 : CycleSubmission.Artifact.artifact.instructionPC 2457 = 3236 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC2455 : CycleSubmission.Artifact.artifact.instructionPC 2460 = 3239 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8399 : CycleSubmission.Artifact.artifact.instructionPC 8404 = 10907 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8400 : CycleSubmission.Artifact.artifact.instructionPC 8405 = 10910 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8401 : CycleSubmission.Artifact.artifact.instructionPC 8406 = 10911 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8402 : CycleSubmission.Artifact.artifact.instructionPC 8407 = 10912 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8403 : CycleSubmission.Artifact.artifact.instructionPC 8408 = 10913 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8404 : CycleSubmission.Artifact.artifact.instructionPC 8409 = 10914 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8405 : CycleSubmission.Artifact.artifact.instructionPC 8410 = 10947 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8406 : CycleSubmission.Artifact.artifact.instructionPC 8411 = 10948 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8407 : CycleSubmission.Artifact.artifact.instructionPC 8412 = 10949 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8408 : CycleSubmission.Artifact.artifact.instructionPC 8413 = 10950 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8409 : CycleSubmission.Artifact.artifact.instructionPC 8414 = 10951 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8410 : CycleSubmission.Artifact.artifact.instructionPC 8415 = 10952 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8411 : CycleSubmission.Artifact.artifact.instructionPC 8416 = 10953 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8412 : CycleSubmission.Artifact.artifact.instructionPC 8417 = 10954 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8413 : CycleSubmission.Artifact.artifact.instructionPC 8418 = 10963 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8414 : CycleSubmission.Artifact.artifact.instructionPC 8419 = 10964 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8415 : CycleSubmission.Artifact.artifact.instructionPC 8420 = 10965 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8416 : CycleSubmission.Artifact.artifact.instructionPC 8421 = 10966 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8417 : CycleSubmission.Artifact.artifact.instructionPC 8422 = 10968 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8418 : CycleSubmission.Artifact.artifact.instructionPC 8423 = 10969 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8419 : CycleSubmission.Artifact.artifact.instructionPC 8424 = 10970 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8420 : CycleSubmission.Artifact.artifact.instructionPC 8425 = 10971 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8421 : CycleSubmission.Artifact.artifact.instructionPC 8426 = 10976 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8422 : CycleSubmission.Artifact.artifact.instructionPC 8427 = 10977 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8423 : CycleSubmission.Artifact.artifact.instructionPC 8428 = 10978 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8424 : CycleSubmission.Artifact.artifact.instructionPC 8429 = 10981 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8425 : CycleSubmission.Artifact.artifact.instructionPC 8430 = 10984 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8426 : CycleSubmission.Artifact.artifact.instructionPC 8431 = 10985 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8427 : CycleSubmission.Artifact.artifact.instructionPC 8432 = 10986 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8428 : CycleSubmission.Artifact.artifact.instructionPC 8433 = 10988 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8429 : CycleSubmission.Artifact.artifact.instructionPC 8434 = 10989 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8430 : CycleSubmission.Artifact.artifact.instructionPC 8435 = 10990 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8431 : CycleSubmission.Artifact.artifact.instructionPC 8436 = 10991 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8432 : CycleSubmission.Artifact.artifact.instructionPC 8437 = 10992 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem lazyTopPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8438 = 10993 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+
+@[simp] theorem inlineRepairPC2361 : CycleSubmission.Artifact.artifact.instructionPC 2361 = 3067 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2362 : CycleSubmission.Artifact.artifact.instructionPC 2362 = 3068 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2363 : CycleSubmission.Artifact.artifact.instructionPC 2363 = 3071 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2364 : CycleSubmission.Artifact.artifact.instructionPC 2364 = 3072 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2365 : CycleSubmission.Artifact.artifact.instructionPC 2365 = 3073 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2366 : CycleSubmission.Artifact.artifact.instructionPC 2366 = 3074 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2367 : CycleSubmission.Artifact.artifact.instructionPC 2367 = 3075 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2368 : CycleSubmission.Artifact.artifact.instructionPC 2368 = 3078 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2369 : CycleSubmission.Artifact.artifact.instructionPC 2369 = 3079 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2370 = 3080 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2371 : CycleSubmission.Artifact.artifact.instructionPC 2371 = 3081 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2372 : CycleSubmission.Artifact.artifact.instructionPC 2372 = 3082 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2373 : CycleSubmission.Artifact.artifact.instructionPC 2373 = 3085 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2374 : CycleSubmission.Artifact.artifact.instructionPC 2374 = 3086 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2375 : CycleSubmission.Artifact.artifact.instructionPC 2375 = 3087 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2376 : CycleSubmission.Artifact.artifact.instructionPC 2376 = 3088 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2377 : CycleSubmission.Artifact.artifact.instructionPC 2377 = 3089 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2378 : CycleSubmission.Artifact.artifact.instructionPC 2378 = 3090 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2379 : CycleSubmission.Artifact.artifact.instructionPC 2379 = 3091 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2380 : CycleSubmission.Artifact.artifact.instructionPC 2380 = 3092 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2381 : CycleSubmission.Artifact.artifact.instructionPC 2381 = 3093 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2382 : CycleSubmission.Artifact.artifact.instructionPC 2382 = 3094 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2383 : CycleSubmission.Artifact.artifact.instructionPC 2383 = 3095 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2384 : CycleSubmission.Artifact.artifact.instructionPC 2384 = 3096 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2385 : CycleSubmission.Artifact.artifact.instructionPC 2385 = 3097 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2386 : CycleSubmission.Artifact.artifact.instructionPC 2386 = 3098 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2387 : CycleSubmission.Artifact.artifact.instructionPC 2387 = 3099 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2388 : CycleSubmission.Artifact.artifact.instructionPC 2388 = 3100 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2389 : CycleSubmission.Artifact.artifact.instructionPC 2389 = 3101 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2390 : CycleSubmission.Artifact.artifact.instructionPC 2390 = 3102 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2391 : CycleSubmission.Artifact.artifact.instructionPC 2391 = 3103 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2392 : CycleSubmission.Artifact.artifact.instructionPC 2392 = 3105 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2393 : CycleSubmission.Artifact.artifact.instructionPC 2393 = 3106 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2394 : CycleSubmission.Artifact.artifact.instructionPC 2394 = 3107 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2395 : CycleSubmission.Artifact.artifact.instructionPC 2395 = 3110 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2396 : CycleSubmission.Artifact.artifact.instructionPC 2396 = 3111 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2397 : CycleSubmission.Artifact.artifact.instructionPC 2397 = 3112 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2398 : CycleSubmission.Artifact.artifact.instructionPC 2398 = 3115 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2399 : CycleSubmission.Artifact.artifact.instructionPC 2399 = 3116 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2400 : CycleSubmission.Artifact.artifact.instructionPC 2400 = 3117 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2401 : CycleSubmission.Artifact.artifact.instructionPC 2401 = 3120 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2402 : CycleSubmission.Artifact.artifact.instructionPC 2402 = 3121 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2403 : CycleSubmission.Artifact.artifact.instructionPC 2403 = 3122 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2404 : CycleSubmission.Artifact.artifact.instructionPC 2404 = 3123 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2405 : CycleSubmission.Artifact.artifact.instructionPC 2405 = 3124 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2406 : CycleSubmission.Artifact.artifact.instructionPC 2406 = 3127 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2407 : CycleSubmission.Artifact.artifact.instructionPC 2407 = 3128 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2408 : CycleSubmission.Artifact.artifact.instructionPC 2408 = 3129 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2409 : CycleSubmission.Artifact.artifact.instructionPC 2409 = 3130 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2410 : CycleSubmission.Artifact.artifact.instructionPC 2410 = 3133 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2411 : CycleSubmission.Artifact.artifact.instructionPC 2411 = 3134 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2412 : CycleSubmission.Artifact.artifact.instructionPC 2412 = 3137 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2413 : CycleSubmission.Artifact.artifact.instructionPC 2413 = 3138 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2414 : CycleSubmission.Artifact.artifact.instructionPC 2414 = 3139 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2415 : CycleSubmission.Artifact.artifact.instructionPC 2415 = 3140 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2416 : CycleSubmission.Artifact.artifact.instructionPC 2416 = 3143 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2417 : CycleSubmission.Artifact.artifact.instructionPC 2417 = 3144 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem inlineRepairPC2418 : CycleSubmission.Artifact.artifact.instructionPC 2418 = 3145 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 
 end CycleSubmission.Global.ShiftPCs

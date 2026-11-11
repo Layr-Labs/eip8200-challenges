@@ -50,7 +50,7 @@ theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn
     (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
   unfold hitFinalMem
-  rw [stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1, hdisj.2.2.2.2.1, hdisj.2.2.2.2.2⟩ n]
+  rw [LazyTopMath.stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1, hdisj.2.2.2.2.1, hdisj.2.2.2.2.2⟩ n]
   exact m2_readWord_disjoint mem input n addr hn hn32 hdisj h2720
 
 theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -108,7 +108,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     exact fastRepresents_preMem _ 2112 n _ (Or.inr (by unfold PRE_DINV; omega)) (by omega)
       (fastRepresents_negStep _ n 2112 n _ (Or.inr (by unfold NEG; omega))
         (m1_base mem input n mm hn hn32 hmpos hodd hmod htop htn0) n le_rfl)
-  exact stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
+  exact LazyTopMath.stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
     hbase2 (Nat.mod_lt _ hmpos)
     (PreOK_cacheMem _ n (PreOK_preMem _)) n
 

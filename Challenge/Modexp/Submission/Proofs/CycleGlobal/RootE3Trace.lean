@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.LazyTopMath
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.GateRaw
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.StackPhaseRun
@@ -121,20 +122,20 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     n bsize esize msize mm minv _ (2 * k) (by omega) (by omega) hn hn8 hbs (e.tagged (UInt256.ofNat 1)) hm
     (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm) hhit.2.2
   have invFirst := CycleSubmission.Global.Fast.Shift.stepInv_stepMems (by omega) hn8 invPrep (2 * k)
-  have hbaseFirst := stepMems_represents (e3Prepared mem input n) n mm _ hn hn8 hm
+  have hbaseFirst := LazyTopMath.stepMems_represents (e3Prepared mem input n) n mm _ hn hn8 hm
     (Model.fastRepresents_lt hmod) htwo invPrep.modulus invPrep.neg hbasePrep
     (Nat.mod_lt _ hm) invPrep.pre (2 * k)
   have invSwitch := phaseSwitch_inv _ n bsize mm minv hn8 invFirst
   have hbaseSwitch := phaseSwitch_preserves _ n 2112 n _ (Or.inr (by omega))
     (Or.inl (by omega)) hbaseFirst
   obtain ⟨inlineSecond, secondLoop⟩ := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 2298) (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0))
-    (CycleSubmission.Global.StackPhaseMath.phaseSwitch (stepMems (e3Prepared mem input n) n mm (2 * k)) n)
+    (CycleSubmission.Global.StackPhaseMath.phaseSwitch (LazyTopStep.iter (e3Prepared mem input n) n mm (2 * k)) n)
     n bsize esize msize mm minv _ k (by omega) (by omega) hn hn8 hbs (e.tagged (UInt256.ofNat 0)) hm
     (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm) hhit.2.2
   have guard := bindings.prologueE3 hhit
   rw [hhalf] at guard
   have switch := bindings.phaseSwitch hhit.2.2 inlineFirst
-    (stepMems (e3Prepared mem input n) n mm (2 * k))
+    (LazyTopStep.iter (e3Prepared mem input n) n mm (2 * k))
   rw [hquarter] at switch
   exact ((((guard.trans firstLoop).trans switch).trans secondLoop).trans
     (bindings.e3Tail inlineSecond _))

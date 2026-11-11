@@ -101,55 +101,55 @@ def phaseBlocks : StackPhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .O
   exitHead := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2357 2 3053 (StackPhaseRun.headProgram false)
-        (by change 2357+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2355 2 3053 (StackPhaseRun.headProgram false)
+        (by change 2355+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8417 1 10956 (StackPhaseRun.headProgram true)
-        (by change 8417+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8416 1 10953 (StackPhaseRun.headProgram true)
+        (by change 8416+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
   guard := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2359 2 3055 (StackPhaseRun.guardProgram false)
-        (by change 2359+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2357 2 3055 (StackPhaseRun.guardProgram false)
+        (by change 2357+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8418 2 10957 (StackPhaseRun.guardProgram true)
-        (by change 8418+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8417 2 10954 (StackPhaseRun.guardProgram true)
+        (by change 8417+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
   cleanup := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2361 2 3065 (StackPhaseRun.cleanupProgram)
-        (by change 2361+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2359 2 3065 (StackPhaseRun.cleanupProgram)
+        (by change 2359+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8420 2 10967 (StackPhaseRun.cleanupProgram)
-        (by change 8420+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8419 2 10964 (StackPhaseRun.cleanupProgram)
+        (by change 8419+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-  commonHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8423 1 10971 (StackPhaseRun.commonHeadProgram)
-      (by change 8423+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  commonHead := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8422 1 10968 (StackPhaseRun.commonHeadProgram)
+      (by change 8422+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
       (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
       (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
       (by decide)
-  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8424 13 10972 (StackPhaseRun.phaseSwitchProgram)
-      (by change 8424+13 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  switch := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8423 13 10969 (StackPhaseRun.phaseSwitchProgram)
+      (by change 8423+13 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
       (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
       (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
       (by decide)
 
-theorem jumpDestCommonSwitch : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10971 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 8423
+theorem jumpDestCommonSwitch : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10968 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 8422
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
@@ -188,7 +188,7 @@ def switchVariant (b : Bool) (s : State) (mem : ByteArray) (n bsize esize msize 
       (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2298)
         (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0))
         (CycleSubmission.Global.StackPhaseMath.phaseSwitch mem n) n bsize esize msize (n / 4)) := by
-  have hd : Decode.isValidJumpDest s.executionEnv.code 10971 = true := by
+  have hd : Decode.isValidJumpDest s.executionEnv.code 10968 = true := by
     rw [e.code]; exact jumpDestCommonSwitch
   have hh : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.headPC n) = true := by
     rw [e.code]; exact CycleSubmission.Global.Fast.Shift.jumpDestHead n
@@ -198,7 +198,7 @@ def switchVariant (b : Bool) (s : State) (mem : ByteArray) (n bsize esize msize 
     (StackPhaseRun.run_head b s mem (UInt256.ofNat 1) (UInt256.ofNat 2310) n bsize esize msize)
   have guardRun : WindowNibbleKernel.runInstructions (StackPhaseRun.guardProgram b)
       (StackPhaseRun.frame s mem (StackPhaseRun.guardPC b) (UInt256.ofNat 1 :: slots)) =
-      some (StackPhaseRun.frame s mem 10971 slots) := by
+      some (StackPhaseRun.frame s mem 10968 slots) := by
     simpa using StackPhaseRun.run_guard b s mem (UInt256.ofNat 1) slots hs hd
   have hGuard := (phaseBlocks.guard b).steps (CycleSubmission.Global.Fast.Shift.bindingEnv e) rfl guardRun
   have hHead := phaseBlocks.commonHead.steps (CycleSubmission.Global.Fast.Shift.bindingEnv e) rfl
@@ -216,7 +216,7 @@ def tailVariant (b : Bool) (s : State) (mem : ByteArray) (n bsize esize msize d 
     GasSteps (doneState b (UInt256.ofNat d)
         (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0)) mem n bsize esize msize)
       (CycleSubmission.Global.SlimFrames.frameState s mem target n bsize esize msize) := by
-  have hd : Decode.isValidJumpDest s.executionEnv.code 10971 = true := by
+  have hd : Decode.isValidJumpDest s.executionEnv.code 10968 = true := by
     rw [e.code]; exact jumpDestCommonSwitch
   let slots := CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize ++ Exp.outer n bsize esize msize
   have hs : slots.length ≤ 1000 := by simp [slots, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]

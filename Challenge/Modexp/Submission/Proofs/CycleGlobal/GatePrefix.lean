@@ -34,17 +34,17 @@ def e3Block : Block CycleSubmission.Artifact.artifact .Osaka 2298 e3Program :=
 theorem jumpDestGate : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2310 = true := by
  have h := CycleSubmission.Global.Binding.jumpDest 1832 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
  have hp : CycleSubmission.Artifact.artifact.instructionPC 1832 = 2310 := by
-  rw [CycleSubmission.PCCertificate.selectedPC 1832 (by decide)]; decide
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 207 = true := by
  have h := CycleSubmission.Global.Binding.jumpDest 135 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
  have hp : CycleSubmission.Artifact.artifact.instructionPC 135 = 207 := by
-  rw [CycleSubmission.PCCertificate.selectedPC 135 (by decide)]; decide
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestSpecial : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3209 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2438 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2438 = 3209 := by
-  rw [CycleSubmission.PCCertificate.selectedPC 2438 (by decide)]; decide
+ have h := CycleSubmission.Global.Binding.jumpDest 2437 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2437 = 3209 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem exponent_eq (s : State) (input : ByteArray) (bsize : Nat)
  (hdata : s.executionEnv.calldata = input) :
