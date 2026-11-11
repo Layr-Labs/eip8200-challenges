@@ -31,7 +31,7 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
 
 
-@[simp] theorem packedJumpPC2411 : CycleSubmission.Artifact.artifact.instructionPC 1867 = 2377 := by
+@[simp] theorem packedJumpPC2411 : CycleSubmission.Artifact.artifact.instructionPC 1869 = 2377 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -44,76 +44,76 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
 
-@[simp] theorem preparedPC1917 : CycleSubmission.Artifact.artifact.instructionPC 1904 = 2436 := by
+@[simp] theorem preparedPC1917 : CycleSubmission.Artifact.artifact.instructionPC 1906 = 2436 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1918 : CycleSubmission.Artifact.artifact.instructionPC 1905 = 2437 := by
+@[simp] theorem preparedPC1918 : CycleSubmission.Artifact.artifact.instructionPC 1907 = 2437 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1919 : CycleSubmission.Artifact.artifact.instructionPC 1906 = 2439 := by
+@[simp] theorem preparedPC1919 : CycleSubmission.Artifact.artifact.instructionPC 1908 = 2439 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1920 : CycleSubmission.Artifact.artifact.instructionPC 1907 = 2440 := by
+@[simp] theorem preparedPC1920 : CycleSubmission.Artifact.artifact.instructionPC 1909 = 2440 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1921 : CycleSubmission.Artifact.artifact.instructionPC 1908 = 2441 := by
+@[simp] theorem preparedPC1921 : CycleSubmission.Artifact.artifact.instructionPC 1910 = 2441 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1922 : CycleSubmission.Artifact.artifact.instructionPC 1909 = 2444 := by
+@[simp] theorem preparedPC1922 : CycleSubmission.Artifact.artifact.instructionPC 1911 = 2444 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1923 : CycleSubmission.Artifact.artifact.instructionPC 1910 = 2445 := by
+@[simp] theorem preparedPC1923 : CycleSubmission.Artifact.artifact.instructionPC 1912 = 2445 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1924 : CycleSubmission.Artifact.artifact.instructionPC 1911 = 2447 := by
+@[simp] theorem preparedPC1924 : CycleSubmission.Artifact.artifact.instructionPC 1913 = 2447 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1925 : CycleSubmission.Artifact.artifact.instructionPC 1912 = 2448 := by
+@[simp] theorem preparedPC1925 : CycleSubmission.Artifact.artifact.instructionPC 1914 = 2448 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1926 : CycleSubmission.Artifact.artifact.instructionPC 1913 = 2449 := by
+@[simp] theorem preparedPC1926 : CycleSubmission.Artifact.artifact.instructionPC 1915 = 2449 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1928 : CycleSubmission.Artifact.artifact.instructionPC 1915 = 2453 := by
+@[simp] theorem preparedPC1928 : CycleSubmission.Artifact.artifact.instructionPC 1917 = 2453 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1930 : CycleSubmission.Artifact.artifact.instructionPC 1917 = 2455 := by
+@[simp] theorem preparedPC1930 : CycleSubmission.Artifact.artifact.instructionPC 1919 = 2455 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1931 : CycleSubmission.Artifact.artifact.instructionPC 1918 = 2456 := by
+@[simp] theorem preparedPC1931 : CycleSubmission.Artifact.artifact.instructionPC 1920 = 2456 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC1932 : CycleSubmission.Artifact.artifact.instructionPC 1919 = 2457 := by
+@[simp] theorem preparedPC1932 : CycleSubmission.Artifact.artifact.instructionPC 1921 = 2457 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2004 = 2566 := by
+@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2006 = 2566 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 1998 = 2558 := by
+@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2000 = 2558 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2002 = 2564 := by
+@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2004 = 2564 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2010 = 2574 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2021 = 2591 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -450,8 +450,8 @@ theorem run_negS4 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negS4
-      (negState s mem 2304 n bsize esize msize 0) =
-      some (negState s mem 2313 n bsize esize msize 1) := by
+      (negState s mem 2291 n bsize esize msize 0) =
+      some (negState s mem 2300 n bsize esize msize 1) := by
   have haw96 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 96 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw1376 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1376 32) =
@@ -459,7 +459,7 @@ theorem run_negS4 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   unfold negState
   rw [negStep_one mem n, hA]
   show Challenge.EvmProof.Stepper.runLocatedBlock negS4
-      { s with pc := UInt256.ofNat 2304, stack := outer n bsize esize msize, memory := mem } = _
+      { s with pc := UInt256.ofNat 2291, stack := outer n bsize esize msize, memory := mem } = _
   simp (config := { maxSteps := 400000 })
     [negS4, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -477,8 +477,8 @@ theorem run_negJ4 (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negJ4
-      (negState s mem 2303 n bsize esize msize j) =
-      some (negState s mem 2304 n bsize esize msize j) := by
+      (negState s mem 2290 n bsize esize msize j) =
+      some (negState s mem 2291 n bsize esize msize j) := by
   unfold negState
   generalize (negStep mem n j).memory = M
   simp (config := { maxSteps := 200000 })
@@ -517,7 +517,7 @@ theorem run_negJ4b (s : State) (mem : ByteArray) (n bsize esize msize j : Nat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock negJ4b
-      (negState s mem 2313 n bsize esize msize j) =
+      (negState s mem 2300 n bsize esize msize j) =
       some (negState s mem 2436 n bsize esize msize j) := by
   unfold negState
   generalize (negStep mem n j).memory = M
@@ -766,13 +766,17 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2720 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2720 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 2500000 })
     [blkNbTail, opAt, pushAt, wfOp, List.exchange, CycleSubmission.Prepared.Arithmetic.mulC,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nbTailState, cacheSetupState, taggedTemplate, phaseTag, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, Exp.push0_word,
+      nbTailState, cacheSetupState, readyCacheSlots, entrySlots, initialPhase, taggedTemplate, phaseTag, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, haw2656, haw32, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

@@ -14,11 +14,11 @@ theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3146 = true) :
     runInstructions fixedProgram (FixedDirectStates.special s mem 8 bsize esize 256 k) =
-      some (call s mem k (UInt256.ofNat 2519)
+      some (call s mem k (UInt256.ofNat 0)
         (UInt256.ofNat k :: Exp.outer 8 bsize esize 256)) := by
   have hdec : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k-1) := by
     interval_cases k <;> decide
-  simp [fixedProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+  simp [Exp.push0_word, fixedProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     FixedDirectStates.special, call, Exp.outer, hdec, hjump,
     Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
@@ -46,7 +46,7 @@ noncomputable opaque run (s : State) (mem : ByteArray) (bsize esize k N A B mi :
   have head := fixedBlock.steps (s := FixedDirectStates.special s mem 8 bsize esize 256 k)
     (env.transfer rfl rfl) rfl (call_run s mem bsize esize k hk hk16
       (by rw [env.code]; exact valid3181))
-  obtain ⟨done, tr, halt, bytes, calls⟩ := CallerTerminal.run s mem k (UInt256.ofNat 2519)
+  obtain ⟨done, tr, halt, bytes, calls⟩ := CallerTerminal.run s mem k (UInt256.ofNat 0)
     (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) N A B hk hk16 env
     (by simp [Exp.outer]) hact hcds hf.s32 hf.ml
     (by simp [Exp.outer]) (by simp [Exp.outer]) hmod ha hb
@@ -61,11 +61,11 @@ noncomputable def bail (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (hf : Exp.Frame mem 8 bsize mi)
     (hg : (CallerPrefix.guardWord mem).toNat = 0) :
     GasSteps (FixedDirectStates.special s mem 8 bsize esize 256 k)
-      (stateAt s mem k (UInt256.ofNat 2519) (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 207) := by
+      (stateAt s mem k (UInt256.ofNat 0) (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 207) := by
   have head := fixedBlock.steps (s := FixedDirectStates.special s mem 8 bsize esize 256 k)
     (env.transfer rfl rfl) rfl (call_run s mem bsize esize k hk hk16
       (by rw [env.code]; exact valid3181))
-  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat 2519)
+  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat 0)
     (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) env (by simp [Exp.outer]) hact hcds hf.s32 hf.ml
     (by simp [Exp.outer]) (by simp [Exp.outer]) hg)
 

@@ -64,7 +64,7 @@ theorem run_pack (s : State) (mem : ByteArray) (scratch z flag : UInt256)
 
 
 def phaseSwitchProgram : List Instr :=
-  [.op (.Swap ⟨15, by decide⟩), .op .POP, .push 4 12, .op (.Swap ⟨15, by decide⟩), .op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY, .op (.Dup ⟨13, by decide⟩), .push 1 2, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
+  [.op (.Swap ⟨15, by decide⟩), .op .POP, .push 4 2304, .op (.Swap ⟨15, by decide⟩), .op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY, .op (.Dup ⟨13, by decide⟩), .push 1 2, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
 
 def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray :=
   Exp.mcopyMem mem 256 2112 (32 * n)
@@ -74,12 +74,12 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
     (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n)
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hstack : rest =
-      CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize ++ Exp.outer n bsize esize msize)
+      CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2312) mem n bsize esize ++ Exp.outer n bsize esize msize)
     (hdest : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.headPC n) = true) :
     runInstructions phaseSwitchProgram
       (frame s mem 10972 rest) =
       some (frame s (phaseSwitchMemory mem n) (CycleSubmission.Global.Fast.Shift.headPC n)
-        (UInt256.ofNat (n / 4) :: CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 12) mem n bsize esize ++
+        (UInt256.ofNat (n / 4) :: CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2304) mem n bsize esize ++
           Exp.outer n bsize esize msize)) := by
   have hn1 : 1 ≤ n := by omega
   have hn8 : n ≤ 8 := by omega
@@ -114,10 +114,10 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
 
 
 def cleanupProgram : List Instr :=
-  [.op (.Swap ⟨15, by decide⟩), .push 1 32, .op .CALLDATALOAD,
+  [.op (.Swap ⟨15, by decide⟩), .push 12 32, .op .CALLDATALOAD,
    .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨15, by decide⟩),
    .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩),
-   .op (.Swap ⟨4, by decide⟩), .push 9 2284, .op .ADD, .op .JUMP]
+   .op (.Swap ⟨4, by decide⟩), .op .JUMP]
 def cleanupSuffix (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) : List UInt256 :=
   (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize).tail.take 15 ++
     [CycleSubmission.Global.Fast.Shift.headWord n] ++ Exp.outer n bsize esize msize
@@ -125,16 +125,14 @@ def cleanupSuffix (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) : List
 theorem run_cleanup (s : State) (mem : ByteArray) (pc d target n bsize esize msize : Nat)
     (hbs : bsize = 32 * n) (hms : msize = 32 * n)
     (hE : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
-    (htarget : 2284 + d = target) (hlt : target < 2^256)
+    (htarget : d = target) (hlt : target < 2^256)
     (hdest : Decode.isValidJumpDest s.executionEnv.code target = true) :
     runInstructions cleanupProgram
       (frame s mem pc (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize ++ Exp.outer n bsize esize msize)) =
       some (frame s mem target (Exp.outer n bsize esize msize ++ cleanupSuffix d mem n bsize esize msize)) := by
-  have hadd : UInt256.ofNat 2284 + UInt256.ofNat d = UInt256.ofNat target := by
-    rw [Challenge.EvmProof.Word.ofNat_add_mod, htarget]
   have hmod : target % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = target := Nat.mod_eq_of_lt hlt
   simp (config := {maxSteps := 400000}) [cleanupProgram, cleanupSuffix, runInstructions, frame, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
-    Challenge.EvmProof.Stepper.runInstr, List.exchange, hbs, hms, hE, hmod, hadd, hdest,
+    Challenge.EvmProof.Stepper.runInstr, List.exchange, hbs, hms, hE, htarget, hmod, hdest,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt,
     Challenge.EvmProof.Word.succ_ofNat_mod]

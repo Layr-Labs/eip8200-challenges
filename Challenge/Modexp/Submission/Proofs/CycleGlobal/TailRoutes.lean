@@ -17,7 +17,7 @@ noncomputable def fixed_head (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s) :
     GasSteps (append (FixedDirectStates.special s mem 8 bsize esize 256 k) rho)
-      (CallerPrefix.call s mem k (UInt256.ofNat 2519)
+      (CallerPrefix.call s mem k (UInt256.ofNat 0)
         ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho)) := by
   have h := blockSteps_append CallerBlocks.fixedBlock
     (s := FixedDirectStates.special s mem 8 bsize esize 256 k) (env.transfer rfl rfl) rfl
@@ -41,7 +41,7 @@ noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B m
     Finish.Outcome (append (FixedDirectStates.special s mem 8 bsize esize 256 k) rho)
       (Precompile.natToBytes (CallerTerminal.result N A B k) 256) := by
   have head := fixed_head s mem bsize esize k rho hrho hk hk16 env
-  obtain ⟨done, tr, halt, bytes, calls⟩ := CallerTerminal.run s mem k (UInt256.ofNat 2519)
+  obtain ⟨done, tr, halt, bytes, calls⟩ := CallerTerminal.run s mem k (UInt256.ofNat 0)
     ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) N A B hk hk16 env
     (by simp [Exp.outer]; omega) hact hcds hf.s32 hf.ml
     (by simp [Exp.outer]) (by simp [Exp.outer]) hmod ha hb
@@ -56,10 +56,10 @@ noncomputable def bail8 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (hf : Exp.Frame mem 8 bsize mi)
     (hg : (CallerPrefix.guardWord mem).toNat = 0) :
     GasSteps (append (FixedDirectStates.special s mem 8 bsize esize 256 k) rho)
-      (CallerPrefix.stateAt s mem k (UInt256.ofNat 2519)
+      (CallerPrefix.stateAt s mem k (UInt256.ofNat 0)
         ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) 207) := by
   have head := fixed_head s mem bsize esize k rho hrho hk hk16 env
-  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat 2519)
+  exact head.trans (CallerPrefix.bail s mem k (UInt256.ofNat 0)
     ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) env
     (by simp [Exp.outer]; omega) hact hcds hf.s32 hf.ml
     (by simp [Exp.outer]) (by simp [Exp.outer]) hg)

@@ -208,7 +208,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 0) (taggedTemplate s (UInt256.ofNat 0))
+      (shiftLoopState (UInt256.ofNat 2312) (taggedTemplate s (UInt256.ofNat 0))
         (preMem (negStep mem n n).memory) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -229,7 +229,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 0) (taggedTemplate s (UInt256.ofNat 0))
+      (shiftLoopState (UInt256.ofNat 2312) (taggedTemplate s (UInt256.ofNat 0))
         (preMem (negStep mem n n).memory) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -249,7 +249,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 0) (taggedTemplate s (UInt256.ofNat 1))
+      (shiftLoopState (UInt256.ofNat 2312) (taggedTemplate s (UInt256.ofNat 1))
         (preMem (negStep mem n n).memory) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv blk2764 e
@@ -392,8 +392,8 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
 def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2378
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1868 5 2378 ShiftProducerSplitRun.copyProgram
-    (by change 1868 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1870 5 2378 ShiftProducerSplitRun.copyProgram
+    (by change 1870 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

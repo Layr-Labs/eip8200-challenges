@@ -38,7 +38,7 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     have h := congrArg UInt256.toNat h
     simpa only [Exp.toNat_ofNat_self hmi, Exp.toNat_ofNat_self (by decide : 1 < 2^256)] using h
   have g1 := CycleSubmission.Global.Fast.Cios2Dispatch.gasSteps_commonSetupSq s mem
-    (UInt256.ofNat 3710) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
+    (UInt256.ofNat 3710) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (UInt256.ofNat 0)
     (UInt256.ofNat k :: (Exp.outer 4 bsize esize 128 ++ rho)) (by simp [Exp.outer] <;> omega)
     env.running env.code env.forkEq env.noPrecompile hact (Or.inl rfl) (by omega)
     (by decide) (by omega) hcds hf.s32 hf.ml (by simp [Exp.outer] <;> omega) (by simp [Exp.outer] <;> omega)
@@ -50,14 +50,14 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (UInt256.ofNat 0)
     (UInt256.ofNat 0 :: UInt256.ofNat 0 :: MachineState.readWord mem 2720 ::
       UInt256.ofNat 0 :: UInt256.ofNat 0 ::
-      UInt256.ofNat (k - 1) :: UInt256.ofNat 2519 :: UInt256.ofNat k :: (Exp.outer 4 bsize esize 128 ++ rho))
+      UInt256.ofNat (k - 1) :: UInt256.ofNat 0 :: UInt256.ofNat k :: (Exp.outer 4 bsize esize 128 ++ rho))
     (by simp [Exp.outer] <;> omega) env.running env.code env.forkEq env.noPrecompile hact
   have g3 := gasSteps_h1 s (SquarePartialClear.memory (stageW mem 2112 (2 + 2)))
     (CycleSubmission.Global.Fast.SquareStagedEntry.qWord (2 + 2)) (UInt256.ofNat 3347)
     (UInt256.ofNat 0) (MachineState.readWord mem 2720)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
-    (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat 2519)
+    (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat 0)
     (UInt256.ofNat k :: (Exp.outer 4 bsize esize 128 ++ rho)) (by simp [Exp.outer] <;> omega)
     env.running env.code env.forkEq env.noPrecompile CycleSubmission.Global.Fast.SquareStagedEntry.qWord_four
   simpa only [append, entryState, entryMemory, frameAt, frameStack, List.append_assoc, List.cons_append] using ((head.trans g1).trans g2).trans g3

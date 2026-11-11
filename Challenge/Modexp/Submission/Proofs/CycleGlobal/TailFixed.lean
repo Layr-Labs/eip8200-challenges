@@ -68,7 +68,7 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
       subst hms8
       have head := CycleSubmission.Global.TailRoutes.bail8 s mem bsize esize k mi rho hrho hk hk16 env hact hcds hf (by omega)
       obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat 2519)
+        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat 0)
           ((UInt256.ofNat k :: Exp.outer 8 bsize esize 256) ++ rho) 207)
         (env.transfer rfl rfl) rfl
         (by simp [append, CycleSubmission.CallerPrefix.stateAt, CycleSubmission.EntryMeaning.saved,
@@ -98,10 +98,10 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     (hm : N = Precompile.bytesToNatPadded input (96+bsize+esize) msize)
     (hAe : A ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix^n [MOD N])
     (hBe : B ≡ Precompile.bytesToNatPadded input 96 bsize [MOD N]) :
-    Handled input (append (FixedExponentRoute.entryState s mem n bsize esize msize) rho) := by
-  have bail (tr : GasSteps (append (FixedExponentRoute.entryState s mem n bsize esize msize) rho)
+    Handled input (append (GateRaw.entryState s mem n bsize esize msize) rho) := by
+  have bail (tr : GasSteps (append (GateRaw.entryState s mem n bsize esize msize) rho)
       (append (FixedDirectStates.bailState s mem n bsize esize msize) rho)) :
-      Handled input (append (FixedExponentRoute.entryState s mem n bsize esize msize) rho) := by
+      Handled input (append (GateRaw.entryState s mem n bsize esize msize) rho) := by
     obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
       (append (FixedDirectStates.bailState s mem n bsize esize msize) rho) (env.transfer rfl rfl) rfl
       (by simp [append, FixedDirectStates.bailState, FixedDirectStates.outer, Exp.outer] <;> omega)
@@ -112,26 +112,26 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     simpa only [hdata] using hr
   by_cases he3 : esize = 3
   · rcases he3 with rfl
-    have entry := CycleSubmission.Global.TailPrefix.gasSteps_entry_three s mem n bsize msize rho hrho
-      env.code env.forkEq env.running env.noPrecompile
     by_cases he : Precompile.bytesToNatPadded input (96+bsize) 3 = 65537
-    · have hit := CycleSubmission.Global.TailPrefix.gasSteps_check65537_hit s mem input n bsize msize rho hrho
-        hbsize he hdata hact hf.eoff env.code env.forkEq env.running env.noPrecompile
-      apply FixedRoute.prepend (entry.trans hit)
+    · have hit := GatePrefix.gasSteps_hit s mem input n bsize msize rho hrho hbsize he hdata env
+      apply FixedRoute.prepend hit
       apply special input s mem n bsize 3 msize 16 N A B mi rho hrho hn (by decide) (by decide)
         env hact hactLe (by rw [hdata]; exact lt_trans hvalid.1 (by norm_num)) hcalls hdata hvalid
         hf hmi hmi1 hinv hmod ha hb hN hodd hA hB hbs hes hms hfull hm
       rw [he]
       simpa only [show (2:Nat)^16+1=65537 from by decide] using
         (Terminal.result_ordinary n N A B _ 16 hN hodd hAe hBe)
-    · exact bail (entry.trans (CycleSubmission.Global.TailPrefix.gasSteps_check65537_miss s mem input
-        n bsize msize rho hrho hbsize he hdata hact hf.eoff env.code env.forkEq env.running env.noPrecompile))
-  · exact bail ((CycleSubmission.Global.TailPrefix.gasSteps_entry_other s mem n bsize esize msize rho hrho
-      he3 hesize env.code env.forkEq env.running env.noPrecompile).trans
-      (CycleSubmission.Global.TailPrefix.gasSteps_oneWidth_miss s mem n bsize esize msize rho hrho
-        env.code env.forkEq env.running env.noPrecompile))
-
-#print axioms run8
+    · exact bail (GatePrefix.gasSteps_miss s mem n bsize 3 msize rho hrho hbsize
+        (GateRaw.miss_exponent s bsize 3 (GatePrefix.exponent_ne s input bsize he hdata)) env)
+  · have hne : UInt256.ofNat esize ≠ UInt256.ofNat 3 := by
+      intro h
+      have h' := congrArg UInt256.toNat h
+      simp only [Word.word_toNat_ofNat] at h'
+      have hl : esize < 2^256 := by omega
+      rw [Nat.mod_eq_of_lt hl] at h'
+      exact he3 (by simpa using h')
+    exact bail (GatePrefix.gasSteps_miss s mem n bsize esize msize rho hrho hbsize
+      (GateRaw.miss_size s bsize esize hne) env)
 #print axioms special
 #print axioms ordinary
 end CycleSubmission.Global.TailFixed

@@ -48,10 +48,10 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
     (hactLe : s.activeWords.toNat ≤ 289)
     (ordinaryTrace : ¬ Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.StackTail.append (FixedExponentRoute.entryState s (ordinaryFinal mem input n mm) n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 0 (ordinaryFinal mem input n mm) n bsize esize msize)))
+      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.GateRaw.entryState s (ordinaryFinal mem input n mm) n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2312 (ordinaryFinal mem input n mm) n bsize esize msize)))
     (e3Trace : Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.Fast.Shift.frameState s (e3Final mem input n mm (n / 4)) 2296 n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 12 (e3Final mem input n mm (n / 4)) n bsize esize msize))) :
+      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.Fast.Shift.frameState s (e3Final mem input n mm (n / 4)) 2304 n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2304 (e3Final mem input n mm (n / 4)) n bsize esize msize))) :
     FixedExponentRoute.Handled input (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize) := by
   have env : Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Environment CycleSubmission.Artifact.artifact .Osaka s :=
     ⟨by change CycleSubmission.Artifact.bytecode.size < 2^256; rw [CycleSubmission.Artifact.bytecodeSize]; decide, hcode,hfork,hrun,hnp⟩
@@ -80,14 +80,14 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       exact RootE3Scale.quarter_scale Limbs.radix k
     -- The shift cleanup tail lands on `e3go` (2471) with the bare outer frame.
     have tr' : Challenge.EvmProof.GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize 1 msize)
-        (CycleSubmission.Global.StackTail.append (FixedDirectStates.e3go s (e3Final mem input n mm k) n bsize 1 msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 12 (e3Final mem input n mm k) n bsize 1 msize)) := tr
+        (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.GateRaw.e3go s (e3Final mem input n mm k) n bsize 1 msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2304 (e3Final mem input n mm k) n bsize 1 msize)) := tr
     have finish := CycleSubmission.Global.TailFixed.special input s (e3Final mem input n mm k)
-      n bsize 1 msize 1 mm X Y minv (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 12 (e3Final mem input n mm k) n bsize 1 msize) (by simpa only [CycleSubmission.Global.StackPhaseRun.cleanupSuffix_length] using (show 21 ≤ 32 from by decide)) hn48 (by decide) (by decide)
+      n bsize 1 msize 1 mm X Y minv (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2304 (e3Final mem input n mm k) n bsize 1 msize) (by simpa only [CycleSubmission.Global.StackPhaseRun.cleanupSuffix_length] using (show 21 ≤ 32 from by decide)) hn48 (by decide) (by decide)
       env hact hactLe hcds hstack hdata hvalid hf hmi hminv1 hinv hmrep hx hy hm hodd
       (Nat.mod_lt _ hm) (Nat.mod_lt _ hm) hbsize hesize hmsz hfull hmm
       (by rw [hexp]; exact Terminal.result_cube n mm X Y _ _ _ hm hodd hxform hyform hscale)
-    have go := CycleSubmission.Global.TailPrefix.gasSteps_threeHit s (e3Final mem input n mm k)
-      n bsize 1 msize (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 12 (e3Final mem input n mm k) n bsize 1 msize) (by simpa only [CycleSubmission.Global.StackPhaseRun.cleanupSuffix_length] using (show 21 ≤ 32 from by decide)) hcode hfork hrun hnp
+    have go := CycleSubmission.Global.GatePrefix.gasSteps_threeHit s (e3Final mem input n mm k)
+      n bsize 1 msize (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2304 (e3Final mem input n mm k) n bsize 1 msize) (by simpa only [CycleSubmission.Global.StackPhaseRun.cleanupSuffix_length] using (show 21 ≤ 32 from by decide)) hcode hfork hrun hnp
     exact FixedRoute.prepend tr' (FixedRoute.prepend go finish)
 
   · let final := ordinaryFinal mem input n mm
@@ -103,7 +103,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       rw [hbEq]
     exact FixedRoute.prepend (ordinaryTrace hE3)
       (CycleSubmission.Global.TailFixed.ordinary input s final n bsize esize msize mm baseM (base%mm) minv
-        (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 0 final n bsize esize msize) (by simpa only [CycleSubmission.Global.StackPhaseRun.cleanupSuffix_length] using (show 21 ≤ 32 from by decide)) hfast env hact hactLe hdata hstack hvalid hb he hf hmi hminv1 hinv
+        (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2312 final n bsize esize msize) (by simpa only [CycleSubmission.Global.StackPhaseRun.cleanupSuffix_length] using (show 21 ≤ 32 from by decide)) hfast env hact hactLe hdata hstack hvalid hb he hf hmi hminv1 hinv
         hmrep hbRep haRep hm hodd (Nat.mod_lt _ hm) (Nat.mod_lt _ hm)
         hbsize hesize hmsz hfull hmm hbForm ((Nat.mod_modEq base mm).trans hrawForm))
 
