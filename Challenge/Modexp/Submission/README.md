@@ -1,8 +1,8 @@
-# Let the phase flag fall through into cleanup
+# Absorb final-counter padding into the guard immediate
 
-Both shared and private exits directly test the memory flag. Zero falls into a local cleanup; one jumps to the shared phase switch. The existing two-outcome final-loop trace and arithmetic implementation are retained.
+The shared exit moves from3036 to3035 and uses PUSH3 1760. Every address3041 onward is retained. The general final counter skips its old neutral instruction; both actual exit choices and the full arithmetic proof are preserved.
 
-Full local run: **355,600 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `6b0a90eb4ba910548fb4ea8fdae10527b4b42c1a604db30d6230f93976668f6f`.
+Full local run: **355,597 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `2ec27db296ed3327a83149cc2ff8b6b3e13fa7760de3fa7ebaa80743e67941a5`.
 
 See the public note and dependencies.json for method, source credit and limitations. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
