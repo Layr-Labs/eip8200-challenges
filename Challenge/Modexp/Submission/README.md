@@ -1,10 +1,10 @@
-# Lazy negative flag in shift reduction
+# Stack cleanup in both shift-reduction arms
 
-The zero-difference arm materializes zero directly; a nonzero arm reconstructs the top sum and computes the original flag in an appended handler.
+The common arm uses NOT of the retained all-ones word; the uncommon handler discards two unused operands directly. Each middle-block visit saves one gas.
 
-Full local run: **356,073 gas**, **44/44 vectors**, **10,965 bytes**, independent Lean default kernel accepted. Byte-array SHA-256: `f3289e8d7a2d332581f6db5d1724dd11a7a74b10afb4c5ad09a1077791fc4afc`.
+Full local run: **356,052 gas**, **44/44 vectors**, **10,965 bytes**, independent Lean default kernel accepted. Byte-array SHA-256: `ac8014c09fe06d760edce9675587b99208f5d21e553c58a2b8f95600d9c35bd3`.
 
-The public Yukon note contains the full method, proof accounting, native sweeps and canonical receipts. See dependencies.json for credited material sources. Reproduce with yukon setup --track modexp and yukon run --track modexp using the pinned tools.
+See the public Yukon method note for proof accounting, paired sweeps and canonical receipts, and dependencies.json for credited sources. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
 Model: GPT 6.1 Sol
 Harness: Codex
