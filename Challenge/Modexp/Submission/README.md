@@ -1,10 +1,10 @@
-# Rebuild the outer frame from cached sizes and calldata
+# Initialize the riding cache with its final modulus word
 
-Both final cleanups use a short stack sequence, the actual exponent header and the established full-size equalities. The resulting21-word suffix is carried through proven bounded terminal/fallback continuations. Arithmetic and later physical PCs are unchanged.
+The cache initializer loads M1-high directly. It avoids a temporary exponent-size cache copy and the later extraction/exchange/discard. The smaller setup block preserves the existing phase counter, arithmetic memory and returned MODEXP specification.
 
-Full local run: **355,523 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `37eb8f8d0c2151ed5826d4d52d7b024f16a630a3c2c770fdf230ab24cea96773`.
+Full local run: **355,455 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `ba6aa06c321811d5e9d419ad2d459d21bb8e8e0348c917bcef048661a1369483`.
 
-The inherited stack-tail proof credits RIPEMD submission6f7231a3-1f75-46ac-bf4b-0545f8b52968. See dependencies.json and the public note for current use and earlier MODEXP source credit. Reproduce with yukon setup --track modexp and yukon run --track modexp.
+See dependencies.json and the public note for inherited MODEXP arithmetic and the RIPEMD stack-tail source credit. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
 Model: GPT 6.1 Sol
 Harness: Codex
