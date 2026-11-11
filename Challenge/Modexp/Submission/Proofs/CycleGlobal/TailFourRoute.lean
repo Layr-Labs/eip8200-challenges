@@ -19,15 +19,20 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
     (hb : Model.FastRepresents mem 256 4 B)
     (hinv : (N % Limbs.radix * (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0)
     (hodd : N % 2 = 1) (hA : A < N) (hB : B < N) :
-    Nonempty (CycleSubmission.Finish.Outcome (SlimR5Head.entryState s mem bsize esize k)
+    Nonempty (CycleSubmission.Finish.Outcome (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
         (Precompile.natToBytes (R5Route.result N A B k) 128)) ∨
     ∃ (stk : List UInt256) (m' : ByteArray),
-      Nonempty (GasSteps (SlimR5Head.entryState s mem bsize esize k)
-        {s with pc := UInt256.ofNat 207, stack := stk, memory := m'}) ∧ stk.length < 900 :=
-  R5Route.prologue_route s env hact (SlimR5Head.entryMemory mem) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    ((SlimFrames.outer mem 4 bsize esize 128)) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]) k N A B hk hk16 rfl
-    (R5Route.entry_represents (by norm_num) hmod) (SlimR5Head.entryMemory_represents mem A ha)
-    (R5Route.entry_represents (by norm_num) hb) hinv hodd hA hB
+      Nonempty (GasSteps (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
+        {s with pc := UInt256.ofNat 207, stack := stk, memory := m'}) ∧ stk.length < 900 := by
+  simpa only [DirectR5Reuse.result] using
+    (R5Route.prologue_route s env hact mem
+      (MachineState.readWord mem 1568) (UInt256.ofNat 4) (MachineState.readWord mem 1312) (MachineState.readWord mem 1344)
+      (MachineState.readWord mem 1376) (MachineState.readWord mem 1408) (MachineState.readWord mem 1440) (MachineState.readWord mem 1472)
+      (MachineState.readWord mem 1504) (MachineState.readWord mem 1632) (MachineState.readWord mem 1664) (MachineState.readWord mem 2720)
+      (MachineState.readWord mem 1536) (UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128)) (UInt256.ofNat (k-1)) (UInt256.ofNat bsize)
+      ((SlimFrames.outer mem 4 bsize esize 128).drop 14)
+      (by simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,Exp.outer])
+      k N A B hk hk16 rfl hmod ha hb hinv hodd hA hB)
 
 theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
     
@@ -57,7 +62,7 @@ theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize 
   rcases route4 s mem bsize esize k N A B hk hk16 env hact hmod ha hb
       (by rw [hmiw]; exact hinv) hodd hA hB with hout' | ⟨stk, m', htr, hlen⟩
   · obtain ⟨out⟩ := hout'
-    have out' : CycleSubmission.Finish.Outcome (SlimR5Head.entryState s mem bsize esize k)
+    have out' : CycleSubmission.Finish.Outcome (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
         (Challenge.Modexp.spec input) := by
       rw [← hout]; exact out
     obtain ⟨final, ⟨tail⟩, hd, hr⟩ := Terminal.handled out' (by

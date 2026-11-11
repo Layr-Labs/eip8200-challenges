@@ -17,17 +17,17 @@ open Word
 
 def bitFinishTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3004 .JUMPDEST,
-   opAt 3005 .POP,
-   opAt 3006 .POP,
-   opAt 3007 .POP]
+  [opAt 3053 .JUMPDEST,
+   opAt 3054 .POP,
+   opAt 3055 .POP,
+   opAt 3056 .POP]
 
 def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 3008 1 1,
-   opAt 3009 .ADD,
-   pushAt 3010 1 187,
-   opAt 3011 .JUMP]
+  [pushAt 3057 1 1,
+   opAt 3058 .ADD,
+   pushAt 3059 1 187,
+   opAt 3060 .JUMP]
 
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
@@ -39,9 +39,9 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
       UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input }
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 3004 ≤ i) (hii : i ≤ 3025) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 3053 ≤ i) (hii : i ≤ 3074) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3936, 3937, 3938, 3939, 3940, 3942, 3943, 3945, 3946, 3947, 3948, 3949, 3950, 3952, 3953, 3955, 3956, 3957, 3958, 3959, 3960, 3961] : List Nat)[i - 3004]! := by
+      ([3936, 3937, 3938, 3939, 3940, 3942, 3943, 3945, 3946, 3947, 3948, 3949, 3950, 3952, 3953, 3955, 3956, 3957, 3958, 3959, 3960, 3961] : List Nat)[i - 3053]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

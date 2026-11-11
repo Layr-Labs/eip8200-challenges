@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.DirectR5Entry
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Terminal
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimCallerFixed
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FixedRoute
@@ -19,8 +20,9 @@ noncomputable def fixed_head (s : State) (mem : ByteArray) (bsize esize k : Nat)
     GasSteps (SlimFrames.special s mem 8 bsize esize 256 k)
       (CallerPrefix.call s mem k (UInt256.ofNat 256)
         ((SlimFrames.outer mem 8 bsize esize 256))) := by
-  simpa [List.append_nil, SlimFrames.special, CallerPrefix.call, List.append_assoc, List.cons_append, List.append_nil] using
-    (GasSteps.refl (SlimFrames.special s mem 8 bsize esize 256 k))
+  simpa [SlimFrames.special,CallerPrefix.call] using
+    (DirectR5Entry.classify8 s mem (UInt256.ofNat (k-1)) (SlimFrames.outer mem 8 bsize esize 256)
+      (by simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,Exp.outer]) env)
 
 noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
     

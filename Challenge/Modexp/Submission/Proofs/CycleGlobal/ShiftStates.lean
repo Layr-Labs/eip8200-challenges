@@ -156,15 +156,8 @@ def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
     (UInt256.eq (UInt256.ofNat 3) (UInt256.byteAt (UInt256.ofNat 0)
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)))
     (UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize))
-def readyCacheSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat)
-    (scratch phase : UInt256) : List UInt256 :=
-  scratch :: (entrySlots z mem n bsize esize phase).tail
-
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2646
-           stack := readyCacheSlots (UInt256.ofNat 2310) mem n bsize esize (UInt256.ofNat n)
-             (initialPhase s mem esize) ++ outer n bsize esize msize
-           memory := mem }
+  slotState (UInt256.ofNat 2310) (taggedTemplate s (initialPhase s mem esize)) mem 2638 n bsize esize msize (UInt256.ofNat n)
 def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   slotKState z s mem (headPC n) k n bsize esize msize
 def shiftBodyState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=

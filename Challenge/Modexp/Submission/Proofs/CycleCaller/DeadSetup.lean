@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.DirectR5Subtract32
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Prepared.SetupPrefix
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SetupEntry
@@ -112,8 +113,7 @@ def newTailProgram : List Instr :=
    .op .ADD,
    .op .MCOPY,
    .op (.Swap sA1),
-   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639904,
-   .op .ADD,
+   .push 1 32, .op (.Swap sA0), .op .SUB,
    .op (.Swap sA1),
    .op (.Swap sA0),
    .op (.Dup dA2),
@@ -124,7 +124,7 @@ def newTailProgram : List Instr :=
 def fullEntryProgram : List Instr :=
   Prepared.SetupPrefix.newProgram ++ newTailProgram
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 34 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 35 := rfl
 
 private theorem run_tail_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
@@ -133,10 +133,12 @@ private theorem run_tail_eq (s : State) (hd pa pb dst ret : UInt256) (rest : Lis
   have capacity (j : Nat) (hj : j ≤ 25) : rest.length + j < 1024 := by omega
   have hn32 : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904 = UInt256.lnot (UInt256.ofNat 31) := by decide
   have hn32Cast : (115792089237316195423570985008687907853269984665640564039457584007913129639904 : UInt256) = UInt256.lnot (31 : UInt256) := by decide
+  have hsub : pb - (32 : UInt256) = UInt256.lnot (31 : UInt256) + pb :=
+    (CycleSubmission.Global.DirectR5Subtract32.lnot_identity pb).symm
   simp [newTailProgram, oldFullEntryProgram, loadProgram,
     EntryPrefix.shuffleProgram, EntryPrefix.lowProgram, zeroProgram, stageProgram, clearProgram,
     pointersJumpProgram, Prepared.SetupPrefix.newModel, Prepared.SetupPrefix.oldModel,
-    runInstructions, Challenge.EvmProof.Stepper.runInstr, capacity, Nat.add_assoc, List.exchange, hn32, hn32Cast, State.activeWordsAfterUInt256_2]
+    runInstructions, Challenge.EvmProof.Stepper.runInstr, capacity, Nat.add_assoc, List.exchange, hn32, hn32Cast, hsub, State.activeWordsAfterUInt256_2]
 
 theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
