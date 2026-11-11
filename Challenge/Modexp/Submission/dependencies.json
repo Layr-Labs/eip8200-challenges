@@ -1,98 +1,103 @@
 [
   {
+    "submissionId": "bb08a3ff-8835-47ff-9819-77ae3e2d4ef5",
+    "rationale": "Direct predecessor supplies the unchanged complete cached terminal frame and memory-width caller integration.",
+    "evidence": "Built directly on the cached-frame source. Retains SWAP16/JUMP cleanup, the full original21-word frame, explicit complete-header integration, and separate sixth neutral final-counter instruction. Replaces its terminal head with a merged setup in the existing physical region, uses retained width as arbitrary return word, and replaces the arbitrary-suffix lifting application with direct fixed-frame block proofs. Runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c."
+  },
+  {
     "submissionId": "1daae59a-f75b-4aeb-9fd5-d03052c9c754",
-    "rationale": "Direct predecessor supplies physical pre-decremented fixed count and bounded slim terminal-frame integration. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains the k-1 physical initial counter for exponent3 and65537, the header size read and complete terminal/fallback integration. This candidate uses the full cached frame directly, takes its first word as opaque return word, reads width from memory, removes both positional tail premises and restores the separate final neutral counter instruction. Retains the k-1 physical count for exponent3 and65537, the real header size read and complete terminal/fallback arithmetic integration. Later variants may shorten or directly reuse the original cached frame and choose a different arbitrary unused return word while preserving the count and generic arithmetic contracts. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "rationale": "Uses the physical pre-decremented fixed count and its complete terminal/fallback integration.",
+    "evidence": "Retains the k-1 physical initial counter for exponent3 and65537, the header size read and complete terminal/fallback integration. This candidate uses the full cached frame directly, takes its first word as opaque return word, reads width from memory, removes both positional tail premises and restores the separate final neutral counter instruction. Retains the k-1 physical count for exponent3 and65537, the real header size read and complete terminal/fallback arithmetic integration. Later variants may shorten or directly reuse the original cached frame and choose a different arbitrary unused return word while preserving the count and generic arithmetic contracts. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "4789709e-4fc3-49b9-ba84-da503c36df74",
     "rationale": "Uses the published source for combined size/value guard and exact continuation integration. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains the OR-of-mismatch condition, direct padded calldata exponent read, valid fallback destination and bounded terminal adapters. Later variants may move the size read to the header, compact the terminal prefix and pre-decrement its physical count while preserving the condition, arithmetic and returned specification. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Retains the OR-of-mismatch condition, direct padded calldata exponent read, valid fallback destination and bounded terminal adapters. Later variants may move the size read to the header, compact the terminal prefix and pre-decrement its physical count while preserving the condition, arithmetic and returned specification. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "7316a328-def1-40da-86c8-4bc6a1bda489",
     "rationale": "Uses the published source for opaque fixed-caller return-word integration insight. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Conservatively credits the source recognition and complete integration of arbitrary-return caller and r5 APIs. The literal zero return word is superseded by the first cached word at memory1312. This declaration does not claim the old PUSH0 remains selected. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Conservatively credits the source recognition and complete integration of arbitrary-return caller and r5 APIs. The literal zero return word is superseded by the first cached word at memory1312. This declaration does not claim the old PUSH0 remains selected. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "74cf059c-03e2-44f0-ba28-9d8aeb32bf61",
     "rationale": "Uses the published source for final cache-slot initialization and short exact setup proof. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains readyCacheSlots with the final M1-high word initialized directly, the reduced setup path and its short checked proofs. The actual continuation addresses, early logical phase tag, shorter Newton frames and all bounded-suffix terminal/fallback contracts remain selected. Later fixed-caller return-word changes preserve these cache and arithmetic contributions. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Retains readyCacheSlots with the final M1-high word initialized directly, the reduced setup path and its short checked proofs. The actual continuation addresses, early logical phase tag, shorter Newton frames and all bounded-suffix terminal/fallback contracts remain selected. Later fixed-caller return-word changes preserve these cache and arithmetic contributions. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "c675ddc2-418d-4556-acdb-5ae9d31701e4",
     "rationale": "Uses the published source for actual continuation addresses, consumed Newton input and early phase initialization. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains the actual continuation-address carrier introduced with values2284/2296, direct-JUMP cleanup, shorter Newton-stage frames and the exact early initialPhase condition. Later variants may retarget those continuation addresses and load the final M1-high word directly while preserving these scalar, phase and bounded-suffix continuation contracts. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Retains the actual continuation-address carrier introduced with values2284/2296, direct-JUMP cleanup, shorter Newton-stage frames and the exact early initialPhase condition. Later variants may retarget those continuation addresses and load the final M1-high word directly while preserving these scalar, phase and bounded-suffix continuation contracts. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "fb187a2e-c269-4935-a79c-0471418e28d4",
-    "rationale": "Uses the cached reconstruction and bounded suffix/full-header integration introduced by this source.",
-    "evidence": "Retains the cached full-frame and explicit full-size/header integration introduced by the source. The current SWAP16/JUMP cleanup passes the original21-word cached frame directly instead of reconstructing a prefix; the additional suffix is empty, and generic bound32 and complete terminal/fallback integration remain selected. Runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03."
+    "rationale": "Uses cached full-frame and explicit header integration.",
+    "evidence": "Retains the original21-word cached frame and actual full-size/header premises from this source. Cleanup passes that frame directly; the merged terminal inserts its physical counter and retained width. Uses direct fixed-frame proofs in place of the earlier arbitrary-suffix lifting and generic peak framework."
   },
   {
     "submissionId": "6843e2ce-d409-4eeb-8330-9f9c98be4f82",
-    "rationale": "Uses the published source for retained-stack outer-frame cleanup and complete continuation proof integration. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains the source stack-suffix lemmas, generic peak bound, bounded dispatcher-adapter method, both width-specific terminal/fallback continuations and appended-frame outer traces. Later variants replace the cleanup opcode sequence and dispatcher prefix, change the concrete suffix size and explicitly adapt the capacity and header-size hypotheses; the old six individual prefix adapters, POP6/DUP16x6 encoding and sixteen-word bound need not remain. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "rationale": "Uses retained-frame, full header and width-specific terminal/fallback integration.",
+    "evidence": "Retains the source full-frame dispatcher and complete two-width terminal/fallback arithmetic integration. Replaces its arbitrary stack-suffix and peak-bound machinery with direct fixed-frame Block.steps traces; neither StackTail nor StackPeak remains in this archive. The current additional suffix is statically empty. This declaration does not claim that the replaced arbitrary-suffix helpers remain selected."
   },
   {
     "submissionId": "a831e9d4-9b27-49f5-8f31-460488d1f08d",
     "rationale": "Uses the published source for stack-carried phase flag, flagless memory model and exact universal proof base. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains the stack-carried logical phase flag, tag-preserving loop states, direct PUSH/JUMPI guards, flagless StackPhaseMath model and common switch. Current early-phase/cache variants replace the source prologue SWAP16/POP/DUP16 packing and final cleanup encoding while preserving the phase arithmetic, both phase choices and operand guards. The bounded suffix and exact changed setup contracts are proved separately. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Retains the stack-carried logical phase flag, tag-preserving loop states, direct PUSH/JUMPI guards, flagless StackPhaseMath model and common switch. Current early-phase/cache variants replace the source prologue SWAP16/POP/DUP16 packing and final cleanup encoding while preserving the phase arithmetic, both phase choices and operand guards. The bounded suffix and exact changed setup contracts are proved separately. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "a07a9ab6-87cc-413f-9357-f5932ba969ff",
     "rationale": "Uses the published source for clear-flag fall-through exit layout and generic cleanup/switch proof base. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the source shared/private fall-through exit layout, common switch integration, generic cleanup/phase-switch block execution approach and both phase-continuation interfaces. The current bounded-suffix cleanup replaces the source sixteen-POP program and raw cleanup proof; current concrete execution and stack capacities are proved separately. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the source shared/private fall-through exit layout, common switch integration, generic cleanup/phase-switch block execution approach and both phase-continuation interfaces. The current bounded-suffix cleanup replaces the source sixteen-POP program and raw cleanup proof; current concrete execution and stack capacities are proved separately. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "861890f6-a20f-42c1-883c-1e3073632c29",
     "rationale": "Uses the published source for compact private exit and two-outcome loop trace interface. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the source compact private exit, dependent-pair final-step and counted-loop traces, and both ordinary/exponent-three phase continuations. Later variants adapt shared/private head locations and guard/cleanup layouts while retaining the arithmetic refinement and explicit final-exit choice. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the source compact private exit, dependent-pair final-step and counted-loop traces, and both ordinary/exponent-three phase continuations. Later variants adapt shared/private head locations and guard/cleanup layouts while retaining the arithmetic refinement and explicit final-exit choice. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "ea50a700-0b61-42aa-b639-8ed63733fc72",
     "rationale": "Uses the published source for general counter branch/padding split and exact selected proof base. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the source branch/padding split, retained MAX/TN interfaces, shared phase-exit body and selected PC certificate as the direct code/proof base. Later variants adapt the final exit layout and trace interface. This identifies the source contribution without asserting that every neutral padding instruction remains in the current runtime. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the source branch/padding split, retained MAX/TN interfaces, shared phase-exit body and selected PC certificate as the direct code/proof base. Later variants adapt the final exit layout and trace interface. This identifies the source contribution without asserting that every neutral padding instruction remains in the current runtime. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "ea1268ea-7279-4d16-b198-8a03b423950a",
     "rationale": "Uses the published source for general MAX counter fusion and direct repair continuation. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the general counter MAX successor interface, the continuing/final split, and the direct repair-to-counter continuation. Later exit-layout changes adapt the final concrete PC while preserving the decrement and repair arithmetic. The current selected ShiftPaths/ShiftTrace3/ShiftTrace4 contain these retained contracts. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the general counter MAX successor interface, the continuing/final split, and the direct repair-to-counter continuation. Later exit-layout changes adapt the final concrete PC while preserving the decrement and repair arithmetic. The current selected ShiftPaths/ShiftTrace3/ShiftTrace4 contain these retained contracts. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "b139088a-0c93-4dea-965f-27647fa5c0ba",
     "rationale": "Uses the published source for private MAX counter fusion and validated tree lookup method. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the private four-limb MAX counter boundary and its continuing/final-step arithmetic contracts. Adapts the published validated PC-tree method to optional instruction lookup over actual instruction chunks. The finite sizes and lookup equality are checked normally. Later variants change the private exit continuation without claiming that its old jump-to-shared-exit remains. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the private four-limb MAX counter boundary and its continuing/final-step arithmetic contracts. Adapts the published validated PC-tree method to optional instruction lookup over actual instruction chunks. The finite sizes and lookup equality are checked normally. Later variants change the private exit continuation without claiming that its old jump-to-shared-exit remains. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "4279a33f-84a3-44ad-a468-a19121f2f35a",
     "rationale": "Uses the published source for TN-only concrete schedule and generic repair-entry discard. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses direct TN computation/store without a concrete NEG calculation, carries an arbitrary disposable word into the original repair-entry POP, and retains run_unc_add and the arithmetic repair refinement. The current common successors carry MAX into the decrement. This does not identify MAX with the mathematical negative flag. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses direct TN computation/store without a concrete NEG calculation, carries an arbitrary disposable word into the original repair-entry POP, and retains run_unc_add and the arithmetic repair refinement. The current common successors carry MAX into the decrement. This does not identify MAX with the mathematical negative flag. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "640b3f53-183e-43df-8a3d-b4db38f5cb54",
     "rationale": "Uses the published source for conditional negative-flag evaluation design and transition contracts. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the common/uncommon lazy-flag design and the original abstract successor states introduced by this source. Later variants may reconstruct the top sum differently or move the store; this reference does not assert that the q+storedTN handler is still executed. Source runtime f3289e8d7a2d332581f6db5d1724dd11a7a74b10afb4c5ad09a1077791fc4afc; see ShiftPaths and ShiftTrace3 middle-block cases. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the common/uncommon lazy-flag design and the original abstract successor states introduced by this source. Later variants may reconstruct the top sum differently or move the store; this reference does not assert that the q+storedTN handler is still executed. Source runtime f3289e8d7a2d332581f6db5d1724dd11a7a74b10afb4c5ad09a1077791fc4afc; see ShiftPaths and ShiftTrace3 middle-block cases. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "7567025e-bae3-409f-b550-0698262482f7",
     "rationale": "Uses the published source for padding-free code base and exact-artifact proof integration. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the padding-free selected artifact and its cycle/global/caller/R5 proof closure as the code base, including the TN-only transition contracts and remapped PC witnesses. The current candidate adds its own schedule changes instead of claiming the predecessor runtime is unchanged. Source runtime d7b496f193c338535546093b32b0f43a2adb12fe97627db2a27c62a0eef02e6b, promoted dad83f881d37f1fbae7f98f43b806070b904a9a1. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Uses the padding-free selected artifact and its cycle/global/caller/R5 proof closure as the code base, including the TN-only transition contracts and remapped PC witnesses. The current candidate adds its own schedule changes instead of claiming the predecessor runtime is unchanged. Source runtime d7b496f193c338535546093b32b0f43a2adb12fe97627db2a27c62a0eef02e6b, promoted dad83f881d37f1fbae7f98f43b806070b904a9a1. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "2094a816-9189-409c-b23e-aae7a45e8bfb",
     "rationale": "Uses the published source for TN-only branch implication and PC-certificate method. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains DifferenceBranch.neg_zero_of_difference_zero and difference_nonzero_of_flags and uses them in selected ShiftTrace3 case proofs. Retains the exact selected-width/cumulative-PC certificate method. The current implementation may change the instruction schedule; this reference does not claim the earlier padding remains. Source runtime1a0d43e943251a09609e08a6c9219f2a092f3d583d8ae349479b4b5a0795b48b, promoted85cae2e9b171ad682d983df9bf6377b484c65794. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Retains DifferenceBranch.neg_zero_of_difference_zero and difference_nonzero_of_flags and uses them in selected ShiftTrace3 case proofs. Retains the exact selected-width/cumulative-PC certificate method. The current implementation may change the instruction schedule; this reference does not claim the earlier padding remains. Source runtime1a0d43e943251a09609e08a6c9219f2a092f3d583d8ae349479b4b5a0795b48b, promoted85cae2e9b171ad682d983df9bf6377b484c65794. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "fece98b8-2608-4e9b-964a-b9c101312a34",
     "rationale": "Uses the published source for retained initial-mask schedule. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Retains the first-quotient mask schedule in Prepared/R9Shared/Exec.lean stage0Part0Program and stage0Part1Program. Separator whitespace may be compacted, but that credited schedule is retained. Source runtime ee009ae266f05165a0064bc7ef3a62d31766d3fa98012b463979569fe42e508f at commit4403fd08d3c2964b4a6af93d3af4b2f577a37036. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
+    "evidence": "Retains the first-quotient mask schedule in Prepared/R9Shared/Exec.lean stage0Part0Program and stage0Part1Program. Separator whitespace may be compacted, but that credited schedule is retained. Source runtime ee009ae266f05165a0064bc7ef3a62d31766d3fa98012b463979569fe42e508f at commit4403fd08d3c2964b4a6af93d3af4b2f577a37036. Current dependent runtime SHA-256 1e02d92b3a2c0bef48f0f3890ab2cd34610b076464f83797639e507908c7581c. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
     "submissionId": "55284ee0-b07f-48c4-8fbf-e52adf1f6c77",
     "rationale": "Uses the published source for provided shift arithmetic, arbitrary-return terminal APIs and arithmetic proof base. Inherited authorship is credited; the current contribution is described separately in its public note.",
-    "evidence": "Uses the provided ShiftModel, caller and r5 terminal contracts and RootE3Memory arithmetic adapted in StackPhaseMath. The current stack change only instantiates and transports these existing arithmetic facts. Current dependent runtime SHA-256 dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities.\n\nProvided CallerTerminal.run accepts an arbitrary ret and proves the verified returned-byte Outcome under the actual arithmetic and memory premises. Provided R5Route.prologue_route accepts arbitrary f15 and proves return or bounded fallback. The dependent supplies MachineState.readWord mem1312 as that opaque word and the remaining twenty cached words as its tail; k remains the mathematical count and the local counter remains k-1. The new full21-word base frame and memory width load remove the old positional tail hypotheses while retaining actual memory width, inverse, operand, active-memory and modulus premises. Generic setup equivalence and the width memory read are checked in Prepared.SetupPrefix and DeadSetup. The source ShiftModel and RootE3Memory arithmetic remain adapted in ShiftTrace2 and StackPhaseMath. Original source files were read and matched to published commit9247ff13b860671cc57e44d714a580e9f293a271; this declaration credits the generic terminal and arithmetic facts rather than claiming them as new.",
+    "evidence": "Uses the provided shift arithmetic, generic eight-limb caller with arbitrary ret and generic four-limb prologue with arbitrary f15. The current caller supplies width as ret and the complete cached frame as rest, with unchanged actual arithmetic, memory, capacity and fallback premises. The source ShiftModel and root memory arithmetic remain adapted in StackPhaseMath and ShiftTrace2. Source commit9247ff13b860671cc57e44d714a580e9f293a271.\n\nUses the provided shift arithmetic, generic eight-limb caller with arbitrary ret and generic four-limb prologue with arbitrary f15. The current caller supplies width as ret and the complete cached frame as rest, with unchanged actual arithmetic, memory, capacity and fallback premises. The source ShiftModel and root memory arithmetic remain adapted in StackPhaseMath and ShiftTrace2. Source commit9247ff13b860671cc57e44d714a580e9f293a271.",
     "citations": [
       {
         "submissionId": "55284ee0-b07f-48c4-8fbf-e52adf1f6c77",
@@ -107,34 +112,6 @@
         "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/R5Route.lean",
         "startLine": 1,
         "endLine": 95
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "da9aec21dc3b27b7b60b2fb6aece9fe998fed7350a92da92ad75f61627d13faf",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/SlimCallerFixed.lean",
-        "startLine": 10,
-        "endLine": 34
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "f410653e99e7e8326884ddcef2c17479e61c8854ffb29398d7cc9d50454200e3",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/TailRoutes.lean",
-        "startLine": 12,
-        "endLine": 68
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "ef5952915815295b4787524e6b1b5908d32c84c94e850931e3a66d8ca7293fa4",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/SlimR5Head.lean",
-        "startLine": 92,
-        "endLine": 179
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "b58fa2e1cfcf1c1fd2f77b8c4817719fb49a4797d7620e857b48fb0bb19fc413",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/TailFourRoute.lean",
-        "startLine": 12,
-        "endLine": 75
       },
       {
         "submissionId": "55284ee0-b07f-48c4-8fbf-e52adf1f6c77",
@@ -152,59 +129,17 @@
       },
       {
         "submissionId": null,
-        "fileSha256": "11cfcf5864c36d37a4384062fad118f01692ae9131c276fe1e92a3248877d169",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ShiftTrace2.lean",
-        "startLine": 250,
-        "endLine": 339
+        "fileSha256": "979b27bd016322514a31377031eb21856e178662a20a2d8d607bc55752884388",
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/TailRoutes.lean",
+        "startLine": 15,
+        "endLine": 58
       },
       {
         "submissionId": null,
-        "fileSha256": "8c37bf27dd1f3f141dd45717c11f4501f7b545235af0bc8605c3bc7c72f35944",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/StackPhaseMath.lean",
-        "startLine": 1,
-        "endLine": 80
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "e8e0ab17d2248077ef49df3628bbfba6c3c90dc2e18f708cf346c7bd984a6e34",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/SlimFrames.lean",
-        "startLine": 1,
-        "endLine": 16
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "2a30da0ad2267824d2eec5580520e94afa31ce5acfabd832b1cfdc7c29628d03",
-        "path": "Challenge/Modexp/Submission/Proofs/Prepared/SetupPrefix.lean",
-        "startLine": 225,
-        "endLine": 275
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "d0adb59451f0ba000d8356bd8547820492be3b4591f55327a7edadd9000467c7",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleCaller/DeadSetup.lean",
-        "startLine": 140,
-        "endLine": 173
-      }
-    ]
-  },
-  {
-    "submissionId": "6f7231a3-1f75-46ac-bf4b-0545f8b52968",
-    "rationale": "Uses the published bounded stack-suffix preservation proof, adapting its DataStepper instruction and located-block lemmas to the provided full MODEXP Stepper. The current peak-stack bound and route composition are separate adaptations.",
-    "evidence": "The supplied StackTail proof from published source8b6490842b63f9009ea6058e26ea838389d72ed7 was matched byte-for-byte before adaptation (file SHA-256 f2dd6ffffb5c0115c706149b552c6f859b3411120409687aa44f67c539fb96a2). Current CycleGlobal/StackTail uses the same list indexing/exchange preservation and inductive suffix-lifting structure with the full Stepper. TailPrefix calls its gasSteps adapter, and StackPeak uses its per-instruction/located extension to derive the smaller maximum-prefix-height bound. TailRoutes and TailFour lift the fixed caller head and instantiate existing arbitrary-tail terminal certificates. This source credit is separate from the new cleanup bytecode and existing MODEXP arithmetic.",
-    "citations": [
-      {
-        "submissionId": "6f7231a3-1f75-46ac-bf4b-0545f8b52968",
-        "fileSha256": "f2dd6ffffb5c0115c706149b552c6f859b3411120409687aa44f67c539fb96a2",
-        "path": "Challenge/Ripemd160/Submission/Proofs/Bytecode/StackTail.lean",
-        "startLine": 1,
-        "endLine": 188
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "0c9213c72a5a45be3e0be9fdf253227a4002eb9e2cd1c2b172319bd208ba1999",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/StackTail.lean",
-        "startLine": 1,
-        "endLine": 190
+        "fileSha256": "31f43d970ec029779ef1e8204c45cad6d37640f4cde6df33c102eb7c21990ee0",
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/TailFourRoute.lean",
+        "startLine": 12,
+        "endLine": 73
       }
     ]
   }

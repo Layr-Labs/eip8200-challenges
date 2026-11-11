@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.GateRaw
-import Challenge.Modexp.Submission.Proofs.CycleGlobal.StackTail
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.StackPhaseRun
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.StackPhaseMath
@@ -62,14 +61,14 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
           (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0)) phaseMem n bsize esize msize
       else CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 2310)
           (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0)) phaseMem n bsize esize msize)
-      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.GateRaw.entryState s phaseMem n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2310 phaseMem n bsize esize msize))
+      (CycleSubmission.Global.GateRaw.entryState s phaseMem n bsize esize msize)
   e3Tail : ∀ isInline : Bool, ∀ phaseMem : ByteArray,
     GasSteps (if isInline then
         CycleSubmission.Global.Fast.Shift.csubExit4State (UInt256.ofNat 2298)
           (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0)) phaseMem n bsize esize msize
       else CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 2298)
           (CycleSubmission.Global.Fast.Shift.taggedTemplate s (UInt256.ofNat 0)) phaseMem n bsize esize msize)
-      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.SlimFrames.frameState s phaseMem 2298 n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2298 phaseMem n bsize esize msize))
+      (CycleSubmission.Global.SlimFrames.frameState s phaseMem 2298 n bsize esize msize)
 
 /-- Ordinary route: carry stack tag0, execute exactly n inherited reductions, then the R1 tail. -/
 def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv : Nat)
@@ -82,7 +81,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
     (hmiss : ¬ Eligible input n bsize esize)
     (hfast : n = 4 ∨ n = 8) :
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.GateRaw.entryState s (ordinaryFinal mem input n mm) n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2310 (ordinaryFinal mem input n mm) n bsize esize msize)) := by
+      (CycleSubmission.Global.GateRaw.entryState s (ordinaryFinal mem input n mm) n bsize esize msize) := by
   have inv0 := CycleSubmission.Global.Fast.Shift.m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have invPrep := prepareMemory_inv _ (UInt256.ofNat 0) n bsize mm minv hn8 inv0
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
@@ -109,7 +108,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hhit : Eligible input n bsize esize) :
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.StackTail.append (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm k) 2298 n bsize esize msize) (CycleSubmission.Global.StackPhaseRun.cleanupSuffix 2298 (e3Final mem input n mm k) n bsize esize msize)) := by
+      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm k) 2298 n bsize esize msize) := by
   have hhalf : n / 2 = 2 * k := by omega
   have inv0 := CycleSubmission.Global.Fast.Shift.m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have hquarter : n / 4 = k := by omega

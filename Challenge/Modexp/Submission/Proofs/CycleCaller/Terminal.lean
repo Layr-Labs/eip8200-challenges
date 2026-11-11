@@ -22,6 +22,7 @@ noncomputable opaque run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
+    (hret : ret = UInt256.ofNat 256)
     (hmod : Model.FastRepresents mem 0 8 N)
     (ha : Model.FastRepresents mem 2112 8 A)
     (hb : Model.FastRepresents mem 256 8 B)
@@ -29,7 +30,7 @@ noncomputable opaque run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hg : (CallerPrefix.guardWord mem).toNat ≠ 0) :
     Finish.Outcome (call s mem k ret tail) (Precompile.natToBytes (result N A B k) 256) := by
-  have lead := CallerPrefix.run s mem k ret tail env hcap hact hcds hs32 hml hg
+  have lead := CallerPrefix.run s mem k ret tail env hcap hact hcds hs32 hml hret hg
   let entry := stateAt s mem k ret tail 5383
   have hmod' : Model.FastRepresents entry.memory 0 8 N :=
     CallerMemory.keep mem 0 8 N (Or.inl (by decide)) hmod
@@ -59,6 +60,7 @@ theorem correct_from_call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
+    (hret : ret = UInt256.ofNat 256)
     (hmod : Model.FastRepresents mem 0 8 N)
     (ha : Model.FastRepresents mem 2112 8 A)
     (hb : Model.FastRepresents mem 256 8 B)
@@ -67,6 +69,6 @@ theorem correct_from_call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256
     (hg : (CallerPrefix.guardWord mem).toNat ≠ 0) (hcalls : s.callStack = []) :
     ∃ gas0, ∀ gas, gas0 ≤ gas → Eval (withGas (call s mem k ret tail) gas)
       (.returned (Precompile.natToBytes (result N A B k) 256)) :=
-  (run s mem k ret tail N A B hk hk16 env hcap hact hcds hs32 hml hmod ha hb hinv hN hodd hB hg).eventually hcalls
+  (run s mem k ret tail N A B hk hk16 env hcap hact hcds hs32 hml hret hmod ha hb hinv hN hodd hB hg).eventually hcalls
 
 end CycleSubmission.CallerTerminal

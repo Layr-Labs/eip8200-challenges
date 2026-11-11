@@ -8,10 +8,9 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
-open CycleSubmission.Global.StackTail
 open CycleSubmission CycleSubmission.Global CycleSubmission.Global.TailFour
 theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
-    (rho : List UInt256) (hrho : rho.length ≤ 32)
+    
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -20,18 +19,18 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
     (hb : Model.FastRepresents mem 256 4 B)
     (hinv : (N % Limbs.radix * (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0)
     (hodd : N % 2 = 1) (hA : A < N) (hB : B < N) :
-    Nonempty (CycleSubmission.Finish.Outcome (append (SlimR5Head.entryState s mem bsize esize k) rho)
+    Nonempty (CycleSubmission.Finish.Outcome (SlimR5Head.entryState s mem bsize esize k)
         (Precompile.natToBytes (R5Route.result N A B k) 128)) ∨
     ∃ (stk : List UInt256) (m' : ByteArray),
-      Nonempty (GasSteps (append (SlimR5Head.entryState s mem bsize esize k) rho)
+      Nonempty (GasSteps (SlimR5Head.entryState s mem bsize esize k)
         {s with pc := UInt256.ofNat 207, stack := stk, memory := m'}) ∧ stk.length < 900 :=
   R5Route.prologue_route s env hact (SlimR5Head.entryMemory mem) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    ((SlimFrames.outer mem 4 bsize esize 128).tail ++ rho) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]; omega) k N A B hk hk16 rfl
+    ((SlimFrames.outer mem 4 bsize esize 128)) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]) k N A B hk hk16 rfl
     (R5Route.entry_represents (by norm_num) hmod) (SlimR5Head.entryMemory_represents mem A ha)
     (R5Route.entry_represents (by norm_num) hb) hinv hodd hA hB
 
 theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
-    (rho : List UInt256) (hrho : rho.length ≤ 32)
+    
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
@@ -46,7 +45,7 @@ theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize 
     (hodd : N % 2 = 1) (hA : A < N) (hB : B < N)
     (hout : Precompile.natToBytes (Terminal.result 4 N A B k) 128 = Challenge.Modexp.spec input)
     (hpos : 0 < Challenge.Modexp.modulusSize input) :
-    FixedExponentRoute.Handled input (append (SlimFrames.special s mem 4 bsize esize 128 k) rho) := by
+    FixedExponentRoute.Handled input (SlimFrames.special s mem 4 bsize esize 128 k) := by
   have hlow : (MachineState.readWord mem 96).toNat = N % Limbs.radix := by
     have h := Model.readWord_of_fastRepresents hmod (j := 3) (by decide)
     simpa using h
@@ -54,11 +53,11 @@ theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize 
     rw [hf.minvW, Exp.toNat_ofNat_self hmi]
   have hmachine : ((MachineState.readWord mem 96).toNat * mi + 1) % 2^256 = 0 := by
     rw [hlow]; exact hinv
-  have head := head4 s mem bsize esize k mi rho hrho hk hk16 env hact hcds hf hmi hmi1 hmachine
-  rcases route4 s mem bsize esize k N A B rho hrho hk hk16 env hact hmod ha hb
+  have head := head4 s mem bsize esize k mi hk hk16 env hact hcds hf hmi hmi1 hmachine
+  rcases route4 s mem bsize esize k N A B hk hk16 env hact hmod ha hb
       (by rw [hmiw]; exact hinv) hodd hA hB with hout' | ⟨stk, m', htr, hlen⟩
   · obtain ⟨out⟩ := hout'
-    have out' : CycleSubmission.Finish.Outcome (append (SlimR5Head.entryState s mem bsize esize k) rho)
+    have out' : CycleSubmission.Finish.Outcome (SlimR5Head.entryState s mem bsize esize k)
         (Challenge.Modexp.spec input) := by
       rw [← hout]; exact out
     obtain ⟨final, ⟨tail⟩, hd, hr⟩ := Terminal.handled out' (by

@@ -8,10 +8,9 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast FixedExponentRoute
-open CycleSubmission.Global.StackTail
 open CycleSubmission CycleSubmission.Global
 noncomputable def run8 (s : State) (mem : ByteArray) (n bsize esize k N A B mi : Nat)
-    (rho : List UInt256) (hrho : rho.length ≤ 32)
+    
     (hn : n = 8) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
@@ -22,15 +21,15 @@ noncomputable def run8 (s : State) (mem : ByteArray) (n bsize esize k N A B mi :
     (hb : Model.FastRepresents mem 256 n B)
     (hN : 0 < N) (hodd : N % 2 = 1) (hB : B < N)
     (hg : (CycleSubmission.CallerPrefix.guardWord mem).toNat ≠ 0) :
-    CycleSubmission.Finish.Outcome (append (SlimFrames.special s mem n bsize esize (32*n) k) rho)
+    CycleSubmission.Finish.Outcome (SlimFrames.special s mem n bsize esize (32*n) k)
       (Precompile.natToBytes (Terminal.result n N A B k) (32*n)) := by
   subst n
-  exact CycleSubmission.Global.TailRoutes.terminal8 s mem bsize esize k N A B mi rho hrho hk hk16 env hact hcds
+  exact CycleSubmission.Global.TailRoutes.terminal8 s mem bsize esize k N A B mi hk hk16 env hact hcds
     hf hmi hinv hmod ha hb hN (Nat.odd_iff.mpr hodd) hB hg
 
 theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize k N A B mi : Nat)
-    (rho : List UInt256) (hrho : rho.length ≤ 32)
+    
     (hn : n = 4 ∨ n = 8) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
@@ -48,17 +47,17 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     (hm : N = Precompile.bytesToNatPadded input (96+bsize+esize) msize)
     (hv : Terminal.result n N A B k = Precompile.bytesToNatPadded input 96 bsize ^
       Precompile.bytesToNatPadded input (96+bsize) esize % N) :
-    Handled input (append (SlimFrames.special s mem n bsize esize msize k) rho) := by
+    Handled input (SlimFrames.special s mem n bsize esize msize k) := by
   have hout := Terminal.output_eq input n bsize esize msize N _ (by omega) hN
     hbs hes hms hfull hm hv
   by_cases h4 : n = 4
   · subst n
     rw [hfull]
-    exact CycleSubmission.Global.TailFourRoute.handled4 input s mem bsize esize k N A B mi rho hrho hk hk16 env hact hactLe hcds
+    exact CycleSubmission.Global.TailFourRoute.handled4 input s mem bsize esize k N A B mi hk hk16 env hact hactLe hcds
       hcalls hdata hvalid hf hmi hmi1 hinv hmod ha hb hodd hA hB hout (by omega)
   · have h8 : n = 8 := by omega
     by_cases hg : (CycleSubmission.CallerPrefix.guardWord mem).toNat ≠ 0
-    · have out := run8 s mem n bsize esize k N A B mi rho hrho h8 hk hk16 env hact hcds
+    · have out := run8 s mem n bsize esize k N A B mi h8 hk hk16 env hact hcds
         hf hmi hinv hmod ha hb hN hodd hB hg
       rw [hout] at out
       rw [← hfull] at out
@@ -66,12 +65,12 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     · subst h8
       have hms8 : msize = 256 := by omega
       subst hms8
-      have head := CycleSubmission.Global.TailRoutes.bail8 s mem bsize esize k mi rho hrho hk hk16 env hact hcds hf (by omega)
+      have head := CycleSubmission.Global.TailRoutes.bail8 s mem bsize esize k mi hk hk16 env hact hcds hf (by omega)
       obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-        (CycleSubmission.CallerPrefix.stateAt s mem k (MachineState.readWord mem 1312)
-          ((SlimFrames.outer mem 8 bsize esize 256).tail ++ rho) 207)
+        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat 256)
+          ((SlimFrames.outer mem 8 bsize esize 256)) 207)
         (env.transfer rfl rfl) rfl
-        (by simp [append, CycleSubmission.CallerPrefix.stateAt, CycleSubmission.EntryMeaning.saved,
+        (by simp [List.append_nil, CycleSubmission.CallerPrefix.stateAt, CycleSubmission.EntryMeaning.saved,
           CycleSubmission.CallerPrefix.frame, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
         hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
         (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
@@ -81,7 +80,7 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
 
 theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize N A B mi : Nat)
-    (rho : List UInt256) (hrho : rho.length ≤ 32)
+    
     (hn : n = 4 ∨ n = 8) (hbfull : bsize=32*n)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
@@ -98,15 +97,15 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     (hm : N = Precompile.bytesToNatPadded input (96+bsize+esize) msize)
     (hAe : A ≡ Precompile.bytesToNatPadded input 96 bsize * Limbs.radix^n [MOD N])
     (hBe : B ≡ Precompile.bytesToNatPadded input 96 bsize [MOD N]) :
-    Handled input (append (GateRaw.entryState s mem n bsize esize msize) rho) := by
+    Handled input (GateRaw.entryState s mem n bsize esize msize) := by
   have hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize := by
     rw [hdata,hes]; rfl
-  have bail (tr : GasSteps (append (GateRaw.entryState s mem n bsize esize msize) rho)
-      (append (SlimFrames.bailState s mem n bsize esize msize) rho)) :
-      Handled input (append (GateRaw.entryState s mem n bsize esize msize) rho) := by
+  have bail (tr : GasSteps (GateRaw.entryState s mem n bsize esize msize)
+      (SlimFrames.bailState s mem n bsize esize msize)) :
+      Handled input (GateRaw.entryState s mem n bsize esize msize) := by
     obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-      (append (SlimFrames.bailState s mem n bsize esize msize) rho) (env.transfer rfl rfl) rfl
-      (by simp [append, SlimFrames.bailState, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
+      (SlimFrames.bailState s mem n bsize esize msize) (env.transfer rfl rfl) rfl
+      (by simp [List.append_nil, SlimFrames.bailState, SlimFrames.guardFrame, SlimFrames.ridingFrame, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
       (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
     refine ⟨done, ⟨tr.trans tail⟩, hd, ?_⟩
@@ -115,15 +114,15 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
   by_cases he3 : esize = 3
   · rcases he3 with rfl
     by_cases he : Precompile.bytesToNatPadded input (96+bsize) 3 = 65537
-    · have hit := GatePrefix.gasSteps_hit s mem input n bsize msize rho hrho hbsize hbfull.symm hsize he hdata env
+    · have hit := GatePrefix.gasSteps_hit s mem input n bsize msize hbsize hbfull.symm hsize he hdata env
       apply FixedRoute.prepend hit
-      apply special input s mem n bsize 3 msize 16 N A B mi rho hrho hn (by decide) (by decide)
+      apply special input s mem n bsize 3 msize 16 N A B mi hn (by decide) (by decide)
         env hact hactLe (by rw [hdata]; exact lt_trans hvalid.1 (by norm_num)) hcalls hdata hvalid
         hf hmi hmi1 hinv hmod ha hb hN hodd hA hB hbs hes hms hfull hm
       rw [he]
       simpa only [show (2:Nat)^16+1=65537 from by decide] using
         (Terminal.result_ordinary n N A B _ 16 hN hodd hAe hBe)
-    · exact bail (GatePrefix.gasSteps_miss s mem n bsize 3 msize rho hrho hbsize hbfull.symm hsize
+    · exact bail (GatePrefix.gasSteps_miss s mem n bsize 3 msize hbsize hbfull.symm hsize
         (GateRaw.miss_exponent s bsize 3 (GatePrefix.exponent_ne s input bsize he hdata)) env)
   · have hne : UInt256.ofNat esize ≠ UInt256.ofNat 3 := by
       intro h
@@ -132,7 +131,7 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
       have hl : esize < 2^256 := by omega
       rw [Nat.mod_eq_of_lt hl] at h'
       exact he3 (by simpa using h')
-    exact bail (GatePrefix.gasSteps_miss s mem n bsize esize msize rho hrho hbsize hbfull.symm hsize
+    exact bail (GatePrefix.gasSteps_miss s mem n bsize esize msize hbsize hbfull.symm hsize
       (GateRaw.miss_size s bsize esize hne) env)
 #print axioms special
 #print axioms ordinary

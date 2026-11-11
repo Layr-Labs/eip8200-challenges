@@ -37,8 +37,7 @@ def call (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UI
   {s with
     pc := UInt256.ofNat 3146
     memory := mem
-    stack := [UInt256.ofNat 3710, UInt256.ofNat 2112, UInt256.ofNat 512,
-      UInt256.ofNat (k-1), ret] ++ tail}
+    stack := [UInt256.ofNat (k-1), ret] ++ tail}
 
 def staged (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256) : State :=
   CiosCached.outState s (CallerMemory.memory mem) 512 8 0 (UInt256.ofNat 3710)
@@ -124,17 +123,17 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
-    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat 224) :
+    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
+    (hret : ret = UInt256.ofNat 256) :
     GasSteps (call s mem k ret tail) (staged s mem k ret tail) := by
   have hcommon := commonBlock.steps (s := call s mem k ret tail)
-    (env.transfer rfl rfl) rfl (jumpDest_run _ (by
-      simp only [call, List.length_append, List.length_cons, List.length_nil]; omega))
+    (env.transfer rfl rfl) rfl (common_run s mem (UInt256.ofNat (k-1)) ret tail (by omega))
   have hsetup := setupBlock.steps
-    (s := { CiosCached.setupState s mem (UInt256.ofNat 3710) 2112 512 (UInt256.ofNat (k-1)) ret tail with pc := UInt256.ofNat 3147 })
+    (s := { CiosCached.setupState s mem (UInt256.ofNat 3710) 2112 512 (UInt256.ofNat (k-1)) ret tail with pc := UInt256.ofNat 3156 })
     (env.transfer rfl rfl) rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3710) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)
-      (by decide) (by decide) (by decide) hcds hs32
+      (by decide) (by decide) (by decide) hcds hs32 hret
       (by rw [env.code]; exact valid3728))
   exact hcommon.trans hsetup
 
@@ -209,9 +208,10 @@ noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (t
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
+    (hret : ret = UInt256.ofNat 256)
     (hg : (guardWord mem).toNat ≠ 0) :
     GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5383) :=
-  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml).trans
+  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hret).trans
     (suffixTrace s mem k ret tail env hcap hact hg)
 
 noncomputable def bail (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
@@ -220,9 +220,10 @@ noncomputable def bail (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
+    (hret : ret = UInt256.ofNat 256)
     (hg : (guardWord mem).toNat = 0) :
     GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 207) :=
-  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml).trans
+  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hret).trans
     (bailTrace s mem k ret tail env hcap hact hg)
 
 set_option exponentiation.threshold 4096 in

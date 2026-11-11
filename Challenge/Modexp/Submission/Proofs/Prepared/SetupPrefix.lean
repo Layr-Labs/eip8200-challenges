@@ -199,11 +199,11 @@ def newpart0Program : List Instr :=
 def newpart0Model (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 128
   let v1 : UInt256 := UInt256.lnot (UInt256.ofNat 0)
-  {s with pc := UInt256.ofNat 3156, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: x3 :: x4 :: rest}
+  {s with pc := UInt256.ofNat 3165, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: x3 :: x4 :: rest}
 
 theorem newpart0_run (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newpart0Program {s with pc := UInt256.ofNat 3147, stack := x0 :: x1 :: x2 :: x3 :: x4 :: rest} =
+    runInstructions newpart0Program {s with pc := UInt256.ofNat 3156, stack := x0 :: x1 :: x2 :: x3 :: x4 :: rest} =
       some (newpart0Model s x0 x1 x2 x3 x4 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -226,10 +226,10 @@ theorem newpart0_run (s : State) (x0 x1 x2 x3 x4 : UInt256) (rest : List UInt256
 
 def newpart1Program : List Instr :=
   [.push 0 0,
-   .push 30 3347,
+   .push 24 3347,
    .push 0 0,
    .op (.Swap sA10),
-   .push 2 2688, .op .MLOAD,
+   .op (.Dup ⟨13, by decide⟩),
    .push 2 2720,
    .op .MLOAD]
 
@@ -239,9 +239,11 @@ def newpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (res
   {s with pc := UInt256.ofNat 3198, memory := s.memory, stack := v1 :: v0 :: x8 :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: (UInt256.ofNat 0) :: x9 :: x10 :: rest}
 
 theorem newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newpart1Program {s with pc := UInt256.ofNat 3156, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest} =
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hw : x10 = MachineState.readWord s.memory 2688) :
+    runInstructions newpart1Program {s with pc := UInt256.ofNat 3165, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: rest} =
       some (newpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 rest) := by
+  subst x10
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have hc (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
@@ -317,10 +319,10 @@ def newProgram : List Instr :=
    .op .MLOAD,
    .push 0 0, .op .NOT,
    .push 0 0,
-   .push 30 3347,
+   .push 24 3347,
    .push 0 0,
    .op (.Swap sA10),
-   .push 2 2688, .op .MLOAD,
+   .op (.Dup ⟨13, by decide⟩),
    .push 2 2720,
    .op .MLOAD,
    .op (.Swap sA10),
@@ -336,17 +338,18 @@ def newModel (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256) : St
   {s with pc := UInt256.ofNat 3202, memory := s.memory, stack := pa :: v2 :: hd :: v2 :: pb :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: v3 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: dst :: ret :: rest}
 
 theorem new_run (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newProgram {s with pc := UInt256.ofNat 3147, stack := hd :: pa :: pb :: dst :: ret :: rest} =
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hw : ret = MachineState.readWord s.memory 2688) :
+    runInstructions newProgram {s with pc := UInt256.ofNat 3156, stack := hd :: pa :: pb :: dst :: ret :: rest} =
       some (newModel s hd pa pb dst ret rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 128
   let v1 : UInt256 := UInt256.lnot (UInt256.ofNat 0)
   let v2 : UInt256 := MachineState.readWord s.memory 2688
   let v3 : UInt256 := MachineState.readWord s.memory 2720
-  have h0 : runInstructions newpart0Program {s with pc := UInt256.ofNat 3147, memory := s.memory, stack := hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3156, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} := by
+  have h0 : runInstructions newpart0Program {s with pc := UInt256.ofNat 3156, memory := s.memory, stack := hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3165, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} := by
     simpa only [newpart0Model, v0, v1] using newpart0_run (s) (hd) (pa) (pb) (dst) (ret) rest hcap hact
-  have h1 : runInstructions newpart1Program {s with pc := UInt256.ofNat 3156, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3198, memory := s.memory, stack := v3 :: v2 :: pb :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: (UInt256.ofNat 0) :: dst :: ret :: rest} := by
-    simpa only [newpart1Model, v2, v3] using newpart1_run (s) (v1) (v0) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) (hd) (pa) (pb) (dst) (ret) rest hcap hact
+  have h1 : runInstructions newpart1Program {s with pc := UInt256.ofNat 3165, memory := s.memory, stack := v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: pb :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3198, memory := s.memory, stack := v3 :: v2 :: pb :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: (UInt256.ofNat 0) :: dst :: ret :: rest} := by
+    simpa only [newpart1Model, v2, v3] using newpart1_run (s) (v1) (v0) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) (hd) (pa) (pb) (dst) (ret) rest hcap hact hw
   have h2 : runInstructions newpart2Program {s with pc := UInt256.ofNat 3198, memory := s.memory, stack := v3 :: v2 :: pb :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: hd :: pa :: (UInt256.ofNat 0) :: dst :: ret :: rest} = some {s with pc := UInt256.ofNat 3202, memory := s.memory, stack := pa :: v2 :: hd :: v2 :: pb :: (UInt256.ofNat 3347) :: (UInt256.ofNat 0) :: v1 :: v0 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: v3 :: (UInt256.ofNat 0) :: (UInt256.ofNat 0) :: dst :: ret :: rest} := by
     simpa only [newpart2Model] using newpart2_run (s) (v3) (v2) (pb) ((UInt256.ofNat 3347)) ((UInt256.ofNat 0)) (v1) (v0) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) ((UInt256.ofNat 0)) (hd) (pa) ((UInt256.ofNat 0)) (dst) (ret) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 h2))
@@ -358,11 +361,12 @@ theorem same_state (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256
   simp only [oldModel, newModel]
 
 theorem replacement_run (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newProgram {s with pc := UInt256.ofNat 3147, stack := hd :: pa :: pb :: dst :: ret :: rest} =
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hw : ret = MachineState.readWord s.memory 2688) :
+    runInstructions newProgram {s with pc := UInt256.ofNat 3156, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     Option.map (fun state => {state with pc := UInt256.ofNat 3202})
       (runInstructions oldProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest}) := by
-  rw [new_run s hd pa pb dst ret rest hcap hact, old_run s hd pa pb dst ret rest hcap hact]
+  rw [new_run s hd pa pb dst ret rest hcap hact hw, old_run s hd pa pb dst ret rest hcap hact]
   simp only [Option.map_some, same_state]
 #print axioms replacement_run
 end CycleSubmission.Prepared.SetupPrefix

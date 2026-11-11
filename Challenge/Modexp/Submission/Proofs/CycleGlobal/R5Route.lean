@@ -210,7 +210,7 @@ theorem route (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
       Nonempty (GasSteps (SlimR5Head.entryState s mem bsize esize k)
         {s with pc := UInt256.ofNat 207, stack := stk, memory := m'}) ∧ stk.length < 900 :=
   prologue_route s env hact (SlimR5Head.entryMemory mem) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (SlimFrames.outer mem 4 bsize esize 128).tail (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]) k N A B hk hk16 rfl
+    (SlimFrames.outer mem 4 bsize esize 128) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]) k N A B hk hk16 rfl
     (entry_represents (by norm_num) hmod) (SlimR5Head.entryMemory_represents mem A ha)
     (entry_represents (by norm_num) hb) hinv hodd hA hB
 

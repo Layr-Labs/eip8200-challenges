@@ -124,7 +124,7 @@ def newTailProgram : List Instr :=
 def fullEntryProgram : List Instr :=
   Prepared.SetupPrefix.newProgram ++ newTailProgram
 
-theorem fullEntryProgram_length : fullEntryProgram.length = 35 := rfl
+theorem fullEntryProgram_length : fullEntryProgram.length = 34 := rfl
 
 private theorem run_tail_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 998) :
@@ -139,12 +139,13 @@ private theorem run_tail_eq (s : State) (hd pa pb dst ret : UInt256) (rest : Lis
     runInstructions, Challenge.EvmProof.Stepper.runInstr, capacity, Nat.add_assoc, List.exchange, hn32, hn32Cast, State.activeWordsAfterUInt256_2]
 
 theorem full_run_eq (s : State) (hd pa pb dst ret : UInt256) (rest : List UInt256)
-    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions fullEntryProgram {s with pc := UInt256.ofNat 3147, stack := hd :: pa :: pb :: dst :: ret :: rest} =
+    (hcap : rest.length ≤ 998) (hact : 88 ≤ s.activeWords.toNat)
+    (hw : ret = MachineState.readWord s.memory 2688) :
+    runInstructions fullEntryProgram {s with pc := UInt256.ofNat 3156, stack := hd :: pa :: pb :: dst :: ret :: rest} =
     runInstructions oldFullEntryProgram {s with pc := UInt256.ofNat 3182, stack := hd :: pa :: pb :: dst :: ret :: rest} := by
   change runInstructions (Prepared.SetupPrefix.newProgram ++ newTailProgram) _ =
     runInstructions (Prepared.SetupPrefix.oldProgram ++ oldFullEntryProgram.drop 23) _
-  simp only [runInstructions_append, Prepared.SetupPrefix.new_run s hd pa pb dst ret rest hcap hact,
+  simp only [runInstructions_append, Prepared.SetupPrefix.new_run s hd pa pb dst ret rest hcap hact hw,
     Prepared.SetupPrefix.old_run s hd pa pb dst ret rest hcap hact, Option.bind_some]
   exact run_tail_eq s hd pa pb dst ret rest hcap
 
@@ -156,16 +157,17 @@ theorem run_entry_sq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat
     (hpb : 32 ≤ pb) (hpbFit : pb+32*n ≤ 2816)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32*n))
+    (hret : ret = UInt256.ofNat (32*n))
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
-    runInstructions fullEntryProgram ({ TnM128Setup.setupState s mem hd pa pb dst ret rest with pc := UInt256.ofNat 3147 }) =
+    runInstructions fullEntryProgram ({ TnM128Setup.setupState s mem hd pa pb dst ret rest with pc := UInt256.ofNat 3156 }) =
     some (TnM128Setup.outState s (SquarePartialClear.memory (stageW mem pa n)) pb n 0 hd (UInt256.ofNat 3347)
       (UInt256.ofNat 0) (UInt256.ofNat 0) (UInt256.ofNat 0)
       (UInt256.ofNat 0 :: UInt256.ofNat 0 ::
         MachineState.readWord mem 2720 :: zeroTn ::
         UInt256.ofNat 0 :: dst :: ret :: rest)) := by
-  have h := full_run_eq {s with memory := mem} hd (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest hcap hact
+  have h := full_run_eq {s with memory := mem} hd (UInt256.ofNat pa) (UInt256.ofNat pb) dst ret rest hcap hact (hret.trans hs32.symm)
   change runInstructions fullEntryProgram _ = runInstructions oldFullEntryProgram _ at h
-  rw [show runInstructions fullEntryProgram ({ TnM128Setup.setupState s mem hd pa pb dst ret rest with pc := UInt256.ofNat 3147 }) =
+  rw [show runInstructions fullEntryProgram ({ TnM128Setup.setupState s mem hd pa pb dst ret rest with pc := UInt256.ofNat 3156 }) =
     runInstructions oldFullEntryProgram (TnM128Setup.setupState s mem hd pa pb dst ret rest) from h]
   exact old_run_entry_sq s mem hd pa pb n dst ret rest hcap hact hn hn32 hpaFit hpb hpbFit hcds hs32 htarget
 
