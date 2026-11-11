@@ -24,40 +24,40 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- The add-round body up to its store (`blk3157` instructions 0..22). -/
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2377 .JUMPDEST,
-   opAt 2378 (.Dup dA0),
-   opAt 2379 .MLOAD,
-   pushAt 2380 2 2112,
-   opAt 2381 (.Dup dA2),
-   opAt 2382 .SUB,
-   opAt 2383 .MLOAD,
-   opAt 2384 (.Dup dA1),
+  [opAt 2371 .JUMPDEST,
+   opAt 2372 (.Dup dA0),
+   opAt 2373 .MLOAD,
+   pushAt 2374 2 2112,
+   opAt 2375 (.Dup dA2),
+   opAt 2376 .SUB,
+   opAt 2377 .MLOAD,
+   opAt 2378 (.Dup dA1),
+   opAt 2379 .ADD,
+   opAt 2380 (.Swap sA0),
+   opAt 2381 (.Dup dA1),
+   opAt 2382 .LT,
+   opAt 2383 (.Swap sA0),
+   opAt 2384 (.Dup dA3),
    opAt 2385 .ADD,
-   opAt 2386 (.Swap sA0),
-   opAt 2387 (.Dup dA1),
+   opAt 2386 (.Swap sA2),
+   opAt 2387 (.Dup dA3),
    opAt 2388 .LT,
-   opAt 2389 (.Swap sA0),
-   opAt 2390 (.Dup dA3),
-   opAt 2391 .ADD,
-   opAt 2392 (.Swap sA2),
-   opAt 2393 (.Dup dA3),
-   opAt 2394 .LT,
-   opAt 2395 .OR,
-   opAt 2396 (.Swap sA1),
-   opAt 2397 (.Dup dA1),
-   opAt 2398 .MSTORE]
+   opAt 2389 .OR,
+   opAt 2390 (.Swap sA1),
+   opAt 2391 (.Dup dA1),
+   opAt 2392 .MSTORE]
 
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 2399 1 31,
-   opAt 2400 .NOT,
-   opAt 2401 .ADD,
-   pushAt 2402 2 2111,
-   opAt 2403 (.Dup dA1),
-   opAt 2404 .GT,
-   pushAt 2405 2 3077,
-   opAt 2406 .JUMPI]
+  [pushAt 2393 1 31,
+   opAt 2394 .NOT,
+   opAt 2395 .ADD,
+   pushAt 2396 2 2111,
+   opAt 2397 (.Dup dA1),
+   opAt 2398 .GT,
+   pushAt 2399 2 3077,
+   opAt 2400 .JUMPI]
 
 /-- The five padding `JUMPDEST`s on the add-round fall-through (indices 2413 to 2417). -/
 def blk3157c :

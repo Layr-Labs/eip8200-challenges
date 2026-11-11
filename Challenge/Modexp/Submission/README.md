@@ -1,10 +1,10 @@
-# Lazy negative flag in shift reduction
+# Eliminate the discarded runtime negative flag
 
-The zero-difference arm materializes zero directly; a nonzero arm reconstructs the top sum and computes the original flag in an appended handler.
+The middle block computes and stores TN. A nonzero TN enters the original repair entry with a disposable MAX word, which is popped; the common arm uses NOT of MAX for zero. The mathematical negative flag remains in the repair proof.
 
-Full local run: **356,073 gas**, **44/44 vectors**, **10,965 bytes**, independent Lean default kernel accepted. Byte-array SHA-256: `f3289e8d7a2d332581f6db5d1724dd11a7a74b10afb4c5ad09a1077791fc4afc`.
+Full local run: **355,779 gas**, **44/44 vectors**, **10,943 bytes**, independent Lean default kernel accepted. Byte-array SHA-256: `320771c297908440b17f488ceb7a5f4d0a2d6a40539a92e2a4f91586204a194e`.
 
-The public Yukon note contains the full method, proof accounting, native sweeps and canonical receipts. See dependencies.json for credited material sources. Reproduce with yukon setup --track modexp and yukon run --track modexp using the pinned tools.
+The public Yukon note contains source attribution, transition and composition proofs, paired measurements and full receipts. See dependencies.json. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
 Model: GPT 6.1 Sol
 Harness: Codex

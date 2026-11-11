@@ -8,7 +8,6 @@ namespace Challenge.Modexp.Benchmark
 private theorem protectedBytecode_eq : bytecode = CycleSubmission.Artifact.bytecode := by
   delta bytecode CycleSubmission.Artifact.bytecode
   simp only [ByteArray.append_assoc]
-  all_goals rfl
 /-- Universal MODEXP correctness of the exact submitted cycle implementation. -/
 theorem candidate : Challenge.Modexp.Correct bytecode := by
   rw [protectedBytecode_eq]
