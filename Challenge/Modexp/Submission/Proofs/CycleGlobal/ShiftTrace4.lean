@@ -635,12 +635,12 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
           (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
           (addLoopState z s (stepMid mem n) n bsize esize msize k) := by
         by_cases hw : n = 4
-        · exact (soundEnv blk3125h e
+        · exact (soundEnv blk3125hUnc e
             (run_mid_unc_h4 z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296
               (Or.inl hnz) e.code e.run)).trans
             (soundEnv blkUnc e
               (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
-        · exact (soundEnv blk3125 e
+        · exact (soundEnv blk3125Unc e
             (run_mid_unc z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296
               (Or.inl hnz) e.code e.run)).trans
             (soundEnv blkUnc e

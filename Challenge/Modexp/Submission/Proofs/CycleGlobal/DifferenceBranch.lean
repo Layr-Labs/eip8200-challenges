@@ -26,4 +26,10 @@ namespace CycleSubmission.DifferenceBranch
     rw [neg_zero_of_difference_zero a q carry he] at hn
     exact hn rfl
   · exact ht
+ theorem lazy_reconstruct (a q : UInt256) : q + (a-q) = a := by
+  apply word_ext
+  rw [word_toNat_add, word_toNat_sub_cond]
+  have ha : a.toNat < 2^256 := a.val.isLt
+  have hq : q.toNat < 2^256 := q.val.isLt
+  split_ifs <;> omega
 end CycleSubmission.DifferenceBranch

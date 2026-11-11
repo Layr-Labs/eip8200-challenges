@@ -26,15 +26,15 @@ def program : List Instr :=
    .op .SUB]
 
 def block : Block CycleSubmission.Artifact.artifact .Osaka 3710 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2820 3 3710 program
-    (by change 2820 + 3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2817 3 3710 program
+    (by change 2817 + 3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 theorem jumpDest : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat 3710).toNat = true :=
-  CycleSubmission.Global.Binding.jumpDest 2820 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2817 (by rfl)
 
 /-- The entry's row pointer word. -/
 def qWord (n : Nat) : UInt256 := UInt256.ofNat 480 - UInt256.ofNat (512 + 32 * n - 32)
