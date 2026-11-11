@@ -45,24 +45,24 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
 
 /-- The single bit body at pc 2454 (instruction indices 1948 to 1966). -/
 def bodyBlock : BoundBlock 3968 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3053 19 3968 (bodyProgram 7)
-    (by change 3053 + 19 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3029 19 3968 (bodyProgram 7)
+    (by change 3029 + 19 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- The body head `JUMPDEST` at pc 2453 (index 1947), the target of the loop control. -/
 def startBlock : BoundBlock 3967 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3052 1 3967 ([.op .JUMPDEST])
-    (by change 3052 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3028 1 3967 ([.op .JUMPDEST])
+    (by change 3028 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- The loop control at pc 2476 (indices 1967 to 1974). -/
 def controlBlock : BoundBlock 3990 (controlProgram) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3072 8 3990 (controlProgram)
-    (by change 3072 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3048 8 3990 (controlProgram)
+    (by change 3048 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -101,7 +101,7 @@ def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
     have hj : Decode.isValidJumpDest s.executionEnv.code 3967 = true := by
-      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 3052 (by rfl)
+      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 3028 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 

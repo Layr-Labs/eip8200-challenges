@@ -7,7 +7,7 @@ open Challenge.Modexp.Submission.Proofs
 -- The unchanged cached frame is the terminal base; no fields are reconstructed.
 def outer (mem : ByteArray) (n bsize esize msize : Nat) : List UInt256 :=
  (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 0) mem n bsize esize).tail.take 15 ++
-  [CycleSubmission.Global.Fast.Shift.headWord n] ++ Challenge.Modexp.Submission.Proofs.Fast.Exp.outer n bsize esize msize
+  [CycleSubmission.Global.Fast.Shift.headWord mem n] ++ Challenge.Modexp.Submission.Proofs.Fast.Exp.outer n bsize esize msize
 def frameState (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
  {s with pc := UInt256.ofNat pc, memory := mem, stack := outer mem n bsize esize msize}
 def ridingFrame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=

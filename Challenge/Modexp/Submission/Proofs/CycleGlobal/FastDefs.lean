@@ -135,7 +135,7 @@ theorem jumpDest3412 :
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3473 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2657
+  have h := CycleSubmission.Global.Binding.jumpDest 2672
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
@@ -145,12 +145,12 @@ theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 6
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3699 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2821
+  have h := CycleSubmission.Global.Binding.jumpDest 2836
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3688 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2814
+  have h := CycleSubmission.Global.Binding.jumpDest 2829
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h

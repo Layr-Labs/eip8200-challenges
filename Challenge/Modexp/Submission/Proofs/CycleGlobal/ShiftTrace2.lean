@@ -1,3 +1,5 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftPCs
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftFrame
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
@@ -39,6 +41,7 @@ open CycleSubmission.Global.ShiftPCs
 
 theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4)
+    (hshift : (MachineState.readWord mem 1536).toNat ≠ 0)
     (hk : k ≠ 0) (hk32 : k ≤ 32)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
@@ -53,7 +56,8 @@ theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       shiftLoopState, shiftBodyState, slotKState, rideSlots, entrySlots, shiftEntry,
-      headPC, hw,
+      headPC, loopPC, CycleSubmission.Global.ZeroShiftMath.head,
+      CycleSubmission.Global.ZeroShiftMath.normalHead, hshift, hw,
       outer, Exp.outer, hcode, hrun, hk, hkmod, UInt256.isZero, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -62,6 +66,7 @@ theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
 
 theorem run_shiftHead_go_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
+    (hshift : (MachineState.readWord mem 1536).toNat ≠ 0)
     (hk : k ≠ 0) (hk32 : k ≤ 32)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
@@ -76,7 +81,8 @@ theorem run_shiftHead_go_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       shiftLoopState, shiftBodyState, slotKState, rideSlots, entrySlots, shiftEntry,
-      headPC, hw,
+      headPC, loopPC, CycleSubmission.Global.ZeroShiftMath.head,
+      CycleSubmission.Global.ZeroShiftMath.normalHead, hshift, hw,
       outer, Exp.outer, hcode, hrun, hk, hkmod, UInt256.isZero, UInt256.isTrue,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
@@ -257,7 +263,7 @@ private theorem sentinel_add_lt (a b : UInt256) :
   split <;> decide
 
 /-- Boundary before the quotient multiplication; keeps the kernel certificate small. -/
-private def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
+def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
   let U := uMem mem n
   let hi := UInt256.shiftRight (MachineState.readWord U 2080) (MachineState.readWord U 1536)
@@ -266,7 +272,7 @@ private def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
   let diff := lo - UInt256.addMod lo
     (UInt256.mulMod hi (MachineState.readWord U 1632) (MachineState.readWord U 1568))
     (MachineState.readWord U 1568)
-  { s with pc := UInt256.ofNat (headPC n + 39)
+  { s with pc := UInt256.ofNat (headPC n + 40)
            memory := uMem0 mem n
            stack := MachineState.readWord U 1664 :: diff :: hi :: UInt256.ofNat k ::
              entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
@@ -276,7 +282,7 @@ private theorem run_estimate_left (z : UInt256) (s : State) (mem : ByteArray) (n
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.take 24)
+    Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.take 25)
       (estimateState z s mem n bsize esize msize k) = some (estimateMid z s mem n bsize esize msize k) := by
   have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -307,12 +313,12 @@ private theorem run_estimate_left (z : UInt256) (s : State) (mem : ByteArray) (n
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
       estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
-private theorem run_estimate_right (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+theorem run_estimate_right (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4) (hn2 : 2 ≤ n)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.drop 24)
+    Challenge.EvmProof.Stepper.runLocatedBlock (blk3026.drop 25)
       (estimateMid z s mem n bsize esize msize k) = some (macSetupState z s mem n bsize esize msize k) := by
   have hA : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -352,7 +358,7 @@ theorem run_estimate (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       (estimateState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
   have h := Challenge.EvmProof.Stepper.runLocatedBlock_append
-    (blk3026.take 24) (blk3026.drop 24)
+    (blk3026.take 25) (blk3026.drop 25)
     (estimateState z s mem n bsize esize msize k) (estimateMid z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
     (run_estimate_left z s mem n bsize esize msize k hw hn2 hact hcode hrun) hrun
     (run_estimate_right z s mem n bsize esize msize k hw hn2 hact hcode hrun)
@@ -375,10 +381,11 @@ private def estimateRawPart1 : List YulEvmCompiler.Instr :=
    .op (.Dup dA15),
    .op .SHR,
    .op .ADD,
+   .op .JUMPDEST,
    .op (.Dup dA13),
    .op (.Dup dA0)]
 
-private def estimateRawPart2 : List YulEvmCompiler.Instr :=
+def estimateRawPart2 : List YulEvmCompiler.Instr :=
   [.op (.Dup dA13),
    .op (.Dup dA4),
    .op .MULMOD,
@@ -388,7 +395,7 @@ private def estimateRawPart2 : List YulEvmCompiler.Instr :=
    .op .SUB,
    .op (.Dup dA12)]
 
-private def estimateRawPart3 : List YulEvmCompiler.Instr :=
+def estimateRawPart3 : List YulEvmCompiler.Instr :=
   [.op .MUL,
    .op (.Dup dA15),
    .op (.Dup dA1),
@@ -398,7 +405,7 @@ private def estimateRawPart3 : List YulEvmCompiler.Instr :=
    .op (.Dup dA1),
    .push 0 0]
 
-private def estimateRawPart4 : List YulEvmCompiler.Instr :=
+def estimateRawPart4 : List YulEvmCompiler.Instr :=
   [.op .MLOAD,
    .op .MUL,
    .push 2 2112,
@@ -408,7 +415,7 @@ private def estimateRawPart4 : List YulEvmCompiler.Instr :=
    .op (.Swap sA0),
    .op .SUB]
 
-private def estimateRawPart5 : List YulEvmCompiler.Instr :=
+def estimateRawPart5 : List YulEvmCompiler.Instr :=
   [.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
    .op (.Swap sA1),
    .op (.Dup dA14),
@@ -428,7 +435,7 @@ private def estimate8 (z : UInt256) (s : State) (mem : ByteArray)
            stack := v2 :: v0 :: v1 :: UInt256.ofNat k ::
              entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
 
-private def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
+def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
   let U := uMem mem n
   let v0 : UInt256 := MachineState.readWord U 2080
@@ -438,12 +445,12 @@ private def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
   let v4 : UInt256 := MachineState.readWord U 2112
   let v5 : UInt256 := UInt256.shiftRight v4 (MachineState.readWord U 1536)
   let v6 : UInt256 := v5 + v3
-  { s with pc := UInt256.ofNat (headPC n + 31)
+  { s with pc := UInt256.ofNat (headPC n + 32)
            memory := uMem0 mem n
            stack := (MachineState.readWord U 1568) :: (MachineState.readWord U 1568) :: v6 :: v1 :: UInt256.ofNat k ::
              entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
 
-private def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
+def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
   let U := uMem mem n
   let v0 : UInt256 := MachineState.readWord U 2080
@@ -459,12 +466,12 @@ private def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
   let v10 : UInt256 := (MachineState.readWord U 1664) * v9
   let v11 : UInt256 := UInt256.shiftRight v10 (UInt256.ofNat 128)
   let v12 : UInt256 := v11 * (UInt256.shiftRight (MachineState.readWord U 32) (UInt256.ofNat 128))
-  { s with pc := UInt256.ofNat (headPC n + 48)
+  { s with pc := UInt256.ofNat (headPC n + 49)
            memory := uMem0 mem n
            stack := (UInt256.ofNat 0) :: v10 :: v12 :: v10 :: v1 :: UInt256.ofNat k ::
              entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
 
-private def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
+def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
   let U := uMem mem n
   let v0 : UInt256 := MachineState.readWord U 2080
@@ -486,7 +493,7 @@ private def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
   let v16 : UInt256 := v15 - v14
   let v17 : UInt256 := UInt256.lt v16 v12
   let v18 : UInt256 := v10 - v17
-  { s with pc := UInt256.ofNat (headPC n + 58)
+  { s with pc := UInt256.ofNat (headPC n + 59)
            memory := uMem0 mem n
            stack := v18 :: v1 :: UInt256.ofNat k ::
              entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
@@ -567,7 +574,7 @@ private theorem run_estimate_h4_part1 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
       estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
-private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -592,7 +599,7 @@ private theorem run_estimate_h4_part2 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
       estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
-private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -617,7 +624,7 @@ private theorem run_estimate_h4_part3 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
       estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
-private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -655,7 +662,7 @@ private theorem run_estimate_h4_part4 (z : UInt256) (s : State) (mem : ByteArray
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange, addMod_comm, saturation_gt_eq_lt,
       estimate_notZero_maxWord, estimate_notZeroOfNat_maxWord, estimate_directMax_maxWord, sentinel_add_lt]
 
-private theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+theorem run_estimate_h4_part5 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)

@@ -77,10 +77,10 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hstack : rest =
       CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2310) mem n bsize esize ++ Exp.outer n bsize esize msize)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.headPC n) = true) :
+    (hdest : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.loopPC mem n) = true) :
     runInstructions phaseSwitchProgram
       (frame s mem 10969 rest) =
-      some (frame s (phaseSwitchMemory mem n) (CycleSubmission.Global.Fast.Shift.headPC n)
+      some (frame s (phaseSwitchMemory mem n) (CycleSubmission.Global.Fast.Shift.loopPC mem n)
         (UInt256.ofNat (n / 4) :: CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2298) mem n bsize esize ++
           Exp.outer n bsize esize msize)) := by
   have hn1 : 1 ≤ n := by omega
@@ -98,10 +98,10 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
   have ha3 : 256 + 32 * n ≤ 2816 := by omega
   have ha4 : 2112 + 32 * n ≤ 2816 := by omega
   have hactive2 := Exp.activeWords_fix2 s 256 (32 * n) 2112 (32 * n) ha2 ha2 ha3 ha4 hact
-  have hhead : CycleSubmission.Global.Fast.Shift.headPC n %
+  have hhead : CycleSubmission.Global.Fast.Shift.loopPC mem n %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
-      CycleSubmission.Global.Fast.Shift.headPC n :=
-    Nat.mod_eq_of_lt (by unfold CycleSubmission.Global.Fast.Shift.headPC; split_ifs <;> norm_num)
+      CycleSubmission.Global.Fast.Shift.loopPC mem n :=
+    Nat.mod_eq_of_lt (CycleSubmission.Global.Fast.Shift.loopPC_lt mem n)
   simp [runInstructions, phaseSwitchProgram, phaseSwitchMemory, frame, CycleSubmission.Global.Fast.Shift.headWord, hhead,
     Challenge.EvmProof.Stepper.runInstr, Exp.storeWord, Exp.mcopyMem,
     hstack, hbs, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.rideSlots, Exp.outer, List.exchange,

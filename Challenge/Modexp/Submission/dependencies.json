@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "9b3ac078-032b-46a0-9bec-01834a129084",
+    "rationale": "Retains the deferred temporary-store algorithm and its checked memory relation/count iteration, plus the restored original provided square-mask kernel.",
+    "evidence": "The cold repair entry still writes the actual difference at2080 while the common zero-difference paths omit that store. LazyTopMemory, LazyTopStep and LazyTopMath retain the universal arithmetic transfer. The original supplied R9 mask bytes and coupled executor/contracts/completion source remain restored. This candidate changes the estimator entry when K=0, selects its cached destination with one actual JUMPI, restores the private zero/NOT counter and replaces both binary lookup implementations with checked chunks. Runtime SHA-256 0d4d80ec000865da0c52a7cc91eb3e2306546b28b0d01fbeed3765fb5fb7f8fe."
+  },
+  {
     "submissionId": "b63d97e1-ef03-448c-9e92-eca1d598bd5f",
     "rationale": "Retains direct eight-limb cached-field entry, top-word guard and direct operand staging into the provided caller.",
     "evidence": "Retains the direct-both predecessor exact width classifier, eight-limb actual operand guard, MCOPY2112-to2368, caller field arrangement and provided arithmetic invocation, plus its direct four-limb count/inverse frame and general zero/NOT counter with conditional repair read. The new shift trace changes common temporary stores and restores the original supplied square-mask kernel. Runtime SHA-256 fedc2c662c8f4a63c532066f1f61931ac0412e62002ae1318e31278d557ffc1e."
@@ -36,8 +41,8 @@
   },
   {
     "submissionId": "c675ddc2-418d-4556-acdb-5ae9d31701e4",
-    "rationale": "Uses original early-phase initialization, Newton and continuation contracts and restores its pre-ReadyCache cache setup proofs.",
-    "evidence": "Retains the original early phase, consumed Newton input and continuation integration. Restores the published cacheSetupState protocol at2638, original NbTail packing and ordinary/exponent-three/slow-exponent cache setup proof bodies. All four selected proof bodies were compared byte-for-byte with published source fa23dce0bc7ebc3121c5e33ad2c51781a5736fa1 after only retagging continuation2284to2310 and2296to2298. The direct M1-high ReadyCache initializer is actually replaced, including its short readyCacheSlots model. Exact selected PC witnesses are independently regenerated for the current artifact.",
+    "rationale": "Retains the original early-phase initialization, consumed Newton input, NbTail packing and continuation/cache setup contracts, adapting the cache head to zero-shift selection.",
+    "evidence": "Retains the early phase, consumed Newton input, initial exponent flag and continuation integration, the original cacheSetupState protocol at2638 and NbTail packing. The supplied source revision is fa23dce0bc7ebc3121c5e33ad2c51781a5736fa1. The later direct M1-high ReadyCache initializer and its readyCacheSlots model remain replaced. The candidate changes the cached destination to depend on the real normalization word, splits initialization into its actual common prefix and taken/untaken selector branches, and adapts all three cache-entry execution proofs. Those proofs now live in ZeroShiftCache rather than ShiftTrace3. Their original exponent/phase classification and state contract are retained; the complete selected cache proof bodies are not claimed byte-for-byte identical to the earlier publication. Instruction and PC witnesses are independently regenerated for the selected artifact.",
     "citations": [
       {
         "submissionId": "c675ddc2-418d-4556-acdb-5ae9d31701e4",
@@ -48,10 +53,10 @@
       },
       {
         "submissionId": null,
-        "fileSha256": "82acce8d8be0ccff05fdd32453fd0f909b27689310112e382c5ea7cf1b4f65eb",
+        "fileSha256": "a44edf64d65c929fde1205baaebe1d43ad2c9950e2b3b7d75505797579740562",
         "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ShiftStates.lean",
-        "startLine": 151,
-        "endLine": 166
+        "startLine": 166,
+        "endLine": 172
       },
       {
         "submissionId": "c675ddc2-418d-4556-acdb-5ae9d31701e4",
@@ -65,7 +70,7 @@
         "fileSha256": "16ab0852e9767d14829987724a83a29eea88fb02ca0f8409f4ccce5fee35bcda",
         "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ShiftTrace1.lean",
         "startLine": 736,
-        "endLine": 785
+        "endLine": 784
       },
       {
         "submissionId": "c675ddc2-418d-4556-acdb-5ae9d31701e4",
@@ -76,10 +81,17 @@
       },
       {
         "submissionId": null,
-        "fileSha256": "327623fe2772f55161745c870d77d4c50b61a8116c6d7d9a29e0dde2ee588543",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ShiftTrace3.lean",
-        "startLine": 698,
-        "endLine": 811
+        "fileSha256": "e60e6b13ee6ba8df2c682d599c9df8cdb2be44305bbd7f2553212a5f2b204718",
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ZeroShiftCache.lean",
+        "startLine": 42,
+        "endLine": 159
+      },
+      {
+        "submissionId": null,
+        "fileSha256": "522f640017f1aff113a6947c4f1e871300f584b87b11e1217752368bacd4218d",
+        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/ZeroHeadBranchPaths.lean",
+        "startLine": 8,
+        "endLine": 41
       }
     ]
   },
@@ -114,27 +126,6 @@
     "evidence": "Uses the source branch/padding split, retained MAX/TN interfaces, shared phase-exit body and selected PC certificate as the direct code/proof base. Later variants adapt the final exit layout and trace interface. This identifies the source contribution without asserting that every neutral padding instruction remains in the current runtime. Current dependent runtime SHA-256 fedc2c662c8f4a63c532066f1f61931ac0412e62002ae1318e31278d557ffc1e. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
   },
   {
-    "submissionId": "b139088a-0c93-4dea-965f-27647fa5c0ba",
-    "rationale": "Retains the private four-limb MAX counter and the validated PC-tree lookup implementation published with it.",
-    "evidence": "The published private-counter submission already contains Table, validity checking and the generic lookup equality before the later general-counter extension. The chosen candidate preserves that implementation and the private MAX boundary while restoring the general zero/NOT counter and conditional repair exit. The current generic tree implementation equals this earlier published source. No claim of verified graph ancestry is made.",
-    "citations": [
-      {
-        "submissionId": "b139088a-0c93-4dea-965f-27647fa5c0ba",
-        "fileSha256": "49c8b5fdb38a6c5e607ca4f1490ddf1822076134e4744309df92c0dab1179990",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/PCCertificate.lean",
-        "startLine": 8,
-        "endLine": 35
-      },
-      {
-        "submissionId": null,
-        "fileSha256": "6fde77f24f45ab416542a8de941dc464d6c219e7f546cec92efa8d7ce605ba18",
-        "path": "Challenge/Modexp/Submission/Proofs/CycleGlobal/PCCertificate.lean",
-        "startLine": 8,
-        "endLine": 35
-      }
-    ]
-  },
-  {
     "submissionId": "4279a33f-84a3-44ad-a468-a19121f2f35a",
     "rationale": "Uses the published source for TN-only concrete schedule and generic repair-entry discard. Inherited authorship is credited; the current contribution is described separately in its public note.",
     "evidence": "Uses direct TN computation/store without a concrete NEG calculation, carries an arbitrary disposable word into the original repair-entry POP, and retains run_unc_add and the arithmetic repair refinement. The current common successors carry MAX into the decrement. This does not identify MAX with the mathematical negative flag. Current dependent runtime SHA-256 fedc2c662c8f4a63c532066f1f61931ac0412e62002ae1318e31278d557ffc1e. The relevant current files are the selected exact artifact, ShiftPaths, ShiftTrace3 and the universal integration; source and dependent runtime hashes are distinct identities."
@@ -157,7 +148,7 @@
   {
     "submissionId": "55284ee0-b07f-48c4-8fbf-e52adf1f6c77",
     "rationale": "Uses provided shift arithmetic, arbitrary-return eight-limb caller and unrestricted-field r5 prologue API.",
-    "evidence": "Uses the supplied shift arithmetic, unrestricted r5 and eight-limb caller APIs, original complete square kernel and its cached-inverse executor/contracts. Restores R9Shared Exec, Contracts and Complete exactly from publication9247ff13b860671cc57e44d714a580e9f293a271. Directly reuses the same publication Fast/TnCacheMemory.lean Agree, readPadded_eq, readWord_eq and top_word helpers; byte-for-byte identity was checked. The new equal-size memory relation, uMem equality, lazy counted-loop relation and selected arithmetic wrappers use those provided helpers. All original range/inverse/modulus and top-bound hypotheses remain in the direct terminal calls.",
+    "evidence": "Uses the supplied shift arithmetic, unrestricted r5 and eight-limb caller APIs, original complete square kernel and its cached-inverse executor/contracts. Restores R9Shared Exec, Contracts and Complete exactly from publication9247ff13b860671cc57e44d714a580e9f293a271. Directly reuses the same publication Fast/TnCacheMemory.lean Agree, readPadded_eq, readWord_eq and top_word helpers; byte-for-byte identity was checked. The new equal-size memory relation, uMem equality, lazy counted-loop relation and selected arithmetic wrappers use those provided helpers. All original range/inverse/modulus and top-bound hypotheses remain in the direct terminal calls. The selected runtime uses zero-shift entry helpers and a once-per-cache branch selector. The original provided square-mask bytes and coupled R9Shared proofs remain restored exactly; the universal lazy-store transfer is retained from the separately declared deferred-store predecessor. The candidate locations and file hashes in these citations refer to the selected branch proof files.",
     "citations": [
       {
         "submissionId": "55284ee0-b07f-48c4-8fbf-e52adf1f6c77",
