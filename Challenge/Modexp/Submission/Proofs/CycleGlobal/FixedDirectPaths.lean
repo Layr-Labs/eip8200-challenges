@@ -40,7 +40,7 @@ abbrev Located :=
 
 @[simp] theorem directPC1 (i : Nat) (hi : 1845 ≤ i) (hii : i ≤ 1854) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([2336, 2337, 2340, 2342, 2343, 2344, 2347, 2350, 2353, 2356] : List Nat)[i - 1845]! := by
+      ([2336, 2337, 2338, 2342, 2343, 2344, 2347, 2350, 2353, 2356] : List Nat)[i - 1845]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -88,8 +88,8 @@ def start : List Located :=
 entering the kernel's `common` block with `hd = sq_row` and return address 2519. -/
 def squareCall : List Located :=
   [CycleSubmission.Global.Fast.opAt 1845 .JUMPDEST,
-   CycleSubmission.Global.Fast.pushAt 1846 2 2519,
-   CycleSubmission.Global.Fast.pushAt 1847 1 1,
+   CycleSubmission.Global.Fast.pushAt 1846 0 0,
+   CycleSubmission.Global.Fast.pushAt 1847 3 1,
    CycleSubmission.Global.Fast.opAt 1848 (.Dup ⟨2, by decide⟩),
    CycleSubmission.Global.Fast.opAt 1849 .SUB,
    CycleSubmission.Global.Fast.pushAt 1850 2 512,
@@ -123,7 +123,7 @@ theorem jumpDestBigC :
 /-- The kernel's shared `common` block `0x0f54` (entered by the square call). -/
 theorem jumpDestSqCommon :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3146 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2412 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2405 (by rfl)
 
 
 /- `after_sq` (pc 3304): the target the in-kernel square loop rewrites the

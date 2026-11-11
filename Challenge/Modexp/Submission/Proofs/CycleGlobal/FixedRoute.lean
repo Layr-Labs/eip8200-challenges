@@ -55,7 +55,7 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
       subst hms8
       have head := CycleSubmission.CallerFixed.bail s mem bsize esize k mi hk hk16 env hact hcds hf (by omega)
       obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat 2519)
+        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat 0)
           (UInt256.ofNat k :: Exp.outer 8 bsize esize 256) 207)
         (env.transfer rfl rfl) rfl
         (by simp [CycleSubmission.CallerPrefix.stateAt, CycleSubmission.EntryMeaning.saved,

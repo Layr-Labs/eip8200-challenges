@@ -113,7 +113,7 @@ open CycleSubmission.Global.ShiftPCs
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2010 = 2574 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2019 = 2591 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -766,13 +766,17 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2720 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2720 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   simp (config := { maxSteps := 2500000 })
     [blkNbTail, opAt, pushAt, wfOp, List.exchange, CycleSubmission.Prepared.Arithmetic.mulC,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nbTailState, cacheSetupState, taggedTemplate, phaseTag, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, Exp.push0_word,
+      nbTailState, cacheSetupState, readyCacheSlots, entrySlots, initialPhase, taggedTemplate, phaseTag, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, haw2656, haw32, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
