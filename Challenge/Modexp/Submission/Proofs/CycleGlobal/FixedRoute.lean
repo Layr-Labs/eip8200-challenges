@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.CycleGlobal.FourTerminal
+import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Fallback
 set_option warningAsError true
 set_option maxRecDepth 40000

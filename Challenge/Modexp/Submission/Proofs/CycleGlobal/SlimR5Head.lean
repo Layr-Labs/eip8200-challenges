@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Cios2Dispatch
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SquareStagedEntry
 import Challenge.Modexp.Submission.Proofs.CycleCaller.Blocks
@@ -22,7 +23,7 @@ at 3743 are shared with width 8 and keep the leader's proofs (`Cios2Dispatch`,
 begins.
 -/
 
-namespace CycleSubmission.Global.R5Head
+namespace CycleSubmission.Global.SlimR5Head
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
@@ -51,8 +52,8 @@ def h1Program : List Instr :=
   [.op (.Dup ⟨0, by decide⟩), .push 1 128, .op .ADD, .op .ISZERO, .push 2 5197, .op .JUMPI]
 
 def h1Block : Block CycleSubmission.Artifact.artifact .Osaka 3715 h1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2800 6 3715 h1Program
-    (by change 2800 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2795 6 3715 h1Program
+    (by change 2795 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -93,14 +94,14 @@ theorem call_run (s : State) (mem : ByteArray) (bsize esize k : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (hjump : Decode.isValidJumpDest s.executionEnv.code 3146 = true) :
     runInstructions CycleSubmission.CallerBlocks.fixedProgram
-        (FixedDirectStates.special s mem 4 bsize esize 128 k) =
+        (CycleSubmission.Global.SlimFrames.special s mem 4 bsize esize 128 k) =
       some (CycleSubmission.Global.Fast.Cios2Dispatch.commonState s mem
         (UInt256.ofNat 3710) 2112 512 (UInt256.ofNat (k-1)) (UInt256.ofNat 0)
-        (UInt256.ofNat k :: Exp.outer 4 bsize esize 128)) := by
+        (UInt256.ofNat (k-1) :: CycleSubmission.Global.SlimFrames.outer 4 bsize esize 128)) := by
   have hdec : UInt256.ofNat k - UInt256.ofNat 1 = UInt256.ofNat (k-1) := by
     interval_cases k <;> decide
   simp [Exp.push0_word, CycleSubmission.CallerBlocks.fixedProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    FixedDirectStates.special, CycleSubmission.Global.Fast.Cios2Dispatch.commonState, Exp.outer, hdec, hjump,
+    CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.Fast.Cios2Dispatch.commonState, CycleSubmission.Global.SlimFrames.outer, hdec, hjump,
     Word.literal_eq_ofNat, Word.word_toNat_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
 /-- The memory at 3751: the operand staged at 2112 and the accumulator rows cleared. -/
@@ -125,7 +126,7 @@ def entryState (s : State) (mem : ByteArray) (bsize esize k : Nat) : State :=
     (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat 0)
-    (UInt256.ofNat k :: Exp.outer 4 bsize esize 128)
+    (UInt256.ofNat (k-1) :: CycleSubmission.Global.SlimFrames.outer 4 bsize esize 128)
 
 /-- From the width-4 special state to the r5 entry at 3751. -/
 def gasSteps_head (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
@@ -134,10 +135,10 @@ def gasSteps_head (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
     (hf : Exp.Frame mem 4 bsize mi) (hmi : mi < 2^256) (hmi1 : mi ≠ 1)
     (hmachine : ((MachineState.readWord mem 96).toNat * mi + 1) % 2^256 = 0) :
-    GasSteps (FixedDirectStates.special s mem 4 bsize esize 128 k)
+    GasSteps (CycleSubmission.Global.SlimFrames.special s mem 4 bsize esize 128 k)
       (entryState s mem bsize esize k) := by
   have head := CycleSubmission.CallerBlocks.fixedBlock.steps
-    (s := FixedDirectStates.special s mem 4 bsize esize 128 k)
+    (s := CycleSubmission.Global.SlimFrames.special s mem 4 bsize esize 128 k)
     (env.transfer rfl rfl) rfl (call_run s mem bsize esize k hk hk16
       (by rw [env.code]; exact CycleSubmission.CallerBlocks.valid3181))
   have hmiw : (MachineState.readWord mem 2720).toNat = mi := by
@@ -153,9 +154,9 @@ def gasSteps_head (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     simpa only [Exp.toNat_ofNat_self hmi, Exp.toNat_ofNat_self (by decide : 1 < 2^256)] using h
   have g1 := CycleSubmission.Global.Fast.Cios2Dispatch.gasSteps_commonSetupSq s mem
     (UInt256.ofNat 3710) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (UInt256.ofNat 0)
-    (UInt256.ofNat k :: Exp.outer 4 bsize esize 128) (by simp [Exp.outer])
+    (UInt256.ofNat (k-1) :: CycleSubmission.Global.SlimFrames.outer 4 bsize esize 128) (by simp [CycleSubmission.Global.SlimFrames.outer])
     env.running env.code env.forkEq env.noPrecompile hact (Or.inl rfl) (by omega)
-    (by decide) (by omega) hcds hf.s32 hf.ml (by simp [Exp.outer]) (by simp [Exp.outer])
+    (by decide) (by omega) hcds hf.s32 hf.ml (by simp [CycleSubmission.Global.SlimFrames.outer]) (by simp [CycleSubmission.Global.SlimFrames.outer])
     CycleSubmission.Global.Fast.SquareStagedEntry.jumpDest hguard
     (CiosInverseGuard.inverse_ne_zero _ _ hinvW)
   have g2 := CycleSubmission.Global.Fast.SquareStagedEntry.gasSteps_entry s
@@ -164,16 +165,16 @@ def gasSteps_head (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (UInt256.ofNat 0)
     (UInt256.ofNat 0 :: UInt256.ofNat 0 :: MachineState.readWord mem 2720 ::
       UInt256.ofNat 0 :: UInt256.ofNat 0 ::
-      UInt256.ofNat (k - 1) :: UInt256.ofNat 0 :: UInt256.ofNat k :: Exp.outer 4 bsize esize 128)
-    (by simp [Exp.outer]) env.running env.code env.forkEq env.noPrecompile hact
+      UInt256.ofNat (k - 1) :: UInt256.ofNat 0 :: UInt256.ofNat (k-1) :: CycleSubmission.Global.SlimFrames.outer 4 bsize esize 128)
+    (by simp [CycleSubmission.Global.SlimFrames.outer]) env.running env.code env.forkEq env.noPrecompile hact
   have g3 := gasSteps_h1 s (SquarePartialClear.memory (stageW mem 2112 (2 + 2)))
     (CycleSubmission.Global.Fast.SquareStagedEntry.qWord (2 + 2)) (UInt256.ofNat 3347)
     (UInt256.ofNat 0) (MachineState.readWord mem 2720)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat 0)
-    (UInt256.ofNat k :: Exp.outer 4 bsize esize 128) (by simp [Exp.outer])
+    (UInt256.ofNat (k-1) :: CycleSubmission.Global.SlimFrames.outer 4 bsize esize 128) (by simp [CycleSubmission.Global.SlimFrames.outer])
     env.running env.code env.forkEq env.noPrecompile CycleSubmission.Global.Fast.SquareStagedEntry.qWord_four
   exact ((head.trans g1).trans g2).trans g3
 
-end CycleSubmission.Global.R5Head
+end CycleSubmission.Global.SlimR5Head

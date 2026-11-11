@@ -13,23 +13,23 @@ open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
 
 def normalizerBlock : Block Artifact.artifact .Osaka 10490 normalizeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8104 101 10490 normalizeProgram
-    (by change 8104 + 101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8099 101 10490 normalizeProgram
+    (by change 8099 + 101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 def returnBlock : Block Artifact.artifact .Osaka 10611 jumpProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8205 1 10611 jumpProgram
-    (by change 8205 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8200 1 10611 jumpProgram
+    (by change 8200 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 10352 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8015
-    (show Artifact.instructions[8015]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8015 = 10352 := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8010
+    (show Artifact.instructions[8010]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8010 = 10352 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

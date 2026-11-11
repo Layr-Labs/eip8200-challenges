@@ -1,6 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.CycleCaller.Fixed
+import Challenge.Modexp.Submission.Proofs.CycleCaller.Terminal
 import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
-import Challenge.Modexp.Submission.Proofs.CycleCaller.Spec
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.RootE3Scale
 set_option warningAsError true
 set_option exponentiation.threshold 4096
@@ -14,24 +13,6 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def result (n N A B k : Nat) : Nat :=
   Model.montMul N (Limbs.radix^n) ((fun a => Model.montMul N (Limbs.radix^n) a a)^[k] A) B
-
-/-- Width 8: the leader's radix-240 cycle route (width 4 is `FourTerminal.handled`). -/
-noncomputable opaque run (s : State) (mem : ByteArray) (n bsize esize k N A B mi : Nat)
-    (hn : n = 8) (hk : 1 ≤ k) (hk16 : k ≤ 16)
-    (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
-    (hf : Exp.Frame mem n bsize mi) (hmi : mi < 2^256)
-    (hinv : (N % Limbs.radix * mi + 1) % 2^256 = 0)
-    (hmod : Model.FastRepresents mem 0 n N)
-    (ha : Model.FastRepresents mem 2112 n A)
-    (hb : Model.FastRepresents mem 256 n B)
-    (hN : 0 < N) (hodd : N % 2 = 1) (hB : B < N)
-    (hg : (CycleSubmission.CallerPrefix.guardWord mem).toNat ≠ 0) :
-    CycleSubmission.Finish.Outcome (FixedDirectStates.special s mem n bsize esize (32*n) k)
-      (Precompile.natToBytes (result n N A B k) (32*n)) := by
-  subst n
-  exact CallerFixed.run s mem bsize esize k N A B mi hk hk16 env hact hcds
-    hf hmi hinv hmod ha hb hN (Nat.odd_iff.mpr hodd) hB hg
 
 theorem handled {input : ByteArray} {s : State}
     (out : CycleSubmission.Finish.Outcome s (Challenge.Modexp.spec input))
