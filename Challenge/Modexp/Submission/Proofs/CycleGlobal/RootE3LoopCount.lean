@@ -23,8 +23,10 @@ def gasSteps_shiftLoop_count (z : UInt256) (s : State) (mem : ByteArray) (n bsiz
     (inv : StepInv mem n bsize mm minv)
     (hbase : Model.FastRepresents mem 2112 n r) (hr : r < mm)
     (hfast : n = 4 ∨ n = 8) :
-    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
-      (shiftDoneState z s (stepMems mem n mm k) n bsize esize msize) := by
+    Σ isInline : Bool, Challenge.EvmProof.GasSteps
+      (shiftLoopState z s mem n bsize esize msize k)
+      (if isInline then csubExit4State z s (stepMems mem n mm k) n bsize esize msize
+       else shiftDoneState z s (stepMems mem n mm k) n bsize esize msize) := by
   have loop : Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (shiftLoopState z s (stepMems mem n mm (k - 1)) n bsize esize msize 1) :=
     Challenge.EvmProof.GasSteps.cast
@@ -49,14 +51,15 @@ def gasSteps_shiftLoop_count (z : UInt256) (s : State) (mem : ByteArray) (n bsiz
   have invL := stepInv_stepMems (by omega) hn32 inv (k - 1)
   have hbaseL := stepMems_represents mem n mm r hn hn32 hmpos hmm htop inv.modulus inv.neg
     hbase hr inv.pre (k - 1)
-  have last := gasSteps_stepLast z s (stepMems mem n mm (k - 1)) n bsize esize msize mm minv
+  obtain ⟨isInline, last⟩ := gasSteps_stepLast z s (stepMems mem n mm (k - 1)) n bsize esize msize mm minv
     hn hn32 hbs hmpos hmm htop e invL hbaseL (Nat.mod_lt _ hmpos)
     (repairFacts_of (stepMems mem n mm (k - 1)) n mm _ hn hn32 hmpos hmm htop invL.modulus
       invL.neg hbaseL (Nat.mod_lt _ hmpos) invL.pre) hfast
   have hlast : stepMem (stepMems mem n mm (k - 1)) n mm = stepMems mem n mm k := by
     rw [show stepMems mem n mm k = stepMems mem n mm (k - 1 + 1) from by rw [Nat.sub_add_cancel hk1]]
     rfl
-  exact loop.trans (Challenge.EvmProof.GasSteps.cast last rfl (by rw [hlast]))
+  exact ⟨isInline, loop.trans (Challenge.EvmProof.GasSteps.cast last rfl (by rw [hlast]))⟩
 
 
 end CycleSubmission.Global.Fast.Shift
+

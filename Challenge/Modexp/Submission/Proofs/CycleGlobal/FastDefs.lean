@@ -22,16 +22,16 @@ def wfOp {op : Operation}
     Challenge.EvmProof.Stepper.WellFormed .Osaka (.op op) :=
   ⟨hopcode, hplain, havailable⟩
 def opAt (index : Nat) (op : Operation)
-    (hget : CycleSubmission.Artifact.instructions[index]? = some (.op op) := by rfl)
-    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := by decide)
-    (hplain : YulEvmCompiler.plainOp op := by trivial)
-    (havailable : op.availableInFork .Osaka = true := by rfl) :
+    (hget : CycleSubmission.Artifact.instructions[index]? = some (.op op) := by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+    (hopcode : Decode.opcodeOf (YulEvmCompiler.Instr.opByte op) = some op := (CycleSubmission.Artifact.wellFormed.valid (List.mem_of_getElem? hget)).1)
+    (hplain : YulEvmCompiler.plainOp op := (CycleSubmission.Artifact.wellFormed.valid (List.mem_of_getElem? hget)).2.1)
+    (havailable : op.availableInFork .Osaka = true := (CycleSubmission.Artifact.wellFormed.valid (List.mem_of_getElem? hget)).2.2) :
     Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka :=
   ⟨index, .op op, hget, wfOp hopcode hplain havailable⟩
 def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
-    (hget : CycleSubmission.Artifact.instructions[index]? = some (.push width value) := by rfl)
+    (hget : CycleSubmission.Artifact.instructions[index]? = some (.push width value) := by rw [CycleSubmission.Artifact.instruction_get]; rfl)
     (hwf : Challenge.EvmProof.Stepper.WellFormed .Osaka
-      (.push width value) := by decide) :
+      (.push width value) := CycleSubmission.Artifact.wellFormed.valid (List.mem_of_getElem? hget)) :
     Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka :=
   ⟨index, .push width value, hget, hwf⟩
 private theorem instructionPC_add
@@ -128,11 +128,11 @@ theorem jumpDest3412 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2284 = true :=
   CycleSubmission.Global.Binding.jumpDest 1813 (by rfl)
 theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3473 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2646 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2637 (by rfl)
 theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 673 = true :=
   CycleSubmission.Global.Binding.jumpDest 476 (by rfl)
 theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3699 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2810 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2801 (by rfl)
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3688 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2803 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2794 (by rfl)
 end CycleSubmission.Global.Fast

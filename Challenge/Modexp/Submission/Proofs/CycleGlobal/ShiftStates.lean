@@ -195,13 +195,13 @@ def subCheckState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
 def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcCsubCall
-           stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
+           stack := Monpro.maxWord :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 10934
-           stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
+  { s with pc := UInt256.ofNat 10935
+           stack := Monpro.maxWord :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
 def uncState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

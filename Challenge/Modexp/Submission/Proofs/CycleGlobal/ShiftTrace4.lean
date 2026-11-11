@@ -639,12 +639,12 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
             (run_mid_unc_h4 z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296
               (Or.inl hnz) e.code e.run)).trans
             (soundEnv blkUnc e
-              (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
+              (run_unc_add z s (stepMid mem n) n bsize esize msize k Monpro.maxWord e.code e.run))
         · exact (soundEnv blk3125Unc e
             (run_mid_unc z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296
               (Or.inl hnz) e.code e.run)).trans
             (soundEnv blkUnc e
-              (run_unc_add z s (stepMid mem n) n bsize esize msize k (stepNeg mem n) hnz e.code e.run))
+              (run_unc_add z s (stepMid mem n) n bsize esize msize k Monpro.maxWord e.code e.run))
       have adds := gasSteps_addRounds z s (stepMid mem n) n bsize esize msize k
         (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)
@@ -698,18 +698,16 @@ def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
       (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))))
     (hfast : n = 4 ∨ n = 8) :
-    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize 1)
-      (shiftDoneState z s (stepMem mem n mm) n bsize esize msize) :=
-  match gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
-      htop e inv hbase hr rf hfast with
-  | .inl h =>
-    (h.trans
-      (soundEnv blk3253 e (run_csubCall_last z s (stepMem mem n mm) n bsize esize msize e.run))).trans
-    (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))
-  | .inr h =>
-    ((h.trans
-      (soundEnv blk3253h e (run_csubCall_last_h4 z s (stepMem mem n mm) n bsize esize msize e.run))).trans
-      (soundEnv blkExit4 e (run_exit4 z s (stepMem mem n mm) n bsize esize msize e.code e.run))).trans
-    (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))
+    Σ isInline : Bool, Challenge.EvmProof.GasSteps
+      (shiftLoopState z s mem n bsize esize msize 1)
+      (if isInline then csubExit4State z s (stepMem mem n mm) n bsize esize msize
+       else shiftDoneState z s (stepMem mem n mm) n bsize esize msize) := by
+  rcases gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
+      htop e inv hbase hr rf hfast with h | h
+  · exact ⟨false, (h.trans
+      (soundEnv blk3253Last e (run_csubCall_last z s (stepMem mem n mm) n bsize esize msize e.run))).trans
+      (soundEnv blk3253x e (run_csubExit z s (stepMem mem n mm) n bsize esize msize e.code e.run))⟩
+  · exact ⟨true, h.trans
+      (soundEnv blk3253h e (run_csubCall_last_h4 z s (stepMem mem n mm) n bsize esize msize e.run))⟩
 
 end CycleSubmission.Global.Fast.Shift
