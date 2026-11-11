@@ -113,41 +113,35 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
 
 
 
-def cleanupProgram : List Instr := List.replicate 16 (.op .POP) ++ [.push 2 2284, .op .ADD, .op .JUMP]
+def cleanupProgram : List Instr :=
+  [.op (.Swap ⟨15, by decide⟩), .push 1 32, .op .CALLDATALOAD,
+   .op (.Dup ⟨15, by decide⟩), .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩), .op (.Dup ⟨0, by decide⟩),
+   .op (.Swap ⟨4, by decide⟩), .push 9 2284, .op .ADD, .op .JUMP]
+def cleanupSuffix (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) : List UInt256 :=
+  (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize).tail.take 15 ++
+    [CycleSubmission.Global.Fast.Shift.headWord n] ++ Exp.outer n bsize esize msize
 
-theorem run_pops (s : State) (mem : ByteArray) (pc : Nat)
-    (front rest : List UInt256) (hbound : front.length + rest.length < 1024) :
-    runInstructions (List.replicate front.length (.op .POP)) (frame s mem pc (front ++ rest)) =
-      some (frame s mem (pc + front.length) rest) := by
-  induction front generalizing pc with
-  | nil => simp [runInstructions, frame]
-  | cons x xs ih =>
-    have hcap : rest.length + (xs.length + 1) < 1024 := by
-      simp only [List.length_cons] at hbound
-      omega
-    have hb : xs.length + rest.length < 1024 := by omega
-    simpa [List.replicate_succ, runInstructions, frame, Challenge.EvmProof.Stepper.runInstr,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Nat.add_assoc, Nat.add_comm, Nat.add_left_comm, hcap]
-      using ih (pc + 1) hb
-
-theorem run_cleanup (s : State) (mem : ByteArray) (pc d target : Nat)
-    (front rest : List UInt256) (hlen : front.length = 16) (hrest : rest.length ≤ 1000)
+theorem run_cleanup (s : State) (mem : ByteArray) (pc d target n bsize esize msize : Nat)
+    (hbs : bsize = 32 * n) (hms : msize = 32 * n)
+    (hE : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
     (htarget : 2284 + d = target) (hlt : target < 2^256)
     (hdest : Decode.isValidJumpDest s.executionEnv.code target = true) :
-    runInstructions cleanupProgram (frame s mem pc (front ++ UInt256.ofNat d :: rest)) =
-      some (frame s mem target rest) := by
-  have hp := run_pops s mem pc front (UInt256.ofNat d :: rest) (by simp only [List.length_cons]; omega)
-  rw [hlen] at hp
-  rw [cleanupProgram, runInstructions_append, hp]
-  have hcap : rest.length + 1 < 1024 := by omega
-  have hcap2 : rest.length + 2 < 1024 := by omega
+    runInstructions cleanupProgram
+      (frame s mem pc (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize ++ Exp.outer n bsize esize msize)) =
+      some (frame s mem target (Exp.outer n bsize esize msize ++ cleanupSuffix d mem n bsize esize msize)) := by
   have hadd : UInt256.ofNat 2284 + UInt256.ofNat d = UInt256.ofNat target := by
     rw [Challenge.EvmProof.Word.ofNat_add_mod, htarget]
   have hmod : target % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = target := Nat.mod_eq_of_lt hlt
-  simp [runInstructions, frame, Challenge.EvmProof.Stepper.runInstr, hcap, hcap2, hmod,
-    hadd, hdest, Challenge.EvmProof.Word.literal_eq_ofNat,
+  simp (config := {maxSteps := 400000}) [cleanupProgram, cleanupSuffix, runInstructions, frame, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
+    Challenge.EvmProof.Stepper.runInstr, List.exchange, hbs, hms, hE, hmod, hadd, hdest,
+    Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt,
     Challenge.EvmProof.Word.succ_ofNat_mod]
+
+theorem cleanupSuffix_length (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) :
+    (cleanupSuffix d mem n bsize esize msize).length = 21 := by
+  simp [cleanupSuffix, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
 
 
 def commonHeadProgram : List Instr := [.op .JUMPDEST]

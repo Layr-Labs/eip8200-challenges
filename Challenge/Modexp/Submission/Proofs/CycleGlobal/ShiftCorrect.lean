@@ -279,7 +279,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
       hminvlt hminvA hcode hfork hrun hnp hdata hstack hact hn hn32 hb he hmz hm32 hfull
       hbsize hesize hmsz hmm hodd hradix hmpos hframe0 hmod0 hminvDef hone0 hmatch htn0 hfast
       hminv1 hvalid hactLe
-      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hframe0 hmatch
+      (RootE3Bindings.build s mem input n bsize esize msize minv hn hn32 hb he e hdata hfull hesize hframe0 hmatch
         htn0 hfast (lowLimb_odd mem n mm (by omega) hodd hmod0))
   · -- The diverted miss.  The dispatcher's `JUMPI` no longer names the `R1`
     -- seeding block: this whole class leaves the fast path at `BAIL6` and enters
