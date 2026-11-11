@@ -1,4 +1,5 @@
-import Challenge.Modexp.Submission.Proofs.CycleCaller.Terminal
+import Challenge.Modexp.Submission.Proofs.CycleCaller.Arithmetic
+import Challenge.Modexp.Submission.Proofs.Cycle.Finish
 import Challenge.Modexp.Submission.Proofs.Fast.FixedExponentRoute
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.RootE3Scale
 set_option warningAsError true

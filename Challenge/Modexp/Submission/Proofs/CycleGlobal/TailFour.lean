@@ -11,7 +11,6 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission CycleSubmission.Global
-open Monpro CiosCached StagedOperand
 noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     
     (hk : 1 ≤ k) (hk16 : k ≤ 16)

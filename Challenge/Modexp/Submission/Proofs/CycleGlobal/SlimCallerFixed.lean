@@ -1,4 +1,3 @@
-import Challenge.Modexp.Submission.Proofs.CycleCaller.Terminal
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 noncomputable section
 set_option maxHeartbeats 4000000
@@ -8,7 +7,6 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-open CycleSubmission.CallerBlocks CycleSubmission.CallerPrefix
 theorem inverse_from_frame (mem : ByteArray) (bsize N mi : Nat)
     (hf : Exp.Frame mem 8 bsize mi) (hmi : mi < 2^256)
     (hinv : (N % Limbs.radix * mi + 1) % 2^256 = 0) :

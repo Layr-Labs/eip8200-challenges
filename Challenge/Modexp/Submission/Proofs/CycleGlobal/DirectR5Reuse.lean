@@ -24,7 +24,7 @@ def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : 
 theorem run (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat)
  (hact : 88 ≤ s.activeWords.toNat)
  (hd : Decode.isValidJumpDest s.executionEnv.code 5197 = true) :
- runInstructions program {s with pc := UInt256.ofNat 3210,memory := mem, stack := count::SlimFrames.outer mem 4 bsize esize msize} =
+ runInstructions program {s with pc := UInt256.ofNat 3220,memory := mem, stack := count::SlimFrames.outer mem 4 bsize esize msize} =
  some (result s mem count bsize esize msize) := by
  have hf := Monpro.activeWords_fix s 2720 32 (by decide) (by norm_num) hact
  simp [program,result,R5Route.entry,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,

@@ -47,7 +47,7 @@ def pcAddTail : Nat := 3114
 def pcAddMid : Nat := 3101
 def pcAddPad : Nat := 3114
 def pcSubCheck : Nat := 3132
-def pcCsubCall : Nat := 3047
+def pcCsubCall : Nat := 3046
 def pcUnc : Nat := 3069
 def pcAfterCsub : Nat := 2660
 def pcCsubExit : Nat := 3053
@@ -205,7 +205,7 @@ def subCheckState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
 def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
   { s with pc := UInt256.ofNat pcCsubCall
-           stack := Monpro.maxWord :: UInt256.ofNat k ::
+           stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize
            memory := mem }
 def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :

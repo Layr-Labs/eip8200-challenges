@@ -251,7 +251,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
   all_goals rfl
 
-@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2356 = 3055 := by
+@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2359 = 3055 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -531,7 +531,6 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
-  decide
 
 
 
@@ -557,11 +556,8 @@ theorem run_csubCall (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
   have headPC_mod : headPC n %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = headPC n :=
     Nat.mod_eq_of_lt (by unfold headPC; split_ifs <;> norm_num)
-  have hdecMax : Monpro.maxWord + UInt256.ofNat k = UInt256.ofNat (k - 1) := by
-    rw [show Monpro.maxWord = UInt256.lnot (UInt256.ofNat 0) by decide]
-    exact hdec
   simp (config := { maxSteps := 200000 })
-    [blk3253,hdecMax,opAt,pushAt,wfOp,
+    [blk3253,opAt,pushAt,wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -612,17 +608,14 @@ theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253Last
       (csubCallState z s mem n bsize esize msize 1) =
       some (csubExitState z s mem n bsize esize msize) := by
-  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2353 = 3052 := by
+  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2356 = 3052 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
     rfl
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hdec' : UInt256.lnot (0 : UInt256) + UInt256.ofNat 1 = UInt256.ofNat 0 := hdec
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
-  have hdecMax : Monpro.maxWord + UInt256.ofNat 1 = UInt256.ofNat 0 := by
-    rw [show Monpro.maxWord = UInt256.lnot (UInt256.ofNat 0) by decide]
-    exact hdec
   simp (config := { maxSteps := 200000 })
-    [blk3253Last,hpadding,hdecMax,opAt,pushAt,wfOp,
+    [blk3253Last,hpadding,opAt,pushAt,wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -1114,70 +1107,70 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   all_goals (first | rfl | decide)
 
 @[simp] private theorem pcFact4392 :
-    CycleSubmission.Artifact.artifact.instructionPC 3033 = 3914 := by
+    CycleSubmission.Artifact.artifact.instructionPC 3007 = 3914 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2416 = 3147 := by
+@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2421 = 3147 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3034 = 3915 := by
+@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3008 = 3915 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3035 = 3916 := by
+@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3009 = 3916 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3036 = 3917 := by
+@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3010 = 3917 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3037 = 3918 := by
+@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3011 = 3918 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3038 = 3919 := by
+@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3012 = 3919 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3039 = 3920 := by
+@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3013 = 3920 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3040 = 3921 := by
+@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3014 = 3921 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3041 = 3922 := by
+@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3015 = 3922 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3044 = 3925 := by
-  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
-  rfl
-
-@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3043 = 3924 := by
+@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3018 = 3925 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3042 = 3923 := by
+@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3017 = 3924 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3045 = 3926 := by
+
+@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3016 = 3923 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3046 = 3927 := by
+@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3019 = 3926 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3047 = 3928 := by
+@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3020 = 3927 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3048 = 3929 := by
+@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3021 = 3928 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3049 = 3930 := by
+@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3022 = 3929 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3050 = 3931 := by
+@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3023 = 3930 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3051 = 3934 := by
+@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3024 = 3931 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3052 = 3935 := by
+@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3025 = 3934 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
+  rfl
+@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3026 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 

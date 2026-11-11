@@ -1,4 +1,4 @@
-import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimR5Head
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 import Challenge.Modexp.Submission.Proofs.Cycle.Finish
 import Challenge.Modexp.Submission.Proofs.R5.Route
 import Challenge.Modexp.Submission.Proofs.R5.PrologueMeaning
@@ -45,10 +45,6 @@ theorem represents_congr {m1 m2 : ByteArray} {ptr X : Nat}
   apply List.map_congr_left
   intro k hk
   rw [h k (List.mem_range.mp hk)]
-
-theorem entry_represents {mem : ByteArray} {ptr X : Nat} (hp : ptr + 128 ≤ 2048)
-    (hr : Model.FastRepresents mem ptr 4 X) : Model.FastRepresents (SlimR5Head.entryMemory mem) ptr 4 X :=
-  represents_congr (fun k hk => SlimR5Head.entryMemory_read mem _ (Or.inl (by omega))) hr
 
 theorem eq_toNat (a b : UInt256) : (UInt256.eq a b).toNat = if a.toNat = b.toNat then 1 else 0 := by
   simp only [UInt256.eq]
@@ -194,24 +190,5 @@ theorem prologue_route (s : State) (env : Environment CycleSubmission.Artifact.a
   refine ⟨⟨t, (((g1.trans g2).trans g3').trans g4).trans (g5.trans gt), hh, ?_, hcs⟩⟩
   rw [hret, show result N A B k = CycleSubmission.R5.RouteMath.result N A B k from rfl,
     CycleSubmission.R5.RouteMath.result_zmod hNpos hodd]
-
-theorem route (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
-    (hk : 1 ≤ k) (hk16 : k ≤ 16)
-    (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
-    (hact : 88 ≤ s.activeWords.toNat)
-    (hmod : Model.FastRepresents mem 0 4 N)
-    (ha : Model.FastRepresents mem 2112 4 A)
-    (hb : Model.FastRepresents mem 256 4 B)
-    (hinv : (N % Limbs.radix * (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0)
-    (hodd : N % 2 = 1) (hA : A < N) (hB : B < N) :
-    Nonempty (CycleSubmission.Finish.Outcome (SlimR5Head.entryState s mem bsize esize k)
-        (Precompile.natToBytes (result N A B k) 128)) ∨
-    ∃ (stk : List UInt256) (m' : ByteArray),
-      Nonempty (GasSteps (SlimR5Head.entryState s mem bsize esize k)
-        {s with pc := UInt256.ofNat 207, stack := stk, memory := m'}) ∧ stk.length < 900 :=
-  prologue_route s env hact (SlimR5Head.entryMemory mem) _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
-    (SlimFrames.outer mem 4 bsize esize 128) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]) k N A B hk hk16 rfl
-    (entry_represents (by norm_num) hmod) (SlimR5Head.entryMemory_represents mem A ha)
-    (entry_represents (by norm_num) hb) hinv hodd hA hB
 
 end CycleSubmission.Global.R5Route
