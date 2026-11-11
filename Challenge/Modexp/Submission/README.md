@@ -1,8 +1,8 @@
-# Fall through into the private four-limb exit
+# Let the phase flag fall through into cleanup
 
-The private final counter falls through into a copy of the shared phase exit. A dependent-pair trace preserves either possible final exit, and the phase proof handles both. All preceding runtime bytes and the arithmetic implementation are inherited.
+Both shared and private exits directly test the memory flag. Zero falls into a local cleanup; one jumps to the shared phase switch. The existing two-outcome final-loop trace and arithmetic implementation are retained.
 
-Full local run: **355,620 gas**, **44/44 vectors**, **10,971 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `f6a3f817aaf9813028b87dd4638b42337164cb3c3d8a6a3beb6185ddce05cfba`.
+Full local run: **355,600 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `6b0a90eb4ba910548fb4ea8fdae10527b4b42c1a604db30d6230f93976668f6f`.
 
 See the public note and dependencies.json for method, source credit and limitations. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
