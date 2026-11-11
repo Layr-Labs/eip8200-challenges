@@ -771,7 +771,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nbTailState, cacheSetupState, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
+      nbTailState, cacheSetupState, taggedTemplate, phaseTag, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
       outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,

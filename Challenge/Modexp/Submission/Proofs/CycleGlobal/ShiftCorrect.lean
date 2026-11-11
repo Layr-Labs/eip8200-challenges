@@ -74,8 +74,8 @@ theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
     (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0) :
     Model.FastRepresents (hitFinalMem mem input n mm) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
-  RootE3Phase.represents_acc_after_steps _ n mm _ n (by omega) hn32
-    (RootE3Phase.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop htn0)
+  CycleSubmission.Global.StackPhaseMath.represents_acc_after_steps _ n mm _ n (by omega) hn32
+    (CycleSubmission.Global.StackPhaseMath.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop htn0)
 
 /-- The retained `TS` holds the Montgomery residue of the base at `BDONE`. -/
 theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)

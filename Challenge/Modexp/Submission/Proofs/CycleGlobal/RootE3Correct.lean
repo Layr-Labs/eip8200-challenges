@@ -9,7 +9,7 @@ namespace CycleSubmission.Global.RootE3Correct
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
-open RootE3Phase
+open CycleSubmission.Global.StackPhaseMath
 open CycleSubmission.Global.Fast
 
 def Eligible (input : ByteArray) (n bsize esize : Nat) : Prop :=
@@ -113,7 +113,7 @@ namespace CycleSubmission.Global.RootE3Correct
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
-open RootE3Phase
+open CycleSubmission.Global.StackPhaseMath
 open CycleSubmission.Global.Fast
 
 theorem handled_of_bound_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)

@@ -25,13 +25,14 @@ open WindowNibbleKernel
 def frame (s : State) (mem : ByteArray) (pc : Nat) (stack : List UInt256) : State :=
   { s with memory := mem, pc := UInt256.ofNat pc, stack := stack }
 
-def phaseGuardProgram : List Instr := [.push 2 1760, .op .MLOAD, .push 2 10971, .op .JUMPI]
+def guardWidth (b : Bool) : Fin 33 := if b then 2 else 3
+def phaseGuardProgram (b : Bool) : List Instr := [.push (guardWidth b) 1760, .op .MLOAD, .push 2 10971, .op .JUMPI]
 
-theorem run_phaseGuard (s : State) (mem : ByteArray) (pc : Nat) (rest : List UInt256)
+theorem run_phaseGuard (s : State) (mem : ByteArray) (b : Bool) (pc : Nat) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hdest : Decode.isValidJumpDest s.executionEnv.code 10971 = true) :
-    runInstructions phaseGuardProgram (frame s mem pc rest) =
-      some (frame s mem (if (MachineState.readWord mem 1760).toNat = 0 then pc + 8 else 10971) rest) := by
+    runInstructions (phaseGuardProgram b) (frame s mem pc rest) =
+      some (frame s mem (if (MachineState.readWord mem 1760).toNat = 0 then pc + (guardWidth b).val + 6 else 10971) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
@@ -42,8 +43,8 @@ theorem run_phaseGuard (s : State) (mem : ByteArray) (pc : Nat) (rest : List UIn
   have hactive : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) = s.activeWords := by
     rw [ha]
     exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
-  by_cases hv : (MachineState.readWord mem 1760).toNat = 0 <;>
-    simp [runInstructions, phaseGuardProgram, frame, Challenge.EvmProof.Stepper.runInstr,
+  cases b <;> by_cases hv : (MachineState.readWord mem 1760).toNat = 0 <;>
+    simp [runInstructions, phaseGuardProgram, guardWidth, frame, Challenge.EvmProof.Stepper.runInstr,
       hcap0, hcap1, hcap2, State.activeWordsAfterUInt256, hactive,
       hv, hdest, UInt256.isTrue, Nat.add_assoc,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -51,21 +52,21 @@ theorem run_phaseGuard (s : State) (mem : ByteArray) (pc : Nat) (rest : List UIn
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 
-theorem run_phaseGuardZero (s : State) (mem : ByteArray) (pc : Nat) (rest : List UInt256)
+theorem run_phaseGuardZero (s : State) (mem : ByteArray) (b : Bool) (pc : Nat) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 0)
     (hdest : Decode.isValidJumpDest s.executionEnv.code 10971 = true) :
-    runInstructions phaseGuardProgram (frame s mem pc rest) =
-      some (frame s mem (pc + 8) rest) := by
-  simpa [hflag] using run_phaseGuard s mem pc rest hrest hact hdest
+    runInstructions (phaseGuardProgram b) (frame s mem pc rest) =
+      some (frame s mem (pc + (guardWidth b).val + 6) rest) := by
+  simpa [hflag] using run_phaseGuard s mem b pc rest hrest hact hdest
 
-theorem run_phaseGuardOne (s : State) (mem : ByteArray) (pc : Nat) (rest : List UInt256)
+theorem run_phaseGuardOne (s : State) (mem : ByteArray) (b : Bool) (pc : Nat) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
     (hflag : MachineState.readWord mem 1760 = UInt256.ofNat 1)
     (hdest : Decode.isValidJumpDest s.executionEnv.code 10971 = true) :
-    runInstructions phaseGuardProgram (frame s mem pc rest) =
+    runInstructions (phaseGuardProgram b) (frame s mem pc rest) =
       some (frame s mem 10971 rest) := by
-  simpa [hflag] using run_phaseGuard s mem pc rest hrest hact hdest
+  simpa [hflag] using run_phaseGuard s mem b pc rest hrest hact hdest
 
 
 
@@ -156,8 +157,8 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
     Challenge.EvmProof.Word.ofNat_add_mod]
 
 
-def exitPC (b : Bool) : Nat := if b then 10939 else 3036
-def guardPC (b : Bool) : Nat := if b then 10940 else 3038
+def exitPC (b : Bool) : Nat := if b then 10939 else 3035
+def guardPC (b : Bool) : Nat := if b then 10940 else 3037
 def cleanupPC (b : Bool) : Nat := if b then 10948 else 3046
 def exitHeadProgram (b : Bool) : List Instr := if b then [.op .POP] else [.op .JUMPDEST, .op .POP]
 def commonHeadProgram : List Instr := [.op .JUMPDEST]
@@ -181,7 +182,7 @@ theorem run_commonHead (s : State) (mem : ByteArray) (rest : List UInt256)
 open Challenge.EvmProof WindowTwentyOneBinding
 structure PhaseBlocks (artifact : ProgramArtifact) (fork : Fork) where
   exitHead : (b : Bool) → Block artifact fork (exitPC b) (exitHeadProgram b)
-  guard : (b : Bool) → Block artifact fork (guardPC b) phaseGuardProgram
+  guard : (b : Bool) → Block artifact fork (guardPC b) (phaseGuardProgram b)
   cleanup : (b : Bool) → Block artifact fork (cleanupPC b) cleanupProgram
   commonHead : Block artifact fork 10971 commonHeadProgram
   switch : Block artifact fork 10972 phaseSwitchProgram

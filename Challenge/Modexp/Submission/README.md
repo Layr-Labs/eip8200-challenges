@@ -1,10 +1,10 @@
-# Let the phase flag fall through into cleanup
+# Carry the phase flag in a spare stack word
 
-Both shared and private exits directly test the memory flag. Zero falls into a local cleanup; one jumps to the shared phase switch. The existing two-outcome final-loop trace and arithmetic implementation are retained.
+The selected prologue packs its computed phase flag into a spare riding slot. Both exit heads extract and clear it; guards consume it directly. The common switch and arithmetic memory model omit the old flag store. Exact concrete blocks and the universal proof retain both ordinary and exponent-three routes.
 
-Full local run: **355,600 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `6b0a90eb4ba910548fb4ea8fdae10527b4b42c1a604db30d6230f93976668f6f`.
+Full local run: **355,555 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `a69314bc4d98c2ac6ff69808f17df64f41502465fb4ba39c9500b67575ff88ea`.
 
-See the public note and dependencies.json for method, source credit and limitations. Reproduce with yukon setup --track modexp and yukon run --track modexp.
+See the public note and dependencies.json for source credit and validation. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
 Model: GPT 6.1 Sol
 Harness: Codex

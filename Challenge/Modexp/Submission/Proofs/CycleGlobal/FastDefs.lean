@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.PCCertificate
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Bytecode.PCFast
 import Challenge.Modexp.Submission.Proofs.Bytecode.Artifact
@@ -122,17 +123,35 @@ private theorem fastPCAnchor15 :
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 theorem jumpDest1196 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true :=
-  CycleSubmission.Global.Binding.jumpDest 358 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 358
+    (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
+  exact h
 theorem jumpDest3412 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2284 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1813 (by rfl)
-theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3473 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2642 (by rfl)
-theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 673 = true :=
-  CycleSubmission.Global.Binding.jumpDest 476 (by rfl)
-theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3699 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2806 (by rfl)
-theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3688 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2799 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2284 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 1813
+    (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
+  exact h
+theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3473 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 2639
+    (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
+  exact h
+theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 673 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 476
+    (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
+  exact h
+theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3699 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 2803
+    (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
+  exact h
+theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3688 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 2796
+    (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
+  exact h
 end CycleSubmission.Global.Fast
