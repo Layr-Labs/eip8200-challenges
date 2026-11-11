@@ -25,7 +25,7 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (s := SlimFrames.special s mem 4 bsize esize 128 k)
     (env.transfer rfl rfl) rfl (call_run s mem bsize esize k hk hk16
       (by rw [env.code]; exact CycleSubmission.CallerBlocks.valid3181)) rho
-    (by simp [SlimFrames.special, SlimFrames.outer, peakInstructions, CallerBlocks.fixedProgram,
+    (by simp [SlimFrames.special, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, peakInstructions, CallerBlocks.fixedProgram,
       pops, pushes, Operation.popArity, Operation.pushArity]; omega)
   have hmiw : (MachineState.readWord mem 2720).toNat = mi := by
     rw [hf.minvW, Exp.toNat_ofNat_self hmi]
@@ -39,10 +39,10 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     have h := congrArg UInt256.toNat h
     simpa only [Exp.toNat_ofNat_self hmi, Exp.toNat_ofNat_self (by decide : 1 < 2^256)] using h
   have g1 := CycleSubmission.Global.Fast.Cios2Dispatch.gasSteps_commonSetupSq s mem
-    (UInt256.ofNat 3710) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (UInt256.ofNat (k-1))
-    ((SlimFrames.outer 4 bsize esize 128 ++ rho)) (by simp [SlimFrames.outer] <;> omega)
+    (UInt256.ofNat 3710) 2112 512 (2 + 2) (UInt256.ofNat (k - 1)) (MachineState.readWord mem 1312)
+    (((SlimFrames.outer mem 4 bsize esize 128).tail ++ rho)) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
     env.running env.code env.forkEq env.noPrecompile hact (Or.inl rfl) (by omega)
-    (by decide) (by omega) hcds hf.s32 hf.ml (by simp [SlimFrames.outer] <;> omega)
+    (by decide) (by omega) hcds hf.s32 hf.ml
     CycleSubmission.Global.Fast.SquareStagedEntry.jumpDest hguard
     (CiosInverseGuard.inverse_ne_zero _ _ hinvW)
   have g2 := CycleSubmission.Global.Fast.SquareStagedEntry.gasSteps_entry s
@@ -51,15 +51,15 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     (UInt256.ofNat 0)
     (UInt256.ofNat 0 :: UInt256.ofNat 0 :: MachineState.readWord mem 2720 ::
       UInt256.ofNat 0 :: UInt256.ofNat 0 ::
-      UInt256.ofNat (k - 1) :: UInt256.ofNat (k-1) :: (SlimFrames.outer 4 bsize esize 128 ++ rho))
-    (by simp [SlimFrames.outer] <;> omega) env.running env.code env.forkEq env.noPrecompile hact
+      UInt256.ofNat (k - 1) :: MachineState.readWord mem 1312 :: ((SlimFrames.outer mem 4 bsize esize 128).tail ++ rho))
+    (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega) env.running env.code env.forkEq env.noPrecompile hact
   have g3 := gasSteps_h1 s (SquarePartialClear.memory (stageW mem 2112 (2 + 2)))
     (CycleSubmission.Global.Fast.SquareStagedEntry.qWord (2 + 2)) (UInt256.ofNat 3347)
     (UInt256.ofNat 0) (MachineState.readWord mem 2720)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
     (UInt256.ofNat 0) (UInt256.ofNat 0)
-    (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (UInt256.ofNat (k-1))
-    ((SlimFrames.outer 4 bsize esize 128 ++ rho)) (by simp [SlimFrames.outer] <;> omega)
+    (UInt256.ofNat 0) (UInt256.ofNat (k - 1)) (MachineState.readWord mem 1312)
+    (((SlimFrames.outer mem 4 bsize esize 128).tail ++ rho)) (by simp [SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
     env.running env.code env.forkEq env.noPrecompile CycleSubmission.Global.Fast.SquareStagedEntry.qWord_four
   simpa only [append, entryState, entryMemory, frameAt, frameStack, List.append_assoc, List.cons_append] using ((head.trans g1).trans g2).trans g3
 

@@ -406,8 +406,8 @@ def zeroExpReturnProgram80 : List Instr :=
   [.op (.Dup dA0), .op .MSIZE, .op .SUB, .op .RETURN]
 
 def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4738 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3609 4 4738 zeroExpReturnProgram80
-    (by change 3609 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block Artifact.wellFormed 3608 4 4738 zeroExpReturnProgram80
+    (by change 3608 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -1394,7 +1394,7 @@ def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
            activeWords := setupWords s.activeWords input }
 private theorem jumpDest3296 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2357 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1855 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 1854 (by rfl)
 namespace MsizeSetup
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 set_option linter.unusedSimpArgs false
@@ -1562,7 +1562,7 @@ theorem copyWords88 (n : Nat) (hn : n ≤ 1024) :
 
 def restProgram : List Instr := program80.drop 17
 private theorem jumpDest2390 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2357 = true :=
-  CycleSubmission.Global.Binding.jumpDest 1855 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 1854 (by rfl)
 
 theorem run_rest (s : State) (input : ByteArray) (m0 : Nat)
     (hdata : s.executionEnv.calldata = input)

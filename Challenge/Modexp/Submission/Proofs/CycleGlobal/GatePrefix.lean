@@ -78,11 +78,11 @@ def gasSteps_hit (s : State) (mem input : ByteArray) (n bsize msize : Nat)
  have hg := blockSteps_append guardBlock
   (s := entryState s mem n bsize 3 msize) (env.transfer rfl rfl) rfl
   (run_guard_hit s mem n bsize msize hb hbs hsize (by rw [exponent_eq s input bsize hdata, he])) rho
-  (by simp [entryState, frame, SlimFrames.outer, guardProgram, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]; omega)
+  (by simp [entryState, frame, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, guardProgram, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]; omega)
  have hp := blockSteps_append hitPushBlock
   (s := frame s mem 2334 n bsize 3 msize) (env.transfer rfl rfl) rfl
   (run_hitPush s mem n bsize msize) rho
-  (by simp [frame, SlimFrames.outer, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]; omega)
+  (by simp [frame, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]; omega)
  exact hg.trans hp
 
 def gasSteps_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -94,7 +94,7 @@ def gasSteps_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (append (SlimFrames.bailState s mem n bsize esize msize) rho) := by
  apply blockSteps_append guardBlock (s := entryState s mem n bsize esize msize) (env.transfer rfl rfl) rfl
   (run_miss s mem n bsize esize msize hb hbs hsize hc (by rw [env.code]; exact jumpDestBail)) rho
- simp [entryState, frame, SlimFrames.outer, guardProgram, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]
+ simp [entryState, frame, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, guardProgram, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]
  omega
 
 def gasSteps_threeHit (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
@@ -108,7 +108,7 @@ def gasSteps_threeHit (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  let env : Environment CycleSubmission.Artifact.artifact .Osaka s := ⟨(by change CycleSubmission.Artifact.bytecode.size < 2^256; rw [CycleSubmission.Artifact.bytecodeSize]; norm_num),hcode,hfork,hrun,hnp⟩
  apply blockSteps_append e3Block (s := e3go s mem n bsize esize msize) (env.transfer rfl rfl) rfl
   (run_e3 s mem n bsize esize msize (by rw [hcode]; exact jumpDestSpecial)) rho
- simp [e3go, frame, SlimFrames.outer, e3Program, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]
+ simp [e3go, frame, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, e3Program, peakInstructions, pushes, pops, Operation.popArity, Operation.pushArity]
  omega
 #print axioms gasSteps_hit
 #print axioms gasSteps_miss

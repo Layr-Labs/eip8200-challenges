@@ -17,12 +17,12 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 def frame (s : State) (mem : ByteArray) (pc : Nat) (stack : List UInt256) : State :=
   { s with memory := mem, pc := UInt256.ofNat pc, stack := stack }
-def exitPC (b : Bool) : Nat := if b then 10956 else 3052
-def guardPC (b : Bool) : Nat := if b then 10957 else 3054
-def cleanupPC (b : Bool) : Nat := if b then 10965 else 3063
+def exitPC (b : Bool) : Nat := if b then 10956 else 3053
+def guardPC (b : Bool) : Nat := if b then 10957 else 3055
+def cleanupPC (b : Bool) : Nat := if b then 10967 else 3065
 def headProgram (b : Bool) : List Instr :=
   if b then [.op (.Swap ⟨15, by decide⟩)] else [.op .JUMPDEST, .op (.Swap ⟨15, by decide⟩)]
-def guardWidth (b : Bool) : Fin 33 := if b then 6 else 7
+def guardWidth (b : Bool) : Fin 33 := if b then 8 else 8
 def guardProgram (b : Bool) : List Instr := [.push (guardWidth b) 10971, .op .JUMPI]
 
 theorem run_head (b : Bool) (s : State) (mem : ByteArray) (flag z : UInt256)
@@ -115,11 +115,8 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
 
 
 
-def cleanupProgram : List Instr :=
- [.op (.Swap ⟨15, by decide⟩), .op (.Dup ⟨14, by decide⟩), .op (.Swap ⟨0, by decide⟩), .op .JUMP]
-def cleanupSuffix (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) : List UInt256 :=
-  (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize).tail.take 15 ++
-    [CycleSubmission.Global.Fast.Shift.headWord n] ++ Exp.outer n bsize esize msize
+def cleanupProgram : List Instr := [.op (.Swap ⟨15, by decide⟩), .op .JUMP]
+def cleanupSuffix (_d : Nat) (_mem : ByteArray) (_n _bsize _esize _msize : Nat) : List UInt256 := []
 
 theorem run_cleanup (s : State) (mem : ByteArray) (pc d target n bsize esize msize : Nat)
     (hbs : bsize = 32 * n) (hms : msize = 32 * n)
@@ -128,16 +125,16 @@ theorem run_cleanup (s : State) (mem : ByteArray) (pc d target n bsize esize msi
     (hdest : Decode.isValidJumpDest s.executionEnv.code target = true) :
     runInstructions cleanupProgram
       (frame s mem pc (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize ++ Exp.outer n bsize esize msize)) =
-      some (frame s mem target (CycleSubmission.Global.SlimFrames.outer n bsize esize msize ++ cleanupSuffix d mem n bsize esize msize)) := by
+      some (frame s mem target (CycleSubmission.Global.SlimFrames.outer mem n bsize esize msize ++ cleanupSuffix d mem n bsize esize msize)) := by
   have hmod : target % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = target := Nat.mod_eq_of_lt hlt
-  simp (config := {maxSteps := 400000}) [CycleSubmission.Global.SlimFrames.outer, cleanupProgram, cleanupSuffix, runInstructions, frame, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
+  simp (config := {maxSteps := 400000}) [CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, cleanupProgram, cleanupSuffix, runInstructions, frame, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
     Challenge.EvmProof.Stepper.runInstr, List.exchange, hbs, hms, hE, htarget, hmod, hdest,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt,
     Challenge.EvmProof.Word.succ_ofNat_mod]
 
 theorem cleanupSuffix_length (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) :
-    (cleanupSuffix d mem n bsize esize msize).length = 21 := by
+    (cleanupSuffix d mem n bsize esize msize).length = 0 := by
   simp [cleanupSuffix, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
 
 

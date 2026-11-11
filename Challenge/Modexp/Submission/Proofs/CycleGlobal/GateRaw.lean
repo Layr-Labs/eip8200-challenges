@@ -14,13 +14,13 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNi
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def guardProgram : List Instr :=
- [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 1 96, .op .ADD,
+ [.op .JUMPDEST, .op (.Dup ⟨13, by decide⟩), .push 1 96, .op .ADD,
   .op .CALLDATALOAD, .push 1 232, .op .SHR, .push 3 65537, .op .XOR,
   .push 1 32, .op .CALLDATALOAD, .push 1 3, .op .XOR, .op .OR,
   .push 1 207, .op .JUMPI]
 def hitProgram : List Instr := guardProgram ++ [.push 1 15]
 def frame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
- {s with memory := mem, pc := UInt256.ofNat pc, stack := CycleSubmission.Global.SlimFrames.outer n bsize esize msize}
+ {s with memory := mem, pc := UInt256.ofNat pc, stack := CycleSubmission.Global.SlimFrames.outer mem n bsize esize msize}
 def exponentWord (s : State) (bsize : Nat) : UInt256 :=
  UInt256.shiftRight (MachineState.readWord s.executionEnv.calldata (96+bsize)) (UInt256.ofNat 232)
 def guardValue (s : State) (bsize esize : Nat) : UInt256 :=
@@ -37,7 +37,7 @@ theorem run_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  runInstructions e3Program (e3go s mem n bsize esize msize) =
    some (CycleSubmission.Global.SlimFrames.special s mem n bsize esize msize 1) := by
  simp [Exp.push0_word, e3Program, e3go, frame, runInstructions, Stepper.runInstr,
-  CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, hd, Word.literal_eq_ofNat,
+  CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, hd, Word.literal_eq_ofNat,
   Word.word_toNat_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
 theorem pointer (bsize : Nat) (hb : bsize ≤ 1024) :
@@ -57,7 +57,7 @@ theorem run_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  have hs : UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat 3) = UInt256.ofNat 0 := by decide
  have ho : UInt256.lor (UInt256.ofNat 0) (UInt256.ofNat 0) = UInt256.ofNat 0 := by decide
  simp [hitProgram, guardProgram, runInstructions, Stepper.runInstr, frame,
-   CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, hbs, hsize, pointer bsize hb, hp, he', hx, hs, ho,
+   CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, hbs, hsize, pointer bsize hb, hp, he', hx, hs, ho,
    UInt256.isTrue, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
    Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
@@ -74,7 +74,7 @@ theorem run_guard_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  have hs : UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat 3) = UInt256.ofNat 0 := by decide
  have ho : UInt256.lor (UInt256.ofNat 0) (UInt256.ofNat 0) = UInt256.ofNat 0 := by decide
  simp [hitProgram, guardProgram, runInstructions, Stepper.runInstr, frame,
-   CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, hbs, hsize, pointer bsize hb, hp, he', hx, hs, ho,
+   CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, hbs, hsize, pointer bsize hb, hp, he', hx, hs, ho,
    UInt256.isTrue, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
    Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
@@ -88,7 +88,7 @@ theorem run_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  have hp : (96+bsize) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 96+bsize := Nat.mod_eq_of_lt (by omega)
  have hc' := hc
  simp only [guardValue, exponentWord] at hc'
- simp [guardProgram, runInstructions, Stepper.runInstr, frame, CycleSubmission.Global.SlimFrames.outer,
+ simp [guardProgram, runInstructions, Stepper.runInstr, frame, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
    hbs, hsize, pointer bsize hb, hp, hc', hd,
    Word.literal_eq_ofNat, Word.word_toNat_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
@@ -112,7 +112,7 @@ theorem miss_exponent (s : State) (bsize esize : Nat)
 theorem run_hitPush (s : State) (mem : ByteArray) (n bsize msize : Nat) :
  runInstructions [.push 1 15] (frame s mem 2334 n bsize 3 msize) =
  some (CycleSubmission.Global.SlimFrames.special s mem n bsize 3 msize 16) := by
- simp [runInstructions, Stepper.runInstr, frame, CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer,
+ simp [runInstructions, Stepper.runInstr, frame, CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
  Word.literal_eq_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod]
 end CycleSubmission.Global.GateRaw
 #print axioms CycleSubmission.Global.GateRaw.run_hit

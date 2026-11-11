@@ -68,8 +68,8 @@ set_option linter.unusedSimpArgs false in
 
 /-- The kernel `setup`: instructions 2602..2660 (pc 3445..3531), 59 instructions. -/
 def setup : Block CycleSubmission.Artifact.artifact .Osaka 3147 CycleSubmission.DeadSetup.fullEntryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2402 33 3147 CycleSubmission.DeadSetup.fullEntryProgram
-    (by change 2402 + 33 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2399 35 3147 CycleSubmission.DeadSetup.fullEntryProgram
+    (by change 2399 + 35 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -120,7 +120,6 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (_hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (_hw : rest[0]? = some (UInt256.ofNat (32 * n)))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode hd.toNat = true) :
     Challenge.EvmProof.GasSteps
       (relocatedSetupState s mem hd pa pb pdst ret rest)
@@ -133,7 +132,7 @@ opaque gasSteps_setupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : 
   setup.steps (environment (relocatedSetupState s mem hd pa pb pdst ret rest) hcode hfork hrun hnp)
     rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem hd pa pb n pdst ret rest hcap hact hn hn32 hpaFit hpb hpbFit
-      hcds hs32 _hw (by rw [hcode]; exact hjump))
+      hcds hs32 (by rw [hcode]; exact hjump))
 
 /-- `common` → `setup` with the square-loop frame's width slot (the limb count). -/
 opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa pb n : Nat)
@@ -149,7 +148,6 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
     (hcds : s.executionEnv.calldata.size < 2 ^ 256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n))
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
-    (hw : rest[0]? = some (UInt256.ofNat (32 * n)))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode hd.toNat = true)
     (hguard : MachineState.readWord mem 2720 ≠ UInt256.ofNat 1)
     (hzero : MachineState.readWord mem 2720 ≠ UInt256.ofNat 0) :
@@ -170,6 +168,6 @@ opaque gasSteps_commonSetupSq (s : State) (mem : ByteArray) (hd : UInt256) (pa p
       hwidth hguard hzero).trans
     (gasSteps_setupSq s mem hd pa pb n pdst ret rest hcap hrun hcode hfork hnp hact
       (by rcases hn with rfl | rfl <;> omega) (by rcases hn with rfl | rfl <;> omega) hn
-      hpaFit hpb hpbFit hcds hs32 hml hw hjump)
+      hpaFit hpb hpbFit hcds hs32 hml hjump)
 
 end CycleSubmission.Global.Fast.Cios2Dispatch

@@ -68,11 +68,11 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
       subst hms8
       have head := CycleSubmission.Global.TailRoutes.bail8 s mem bsize esize k mi rho hrho hk hk16 env hact hcds hf (by omega)
       obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-        (CycleSubmission.CallerPrefix.stateAt s mem k (UInt256.ofNat (k-1))
-          ((SlimFrames.outer 8 bsize esize 256) ++ rho) 207)
+        (CycleSubmission.CallerPrefix.stateAt s mem k (MachineState.readWord mem 1312)
+          ((SlimFrames.outer mem 8 bsize esize 256).tail ++ rho) 207)
         (env.transfer rfl rfl) rfl
         (by simp [append, CycleSubmission.CallerPrefix.stateAt, CycleSubmission.EntryMeaning.saved,
-          CycleSubmission.CallerPrefix.frame, SlimFrames.outer] <;> omega)
+          CycleSubmission.CallerPrefix.frame, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
         hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
         (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
       exact ⟨done, ⟨head.trans tail⟩, hd, by
@@ -106,7 +106,7 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
       Handled input (append (GateRaw.entryState s mem n bsize esize msize) rho) := by
     obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
       (append (SlimFrames.bailState s mem n bsize esize msize) rho) (env.transfer rfl rfl) rfl
-      (by simp [append, SlimFrames.bailState, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer] <;> omega)
+      (by simp [append, SlimFrames.bailState, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
       (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
     refine ⟨done, ⟨tr.trans tail⟩, hd, ?_⟩

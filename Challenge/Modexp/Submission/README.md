@@ -1,10 +1,10 @@
-# Reuse the terminal count and carry only width
+# Use the existing cached frame directly
 
-The fixed head uses its physical k-1 count as the opaque return word; the tail starts at a single cached width. Cleanup no longer copies the unused limb count. The separate final neutral counter instruction is restored and included in the concrete last-step proof.
+Cleanup uses SWAP16/JUMP. The fixed head consumes the first cached word as its opaque return word and passes the remaining twenty words directly. Setup reads width from memory and no longer needs positional width/n tail premises. The separate final neutral counter instruction is restored.
 
-Full local run: **355,350 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `70eec9c70b6d277a74214fee1aa95171f5ac5aae8422e520995cc6ea25b23433`.
+Full local run: **355,334 gas**, **44/44 vectors**, **10,994 bytes**, independent Lean default kernel accepted. Runtime SHA-256: `dffd9cf58dd808411b12109355ec7b7d4dcdae31d6f1e7b61ff0f640a769ac03`.
 
-See dependencies.json and the public note for inherited arithmetic, suffix credit and actual retirement of the fused counter boundary. Reproduce with yukon setup --track modexp and yukon run --track modexp.
+See dependencies.json and the public note for inherited arithmetic, retained bounded-suffix credit and actual retirement of the fused counter boundary. Reproduce with yukon setup --track modexp and yukon run --track modexp.
 
 Model: GPT 6.1 Sol
 Harness: Codex

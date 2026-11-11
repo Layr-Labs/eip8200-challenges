@@ -124,9 +124,7 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (hcap : tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
-    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (_hw : tail[0]? = some (UInt256.ofNat 256))
-    :
+    (_hml : MachineState.readWord mem 2752 = UInt256.ofNat 224) :
     GasSteps (call s mem k ret tail) (staged s mem k ret tail) := by
   have hcommon := commonBlock.steps (s := call s mem k ret tail)
     (env.transfer rfl rfl) rfl (jumpDest_run _ (by
@@ -136,7 +134,7 @@ noncomputable opaque setupTrace (s : State) (mem : ByteArray) (k : Nat) (ret : U
     (env.transfer rfl rfl) rfl
     (CycleSubmission.DeadSetup.run_entry_sq s mem (UInt256.ofNat 3710) 2112 512 8
       (UInt256.ofNat (k-1)) ret tail (by omega) hact (by decide) (by decide)
-      (by decide) (by decide) (by decide) hcds hs32 _hw
+      (by decide) (by decide) (by decide) hcds hs32
       (by rw [env.code]; exact valid3728))
   exact hcommon.trans hsetup
 
@@ -211,10 +209,9 @@ noncomputable def run (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (t
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (hw : tail[0]? = some (UInt256.ofNat 256))
     (hg : (guardWord mem).toNat ≠ 0) :
     GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 5383) :=
-  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw).trans
+  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml).trans
     (suffixTrace s mem k ret tail env hcap hact hg)
 
 noncomputable def bail (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (tail : List UInt256)
@@ -223,10 +220,9 @@ noncomputable def bail (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256) (
     (hcds : s.executionEnv.calldata.size < 2^256)
     (hs32 : MachineState.readWord mem 2688 = UInt256.ofNat 256)
     (hml : MachineState.readWord mem 2752 = UInt256.ofNat 224)
-    (hw : tail[0]? = some (UInt256.ofNat 256))
     (hg : (guardWord mem).toNat = 0) :
     GasSteps (call s mem k ret tail) (stateAt s mem k ret tail 207) :=
-  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml hw).trans
+  (setupTrace s mem k ret tail env hcap hact hcds hs32 hml).trans
     (bailTrace s mem k ret tail env hcap hact hg)
 
 set_option exponentiation.threshold 4096 in
