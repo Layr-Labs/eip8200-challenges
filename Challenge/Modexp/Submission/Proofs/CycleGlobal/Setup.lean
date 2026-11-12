@@ -258,12 +258,12 @@ def fallbackState (s : State) : State :=
 def memoEntryState (s : State) : State :=
   { s with pc := UInt256.ofNat 674, stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 3428, stack := [] }
+  { s with pc := UInt256.ofNat 3436, stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 3473, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 3481, stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 3480
+    pc := UInt256.ofNat 3488
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -406,8 +406,8 @@ def zeroExpReturnProgram80 : List Instr :=
   [.op (.Dup dA0), .op .MSIZE, .op .SUB, .op .RETURN]
 
 def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4738 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3622 4 4738 zeroExpReturnProgram80
-    (by change 3622 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block Artifact.wellFormed 3621 4 4738 zeroExpReturnProgram80
+    (by change 3621 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

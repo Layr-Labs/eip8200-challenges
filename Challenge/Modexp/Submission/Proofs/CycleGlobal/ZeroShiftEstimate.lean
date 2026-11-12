@@ -81,7 +81,7 @@ private theorem zero_estimate_h4_program :
     (blkEstimateSuffix4.drop 3).map Challenge.EvmProof.Stepper.Located.instruction =
       estimateRawPart2 ++ (estimateRawPart3 ++ (estimateRawPart4 ++ estimateRawPart5)) := by rfl
 private theorem zero_estimate_h4_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10724) (blkEstimateSuffix4.drop 3) := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10725) (blkEstimateSuffix4.drop 3) := by
   dsimp only [blkEstimateSuffix4, List.drop, opAt, pushAt, wfOp,
     WindowTwentyOneLocated.LinearPath, WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push, YulEvmCompiler.Instr.size_op,
@@ -102,7 +102,7 @@ theorem run_zeroEstimate_right4 (z : UInt256) (s : State) (mem : ByteArray)
         (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
           (run_estimate_h4_part4 z s mem n bsize esize msize k hn hact hcode hrun)
           (run_estimate_h4_part5 z s mem n bsize esize msize k hn hact hcode hrun)))
-  refine WindowTwentyOneLocated.run_linear (blkEstimateSuffix4.drop 3) (UInt256.ofNat 10724)
+  refine WindowTwentyOneLocated.run_linear (blkEstimateSuffix4.drop 3) (UInt256.ofNat 10725)
     (estimate16 z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
     ?_ zero_estimate_h4_layout ?_ hrun ?_
   · change CycleSubmission.Artifact.bytecode.size < 2^256

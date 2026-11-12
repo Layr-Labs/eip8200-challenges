@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.DirectWordMath
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Mathlib.Data.Nat.Bitwise
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
@@ -113,7 +114,7 @@ open CycleSubmission.Global.ShiftPCs
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2032 = 2591 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2034 = 2602 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -737,7 +738,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
     (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
-    Challenge.EvmProof.Stepper.runLocatedBlock blkNbTail
+    Challenge.EvmProof.Stepper.runLocatedBlock (blkNbTail esize)
       (nbTailState s M d n0 n bsize esize msize) =
       some (cacheSetupState s (nbOutMem M d n0) n bsize esize msize) := by
   have haw1312 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1312 32) =
@@ -768,13 +769,24 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 2500000 })
-    [blkNbTail, opAt, pushAt, wfOp, List.exchange, CycleSubmission.Prepared.Arithmetic.mulC,
+  have heq11 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat 1) = UInt256.ofNat 1 := by decide
+  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 1605 + UInt256.ofNat 2310 = UInt256.ofNat 2310 := by decide
+  have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
+      s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
+  have hz1 : UInt256.isZero (UInt256.ofNat 1) = UInt256.ofNat 0 := by decide
+  have heqSize : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize) =
+      (if UInt256.ofNat esize = UInt256.ofNat 1 then UInt256.ofNat 1 else UInt256.ofNat 0) := by
+    simp only [CycleSubmission.Global.DirectWordMath.eq_word, eq_comm]
+  by_cases hsize : UInt256.ofNat esize = UInt256.ofNat 1
+  all_goals simp (config := { maxSteps := 3000000 })
+    [blkNbTail, blkNbTailHead, blkNbTailByte, blkNbTailJoin, hsize, heqSize, heq11, hzeroAdd, jumpDestNbJoin,
+      CycleSubmission.Global.DirectWordMath.land_eq_zero, CycleSubmission.Global.DirectWordMath.land_eq_one, hz0, hz1, Exp.not_isTrue_zero, Exp.isTrue_one, opAt, pushAt, wfOp, List.exchange, CycleSubmission.Prepared.Arithmetic.mulC,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      nbTailState, cacheSetupState, initialPhase, taggedTemplate, phaseTag, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
-      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, haw2656, Exp.push0_word,
+      nbTailState, cacheSetupState, initialContinuation, CycleSubmission.Prepared.Arithmetic.addC, initialPhase, slotState, rideSlots, nbOutMem, Exp.storeWord, PRE_DINV,
+      outer, Exp.outer, hcode, hrun, haw1312, haw1344, haw1376, haw1408, haw1440, haw1472, haw1504, haw1536, haw1568, haw1600, haw1632, haw1664, haw2720, haw2656, haw32, Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

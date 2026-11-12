@@ -461,7 +461,7 @@ theorem prCol1_eq (s : State) (c q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 
       {s with pc := N 4713, stack := (prCol1_o0 c q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 n0) :: (prCol1_o1 c q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 n0) :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol1Model, prCol1_o0, prCol1_o1, h_b0, h_b1, h_n0]
 
-/-! ## prCol2: pc 3256..3334, 68 instructions -/
+/-! ## prCol2: pc 3264..3342, 68 instructions -/
 
 def p2c0P : List Instr :=
   [.op .JUMPDEST,
@@ -476,11 +476,11 @@ def p2c0M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : W) (r
   let v0 : W := MachineState.readWord s.memory 64
   let v1 : W := x3 * v0
   let v2 : W := v1 + x0
-  {s with pc := N 3259, memory := s.memory, stack := v2 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
+  {s with pc := N 3267, memory := s.memory, stack := v2 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
 
 theorem p2c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c0P {s with pc := N 3251, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+    runInstructions p2c0P {s with pc := N 3259, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
       some (p2c0M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -503,11 +503,11 @@ def p2c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W
   let v1 : W := x5 * v0
   let v2 : W := v1 + x0
   let v3 : W := MachineState.readWord s.memory 0
-  {s with pc := N 3268, memory := s.memory, stack := x6 :: v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := N 3276, memory := s.memory, stack := x6 :: v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem p2c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c1P {s with pc := N 3259, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions p2c1P {s with pc := N 3267, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
       some (p2c1M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -532,11 +532,11 @@ def p2c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := v0 + x2
   let v2 : W := x5 * x12
   let v3 : W := v2 + v1
-  {s with pc := N 3276, memory := s.memory, stack := x4 :: x11 :: v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3284, memory := s.memory, stack := x4 :: x11 :: v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p2c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c2P {s with pc := N 3268, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p2c2P {s with pc := N 3276, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p2c2M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -557,11 +557,11 @@ def p2c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := v0 + x2
   let v2 : W := x16 * v1
   let v3 : W := UInt256.shiftRight v2 (N 16)
-  {s with pc := N 3285, memory := s.memory, stack := x15 :: x3 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3293, memory := s.memory, stack := x15 :: x3 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p2c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c3P {s with pc := N 3276, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p2c3P {s with pc := N 3284, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p2c3M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -582,11 +582,11 @@ def p2c4M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := UInt256.mulMod x5 v0 x0
   let v2 : W := v1 + x1
   let v3 : W := MachineState.readWord s.memory 32
-  {s with pc := N 3295, memory := s.memory, stack := v3 :: x14 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := N 3303, memory := s.memory, stack := v3 :: x14 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem p2c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c4P {s with pc := N 3285, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions p2c4P {s with pc := N 3293, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (p2c4M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -611,11 +611,11 @@ def p2c5M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := v0 + x2
   let v2 : W := MachineState.readWord s.memory 0
   let v3 : W := UInt256.mulMod x8 v2 x15
-  {s with pc := N 3303, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3311, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p2c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c5P {s with pc := N 3295, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p2c5P {s with pc := N 3303, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p2c5M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -637,11 +637,11 @@ def p2c6M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v0 : W := x0 + x1
   let v1 : W := UInt256.mulMod x4 x11 x14
   let v2 : W := v1 + v0
-  {s with pc := N 3311, memory := s.memory, stack := x10 :: x14 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := N 3319, memory := s.memory, stack := x10 :: x14 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem p2c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c6P {s with pc := N 3303, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions p2c6P {s with pc := N 3311, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (p2c6M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -662,11 +662,11 @@ def p2c7M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := v0 + x2
   let v2 : W := MachineState.readWord s.memory 160
   let v3 : W := UInt256.mulMod x3 v2 x15
-  {s with pc := N 3320, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3328, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p2c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c7P {s with pc := N 3311, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p2c7P {s with pc := N 3319, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p2c7M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -684,11 +684,11 @@ def p2c8P : List Instr :=
 def p2c8M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
   let v1 : W := UInt256.mulMod (N 2048) v0 x14
-  {s with pc := N 3327, memory := s.memory, stack := v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := N 3335, memory := s.memory, stack := v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem p2c8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p2c8P {s with pc := N 3320, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions p2c8P {s with pc := N 3328, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (p2c8M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -797,11 +797,11 @@ def prCol2Model (s : State) (c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : W) 
   let v29 : W := UInt256.mulMod v14 v28 P
   let v30 : W := v29 + v27
   let v31 : W := UInt256.mulMod (N 2048) v30 P
-  {s with pc := N 3327, memory := s.memory, stack := v31 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
+  {s with pc := N 3335, memory := s.memory, stack := v31 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
 
 theorem prCol2_run (s : State) (c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol2Program {s with pc := N 3251, stack := c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} =
+    runInstructions prCol2Program {s with pc := N 3259, stack := c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} =
       some (prCol2Model s c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest) := by
   let v0 : W := MachineState.readWord s.memory 64
   let v1 : W := x0 * v0
@@ -835,23 +835,23 @@ theorem prCol2_run (s : State) (c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : 
   let v29 : W := UInt256.mulMod v14 v28 P
   let v30 : W := v29 + v27
   let v31 : W := UInt256.mulMod (N 2048) v30 P
-  have h0 : runInstructions p2c0P {s with pc := N 3251, memory := s.memory, stack := c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3259, memory := s.memory, stack := v2 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h0 : runInstructions p2c0P {s with pc := N 3259, memory := s.memory, stack := c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3267, memory := s.memory, stack := v2 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c0M, v0, v1, v2] using p2c0_run (s) c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h1 : runInstructions p2c1P {s with pc := N 3259, memory := s.memory, stack := v2 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3268, memory := s.memory, stack := x2 :: v6 :: v5 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h1 : runInstructions p2c1P {s with pc := N 3267, memory := s.memory, stack := v2 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3276, memory := s.memory, stack := x2 :: v6 :: v5 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c1M, v3, v4, v5, v6] using p2c1_run (s) v2 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h2 : runInstructions p2c2P {s with pc := N 3268, memory := s.memory, stack := x2 :: v6 :: v5 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3276, memory := s.memory, stack := q1 :: n1 :: v10 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h2 : runInstructions p2c2P {s with pc := N 3276, memory := s.memory, stack := x2 :: v6 :: v5 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3284, memory := s.memory, stack := q1 :: n1 :: v10 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c2M, v7, v8, v9, v10] using p2c2_run (s) x2 v6 v5 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h3 : runInstructions p2c3P {s with pc := N 3276, memory := s.memory, stack := q1 :: n1 :: v10 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3285, memory := s.memory, stack := P :: c :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h3 : runInstructions p2c3P {s with pc := N 3284, memory := s.memory, stack := q1 :: n1 :: v10 :: c :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3293, memory := s.memory, stack := P :: c :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c3M, v11, v12, v13, v14] using p2c3_run (s) q1 n1 v10 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h4 : runInstructions p2c4P {s with pc := N 3285, memory := s.memory, stack := P :: c :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3295, memory := s.memory, stack := v18 :: P :: v17 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h4 : runInstructions p2c4P {s with pc := N 3293, memory := s.memory, stack := P :: c :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3303, memory := s.memory, stack := v18 :: P :: v17 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c4M, v15, v16, v17, v18] using p2c4_run (s) P c v14 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h5 : runInstructions p2c5P {s with pc := N 3295, memory := s.memory, stack := v18 :: P :: v17 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3303, memory := s.memory, stack := v22 :: v20 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h5 : runInstructions p2c5P {s with pc := N 3303, memory := s.memory, stack := v18 :: P :: v17 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3311, memory := s.memory, stack := v22 :: v20 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c5M, v19, v20, v21, v22] using p2c5_run (s) v18 P v17 v14 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h6 : runInstructions p2c6P {s with pc := N 3303, memory := s.memory, stack := v22 :: v20 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3311, memory := s.memory, stack := n1 :: P :: v25 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h6 : runInstructions p2c6P {s with pc := N 3311, memory := s.memory, stack := v22 :: v20 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3319, memory := s.memory, stack := n1 :: P :: v25 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c6M, v23, v24, v25] using p2c6_run (s) v22 v20 v14 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h7 : runInstructions p2c7P {s with pc := N 3311, memory := s.memory, stack := n1 :: P :: v25 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3320, memory := s.memory, stack := v29 :: v27 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h7 : runInstructions p2c7P {s with pc := N 3319, memory := s.memory, stack := n1 :: P :: v25 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3328, memory := s.memory, stack := v29 :: v27 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c7M, v26, v27, v28, v29] using p2c7_run (s) n1 P v25 v14 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h8 : runInstructions p2c8P {s with pc := N 3320, memory := s.memory, stack := v29 :: v27 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3327, memory := s.memory, stack := v31 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h8 : runInstructions p2c8P {s with pc := N 3328, memory := s.memory, stack := v29 :: v27 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3335, memory := s.memory, stack := v31 :: v14 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p2c8M, v30, v31] using p2c8_run (s) v29 v27 v14 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 h8))))))))
 
@@ -867,10 +867,10 @@ theorem prCol2_eq (s : State) (c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 
     (h_b2 : MachineState.readWord s.memory 64 = b2)
     (h_n0 : MachineState.readWord s.memory 160 = n0) :
     prCol2Model s c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest =
-      {s with pc := N 3327, stack := (prCol2_o0 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 n0) :: (prCol2_o1 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 n0) :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+      {s with pc := N 3335, stack := (prCol2_o0 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 n0) :: (prCol2_o1 c q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 n0) :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol2Model, prCol2_o0, prCol2_o1, h_b0, h_b1, h_b2, h_n0]
 
-/-! ## prCol3: pc 3334..3433, 87 instructions -/
+/-! ## prCol3: pc 3342..3441, 87 instructions -/
 
 def p3c0P : List Instr :=
   [.op (.Dup dA0),
@@ -887,11 +887,11 @@ def p3c0M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W
   let v1 : W := x4 * v0
   let v2 : W := v1 + x0
   let v3 : W := MachineState.readWord s.memory 64
-  {s with pc := N 3337, memory := s.memory, stack := v3 :: v2 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
+  {s with pc := N 3345, memory := s.memory, stack := v3 :: v2 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
 
 theorem p3c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c0P {s with pc := N 3327, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions p3c0P {s with pc := N 3335, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
       some (p3c0M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -917,11 +917,11 @@ def p3c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v2 : W := MachineState.readWord s.memory 32
   let v3 : W := x8 * v2
   let v4 : W := v3 + v1
-  {s with pc := N 3346, memory := s.memory, stack := v4 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3354, memory := s.memory, stack := v4 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c1P {s with pc := N 3337, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c1P {s with pc := N 3345, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c1M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -944,11 +944,11 @@ def p3c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := x8 * v0
   let v2 : W := v1 + x0
   let v3 : W := x4 * x12
-  {s with pc := N 3354, memory := s.memory, stack := v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
+  {s with pc := N 3362, memory := s.memory, stack := v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
 
 theorem p3c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c2P {s with pc := N 3346, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions p3c2P {s with pc := N 3354, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
       some (p3c2M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -971,11 +971,11 @@ def p3c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := x4 * x12
   let v2 : W := v1 + v0
   let v3 : W := x3 * x11
-  {s with pc := N 3362, memory := s.memory, stack := v3 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3370, memory := s.memory, stack := v3 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c3P {s with pc := N 3354, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c3P {s with pc := N 3362, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c3M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -994,11 +994,11 @@ def p3c4M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v0 : W := x0 + x1
   let v1 : W := x16 * v0
   let v2 : W := UInt256.shiftRight v1 (N 16)
-  {s with pc := N 3370, memory := s.memory, stack := x15 :: x2 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3378, memory := s.memory, stack := x15 :: x2 :: v2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c4P {s with pc := N 3362, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c4P {s with pc := N 3370, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c4M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 31) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1019,11 +1019,11 @@ def p3c5M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := UInt256.mulMod x6 v0 x0
   let v2 : W := v1 + x1
   let v3 : W := MachineState.readWord s.memory 64
-  {s with pc := N 3380, memory := s.memory, stack := v3 :: x15 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3388, memory := s.memory, stack := v3 :: x15 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c5P {s with pc := N 3370, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c5P {s with pc := N 3378, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c5M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1048,11 +1048,11 @@ def p3c6M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := v0 + x2
   let v2 : W := MachineState.readWord s.memory 32
   let v3 : W := UInt256.mulMod x9 v2 x16
-  {s with pc := N 3389, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
+  {s with pc := N 3397, memory := s.memory, stack := v3 :: v1 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
 
 theorem p3c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c6P {s with pc := N 3380, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions p3c6P {s with pc := N 3388, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
       some (p3c6M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1075,11 +1075,11 @@ def p3c7M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v1 : W := MachineState.readWord s.memory 0
   let v2 : W := UInt256.mulMod x9 v1 x15
   let v3 : W := v2 + v0
-  {s with pc := N 3397, memory := s.memory, stack := x15 :: v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3405, memory := s.memory, stack := x15 :: v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c7P {s with pc := N 3389, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c7P {s with pc := N 3397, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c7M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1101,11 +1101,11 @@ def p3c8M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v0 : W := UInt256.mulMod x5 x13 x0
   let v1 : W := v0 + x1
   let v2 : W := UInt256.mulMod x4 x12 x15
-  {s with pc := N 3405, memory := s.memory, stack := v2 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3413, memory := s.memory, stack := v2 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c8P {s with pc := N 3397, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c8P {s with pc := N 3405, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c8M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1124,11 +1124,11 @@ def p3c9M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16
   let v0 : W := x0 + x1
   let v1 : W := UInt256.mulMod x3 x11 x15
   let v2 : W := v1 + v0
-  {s with pc := N 3412, memory := s.memory, stack := x15 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3420, memory := s.memory, stack := x15 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c9P {s with pc := N 3405, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c9P {s with pc := N 3413, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c9M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1147,11 +1147,11 @@ def p3c10M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x1
   let v0 : W := MachineState.readWord s.memory 160
   let v1 : W := UInt256.mulMod x2 v0 x0
   let v2 : W := v1 + x1
-  {s with pc := N 3420, memory := s.memory, stack := v2 :: x15 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3428, memory := s.memory, stack := v2 :: x15 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c10P {s with pc := N 3412, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c10P {s with pc := N 3420, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c10M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1165,11 +1165,11 @@ def p3c11P : List Instr :=
 
 def p3c11M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod (N 2048) x0 x1
-  {s with pc := N 3424, memory := s.memory, stack := v0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
+  {s with pc := N 3432, memory := s.memory, stack := v0 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
 
 theorem p3c11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p3c11P {s with pc := N 3420, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions p3c11P {s with pc := N 3428, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
       some (p3c11M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
@@ -1307,11 +1307,11 @@ def prCol3Model (s : State) (c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : 
   let v39 : W := UInt256.mulMod v19 v38 P
   let v40 : W := v39 + v37
   let v41 : W := UInt256.mulMod (N 2048) v40 P
-  {s with pc := N 3424, memory := s.memory, stack := v41 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
+  {s with pc := N 3432, memory := s.memory, stack := v41 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest}
 
 theorem prCol3_run (s : State) (c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prCol3Program {s with pc := N 3327, stack := c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} =
+    runInstructions prCol3Program {s with pc := N 3335, stack := c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} =
       some (prCol3Model s c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest) := by
   let v0 : W := MachineState.readWord s.memory 96
   let v1 : W := x0 * v0
@@ -1355,29 +1355,29 @@ theorem prCol3_run (s : State) (c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp
   let v39 : W := UInt256.mulMod v19 v38 P
   let v40 : W := v39 + v37
   let v41 : W := UInt256.mulMod (N 2048) v40 P
-  have h0 : runInstructions p3c0P {s with pc := N 3327, memory := s.memory, stack := c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3337, memory := s.memory, stack := v3 :: v2 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h0 : runInstructions p3c0P {s with pc := N 3335, memory := s.memory, stack := c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3345, memory := s.memory, stack := v3 :: v2 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c0M, v0, v1, v2, v3] using p3c0_run (s) c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h1 : runInstructions p3c1P {s with pc := N 3337, memory := s.memory, stack := v3 :: v2 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3346, memory := s.memory, stack := v8 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h1 : runInstructions p3c1P {s with pc := N 3345, memory := s.memory, stack := v3 :: v2 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3354, memory := s.memory, stack := v8 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c1M, v4, v5, v6, v7, v8] using p3c1_run (s) v3 v2 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h2 : runInstructions p3c2P {s with pc := N 3346, memory := s.memory, stack := v8 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3354, memory := s.memory, stack := v12 :: v11 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h2 : runInstructions p3c2P {s with pc := N 3354, memory := s.memory, stack := v8 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3362, memory := s.memory, stack := v12 :: v11 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c2M, v9, v10, v11, v12] using p3c2_run (s) v8 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h3 : runInstructions p3c3P {s with pc := N 3354, memory := s.memory, stack := v12 :: v11 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3362, memory := s.memory, stack := v16 :: v15 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h3 : runInstructions p3c3P {s with pc := N 3362, memory := s.memory, stack := v12 :: v11 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3370, memory := s.memory, stack := v16 :: v15 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c3M, v13, v14, v15, v16] using p3c3_run (s) v12 v11 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h4 : runInstructions p3c4P {s with pc := N 3362, memory := s.memory, stack := v16 :: v15 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3370, memory := s.memory, stack := P :: c :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h4 : runInstructions p3c4P {s with pc := N 3370, memory := s.memory, stack := v16 :: v15 :: c :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3378, memory := s.memory, stack := P :: c :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c4M, v17, v18, v19] using p3c4_run (s) v16 v15 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h5 : runInstructions p3c5P {s with pc := N 3370, memory := s.memory, stack := P :: c :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3380, memory := s.memory, stack := v23 :: P :: v22 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h5 : runInstructions p3c5P {s with pc := N 3378, memory := s.memory, stack := P :: c :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3388, memory := s.memory, stack := v23 :: P :: v22 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c5M, v20, v21, v22, v23] using p3c5_run (s) P c v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h6 : runInstructions p3c6P {s with pc := N 3380, memory := s.memory, stack := v23 :: P :: v22 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3389, memory := s.memory, stack := v27 :: v25 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h6 : runInstructions p3c6P {s with pc := N 3388, memory := s.memory, stack := v23 :: P :: v22 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3397, memory := s.memory, stack := v27 :: v25 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c6M, v24, v25, v26, v27] using p3c6_run (s) v23 P v22 v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h7 : runInstructions p3c7P {s with pc := N 3389, memory := s.memory, stack := v27 :: v25 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3397, memory := s.memory, stack := P :: v31 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h7 : runInstructions p3c7P {s with pc := N 3397, memory := s.memory, stack := v27 :: v25 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3405, memory := s.memory, stack := P :: v31 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c7M, v28, v29, v30, v31] using p3c7_run (s) v27 v25 v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h8 : runInstructions p3c8P {s with pc := N 3397, memory := s.memory, stack := P :: v31 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3405, memory := s.memory, stack := v34 :: v33 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h8 : runInstructions p3c8P {s with pc := N 3405, memory := s.memory, stack := P :: v31 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3413, memory := s.memory, stack := v34 :: v33 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c8M, v32, v33, v34] using p3c8_run (s) P v31 v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h9 : runInstructions p3c9P {s with pc := N 3405, memory := s.memory, stack := v34 :: v33 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3412, memory := s.memory, stack := P :: v37 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h9 : runInstructions p3c9P {s with pc := N 3413, memory := s.memory, stack := v34 :: v33 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3420, memory := s.memory, stack := P :: v37 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c9M, v35, v36, v37] using p3c9_run (s) v34 v33 v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h10 : runInstructions p3c10P {s with pc := N 3412, memory := s.memory, stack := P :: v37 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3420, memory := s.memory, stack := v40 :: P :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h10 : runInstructions p3c10P {s with pc := N 3420, memory := s.memory, stack := P :: v37 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3428, memory := s.memory, stack := v40 :: P :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c10M, v38, v39, v40] using p3c10_run (s) P v37 v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h11 : runInstructions p3c11P {s with pc := N 3420, memory := s.memory, stack := v40 :: P :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3424, memory := s.memory, stack := v41 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+  have h11 : runInstructions p3c11P {s with pc := N 3428, memory := s.memory, stack := v40 :: P :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} = some {s with pc := N 3432, memory := s.memory, stack := v41 :: v19 :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
     simpa only [p3c11M, v41] using p3c11_run (s) v40 P v19 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 h11)))))))))))
 
@@ -1394,7 +1394,7 @@ theorem prCol3_eq (s : State) (c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp 
     (h_b3 : MachineState.readWord s.memory 96 = b3)
     (h_n0 : MachineState.readWord s.memory 160 = n0) :
     prCol3Model s c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest =
-      {s with pc := N 3424, stack := (prCol3_o0 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 n0) :: (prCol3_o1 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 n0) :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
+      {s with pc := N 3432, stack := (prCol3_o0 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 n0) :: (prCol3_o1 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 n0) :: q2 :: q1 :: q0 :: x0 :: x1 :: x2 :: x3 :: x4 :: n1 :: n2 :: n3 :: n4 :: P :: inv :: cntp :: rest} := by
   simp only [prCol3Model, prCol3_o0, prCol3_o1, h_b0, h_b1, h_b2, h_b3, h_n0]
 
 /-! ## prCol4: pc 3775..3901, 111 instructions -/

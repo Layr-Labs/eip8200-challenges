@@ -40,23 +40,23 @@ open Challenge.Modexp.Submission.Proofs.Fast Monpro
 
 /-- The conversion frame's riding `-N` slots: `entrySlots`' words 1..7 are exactly the
 `readWord um (1280 + 32 i)` limbs `gasSteps_run` wants, by construction. -/
-theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) (phase : UInt256 := UInt256.ofNat 0) :
+theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
     ∀ i : Nat, i < 7 →
-      (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize phase ++
+      (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
         Exp.outer n bsize esize msize)[8 - i]? =
       some (MachineState.readWord um (1280 + 32 * (7 - i))) := by
   intro i hi
   interval_cases i <;>
     simp [Shift.entrySlots, Exp.outer]
 
-/-- The riding frame is twenty-three words: the counter, seventeen slots, five outer. -/
-theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) (phase : UInt256 := UInt256.ofNat 0) :
-    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize phase ++
-      Exp.outer n bsize esize msize).length = 23 := by
+/-- The riding frame is twenty-one words: the counter, fifteen slots, five outer. -/
+theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
+      Exp.outer n bsize esize msize).length = 21 := by
   simp [Shift.entrySlots, Exp.outer]
 
 /-- The section on the conversion frame: from `macSetupState` (the end of the loop head of the
-width, `headPC n + 98`) with the quotient guess above the counter, slots and outer frame over `um`,
+width, `(headPC n + 98 + (if n = 4 then 1 else 2))`) with the quotient guess above the counter, slots and outer frame over `um`,
 to the middle block at pc 3034 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
 def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
@@ -69,24 +69,24 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat (Shift.headPC n + 98),
-               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize (Shift.phaseTag s) ++
+      { s with pc := UInt256.ofNat ((Shift.headPC n + 98 + (if n = 4 then 1 else 2))),
+               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
       { s with pc := UInt256.ofNat (Shift.midPC n),
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
-                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize (Shift.phaseTag s) ++ Exp.outer n bsize esize msize,
+                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } := by
-  have hpc : Shift.headPC n + 98 = sectionPC n := by
+  have hpc : (Shift.headPC n + 98 + (if n = 4 then 1 else 2)) = sectionPC n := by
     unfold Shift.headPC sectionPC; split_ifs <;> rfl
   have hpc2 : Shift.midPC n = sectionEndPC n := by
     unfold Shift.midPC sectionEndPC; split_ifs <;> rfl
   rw [hpc, hpc2]
   exact gasSteps_macChain n hn s um q
-    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize (Shift.phaseTag s) ++ Exp.outer n bsize esize msize)
-    (by rw [rest_length z um n bsize esize msize k (Shift.phaseTag s)]; omega)
-    (by rw [rest_length z um n bsize esize msize k (Shift.phaseTag s)]; omega)
-    (entrySlots_ride z um n bsize esize msize k (Shift.phaseTag s))
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (entrySlots_ride z um n bsize esize msize k)
     htop htop4 hrun hcode hfork hnp hact
 
 /-- `gasSteps_macSection` entered on the loop head's memory `um0`, whose top limb is not cleared;
@@ -101,24 +101,24 @@ def gasSteps_macSection_stale (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s 
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      { s with pc := UInt256.ofNat (Shift.headPC n + 98),
-               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize (Shift.phaseTag s) ++
+      { s with pc := UInt256.ofNat ((Shift.headPC n + 98 + (if n = 4 then 1 else 2))),
+               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um0 }
       { s with pc := UInt256.ofNat (Shift.midPC n),
                stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
-                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize (Shift.phaseTag s) ++ Exp.outer n bsize esize msize,
+                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } := by
-  have hpc : Shift.headPC n + 98 = sectionPC n := by
+  have hpc : (Shift.headPC n + 98 + (if n = 4 then 1 else 2)) = sectionPC n := by
     unfold Shift.headPC sectionPC; split_ifs <;> rfl
   have hpc2 : Shift.midPC n = sectionEndPC n := by
     unfold Shift.midPC sectionEndPC; split_ifs <;> rfl
   rw [hpc, hpc2]
   exact gasSteps_macChain_stale n hn s um0 um hum q
-    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize (Shift.phaseTag s) ++ Exp.outer n bsize esize msize)
-    (by rw [rest_length z um n bsize esize msize k (Shift.phaseTag s)]; omega)
-    (by rw [rest_length z um n bsize esize msize k (Shift.phaseTag s)]; omega)
-    (entrySlots_ride z um n bsize esize msize k (Shift.phaseTag s))
+    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (by rw [rest_length z um n bsize esize msize k]; omega)
+    (entrySlots_ride z um n bsize esize msize k)
     hrun hcode hfork hnp hact
 
 end CycleSubmission.Global.Fast.M9Mac

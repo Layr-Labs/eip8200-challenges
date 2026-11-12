@@ -48,13 +48,6 @@ structure Env (s : State) : Prop where
     s.executionEnv.fork s.executionEnv.codeAddr = false
   act : 88 ≤ s.activeWords.toNat
 
-def Env.tagged {s : State} (e : Env s) (phase : UInt256) : Env (taggedTemplate s phase) where
-  code := e.code
-  fork := e.fork
-  run := e.run
-  np := e.np
-  act := e.act
-
 /-- Lift a block reduction to a trace.  Every state of the routine is a record
 update of the carrier `s` on `pc`, `stack` and `memory`, so the environment,
 fork and halt fields are those of `s` by `rfl`. -/
@@ -194,7 +187,7 @@ def gasSteps_preE5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
         (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
         (MachineState.readWord (negStep mem n n).memory 0)
         (MachineState.readWord (negStep mem n n).memory (32 * n - 32)) n bsize esize msize e.code e.run)).trans
-      (soundEnv blkNbTail e (run_nbTail s
+      (soundEnv (blkNbTail esize) e (run_nbTail s
         (preNewtonState s (negStep mem n n).memory n bsize esize msize).memory
         (MachineState.readWord (negStep mem n n).memory 0)
         (MachineState.readWord (negStep mem n n).memory (32 * n - 32)) n bsize esize msize e.act296 e.code e.run)))).cast
@@ -210,7 +203,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 2310) (taggedTemplate s (UInt256.ofNat 0))
+      (shiftLoopState (UInt256.ofNat 2310) s
         (preMem (negStep mem n n).memory) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -231,7 +224,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 2310) (taggedTemplate s (UInt256.ofNat 0))
+      (shiftLoopState (UInt256.ofNat 2310) s
         (preMem (negStep mem n n).memory) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -251,7 +244,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 2310) (taggedTemplate s (UInt256.ofNat 1))
+      (shiftLoopState (UInt256.ofNat 3915) s
         (preMem (negStep mem n n).memory) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -271,7 +264,7 @@ def gasSteps_addIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       (addInnerState z s mem n bsize esize msize k (j + 1)) :=
     (soundEnv blk3157a e
       (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)) n bsize esize msize k j
-        (entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize)
+        (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
         hn32 (by omega) (tPtr_toNat n j hn32 (by omega))
         (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
         e.act296 e.code e.run)).trans
@@ -279,7 +272,7 @@ def gasSteps_addIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       (run_addTail_go s (addStep mem n (j + 1)).memory (addStep mem n (j + 1)).flag
         (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j))
         (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1))) n bsize esize msize k
-        (entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize)
+        (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
         (ptrWord_step _ _)
         (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
         (tPtr_gt_8255 n (j + 1) hn32 hj) e.code e.run))
@@ -292,21 +285,21 @@ def gasSteps_addLastIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
   Challenge.EvmProof.GasSteps.cast
     ((soundEnv blk3157a e
         (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1))) n bsize esize
-          msize k (n - 1) (entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize)
+          msize k (n - 1) (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
           hn32 (by omega) (tPtr_toNat n (n - 1) hn32 (by omega))
           (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer]) e.act296 e.code e.run)).trans
       ((soundEnv blk3157b e
         (run_addTail_last s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
           (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
-          (entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize)
+          (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
           (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
           (ptrWord_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32)
           e.code e.run)).trans
         (soundEnv blk3157c e
           (run_addPad s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
             (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
-            (entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize)
+            (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
             e.code e.run))))
     rfl (by rw [Nat.sub_add_cancel hn]; rfl)
 

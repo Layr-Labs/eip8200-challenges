@@ -49,20 +49,20 @@ def bigJumpPath := Dispatch.wordJumpPath
 def bigCheckExpPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 371 .JUMPDEST,
-   opAt 372 (.Dup ⟨2, by decide⟩),
+   opAt 372 (.Dup ⟨2,by decide⟩),
    pushAt 373 1 96,
    opAt 374 .ADD]
 
 def bigCheckModPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 375 (.Dup ⟨2, by decide⟩),
-   opAt 376 (.Dup ⟨1, by decide⟩),
+  [opAt 375 (.Dup ⟨2,by decide⟩),
+   opAt 376 (.Dup ⟨1,by decide⟩),
    opAt 377 .ADD]
 
 def bigCheckComparePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [pushAt 378 1 32,
-   opAt 379 (.Dup ⟨3, by decide⟩),
+   opAt 379 (.Dup ⟨3,by decide⟩),
    opAt 380 .GT]
 
 /-- `PUSH1 236; JUMPI` (pc 580..582): the taken branch is the fallback entry itself. -/

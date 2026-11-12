@@ -109,6 +109,9 @@ theorem run_shiftBody (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
       (32 * n)) = s.activeWords :=
     Exp.activeWords_fix2 s 2080 (32 * n) 2112 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
+  have hwidth : 32 * n = 256 := by omega
+  have hfix2lit := hfix2
+  simp only [hwidth] at hfix2lit
   have hfixTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) (by omega)
   have hfixT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -152,7 +155,7 @@ theorem run_shiftBody (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
       Challenge.EvmProof.Stepper.runInstr,
       shiftBodyState, estimateState, slotKState, rideSlots, entrySlots, shiftEntry,
       headPC, hw,
-      Exp.mcopyMem, Exp.storeWord, outer, Exp.outer, hcode, hrun, hmod, hfix2, hfixTL,
+      uMem0, hwidth, hfix2lit, headPC, hw, Exp.mcopyMem, Exp.storeWord, outer, Exp.outer, hcode, hrun, hmod, hfix2, hfixTL,
       hfixT0, htl', hmodTL, hlit, hbsz, hbsw, hu1312, hu1344, hu1376, hu1408, hu1440,
       hu1472, hu1504, hu1632, hu1664, hu1568, hu1536, hu32, Exp.push0_word,
       State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
@@ -181,6 +184,9 @@ theorem run_shiftBody_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       (32 * n)) = s.activeWords :=
     Exp.activeWords_fix2 s 2080 (32 * n) 2112 (32 * n) (by omega) (by omega) (by omega)
       (by omega) hact
+  have hwidth : 32 * n = 128 := by omega
+  have hfix2lit := hfix2
+  simp only [hwidth] at hfix2lit
   have hfixTL : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2784 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) (by omega)
   have hfixT0 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
@@ -216,6 +222,7 @@ theorem run_shiftBody_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
   have hu1568 := huv 1568 (by omega)
   have hu1536 := huv 1536 (by omega)
   have hu32 := huv 32 (by omega)
+  simp only [hw] at hu1312 hu1344 hu1376 hu1408 hu1440 hu1472 hu1504 hu1632 hu1664 hu1568 hu1536 hu32
   have hpc : headPC n = 10692 := by simp [headPC, hw]
   have hlit : UInt256.ofNat 2208 = UInt256.ofNat (2080 + 32 * n) := by rw [hlimb]
   simp (config := { maxSteps := 400000 })
@@ -225,7 +232,7 @@ theorem run_shiftBody_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Stepper.runInstr,
       shiftBodyState, estimateState, slotKState, rideSlots, entrySlots, shiftEntry,
       hpc,
-      Exp.mcopyMem, Exp.storeWord, outer, Exp.outer, hcode, hrun, hmod, hfix2, hfixTL,
+      uMem0, hwidth, hfix2lit, headPC, hw, Exp.mcopyMem, Exp.storeWord, outer, Exp.outer, hcode, hrun, hmod, hfix2, hfixTL,
       hfixT0, htl', hmodTL, hlit, hbsz, hbsw, hu1312, hu1344, hu1376, hu1408, hu1440,
       hu1472, hu1504, hu1632, hu1664, hu1568, hu1536, hu32, Exp.push0_word,
       State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2,
@@ -272,10 +279,10 @@ def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
   let diff := lo - UInt256.addMod lo
     (UInt256.mulMod hi (MachineState.readWord U 1632) (MachineState.readWord U 1568))
     (MachineState.readWord U 1568)
-  { s with pc := UInt256.ofNat (headPC n + 40)
+  { s with pc := UInt256.ofNat ((headPC n + 40 + (if n = 4 then 1 else 2)))
            memory := uMem0 mem n
            stack := MachineState.readWord U 1664 :: diff :: hi :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 private theorem run_estimate_left (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4) (hn2 : 2 ≤ n)
@@ -430,10 +437,10 @@ private def estimate8 (z : UInt256) (s : State) (mem : ByteArray)
   let v0 : UInt256 := MachineState.readWord U 2080
   let v1 : UInt256 := UInt256.shiftRight v0 (MachineState.readWord U 1536)
   let v2 : UInt256 := MachineState.readWord U 1600
-  { s with pc := UInt256.ofNat (headPC n + 21)
+  { s with pc := UInt256.ofNat ((headPC n + 21 + (if n = 4 then 1 else 2)))
            memory := uMem0 mem n
            stack := v2 :: v0 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
@@ -445,10 +452,10 @@ def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
   let v4 : UInt256 := MachineState.readWord U 2112
   let v5 : UInt256 := UInt256.shiftRight v4 (MachineState.readWord U 1536)
   let v6 : UInt256 := v5 + v3
-  { s with pc := UInt256.ofNat (headPC n + 32)
+  { s with pc := UInt256.ofNat ((headPC n + 32 + (if n = 4 then 1 else 2)))
            memory := uMem0 mem n
            stack := (MachineState.readWord U 1568) :: (MachineState.readWord U 1568) :: v6 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
@@ -466,10 +473,10 @@ def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
   let v10 : UInt256 := (MachineState.readWord U 1664) * v9
   let v11 : UInt256 := UInt256.shiftRight v10 (UInt256.ofNat 128)
   let v12 : UInt256 := v11 * (UInt256.shiftRight (MachineState.readWord U 32) (UInt256.ofNat 128))
-  { s with pc := UInt256.ofNat (headPC n + 49)
+  { s with pc := UInt256.ofNat ((headPC n + 49 + (if n = 4 then 1 else 2)))
            memory := uMem0 mem n
            stack := (UInt256.ofNat 0) :: v10 :: v12 :: v10 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
@@ -493,10 +500,10 @@ def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
   let v16 : UInt256 := v15 - v14
   let v17 : UInt256 := UInt256.lt v16 v12
   let v18 : UInt256 := v10 - v17
-  { s with pc := UInt256.ofNat (headPC n + 59)
+  { s with pc := UInt256.ofNat ((headPC n + 59 + (if n = 4 then 1 else 2)))
            memory := uMem0 mem n
            stack := v18 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 private theorem run_estimate_h4_part0 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -692,7 +699,7 @@ private theorem estimate_h4_program :
       estimateRawPart0 ++ (estimateRawPart1 ++ (estimateRawPart2 ++ (estimateRawPart3 ++ (estimateRawPart4 ++ (estimateRawPart5))))) := by rfl
 
 private theorem estimate_h4_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10701) blk3026h := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10702) blk3026h := by
   dsimp only [blk3026h, opAt, pushAt, wfOp,
     WindowTwentyOneLocated.LinearPath, WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push, YulEvmCompiler.Instr.size_op,
@@ -712,7 +719,7 @@ theorem run_estimate_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esi
       (run_estimate_h4_part2 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
       (run_estimate_h4_part3 z s mem n bsize esize msize k hw hact hcode hrun) (WindowNibbleKernel.runInstructions_append_some _ _ _ _ _
       (run_estimate_h4_part4 z s mem n bsize esize msize k hw hact hcode hrun) (run_estimate_h4_part5 z s mem n bsize esize msize k hw hact hcode hrun))))))
-  refine WindowTwentyOneLocated.run_linear blk3026h (UInt256.ofNat 10701)
+  refine WindowTwentyOneLocated.run_linear blk3026h (UInt256.ofNat 10702)
     (estimateState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
     ?_ estimate_h4_layout ?_ hrun ?_
   · change CycleSubmission.Artifact.bytecode.size < 2 ^ 256

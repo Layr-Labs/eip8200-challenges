@@ -17,81 +17,62 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 def frame (s : State) (mem : ByteArray) (pc : Nat) (stack : List UInt256) : State :=
   { s with memory := mem, pc := UInt256.ofNat pc, stack := stack }
-def exitPC (b : Bool) : Nat := if b then 10953 else 3053
-def guardPC (b : Bool) : Nat := if b then 10954 else 3055
-def cleanupPC (b : Bool) : Nat := if b then 10964 else 3065
+def exitPC (b : Bool) : Nat := if b then 10953 else 3069
+def transferPC (b : Bool) : Nat := if b then 10954 else 3071
 def headProgram (b : Bool) : List Instr :=
-  if b then [.op (.Swap ⟨15, by decide⟩)] else [.op .JUMPDEST, .op (.Swap ⟨15, by decide⟩)]
-def guardWidth (b : Bool) : Fin 33 := if b then 8 else 8
-def guardProgram (b : Bool) : List Instr := [.push (guardWidth b) 10968, .op .JUMPI]
+  if b then [.op .POP] else [.op .JUMPDEST, .op .POP]
+def transferProgram : List Instr := [.op (.Swap ⟨13, by decide⟩), .op .JUMP]
 
-theorem run_head (b : Bool) (s : State) (mem : ByteArray) (flag z : UInt256)
+def transferSlots (z : UInt256) (mem : ByteArray) (n bsize esize msize : Nat) : List UInt256 :=
+  (CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize).tail.take 13 ++
+    [CycleSubmission.Global.Fast.Shift.headWord mem n] ++ Exp.outer n bsize esize msize
+
+theorem run_head (b : Bool) (s : State) (mem : ByteArray) (z : UInt256)
     (n bsize esize msize : Nat) :
     runInstructions (headProgram b)
       (frame s mem (exitPC b) (UInt256.ofNat 0 ::
-        CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize flag ++ Exp.outer n bsize esize msize)) =
-      some (frame s mem (guardPC b) (flag ::
-        CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize (UInt256.ofNat 0) ++ Exp.outer n bsize esize msize)) := by
-  cases b <;> simp [runInstructions, headProgram, frame, exitPC, guardPC,
-    Challenge.EvmProof.Stepper.runInstr, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, List.exchange,
-    Challenge.EvmProof.Word.succ_ofNat_mod]
+        CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize ++ Exp.outer n bsize esize msize)) =
+      some (frame s mem (transferPC b)
+        (CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize ++ Exp.outer n bsize esize msize)) := by
+  cases b <;> simp [headProgram, runInstructions, frame, exitPC, transferPC, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
+    Challenge.EvmProof.Stepper.runInstr, Challenge.EvmProof.Word.succ_ofNat_mod]
 
-theorem run_guard (b : Bool) (s : State) (mem : ByteArray) (flag : UInt256) (rest : List UInt256)
-    (hrest : rest.length ≤ 1000)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 10968 = true) :
-    runInstructions (guardProgram b) (frame s mem (guardPC b) (flag :: rest)) =
-      some (frame s mem (if flag.toNat = 0 then cleanupPC b else 10968) rest) := by
-  have hc1 : rest.length + 1 < 1024 := by omega
-  have hc2 : rest.length + 2 < 1024 := by omega
-  cases b <;> by_cases hf : flag.toNat = 0 <;>
-    simp [runInstructions, guardProgram, guardWidth, frame, guardPC, cleanupPC,
-      Challenge.EvmProof.Stepper.runInstr, hc1, hc2, hf, hdest, UInt256.isTrue,
-      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
-def packSlots (scratch z flag : UInt256) (mem : ByteArray) (n bsize esize : Nat) : List UInt256 :=
-  scratch :: (CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize flag).tail
-
-def packProgram : List Instr := [.op (.Swap ⟨15, by decide⟩), .op .POP, .op (.Dup ⟨15, by decide⟩)]
-
-theorem run_pack (s : State) (mem : ByteArray) (scratch z flag : UInt256)
-    (n bsize esize msize : Nat) :
-    runInstructions packProgram
-      (frame s mem 2642 (flag :: packSlots scratch z (UInt256.ofNat 0) mem n bsize esize ++
-        Exp.outer n bsize esize msize)) =
-      some (frame s mem 2645 (flag :: packSlots scratch z flag mem n bsize esize ++
-        Exp.outer n bsize esize msize)) := by
-  simp [runInstructions, packProgram, packSlots, frame, Challenge.EvmProof.Stepper.runInstr,
-    CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
-
+theorem run_transfer (s : State) (mem : ByteArray) (pc target : Nat) (z : UInt256)
+    (n bsize esize msize : Nat)
+    (ht : z = UInt256.ofNat target)
+    (hlt : target < 2^256) (hd : Decode.isValidJumpDest s.executionEnv.code target = true) :
+    runInstructions transferProgram
+      (frame s mem pc (CycleSubmission.Global.Fast.Shift.entrySlots z mem n bsize esize ++ Exp.outer n bsize esize msize)) =
+      some (frame s mem target (transferSlots z mem n bsize esize msize)) := by
+  have hm : target % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = target := Nat.mod_eq_of_lt hlt
+  simp [transferProgram, transferSlots, CycleSubmission.Global.Fast.Shift.entrySlots,
+    frame, Exp.outer, runInstructions, Challenge.EvmProof.Stepper.runInstr,
+    List.exchange, ht, hm, hd, Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod]
 
 def phaseSwitchProgram : List Instr :=
-  [.op (.Swap ⟨15, by decide⟩), .op .POP, .push 4 2298, .op (.Swap ⟨15, by decide⟩), .op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY, .op (.Dup ⟨13, by decide⟩), .push 1 2, .op .SHR, .op (.Dup ⟨1, by decide⟩), .op .JUMP]
-
-def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray :=
-  Exp.mcopyMem mem 256 2112 (32 * n)
+  [.op (.Dup ⟨14, by decide⟩), .push 2 2112, .push 2 256, .op .MCOPY,
+   .op (.Dup ⟨14, by decide⟩), .push 1 7, .op .SHR, .push 3 2298,
+   .op (.Swap ⟨14, by decide⟩), .op (.Swap ⟨0, by decide⟩),
+   .op (.Dup ⟨1, by decide⟩), .op .JUMP]
+def phaseSwitchMemory (mem : ByteArray) (n : Nat) : ByteArray := Exp.mcopyMem mem 256 2112 (32 * n)
 
 theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
-    (rest : List UInt256)
-    (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n)
-    (hrest : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
-    (hstack : rest =
-      CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2310) mem n bsize esize ++ Exp.outer n bsize esize msize)
+    (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n) (hact : 88 ≤ s.activeWords.toNat)
     (hdest : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.loopPC mem n) = true) :
     runInstructions phaseSwitchProgram
-      (frame s mem 10969 rest) =
+      (frame s mem 3916 (transferSlots (UInt256.ofNat 3915) mem n bsize esize msize)) =
       some (frame s (phaseSwitchMemory mem n) (CycleSubmission.Global.Fast.Shift.loopPC mem n)
-        (UInt256.ofNat (n / 4) :: CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2298) mem n bsize esize ++
-          Exp.outer n bsize esize msize)) := by
+        (UInt256.ofNat (n / 4) :: CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2298) mem n bsize esize ++ Exp.outer n bsize esize msize)) := by
   have hn1 : 1 ≤ n := by omega
   have hn8 : n ≤ 8 := by omega
-  have hcap2 : rest.length + 2 < 1024 := by omega
-  have hcap3 : rest.length + 3 < 1024 := by omega
-  have hcap4 : rest.length + 4 < 1024 := by omega
-  have hcap5 : rest.length + 5 < 1024 := by omega
+  have hcap2 : (transferSlots (UInt256.ofNat 3915) mem n bsize esize msize).length + 2 < 1024 := by simp [transferSlots, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
+  have hcap3 : (transferSlots (UInt256.ofNat 3915) mem n bsize esize msize).length + 3 < 1024 := by simp [transferSlots, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
+  have hcap4 : (transferSlots (UInt256.ofNat 3915) mem n bsize esize msize).length + 4 < 1024 := by simp [transferSlots, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
+  have hcap5 : (transferSlots (UInt256.ofNat 3915) mem n bsize esize msize).length + 5 < 1024 := by simp [transferSlots, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
   have hs32 : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  have hquarter : UInt256.shiftRight (UInt256.ofNat n) (UInt256.ofNat 2) =
+  have hquarter : UInt256.shiftRight (UInt256.ofNat (32*n)) (UInt256.ofNat 7) =
       UInt256.ofNat (n / 4) := by
     rcases hn with rfl | rfl <;> decide
   have ha2 : 32 * n ≠ 0 := by omega
@@ -102,48 +83,21 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       CycleSubmission.Global.Fast.Shift.loopPC mem n :=
     Nat.mod_eq_of_lt (CycleSubmission.Global.Fast.Shift.loopPC_lt mem n)
-  simp [runInstructions, phaseSwitchProgram, phaseSwitchMemory, frame, CycleSubmission.Global.Fast.Shift.headWord, hhead,
+  simp [runInstructions, phaseSwitchProgram, phaseSwitchMemory, transferSlots, frame, CycleSubmission.Global.Fast.Shift.headWord, hhead,
     Challenge.EvmProof.Stepper.runInstr, Exp.storeWord, Exp.mcopyMem,
-    hstack, hbs, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.rideSlots, Exp.outer, List.exchange,
+    hbs, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.rideSlots, Exp.outer, List.exchange,
     hcap2, hcap3, hcap4, hcap5, hs32, hquarter, hdest, Exp.push0_word,
     State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactive2,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
-
-
-
-def cleanupProgram : List Instr := [.op (.Swap ⟨15, by decide⟩), .op .JUMP]
-def cleanupSuffix (_d : Nat) (_mem : ByteArray) (_n _bsize _esize _msize : Nat) : List UInt256 := []
-
-theorem run_cleanup (s : State) (mem : ByteArray) (pc d target n bsize esize msize : Nat)
-    (hbs : bsize = 32 * n) (hms : msize = 32 * n)
-    (hE : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
-    (htarget : d = target) (hlt : target < 2^256)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code target = true) :
-    runInstructions cleanupProgram
-      (frame s mem pc (CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat d) mem n bsize esize ++ Exp.outer n bsize esize msize)) =
-      some (frame s mem target (CycleSubmission.Global.SlimFrames.outer mem n bsize esize msize ++ cleanupSuffix d mem n bsize esize msize)) := by
-  have hmod : target % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = target := Nat.mod_eq_of_lt hlt
-  simp (config := {maxSteps := 400000}) [CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer, cleanupProgram, cleanupSuffix, runInstructions, frame, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer,
-    Challenge.EvmProof.Stepper.runInstr, List.exchange, hbs, hms, hE, htarget, hmod, hdest,
-    Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt,
-    Challenge.EvmProof.Word.succ_ofNat_mod]
-
-theorem cleanupSuffix_length (d : Nat) (mem : ByteArray) (n bsize esize msize : Nat) :
-    (cleanupSuffix d mem n bsize esize msize).length = 0 := by
-  simp [cleanupSuffix, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer]
-
-
 def commonHeadProgram : List Instr := [.op .JUMPDEST]
 
 theorem run_commonHead (s : State) (mem : ByteArray) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
-    runInstructions commonHeadProgram (frame s mem 10968 rest) =
-      some (frame s mem 10969 rest) := by
+    runInstructions commonHeadProgram (frame s mem 3915 rest) =
+      some (frame s mem 3916 rest) := by
   have hcap : rest.length < 1024 := by omega
   simp [runInstructions, commonHeadProgram, frame, Challenge.EvmProof.Stepper.runInstr,
     hcap, Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -152,9 +106,7 @@ theorem run_commonHead (s : State) (mem : ByteArray) (rest : List UInt256)
 open Challenge.EvmProof WindowTwentyOneBinding
 structure PhaseBlocks (artifact : ProgramArtifact) (fork : Fork) where
   exitHead : (b : Bool) → Block artifact fork (exitPC b) (headProgram b)
-  guard : (b : Bool) → Block artifact fork (guardPC b) (guardProgram b)
-  cleanup : (b : Bool) → Block artifact fork (cleanupPC b) cleanupProgram
-  commonHead : Block artifact fork 10968 commonHeadProgram
-  switch : Block artifact fork 10969 phaseSwitchProgram
-
+  transfer : (b : Bool) → Block artifact fork (transferPC b) transferProgram
+  commonHead : Block artifact fork 3915 commonHeadProgram
+  switch : Block artifact fork 3916 phaseSwitchProgram
 end CycleSubmission.Global.StackPhaseRun
