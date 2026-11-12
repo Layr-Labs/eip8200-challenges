@@ -37,7 +37,7 @@ def run (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
   exact hinv
  obtain ⟨done,tr,halt,bytes,calls⟩ := CallerCore.run entry f k N A B
   (CallerArithmetic.decode N A) hk hk16 (env.transfer rfl rfl)
-  (by simp [f,DirectEightRaw.frame,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,Exp.outer])
+  (by simp [f,DirectEightRaw.frame,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer])
   hact rfl hn' ha' hb' hinv' hN hodd hB (CallerArithmetic.decode_form N A hN hodd)
   (DirectEightRaw.guard_bound mem A ha hg)
  change GasSteps (DirectEightRaw.entered s mem (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize) done at tr

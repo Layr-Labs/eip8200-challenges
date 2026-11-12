@@ -14,15 +14,15 @@ def overflowHeadpart0Program : List Instr :=
   [.op (.Dup ⟨13, by decide⟩),
    .push 1 240,
    .op .SHR,
-   .push 2 10484]
+   .push 2 10516]
 
 def overflowHeadpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftRight x13 (UInt256.ofNat 240)
-  {s with pc := UInt256.ofNat 7664, memory := s.memory, stack := (UInt256.ofNat 10484) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 7696, memory := s.memory, stack := (UInt256.ofNat 10516) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
 
 theorem overflowHeadpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions overflowHeadpart0Program {s with pc := UInt256.ofNat 7657, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions overflowHeadpart0Program {s with pc := UInt256.ofNat 7689, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (overflowHeadpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -34,18 +34,18 @@ def overflowHeadProgram : List Instr :=
   [.op (.Dup ⟨13, by decide⟩),
    .push 1 240,
    .op .SHR,
-   .push 2 10484]
+   .push 2 10516]
 
 def overflowHeadModel (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftRight x13 (UInt256.ofNat 240)
-  {s with pc := UInt256.ofNat 7664, memory := s.memory, stack := (UInt256.ofNat 10484) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 7696, memory := s.memory, stack := (UInt256.ofNat 10516) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
 
 theorem overflowHead_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions overflowHeadProgram {s with pc := UInt256.ofNat 7657, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions overflowHeadProgram {s with pc := UInt256.ofNat 7689, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (overflowHeadModel s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   let v0 : UInt256 := UInt256.shiftRight x13 (UInt256.ofNat 240)
-  have h0 : runInstructions overflowHeadpart0Program {s with pc := UInt256.ofNat 7657, memory := s.memory, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} = some {s with pc := UInt256.ofNat 7664, memory := s.memory, stack := (UInt256.ofNat 10484) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} := by
+  have h0 : runInstructions overflowHeadpart0Program {s with pc := UInt256.ofNat 7689, memory := s.memory, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} = some {s with pc := UInt256.ofNat 7696, memory := s.memory, stack := (UInt256.ofNat 10516) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} := by
     simpa only [overflowHeadpart0Model, v0] using overflowHeadpart0_run (s) (x0) (x1) (x2) (x3) (x4) (x5) (x6) (x7) (x8) (x9) (x10) (x11) (x12) (x13) rest hcap hact
   exact h0
 

@@ -33,7 +33,7 @@ private def fermatHandled {artifact : ProgramArtifact} {fork : Fork}
     (he : (FermatNext.fermatDiff (WindowTwentyOneInput.modulusWord input)
       (WindowTwentyOneInput.exponentWord input)).toNat = 0)
     (hprime : (FermatProgram.primeValue (WindowTwentyOneInput.modulusWord input)).toNat ≠ 0) :
-    ∃ final : State, Nonempty (GasSteps (withModulus template input tail 4749) final) ∧
+    ∃ final : State, Nonempty (GasSteps (withModulus template input tail 4781) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let ec := WindowTwentyOneGasRoute.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
@@ -58,20 +58,20 @@ private def fermatHandled {artifact : ProgramArtifact} {fork : Fork}
     have h := congrArg UInt256.toNat heq
     rw [hsub, WindowTwentyOneInput.exponentWord_toNat, hmNat] at h
     exact h.symm
-  let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 4757)
+  let final := WindowTwentyOneReturn.returned (context template input) (UInt256.ofNat 4789)
     (FermatMath.resultWord input) 0 (coreStack input tail)
   have hr := FermatProgram.run_return (context template input) m (shiftWord input)
     (coreStack input tail) (by simp [coreStack]; omega) rfl rfl
   change WindowTwentyOneMsize.runInstructionsX FermatProgram.returnProgram
-    (withModulus template input tail (UInt256.ofNat 4749)) = some final at hr
-  have resultSteps : GasSteps (withModulus template input tail (UInt256.ofNat 4749)) final :=
+    (withModulus template input tail (UInt256.ofNat 4781)) = some final at hr
+  have resultSteps : GasSteps (withModulus template input tail (UInt256.ofNat 4781)) final :=
     WindowTwentyOneMsize.Block.stepsX paths.result (ec.transfer rfl rfl) rfl hr
   refine ⟨final, ⟨resultSteps⟩, ?_, ?_⟩
   · change (true && template.callStack.isEmpty) = true
     rw [hcall]
     rfl
   · have h := WindowTwentyOneReturn.returned_result (context template input)
-      (UInt256.ofNat 4757) (FermatMath.resultWord input) 0 (coreStack input tail)
+      (UInt256.ofNat 4789) (FermatMath.resultWord input) 0 (coreStack input tail)
     rw [← FermatMath.result_spec input hmatch hp hexponent] at h
     exact h
 
@@ -89,9 +89,9 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   let e := WindowTwentyOneInput.exponentWord input
   have hjump : Decode.isValidJumpDest (context template input).executionEnv.code 717 = true := by
     rw [ec.code]; exact paths.routeJump
-  have htailjump : Decode.isValidJumpDest (context template input).executionEnv.code 4748 = true := by
+  have htailjump : Decode.isValidJumpDest (context template input).executionEnv.code 4780 = true := by
     rw [ec.code]; exact paths.tailJump
-  have hprimejump : Decode.isValidJumpDest (context template input).executionEnv.code 10612 = true := by
+  have hprimejump : Decode.isValidJumpDest (context template input).executionEnv.code 10644 = true := by
     rw [ec.code]; exact paths.primeJump
   have hraw := FermatNext.run_join (context template input) m e (shiftWord input :: tail)
     (by simp; omega) hjump
@@ -103,27 +103,27 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
       paths.join.steps (ec.transfer rfl rfl) rfl hraw
     have hjp := FermatNext.run_toPrime (context template input) (m :: coreStack input tail)
       (by simp [coreStack]; omega) hprimejump
-    have toPrimeSteps : GasSteps (withModulus template input tail 57) (withModulus template input tail 10612) :=
+    have toPrimeSteps : GasSteps (withModulus template input tail 57) (withModulus template input tail 10644) :=
       paths.toPrime.steps (ec.transfer rfl rfl) rfl hjp
     have hpraw := FermatNext.run_prime (context template input) m (coreStack input tail)
       (by simp [coreStack]; omega) htailjump
     have commonSteps := joinSteps.trans toPrimeSteps
     by_cases hp : (FermatProgram.primeValue m).toNat = 0
     · rw [if_pos hp] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail 10612) (withModulus template input tail 10688) :=
+      have primeSteps : GasSteps (withModulus template input tail 10644) (withModulus template input tail 10720) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       have hjraw := FermatNext.run_jumpTail (context template input) (m :: coreStack input tail)
         (by simp [coreStack]; omega) hjump
-      have jumpSteps : GasSteps (withModulus template input tail 10688)
+      have jumpSteps : GasSteps (withModulus template input tail 10720)
           (WindowTwentyOneGasRoute.entryState template input tail) :=
         paths.jumpTail.steps (ec.transfer rfl rfl) rfl hjraw
       exact ⟨oldFinal, ⟨((commonSteps.trans primeSteps).trans jumpSteps).trans oldTrace⟩, oldDone, oldResult⟩
     · rw [if_neg hp] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail 10612) (withModulus template input tail 4748) :=
+      have primeSteps : GasSteps (withModulus template input tail 10644) (withModulus template input tail 4780) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       have htraw := FermatNext.run_tail (context template input) m e (shiftWord input :: tail)
         (by simp; omega)
-      have tailSteps : GasSteps (withModulus template input tail 4748) (withModulus template input tail 4749) :=
+      have tailSteps : GasSteps (withModulus template input tail 4780) (withModulus template input tail 4781) :=
         paths.tail.steps (ec.transfer rfl rfl) rfl htraw
       obtain ⟨final, ⟨trace⟩, done, result⟩ :=
         fermatHandled paths template env hcall input tail htail hmatch hbn hsecp hs hp
