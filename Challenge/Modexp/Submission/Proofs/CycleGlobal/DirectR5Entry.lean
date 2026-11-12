@@ -12,25 +12,25 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 def classifyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3194 DirectR5Classifier.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2443 9 3194 DirectR5Classifier.program
-  (by change 2443+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2442 9 3194 DirectR5Classifier.program
+  (by change 2442+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 3206 DirectR5Reuse.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2452 7 3206 DirectR5Reuse.program
-  (by change 2452+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2451 7 3206 DirectR5Reuse.program
+  (by change 2451+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3134 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2426 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2426 = 3134 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2425 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2425 = 3134 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestR5 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 5204 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 4055 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 4055 = 5204 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 4054 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 4054 = 5204 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 def classify8 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256)

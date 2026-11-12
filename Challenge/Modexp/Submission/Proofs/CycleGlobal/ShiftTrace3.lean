@@ -67,13 +67,13 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
 
 
 /-- Store TN and enter UNC with a disposable MAX word. The mathematical negative flag remains in the hypothesis,but the repair entry immediately pops its runtime word. -/
-@[simp] theorem rhoRestoredPC2369 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3033 := by
+@[simp] theorem rhoRestoredPC2369 : CycleSubmission.Artifact.artifact.instructionPC 2349 = 3033 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2351 = 3034 := by
+@[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2350 = 3034 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8414 = 10920 := by
+@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8413 = 10920 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8415 = 10921 := by
+@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8414 = 10921 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 
 theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
@@ -251,7 +251,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
   all_goals rfl
 
-@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2365 = 3051 := by
+@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2364 = 3051 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -605,7 +605,7 @@ theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253
       (csubCallState z s mem n bsize esize msize 1) =
       some (csubExitState z s mem n bsize esize msize) := by
-  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2358 = 3044 := by
+  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2357 = 3044 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
     rfl
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
@@ -668,70 +668,70 @@ theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 @[simp] private theorem pcFact4392 :
-    CycleSubmission.Artifact.artifact.instructionPC 3017 = 3915 := by
+    CycleSubmission.Artifact.artifact.instructionPC 3016 = 3915 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2427 = 3135 := by
+@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2426 = 3135 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3024 = 3927 := by
+@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 3023 = 3927 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3025 = 3928 := by
+@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 3024 = 3928 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3031 = 3939 := by
-  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
-  rfl
-
-@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3031 = 3939 := by
+@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 3030 = 3939 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3028 = 3935 := by
+@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 3030 = 3939 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3031 = 3939 := by
+
+@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 3027 = 3935 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 3943 := by
+@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 3030 = 3939 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 3943 := by
+@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 3943 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 3943 := by
+@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 3943 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 3943 := by
+@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 3943 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3033 = 3943 := by
+@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 3943 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3035 = 3945 := by
+@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 3032 = 3943 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3036 = 3946 := by
+@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 3034 = 3945 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
+  rfl
+@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 3035 = 3946 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
