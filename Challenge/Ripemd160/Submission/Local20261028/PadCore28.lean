@@ -45,11 +45,11 @@ theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt25
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
     StackRoundTrace.runInstrSeq PadRaw28.template
-      {s with pc := UInt256.ofNat 7860, stack := stack n h4 [ .d, .cache 190, .cache 140, .e, .literal 1109194275457955143375908765704, .pair, .upper, .a, .b, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 27) rho} =
-      some {s with pc := UInt256.ofNat 7918, stack := stack n h4 [ .d, .cache 190, .cache 140, .a, .literal 1109194275457955143375908765704, .pair, .upper, .e, .c, .literal 23, .literal 40945789247971450477386360121479348807026276516919705, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerAlgorithm.physicalKey 28) rho} := by
-  have h := PadRaw28.run_actual s (UInt256.ofNat 7860) n
+      {s with pc := UInt256.ofNat 7859, stack := stack n h4 [ .d, .cache 190, .cache 140, .e, .literal 1109194275457955143375908765704, .pair, .upper, .a, .b, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 27) rho} =
+      some {s with pc := UInt256.ofNat 7917, stack := stack n h4 [ .d, .cache 190, .cache 140, .a, .literal 1109194275457955143375908765704, .pair, .upper, .e, .c, .literal 23, .literal 40945789247971450477386360121479348807026276516919705, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval n q) right (StaggerAlgorithm.physicalKey 28) rho} := by
+  have h := PadRaw28.run_actual s (UInt256.ofNat 7859) n
     (input n h4 q right (StaggerAlgorithm.physicalKey 27)) rho hstack hrun hactive hcal hmem
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 7860) PadRaw28.template = UInt256.ofNat 7918 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 7859) PadRaw28.template = UInt256.ofNat 7917 := by decide +kernel
   rw [hend, output_eq] at h
   exact h
 #print axioms run

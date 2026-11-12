@@ -18,6 +18,10 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StaggerRaw
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
+private theorem folded_key :
+    UInt256.ofNat 45805604527067802242040499947532902706799460545707356 =
+      UInt256.add (UInt256.ofNat 2854495385411919762116571938898990272765493376)
+        (UInt256.ofNat 45805601672572416830120737830960963807809187780213980) := by decide
 def template : List Instr :=
   [ .op (.Dup ⟨13, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
@@ -36,9 +40,7 @@ def template : List Instr :=
     .op (.Dup ⟨12, by decide⟩),
     .op .XOR,
     .op .ADD,
-    .push ⟨19, by decide⟩ (UInt256.ofNat 2854495385411919762116571938898990272765493376),
-    .op .ADD,
-    .op (.Dup ⟨3, by decide⟩),
+    .push ⟨22, by decide⟩ (UInt256.ofNat 45805604527067802242040499947532902706799460545707356),
     .op .ADD,
     .op (.Dup ⟨5, by decide⟩),
     .op .AND,
@@ -135,7 +137,7 @@ private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : Li
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
     RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
-  all_goals simp only [PadValues.add_zero, PadValues.zero_add, PadValues.xor_zero, PadValues.zero_xor, neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
+  all_goals simp only [folded_key, PadValues.add_zero, PadValues.zero_add, PadValues.xor_zero, PadValues.zero_xor, neutral_hadd, neutral_hmul, RawExpressionAC.add_assoc, RawExpressionAC.add_comm, RawExpressionAC.add_left_comm, RawExpressionAC.mul_assoc, RawExpressionAC.mul_comm, RawExpressionAC.mul_left_comm, RawExpressionAC.land_assoc, RawExpressionAC.land_comm, RawExpressionAC.land_left_comm, RawExpressionAC.lor_assoc, RawExpressionAC.lor_comm, RawExpressionAC.lor_left_comm, RawExpressionAC.xor_assoc, RawExpressionAC.xor_comm, RawExpressionAC.xor_left_comm]
   all_goals try simp only [PadValues.fold_one, PadValues.fold_two]
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
@@ -148,10 +150,10 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
   simpa only [actualOutput_eq] using run_generated s pc n x rho hstack hrun hactive hcal hmem
 #print axioms run_actual
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 8843).take 58 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 8842).take 59 =
       PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (8832+11)).take 58 = _
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (8832+10)).take 59 = _
   rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop138]
   decide +kernel
 #print axioms exact_bytes

@@ -75,9 +75,9 @@ theorem valid9949 : Decode.isValidJumpDest CandidateArtifact.artifact.code 4882 
   exact h
 #print axioms valid9949
 theorem valid10108 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9911 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 6820 = 9911 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 6817 = 9911 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 6820 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 6817 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid10108
