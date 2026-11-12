@@ -47,7 +47,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2310) (taggedTemplate s (UInt256.ofNat 0)) mem
+      some (shiftLoopState (UInt256.ofNat 2310) s mem
         n bsize esize msize n) := by
   have hne1 : ¬ (1 = esize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936) := by
@@ -68,8 +68,6 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     · rw [if_neg h]
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
-      s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
@@ -86,38 +84,12 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18724 -
       (UInt256.ofNat 2008 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2660 := by decide
-  have hflag1760 : ∀ (v a : Nat),a + 32 ≤ 1760 →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1760) a =
-        MachineState.readWord mem a := by
-    intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
     intro v a ha
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hslot1760 : ∀ (v a : Nat),a + 32 ≤ 1760 →
-      MachineState.readWord
-        (MachineState.writeBytes (MachineState.writeBytes mem
-          (Data.Bytes.natToBytesPadded v 32) 1698) (Data.Bytes.natToBytesPadded 0 32) 1760) a =
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a := by
-    intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hback3032 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2901 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2901 := by
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2901 (by decide)]
-  have hback2899 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2785 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2785 := by
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2785 (by decide)]
   have hz1 : (if 1 = esize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 then
         UInt256.ofNat 1 else UInt256.ofNat 0) = UInt256.ofNat 0 := by
@@ -138,24 +110,22 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,taggedTemplate,phaseTag,
-      shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
       CycleSubmission.Global.ZeroShiftMath.branch_zero4,CycleSubmission.Global.ZeroShiftMath.branch_zero8,
       jumpDestCacheZero,jumpDestLoop2684,jumpDestLoop10692,jumpDestLoop3711,jumpDestLoop3879,
       UInt256.eq,UInt256.isTrue,
-      haw1698,haw1760,haw2816,haw32,hv4,hv8,hw4,hw8,hslot1698,hflag1760,hslot1760,hback3032,hback2899,
-      Challenge.EvmProof.Word.literal_eq_ofNat,
+      haw1698,haw2816,haw32,hv4,hv8,hw4,hw8,hslot1698,Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,Nat.mod_eq_of_lt,List.exchange]
-  all_goals (simp only [State.activeWordsAfterUInt256,haw1698,haw1760,haw2816,haw32,
-      hslot1698,hflag1760,hslot1760,hback3032,hback2899,hv4,hv8,hw4,hw8,hv8,
+  all_goals (simp only [State.activeWordsAfterUInt256,haw1698,haw2816,haw32,
+      hslot1698,hv4,hv8,hw4,hw8,hv8,
       Fin.land,Nat.and_zero,Nat.zero_and])
   all_goals (first | rfl | simp [UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,
-      Nat.and_zero,Nat.zero_and,UInt256.toNat,hback3032,hback2899])
+      Nat.and_zero,Nat.zero_and,UInt256.toNat])
   all_goals (first | rfl | decide)
 
 /-- An initialized exponent-three cache enters the half-length first loop. -/
@@ -170,11 +140,9 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2310) (taggedTemplate s (UInt256.ofNat 1)) mem
+      some (shiftLoopState (UInt256.ofNat 3915) s mem
         n bsize esize msize (n / 2)) := by
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
-      s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -225,12 +193,6 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18724 -
       (UInt256.ofNat 2008 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2660 := by decide
-  have hflag1760 : ∀ (v a : Nat),a + 32 ≤ 1760 →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1760) a =
-        MachineState.readWord mem a := by
-    intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -243,26 +205,6 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     intro v a ha
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hslot1760 : ∀ (v a : Nat),a + 32 ≤ 1760 →
-      MachineState.readWord
-        (MachineState.writeBytes (MachineState.writeBytes mem
-          (Data.Bytes.natToBytesPadded v 32) 1698) (Data.Bytes.natToBytesPadded 1 32) 1760) a =
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a := by
-    intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hback3032 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2901 32) 1698)
-        (Data.Bytes.natToBytesPadded 1 32) 1760) 1698 = UInt256.ofNat 2901 := by
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2901 (by decide)]
-  have hback2899 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2785 32) 1698)
-        (Data.Bytes.natToBytesPadded 1 32) 1760) 1698 = UInt256.ofNat 2785 := by
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2785 (by decide)]
   have hinitial : initialPhase s mem esize = UInt256.ofNat 1 := by
     unfold initialPhase
     rw [hbyte3, hsize1]
@@ -274,28 +216,26 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,taggedTemplate,phaseTag,
-      shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
       CycleSubmission.Global.ZeroShiftMath.branch_zero4,CycleSubmission.Global.ZeroShiftMath.branch_zero8,
       jumpDestCacheZero,jumpDestLoop2684,jumpDestLoop10692,jumpDestLoop3711,jumpDestLoop3879,
       UInt256.eq,UInt256.isTrue,
-      haw1698,haw1760,haw2816,haw32,hv4,hv8,hw4,hw8,hslot1698,hflag1760,hhi1698,hslot1760,hback3032,hback2899,
-      hmodif,hb3t,hb3m,hmodl,
+      haw1698,haw2816,haw32,hv4,hv8,hw4,hw8,hslot1698,hhi1698,hmodif,hb3t,hb3m,hmodl,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,Nat.mod_eq_of_lt,List.exchange]
-  all_goals (simp only [State.activeWordsAfterUInt256,haw1698,haw1760,haw2816,haw32,
-      hslot1698,hflag1760,hhi1698,hslot1760,hback3032,hback2899,hv4,hv8,hw4,hw8,hmodif,hmodl,hb3m,
+  all_goals (simp only [State.activeWordsAfterUInt256,haw1698,haw2816,haw32,
+      hslot1698,hhi1698,hv4,hv8,hw4,hw8,hmodif,hmodl,hb3m,
       Fin.land,Nat.and_zero,Nat.zero_and])
   all_goals (first | rfl | simp [UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,
-      Nat.and_zero,Nat.zero_and,UInt256.toNat,hback3032,hback2899,hmodif,hmodl,hb3m])
+      Nat.and_zero,Nat.zero_and,UInt256.toNat,hmodif,hmodl,hb3m])
   all_goals (first | rfl | decide)
 
-/-- Other single-byte exponents enter the ordinary loop with a clear phase flag. -/
+/-- Other single-byte exponents enter the ordinary loop with continuation 2310. -/
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -307,11 +247,9 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2310) (taggedTemplate s (UInt256.ofNat 0)) mem
+      some (shiftLoopState (UInt256.ofNat 2310) s mem
         n bsize esize msize n) := by
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
-      s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
-  have haw1760 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1760 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -378,12 +316,6 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18724 -
       (UInt256.ofNat 2008 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2660 := by decide
-  have hflag1760 : ∀ (v a : Nat),a + 32 ≤ 1760 →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1760) a =
-        MachineState.readWord mem a := by
-    intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1698 →
       MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
         MachineState.readWord mem a := by
@@ -396,26 +328,6 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     intro v a ha
     rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hslot1760 : ∀ (v a : Nat),a + 32 ≤ 1760 →
-      MachineState.readWord
-        (MachineState.writeBytes (MachineState.writeBytes mem
-          (Data.Bytes.natToBytesPadded v 32) 1698) (Data.Bytes.natToBytesPadded 0 32) 1760) a =
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a := by
-    intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hback3032 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2901 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2901 := by
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2901 (by decide)]
-  have hback2899 : MachineState.readWord
-      (MachineState.writeBytes (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 2785 32) 1698)
-        (Data.Bytes.natToBytesPadded 0 32) 1760) 1698 = UInt256.ofNat 2785 := by
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ 1698 1760
-      (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
-      Challenge.EvmProof.Memory.readWord_writeBytes_of_lt _ 1698 2785 (by decide)]
   have hinitial : initialPhase s mem esize = UInt256.ofNat 0 := by
     have hb : UInt256.eq (UInt256.ofNat 3)
         (UInt256.byteAt (UInt256.ofNat 0)
@@ -434,25 +346,23 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,taggedTemplate,phaseTag,
-      shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
       CycleSubmission.Global.ZeroShiftMath.branch_zero4,CycleSubmission.Global.ZeroShiftMath.branch_zero8,
       jumpDestCacheZero,jumpDestLoop2684,jumpDestLoop10692,jumpDestLoop3711,jumpDestLoop3879,
       UInt256.eq,UInt256.isTrue,
-      haw1698,haw1760,haw2816,haw32,hv4,hv8,hw4,hw8,hslot1698,hflag1760,hhi1698,hslot1760,hback3032,hback2899,
-      hmodif,hmodl,
+      haw1698,haw2816,haw32,hv4,hv8,hw4,hw8,hslot1698,hhi1698,hmodif,hmodl,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,Nat.mod_eq_of_lt,List.exchange]
-  all_goals (simp only [State.activeWordsAfterUInt256,haw1698,haw1760,haw2816,haw32,
-      hslot1698,hflag1760,hhi1698,hslot1760,hback3032,hback2899,hv4,hv8,hw4,hw8,hmodif,hmodl,hbn,hbn2,
+  all_goals (simp only [State.activeWordsAfterUInt256,haw1698,haw2816,haw32,
+      hslot1698,hhi1698,hv4,hv8,hw4,hw8,hmodif,hmodl,hbn,hbn2,
       Fin.land,Nat.and_zero,Nat.zero_and])
   all_goals (first | rfl | simp [UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,
-      Nat.and_zero,Nat.zero_and,UInt256.toNat,hback3032,hback2899,hmodif,hmodl,hbn,hbn2,
+      Nat.and_zero,Nat.zero_and,UInt256.toNat,hmodif,hmodl,hbn,hbn2,
       hb3mne])
   all_goals (first | rfl | decide)
 

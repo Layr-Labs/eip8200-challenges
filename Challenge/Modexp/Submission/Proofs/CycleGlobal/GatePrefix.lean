@@ -42,8 +42,8 @@ theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestSpecial : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3209 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2452 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2452 = 3209 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2457 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2457 = 3209 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem exponent_eq (s : State) (input : ByteArray) (bsize : Nat)

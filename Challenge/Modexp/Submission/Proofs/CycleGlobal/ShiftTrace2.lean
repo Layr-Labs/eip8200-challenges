@@ -275,7 +275,7 @@ def estimateMid (z : UInt256) (s : State) (mem : ByteArray)
   { s with pc := UInt256.ofNat (headPC n + 40)
            memory := uMem0 mem n
            stack := MachineState.readWord U 1664 :: diff :: hi :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 private theorem run_estimate_left (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n ≠ 4) (hn2 : 2 ≤ n)
@@ -433,7 +433,7 @@ private def estimate8 (z : UInt256) (s : State) (mem : ByteArray)
   { s with pc := UInt256.ofNat (headPC n + 21)
            memory := uMem0 mem n
            stack := v2 :: v0 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
@@ -448,7 +448,7 @@ def estimate16 (z : UInt256) (s : State) (mem : ByteArray)
   { s with pc := UInt256.ofNat (headPC n + 32)
            memory := uMem0 mem n
            stack := (MachineState.readWord U 1568) :: (MachineState.readWord U 1568) :: v6 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
@@ -469,7 +469,7 @@ def estimate32 (z : UInt256) (s : State) (mem : ByteArray)
   { s with pc := UInt256.ofNat (headPC n + 49)
            memory := uMem0 mem n
            stack := (UInt256.ofNat 0) :: v10 :: v12 :: v10 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) : State :=
@@ -496,7 +496,7 @@ def estimate40 (z : UInt256) (s : State) (mem : ByteArray)
   { s with pc := UInt256.ofNat (headPC n + 59)
            memory := uMem0 mem n
            stack := v18 :: v1 :: UInt256.ofNat k ::
-             entrySlots z U n bsize esize (phaseTag s) ++ outer n bsize esize msize }
+             entrySlots z U n bsize esize ++ outer n bsize esize msize }
 
 private theorem run_estimate_h4_part0 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
