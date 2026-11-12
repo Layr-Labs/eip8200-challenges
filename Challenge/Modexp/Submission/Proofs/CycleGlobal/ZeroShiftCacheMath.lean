@@ -7,7 +7,7 @@ theorem land_comm (a b : UInt256) : UInt256.land a b = UInt256.land b a := by
 theorem packed_mask_eq (n : Nat) (k : UInt256) (hn : n = 4 ∨ n = 8) :
     UInt256.land (UInt256.ofNat 65535)
       (UInt256.shiftRight
-        (UInt256.ofNat ((4047*65536)+18700) - UInt256.ofNat ((42*65536)+2002)*UInt256.ofNat n)
+        (UInt256.ofNat ((4075*65536)+18744) - UInt256.ofNat ((45*65536)+2006)*UInt256.ofNat n)
         (UInt256.ofNat 16 * UInt256.isZero k)) = UInt256.ofNat (head n k) := by
   rw [land_comm]
   exact packed_eq n k hn

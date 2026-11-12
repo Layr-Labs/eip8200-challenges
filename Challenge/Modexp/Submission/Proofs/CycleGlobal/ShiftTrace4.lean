@@ -244,7 +244,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 3915) s
+      (shiftLoopState (UInt256.ofNat 3943) s
         (preMem (negStep mem n n).memory) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -266,7 +266,7 @@ def gasSteps_addIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) j)) n bsize esize msize k j
         (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
         hn32 (by omega) (tPtr_toNat n j hn32 (by omega))
-        (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
+        (by simp [entrySlots, aprevSlot, hdSlot, rideSlots, shiftEntry, outer, Exp.outer])
         e.act296 e.code e.run)).trans
     (soundEnv blk3157b e
       (run_addTail_go s (addStep mem n (j + 1)).memory (addStep mem n (j + 1)).flag
@@ -274,7 +274,7 @@ def gasSteps_addIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
         (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (j + 1))) n bsize esize msize k
         (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
         (ptrWord_step _ _)
-        (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
+        (by simp [entrySlots, aprevSlot, hdSlot, rideSlots, shiftEntry, outer, Exp.outer])
         (tPtr_gt_8255 n (j + 1) hn32 hj) e.code e.run))
 
 /-- The last add-pass iteration, falling into the add tail. -/
@@ -287,13 +287,13 @@ def gasSteps_addLastIter (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
         (run_addBodyA s mem (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1))) n bsize esize
           msize k (n - 1) (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
           hn32 (by omega) (tPtr_toNat n (n - 1) hn32 (by omega))
-          (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer]) e.act296 e.code e.run)).trans
+          (by simp [entrySlots, aprevSlot, hdSlot, rideSlots, shiftEntry, outer, Exp.outer]) e.act296 e.code e.run)).trans
       ((soundEnv blk3157b e
         (run_addTail_last s (addStep mem n (n - 1 + 1)).memory (addStep mem n (n - 1 + 1)).flag
           (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1)))
           (UInt256.ofNat (Monpro.ptrAt (2080 + 32 * n) (n - 1 + 1))) n bsize esize msize k
           (entrySlots z mem n bsize esize ++ outer n bsize esize msize)
-          (by simp [entrySlots, rideSlots, shiftEntry, outer, Exp.outer])
+          (by simp [entrySlots, aprevSlot, hdSlot, rideSlots, shiftEntry, outer, Exp.outer])
           (ptrWord_step _ _) (by rw [Nat.sub_add_cancel hn]; exact tPtr_toNat_last n hn32)
           e.code e.run)).trans
         (soundEnv blk3157c e
@@ -525,18 +525,21 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
         (uMem_readWord_disjoint mem n 1600 (Or.inl (by omega))).trans hsw
       by_cases hw : n = 4
       · exact soundEnv (blkZero4 ++ blkEstimateSuffix4) e
-          (run_zeroEstimate4 z s mem n bsize esize msize k hw hshift hkU hxU hbs e.act e.code e.run)
+          (run_zeroEstimate4 z s mem n bsize esize msize k hw inv.pre (top_limb_ne_zero mem n mm hn htop inv.modulus) hshift hkU hxU hbs e.act e.code e.run)
       · exact soundEnv (blkZero8 ++ blkEstimateSuffix8) e
           (run_zeroEstimate8 z s mem n bsize esize msize k
-            (by rcases hfast with h | h <;> omega) hshift hkU hxU hbs e.act e.code e.run)
-    · exact
+            (by rcases hfast with h | h <;> omega) inv.pre (top_limb_ne_zero mem n mm hn htop inv.modulus) hshift hkU hxU hbs e.act e.code e.run)
+    · have hshiftU : (MachineState.readWord (uMem mem n) 1536).toNat ≠ 0 := by
+        rw [uMem_readWord_disjoint mem n 1536 (Or.inl (by omega))]
+        exact hshift
+      exact
         if hw : n = 4 then
         ((soundEnv blk3013h e
             (run_shiftHead_go_h4 z s mem n bsize esize msize k hw hshift (by omega) hk32 e.code e.run)).trans
           (soundEnv blk3018h e
             (run_shiftBody_h4 z s mem n bsize esize msize k hw hn hn32 e.act hbs htl0 (by omega) e.code e.run))).trans
           (soundEnv blk3026h e
-            (run_estimate_h4 z s mem n bsize esize msize k hw e.act296 e.code e.run))
+            (run_estimate_h4 z s mem n bsize esize msize k hw hshiftU e.act296 e.code e.run))
         else
         ((soundEnv blk3013 e
             (run_shiftHead_go z s mem n bsize esize msize k hw hshift (by omega) hk32 e.code e.run)).trans
@@ -544,7 +547,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
             (run_shiftBody z s mem n bsize esize msize k hw hn hn32 e.act hbs htl0
               (by rcases hfast with h | h <;> omega) e.code e.run))).trans
           (soundEnv blk3026 e
-            (run_estimate z s mem n bsize esize msize k hw hn
+            (run_estimate z s mem n bsize esize msize k hw hn hshiftU
               e.act296 e.code e.run))
   have g2 : Challenge.EvmProof.GasSteps
       (macSetupState z s mem n bsize esize msize k)
@@ -718,7 +721,7 @@ def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
   rcases gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
       htop e inv hbase hr rf hfast with h | h
   · exact ⟨false, (h.trans
-      (soundEnv blk3253Last e (run_csubCall_last z s (LazyTopStep.next mem n mm) n bsize esize msize e.run))).trans
+      (soundEnv blk3253 e (run_csubCall_last z s (LazyTopStep.next mem n mm) n bsize esize msize e.run))).trans
       (soundEnv blk3253x e (run_csubExit z s (LazyTopStep.next mem n mm) n bsize esize msize e.code e.run))⟩
   · exact ⟨true, h.trans
       (soundEnv blk3253h e (run_csubCall_last_h4 z s (LazyTopStep.next mem n mm) n bsize esize msize e.run))⟩

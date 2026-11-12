@@ -18,9 +18,9 @@ open Word
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 3001 ≤ i) (hii : i ≤ 3022) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 3042 ≤ i) (hii : i ≤ 3063) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3936, 3937, 3938, 3939, 3940, 3942, 3943, 3945, 3946, 3947, 3948, 3949, 3950, 3952, 3953, 3955, 3956, 3957, 3958, 3959, 3960, 3961] : List Nat)[i - 3001]! := by
+      ([3964, 3965, 3966, 3967, 3968, 3970, 3971, 3973, 3974, 3975, 3976, 3977, 3978, 3980, 3981, 3983, 3984, 3985, 3986, 3987, 3988, 3989] : List Nat)[i - 3042]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

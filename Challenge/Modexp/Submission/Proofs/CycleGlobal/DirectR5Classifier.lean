@@ -6,10 +6,10 @@ namespace CycleSubmission.Global.DirectR5Classifier
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 def program : List Instr :=
- [.op .JUMPDEST,.op (.Dup ⟨1,by decide⟩),.push 1 128,.op .XOR,.push 2 3154,.op .JUMPI]
+ [.op .JUMPDEST,.op (.Dup ⟨1,by decide⟩),.push 1 128,.op .XOR,.push 2 3150,.op .JUMPI]
 theorem run4 (s : State) (count : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1000) :
- runInstructions program {s with pc := UInt256.ofNat 3217,stack := [count,UInt256.ofNat 128]++rest} =
- some {s with pc := UInt256.ofNat 3226,stack := [count,UInt256.ofNat 128]++rest} := by
+ runInstructions program {s with pc := UInt256.ofNat 3213,stack := [count,UInt256.ofNat 128]++rest} =
+ some {s with pc := UInt256.ofNat 3222,stack := [count,UInt256.ofNat 128]++rest} := by
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega
@@ -17,9 +17,9 @@ theorem run4 (s : State) (count : UInt256) (rest : List UInt256) (hcap : rest.le
  simp [program,runInstructions,Stepper.runInstr,hc2,hc3,hc4,Nat.add_assoc,hx,UInt256.isTrue,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run8 (s : State) (count : UInt256) (rest : List UInt256) (hcap : rest.length ≤ 1000)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3154 = true) :
- runInstructions program {s with pc := UInt256.ofNat 3217,stack := [count,UInt256.ofNat 256]++rest} =
- some {s with pc := UInt256.ofNat 3154,stack := [count,UInt256.ofNat 256]++rest} := by
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3150 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 3213,stack := [count,UInt256.ofNat 256]++rest} =
+ some {s with pc := UInt256.ofNat 3150,stack := [count,UInt256.ofNat 256]++rest} := by
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega

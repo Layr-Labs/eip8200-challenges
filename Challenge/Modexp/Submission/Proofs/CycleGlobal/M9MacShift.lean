@@ -47,13 +47,13 @@ theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : 
       some (MachineState.readWord um (1280 + 32 * (7 - i))) := by
   intro i hi
   interval_cases i <;>
-    simp [Shift.entrySlots, Exp.outer]
+    simp [Shift.entrySlots, Shift.aprevSlot, Shift.hdSlot, Exp.outer]
 
 /-- The riding frame is twenty-one words: the counter, fifteen slots, five outer. -/
 theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
     (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
-      Exp.outer n bsize esize msize).length = 21 := by
-  simp [Shift.entrySlots, Exp.outer]
+      Exp.outer n bsize esize msize).length = 20 := by
+  simp [Shift.entrySlots, Shift.aprevSlot, Shift.hdSlot, Exp.outer]
 
 /-- The section on the conversion frame: from `macSetupState` (the end of the loop head of the
 width, `(headPC n + 98 + (if n = 4 then 1 else 2))`) with the quotient guess above the counter, slots and outer frame over `um`,

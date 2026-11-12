@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.DirectWordMath
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Mathlib.Data.Nat.Bitwise
@@ -114,7 +115,7 @@ open CycleSubmission.Global.ShiftPCs
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2034 = 2602 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2033 = 2602 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -770,7 +771,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
   have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have heq11 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat 1) = UInt256.ofNat 1 := by decide
-  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 1605 + UInt256.ofNat 2310 = UInt256.ofNat 2310 := by decide
+  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 1633 + UInt256.ofNat 2310 = UInt256.ofNat 2310 := by decide
   have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide
@@ -778,9 +779,23 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
   have heqSize : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize) =
       (if UInt256.ofNat esize = UInt256.ofNat 1 then UInt256.ofNat 1 else UInt256.ofNat 0) := by
     simp only [CycleSubmission.Global.DirectWordMath.eq_word, eq_comm]
+  have hxor11 : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat 1) = UInt256.ofNat 0 := by decide
+  have hxword : UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize) = 0 ↔
+      UInt256.ofNat esize = UInt256.ofNat 1 := by
+    rw [WindowGuardLogic.wordXor_eq_zero_iff, eq_comm]
+  have hxzero : (UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize)).toNat = 0 ↔
+      UInt256.ofNat esize = UInt256.ofNat 1 := by
+    constructor
+    · intro h
+      exact hxword.mp (Challenge.EvmProof.Word.word_ext h)
+    · intro h
+      rw [hxword.mpr h]
+      rfl
+  have hxtrue : UInt256.isTrue (UInt256.xor (UInt256.ofNat 1) (UInt256.ofNat esize)) ↔
+      UInt256.ofNat esize ≠ UInt256.ofNat 1 := not_congr hxzero
   by_cases hsize : UInt256.ofNat esize = UInt256.ofNat 1
   all_goals simp (config := { maxSteps := 3000000 })
-    [blkNbTail, blkNbTailHead, blkNbTailByte, blkNbTailJoin, hsize, heqSize, heq11, hzeroAdd, jumpDestNbJoin,
+    [blkNbTail, blkNbTailHead, blkNbTailByte, blkNbTailJoin, hxor11, hxtrue, hsize, heqSize, heq11, hzeroAdd, jumpDestNbJoin,
       CycleSubmission.Global.DirectWordMath.land_eq_zero, CycleSubmission.Global.DirectWordMath.land_eq_one, hz0, hz1, Exp.not_isTrue_zero, Exp.isTrue_one, opAt, pushAt, wfOp, List.exchange, CycleSubmission.Prepared.Arithmetic.mulC,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,

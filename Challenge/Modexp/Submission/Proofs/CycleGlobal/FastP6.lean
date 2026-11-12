@@ -31,7 +31,7 @@ empty stack. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2677 .JUMPDEST,
-   pushAt 2678 2 3436,
+   pushAt 2678 2 3432,
    opAt 2679 .JUMPI]
 
 /-- The same test for `msize = 0`: the `JUMPI` falls through to `PUSH0 PUSH0 RETURN`
@@ -39,7 +39,7 @@ def blk1341 :
 def blkEmptyModulus :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2677 .JUMPDEST,
-   pushAt 2678 2 3436,
+   pushAt 2678 2 3432,
    opAt 2679 .JUMPI,
    pushAt 2680 0 0,
    pushAt 2681 0 0,
@@ -96,59 +96,59 @@ def blkZeroExpHit :
    pushAt 2658 2 673,
    opAt 2659 .JUMPI,
    pushAt 2660 1 64,
-   pushAt 2661 2 4717,
+   pushAt 2661 2 4745,
    opAt 2662 .JUMP,
-   opAt 3604 .JUMPDEST,
-   opAt 3605 .CALLDATALOAD,
-   pushAt 3606 0 0,
-   opAt 3607 .CALLDATALOAD,
-   pushAt 3608 1 96,
-   opAt 3609 .ADD,
-   opAt 3610 .CALLDATALOAD,
-   opAt 3611 (.Dup ⟨1,by decide⟩),
-   pushAt 3612 1 32,
-   opAt 3613 .SUB,
-   pushAt 3614 1 3,
-   opAt 3615 .SHL,
-   opAt 3616 .SHR,
-   pushAt 3617 1 1,
-   opAt 3618 .LT,
-   pushAt 3619 0 0,
-   opAt 3620 .MSTORE]
+   opAt 3645 .JUMPDEST,
+   opAt 3646 .CALLDATALOAD,
+   pushAt 3647 0 0,
+   opAt 3648 .CALLDATALOAD,
+   pushAt 3649 1 96,
+   opAt 3650 .ADD,
+   opAt 3651 .CALLDATALOAD,
+   opAt 3652 (.Dup ⟨1,by decide⟩),
+   pushAt 3653 1 32,
+   opAt 3654 .SUB,
+   pushAt 3655 1 3,
+   opAt 3656 .SHL,
+   opAt 3657 .SHR,
+   pushAt 3658 1 1,
+   opAt 3659 .LT,
+   pushAt 3660 0 0,
+   opAt 3661 .MSTORE]
 
 /-- The return of the zero-exponent hit: `DUP1 PUSH1 32 SUB RETURN` returns the low
 `msize` bytes of word 0 (instructions 8666..8669). -/
 def blkZeroExpReturn :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3621 (.Dup ⟨0,by decide⟩),
-   opAt 3622 .MSIZE,
-   opAt 3623 .SUB,
-   opAt 3624 .RETURN]
+  [opAt 3662 (.Dup ⟨0,by decide⟩),
+   opAt 3663 .MSIZE,
+   opAt 3664 .SUB,
+   opAt 3665 .RETURN]
 
 
 
-theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3436 = true :=
+theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3432 = true :=
   CycleSubmission.Global.Binding.jumpDest 2649 (by rfl)
 
 @[simp] theorem packedEmptyPCs (i : Nat) (hi : 2677 ≤ i) (hii : i ≤ 2682) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3481, 3482, 3485, 3486, 3487, 3488] : List Nat)[i - 2677]! := by
+      ([3477, 3478, 3481, 3482, 3483, 3484] : List Nat)[i - 2677]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem packedHeadPCs (i : Nat) (hi : 2649 ≤ i) (hii : i ≤ 2662) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3436, 3437, 3439, 3440, 3443, 3444, 3446, 3447, 3449, 3450, 3453, 3454, 3456, 3459] : List Nat)[i - 2649]! := by
+      ([3432, 3433, 3435, 3436, 3439, 3440, 3442, 3443, 3445, 3446, 3449, 3450, 3452, 3455] : List Nat)[i - 2649]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-@[simp] theorem packedTailPCs (i : Nat) (hi : 3604 ≤ i) (hii : i ≤ 3624) :
+@[simp] theorem packedTailPCs (i : Nat) (hi : 3645 ≤ i) (hii : i ≤ 3665) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4717, 4718, 4719, 4720, 4721, 4723, 4724, 4725, 4726, 4728, 4729, 4731, 4732, 4733, 4735, 4736, 4737, 4738, 4739, 4740, 4741] : List Nat)[i - 3604]! := by
+      ([4745, 4746, 4747, 4748, 4749, 4751, 4752, 4753, 4754, 4756, 4757, 4759, 4760, 4761, 4763, 4764, 4765, 4766, 4767, 4768, 4769] : List Nat)[i - 3645]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
-theorem jumpDestZeroExpTail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4717 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3604 (by rfl)
+theorem jumpDestZeroExpTail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4745 = true :=
+  CycleSubmission.Global.Binding.jumpDest 3645 (by rfl)
 
 end CycleSubmission.Global.Fast

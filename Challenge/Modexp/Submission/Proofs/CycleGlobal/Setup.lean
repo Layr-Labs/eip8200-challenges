@@ -258,12 +258,12 @@ def fallbackState (s : State) : State :=
 def memoEntryState (s : State) : State :=
   { s with pc := UInt256.ofNat 674, stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 3436, stack := [] }
+  { s with pc := UInt256.ofNat 3432, stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 3481, stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 3477, stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 3488
+    pc := UInt256.ofNat 3484
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -304,14 +304,14 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 4738
+    pc := UInt256.ofNat 4766
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
 def zeroExpFinalState (s : State) (input : ByteArray) : State :=
   { zeroExpStoreState s input with
     stack := []
-    pc := UInt256.ofNat 4741
+    pc := UInt256.ofNat 4769
     halt := .Returned
     hReturn := MachineState.readPadded (zeroExpMemory s input)
       (32 - modulusSize input) (modulusSize input)
@@ -405,9 +405,9 @@ set_option linter.unusedSimpArgs false in
 def zeroExpReturnProgram80 : List Instr :=
   [.op (.Dup dA0), .op .MSIZE, .op .SUB, .op .RETURN]
 
-def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4738 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 3621 4 4738 zeroExpReturnProgram80
-    (by change 3621 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 4766 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 3662 4 4766 zeroExpReturnProgram80
+    (by change 3662 + 4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -1362,26 +1362,26 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
     2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 444 (.Dup dA3),
+  [opAt 444 (.Dup ⟨3,by decide⟩),
    pushAt 445 1 96,
    opAt 446 .ADD,
    pushAt 447 2 2656,
    opAt 448 .MSTORE,
-   opAt 449 (.Dup dA1),
+   opAt 449 (.Dup ⟨1,by decide⟩),
    opAt 450 .MSIZE,
    opAt 451 .MSTORE,
    pushAt 452 1 32,
-   opAt 453 (.Dup dA2),
+   opAt 453 (.Dup ⟨2,by decide⟩),
    opAt 454 .SUB,
    pushAt 455 2 2752,
    opAt 456 .MSTORE,
-   opAt 457 (.Dup dA1),
+   opAt 457 (.Dup ⟨1,by decide⟩),
    pushAt 458 2 2080,
    opAt 459 .ADD,
    opAt 460 .MSIZE,
    opAt 461 .MSTORE,
-   opAt 462 (.Dup dA5),
-   opAt 463 (.Dup dA1),
+   opAt 462 (.Dup ⟨5,by decide⟩),
+   opAt 463 (.Dup ⟨1,by decide⟩),
    pushAt 464 0 0,
    opAt 465 .CALLDATACOPY,
    opAt 466 .POP,

@@ -55,6 +55,6 @@ def productColumn17Model (s : State) (carry word0 word1 word2 word3 word4 word5 
   let v41 : UInt256 := UInt256.mulMod v38 v37 word11
   let v42 : UInt256 := v41 + v36
   let v43 : UInt256 := MachineState.readWord v26 1984
-  {s with pc := UInt256.ofNat 10019, memory := v26, stack := v43 :: word4 :: v40 :: word4 :: word11 :: v42 :: v43 :: word4 :: word5 :: word6 :: word7 :: v32 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest}
+  {s with pc := UInt256.ofNat 10047, memory := v26, stack := v43 :: word4 :: v40 :: word4 :: word11 :: v42 :: v43 :: word4 :: word5 :: word6 :: word7 :: v32 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: word15 :: word16 :: word17 :: rest}
 
 end CycleSubmission.Execution
