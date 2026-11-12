@@ -35,8 +35,8 @@ def prefixProgram : List Instr :=
 def testProgram : List Instr :=
  [.op (.Dup ⟨15,by decide⟩),.push 1 96,.op .ADD,.op .CALLDATALOAD,
   .push 1 232,.op .SHR,.push 3 65537,.op .EQ,.push 2 512,.op .MLOAD,
-  .op .AND,.op .JUMPDEST,.push 2 16,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
-  .push 2 3194,.op .JUMPI]
+  .op .AND,.op .JUMPDEST,.push 2 15,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
+  .push 2 3197,.op .JUMPI]
 def guardProgram : List Instr := prefixProgram ++ testProgram
 def frame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
  {s with memory := mem, pc := UInt256.ofNat pc, stack := CycleSubmission.Global.SlimFrames.outer mem n bsize esize msize}
@@ -50,9 +50,9 @@ def entryState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State
  frame s mem 2306 n bsize esize msize
 def e3go (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
  frame s mem 2298 n bsize esize msize
-def e3Program : List Instr := [.op .JUMPDEST, .op (.Dup ⟨13, by decide⟩), .push 1 1, .push 2 3194, .op .JUMP]
+def e3Program : List Instr := [.op .JUMPDEST, .op (.Dup ⟨13, by decide⟩), .push 0 0, .push 3 3197, .op .JUMP]
 theorem run_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3194 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true) :
  runInstructions e3Program (e3go s mem n bsize esize msize) =
    some (CycleSubmission.Global.SlimFrames.special s mem n bsize esize msize 1) := by
  simp [Exp.push0_word, e3Program, e3go, frame, runInstructions, Stepper.runInstr,
@@ -84,7 +84,7 @@ theorem run_prefix (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 theorem run_test_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3194 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true) :
  runInstructions testProgram (storedFrame s mem n bsize 3 msize) =
    some (CycleSubmission.Global.SlimFrames.special s (GateScratch.memory mem 3) n bsize 3 msize 16) := by
  simp only [CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.guardFrame, GateScratch.outer]
@@ -121,7 +121,7 @@ theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 theorem run_guard_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3194 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true) :
  runInstructions guardProgram (frame s mem 2306 n bsize 3 msize) =
  some (SlimFrames.special s (GateScratch.memory mem 3) n bsize 3 msize 16) := by
  exact runInstructions_append_some _ _ _ _ _ (run_prefix s mem n bsize 3 msize hact)
