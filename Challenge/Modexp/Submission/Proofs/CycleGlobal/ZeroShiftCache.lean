@@ -110,7 +110,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
@@ -140,7 +140,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 3915) s mem
+      some (shiftLoopState (UInt256.ofNat 3963) s mem
         n bsize esize msize (n / 2)) := by
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -216,7 +216,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,
@@ -346,7 +346,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
+      cacheSetupState,initialContinuation,hinitial,slotState,slotKState,shiftLoopState,rideSlots,entrySlots,aprevSlot,hdSlot,shiftEntry,Exp.storeWord,outer,Exp.outer,hcode,hrun,CycleSubmission.Global.ZeroShiftMath.shr_zero,headWord,loopPC,
       CycleSubmission.Global.ZeroShiftMath.head,CycleSubmission.Global.ZeroShiftMath.zeroHead,
       CycleSubmission.Global.ZeroShiftMath.normalHead,UInt256.isZero,
       CycleSubmission.Global.ZeroShiftMath.branch_normal4,CycleSubmission.Global.ZeroShiftMath.branch_normal8,

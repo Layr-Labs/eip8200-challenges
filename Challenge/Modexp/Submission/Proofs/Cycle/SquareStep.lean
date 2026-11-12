@@ -26,7 +26,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < WordArithmetic.radix)
     (hz : (overflowFlag (squared inv a zeroWords n)).toNat = 0) :
-    GasSteps {s with pc := UInt256.ofNat 5568, stack := SquareMeaning.frame0 inv a zeroWords n rest}
+    GasSteps {s with pc := UInt256.ofNat 5615, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
   have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact ha
   have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest hz
@@ -49,7 +49,7 @@ theorem frame_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
   SquareNormalize.frame_output _ _ _ _
 
 theorem pc_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a n rest).pc = UInt256.ofNat 7657 := by
+    (result s inv a n rest).pc = UInt256.ofNat 7704 := by
   unfold result SquareNormalize.completed
   split_ifs <;> rfl
 

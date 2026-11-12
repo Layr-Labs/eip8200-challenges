@@ -18,7 +18,7 @@ def guardWord (mem : ByteArray) : UInt256 :=
 def memory (mem : ByteArray) : ByteArray := StagedOperand.stage mem 2112 8
 def frame (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : Caller where
  pbi := MachineState.readWord mem 1376
- hd := UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128)
+ hd := CycleSubmission.Global.Fast.Shift.hdSlot mem
  w3 := width
  ent := MachineState.readWord mem 1312
  m32 := MachineState.readWord mem 1344
@@ -29,7 +29,7 @@ def frame (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : Caller
  m96 := MachineState.readWord mem 1632
  inv := MachineState.readWord mem 1664
  tn := MachineState.readWord mem 1568
- aprev := MachineState.readWord mem 1536
+ aprev := CycleSubmission.Global.Fast.Shift.aprevSlot mem
  counter := count
  ret := UInt256.ofNat 2519
  tail := (SlimFrames.outer mem 8 bsize esize 256).drop 13
@@ -37,47 +37,47 @@ def state (s : State) (mem : ByteArray) (pc : Nat) (count width : UInt256) (bsiz
  {s with pc := UInt256.ofNat pc, memory := mem, stack := [count,width]++SlimFrames.outer mem 8 bsize esize 256}
 def guardProgram : List Instr :=
  [.op .JUMPDEST,.push 2 2112,.op .MLOAD,.push 32 (UInt256.ofNat (2^256-2^146-1)),
- .op .LT,.push 2 207,.op .JUMPI]
+ .op .LT,.push 1 207,.op .JUMPI]
 def finishProgram : List Instr :=
  [.push 2 256,.push 2 2112,.push 2 2368,.op .MCOPY,.op (.Swap ⟨12,by decide⟩),
- .push 0 0,.op .NOT,.op (.Swap ⟨4,by decide⟩),.push 4 5383,.op .JUMP]
+ .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,.op (.Swap ⟨4,by decide⟩),.push 2 5430,.op .JUMP]
 def entered (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : State :=
- {s with pc := UInt256.ofNat 5383, memory := memory mem, stack := saved (frame mem count width bsize esize)}
+ {s with pc := UInt256.ofNat 5430, memory := memory mem, stack := saved (frame mem count width bsize esize)}
 theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat ≠ 0) :
- runInstructions guardProgram (state s mem 3154 count width bsize esize) =
- some (state s mem 3197 count width bsize esize) := by
+ runInstructions guardProgram (state s mem 3147 count width bsize esize) =
+ some (state s mem 3189 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
  have hb : ¬ (2^256-2^146-1 < (MachineState.readWord mem 2112).toNat) := by
   intro h
   exact hg ((CycleSubmission.Global.DirectBoundMath.zero_iff _).mpr h)
  simp only [guardWord] at hg
- simp [CycleSubmission.Global.DirectBoundMath.guard_eq,hb,guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,Exp.outer,
+ simp [CycleSubmission.Global.DirectBoundMath.guard_eq,hb,guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,
   runInstructions,Stepper.runInstr,UInt256.isZero,UInt256.isTrue,State.activeWordsAfterUInt256,hf,hg,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
 theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat = 0)
  (hd : Decode.isValidJumpDest s.executionEnv.code 207 = true) :
- runInstructions guardProgram (state s mem 3154 count width bsize esize) =
+ runInstructions guardProgram (state s mem 3147 count width bsize esize) =
  some (state s mem 207 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
  have hb : 2^256-2^146-1 < (MachineState.readWord mem 2112).toNat :=
   (CycleSubmission.Global.DirectBoundMath.zero_iff _).mp hg
  simp only [guardWord] at hg
- simp [CycleSubmission.Global.DirectBoundMath.guard_eq,hb,guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,Exp.outer,
+ simp [CycleSubmission.Global.DirectBoundMath.guard_eq,hb,guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,
   runInstructions,Stepper.runInstr,UInt256.isZero,UInt256.isTrue,State.activeWordsAfterUInt256,hf,hg,hd,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
 theorem run_finish (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 5383 = true) :
- runInstructions finishProgram (state s mem 3197 count width bsize esize) =
+ (hd : Decode.isValidJumpDest s.executionEnv.code 5430 = true) :
+ runInstructions finishProgram (state s mem 3189 count width bsize esize) =
  some (entered s mem count width bsize esize) := by
  have hmax : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat (2^256-1) := by decide
  have hf := Exp.activeWords_fix2 s 2368 256 2112 256 (by decide) (by decide) (by norm_num) (by norm_num) hact
  simp [hmax,finishProgram,state,entered,frame,saved,memory,StagedOperand.stage,SlimFrames.outer,
-  CycleSubmission.Global.Fast.Shift.entrySlots,Exp.outer,runInstructions,Stepper.runInstr,List.exchange,
+  CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,runInstructions,Stepper.runInstr,List.exchange,
   State.activeWordsAfterUInt256_2,hf,hd,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
   Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals decide
