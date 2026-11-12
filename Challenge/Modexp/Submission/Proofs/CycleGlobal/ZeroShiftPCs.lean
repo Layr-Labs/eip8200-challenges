@@ -31,7 +31,7 @@ namespace CycleSubmission.Global.ZeroShiftPCs
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem pc2071 : CycleSubmission.Artifact.artifact.instructionPC 2052 = 2645 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem pc2072 : CycleSubmission.Artifact.artifact.instructionPC 2055 = 2650 := by
+@[simp] theorem pc2072 : CycleSubmission.Artifact.artifact.instructionPC 2055 = 2649 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem pc2073 : CycleSubmission.Artifact.artifact.instructionPC 2068 = 2667 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl

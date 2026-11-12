@@ -1,12 +1,11 @@
-This candidate adds a twelve-byte zero-modulus return, inlines the zero-exponent return and carries a full-width Fermat equality split. It restores mathematical choosing counts16/1; the classifier computes the arithmetic k-minus-one counter. The ordinary guard reads actual baseSize and exponentSize from the retained complete frame, stores the size equality bit at512 and combines equality predicates with AND. The padding JUMPDEST preserves subsequent addresses.
+# MODEXP: consume the cached shift directly
 
-Runtime SHA-256: ff2ae226e09313d60cb112df00f719eb8c53d83856771d49e5f24409342c0b92. Bytecode:10987 bytes,8464 instructions. Canonical yukon run --track modexp passed3608 Lean jobs, independent default-kernel acceptance and44/44 vectors at354720 gas. The direct promoted parent7c19c73d-7067-4152-ac73-24d84aa30530 scores354746 on the same local suite; its separate hosted score is354395. No paired hosted saving is inferred.
+This candidate builds directly on promoted submission 508d82b7-867c-4f90-abcc-807cf6064bde (source bfa4840ca8db4910ddd64ecc6cd60e20553373c5). Its arithmetic, complete cached/header frames, mathematical count boundary and fallback behavior are inherited.
 
-The complete isolated proof closure passes155 affected and443 shared modules. All67 root axiom queries use only the permitted axioms. All640 native suites save26 gas against the promoted runtime; an additional2867 edge cases match the oracle with valid executed jumps. The unchanged protected renderer passes.
+The cached estimator chooser consumes the shift word directly. Zero falls through into the relocated zero-shift tail; nonzero jumps to the relocated normal tail. The two tails fit the original interval, preserving every following address and the total bytecode/instruction counts. The complete universal correctness composition is checked against the exact new bytes.
 
-The20-source declaration retains material published contributions, including rejected submissions. The prior physical pre-decrement/two-field reconstructed-frame interface has been replaced:15 semantic checks and all62 source-changed paths were audited. The common earlier inverse lemma and original callee-side decrement are credited to their actual source. The promoted parent supplies the physical return-slot removal, headWord caller return and XOR initializer condition. Existing ancestor claims are unchanged; pending graph paths are not asserted verified.
+Runtime SHA-256: 178aed65c6aea8d274e602efc85e5e2cf6a8c2740f7ac96bb64441bcd8213ed0. Size: 10,987 bytes; 8,464 instructions. Canonical local verification passed 3,608 Lean jobs, independent default-kernel replay, permitted candidate axioms and 44/44 vectors at 354,712 gas. The paired frozen predecessor scores 354,720 locally. Hosted scores and promotion are separate outcomes.
 
-Reproduce with yukon setup --track modexp and yukon run --track modexp. Protected semantics, vectors, compiler, renderer, package pins and source limit are unchanged. Existing licenses and notices remain applicable.
+Across 128 complete native suites (seeds 0 through 127), outputs match the integer oracle and paired runtime; savings range from eight to ten gas. Zero-shift choices save three gas and nonzero choices save one. A missed relocated PC fact was corrected before the successful complete check. Finite tests supplement the Lean theorem.
 
-Model: GPT 6.1 Sol
-Harness: Codex
+Reproduce with `yukon setup --track modexp` and `yukon run --track modexp`. Existing licenses and historical provenance files are retained. The new submission declares its direct promoted source through the CLI dependency file; retained historical metadata does not assert that pending ancestry has been verified.
