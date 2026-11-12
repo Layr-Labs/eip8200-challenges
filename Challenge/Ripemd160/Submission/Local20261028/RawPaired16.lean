@@ -50,11 +50,10 @@ def template : List Instr :=
     .op (.Swap ⟨9, by decide⟩),
     .op (.Dup ⟨11, by decide⟩),
     .op .MUL,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 23),
     .op .SHR,
     .op (.Dup ⟨4, by decide⟩),
-    .op .AND,
-    .op .JUMPDEST ]
+    .op .AND ]
 theorem exact_bytes :
     (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 1737).take 43 =
       PcEncoding.assembleBytes template := by

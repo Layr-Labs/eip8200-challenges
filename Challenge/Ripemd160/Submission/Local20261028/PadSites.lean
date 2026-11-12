@@ -1782,7 +1782,6 @@ def middle : List Instr :=
     .op .SHR,
     .op (.Dup ⟨3, by decide⟩),
     .op .AND,
-    .op .JUMPDEST,
     .op (.Dup ⟨13, by decide⟩),
     .op (.Dup ⟨1, by decide⟩),
     .op (.Swap ⟨6, by decide⟩),
@@ -1806,7 +1805,7 @@ def middle : List Instr :=
     .op .AND,
     .op (.Dup ⟨12, by decide⟩),
     .op .MUL,
-    .push ⟨1, by decide⟩ (UInt256.ofNat 19),
+    .push ⟨2, by decide⟩ (UInt256.ofNat 19),
     .op .SHR,
     .op (.Dup ⟨10, by decide⟩),
     .op .ADD,
@@ -2770,21 +2769,21 @@ def middle : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 6409),
     .op .JUMP ]
 def middleSite : GenericRoundSite CandidateArtifact.artifact .Osaka middle :=
-  StackSiteBuilder.ofSlice middle 4108 (by rfl)
-    (by change 4108 + middle.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice middle 4107 (by rfl)
+    (by change 4107 + middle.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem middle_pc : middleSite.startPC = UInt256.ofNat 6504 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 4108) = UInt256.ofNat 6504
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 4107) = UInt256.ofNat 6504
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem middle_advances : middle.dropLast.all PadTrace.advancesCheck = true := by decide +kernel
 #print axioms middleSite
 theorem valid4601 : Decode.isValidJumpDest CandidateArtifact.artifact.code 6504 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 4108 = 6504 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 4107 = 6504 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 4108 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 4107 (by rfl)
   rw [hpc] at h
   exact h
 theorem middle_last : middle = middle.take (middle.length-2) ++
@@ -2852,21 +2851,21 @@ def output : List Instr :=
     .push ⟨0, by decide⟩ (UInt256.ofNat 0),
     .op .RETURN ]
 def outputSite : GenericRoundSite CandidateArtifact.artifact .Osaka output :=
-  StackSiteBuilder.ofSlice output 4032 (by rfl)
-    (by change 4032 + output.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice output 4031 (by rfl)
+    (by change 4031 + output.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem output_pc : outputSite.startPC = UInt256.ofNat 6409 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 4032) = UInt256.ofNat 6409
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 4031) = UInt256.ofNat 6409
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem output_advances : output.dropLast.all PadTrace.advancesCheck = true := by decide +kernel
 #print axioms outputSite
 theorem valid10024 : Decode.isValidJumpDest CandidateArtifact.artifact.code 6409 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 4032 = 6409 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 4031 = 6409 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 4032 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 4031 (by rfl)
   rw [hpc] at h
   exact h
 theorem template_eq : PadSetup.template ++ PadBody.template = front ++ (middle ++ output) := by rfl
