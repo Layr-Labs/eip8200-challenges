@@ -73,6 +73,14 @@ def taggedTemplate (s : State) (phase : UInt256) : State := { s with stack := [p
 @[simp] theorem phaseTag_taggedTemplate (s : State) (phase : UInt256) :
     phaseTag (taggedTemplate s phase) = phase := rfl
 
+/-- The next conversion continuation is carried directly, without a phase slot. -/
+def returnWord (z phase : UInt256) : UInt256 := z + phase * UInt256.ofNat 1605
+@[simp] theorem returnWord_zero (z : UInt256) : returnWord z (UInt256.ofNat 0) = z := by
+  change z + UInt256.ofNat 0 = z
+  apply Challenge.EvmProof.Word.word_ext
+  change (z.val + 0).val = z.val.val
+  rw [add_zero]
+
 def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : UInt256) (phase : UInt256 := UInt256.ofNat 0) :
     List UInt256 :=
   scratch :: MachineState.readWord mem 1312 :: MachineState.readWord mem 1344 ::
@@ -81,7 +89,7 @@ def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : U
     MachineState.readWord mem 1504 :: MachineState.readWord mem 1632 ::
     MachineState.readWord mem 1664 :: MachineState.readWord mem 1568 ::
     MachineState.readWord mem 1536 :: UInt256.ofNat esize :: UInt256.ofNat n ::
-    UInt256.ofNat bsize :: phase :: z :: []
+    UInt256.ofNat bsize :: returnWord z phase :: []
 def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2785 + if n = 4 then 116 else 0)
 def entrySlots (z : UInt256) (mem : ByteArray) (n bsize _esize : Nat) (phase : UInt256 := UInt256.ofNat 0) : List UInt256 :=
   headWord mem n :: MachineState.readWord mem 1312 :: MachineState.readWord mem 1344 ::
@@ -91,7 +99,7 @@ def entrySlots (z : UInt256) (mem : ByteArray) (n bsize _esize : Nat) (phase : U
     MachineState.readWord mem 1664 :: MachineState.readWord mem 1568 ::
     MachineState.readWord mem 1536 ::
     UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128) :: UInt256.ofNat n ::
-    UInt256.ofNat bsize :: phase :: z :: []
+    UInt256.ofNat bsize :: returnWord z phase :: []
 def slotState (z : UInt256) (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat)
     (scratch : UInt256) : State :=
   { s with pc := UInt256.ofNat pc
@@ -169,7 +177,7 @@ def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)))
     (UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize))
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotState (UInt256.ofNat 2310) (taggedTemplate s (initialPhase s mem esize)) mem 2638 n bsize esize msize (UInt256.ofNat n)
+  slotState (UInt256.ofNat 2310) (taggedTemplate s (initialPhase s mem esize)) mem 2641 n bsize esize msize (UInt256.ofNat n)
 def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   slotKState z s mem (loopPC mem n) k n bsize esize msize
 def shiftBodyState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
@@ -244,11 +252,6 @@ def csubExit4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize ms
 def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   slotKState z s mem pcShiftDone 0 n bsize esize msize
-def cleanupState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
-    State :=
-  { s with pc := UInt256.ofNat 3914
-           stack := entrySlots z mem n bsize esize (phaseTag s) ++ outer n bsize esize msize
-           memory := mem }
 theorem negK_literal :
     (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
       UInt256) = UInt256.ofNat

@@ -12,31 +12,31 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 def classifyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3209 DirectR5Classifier.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2452 6 3209 DirectR5Classifier.program
-  (by change 2452+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2455 6 3209 DirectR5Classifier.program
+  (by change 2455+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 def dropBlock : Block CycleSubmission.Artifact.artifact .Osaka 3218 DirectR5Classifier.dropWidth :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2458 2 3218 DirectR5Classifier.dropWidth
-  (by change 2458+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2461 2 3218 DirectR5Classifier.dropWidth
+  (by change 2461+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 3220 DirectR5Reuse.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2460 7 3220 DirectR5Reuse.program
-  (by change 2460+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2463 7 3220 DirectR5Reuse.program
+  (by change 2463+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3146 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2434 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2434 = 3146 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2437 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2437 = 3146 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestR5 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 5197 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 4027 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 4027 = 5197 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 4023 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 4023 = 5197 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 def classify8 (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt256)

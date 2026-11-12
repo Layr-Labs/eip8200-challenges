@@ -49,10 +49,10 @@ theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : 
   interval_cases i <;>
     simp [Shift.entrySlots, Exp.outer]
 
-/-- The riding frame is twenty-three words: the counter, seventeen slots, five outer. -/
+/-- The riding frame is twenty-two words: the counter, sixteen slots, five outer. -/
 theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) (phase : UInt256 := UInt256.ofNat 0) :
     (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize phase ++
-      Exp.outer n bsize esize msize).length = 23 := by
+      Exp.outer n bsize esize msize).length = 22 := by
   simp [Shift.entrySlots, Exp.outer]
 
 /-- The section on the conversion frame: from `macSetupState` (the end of the loop head of the
