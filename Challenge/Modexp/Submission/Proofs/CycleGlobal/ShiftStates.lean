@@ -38,7 +38,7 @@ def pcShiftLoop : Nat := 2700
 def pcShiftBody : Nat := 2701
 def pcEstimate : Nat := 2711
 def pcMacSetup : Nat := 2800   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
-def headPC (n : Nat) : Nat := if n = 4 then 10692 else 2700
+def headPC (n : Nat) : Nat := if n = 4 then 10724 else 2700
 def loopPC (mem : ByteArray) (n : Nat) : Nat :=
   CycleSubmission.Global.ZeroShiftMath.head n (MachineState.readWord mem 1536)
 def headWord (mem : ByteArray) (n : Nat) : UInt256 := UInt256.ofNat (loopPC mem n)
@@ -52,7 +52,7 @@ theorem loopPC_lt (mem : ByteArray) (n : Nat) : loopPC mem n < 2^256 := by
     CycleSubmission.Global.ZeroShiftMath.normalHead, headPC, hk]
 
 def pcMid : Nat := 3046   -- the fall-through after the eight straight blocks
-def midPC (n : Nat) : Nat := if n = 4 then 10909 else 3046
+def midPC (n : Nat) : Nat := if n = 4 then 10941 else 3046
 def pcAddLoop : Nat := 3081
 def pcAddInner : Nat := 3087
 def pcAddTail : Nat := 3124
@@ -79,14 +79,15 @@ def rideSlots (z : UInt256) (mem : ByteArray) (n bsize esize : Nat) (scratch : U
     MachineState.readWord mem 1536 :: UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128) :: UInt256.ofNat 2519 ::
     z :: []
 def shiftEntry (n : Nat) : UInt256 := UInt256.ofNat (2785 + if n = 4 then 116 else 0)
+def aprevSlot (mem : ByteArray) : UInt256 := MachineState.readWord mem 1536
+def hdSlot (mem : ByteArray) : UInt256 := UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128)
 def entrySlots (z : UInt256) (mem : ByteArray) (n bsize _esize : Nat) : List UInt256 :=
   headWord mem n :: MachineState.readWord mem 1312 :: MachineState.readWord mem 1344 ::
     MachineState.readWord mem 1376 :: MachineState.readWord mem 1408 ::
     MachineState.readWord mem 1440 :: MachineState.readWord mem 1472 ::
     MachineState.readWord mem 1504 :: MachineState.readWord mem 1632 ::
     MachineState.readWord mem 1664 :: MachineState.readWord mem 1568 ::
-    MachineState.readWord mem 1536 ::
-    UInt256.shiftRight (MachineState.readWord mem 32) (UInt256.ofNat 128) :: UInt256.ofNat 2519 ::
+    aprevSlot mem :: hdSlot mem :: UInt256.ofNat 2519 ::
     z :: []
 def slotState (z : UInt256) (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat)
     (scratch : UInt256) : State :=
@@ -165,7 +166,7 @@ def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)))
     (UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize))
 def initialContinuation (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
-  UInt256.ofNat 2310 + initialPhase s mem esize * UInt256.ofNat 1605
+  UInt256.ofNat 2310 + initialPhase s mem esize * UInt256.ofNat 1637
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   slotState (initialContinuation s mem esize) s mem 2660 n bsize esize msize
     (UInt256.ofNat n)
@@ -221,7 +222,7 @@ def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
            memory := mem }
 def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 10948
+  { s with pc := UInt256.ofNat 10980
            stack := UInt256.ofNat 0 :: UInt256.ofNat k ::
              entrySlots z mem n bsize esize ++ outer n bsize esize msize
            memory := mem }
@@ -239,13 +240,12 @@ def csubExitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   slotKState z s mem pcCsubExit 0 n bsize esize msize
 def csubExit4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotKState z s mem 10953 0 n bsize esize msize
+  slotKState z s mem 10985 0 n bsize esize msize
 def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   slotKState z s mem pcShiftDone 0 n bsize esize msize
 theorem negK_literal :
-    (115792089237316195423570985008687907853269984665640564039457584007913129639904 :
-      UInt256) = UInt256.ofNat
+    (115792089237316195423570985008687907853269984665640564039457584007913129639904 : UInt256) = UInt256.ofNat
         115792089237316195423570985008687907853269984665640564039457584007913129639904 := by
   decide
 theorem ptrAt_step (base j : Nat) :

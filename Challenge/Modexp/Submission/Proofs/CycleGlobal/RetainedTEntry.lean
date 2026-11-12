@@ -37,19 +37,19 @@ entry at 3509. -/
 def pushProgram : List Instr := [.push 2 2378, .push 2 2112]
 
 def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 3492 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2686 8 3492 entryProgram
-    (by change 2686 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2688 8 3492 entryProgram
+    (by change 2688 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 3502 pushProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2694 2 3502 pushProgram
-    (by change 2694 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2696 2 3502 pushProgram
+    (by change 2696 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 theorem jumpDest4486 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3492 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2686 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 2688 (by rfl)
 /-- The comparison word the entry block tests. -/
 def skipWord (mem : ByteArray) : UInt256 :=
   UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)

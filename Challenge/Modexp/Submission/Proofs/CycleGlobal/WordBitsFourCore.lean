@@ -106,12 +106,12 @@ pc 2413 with the counter at eight. -/
 def controlProgram : List Instr :=
   [.push 1 1, .op (.Dup dA2), .op .ADD, .op (.Swap sA1),
    .push 1 7, .op .GT,
-   .push 2 3967, .op .JUMPI]
+   .push 2 3999, .op .JUMPI]
 
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 3967 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s 3968 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
+      (framed s 3999 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s 4000 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, framed, h8]
   decide
@@ -130,15 +130,15 @@ theorem gt_seven_seven :
 /-- One pass of the loop control with the counter at `c`: bits zero to six jump
 back to the body head at 2377, the seventh bit falls through to the exit at 2413. -/
 theorem run_control (c : Nat) (hc : c < 8) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 3967 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 3999 = true) :
     runInstructions controlProgram
-      (framed s 3990 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
-      some (framed s (if c < 7 then 3967 else 4002)
+      (framed s 4022 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest)) =
+      some (framed s (if c < 7 then 3999 else 4034)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (3967 : UInt256).toNat = 3967 := by decide
+  have htarget : (3999 : UInt256).toNat = 3999 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have ht0 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   by_cases h7 : c < 7

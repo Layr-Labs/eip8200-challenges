@@ -770,7 +770,7 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
   have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have heq11 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat 1) = UInt256.ofNat 1 := by decide
-  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 1605 + UInt256.ofNat 2310 = UInt256.ofNat 2310 := by decide
+  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 1637 + UInt256.ofNat 2310 = UInt256.ofNat 2310 := by decide
   have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide

@@ -44,25 +44,25 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
   exact blockCostW block.path work hresult hs.fork hfree hcost hactive
 
 /-- The single bit body at pc 2454 (instruction indices 1948 to 1966). -/
-def bodyBlock : BoundBlock 3968 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3028 19 3968 (bodyProgram 7)
-    (by change 3028 + 19 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def bodyBlock : BoundBlock 4000 (bodyProgram 7) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3071 19 4000 (bodyProgram 7)
+    (by change 3071 + 19 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- The body head `JUMPDEST` at pc 2453 (index 1947), the target of the loop control. -/
-def startBlock : BoundBlock 3967 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3027 1 3967 ([.op .JUMPDEST])
-    (by change 3027 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def startBlock : BoundBlock 3999 ([.op .JUMPDEST]) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3070 1 3999 ([.op .JUMPDEST])
+    (by change 3070 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 /-- The loop control at pc 2476 (indices 1967 to 1974). -/
-def controlBlock : BoundBlock 3990 (controlProgram) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3047 8 3990 (controlProgram)
-    (by change 3047 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def controlBlock : BoundBlock 4022 (controlProgram) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3090 8 4022 (controlProgram)
+    (by change 3090 + 8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -72,11 +72,11 @@ variable (s : State) (rest : List UInt256)
 
 /-- The body with the loop counter symbolic: it selects bit `7 - counter`. -/
 def body (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3968 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3990 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m] ++ rest)) :=
+    GasSteps (stW s 4000 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 4022 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m] ++ rest)) :=
   lift bodyBlock s hs _ _ (by
     simpa only [stW, framed, Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 3968 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 4000 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem body_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
@@ -84,8 +84,8 @@ def body (hrest : rest.length < 1000) (counter : UInt256) :
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 
 def start (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 3967 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s 3968 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) :=
+    GasSteps (stW s 3999 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s 4000 ([Bm1,counter,byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift startBlock s hs _ _ (run_start s Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 
 @[simp] theorem start_cost (hrest : rest.length < 1000) (counter : UInt256) :
@@ -96,12 +96,12 @@ def start (hrest : rest.length < 1000) (counter : UInt256) :
 /-- The loop control with the counter at `c < 8`: back to the body head for
 `c < 7`, otherwise on to the exit at 2413; the counter becomes `c + 1`. -/
 def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
-    GasSteps (stW s 3990 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest))
-      (stW s (if c < 7 then 3967 else 4002)
+    GasSteps (stW s 4022 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m] ++ rest))
+      (stW s (if c < 7 then 3999 else 4034)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m] ++ rest)) :=
   lift controlBlock s hs _ _ (by
-    have hj : Decode.isValidJumpDest s.executionEnv.code 3967 = true := by
-      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 3027 (by rfl)
+    have hj : Decode.isValidJumpDest s.executionEnv.code 3999 = true := by
+      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 3070 (by rfl)
     simpa only [stW, framed, apply_ite UInt256.ofNat, Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 

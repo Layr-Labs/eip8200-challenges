@@ -16,11 +16,11 @@ open HistoricalSearch.CRTControl HistoricalSearch.CRTMemoryCells
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 
 def initial (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 7657, stack := frame a n (n 0) (n 1) rest}
+  {s with pc := UInt256.ofNat 7689, stack := frame a n (n 0) (n 1) rest}
 def completed (s : State) (a n : Nat → UInt256) (rest : List UInt256) : State :=
   if (overflowFlag a).toNat = 0 then
-    {s with pc := UInt256.ofNat 7657, stack := frame a n (n 0) (n 1) rest}
-  else NormalizeBinding.returned s a n (UInt256.ofNat 7657) (n 1) rest
+    {s with pc := UInt256.ofNat 7689, stack := frame a n (n 0) (n 1) rest}
+  else NormalizeBinding.returned s a n (UInt256.ofNat 7689) (n 1) rest
 
 /-- There is no overflow test any more: the square loop keeps its operands below `R - 2N`, so the
 kernel's top digit never reaches `2^240` and the normalization branch is not needed. -/

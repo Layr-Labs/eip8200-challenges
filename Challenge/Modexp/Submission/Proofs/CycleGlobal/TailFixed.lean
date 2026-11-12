@@ -75,7 +75,7 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
       obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
         (DirectEightEntry.bailState s mem bsize esize k)
         (env.transfer rfl rfl) rfl
-        (by simp [List.append_nil, DirectEightEntry.bailState, DirectEightRaw.state, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
+        (by simp [List.append_nil, DirectEightEntry.bailState, DirectEightRaw.state, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer] <;> omega)
         hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
         (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
       exact ⟨done, ⟨head.trans tail⟩, hd, by
@@ -109,7 +109,7 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
       Handled input (GateRaw.entryState s mem n bsize esize msize) := by
     obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
       (SlimFrames.bailState s mem n bsize esize msize) (env.transfer rfl rfl) rfl
-      (by simp [List.append_nil, SlimFrames.bailState, SlimFrames.guardFrame, SlimFrames.ridingFrame, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, Exp.outer] <;> omega)
+      (by simp [List.append_nil, SlimFrames.bailState, SlimFrames.guardFrame, SlimFrames.ridingFrame, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer] <;> omega)
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
       (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
     refine ⟨done, ⟨tr.trans tail⟩, hd, ?_⟩
