@@ -10,7 +10,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNi
 open Challenge.Modexp.Submission.Proofs.Fast
 def program : List Instr :=
  [.op .JUMPDEST,.op (.Swap ⟨12,by decide⟩),.push 2 2720,.op .MLOAD,
-  .op (.Swap ⟨10,by decide⟩),.push 2 5225,.op .JUMP]
+  .op (.Swap ⟨10,by decide⟩),.push 2 5204,.op .JUMP]
 def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat) : State :=
  R5Route.entry s mem (MachineState.readWord mem 1664)
  (CycleSubmission.Global.Fast.Shift.hdSlot mem)
@@ -24,8 +24,8 @@ def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : 
  ((SlimFrames.outer mem 4 bsize esize msize).drop 13)
 theorem run (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat)
  (hact : 88 ≤ s.activeWords.toNat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 5225 = true) :
- runInstructions program {s with pc := UInt256.ofNat 3222,memory := mem, stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize} =
+ (hd : Decode.isValidJumpDest s.executionEnv.code 5204 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 3206,memory := mem, stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize} =
  some (result s mem count bsize esize msize) := by
  have hf := Monpro.activeWords_fix s 2720 32 (by decide) (by norm_num) hact
  simp [program,result,R5Route.entry,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,

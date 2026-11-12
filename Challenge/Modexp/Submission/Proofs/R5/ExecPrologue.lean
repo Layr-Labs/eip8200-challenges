@@ -94,11 +94,11 @@ def preparedpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v1 : W := MachineState.readWord s.memory 2170
   let v2 : W := UInt256.land v0 v1
   let v3 : W := MachineState.readWord s.memory 2200
-  {s with pc := N 5390, memory := s.memory, stack := v3 :: v2 :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest}
+  {s with pc := N 5369, memory := s.memory, stack := v3 :: v2 :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest}
 
 theorem preparedpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedpart0Program {s with pc := N 5377, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest} =
+    runInstructions preparedpart0Program {s with pc := N 5356, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: rest} =
       some (preparedpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -127,11 +127,11 @@ def preparedpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x1
   let v1 : W := MachineState.readWord s.memory 2208
   let v2 : W := UInt256.shiftLeft v1 (N 176)
   let v3 : W := MachineState.readWord s.memory 2140
-  {s with pc := N 5403, memory := s.memory, stack := v3 :: v2 :: v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: rest}
+  {s with pc := N 5382, memory := s.memory, stack := v3 :: v2 :: v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: rest}
 
 theorem preparedpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedpart1Program {s with pc := N 5390, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: rest} =
+    runInstructions preparedpart1Program {s with pc := N 5369, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: rest} =
       some (preparedpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -152,11 +152,11 @@ def preparedpart2Program : List Instr :=
 def preparedpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 : W) (rest : List W) : State :=
   let v0 : W := UInt256.land x4 x0
   let v1 : W := UInt256.land x4 x1
-  {s with pc := N 5407, memory := s.memory, stack := v1 :: x2 :: x3 :: v0 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest}
+  {s with pc := N 5386, memory := s.memory, stack := v1 :: x2 :: x3 :: v0 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest}
 
 theorem preparedpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedpart2Program {s with pc := N 5403, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest} =
+    runInstructions preparedpart2Program {s with pc := N 5382, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: x20 :: x21 :: x22 :: x23 :: x24 :: x25 :: x26 :: x27 :: x28 :: rest} =
       some (preparedpart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 x21 x22 x23 x24 x25 x26 x27 x28 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -197,11 +197,11 @@ def preparedModel (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9
   let v7 : W := MachineState.readWord s.memory 2140
   let v8 : W := UInt256.land v0 v7
   let v9 : W := UInt256.land v0 v6
-  {s with pc := N 5407, memory := s.memory, stack := v9 :: v4 :: v2 :: v8 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest}
+  {s with pc := N 5386, memory := s.memory, stack := v9 :: v4 :: v2 :: v8 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest}
 
 theorem prepared_run (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedProgram {s with pc := N 5377, stack := p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} =
+    runInstructions preparedProgram {s with pc := N 5356, stack := p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} =
       some (preparedModel s p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 rest) := by
   let v0 : W := MachineState.readWord s.memory 224
   let v1 : W := MachineState.readWord s.memory 2170
@@ -213,11 +213,11 @@ theorem prepared_run (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p
   let v7 : W := MachineState.readWord s.memory 2140
   let v8 : W := UInt256.land v0 v7
   let v9 : W := UInt256.land v0 v6
-  have h0 : runInstructions preparedpart0Program {s with pc := N 5377, memory := s.memory, stack := p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} = some {s with pc := N 5390, memory := s.memory, stack := v3 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
+  have h0 : runInstructions preparedpart0Program {s with pc := N 5356, memory := s.memory, stack := p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} = some {s with pc := N 5369, memory := s.memory, stack := v3 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
     simpa only [preparedpart0Model, v0, v1, v2, v3] using preparedpart0_run (s) (p9_0) (p9_1) (p9_2) (p9_3) (p9_4) (p9_5) (p9_6) (p9_7) (p9_8) (p9_9) (p9_10) (p9_11) (p9_12) (p9_13) (p9_14) (p9_15) (p9_16) (p9_17) (p9_18) (p9_19) (p9_20) (p9_21) (p9_22) (p9_23) rest hcap hact
-  have h1 : runInstructions preparedpart1Program {s with pc := N 5390, memory := s.memory, stack := v3 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} = some {s with pc := N 5403, memory := s.memory, stack := v7 :: v6 :: v4 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
+  have h1 : runInstructions preparedpart1Program {s with pc := N 5369, memory := s.memory, stack := v3 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} = some {s with pc := N 5382, memory := s.memory, stack := v7 :: v6 :: v4 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
     simpa only [preparedpart1Model, v4, v5, v6, v7] using preparedpart1_run (s) (v3) (v2) (v0) (p9_0) (p9_1) (p9_2) (p9_3) (p9_4) (p9_5) (p9_6) (p9_7) (p9_8) (p9_9) (p9_10) (p9_11) (p9_12) (p9_13) (p9_14) (p9_15) (p9_16) (p9_17) (p9_18) (p9_19) (p9_20) (p9_21) (p9_22) (p9_23) rest hcap hact
-  have h2 : runInstructions preparedpart2Program {s with pc := N 5403, memory := s.memory, stack := v7 :: v6 :: v4 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} = some {s with pc := N 5407, memory := s.memory, stack := v9 :: v4 :: v2 :: v8 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
+  have h2 : runInstructions preparedpart2Program {s with pc := N 5382, memory := s.memory, stack := v7 :: v6 :: v4 :: v2 :: v0 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} = some {s with pc := N 5386, memory := s.memory, stack := v9 :: v4 :: v2 :: v8 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
     simpa only [preparedpart2Model, v8, v9] using preparedpart2_run (s) (v7) (v6) (v4) (v2) (v0) (p9_0) (p9_1) (p9_2) (p9_3) (p9_4) (p9_5) (p9_6) (p9_7) (p9_8) (p9_9) (p9_10) (p9_11) (p9_12) (p9_13) (p9_14) (p9_15) (p9_16) (p9_17) (p9_18) (p9_19) (p9_20) (p9_21) (p9_22) (p9_23) rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 h2))
 
@@ -237,7 +237,7 @@ def blk5467Model (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 
   let v10 : W := UInt256.shiftLeft v9 (N 176)
   let v11 : W := MachineState.readWord s.memory 224
   let v12 : W := UInt256.land v11 v10
-  {s with pc := N 5407, memory := s.memory, stack := v12 :: v8 :: v5 :: v2 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest}
+  {s with pc := N 5386, memory := s.memory, stack := v12 :: v8 :: v5 :: v2 :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest}
 
 def blk5467Program : List Instr := preparedProgram
 
@@ -247,7 +247,7 @@ private theorem prepared_model_eq (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_
 
 theorem blk5467_run (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions blk5467Program {s with pc := N 5377, stack := p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} =
+    runInstructions blk5467Program {s with pc := N 5356, stack := p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} =
       some (blk5467Model s p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 rest) := by
   exact (prepared_run s p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 rest hcap hact).trans
     (congrArg some (prepared_model_eq s p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 rest))
@@ -268,7 +268,7 @@ def blk5467_o3 (mem : ByteArray) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p
 
 theorem blk5467_eq (s : State) (p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 : W) (rest : List W) :
     blk5467Model s p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23 rest =
-      {s with pc := N 5407, stack := (blk5467_o0 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: (blk5467_o1 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: (blk5467_o2 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: (blk5467_o3 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
+      {s with pc := N 5386, stack := (blk5467_o0 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: (blk5467_o1 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: (blk5467_o2 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: (blk5467_o3 s.memory p9_0 p9_1 p9_2 p9_3 p9_4 p9_5 p9_6 p9_7 p9_8 p9_9 p9_10 p9_11 p9_12 p9_13 p9_14 p9_15 p9_16 p9_17 p9_18 p9_19 p9_20 p9_21 p9_22 p9_23) :: p9_0 :: p9_1 :: p9_2 :: p9_3 :: p9_4 :: p9_5 :: p9_6 :: p9_7 :: p9_8 :: p9_9 :: p9_10 :: p9_11 :: p9_12 :: p9_13 :: p9_14 :: p9_15 :: p9_16 :: p9_17 :: p9_18 :: p9_19 :: p9_20 :: p9_21 :: p9_22 :: p9_23 :: rest} := by
   simp only [blk5467Model, blk5467_o0, blk5467_o1, blk5467_o2, blk5467_o3]
 
 end CycleSubmission.R5.ExecPrologue

@@ -32,7 +32,7 @@ noncomputable def bail8 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
  (hf : Exp.Frame mem 8 bsize mi) (hg : (DirectEightRaw.guardWord mem).toNat = 0) :
  GasSteps (SlimFrames.special s mem 8 bsize esize 256 k) (DirectEightEntry.bailState s mem bsize esize k) :=
- DirectEightEntry.miss s mem bsize esize k hact env hg
+ DirectEightEntry.miss s mem bsize esize k hk hk16 hact env hg
 #print axioms terminal8
 #print axioms bail8
 end CycleSubmission.Global.TailRoutes

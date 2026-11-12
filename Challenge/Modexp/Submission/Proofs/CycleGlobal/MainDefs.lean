@@ -55,17 +55,17 @@ def trampoline1Path :
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 358 .JUMPDEST]
+  [opAt 357 .JUMPDEST]
 
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 359 0 0,
-   opAt 360 .CALLDATALOAD,
-   pushAt 361 1 32,
-   opAt 362 .CALLDATALOAD,
-   pushAt 363 1 64,
-   opAt 364 .CALLDATALOAD]
+  [pushAt 358 0 0,
+   opAt 359 .CALLDATALOAD,
+   pushAt 360 1 32,
+   opAt 361 .CALLDATALOAD,
+   pushAt 362 1 64,
+   opAt 363 .CALLDATALOAD]
 
 /-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
@@ -81,7 +81,7 @@ def headerPath := trampoline1Path ++ trampoline2Path ++
   headerLoadPath ++ headerCheckPath
 
 def tramp0Path : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) := []
-def tramp7DestPath := [opAt 358 .JUMPDEST]
+def tramp7DestPath := [opAt 357 .JUMPDEST]
 
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat pc }
@@ -142,15 +142,15 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
     CycleSubmission.Artifact.artifact.instructionPC i = [0, 2][i]! := by
   interval_cases i <;> decide
 
-@[simp] theorem headerPCs899 (i : Nat) (hi : 358 ≤ i) (hii : i ≤ 365) :
+@[simp] theorem headerPCs899 (i : Nat) (hi : 357 ≤ i) (hii : i ≤ 364) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([519, 520, 521, 522, 524, 525, 527, 528] : List Nat)[i - 358]! := by
+      ([519, 520, 521, 522, 524, 525, 527, 528] : List Nat)[i - 357]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem jump1196 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true :=
-  CycleSubmission.Global.Binding.jumpDest 358 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 357 (by rfl)
 
 
 

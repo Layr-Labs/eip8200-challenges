@@ -23,7 +23,7 @@ def run (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
  (hg : (DirectEightRaw.guardWord mem).toNat ≠ 0) :
  Finish.Outcome (SlimFrames.special s mem 8 bsize esize 256 k)
  (Precompile.natToBytes (Terminal.result 8 N A B k) 256) := by
- have lead := DirectEightEntry.hit s mem bsize esize k hact env hg
+ have lead := DirectEightEntry.hit s mem bsize esize k hk hk16 hact env hg
  let entry : State := {s with memory := DirectEightRaw.memory mem}
  let f := DirectEightRaw.frame mem (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize
  have hn' : Model.FastRepresents entry.memory 0 8 N :=

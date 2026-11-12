@@ -21,7 +21,7 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
     GasSteps (SlimFrames.special s mem 4 bsize esize 128 k)
       (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128) := by
   simpa [SlimFrames.special] using
-    (DirectR5Entry.enter4 s mem (UInt256.ofNat (k-1)) bsize esize 128 hact env)
+    (DirectR5Entry.enter4 s mem k hk hk16 bsize esize 128 hact env)
 
 #print axioms head4
 end CycleSubmission.Global.TailFour

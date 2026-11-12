@@ -26,7 +26,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < WordArithmetic.radix)
     (hz : (overflowFlag (squared inv a zeroWords n)).toNat = 0) :
-    GasSteps {s with pc := UInt256.ofNat 5596, stack := SquareMeaning.frame0 inv a zeroWords n rest}
+    GasSteps {s with pc := UInt256.ofNat 5575, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
   have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact ha
   have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest hz
@@ -49,7 +49,7 @@ theorem frame_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
   SquareNormalize.frame_output _ _ _ _
 
 theorem pc_output (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a n rest).pc = UInt256.ofNat 7685 := by
+    (result s inv a n rest).pc = UInt256.ofNat 7661 := by
   unfold result SquareNormalize.completed
   split_ifs <;> rfl
 
@@ -153,7 +153,7 @@ theorem keeps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List U
   split_ifs
   · exact h
   · exact (NormalizeMeaning.preserves (middle s inv a n rest) (squared inv a zeroWords n) n
-      (UInt256.ofNat 7627) (n 1) rest start count (Or.inr (by omega)) (Or.inr (by omega))).trans h
+      (UInt256.ofNat 7606) (n 1) rest start count (Or.inr (by omega)) (Or.inr (by omega))).trans h
 
 theorem keeps_base (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (start count : Nat) (hs : 256 ≤ start) (he : start+count ≤ 768) :
@@ -164,6 +164,6 @@ theorem keeps_base (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : L
   split_ifs
   · exact h
   · exact (NormalizeMeaning.preserves (middle s inv a n rest) (squared inv a zeroWords n) n
-      (UInt256.ofNat 7627) (n 1) rest start count (Or.inr (by omega)) (Or.inl he)).trans h
+      (UInt256.ofNat 7606) (n 1) rest start count (Or.inr (by omega)) (Or.inl he)).trans h
 
 end CycleSubmission.SquareStep

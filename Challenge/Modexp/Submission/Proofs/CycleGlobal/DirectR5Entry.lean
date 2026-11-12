@@ -11,46 +11,46 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-def classifyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3213 DirectR5Classifier.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2457 6 3213 DirectR5Classifier.program
-  (by change 2457+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def classifyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3194 DirectR5Classifier.program :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2443 9 3194 DirectR5Classifier.program
+  (by change 2443+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 3222 DirectR5Reuse.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2463 7 3222 DirectR5Reuse.program
-  (by change 2463+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 3206 DirectR5Reuse.program :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2452 7 3206 DirectR5Reuse.program
+  (by change 2452+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3150 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2440 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2440 = 3150 := by
+theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3134 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2426 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2426 = 3134 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
-theorem jumpDestR5 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 5225 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 4067 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 4067 = 5225 := by
+theorem jumpDestR5 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 5204 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 4055 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 4055 = 5204 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
-def classify8 (s : State) (mem : ByteArray) (count : UInt256) (rest : List UInt256)
+def classify8 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256)
  (hcap : rest.length ≤ 1000) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
- GasSteps {s with pc := UInt256.ofNat 3213, memory := mem, stack := [count,UInt256.ofNat 256]++rest}
- {s with pc := UInt256.ofNat 3150, memory := mem, stack := [count,UInt256.ofNat 256]++rest} :=
- classifyBlock.steps (s := {s with pc := UInt256.ofNat 3213, memory := mem, stack := [count,UInt256.ofNat 256]++rest})
-  (env.transfer rfl rfl) rfl (DirectR5Classifier.run8 {s with memory := mem} count rest hcap (by rw [env.code]; exact jumpDestCommon))
-def enter4 (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat)
+ GasSteps {s with pc := UInt256.ofNat 3194, memory := mem, stack := [UInt256.ofNat count,UInt256.ofNat 256]++rest}
+ {s with pc := UInt256.ofNat 3134, memory := mem, stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} :=
+ classifyBlock.steps (s := {s with pc := UInt256.ofNat 3194, memory := mem, stack := [UInt256.ofNat count,UInt256.ofNat 256]++rest})
+  (env.transfer rfl rfl) rfl (DirectR5Classifier.run8 {s with memory := mem} count hpos hle rest hcap (by rw [env.code]; exact jumpDestCommon))
+def enter4 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (bsize esize msize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
- GasSteps {s with pc := UInt256.ofNat 3213, memory := mem, stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize}
- (DirectR5Reuse.result s mem count bsize esize msize) := by
+ GasSteps {s with pc := UInt256.ofNat 3194, memory := mem, stack := [UInt256.ofNat count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize}
+ (DirectR5Reuse.result s mem (UInt256.ofNat (count-1)) bsize esize msize) := by
  have hc : (SlimFrames.outer mem 4 bsize esize msize).length ≤ 1000 := by
   simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
  have g1 := classifyBlock.steps
-  (s := {s with pc := UInt256.ofNat 3213, memory := mem, stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
-  (env.transfer rfl rfl) rfl (DirectR5Classifier.run4 {s with memory := mem} count _ hc)
+  (s := {s with pc := UInt256.ofNat 3194, memory := mem, stack := [UInt256.ofNat count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
+  (env.transfer rfl rfl) rfl (DirectR5Classifier.run4 {s with memory := mem} count hpos hle _ hc)
  have g3 := headerBlock.steps
-  (s := {s with pc := UInt256.ofNat 3222, memory := mem, stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
-  (env.transfer rfl rfl) rfl (DirectR5Reuse.run s mem count bsize esize msize hact (by rw [env.code]; exact jumpDestR5))
+  (s := {s with pc := UInt256.ofNat 3206, memory := mem, stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
+  (env.transfer rfl rfl) rfl (DirectR5Reuse.run s mem (UInt256.ofNat (count-1)) bsize esize msize hact (by rw [env.code]; exact jumpDestR5))
  exact g1.trans g3
 #print axioms classify8
 #print axioms enter4

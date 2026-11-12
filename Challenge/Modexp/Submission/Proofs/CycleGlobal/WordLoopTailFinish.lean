@@ -18,15 +18,15 @@ open Word
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 3042 ≤ i) (hii : i ≤ 3063) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 3037 ≤ i) (hii : i ≤ 3058) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3964, 3965, 3966, 3967, 3968, 3970, 3971, 3973, 3974, 3975, 3976, 3977, 3978, 3980, 3981, 3983, 3984, 3985, 3986, 3987, 3988, 3989] : List Nat)[i - 3042]! := by
+      ([3947, 3948, 3949, 3950, 3951, 3953, 3954, 3956, 3957, 3958, 3959, 3960, 3961, 3963, 3964, 3966, 3967, 3968, 3969, 3970, 3971, 3972] : List Nat)[i - 3037]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] private theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 187 = true :=
-  CycleSubmission.Global.Binding.jumpDest 119 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 118 (by rfl)
 
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)

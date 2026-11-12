@@ -31,8 +31,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 
 theorem jumpD4643 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
-    (UInt256.ofNat 2357).toNat = true :=
-  by simpa only [show (UInt256.ofNat 2357).toNat = 2357 by decide] using jumpDest4608
+    (UInt256.ofNat 2349).toNat = true :=
+  by simpa only [show (UInt256.ofNat 2349).toNat = 2349 by decide] using jumpDest4608
 
 /-! ## Facts at `BDONE` on the hit path -/
 

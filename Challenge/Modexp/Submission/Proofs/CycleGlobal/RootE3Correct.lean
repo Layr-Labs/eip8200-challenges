@@ -87,7 +87,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       env hact hactLe hcds hstack hdata hvalid hf hmi hminv1 hinv hmrep hx hy hm hodd
       (Nat.mod_lt _ hm) (Nat.mod_lt _ hm) hbsize hesize hmsz hfull hmm
       (by rw [hexp]; exact Terminal.result_cube n mm X Y _ _ _ hm hodd hxform hyform hscale)
-    have go := CycleSubmission.Global.GatePrefix.gasSteps_threeHit (hbs := hbEq.symm) s (e3Final mem input n mm k)
+    have go := CycleSubmission.Global.GatePrefix.gasSteps_threeHit s (e3Final mem input n mm k)
       n bsize 1 msize   hcode hfork hrun hnp
     exact FixedRoute.prepend tr' (FixedRoute.prepend go finish)
 
@@ -104,7 +104,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       rw [hbEq]
     exact FixedRoute.prepend (ordinaryTrace hE3)
       (CycleSubmission.Global.TailFixed.ordinary input s final n bsize esize msize mm baseM (base%mm) minv
-          hfast hbEq env hact hactLe hdata hstack hvalid hb he hf hmi hminv1 hinv
+          hfast env hact hactLe hdata hstack hvalid hb he hf hmi hminv1 hinv
         hmrep hbRep haRep hm hodd (Nat.mod_lt _ hm) (Nat.mod_lt _ hm)
         hbsize hesize hmsz hfull hmm hbForm ((Nat.mod_modEq base mm).trans hrawForm))
 

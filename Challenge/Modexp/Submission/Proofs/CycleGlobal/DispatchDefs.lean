@@ -47,50 +47,50 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 365 (.Dup ⟨0,by decide⟩),
-   pushAt 366 2 536,
-   opAt 367 .JUMPI,
+  [opAt 364 (.Dup ⟨0,by decide⟩),
+   pushAt 365 2 536,
+   opAt 366 .JUMPI,
+   pushAt 367 0 0,
    pushAt 368 0 0,
-   pushAt 369 0 0,
-   opAt 370 .RETURN]
+   opAt 369 .RETURN]
 
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 365 (.Dup ⟨0,by decide⟩),
-   pushAt 366 2 536,
-   opAt 367 .JUMPI,
-   opAt 371 .JUMPDEST,
-   opAt 372 (.Dup ⟨2,by decide⟩),
-   pushAt 373 1 96,
-   opAt 374 .ADD,
-   opAt 375 (.Dup ⟨2,by decide⟩),
-   opAt 376 (.Dup ⟨1,by decide⟩),
-   opAt 377 .ADD,
-   pushAt 378 1 32,
-   opAt 379 (.Dup ⟨3,by decide⟩),
-   opAt 380 .GT,
-   pushAt 381 1 207,
-   opAt 382 .JUMPI,
-   pushAt 383 2 1186,
-   opAt 384 (.Dup ⟨1,by decide⟩),
-   opAt 385 (.Dup ⟨3,by decide⟩),
-   pushAt 386 1 96,
-   opAt 387 (.Dup ⟨6,by decide⟩),
-   opAt 388 (.Dup ⟨8,by decide⟩),
-   opAt 389 (.Dup ⟨10,by decide⟩),
-   pushAt 390 1 131,
-   opAt 391 .JUMP]
+  [opAt 364 (.Dup ⟨0,by decide⟩),
+   pushAt 365 2 536,
+   opAt 366 .JUMPI,
+   opAt 370 .JUMPDEST,
+   opAt 371 (.Dup ⟨2,by decide⟩),
+   pushAt 372 1 96,
+   opAt 373 .ADD,
+   opAt 374 (.Dup ⟨2,by decide⟩),
+   opAt 375 (.Dup ⟨1,by decide⟩),
+   opAt 376 .ADD,
+   pushAt 377 1 32,
+   opAt 378 (.Dup ⟨3,by decide⟩),
+   opAt 379 .GT,
+   pushAt 380 1 207,
+   opAt 381 .JUMPI,
+   pushAt 382 2 1186,
+   opAt 383 (.Dup ⟨1,by decide⟩),
+   opAt 384 (.Dup ⟨3,by decide⟩),
+   pushAt 385 1 96,
+   opAt 386 (.Dup ⟨6,by decide⟩),
+   opAt 387 (.Dup ⟨8,by decide⟩),
+   opAt 388 (.Dup ⟨10,by decide⟩),
+   pushAt 389 1 131,
+   opAt 390 .JUMP]
 
 def zeroSetupPath := zeroSizePath.take 5
-def zeroReturnPath := [opAt 370 .RETURN]
+def zeroReturnPath := [opAt 369 .RETURN]
 def wordJumpPath := wordEntryPath.take 3
 def wordRestPath := wordEntryPath.drop 3
 def wordCheckPath := wordRestPath.take 12
 def wordTailPath := wordRestPath.drop 12
 
-@[simp] theorem dispatchPCs (i : Nat) (hi : 365 ≤ i) (hii : i ≤ 391) :
+@[simp] theorem dispatchPCs (i : Nat) (hi : 364 ≤ i) (hii : i ≤ 390) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([528, 529, 532, 533, 534, 535, 536, 537, 538, 540, 541, 542, 543, 544, 546, 547, 548, 550, 551, 554, 555, 556, 558, 559, 560, 561, 563] : List Nat)[i - 365]! := by
+      ([528, 529, 532, 533, 534, 535, 536, 537, 538, 540, 541, 542, 543, 544, 546, 547, 548, 550, 551, 554, 555, 556, 558, 559, 560, 561, 563] : List Nat)[i - 364]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -105,11 +105,11 @@ def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem jump1237 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 536 = true :=
-  CycleSubmission.Global.Binding.jumpDest 371 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 370 (by rfl)
 
 @[simp] theorem jump517 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 131 = true :=
-  CycleSubmission.Global.Binding.jumpDest 71 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 70 (by rfl)
 
 def zeroSizeFinalState (input : ByteArray) : State :=
   { Main.headerState input with

@@ -12,7 +12,7 @@ open EvmSemantics EvmSemantics.EVM
 private theorem rho_clamp8_program :
     blkEstimateSuffix8.map Challenge.EvmProof.Stepper.Located.instruction = estimateRawPart5 := by rfl
 private theorem rho_clamp8_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 2756) blkEstimateSuffix8 := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 2740) blkEstimateSuffix8 := by
   dsimp only [blkEstimateSuffix8, opAt, pushAt, wfOp,
     WindowTwentyOneLocated.LinearPath, WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push, YulEvmCompiler.Instr.size_op,
@@ -32,7 +32,7 @@ private theorem rho_clamp8_layout :
   have hright : Challenge.EvmProof.Stepper.runLocatedBlock blkEstimateSuffix8
       (zeroJoinState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
-    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix8 (UInt256.ofNat 2756)
+    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix8 (UInt256.ofNat 2740)
       (zeroJoinState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
       ?_ rho_clamp8_layout ?_ hrun ?_
     · change CycleSubmission.Artifact.bytecode.size < 2^256
@@ -46,7 +46,7 @@ private theorem rho_clamp8_layout :
 private theorem rho_clamp4_program :
     blkEstimateSuffix4.map Challenge.EvmProof.Stepper.Located.instruction = estimateRawPart5 := by rfl
 private theorem rho_clamp4_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10779) blkEstimateSuffix4 := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10755) blkEstimateSuffix4 := by
   dsimp only [blkEstimateSuffix4, opAt, pushAt, wfOp,
     WindowTwentyOneLocated.LinearPath, WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push, YulEvmCompiler.Instr.size_op,
@@ -66,7 +66,7 @@ private theorem rho_clamp4_layout :
   have hright : Challenge.EvmProof.Stepper.runLocatedBlock blkEstimateSuffix4
       (zeroJoinState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
-    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix4 (UInt256.ofNat 10779)
+    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix4 (UInt256.ofNat 10755)
       (zeroJoinState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
       ?_ rho_clamp4_layout ?_ hrun ?_
     · change CycleSubmission.Artifact.bytecode.size < 2^256

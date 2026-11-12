@@ -67,7 +67,7 @@ def handledOf (route : WindowRoute.Route)
       exact ⟨final, ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans fastTrace⟩,
         hdone, hresult⟩
     · rcases Setup.gasSteps_fallback input hvalid hfast with
-        ⟨_, steps⟩ | ⟨h32, hupper, steps⟩ | ⟨hzero, steps⟩ | ⟨hez, hpos, hsmall, steps⟩
+        ⟨_, steps⟩ | ⟨h32, hupper, steps⟩ | ⟨hzero, steps⟩ | ⟨hez, hpos, hsmall, steps⟩ | ⟨h12, hz, steps⟩
       · -- the header route lands on the fixed-vector recogniser: it either claims the
         -- input and returns the specified result, or restores the legacy entry
         by_cases hmemo : MemoLogic.Matches input
@@ -88,6 +88,10 @@ def handledOf (route : WindowRoute.Route)
           ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
           Setup.zeroExpFinalState_isDone _ _ rfl,
           Setup.zeroExpFinalState_result _ input hez hpos hsmall⟩
+
+      · exact ⟨ZeroMod12.finalState (initialState CycleSubmission.Artifact.bytecode input 0),
+          ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
+          ZeroMod12.isDone _ rfl, ZeroMod12.result _ input h12 hz⟩
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

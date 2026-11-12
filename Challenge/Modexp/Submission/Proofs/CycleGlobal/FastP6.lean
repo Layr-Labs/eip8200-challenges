@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.PCCertificate
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
 noncomputable section
@@ -19,10 +20,10 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- Instructions 483..486, pc 692..696. -/
 def blk1333 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 471 (.Dup ⟨4,by decide⟩),
-   pushAt 472 1 1,
-   pushAt 473 0 0,
-   opAt 474 .RETURN]
+  [opAt 470 (.Dup ⟨4,by decide⟩),
+   pushAt 471 1 1,
+   pushAt 472 0 0,
+   opAt 473 .RETURN]
 
 /-- The empty-modulus test at pc 3482 (instructions 511..513, in the former unreachable
 filler behind the memo hit exit) for a nonzero `msize`: `JUMPDEST PUSH2 3437 JUMPI`
@@ -30,20 +31,23 @@ consumes `msize` and lands on the zero-exponent test appended at pc 3437 with an
 empty stack. -/
 def blk1341 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2677 .JUMPDEST,
-   pushAt 2678 2 3432,
-   opAt 2679 .JUMPI]
+  [opAt 2672 .JUMPDEST,
+   opAt 2673 (.Dup ⟨0,by decide⟩),
+   pushAt 2674 2 10955,
+   opAt 2675 .JUMPI]
+
 
 /-- The same test for `msize = 0`: the `JUMPI` falls through to `PUSH0 PUSH0 RETURN`
 (instructions 514..516, pc 3487..3489), which returns the empty byte array. -/
 def blkEmptyModulus :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2677 .JUMPDEST,
-   pushAt 2678 2 3432,
-   opAt 2679 .JUMPI,
-   pushAt 2680 0 0,
-   pushAt 2681 0 0,
-   opAt 2682 .RETURN]
+  [opAt 2672 .JUMPDEST,
+   opAt 2673 (.Dup ⟨0,by decide⟩),
+   pushAt 2674 2 10955,
+   opAt 2675 .JUMPI,
+   pushAt 2676 0 0,
+   opAt 2677 .RETURN]
+
 
 /- `blk1345` (the oversize bail target `BAIL3`, pristine instructions 1345..1350) is
 deleted with the size test that was its only predecessor: nothing jumps to it any more,
@@ -56,99 +60,158 @@ pc 698 (instruction 488), which falls into the fixed-vector recogniser at pc 699
 empty stack. -/
 def blkZeroExpMiss :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2649 .JUMPDEST,
-   pushAt 2650 1 32,
-   opAt 2651 .CALLDATALOAD,
-   pushAt 2652 2 673,
-   opAt 2653 .JUMPI,
-   opAt 476 .JUMPDEST]
+  [opAt 2638 .JUMPDEST,
+   pushAt 2639 1 32,
+   opAt 2640 .CALLDATALOAD,
+   pushAt 2641 2 673,
+   opAt 2642 .JUMPI,
+   opAt 475 .JUMPDEST]
 
-/-- A zero `esize` with `msize > 32`: the width test `PUSH1 64 CALLDATALOAD PUSH1 32 LT
-PUSH2 698 JUMPI` (instructions 8643..8648) leaves for the recogniser too. -/
 def blkZeroExpWide :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2649 .JUMPDEST,
-   pushAt 2650 1 32,
-   opAt 2651 .CALLDATALOAD,
-   pushAt 2652 2 673,
-   opAt 2653 .JUMPI,
-   pushAt 2654 1 64,
-   opAt 2655 .CALLDATALOAD,
-   pushAt 2656 1 32,
-   opAt 2657 .LT,
-   pushAt 2658 2 673,
-   opAt 2659 .JUMPI,
-   opAt 476 .JUMPDEST]
+  [opAt 2638 .JUMPDEST,
+   pushAt 2639 1 32,
+   opAt 2640 .CALLDATALOAD,
+   pushAt 2641 2 673,
+   opAt 2642 .JUMPI,
+   pushAt 2643 1 64,
+   opAt 2644 .CALLDATALOAD,
+   opAt 2645 (.Dup ⟨0,by decide⟩),
+   pushAt 2646 1 32,
+   opAt 2647 .LT,
+   pushAt 2648 2 10949,
+   opAt 2649 .JUMPI,
+   opAt 8437 .JUMPDEST,
+   opAt 8438 .POP,
+   pushAt 8439 2 673,
+   opAt 8440 .JUMP,
+   opAt 475 .JUMPDEST]
 
-/-- A zero `esize` with `1 ≤ msize ≤ 32`: the result `1 mod m` is `1 < m`, stored at
-word 0 (instructions 8638..8665, pc 3437..4824). -/
 def blkZeroExpHit :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2649 .JUMPDEST,
-   pushAt 2650 1 32,
+  [opAt 2638 .JUMPDEST,
+   pushAt 2639 1 32,
+   opAt 2640 .CALLDATALOAD,
+   pushAt 2641 2 673,
+   opAt 2642 .JUMPI,
+   pushAt 2643 1 64,
+   opAt 2644 .CALLDATALOAD,
+   opAt 2645 (.Dup ⟨0,by decide⟩),
+   pushAt 2646 1 32,
+   opAt 2647 .LT,
+   pushAt 2648 2 10949,
+   opAt 2649 .JUMPI,
+   pushAt 2650 0 0,
    opAt 2651 .CALLDATALOAD,
-   pushAt 2652 2 673,
-   opAt 2653 .JUMPI,
-   pushAt 2654 1 64,
-   opAt 2655 .CALLDATALOAD,
+   pushAt 2652 1 96,
+   opAt 2653 .ADD,
+   opAt 2654 .CALLDATALOAD,
+   opAt 2655 (.Dup ⟨1,by decide⟩),
    pushAt 2656 1 32,
-   opAt 2657 .LT,
-   pushAt 2658 2 673,
-   opAt 2659 .JUMPI,
-   pushAt 2660 1 64,
-   pushAt 2661 2 4745,
-   opAt 2662 .JUMP,
-   opAt 3645 .JUMPDEST,
-   opAt 3646 .CALLDATALOAD,
-   pushAt 3647 0 0,
-   opAt 3648 .CALLDATALOAD,
-   pushAt 3649 1 96,
-   opAt 3650 .ADD,
-   opAt 3651 .CALLDATALOAD,
-   opAt 3652 (.Dup ⟨1,by decide⟩),
-   pushAt 3653 1 32,
-   opAt 3654 .SUB,
-   pushAt 3655 1 3,
-   opAt 3656 .SHL,
-   opAt 3657 .SHR,
-   pushAt 3658 1 1,
-   opAt 3659 .LT,
-   pushAt 3660 0 0,
-   opAt 3661 .MSTORE]
+   opAt 2657 .SUB,
+   pushAt 2658 1 3,
+   opAt 2659 .SHL,
+   opAt 2660 .SHR,
+   pushAt 2661 1 1,
+   opAt 2662 .LT,
+   pushAt 2663 0 0,
+   opAt 2664 .MSTORE]
 
-/-- The return of the zero-exponent hit: `DUP1 PUSH1 32 SUB RETURN` returns the low
-`msize` bytes of word 0 (instructions 8666..8669). -/
 def blkZeroExpReturn :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3662 (.Dup ⟨0,by decide⟩),
-   opAt 3663 .MSIZE,
-   opAt 3664 .SUB,
-   opAt 3665 .RETURN]
+  [opAt 2665 (.Dup ⟨0,by decide⟩),
+   opAt 2666 .MSIZE,
+   opAt 2667 .SUB,
+   opAt 2668 .RETURN]
 
+theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3416 = true :=
+  CycleSubmission.Global.Binding.jumpDest 2638 (by rfl)
 
+theorem jumpDestZeroExpCleanup : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10949 = true :=
+  CycleSubmission.Global.Binding.jumpDest 8437 (by rfl)
 
-theorem jumpDestZeroExp : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3432 = true :=
-  CycleSubmission.Global.Binding.jumpDest 2649 (by rfl)
-
-@[simp] theorem packedEmptyPCs (i : Nat) (hi : 2677 ≤ i) (hii : i ≤ 2682) :
+@[simp] theorem packedEmptyPCs (i : Nat) (hi : 2672 ≤ i) (hii : i ≤ 2677) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3477, 3478, 3481, 3482, 3483, 3484] : List Nat)[i - 2677]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+      ([3461, 3462, 3463, 3466, 3467, 3468] : List Nat)[i - 2672]! := by
+  interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
 
-@[simp] theorem packedHeadPCs (i : Nat) (hi : 2649 ≤ i) (hii : i ≤ 2662) :
+@[simp] theorem packedHeadPCs (i : Nat) (hi : 2638 ≤ i) (hii : i ≤ 2668) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3432, 3433, 3435, 3436, 3439, 3440, 3442, 3443, 3445, 3446, 3449, 3450, 3452, 3455] : List Nat)[i - 2649]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+      ([3416, 3417, 3419, 3420, 3423, 3424, 3426, 3427, 3428, 3430, 3431, 3434, 3435, 3436, 3437, 3439, 3440, 3441, 3442, 3444, 3445, 3447, 3448, 3449, 3451, 3452, 3453, 3454, 3455, 3456, 3457] : List Nat)[i - 2638]! := by
+  interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
 
-@[simp] theorem packedTailPCs (i : Nat) (hi : 3645 ≤ i) (hii : i ≤ 3665) :
+@[simp] theorem packedTailPCs (i : Nat) (hi : 2650 ≤ i) (hii : i ≤ 2668) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([4745, 4746, 4747, 4748, 4749, 4751, 4752, 4753, 4754, 4756, 4757, 4759, 4760, 4761, 4763, 4764, 4765, 4766, 4767, 4768, 4769] : List Nat)[i - 3645]! := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
-  interval_cases i <;> rfl
+      ([3435, 3436, 3437, 3439, 3440, 3441, 3442, 3444, 3445, 3447, 3448, 3449, 3451, 3452, 3453, 3454, 3455, 3456, 3457] : List Nat)[i - 2650]! := by
+  interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
 
-theorem jumpDestZeroExpTail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 4745 = true :=
-  CycleSubmission.Global.Binding.jumpDest 3645 (by rfl)
+@[simp] theorem zeroExpCleanupPCs (i : Nat) (hi : 8437 ≤ i) (hii : i ≤ 8440) :
+    CycleSubmission.Artifact.artifact.instructionPC i =
+      ([10949, 10950, 10951, 10954] : List Nat)[i - 8437]! := by
+  interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
+
+
+def blkZero12WidthMiss :
+    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
+  [opAt 8441 .JUMPDEST,
+   pushAt 8442 1 12,
+   opAt 8443 .XOR,
+   pushAt 8444 2 3416,
+   opAt 8445 .JUMPI]
+
+def blkZero12Nonzero :
+    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
+  [opAt 8441 .JUMPDEST,
+   pushAt 8442 1 12,
+   opAt 8443 .XOR,
+   pushAt 8444 2 3416,
+   opAt 8445 .JUMPI,
+   pushAt 8446 0 0,
+   opAt 8447 .CALLDATALOAD,
+   pushAt 8448 1 32,
+   opAt 8449 .CALLDATALOAD,
+   opAt 8450 .ADD,
+   pushAt 8451 1 96,
+   opAt 8452 .ADD,
+   opAt 8453 .CALLDATALOAD,
+   pushAt 8454 1 160,
+   opAt 8455 .SHR,
+   pushAt 8456 2 673,
+   opAt 8457 .JUMPI,
+   opAt 475 .JUMPDEST]
+
+def blkZero12Zero :
+    List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
+  [opAt 8441 .JUMPDEST,
+   pushAt 8442 1 12,
+   opAt 8443 .XOR,
+   pushAt 8444 2 3416,
+   opAt 8445 .JUMPI,
+   pushAt 8446 0 0,
+   opAt 8447 .CALLDATALOAD,
+   pushAt 8448 1 32,
+   opAt 8449 .CALLDATALOAD,
+   opAt 8450 .ADD,
+   pushAt 8451 1 96,
+   opAt 8452 .ADD,
+   opAt 8453 .CALLDATALOAD,
+   pushAt 8454 1 160,
+   opAt 8455 .SHR,
+   pushAt 8456 2 673,
+   opAt 8457 .JUMPI,
+   pushAt 8458 0 0,
+   pushAt 8459 0 0,
+   opAt 8460 .MSTORE,
+   pushAt 8461 1 12,
+   pushAt 8462 0 0,
+   opAt 8463 .RETURN]
+
+theorem jumpDestZero12 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10955 = true :=
+  CycleSubmission.Global.Binding.jumpDest 8441 (by rfl)
+
+@[simp] theorem packedZero12PCs (i : Nat) (hi : 8441 ≤ i) (hii : i ≤ 8463) :
+ CycleSubmission.Artifact.artifact.instructionPC i =
+  ([10955, 10956, 10958, 10959, 10962, 10963, 10964, 10965, 10967, 10968, 10969, 10971, 10972, 10973, 10975, 10976, 10979, 10980, 10981, 10982, 10983, 10985, 10986] : List Nat)[i-8441]! := by
+ interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
 
 end CycleSubmission.Global.Fast

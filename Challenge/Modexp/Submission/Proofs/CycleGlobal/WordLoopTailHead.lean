@@ -17,31 +17,31 @@ open Word
 
 def bitFinishTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 3042 .JUMPDEST,
-   opAt 3043 .POP,
-   opAt 3044 .POP,
-   opAt 3045 .POP]
+  [opAt 3037 .JUMPDEST,
+   opAt 3038 .POP,
+   opAt 3039 .POP,
+   opAt 3040 .POP]
 
 def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 3046 1 1,
-   opAt 3047 .ADD,
-   pushAt 3048 1 187,
-   opAt 3049 .JUMP]
+  [pushAt 3041 1 1,
+   opAt 3042 .ADD,
+   pushAt 3043 1 187,
+   opAt 3044 .JUMP]
 
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
   { bitLoopState input outer 8 0 0 acc base with
-    pc := UInt256.ofNat 3968
+    pc := UInt256.ofNat 3951
     stack := [UInt256.ofNat outer, acc, base,
       UInt256.ofNat (modulusValue input), UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input), UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96, UInt256.ofNat (expOffset input),
       UInt256.ofNat (modulusOffset input), UInt256.ofNat 1186] ++ callerRest input }
 
-@[simp] private theorem exitPCs (i : Nat) (hi : 3042 ≤ i) (hii : i ≤ 3063) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 3037 ≤ i) (hii : i ≤ 3058) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3964, 3965, 3966, 3967, 3968, 3970, 3971, 3973, 3974, 3975, 3976, 3977, 3978, 3980, 3981, 3983, 3984, 3985, 3986, 3987, 3988, 3989] : List Nat)[i - 3042]! := by
+      ([3947, 3948, 3949, 3950, 3951, 3953, 3954, 3956, 3957, 3958, 3959, 3960, 3961, 3963, 3964, 3966, 3967, 3968, 3969, 3970, 3971, 3972] : List Nat)[i - 3037]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
@@ -51,10 +51,10 @@ theorem run_bitFinishTailHead (input : ByteArray) (outer : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bitFinishTailHeadPath
       (bitFinishDispatchState input outer byte offset acc base) =
         some (bitFinishTailMidState input outer acc base) := by
-  have h656 : (UInt256.ofNat 3964).succ = UInt256.ofNat 3965 := by decide
-  have h657 : (UInt256.ofNat 3965).succ = UInt256.ofNat 3966 := by decide
-  have h658 : (UInt256.ofNat 3966).succ = UInt256.ofNat 3967 := by decide
-  have h659 : (UInt256.ofNat 3967).succ = UInt256.ofNat 3968 := by decide
+  have h656 : (UInt256.ofNat 3947).succ = UInt256.ofNat 3948 := by decide
+  have h657 : (UInt256.ofNat 3948).succ = UInt256.ofNat 3949 := by decide
+  have h658 : (UInt256.ofNat 3949).succ = UInt256.ofNat 3950 := by decide
+  have h659 : (UInt256.ofNat 3950).succ = UInt256.ofNat 3951 := by decide
   simp (config := { maxSteps := 100000 })
     [bitFinishTailHeadPath, Word.opAt, Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
