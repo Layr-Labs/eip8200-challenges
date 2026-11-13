@@ -1,6 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 import Challenge.EvmProof.Memory
 noncomputable section
+set_option linter.unusedVariables false
 set_option maxHeartbeats 1000000
 set_option linter.unusedSimpArgs false
 namespace CycleSubmission.Global.GateScratch
@@ -10,17 +11,13 @@ open Challenge.Modexp.Submission.Proofs.Fast
 
 def value (esize : Nat) : UInt256 := UInt256.eq (UInt256.ofNat 3) (UInt256.ofNat esize)
 def memory (mem : ByteArray) (esize : Nat) : ByteArray :=
- MachineState.writeBytes mem (Data.Bytes.natToBytesPadded (value esize).toNat 32) 512
+ mem
 
 theorem readWord (mem : ByteArray) (esize addr : Nat)
  (hd : addr+32≤512 ∨ 544≤addr) :
  MachineState.readWord (memory mem esize) addr = MachineState.readWord mem addr := by
- apply Memory.readWord_writeBytes_disjoint
- simpa [YulEvmCompiler.BytesLemmas.natToBytesPadded_size] using hd
+ rfl
 
-theorem readValue (mem : ByteArray) (esize : Nat) :
- MachineState.readWord (memory mem esize) 512 = value esize :=
- Memory.readWord_writeWord mem 512 (value esize)
 
 theorem represents (mem : ByteArray) (esize ptr n X : Nat)
  (hd : ptr+32*n≤512 ∨ 544≤ptr) (hrep : Model.FastRepresents mem ptr n X) :

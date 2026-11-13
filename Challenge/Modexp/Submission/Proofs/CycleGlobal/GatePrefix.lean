@@ -14,14 +14,14 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNi
 open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission.Global.GateRaw
 def guardBlock : Block CycleSubmission.Artifact.artifact .Osaka 2306 guardProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1826 25 2306 guardProgram
-  (by change 1826+25 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1826 18 2306 guardProgram
+  (by change 1826+18 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 def bailBlock : Block CycleSubmission.Artifact.artifact .Osaka 2345 bailProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1851 2 2345 bailProgram
-  (by change 1851+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1844 2 2345 bailProgram
+  (by change 1844+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
@@ -42,8 +42,8 @@ theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestSpecial : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3197 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2445 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2445 = 3197 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2436 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2436 = 3197 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem exponent_eq (s : State) (input : ByteArray) (bsize : Nat)
@@ -69,19 +69,23 @@ def gasSteps_hit (s : State) (mem input : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : Precompile.bytesToNatPadded input (96+bsize) 3 = 65537)
  (hdata : s.executionEnv.calldata = input)
- (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
+ (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
+ (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3)
+ (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
  GasSteps (entryState s mem n bsize 3 msize) (SlimFrames.special s (GateScratch.memory mem 3) n bsize 3 msize 16) :=
  guardBlock.steps (s := entryState s mem n bsize 3 msize) (env.transfer rfl rfl) rfl
   (run_guard_hit s mem n bsize msize hb hact (by rw [exponent_eq s input bsize hdata, he])
-    (by rw [env.code]; exact jumpDestSpecial))
+    (by rw [env.code]; exact jumpDestSpecial) hsize hptr)
 
 def gasSteps_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (hc : UInt256.isTrue (guardValue s bsize esize))
- (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
+ (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
+ (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
+ (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
  GasSteps (entryState s mem n bsize esize msize) (SlimFrames.bailState s (GateScratch.memory mem esize) n bsize esize msize) := by
  have hg := guardBlock.steps (s := entryState s mem n bsize esize msize) (env.transfer rfl rfl) rfl
-  (run_guard_miss s mem n bsize esize msize hb hact hc)
+  (run_guard_miss s mem n bsize esize msize hb hact hc hsize hptr)
  have hb := bailBlock.steps (s := SlimFrames.guardFrame s (GateScratch.memory mem esize) 2345 n bsize esize msize)
   (env.transfer rfl rfl) rfl (run_bail s (GateScratch.memory mem esize) n bsize esize msize (by rw [env.code]; exact jumpDestBail))
  exact hg.trans hb

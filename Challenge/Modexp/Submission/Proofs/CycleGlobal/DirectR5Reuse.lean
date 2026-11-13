@@ -9,7 +9,7 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 def program : List Instr :=
- [.op .JUMPDEST,.op (.Swap ⟨12,by decide⟩),.push 2 2720,.op .MLOAD,
+ [.op (.Swap ⟨12,by decide⟩),.push 3 2720,.op .MLOAD,
   .op (.Swap ⟨10,by decide⟩),.push 2 5204,.op .JUMP]
 def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat) : State :=
  R5Route.entry s mem (MachineState.readWord mem 1664)

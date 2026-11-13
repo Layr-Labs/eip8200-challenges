@@ -121,10 +121,13 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     refine ⟨done, ⟨tr.trans tail⟩, hd, ?_⟩
     change done.toResult = .returned (Challenge.Modexp.spec s.executionEnv.calldata) at hr
     simpa only [hdata] using hr
+  have hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize := by
+    rw [hdata, hes]
+    rfl
   by_cases he3 : esize = 3
   · rcases he3 with rfl
     by_cases he : Precompile.bytesToNatPadded input (96+bsize) 3 = 65537
-    · have hit := GatePrefix.gasSteps_hit s mem input n bsize msize hbsize hact he hdata env
+    · have hit := GatePrefix.gasSteps_hit s mem input n bsize msize hbsize hact he hdata env hsize hf.eoff
       apply prepend hit
       apply special input s (GateScratch.memory mem 3) n bsize 3 msize 16 N A B mi hn (by decide) (by decide)
         env hact hactLe (by rw [hdata]; exact lt_trans hvalid.1 (by norm_num)) hcalls hdata hvalid
@@ -133,7 +136,7 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
       simpa only [show (2:Nat)^16+1=65537 from by decide] using
         (Terminal.result_ordinary n N A B _ 16 hN hodd hAe hBe)
     · exact bail (GatePrefix.gasSteps_miss s mem n bsize 3 msize hbsize hact
-        (GateRaw.miss_exponent s bsize 3 (GatePrefix.exponent_ne s input bsize he hdata)) env)
+        (GateRaw.miss_exponent s bsize 3 (GatePrefix.exponent_ne s input bsize he hdata)) env hsize hf.eoff)
   · have hne : UInt256.ofNat esize ≠ UInt256.ofNat 3 := by
       intro h
       have h' := congrArg UInt256.toNat h
@@ -142,7 +145,7 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
       rw [Nat.mod_eq_of_lt hl] at h'
       exact he3 (by simpa using h')
     exact bail (GatePrefix.gasSteps_miss s mem n bsize esize msize hbsize hact
-      (GateRaw.miss_size s bsize esize hne) env)
+      (GateRaw.miss_size s bsize esize hne) env hsize hf.eoff)
 #print axioms special
 #print axioms ordinary
 end CycleSubmission.Global.TailFixed
