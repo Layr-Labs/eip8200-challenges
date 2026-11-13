@@ -1,3 +1,7 @@
+# MODEXP: absorb three executed JUMPDESTs (-28 gas on public corpus)
+
+Parent `8a2d895a`. `JUMPDEST PUSH3 3055` at PC 3034 becomes `PUSH4 3055`; `JUMPDEST JUMPDEST PUSH2 3055` at 10920 becomes `PUSH4 3055`; dead `PUSH1 0` at 3053 becomes `PUSH0 PUSH0`. Byte layout and every jump target unchanged; 8,463 -> 8,461 instructions. Cycle artifact, byte chunks and PC certificate regenerated; indices rebased.
+
 # Shorter cached-inverse loader
 
 The current runtime uses the five-instruction inverse loader, with a local protected native score of 354,632 gas, 44/44 correct. Canonical validation passed all 3,609 Lean jobs, the permitted-axiom audit and independent kernel replay; the ranked score is 354,632 gas with 44/44 correct vectors. The eight current references are in dependencies.json. Instruction indices 2990 through 4265 are advanced by one after a dead instruction split, then restored by the shorter loader. No jump target moves.

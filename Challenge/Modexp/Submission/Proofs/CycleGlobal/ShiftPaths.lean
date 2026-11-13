@@ -557,9 +557,8 @@ def blk3125Unc :
    opAt 2347 .SUB,
    opAt 2348 (.Dup ⟨0,by decide⟩),
    opAt 2349 .JUMPDEST,
-   opAt 2350 .JUMPDEST,
-   pushAt 2351 3 3055,
-   opAt 2352 .JUMPI,
+   pushAt 2350 4 3055,
+   opAt 2351 .JUMPI,
    opAt 2367 .JUMPDEST,
    pushAt 2368 2 2080,
    opAt 2369 .MSTORE]
@@ -571,10 +570,8 @@ def blk3125hUnc :
    opAt 8410 .ADD,
    opAt 8411 .SUB,
    opAt 8412 (.Dup ⟨0,by decide⟩),
-   opAt 8413 .JUMPDEST,
-   opAt 8414 .JUMPDEST,
-   pushAt 8415 2 3055,
-   opAt 8416 .JUMPI,
+   pushAt 8413 4 3055,
+   opAt 8414 .JUMPI,
    opAt 2367 .JUMPDEST,
    pushAt 2368 2 2080,
    opAt 2369 .MSTORE]
@@ -587,11 +584,10 @@ def blk3125 :
    opAt 2347 .SUB,
    opAt 2348 (.Dup ⟨0,by decide⟩),
    opAt 2349 .JUMPDEST,
-   opAt 2350 .JUMPDEST,
-   pushAt 2351 3 3055,
-   opAt 2352 .JUMPI,
-   opAt 2353 (.Swap ⟨0,by decide⟩),
-   opAt 2354 .POP]
+   pushAt 2350 4 3055,
+   opAt 2351 .JUMPI,
+   opAt 2352 (.Swap ⟨0,by decide⟩),
+   opAt 2353 .POP]
 
  
 def blkUnc :
@@ -669,13 +665,13 @@ def blk3204 :
  
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2355 .JUMPDEST,
-   opAt 2356 .NOT,
-   opAt 2357 .JUMPDEST,
-   opAt 2358 .ADD,
-   opAt 2359 (.Dup ⟨0,by decide⟩),
-   opAt 2360 (.Dup ⟨2,by decide⟩),
-   opAt 2361 .JUMPI]
+  [opAt 2354 .JUMPDEST,
+   opAt 2355 .NOT,
+   opAt 2356 .JUMPDEST,
+   opAt 2357 .ADD,
+   opAt 2358 (.Dup ⟨0,by decide⟩),
+   opAt 2359 (.Dup ⟨2,by decide⟩),
+   opAt 2360 .JUMPI]
 
 
  
@@ -692,21 +688,19 @@ def blk3125h :
    opAt 8410 .ADD,
    opAt 8411 .SUB,
    opAt 8412 (.Dup ⟨0,by decide⟩),
-   opAt 8413 .JUMPDEST,
-   opAt 8414 .JUMPDEST,
-   pushAt 8415 2 3055,
-   opAt 8416 .JUMPI,
-   opAt 8417 (.Swap ⟨0,by decide⟩),
-   opAt 8418 .POP]
+   pushAt 8413 4 3055,
+   opAt 8414 .JUMPI,
+   opAt 8415 (.Swap ⟨0,by decide⟩),
+   opAt 8416 .POP]
 
  
 def blk3253h :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8419 .NOT,
-   opAt 8420 .ADD,
-   opAt 8421 (.Dup ⟨0,by decide⟩),
-   opAt 8422 (.Dup ⟨2,by decide⟩),
-   opAt 8423 .JUMPI]
+  [opAt 8417 .NOT,
+   opAt 8418 .ADD,
+   opAt 8419 (.Dup ⟨0,by decide⟩),
+   opAt 8420 (.Dup ⟨2,by decide⟩),
+   opAt 8421 .JUMPI]
 
 
 theorem jumpDest4608 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2349 = true := by
@@ -787,15 +781,15 @@ theorem jumpDestUnc : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3
 
 
 theorem jumpDest5311 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3042 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2355 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
-  have hp : CycleSubmission.Artifact.artifact.instructionPC 2355 = 3042 := by
+  have h := CycleSubmission.Global.Binding.jumpDest 2354 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have hp : CycleSubmission.Artifact.artifact.instructionPC 2354 = 3042 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
 
 
 theorem jumpDest5366 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3049 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2362 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
-  have hp : CycleSubmission.Artifact.artifact.instructionPC 2362 = 3049 := by
+  have h := CycleSubmission.Global.Binding.jumpDest 2361 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have hp : CycleSubmission.Artifact.artifact.instructionPC 2361 = 3049 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
 
