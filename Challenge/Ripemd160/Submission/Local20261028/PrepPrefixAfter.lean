@@ -3,6 +3,7 @@ import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2RawTransition
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedLaneUInt256Bridge
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -31,6 +32,34 @@ private theorem sub_literal (x : UInt256) :
 private theorem hsub_literal (x : UInt256) :
     x - UInt256.ofNat 937819299 =
       UInt256.add (UInt256.lnot (UInt256.ofNat 937819298)) x := sub_literal x
+private theorem add_lnot_literal (z : UInt256) :
+    UInt256.ofNat 5708990770823839524233143877797980550169194198 + UInt256.lnot z =
+      UInt256.ofNat 5708990770823839524233143877797980550169194197 - z := by
+  apply Word.word_ext
+  have hz : z.toNat < 2 ^ 256 := z.val.isLt
+  rw [Word.word_toNat_add, Word.word_toNat_sub]
+  unfold UInt256.lnot
+  simp only [Word.word_toNat_ofNat, UInt256.size]
+  omega
+private theorem xor_lnot_literal (y : UInt256) :
+    UInt256.xor y (UInt256.lnot (UInt256.ofNat 48402048319894885521722115772514)) =
+      UInt256.lnot (UInt256.xor y (UInt256.ofNat 48402048319894885521722115772514)) := by
+  apply PairedLaneUInt256Bridge.bits_injective
+  simp only [PairedLaneUInt256Bridge.bits_xor, PairedLaneUInt256Bridge.bits_lnot]
+  exact BitVec.not_xor_right.symm
+private theorem sub_xor_literal (y : UInt256) :
+    UInt256.sub (UInt256.ofNat 5708990770823839524233143877797980550169194197)
+        (UInt256.xor y (UInt256.ofNat 48402048319894885521722115772514)) =
+      UInt256.add (UInt256.ofNat 5708990770823839524233143877797980550169194198)
+        (UInt256.xor y (UInt256.lnot (UInt256.ofNat 48402048319894885521722115772514))) := by
+  rw [xor_lnot_literal]
+  exact (add_lnot_literal _).symm
+private theorem hsub_xor_literal (y : UInt256) :
+    UInt256.ofNat 5708990770823839524233143877797980550169194197 -
+        UInt256.xor y (UInt256.ofNat 48402048319894885521722115772514) =
+      UInt256.add (UInt256.ofNat 5708990770823839524233143877797980550169194198)
+        (UInt256.xor y (UInt256.lnot (UInt256.ofNat 48402048319894885521722115772514))) :=
+  sub_xor_literal y
 namespace PrefixAfter
 def template : List Instr := [
 .push ⟨4, by decide⟩ (UInt256.ofNat 937819299),
@@ -49,16 +78,15 @@ def template : List Instr := [
 .op .AND,
 .push ⟨2, by decide⟩ (UInt256.ofNat 144),
 .push ⟨14, by decide⟩ (UInt256.ofNat 48402048319894885521722115772514),
-.op .NOT,
 .op (.Dup ⟨2, by decide⟩),
 .op .XOR,
-.push ⟨20, by decide⟩ (UInt256.ofNat 5708990770823839524233143877797980550169194198),
-.op .ADD,
+.push ⟨20, by decide⟩ (UInt256.ofNat 5708990770823839524233143877797980550169194197),
+.op .SUB,
 .op (.Dup ⟨4, by decide⟩),
 .op .AND,
 .op (.Dup ⟨3, by decide⟩),
 .op .MUL,
-.push ⟨1, by decide⟩ (UInt256.ofNat 24),
+.push ⟨2, by decide⟩ (UInt256.ofNat 24),
 .op .SHR,
 .op (.Dup ⟨10, by decide⟩),
 .op .ADD,
@@ -138,7 +166,8 @@ theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     runInstrSeq, DataStepper.runInstr, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, hzero,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat,
-    Word.literal_eq_ofNat, add_literals, hadd_literals, sub_literal, hsub_literal]
+    Word.literal_eq_ofNat, add_literals, hadd_literals, sub_literal, hsub_literal,
+    sub_xor_literal, hsub_xor_literal]
   all_goals repeat first | apply And.intro | rfl
 #print axioms exact_bytes
 #print axioms run
