@@ -23,11 +23,16 @@ structure Holds (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : Pr
  at64 : MachineState.readWord mem 64 = a 4
  at128 : MachineState.readWord mem 128 = a 6
  at160 : MachineState.readWord mem 160 = a 7
+ at1664 : MachineState.readWord mem 1664 = mask
 
 /-- The old mask is stored once, before the repeated kernel begins. -/
 theorem install (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
- (h : SquareMeaning.Memory0 mem inv a b n) : Holds mem inv a b n := by
- exact ⟨h.at768,h.at1344,h.at1376,h.at2720,h.at1568,h.at1600,h.at32,h.at64,h.at128,h.at160⟩
+ (h : SquareMeaning.Memory0 mem inv a b n) :
+ Holds (store mem 1664 mask) inv a b n := by
+ constructor <;>
+  simp (disch := decide) only [store, readWord_writeWord, read_disjoint,
+   h.at768,h.at1344,h.at1376,h.at2720,h.at1568,h.at1600,
+   h.at32,h.at64,h.at128,h.at160]
 
 /-- The final carried limb reestablishes the original complete memory contract. -/
 theorem flush (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)

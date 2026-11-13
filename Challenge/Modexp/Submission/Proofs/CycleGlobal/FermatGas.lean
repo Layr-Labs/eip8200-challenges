@@ -24,7 +24,7 @@ def withModulus (template : State) (input : ByteArray) (tail : List UInt256)
 
 /-- The join point at 48 with the core frame. -/
 def joinState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  withModulus template input tail (UInt256.ofNat 10741)
+  withModulus template input tail (UInt256.ofNat 10889)
 
 private def fermatHandled {artifact : ProgramArtifact} {fork : Fork}
     (paths : FermatNext.Paths artifact fork) (template : State) (env : Environment artifact fork template)
@@ -86,7 +86,7 @@ def handledFrom {artifact : ProgramArtifact} {fork : Fork}
     (start : State)
     (yes : (FermatNext.fermatDiff (WindowTwentyOneInput.modulusWord input)
       (WindowTwentyOneInput.exponentWord input)).toNat = 0 →
-      GasSteps start (withModulus template input tail 10471))
+      GasSteps start (withModulus template input tail 10623))
     (no : (FermatNext.fermatDiff (WindowTwentyOneInput.modulusWord input)
       (WindowTwentyOneInput.exponentWord input)).toNat ≠ 0 →
       GasSteps start (WindowDispatchCore.entryState template input tail)) :
@@ -99,7 +99,7 @@ def handledFrom {artifact : ProgramArtifact} {fork : Fork}
     rw [ec.code]; exact paths.routeJump
   have htailjump : Decode.isValidJumpDest (context template input).executionEnv.code 4627 = true := by
     rw [ec.code]; exact paths.tailJump
-  have hprimejump : Decode.isValidJumpDest (context template input).executionEnv.code 10471 = true := by
+  have hprimejump : Decode.isValidJumpDest (context template input).executionEnv.code 10623 = true := by
     rw [ec.code]; exact paths.primeJump
   obtain ⟨oldFinal, ⟨oldTrace⟩, oldDone, oldResult⟩ :=
     WindowDispatchCore.handled legacy template env hcall input tail htail hmatch
@@ -109,16 +109,16 @@ def handledFrom {artifact : ProgramArtifact} {fork : Fork}
       (by simp [coreStack]; omega) htailjump
     by_cases hp : (FermatProgram.primeValue m).toNat = 0
     · rw [if_pos hp] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail 10471) (withModulus template input tail 10521) :=
+      have primeSteps : GasSteps (withModulus template input tail 10623) (withModulus template input tail 10673) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       have hjraw := FermatNext.run_jumpTail (context template input) (m :: coreStack input tail)
         (by simp [coreStack]; omega) hjump
-      have jumpSteps : GasSteps (withModulus template input tail 10521)
+      have jumpSteps : GasSteps (withModulus template input tail 10673)
           (WindowDispatchCore.entryState template input tail) :=
         paths.jumpTail.steps (ec.transfer rfl rfl) rfl hjraw
       exact ⟨oldFinal, ⟨((commonSteps.trans primeSteps).trans jumpSteps).trans oldTrace⟩, oldDone, oldResult⟩
     · rw [if_neg hp] at hpraw
-      have primeSteps : GasSteps (withModulus template input tail 10471) (withModulus template input tail 4627) :=
+      have primeSteps : GasSteps (withModulus template input tail 10623) (withModulus template input tail 4627) :=
         paths.prime.steps (ec.transfer rfl rfl) rfl hpraw
       have htraw := FermatNext.run_tail (context template input) m e (shiftWord input :: tail)
         (by simp; omega)
@@ -135,24 +135,24 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     (input : ByteArray) (tail : List UInt256) (htail : tail.length ≤ 590)
     (hmatch : WindowTwentyOneInput.Matches input)
     (hbn : FermatProgram.bn.toNat.Prime) (hsecp : FermatProgram.secp.toNat.Prime) :
-    ∃ final : State, Nonempty (GasSteps (withModulus template input tail 10741) final) ∧
+    ∃ final : State, Nonempty (GasSteps (withModulus template input tail 10889) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let ec := WindowDispatchCore.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
   let e := WindowTwentyOneInput.exponentWord input
   have hj : Decode.isValidJumpDest (context template input).executionEnv.code 717 = true := by
     rw [ec.code]; exact paths.routeJump
-  have hp : Decode.isValidJumpDest (context template input).executionEnv.code 10471 = true := by
+  have hp : Decode.isValidJumpDest (context template input).executionEnv.code 10623 = true := by
     rw [ec.code]; exact paths.primeJump
   have hraw := FermatNext.run_join (context template input) m e (shiftWord input :: tail)
     (by simp; omega) hj
   refine handledFrom paths legacy template env hcall input tail htail hmatch hbn hsecp
-    (withModulus template input tail 10741) ?_ ?_
+    (withModulus template input tail 10889) ?_ ?_
   · intro hs
     have hr := hraw
     rw [if_pos hs] at hr
-    have first : GasSteps (withModulus template input tail 10741)
-        (withModulus template input tail 10750) :=
+    have first : GasSteps (withModulus template input tail 10889)
+        (withModulus template input tail 10898) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hr
     have hpr := FermatNext.run_toPrime (context template input) (m :: coreStack input tail)
       (by simp [coreStack]; omega) hp
@@ -178,7 +178,7 @@ def handledFast {artifact : ProgramArtifact} {fork : Fork}
   let e := WindowTwentyOneInput.exponentWord input
   have hj : Decode.isValidJumpDest (context template input).executionEnv.code 717 = true := by
     rw [ec.code]; exact paths.routeJump
-  have hp : Decode.isValidJumpDest (context template input).executionEnv.code 10471 = true := by
+  have hp : Decode.isValidJumpDest (context template input).executionEnv.code 10623 = true := by
     rw [ec.code]; exact paths.primeJump
   have hraw := FermatNext.run_fastJoin (context template input) m e (shiftWord input :: tail)
     hhalf (by simp; omega) hj
@@ -418,7 +418,7 @@ def genSteps {artifact : ProgramArtifact} {fork : Fork}
   have h238 : Decode.isValidJumpDest (context template input).executionEnv.code 207 = true := by
     rw [ec.code]
     exact paths.bigJump
-  have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 10741 = true := by
+  have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 10889 = true := by
     rw [ec.code]
     exact paths.joinJump
   have hword : MachineState.readWord (context template input).executionEnv.calldata 0 =
