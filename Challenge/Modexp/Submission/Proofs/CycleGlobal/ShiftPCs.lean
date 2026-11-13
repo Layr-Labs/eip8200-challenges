@@ -113,7 +113,7 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
 
 @[simp] theorem pc2638 : IPC 1934 = 2471 := by pc_by_len
 
-@[simp] theorem pc2639 : IPC 1935 = 2474 := by pc_by_len
+@[simp] theorem pc2639 : IPC 1935 = 2472 := by pc_by_len
 
 @[simp] theorem pc2641 : IPC 1936 = 2475 := by pc_by_len
 

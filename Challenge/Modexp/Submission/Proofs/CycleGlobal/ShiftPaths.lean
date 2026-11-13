@@ -172,7 +172,7 @@ def blk2919a :
    opAt 1922 .SUB,
    opAt 1923 (.Dup ⟨1,by decide⟩),
    opAt 1924 .AND,
-   opAt 1925 (.Dup ⟨0,by decide⟩)]
+   opAt 1925 .JUMPDEST]
 
 
  
@@ -186,10 +186,10 @@ def blk2919b :
    opAt 1931 .MSTORE,
    pushAt 1932 1 255,
    opAt 1933 .SUB,
-   pushAt 1934 2 1536,
-   opAt 1935 .MSTORE,
-   opAt 1936 (.Swap ⟨0,by decide⟩),
-   opAt 1937 .DIV,
+   opAt 1934 (.Dup ⟨0,by decide⟩),
+   pushAt 1935 2 1536,
+   opAt 1936 .MSTORE,
+   opAt 1937 .SHR,
    opAt 1938 (.Dup ⟨0,by decide⟩),
    pushAt 1939 2 1568,
    opAt 1940 .MSTORE,
