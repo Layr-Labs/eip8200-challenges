@@ -90,7 +90,7 @@ def wordTailPath := wordRestPath.drop 12
 
 @[simp] theorem dispatchPCs (i : Nat) (hi : 364 ≤ i) (hii : i ≤ 390) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([528, 529, 532, 533, 534, 535, 536, 537, 538, 540, 541, 542, 543, 544, 546, 547, 548, 550, 551, 554, 555, 556, 558, 559, 560, 561, 563] : List Nat)[i - 364]! := by
+      ([528,529,532,533,534,535,536,537,538,540,541,542,543,544,546,547,548,550,551,554,555,556,558,559,560,561,563] : List Nat)[i - 364]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

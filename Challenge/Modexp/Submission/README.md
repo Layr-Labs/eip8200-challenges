@@ -1,1 +1,1 @@
-Guard loads exact exponent offset from2656, discharging hptr via actual hf.eoff. Runtime10989bytes8455instructions. Canonical3609-job build and independent kernel accepted354513gas44/44correct. Eighteen published material dependencies.
+Stack-cached accumulator limb5 through the repeated nine-limb square loop, with final flush and mask restoration. Runtime10937bytes8428instructions. Complete normal build, allowed-axiom audit and independent default kernel accepted354365gas44/44correct. Twenty published material dependencies.

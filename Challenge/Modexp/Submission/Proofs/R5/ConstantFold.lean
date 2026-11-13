@@ -12,8 +12,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.EvmProof.Word Challenge.EvmProof.Stepper
 
+private theorem compact_mask256 : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 := by decide
+private theorem compact_mask251 : UInt256.shiftRight (UInt256.lnot (UInt256.ofNat 0)) (UInt256.ofNat 5) = UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247 := by decide
+private theorem compact_shift256 : UInt256.shiftRight (UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935) (UInt256.ofNat 5) = UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247 := by decide
+attribute [local simp] compact_mask256 compact_mask251 compact_shift256
+
 def oldProgram : List Instr :=
-  [.push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+  [.push 0 0,
+   .op .NOT,
    .op (.Dup ⟨0, by decide⟩),
    .push 1 16,
    .op .SHR,
@@ -26,40 +32,45 @@ def oldModel (s : State) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftRight (UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935) (UInt256.ofNat 16)
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 224
   let v2 : UInt256 := UInt256.shiftRight (UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935) (UInt256.ofNat 5)
-  {s with pc := UInt256.ofNat 5257, memory := v1, stack := v2 :: rest}
+  {s with pc := UInt256.ofNat 5098, memory := v1, stack := v2 :: rest}
 
 theorem old_run (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions oldProgram {s with pc := UInt256.ofNat 5214, stack := rest} =
+    runInstructions oldProgram {s with pc := UInt256.ofNat 5086, stack := rest} =
       some (oldModel s rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
   have capacity0 : rest.length < 1024 := by omega
   have ha224 : (224 : UInt256).toNat = 224 := rfl
   have hf224 := Challenge.Modexp.Submission.Proofs.Fast.Monpro.activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [oldProgram, oldModel, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, capacity0, ha224, hf224]
+  simp [hz, oldProgram, oldModel, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, capacity0, ha224, hf224]
 
 def newProgram : List Instr :=
-  [.push 32 3618502788666131106986593281521497120414687020801267626233049500247285301247,
+  [.push 0 0,
+   .op .NOT,
+   .push 1 5,
+   .op .SHR,
    .op (.Dup ⟨0, by decide⟩),
    .push 1 11,
    .op .SHR,
-   .push 4 224,
+   .push 1 224,
    .op .MSTORE]
 
 def newModel (s : State) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.shiftRight (UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247) (UInt256.ofNat 11)
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 224
-  {s with pc := UInt256.ofNat 5257, memory := v1, stack := (UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247) :: rest}
+  {s with pc := UInt256.ofNat 5098, memory := v1, stack := (UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247) :: rest}
 
 theorem new_run (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newProgram {s with pc := UInt256.ofNat 5214, stack := rest} =
+    runInstructions newProgram {s with pc := UInt256.ofNat 5086, stack := rest} =
       some (newModel s rest) := by
+  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
   have capacity0 : rest.length < 1024 := by omega
   have ha224 : (224 : UInt256).toNat = 224 := rfl
   have hf224 := Challenge.Modexp.Submission.Proofs.Fast.Monpro.activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [newProgram, newModel, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, capacity0, ha224, hf224]
+  simp [hz, newProgram, newModel, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, capacity0, ha224, hf224]
 
 theorem mask_old : UInt256.shiftRight (UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935) (UInt256.ofNat 16) = UInt256.ofNat 1766847064778384329583297500742918515827483896875618958121606201292619775 := by decide
 theorem modulus_old : UInt256.shiftRight (UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935) (UInt256.ofNat 5) = UInt256.ofNat 3618502788666131106986593281521497120414687020801267626233049500247285301247 := by decide
@@ -73,8 +84,8 @@ theorem boundary_eq (s : State) (rest : List UInt256) :
 /-- All entry stack words are opaque; neither window inspects them. -/
 theorem replacement_run (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions newProgram {s with pc := UInt256.ofNat 5214, stack := rest} =
-    runInstructions oldProgram {s with pc := UInt256.ofNat 5214, stack := rest} := by
+    runInstructions newProgram {s with pc := UInt256.ofNat 5086, stack := rest} =
+    runInstructions oldProgram {s with pc := UInt256.ofNat 5086, stack := rest} := by
   rw [old_run s rest hcap hact, new_run s rest hcap hact, boundary_eq]
 #print axioms replacement_run
 
@@ -101,9 +112,9 @@ def prologuePairProgram : List Instr := newProgram ++ tailProgram
 not merely an isolated arithmetic identity. -/
 theorem prologue_pair_run_eq (s : State) (rest : List UInt256)
     (hcap : rest.length ≤ 1018) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions prologuePairProgram {s with pc := UInt256.ofNat 5214, stack := rest} =
+    runInstructions prologuePairProgram {s with pc := UInt256.ofNat 5086, stack := rest} =
     runInstructions (preparedProloguepart1Program ++ preparedProloguepart2Program)
-      {s with pc := UInt256.ofNat 5214, stack := rest} := by
+      {s with pc := UInt256.ofNat 5086, stack := rest} := by
   rw [← historical_partition, prologuePairProgram,
     runInstructions_append, runInstructions_append, replacement_run s rest hcap hact]
 
@@ -160,9 +171,9 @@ The 960-tail capacity and 88-word memory bound are exactly the existing contract
 theorem full_prologue_run_eq (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions foldedPrologueProgram
-      {s with pc := UInt256.ofNat 5204, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} =
+      {s with pc := UInt256.ofNat 5076, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} =
     runInstructions preparedPrologueProgram
-      {s with pc := UInt256.ofNat 5204, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} := by
+      {s with pc := UInt256.ofNat 5076, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} := by
   rw [foldedPrologueProgram, historical_full_partition]
   exact compose_splice _ _ _ _ _ _
     (preparedProloguepart0_run s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact)
@@ -172,7 +183,7 @@ theorem full_prologue_run_eq (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 
 theorem folded_prologue_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions foldedPrologueProgram
-      {s with pc := UInt256.ofNat 5204, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} =
+      {s with pc := UInt256.ofNat 5076, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} =
       some (preparedPrologueModel s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) := by
   rw [full_prologue_run_eq s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact]
   exact preparedPrologue_run s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact
@@ -183,8 +194,8 @@ theorem folded_prologue_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f
 /-- Drop-in executor theorem for the existing R5 proSeg caller contract. -/
 theorem folded_proSeg_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions foldedPrologueProgram {s with pc := UInt256.ofNat 5204, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} =
-      some {s with pc := UInt256.ofNat 5353, memory := (proSegM7 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15), stack := (proSegV8_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV8_1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_2 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_3 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_4 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV0_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: f14 :: f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} := by
+    runInstructions foldedPrologueProgram {s with pc := UInt256.ofNat 5076, stack := f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} =
+      some {s with pc := UInt256.ofNat 5194, memory := (proSegM7 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15), stack := (proSegV8_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV8_1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_1 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_2 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_3 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV2_4 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: (proSegV0_0 s.memory f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) :: f14 :: f0 :: f1 :: f2 :: f3 :: f4 :: f5 :: f6 :: f7 :: f8 :: f9 :: f10 :: f11 :: f12 :: f13 :: f14 :: f15 :: rest} := by
   rw [full_prologue_run_eq s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact]
   exact proSeg_run s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest hcap hact
 

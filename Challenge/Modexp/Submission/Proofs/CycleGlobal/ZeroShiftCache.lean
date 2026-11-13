@@ -140,7 +140,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 3927) s mem
+      some (shiftLoopState (UInt256.ofNat 3803) s mem
         n bsize esize msize (n / 2)) := by
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact

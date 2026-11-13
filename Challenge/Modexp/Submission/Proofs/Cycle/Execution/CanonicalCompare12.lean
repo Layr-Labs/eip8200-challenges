@@ -11,18 +11,19 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def canonicalCompare12part0Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [
+  .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .LT,
-   .push 2 10356]
+   .push 2 10367]
 
 def canonicalCompare12part0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.lt x4 x0
-  {s with pc := UInt256.ofNat 10295, memory := s.memory, stack := (UInt256.ofNat 10356) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 10306, memory := s.memory, stack := (UInt256.ofNat 10367) :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
 
 theorem canonicalCompare12part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalCompare12part0Program {s with pc := UInt256.ofNat 10289, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions canonicalCompare12part0Program {s with pc := UInt256.ofNat 10300, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (canonicalCompare12part0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -31,21 +32,22 @@ theorem canonicalCompare12part0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x
 
 
 def canonicalCompare12Program : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩),
+  [
+  .op (.Dup ⟨0, by decide⟩),
    .op (.Dup ⟨5, by decide⟩),
    .op .LT,
-   .push 2 10356]
+   .push 2 10367]
 
 def canonicalCompare12Model (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.lt a2 n2
-  {s with pc := UInt256.ofNat 10295, memory := s.memory, stack := (UInt256.ofNat 10356) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
+  {s with pc := UInt256.ofNat 10306, memory := s.memory, stack := (UInt256.ofNat 10367) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest}
 
 theorem canonicalCompare12_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalCompare12Program {s with pc := UInt256.ofNat 10289, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions canonicalCompare12Program {s with pc := UInt256.ofNat 10300, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
       some (canonicalCompare12Model s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := UInt256.lt a2 n2
-  have h0 : runInstructions canonicalCompare12part0Program {s with pc := UInt256.ofNat 10289, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10295, memory := s.memory, stack := (UInt256.ofNat 10356) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
+  have h0 : runInstructions canonicalCompare12part0Program {s with pc := UInt256.ofNat 10300, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10306, memory := s.memory, stack := (UInt256.ofNat 10367) :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
     simpa only [canonicalCompare12part0Model, v0] using canonicalCompare12part0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   exact h0
 

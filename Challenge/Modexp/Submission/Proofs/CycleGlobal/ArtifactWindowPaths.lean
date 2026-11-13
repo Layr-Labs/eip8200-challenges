@@ -150,29 +150,29 @@ private def fermat_recheck :
     (by decide)
 
 private def fermat_join :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10936 FermatNext.joinProgram where
-  path := [CycleSubmission.Global.Fast.opAt 8417 .JUMPDEST,
-    CycleSubmission.Global.Fast.opAt 8418 (.Dup ⟨1,by decide⟩),
-    CycleSubmission.Global.Fast.opAt 8419 .NOT,
-    CycleSubmission.Global.Fast.opAt 8420 (.Dup ⟨1,by decide⟩),
-    CycleSubmission.Global.Fast.opAt 8421 .ADD,
-    CycleSubmission.Global.Fast.pushAt 8422 2 717,
-    CycleSubmission.Global.Fast.opAt 8423 .JUMPI]
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10889 FermatNext.joinProgram where
+  path := [CycleSubmission.Global.Fast.opAt 8395 .JUMPDEST,
+   CycleSubmission.Global.Fast.opAt 8396 (.Dup ⟨1,by decide⟩),
+   CycleSubmission.Global.Fast.opAt 8397 .NOT,
+   CycleSubmission.Global.Fast.opAt 8398 (.Dup ⟨1,by decide⟩),
+   CycleSubmission.Global.Fast.opAt 8399 .ADD,
+   CycleSubmission.Global.Fast.pushAt 8400 2 717,
+   CycleSubmission.Global.Fast.opAt 8401 .JUMPI]
   instructions_eq := by rfl
   layout := by
-    have hp0 : CycleSubmission.Artifact.artifact.instructionPC 8417 = 10936 := by
+    have hp0 : CycleSubmission.Artifact.artifact.instructionPC 8395 = 10889 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp1 : CycleSubmission.Artifact.artifact.instructionPC 8418 = 10937 := by
+    have hp1 : CycleSubmission.Artifact.artifact.instructionPC 8396 = 10890 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp2 : CycleSubmission.Artifact.artifact.instructionPC 8419 = 10938 := by
+    have hp2 : CycleSubmission.Artifact.artifact.instructionPC 8397 = 10891 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp3 : CycleSubmission.Artifact.artifact.instructionPC 8420 = 10939 := by
+    have hp3 : CycleSubmission.Artifact.artifact.instructionPC 8398 = 10892 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp4 : CycleSubmission.Artifact.artifact.instructionPC 8421 = 10940 := by
+    have hp4 : CycleSubmission.Artifact.artifact.instructionPC 8399 = 10893 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp5 : CycleSubmission.Artifact.artifact.instructionPC 8422 = 10941 := by
+    have hp5 : CycleSubmission.Artifact.artifact.instructionPC 8400 = 10894 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp6 : CycleSubmission.Artifact.artifact.instructionPC 8423 = 10944 := by
+    have hp6 : CycleSubmission.Artifact.artifact.instructionPC 8401 = 10897 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
     simp [Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated.LinearPath,
       Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated.Linear,
@@ -181,14 +181,14 @@ private def fermat_join :
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 private def fermat_toPrime :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10945 FermatNext.toPrimeProgram where
-  path := [CycleSubmission.Global.Fast.pushAt 8424 2 10616,
-    CycleSubmission.Global.Fast.opAt 8425 .JUMP]
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10898 FermatNext.toPrimeProgram where
+  path := [CycleSubmission.Global.Fast.pushAt 8402 2 10626,
+   CycleSubmission.Global.Fast.opAt 8403 .JUMP]
   instructions_eq := by rfl
   layout := by
-    have hp0 : CycleSubmission.Artifact.artifact.instructionPC 8424 = 10945 := by
+    have hp0 : CycleSubmission.Artifact.artifact.instructionPC 8402 = 10898 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-    have hp1 : CycleSubmission.Artifact.artifact.instructionPC 8425 = 10948 := by
+    have hp1 : CycleSubmission.Artifact.artifact.instructionPC 8403 = 10901 := by
       rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
     simp [Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated.LinearPath,
       Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLocated.Linear,
@@ -197,33 +197,33 @@ private def fermat_toPrime :
       Challenge.EvmProof.Word.ofNat_add_mod]
 
 private def fermat_prime :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10616 FermatNext.primeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8233 10 10616 FermatNext.primeProgram
-    (by change 8233 + 10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10626 FermatNext.primeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8206 11 10626 FermatNext.primeProgram
+    (by change 8206 + 11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_jumpTail :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10692 FermatNext.jumpTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8243 2 10692 FermatNext.jumpTailProgram
-    (by change 8243 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10676 FermatNext.jumpTailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8217 2 10676 FermatNext.jumpTailProgram
+    (by change 8217 + 2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_tail :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4755 FermatNext.tailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3652 1 4755 FermatNext.tailProgram
-    (by change 3652 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4627 FermatNext.tailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3612 1 4627 FermatNext.tailProgram
+    (by change 3612 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 private def fermat_result :
-    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4756 FermatProgram.returnProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3653 9 4756 FermatProgram.returnProgram
-    (by change 3653 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 4628 FermatProgram.returnProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 3613 9 4628 FermatProgram.returnProgram
+    (by change 3613 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -275,10 +275,10 @@ def fermatPaths : FermatNext.Paths CycleSubmission.Artifact.artifact .Osaka wher
   genCheck := fermat_genCheck
   genLoad := fermat_genLoad
   routeJump := by exact CycleSubmission.Global.Binding.jumpDest 503 (by rfl)
-  joinJump := CycleSubmission.Global.Binding.jumpDest 8417 (by rfl)
-  tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3652 (by rfl)
+  joinJump := CycleSubmission.Global.Binding.jumpDest 8395 (by rfl)
+  tailJump := by exact CycleSubmission.Global.Binding.jumpDest 3612 (by rfl)
   bigJump := by exact CycleSubmission.Global.Binding.jumpDest 134 (by rfl)
-  primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8233 (by rfl)
+  primeJump := by exact CycleSubmission.Global.Binding.jumpDest 8206 (by rfl)
   genJump := by exact CycleSubmission.Global.Binding.jumpDest 43 (by rfl)
 
 def twentyOnePaths : WindowDispatchCore.Paths CycleSubmission.Artifact.artifact .Osaka where
