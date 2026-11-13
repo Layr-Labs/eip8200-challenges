@@ -1416,12 +1416,11 @@ def setupPathA :
    opAt 459 .MSIZE,
    opAt 460 .MSTORE,
    opAt 461 (.Dup ⟨5,by decide⟩),
-   opAt 462 (.Dup ⟨1,by decide⟩),
+   opAt 462 (.Swap ⟨0,by decide⟩),
    pushAt 463 0 0,
    opAt 464 .CALLDATACOPY,
-   opAt 465 .POP,
-   pushAt 466 2 2338,
-   opAt 467 .JUMP]
+   pushAt 465 2 2338,
+   opAt 466 .JUMP]
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
   { s with pc := UInt256.ofNat 2338
            stack := outerStack input
@@ -1477,10 +1476,9 @@ def program80 : List Instr :=
    .op .MSIZE,
    .op .MSTORE,
    .op (.Dup dA5),
-   .op (.Dup dA1),
+   .op (.Swap sA0),
    .push 0 0,
    .op .CALLDATACOPY,
-   .op .POP,
    .push 2 2338,
    .op .JUMP]
 
@@ -1661,8 +1659,8 @@ theorem run_setup80 (s : State) (input : ByteArray) (m0 : Nat)
 end MsizeSetup
 
 def setupBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 630 MsizeSetup.program80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 443 25 630 MsizeSetup.program80
-    (by change 443 + 25 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block Artifact.wellFormed 443 24 630 MsizeSetup.program80
+    (by change 443 + 24 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

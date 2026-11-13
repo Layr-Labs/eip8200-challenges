@@ -12,9 +12,9 @@ def blkCacheChoose : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Ar
 def blkCacheNormal : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 2055 .JUMPDEST,
    opAt 2056 (.Dup ⟨0,by decide⟩),
-   pushAt 2057 2 2004,
+   pushAt 2057 2 1967,
    opAt 2058 .MUL,
-   pushAt 2059 2 18699,
+   pushAt 2059 2 18403,
    opAt 2060 .SUB,
    opAt 2061 (.Swap ⟨0,by decide⟩),
    opAt 2062 (.Dup ⟨14,by decide⟩),

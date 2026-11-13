@@ -80,9 +80,9 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
   have capFinal : (PersistentLoop.counter last :: saved f).length ≤ 960 := by
     simp only [List.length_cons]; omega
   have unpack := Unpack.gasSteps last inv out n (PersistentLoop.counter last :: saved f) envLast capFinal actLast
-  have lastReset : {last with pc := UInt256.ofNat 7678, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last :: saved f)} = last :=
+  have lastReset : {last with pc := UInt256.ofNat 7526, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last :: saved f)} = last :=
     PersistentSquareLoop.reset_self _ _ _ lastPc lastFrame
-  change GasSteps {last with pc := UInt256.ofNat 7678, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last :: saved f)} (Unpack.result last inv out n (PersistentLoop.counter last :: saved f)) at unpack
+  change GasSteps {last with pc := UInt256.ofNat 7526, stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last :: saved f)} (Unpack.result last inv out n (PersistentLoop.counter last :: saved f)) at unpack
   rw [lastReset] at unpack
   obtain ⟨done, finish, returned, bytes, callsDone⟩ := Finish.product (Unpack.result last inv out n (PersistentLoop.counter last :: saved f))
     inv out (ordinary last.memory 256) n (PersistentLoop.counter last :: saved f) (envLast.transfer rfl rfl)
@@ -90,7 +90,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     lastBound factor.1 nBound N (x^(2^k)) n0 nValue inverse hN hNsize hodd
     (by rw [hfactor]; exact hB) lastForm
   have unpackReset : {Unpack.result last inv out n (PersistentLoop.counter last :: saved f) with
-      pc := UInt256.ofNat 7769
+      pc := UInt256.ofNat 7617
       stack := ProductMeaning.frame0 inv out (ordinary last.memory 256) n (PersistentLoop.counter last :: saved f)} =
       Unpack.result last inv out n (PersistentLoop.counter last :: saved f) := PersistentSquareLoop.reset_self _ _ _ rfl rfl
   rw [unpackReset] at finish
