@@ -51,9 +51,8 @@ theorem run_persistent (s : State) (inv count : UInt256) (a b n : Nat → UInt25
  exact runInstructions_append_some _ _ _ _ _ hp hh
 
 def restoreMaskProgram : List Instr :=
- [.op (.Dup ⟨10,by decide⟩),.push 1 96,.op .MSTORE,
-  .push 2 2720,.op .MLOAD,.op (.Swap ⟨15,by decide⟩),
-  .op (.Swap ⟨14,by decide⟩),.op (.Swap ⟨13,by decide⟩),.op (.Swap ⟨10,by decide⟩),.op .POP]
+ [.push 2 2720,.op .MLOAD,.op (.Swap ⟨15,by decide⟩),
+  .op (.Swap ⟨14,by decide⟩),.op (.Swap ⟨13,by decide⟩),.op (.Swap ⟨10,by decide⟩),.push 3 96,.op .MSTORE]
 
 theorem run_restoreMask (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)

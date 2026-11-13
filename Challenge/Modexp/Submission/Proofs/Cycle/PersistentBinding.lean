@@ -30,8 +30,8 @@ def roundBlock : Block Artifact.artifact .Osaka 5395 PersistentCounter.roundProg
 theorem restore_pc : Artifact.artifact.instructionPC 5802 = 7513 := by
  rw [PCCertificate.selectedPC 5802 (by decide)]; rfl
 def restoreBlock : Block Artifact.artifact .Osaka 7513 CachedInverse.restoreMaskProgram :=
- WindowTwentyOneSlice.block Artifact.wellFormed 5802 10 7513 CachedInverse.restoreMaskProgram
-  (by change 5802+10 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block Artifact.wellFormed 5802 8 7513 CachedInverse.restoreMaskProgram
+  (by change 5802+8 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
   restore_pc (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl) (by decide)
 
 theorem valid_kernel : Decode.isValidJumpDest Artifact.bytecode 5395 = true := by

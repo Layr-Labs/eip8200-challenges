@@ -278,7 +278,7 @@ abbrev zeroJoinState := estimate40
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem rhoPC3034 : CycleSubmission.Artifact.artifact.instructionPC 2980 = 3802 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoPC8318 : CycleSubmission.Artifact.artifact.instructionPC 8275 = 10593 := by
+@[simp] theorem rhoPC8318 : CycleSubmission.Artifact.artifact.instructionPC 8273 = 10593 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem jumpDestZeroJoin8 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2725 = true := by
   have h := CycleSubmission.Global.Binding.jumpDest 2113 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
@@ -356,7 +356,7 @@ theorem run_zeroPrefix8 (z : UInt256) (s : State) (mem : ByteArray)
   trivial
 #print axioms run_zeroPrefix8
 theorem jumpDestZeroJoin4 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10593 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 8275 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have h := CycleSubmission.Global.Binding.jumpDest 8273 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   simpa only [rhoPC8318] using h
 theorem run_zeroPrefix4 (z : UInt256) (s : State) (mem : ByteArray)
     (n bsize esize msize k : Nat) (hn : n = 4)
@@ -436,8 +436,8 @@ theorem jumpDestLoop2684 : Decode.isValidJumpDest CycleSubmission.Artifact.bytec
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
 theorem jumpDestLoop10692 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10535 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 8230 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
-  have hp : CycleSubmission.Artifact.artifact.instructionPC 8230 = 10535 := by
+  have h := CycleSubmission.Global.Binding.jumpDest 8228 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have hp : CycleSubmission.Artifact.artifact.instructionPC 8228 = 10535 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
 theorem jumpDestLoop3711 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3588 = true := by

@@ -43,7 +43,7 @@ open CycleSubmission.Global.ShiftPCs
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[local simp] private theorem compactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8277 = 10595 := by
+@[local simp] private theorem compactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8275 = 10595 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
