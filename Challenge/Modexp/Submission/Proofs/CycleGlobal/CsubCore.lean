@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.PCCertificate
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.Fast.CsubCore
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.CsubFixed
@@ -49,23 +50,23 @@ def csFixedState (s : State) (memory : ByteArray) (n j pc : Nat)
            memory := (csStep memory n j).memory }
 
 @[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 3650 = 4743 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
 @[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 3651 = 4744 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
 @[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 3652 = 4747 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 2840 = 3696 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+@[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 2838 = 3696 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
-@[simp] theorem preparedPC2859 : CycleSubmission.Artifact.artifact.instructionPC 2841 = 3697 := by
-  rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
+@[simp] theorem preparedPC2859 : CycleSubmission.Artifact.artifact.instructionPC 2839 = 3697 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 
 -- the eight-limb entry now falls through the dispatch instead of jumping, so it no longer needs

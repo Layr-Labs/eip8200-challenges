@@ -102,20 +102,20 @@ open CycleSubmission.Global.ShiftPCs
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2003 = 2558 := by
+@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2002 = 2558 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 1997 = 2550 := by
+@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 1996 = 2550 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2001 = 2556 := by
+@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2000 = 2556 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
 /-- A pc inside `blkNbTail`. -/
-@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2019 = 2586 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2018 = 2586 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
@@ -641,6 +641,16 @@ theorem run_negDoneA (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod, List.exchange]
 
+private theorem shift_dodd (d : UInt256) : UInt256.shiftRight d (preK d) = preDodd d := by
+  by_cases hd : d.toNat = 0
+  · have hz : d = UInt256.ofNat 0 := by apply Challenge.EvmProof.Word.word_ext; simpa using hd
+    subst d
+    decide
+  · obtain ⟨v,hv,hL,_,_,_,_,_⟩ := pre_facts d hd
+    apply Challenge.EvmProof.Word.word_ext
+    rw [shiftRight_preK d d v hv hL]
+    simpa only [preDodd] using (Challenge.Modexp.Submission.Proofs.Fast.QHat.toNat_div d (preL d)).symm
+
 private theorem add_one_eq_neg_not115 (x : UInt256) :
     UInt256.ofNat 1 + x = UInt256.ofNat 0 - UInt256.lnot x := by
   apply Challenge.EvmProof.Word.word_ext
@@ -667,8 +677,10 @@ theorem run_negDoneB (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw4 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1632 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
+  have hdodd := shift_dodd (MachineState.readWord mem 0)
+  simp only [preK] at hdodd
   simp (config := { maxSteps := 600000 })
-    [add_one_eq_neg_not115, blk2919b, opAt, pushAt, wfOp,
+    [hdodd, add_one_eq_neg_not115, blk2919b, opAt, pushAt, wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
