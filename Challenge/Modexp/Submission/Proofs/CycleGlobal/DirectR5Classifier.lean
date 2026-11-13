@@ -6,29 +6,25 @@ namespace CycleSubmission.Global.DirectR5Classifier
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 def program : List Instr :=
- [.op .JUMPDEST,.push 0 0,.op .NOT,.op .ADD,.op (.Dup ⟨1,by decide⟩),.push 1 128,.op .XOR,.push 2 3134,.op .JUMPI]
+ [.op .JUMPDEST,.op (.Dup ⟨1,by decide⟩),.push 1 128,.op .XOR,.push 2 3134,.op .JUMPI]
 theorem run4 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256) (hcap : rest.length ≤ 1000) :
- runInstructions program {s with pc := UInt256.ofNat 3194,stack := [UInt256.ofNat count,UInt256.ofNat 128]++rest} =
+ runInstructions program {s with pc := UInt256.ofNat 3197,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} =
  some {s with pc := UInt256.ofNat 3206,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} := by
- have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat count = UInt256.ofNat (count-1) := by
-  interval_cases count <;> decide
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega
  have hx : UInt256.xor (UInt256.ofNat 128) (UInt256.ofNat 128) = UInt256.ofNat 0 := by decide
- simp [program,runInstructions,Stepper.runInstr,hc2,hc3,hc4,Nat.add_assoc,Challenge.Modexp.Submission.Proofs.Fast.Exp.push0_word,hdec,hx,UInt256.isTrue,
+ simp [program,runInstructions,Stepper.runInstr,hc2,hc3,hc4,Nat.add_assoc,Challenge.Modexp.Submission.Proofs.Fast.Exp.push0_word,hx,UInt256.isTrue,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run8 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256) (hcap : rest.length ≤ 1000)
  (hd : Decode.isValidJumpDest s.executionEnv.code 3134 = true) :
- runInstructions program {s with pc := UInt256.ofNat 3194,stack := [UInt256.ofNat count,UInt256.ofNat 256]++rest} =
+ runInstructions program {s with pc := UInt256.ofNat 3197,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} =
  some {s with pc := UInt256.ofNat 3134,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} := by
- have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat count = UInt256.ofNat (count-1) := by
-  interval_cases count <;> decide
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega
  have hx : UInt256.xor (UInt256.ofNat 128) (UInt256.ofNat 256) = UInt256.ofNat 384 := by decide
- simp [program,runInstructions,Stepper.runInstr,hc2,hc3,hc4,Nat.add_assoc,Challenge.Modexp.Submission.Proofs.Fast.Exp.push0_word,hdec,hx,hd,UInt256.isTrue,
+ simp [program,runInstructions,Stepper.runInstr,hc2,hc3,hc4,Nat.add_assoc,Challenge.Modexp.Submission.Proofs.Fast.Exp.push0_word,hx,hd,UInt256.isTrue,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 #print axioms run4
 #print axioms run8

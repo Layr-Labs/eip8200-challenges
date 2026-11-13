@@ -44,8 +44,8 @@ def copyProgram : List Instr :=
    .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
 
 def copyBlock : Block CycleSubmission.Artifact.artifact .Osaka 3676 copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2829 7 3676 copyProgram
-    (by change 2829 + 7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2828 7 3676 copyProgram
+    (by change 2828 + 7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

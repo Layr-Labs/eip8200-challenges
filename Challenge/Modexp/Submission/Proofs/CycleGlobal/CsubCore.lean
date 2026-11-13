@@ -48,23 +48,23 @@ def csFixedState (s : State) (memory : ByteArray) (n j pc : Nat)
            stack := (if j = 0 then [] else [(csStep memory n j).flag]) ++ [pdst, ret] ++ rest
            memory := (csStep memory n j).memory }
 
-@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 3650 = 4743 := by
+@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 3649 = 4743 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 3651 = 4744 := by
+@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 3650 = 4744 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 3652 = 4747 := by
+@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 3651 = 4747 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 2841 = 3696 := by
+@[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 2840 = 3696 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 
-@[simp] theorem preparedPC2859 : CycleSubmission.Artifact.artifact.instructionPC 2842 = 3697 := by
+@[simp] theorem preparedPC2859 : CycleSubmission.Artifact.artifact.instructionPC 2841 = 3697 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 

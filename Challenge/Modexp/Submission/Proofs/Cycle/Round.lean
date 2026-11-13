@@ -30,12 +30,12 @@ theorem reset_middle (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest :
 noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
-    (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < WordArithmetic.radix)
     (hz : (ControlArithmetic.overflowFlag (WordHistory.squared inv a zeroWords n)).toNat = 0) :
     GasSteps {s with pc := UInt256.ofNat 5575, stack := SquareMeaning.frame0 inv a zeroWords n (CounterControl.counter s :: rest)}
       (result s inv a n rest) := by
-  have h1 := SquareStep.gasSteps s inv a n (CounterControl.counter s :: rest) env h (by simp only [List.length_cons]; omega) hact ha hz
+  have h1 := SquareStep.gasSteps s inv a n (CounterControl.counter s :: rest) env h (by simpa using hcache) (by simp only [List.length_cons]; omega) hact ha hz
   have e := env.transfer (SquareStep.executionEnv_eq s inv a n (CounterControl.counter s :: rest)) (SquareStep.halt_eq s inv a n (CounterControl.counter s :: rest))
   have act : 88 ≤ (SquareStep.result s inv a n (CounterControl.counter s :: rest)).activeWords.toNat := by
     rw [SquareStep.active_eq]; exact hact
