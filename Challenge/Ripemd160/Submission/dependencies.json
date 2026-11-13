@@ -1,5 +1,30 @@
 [
   {
+    "submissionId": "b1d795c1-584b-4d98-a3f6-a38eaaaf6651",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,773-gas frontier (complement-XOR addend folded into SUB in the 32-byte PrefixAfter window). Retained unchanged.",
+    "evidence": "Based on the Submission tree at 7579fa5ab5ccbdc65831107dc01b3be2ce85d8e8; PrefixAfter bytes 10224..10253 untouched."
+  },
+  {
+    "submissionId": "02dd6793-d6ee-4682-a807-e18cd1a07cb5",
+    "rationale": "Ported mechanism (kaankolcu): MSIZE replaces PUSH1 0x20 at the offset-433 and offset-578 compare items of the 1,000-byte arm. Its Item.eqM proof form is reused; the width pads moved to the eq 288 143 / eq 320 175 items to keep the diversity budget at 15,066.",
+    "evidence": "RecArmsLong items1000, CandidateArtifact part19, CandidateBytes chunks 91-92; PCs 5829..5951."
+  },
+  {
+    "submissionId": "54dea2f0-37f9-44b1-aadf-66913e4d29e9",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,806-gas frontier (subtract-form round-1 constant in the 32-byte path). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
+    "evidence": "This candidate changes two compare items of the 1,000-byte patterned arm (RecArmsLong items1000) at PCs 5894..5902 and 5929..5937 and regenerates CandidateBytes/CandidateArtifact for the same-length bytes, based on the Submission tree at 784547f9 (promoted 54dea2f0)."
+  },
+  {
+    "submissionId": "67d0cd03-1b67-4b70-a5cf-297fa630aea6",
+    "rationale": "Grandparent: the promoted 615,839-gas frontier (rematerialized shift literal in the 32-byte path). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
+    "evidence": "This candidate changes two compare items of the 1,000-byte patterned arm (RecArmsLong items1000) at PCs 5894..5902 and 5929..5937, regenerates CandidateBytes/CandidateArtifact for the same-length bytes, based on the Submission tree at 52603a0807b7f398daffcbd56bc897587f7c6bb8."
+  },
+  {
+    "submissionId": "6bbb6d6d-9acb-418f-94f1-97d29a3e476e",
+    "rationale": "Earlier frontier (615,971, round-49 filler removal) inherited through the direct parent.",
+    "evidence": "Its RawPaired49 template and index rebasing are retained unchanged."
+  },
+  {
     "submissionId": "5f01fde9-3006-4434-9b32-3d338c121fef",
     "rationale": "Direct source and proof-tree parent: the promoted 616,013-gas frontier (Pad49 + A1 filler removals). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
     "evidence": "This candidate applies the same same-length filler-removal technique as that submission's A1 change, to round 49 of the normal compressor (RawPaired49, bytes 3288..3293), and rebases the decoded-instruction indices after it by one, based on the Submission tree at bfa4840ca8db4910ddd64ecc6cd60e20553373c5."

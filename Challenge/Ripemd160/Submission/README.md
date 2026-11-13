@@ -1,4 +1,31 @@
-# RIPEMD-160: round-49 filler removal in the normal compressor (615,971 gas)
+# RIPEMD-160: MSIZE offsets in the 1,000-byte arm, diversity-neutral pads (615,771 gas)
+
+Port of kaankolcu's `02dd6793` (MSIZE offsets in the 1,000-byte arm) onto the
+615,773-gas frontier `b1d795c1`, whose accept commit dropped it.
+
+Two compare items of the 1,000-byte patterned recognizer read their second
+calldata word at offset 32 with `PUSH1 0x20`. At that point memory holds
+exactly the stored digest word, so `MSIZE` already equals 32 on every path
+into the arm. Each item becomes `PUSH2 o; CALLDATALOAD; MSIZE; CALLDATALOAD;
+XOR; OR` (offsets 433 and 578). The two freed bytes are absorbed by widening
+the second-offset pushes of the earlier items `eq 288 143` and `eq 320 175`
+to `PUSH2 0x008f` / `PUSH2 0x00af` (`Item.eqP`). Those pads sit in the
+64-byte chunk that already contains a zero byte, so the byte-diversity
+budget stays at 15,066 (limit 15,066); the original `PUSH3` pads added a new
+zero byte to chunk 92 and would overflow the budget on top of `b1d795c1`.
+The arm keeps its length; every later PC and instruction index is unchanged.
+1 gas per item, 2 items on the `1000-byte` vector: 615,773 -> **615,771**.
+
+Proof: `RecArmsLong` keeps kaankolcu's `Item.eqM o` (value `eq o 32`, needs
+`s.activeWords = 1`) and adds `Item.eqP o s` (value `eq o s`, second offset
+pushed at width 2). `plan1000_mem` maps plan pairs to `eq`, `eqP` or `eqM`
+items. `WindowCover` is unchanged. Instruction count unchanged.
+
+---
+
+## Inherited description (parents 54dea2f0, 67d0cd03, 6bbb6d6d and earlier)
+
+## Round-49 filler removal in the normal compressor (615,971 gas)
 
 This candidate removes one more fall-through-only `JUMPDEST` from the hot
 normal-compressor path of the promoted 616,013-gas artifact (submission

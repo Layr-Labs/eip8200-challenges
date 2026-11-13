@@ -27,6 +27,8 @@ open PatternedInputData
 inductive Item where
   | eq (o s : Nat)
   | lit (o : Nat) (c : Nat)
+  | eqM (o : Nat)
+  | eqP (o s : Nat)
   deriving DecidableEq
 
 def width (v : Nat) : Nat := if v = 0 then 0 else if v < 256 then 1 else 2
@@ -40,10 +42,14 @@ def W (input : ByteArray) (o : Nat) : UInt256 := MachineState.readWord input o
 def itemVal (input : ByteArray) : Item → UInt256
   | .eq o s => UInt256.xor (W input s) (W input o)
   | .lit o c => UInt256.xor (W input o) (UInt256.ofNat c)
+  | .eqM o => UInt256.xor (W input 32) (W input o)
+  | .eqP o s => UInt256.xor (W input s) (W input o)
 
 def itemTemplate : Item → List Instr
   | .eq o s => [pushNat o, .op .CALLDATALOAD, pushNat s, .op .CALLDATALOAD, .op .XOR, .op .OR]
   | .lit o c => [.push ⟨32, by decide⟩ (UInt256.ofNat c), pushNat o, .op .CALLDATALOAD, .op .XOR, .op .OR]
+  | .eqM o => [pushNat o, .op .CALLDATALOAD, .op .MSIZE, .op .CALLDATALOAD, .op .XOR, .op .OR]
+  | .eqP o s => [pushNat o, .op .CALLDATALOAD, .push ⟨2, by decide⟩ (UInt256.ofNat s), .op .CALLDATALOAD, .op .XOR, .op .OR]
 
 def accVal (input : ByteArray) (a : UInt256) : List Item → UInt256
   | [] => a
@@ -68,8 +74,8 @@ theorem accVal_zero (input : ByteArray) (a : UInt256) (xs : List Item) :
     · exact h2 j hj
 
 theorem run_item (s : State) (pc : UInt256) (x : Item) (a : UInt256) (rho : List UInt256)
-    (hit : match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256)
-    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    (hit : match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256 | .eqM o => o < 1024 | .eqP o t => o < 1024 ∧ t < 1024)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) (ha : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq (itemTemplate x) {s with pc := pc, stack := a :: rho} =
       some {s with pc := pcAfter pc (itemTemplate x), stack := UInt256.lor (itemVal s.executionEnv.calldata x) a :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
@@ -100,20 +106,46 @@ theorem run_item (s : State) (pc : UInt256) (x : Item) (a : UInt256) (rho : List
           UInt256.succ, Instr.size, Nat.add_assoc, hoN, Word.literal_eq_ofNat,
           List.getElem?_cons_zero, List.exchange]
          repeat first | apply And.intro | rfl)
+  | eqM o =>
+    have ho : o < 1024 := hit
+    have hoN : (UInt256.ofNat o).toNat = o := by
+      rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    by_cases h0 : o = 0 <;> by_cases h1 : o < 256
+    all_goals first
+      | (exfalso; omega)
+      | (simp (discharger := omega) [itemTemplate, pushNat, width, h0, h1, itemVal, W,
+          runInstrSeq, DataStepper.runInstr, pcAfter, hrun, show rho.length < 1024 by omega, hcap,
+          UInt256.succ, Instr.size, Nat.add_assoc, hoN, Word.literal_eq_ofNat,
+          List.getElem?_cons_zero, List.exchange, MachineState.msize, ha]
+         repeat first | apply And.intro | rfl)
+  | eqP o t =>
+    obtain ⟨ho, ht⟩ := hit
+    have hoN : (UInt256.ofNat o).toNat = o := by
+      rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    have htN : (UInt256.ofNat t).toNat = t := by
+      rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    by_cases h0 : o = 0 <;> by_cases h1 : o < 256
+    all_goals first
+      | (exfalso; omega)
+      | (simp (discharger := omega) [itemTemplate, pushNat, width, h0, h1, itemVal, W,
+          runInstrSeq, DataStepper.runInstr, pcAfter, hrun, show rho.length < 1024 by omega, hcap,
+          UInt256.succ, Instr.size, Nat.add_assoc, hoN, htN, Word.literal_eq_ofNat,
+          List.getElem?_cons_zero, List.exchange]
+         repeat first | apply And.intro | rfl)
 
 def ItemsOk : List Item → Prop
   | [] => True
-  | x :: rest => (match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256) ∧ ItemsOk rest
+  | x :: rest => (match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256 | .eqM o => o < 1024 | .eqP o t => o < 1024 ∧ t < 1024) ∧ ItemsOk rest
 
 theorem run_items (s : State) (pc : UInt256) (xs : List Item) (hok : ItemsOk xs)
     (a : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) (ha : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq (itemsTemplate xs) {s with pc := pc, stack := a :: rho} =
       some {s with pc := pcAfter pc (itemsTemplate xs), stack := accVal s.executionEnv.calldata a xs :: rho} := by
   induction xs generalizing pc a with
   | nil => simp [itemsTemplate, accVal, runInstrSeq, pcAfter]
   | cons x rest ih =>
-    have h1 := run_item s pc x a rho hok.1 hs hrun
+    have h1 := run_item s pc x a rho hok.1 hs hrun ha
     have h2 := ih (pc := pcAfter pc (itemTemplate x)) (a := UInt256.lor (itemVal s.executionEnv.calldata x) a) (hok := hok.2)
     have hall := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
     simpa only [itemsTemplate, accVal, DenseScheduleTrace.pcAfter_append] using hall
@@ -121,7 +153,9 @@ theorem run_items (s : State) (pc : UInt256) (xs : List Item) (hok : ItemsOk xs)
 
 theorem itemsOk_of_check (xs : List Item) (h : xs.all (fun x => match x with
     | .eq o t => decide (o < 1024) && decide (t < 1024)
-    | .lit o c => decide (o < 1024) && decide (c < 2^256)) = true) : ItemsOk xs := by
+    | .lit o c => decide (o < 1024) && decide (c < 2^256)
+    | .eqM o => decide (o < 1024)
+    | .eqP o t => decide (o < 1024) && decide (t < 1024)) = true) : ItemsOk xs := by
   induction xs with
   | nil => trivial
   | cons x rest ih =>
@@ -134,8 +168,8 @@ theorem itemsOk_of_check (xs : List Item) (h : xs.all (fun x => match x with
 def items376 : List Item := [.eq 288 143, .eq 320 175, .eq 344 199]
 
 def items1000 : List Item :=
-  [.eq 256 111, .eq 288 143, .eq 320 175, .eq 352 207, .eq 433 32, .eq 465 64, .eq 502 212,
-   .eq 546 0, .eq 578 32, .eq 610 64, .eq 642 96, .eq 674 128, .eq 706 160, .eq 753 62,
+  [.eq 256 111, .eqP 288 143, .eqP 320 175, .eq 352 207, .eqM 433, .eq 465 64, .eq 502 212,
+   .eq 546 0, .eqM 578, .eq 610 64, .eq 642 96, .eq 674 128, .eq 706 160, .eq 753 62,
    .eq 785 94, .eq 817 126, .eq 849 158, .eq 881 190, .eq 947 0, .eq 910 219, .eq 968 21,
    .eq 721 175, .eq 364 219, .eq 509 219, .eq 470 69,
    .lit 369 46836809398124041301509275424151671459047373308733951134252891636751576645090,
@@ -222,6 +256,7 @@ def gasSteps_a376_entry (input : ByteArray) :
   have h3 := run_items (prepared input 376)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5766)) head376) items376
     (itemsOk_of_check _ (by decide)) (itemVal input (.eq 256 111)) [] (by simp) rfl
+    (prepared_activeWords input 376)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 376)
     (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5766)) head376) (itemsTemplate items376))
@@ -244,6 +279,7 @@ def gasSteps_a1000_entry (input : ByteArray) :
   have h3 := run_items (prepared input 1000)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5829)) head1000) items1000
     (itemsOk_of_check _ (by decide)) (itemVal input (.eq 0 401)) [] (by simp) rfl
+    (prepared_activeWords input 1000)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 1000)
     (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5829)) head1000) (itemsTemplate items1000))
@@ -286,7 +322,9 @@ theorem result376 (input : ByteArray) (hsize : input.size = 376)
     all_goals exact item_eq input _ _ (hi _ (by decide))
   · simp
 
-theorem plan1000_mem : ∀ p ∈ WindowCover.plan1000, p = (401, 0) ∨ Item.eq p.1 p.2 ∈ items1000 := by
+theorem plan1000_mem : ∀ p ∈ WindowCover.plan1000,
+    p = (401, 0) ∨ Item.eq p.1 p.2 ∈ items1000 ∨ Item.eqP p.1 p.2 ∈ items1000 ∨
+      (p.2 = 32 ∧ Item.eqM p.1 ∈ items1000) := by
   decide
 
 theorem result1000 (input : ByteArray) (hsize : input.size = 1000)
@@ -296,9 +334,13 @@ theorem result1000 (input : ByteArray) (hsize : input.size = 1000)
   apply WindowCover.eq_reference input 1000 WindowCover.plan1000 WindowCover.anchors1000
     WindowCover.cover1000 hsize h0
   · intro p hp
-    rcases plan1000_mem p hp with rfl | hm
+    rcases plan1000_mem p hp with rfl | hm | hm | ⟨h32, hm⟩
     · exact (item_eq input _ _ hh).symm
     · exact item_eq input _ _ (hi _ hm)
+    · exact item_eq input p.1 p.2 (hi (.eqP p.1 p.2) hm)
+    · have hz : itemVal input (.eqM p.1) = 0 := hi (.eqM p.1) hm
+      rw [h32]
+      exact item_eq input p.1 32 hz
   · intro a ha'
     simp only [WindowCover.anchors1000, List.mem_cons, List.not_mem_nil, or_false] at ha'
     subst ha'
