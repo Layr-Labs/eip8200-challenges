@@ -29,6 +29,7 @@ inductive Item where
   | lit (o : Nat) (c : Nat)
   | eqM (o : Nat)
   | eqP (o s : Nat)
+  | skip
   deriving DecidableEq
 
 def width (v : Nat) : Nat := if v = 0 then 0 else if v < 256 then 1 else 2
@@ -44,12 +45,19 @@ def itemVal (input : ByteArray) : Item → UInt256
   | .lit o c => UInt256.xor (W input o) (UInt256.ofNat c)
   | .eqM o => UInt256.xor (W input 32) (W input o)
   | .eqP o s => UInt256.xor (W input s) (W input o)
+  | .skip => 0
+
+theorem lor_zero_left (a : UInt256) : UInt256.lor 0 a = a := by
+  have hzeroNat : (0 : UInt256).toNat = 0 := by decide
+  apply Word.word_ext
+  rw [Word.word_toNat_lor, hzeroNat, Nat.zero_or]
 
 def itemTemplate : Item → List Instr
   | .eq o s => [pushNat o, .op .CALLDATALOAD, pushNat s, .op .CALLDATALOAD, .op .XOR, .op .OR]
   | .lit o c => [.push ⟨32, by decide⟩ (UInt256.ofNat c), pushNat o, .op .CALLDATALOAD, .op .XOR, .op .OR]
   | .eqM o => [pushNat o, .op .CALLDATALOAD, .op .MSIZE, .op .CALLDATALOAD, .op .XOR, .op .OR]
   | .eqP o s => [pushNat o, .op .CALLDATALOAD, .push ⟨2, by decide⟩ (UInt256.ofNat s), .op .CALLDATALOAD, .op .XOR, .op .OR]
+  | .skip => [.op .JUMPDEST]
 
 def accVal (input : ByteArray) (a : UInt256) : List Item → UInt256
   | [] => a
@@ -74,7 +82,7 @@ theorem accVal_zero (input : ByteArray) (a : UInt256) (xs : List Item) :
     · exact h2 j hj
 
 theorem run_item (s : State) (pc : UInt256) (x : Item) (a : UInt256) (rho : List UInt256)
-    (hit : match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256 | .eqM o => o < 1024 | .eqP o t => o < 1024 ∧ t < 1024)
+    (hit : match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256 | .eqM o => o < 1024 | .eqP o t => o < 1024 ∧ t < 1024 | .skip => True)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) (ha : s.activeWords = UInt256.ofNat 1) :
     runInstrSeq (itemTemplate x) {s with pc := pc, stack := a :: rho} =
       some {s with pc := pcAfter pc (itemTemplate x), stack := UInt256.lor (itemVal s.executionEnv.calldata x) a :: rho} := by
@@ -132,10 +140,16 @@ theorem run_item (s : State) (pc : UInt256) (x : Item) (a : UInt256) (rho : List
           UInt256.succ, Instr.size, Nat.add_assoc, hoN, htN, Word.literal_eq_ofNat,
           List.getElem?_cons_zero, List.exchange]
          repeat first | apply And.intro | rfl)
+  | skip =>
+    simp (discharger := omega) [itemTemplate, itemVal, lor_zero_left,
+      runInstrSeq, DataStepper.runInstr, pcAfter, hrun, show rho.length < 1024 by omega, hcap,
+      UInt256.succ, Instr.size, Nat.add_assoc, Word.literal_eq_ofNat,
+      List.getElem?_cons_zero, List.exchange]
+    repeat first | apply And.intro | rfl
 
 def ItemsOk : List Item → Prop
   | [] => True
-  | x :: rest => (match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256 | .eqM o => o < 1024 | .eqP o t => o < 1024 ∧ t < 1024) ∧ ItemsOk rest
+  | x :: rest => (match x with | .eq o t => o < 1024 ∧ t < 1024 | .lit o c => o < 1024 ∧ c < 2^256 | .eqM o => o < 1024 | .eqP o t => o < 1024 ∧ t < 1024 | .skip => True) ∧ ItemsOk rest
 
 theorem run_items (s : State) (pc : UInt256) (xs : List Item) (hok : ItemsOk xs)
     (a : UInt256) (rho : List UInt256)
@@ -155,13 +169,19 @@ theorem itemsOk_of_check (xs : List Item) (h : xs.all (fun x => match x with
     | .eq o t => decide (o < 1024) && decide (t < 1024)
     | .lit o c => decide (o < 1024) && decide (c < 2^256)
     | .eqM o => decide (o < 1024)
-    | .eqP o t => decide (o < 1024) && decide (t < 1024)) = true) : ItemsOk xs := by
+    | .eqP o t => decide (o < 1024) && decide (t < 1024)
+    | .skip => true) = true) : ItemsOk xs := by
   induction xs with
   | nil => trivial
   | cons x rest ih =>
     simp only [List.all_cons, Bool.and_eq_true] at h
     refine ⟨?_, ih h.2⟩
-    cases x <;> simpa using h.1
+    cases x
+    · simpa using h.1
+    · simpa using h.1
+    · simpa using h.1
+    · simpa using h.1
+    · exact True.intro
 
 /-! ## Concrete arms -/
 
@@ -170,8 +190,9 @@ def items376 : List Item := [.eq 288 143, .eq 320 175, .eq 344 199]
 def items1000 : List Item :=
   [.eq 256 111, .eqP 288 143, .eqP 320 175, .eq 352 207, .eqM 433, .eq 465 64, .eq 502 212,
    .eq 546 0, .eqM 578, .eq 610 64, .eq 642 96, .eq 674 128, .eq 706 160, .eq 753 62,
-   .eq 785 94, .eq 817 126, .eq 849 158, .eq 881 190, .eq 947 0, .eq 910 219, .eq 968 21,
-   .eq 721 175, .eq 364 219, .eq 509 219, .eq 470 69,
+   .eq 785 94, .eq 817 126, .eq 849 158, .eq 881 190, .eqP 947 0, .eqP 910 219, .eqP 968 21,
+   .eqP 721 175, .skip, .skip, .skip, .skip, .skip, .skip, .skip, .skip, .skip, .skip, .skip, .skip,
+   .eqP 470 69,
    .lit 369 46836809398124041301509275424151671459047373308733951134252891636751576645090,
    .eq 514 369, .eq 915 369]
 

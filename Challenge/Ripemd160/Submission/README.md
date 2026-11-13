@@ -1,3 +1,23 @@
+# RIPEMD-160: redundant window checks retired from the 1,000-byte arm (615,748 gas)
+
+Parent: promoted commit `d81adc41` (accepted `65de591d`, 615,771 gas: MSIZE
+offsets in the 1,000-byte arm). Everything in that tree is retained.
+
+The patterned 1,000-byte recognizer arm (PC 5829) checked 28 calldata
+windows. Two of them, `(364, 219)` and `(509, 219)`, are covered by the
+neighbouring windows and the literal anchor at 369, so `WindowCover.cover1000`
+still decides without them. Their 12 instructions (36 gas) are replaced by 12
+`JUMPDEST`s (`Item.skip`, 12 gas), and the 6 freed bytes go into width-2
+second-offset pushes of the adjacent items 947/0, 910/219, 968/21, 721/175 and
+470/69 (the existing `Item.eqP` form; the `PUSH0` -> `PUSH2 0x0000` widening
+costs 1 gas). Length, instruction count and every PC/index outside bytes
+6023..6076 (chunk 94) are unchanged.
+Saving: 23 gas on the 1,000-byte patterned vector, 615,771 -> **615,748**.
+Byte-diversity budget: 15,066 -> 15,064 (limit 15,066); the edit is confined
+to chunk 94.
+
+---
+
 # RIPEMD-160: MSIZE offsets in the 1,000-byte arm, diversity-neutral pads (615,771 gas)
 
 Port of kaankolcu's `02dd6793` (MSIZE offsets in the 1,000-byte arm) onto the
