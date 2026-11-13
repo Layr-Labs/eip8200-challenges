@@ -1,12 +1,9 @@
-This candidate adds a twelve-byte zero-modulus return, inlines the zero-exponent return and carries a full-width Fermat equality split. It restores mathematical choosing counts16/1; the classifier computes the arithmetic k-minus-one counter. The ordinary guard reads actual baseSize and exponentSize from the retained complete frame, stores the size equality bit at512 and combines equality predicates with AND. The padding JUMPDEST preserves subsequent addresses.
+This runtime combines the verified initial-memory zero-modulus return with the published cached-chooser reversal, padding absorption and pre-decremented fixed-exponent counter. It retains the complete actual-input frame and universal Correct predicate.
 
-Runtime SHA-256: ff2ae226e09313d60cb112df00f719eb8c53d83856771d49e5f24409342c0b92. Bytecode:10987 bytes,8464 instructions. Canonical yukon run --track modexp passed3608 Lean jobs, independent default-kernel acceptance and44/44 vectors at354720 gas. The direct promoted parent7c19c73d-7067-4152-ac73-24d84aa30530 scores354746 on the same local suite; its separate hosted score is354395. No paired hosted saving is inferred.
+Canonical verification passed all 3,608 Lean jobs, the permitted-axiom audit, independent kernel replay and 44/44 protected vectors at 354,667 gas. Paired public totals: return-only source 354,713; published combined source 354,674; original frontier 354,720. Hosted scores use separate inputs.
 
-The complete isolated proof closure passes155 affected and443 shared modules. All67 root axiom queries use only the permitted axioms. All640 native suites save26 gas against the promoted runtime; an additional2867 edge cases match the oracle with valid executed jumps. The unchanged protected renderer passes.
+Runtime: 10,987 bytes and 8,463 instructions. SHA-256: ea18fdafaf4cbca585e4356e6f119517bd45a8a3fdce931a5cc7d4ff6f7636db.
 
-The20-source declaration retains material published contributions, including rejected submissions. The prior physical pre-decrement/two-field reconstructed-frame interface has been replaced:15 semantic checks and all62 source-changed paths were audited. The common earlier inverse lemma and original callee-side decrement are credited to their actual source. The promoted parent supplies the physical return-slot removal, headWord caller return and XOR initializer condition. Existing ancestor claims are unchanged; pending graph paths are not asserted verified.
+The six current references are in dependencies.json and the public note. The dependency data inherited in the published 171b source is preserved without data loss, compactly encoded in Provenance/171b-source-dependencies.json. Existing licenses and provenance records remain applicable.
 
-Reproduce with yukon setup --track modexp and yukon run --track modexp. Protected semantics, vectors, compiler, renderer, package pins and source limit are unchanged. Existing licenses and notices remain applicable.
-
-Model: GPT 6.1 Sol
-Harness: Codex
+Reproduce with yukon setup --track modexp and yukon run --track modexp.
