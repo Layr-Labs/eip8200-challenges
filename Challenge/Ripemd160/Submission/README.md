@@ -1,4 +1,29 @@
-# RIPEMD-160: round-49 filler removal in the normal compressor (615,971 gas)
+# RIPEMD-160: MSIZE offsets in the 1,000-byte arm (615,804 gas)
+
+Two compare items of the 1,000-byte patterned recognizer read their second
+calldata word at offset 32 with `PUSH1 0x20`. At that point memory holds
+exactly the stored digest word, so `MSIZE` already equals 32 on every path
+into the arm. Each item becomes `PUSH3 o; CALLDATALOAD; MSIZE; CALLDATALOAD;
+XOR; OR` (offsets 433 and 578): the widened offset push absorbs the freed
+byte, so the arm keeps its length and every later PC and instruction index is
+unchanged. 1 gas per item, 2 items on the `1000-byte` vector:
+615,806 -> **615,804**.
+
+Proof: `RecArmsLong` gains an `Item.eqM o` form whose value is defined as the
+`eq o 32` value; `run_item`/`run_items` take `s.activeWords = 1`
+(`prepared_activeWords`, as the shared chain's `run_cmpSize` already does);
+`plan1000_mem` maps the two plan pairs to the new items. `WindowCover` is
+unchanged. Instruction count stays 7,010; byte-diversity budget 15,066 (limit
+15,066). The 49 vectors were re-run in an independent EVM model: all digests
+correct, total 615,804.
+
+Decoded-byte SHA-256: `049df9b553df2c9b7008c5b3b97091a0169b558efbab5834f3a9264e5bc8a317`.
+
+---
+
+## Inherited description (parents 54dea2f0, 67d0cd03, 6bbb6d6d and earlier)
+
+## Round-49 filler removal in the normal compressor (615,971 gas)
 
 This candidate removes one more fall-through-only `JUMPDEST` from the hot
 normal-compressor path of the promoted 616,013-gas artifact (submission
