@@ -25,29 +25,29 @@ open CycleSubmission.Global.UnrollPCs
 /-- The jump into the block. -/
 def gasSteps_bitEntry_sym (s : State) (rest : List UInt256)
     (zero byte offset outerW acc base m : UInt256)
-    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3973 = true) :
+    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3854 = true) :
     GasSteps (stW s 203 ([zero, byte, offset, outerW, acc, base, m] ++ rest))
-      (stW s 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest)) := by
-  have step485 := soundW hs (pushAt 132 2 3973)
+      (stW s 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest)) := by
+  have step485 := soundW hs (pushAt 132 2 3854)
     (blockOfW _ (pcFactW s 132 203 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc485)
-      (stepW_push s 203 2 (3973 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+      (stepW_push s 203 2 (3854 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
   have step486 := soundW hs (opAt 133 .JUMP)
-    (blockOfW _ (pcFactW s 133 206 ([(3973 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc486)
-      (stepW_jump s 206 3973 ((3973 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest))
+    (blockOfW _ (pcFactW s 133 206 ([(3854 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc486)
+      (stepW_jump s 206 3854 ((3854 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest))
   exact step485.trans step486
 
 /-- The block is straight-line, so its cost is the sum of its opcodes. -/
 theorem gasSteps_bitEntry_sym_cost (s : State) (rest : List UInt256)
     (zero byte offset outerW acc base m : UInt256)
-    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3973 = true) :
+    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3854 = true) :
     (gasSteps_bitEntry_sym s rest zero byte offset outerW acc base m hs hrest hdest).cost = 11 := by
   unfold gasSteps_bitEntry_sym
-  have c485 := blockCostW [pushAt 132 2 3973] 3
+  have c485 := blockCostW [pushAt 132 2 3854] 3
     (blockOfW _ (pcFactW s 132 203 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc485)
-      (stepW_push s 203 2 (3973 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+      (stepW_push s 203 2 (3854 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
   have c486 := blockCostW [opAt 133 .JUMP] 8
-    (blockOfW _ (pcFactW s 133 206 ([(3973 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc486)
-      (stepW_jump s 206 3973 ((3973 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest)) hs.fork (by decide) (by rfl) (by rfl)
+    (blockOfW _ (pcFactW s 133 206 ([(3854 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc486)
+      (stepW_jump s 206 3854 ((3854 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest)) hs.fork (by decide) (by rfl) (by rfl)
   simp only [soundW, Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, Nat.reduceAdd]
   omega
@@ -56,20 +56,20 @@ theorem gasSteps_bitEntry_sym_cost (s : State) (rest : List UInt256)
 def gasSteps_bitBodyHead_sym (s : State) (rest : List UInt256)
     (zero byte offset outerW acc base m : UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
-    GasSteps (stW s 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest))
-      (stW s 3978 ([(base - (1 : UInt256)), zero, byte, offset, outerW, acc, base, m] ++ rest)) := by
-  have step2361 := soundW hs (opAt 3051 .JUMPDEST)
-    (blockOfW _ (pcFactW s 3051 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2414)
-      (stepW_jumpdest s 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2362 := soundW hs (pushAt 3052 1 1)
-    (blockOfW _ (pcFactW s 3052 3974 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2415)
-      (stepW_push s 3974 1 (1 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2363 := soundW hs (opAt 3053 (.Dup ⟨6,by decide⟩))
-    (blockOfW _ (pcFactW s 3053 3976 ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2416)
-      (stepW_dup s 3976 6 (by decide) ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (base) (by rfl) (by simp; omega) (by norm_num)))
-  have step2364 := soundW hs (opAt 3054 .SUB)
-    (blockOfW _ (pcFactW s 3054 3977 ([base, (1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2417)
-      (stepW_sub s 3977 (base) ((1 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+    GasSteps (stW s 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest))
+      (stW s 3859 ([(base - (1 : UInt256)), zero, byte, offset, outerW, acc, base, m] ++ rest)) := by
+  have step2361 := soundW hs (opAt 3020 .JUMPDEST)
+    (blockOfW _ (pcFactW s 3020 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2414)
+      (stepW_jumpdest s 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step2362 := soundW hs (pushAt 3021 1 1)
+    (blockOfW _ (pcFactW s 3021 3855 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2415)
+      (stepW_push s 3855 1 (1 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+  have step2363 := soundW hs (opAt 3022 (.Dup ⟨6,by decide⟩))
+    (blockOfW _ (pcFactW s 3022 3857 ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2416)
+      (stepW_dup s 3857 6 (by decide) ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (base) (by rfl) (by simp; omega) (by norm_num)))
+  have step2364 := soundW hs (opAt 3023 .SUB)
+    (blockOfW _ (pcFactW s 3023 3858 ([base, (1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2417)
+      (stepW_sub s 3858 (base) ((1 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
   exact step2361.trans (step2362.trans (step2363.trans (step2364)))
 
 /-- The block is straight-line, so its cost is the sum of its opcodes. -/
@@ -78,18 +78,18 @@ theorem gasSteps_bitBodyHead_sym_cost (s : State) (rest : List UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
     (gasSteps_bitBodyHead_sym s rest zero byte offset outerW acc base m hs hrest).cost = 10 := by
   unfold gasSteps_bitBodyHead_sym
-  have c2361 := blockCostW [opAt 3051 .JUMPDEST] 1
-    (blockOfW _ (pcFactW s 3051 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2414)
-      (stepW_jumpdest s 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2362 := blockCostW [pushAt 3052 1 1] 3
-    (blockOfW _ (pcFactW s 3052 3974 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2415)
-      (stepW_push s 3974 1 (1 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2363 := blockCostW [opAt 3053 (.Dup ⟨6,by decide⟩)] 3
-    (blockOfW _ (pcFactW s 3053 3976 ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2416)
-      (stepW_dup s 3976 6 (by decide) ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (base) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2364 := blockCostW [opAt 3054 .SUB] 3
-    (blockOfW _ (pcFactW s 3054 3977 ([base, (1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2417)
-      (stepW_sub s 3977 (base) ((1 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2361 := blockCostW [opAt 3020 .JUMPDEST] 1
+    (blockOfW _ (pcFactW s 3020 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2414)
+      (stepW_jumpdest s 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2362 := blockCostW [pushAt 3021 1 1] 3
+    (blockOfW _ (pcFactW s 3021 3855 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2415)
+      (stepW_push s 3855 1 (1 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2363 := blockCostW [opAt 3022 (.Dup ⟨6,by decide⟩)] 3
+    (blockOfW _ (pcFactW s 3022 3857 ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2416)
+      (stepW_dup s 3857 6 (by decide) ([(1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (base) (by rfl) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2364 := blockCostW [opAt 3023 .SUB] 3
+    (blockOfW _ (pcFactW s 3023 3858 ([base, (1 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2417)
+      (stepW_sub s 3858 (base) ((1 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
   simp only [soundW, Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, Nat.reduceAdd]
   omega
@@ -98,8 +98,8 @@ theorem gasSteps_bitBodyHead_sym_cost (s : State) (rest : List UInt256)
 def gasSteps_bitHead_sym (s : State) (rest : List UInt256)
     (zero byte offset outerW acc base m : UInt256)
     (hs : Frame s) (hrest : rest.length < 1000) :
-    GasSteps (stW s 3973 ([zero, byte, offset, outerW, acc, base, m] ++ rest))
-      (stW s 3978 ([(base - (1 : UInt256)), zero, byte, offset, outerW, acc, base, m] ++ rest)) :=
+    GasSteps (stW s 3854 ([zero, byte, offset, outerW, acc, base, m] ++ rest))
+      (stW s 3859 ([(base - (1 : UInt256)), zero, byte, offset, outerW, acc, base, m] ++ rest)) :=
   gasSteps_bitBodyHead_sym s rest zero byte offset outerW acc base m hs hrest
 
 theorem gasSteps_bitHead_sym_cost (s : State) (rest : List UInt256)
@@ -111,35 +111,35 @@ theorem gasSteps_bitHead_sym_cost (s : State) (rest : List UInt256)
 /-- The tail, with every stack slot symbolic. -/
 def gasSteps_bitExit_sym (s : State) (rest : List UInt256)
     (Bm1 zero byte offset outerW acc base m : UInt256)
-    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3947 = true) :
-    GasSteps (stW s 4013 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest))
-      (stW s 3947 ([zero, byte, offset, outerW, acc, base, m] ++ rest)) := by
-  have step2501 := soundW hs (opAt 3083 .POP)
-    (blockOfW _ (pcFactW s 3083 4013 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2554)
-      (stepW_pop s 4013 (Bm1) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
-  have step2502 := soundW hs (pushAt 3084 2 3947)
-    (blockOfW _ (pcFactW s 3084 4014 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2555)
-      (stepW_push s 4014 2 (3947 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
-  have step2503 := soundW hs (opAt 3085 .JUMP)
-    (blockOfW _ (pcFactW s 3085 4017 ([(3947 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2556)
-      (stepW_jump s 4017 3947 ((3947 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest))
+    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3828 = true) :
+    GasSteps (stW s 3894 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest))
+      (stW s 3828 ([zero, byte, offset, outerW, acc, base, m] ++ rest)) := by
+  have step2501 := soundW hs (opAt 3052 .POP)
+    (blockOfW _ (pcFactW s 3052 3894 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2554)
+      (stepW_pop s 3894 (Bm1) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num)))
+  have step2502 := soundW hs (pushAt 3053 2 3828)
+    (blockOfW _ (pcFactW s 3053 3895 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2555)
+      (stepW_push s 3895 2 (3828 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num)))
+  have step2503 := soundW hs (opAt 3054 .JUMP)
+    (blockOfW _ (pcFactW s 3054 3898 ([(3828 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2556)
+      (stepW_jump s 3898 3828 ((3828 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest))
   exact step2501.trans (step2502.trans (step2503))
 
 /-- The block is straight-line, so its cost is the sum of its opcodes. -/
 theorem gasSteps_bitExit_sym_cost (s : State) (rest : List UInt256)
     (Bm1 zero byte offset outerW acc base m : UInt256)
-    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3947 = true) :
+    (hs : Frame s) (hrest : rest.length < 1000) (hdest : Decode.isValidJumpDest s.executionEnv.code 3828 = true) :
     (gasSteps_bitExit_sym s rest Bm1 zero byte offset outerW acc base m hs hrest hdest).cost = 13 := by
   unfold gasSteps_bitExit_sym
-  have c2501 := blockCostW [opAt 3083 .POP] 2
-    (blockOfW _ (pcFactW s 3083 4013 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2554)
-      (stepW_pop s 4013 (Bm1) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2502 := blockCostW [pushAt 3084 2 3947] 3
-    (blockOfW _ (pcFactW s 3084 4014 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2555)
-      (stepW_push s 4014 2 (3947 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
-  have c2503 := blockCostW [opAt 3085 .JUMP] 8
-    (blockOfW _ (pcFactW s 3085 4017 ([(3947 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2556)
-      (stepW_jump s 4017 3947 ((3947 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest)) hs.fork (by decide) (by rfl) (by rfl)
+  have c2501 := blockCostW [opAt 3052 .POP] 2
+    (blockOfW _ (pcFactW s 3052 3894 ([Bm1, zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2554)
+      (stepW_pop s 3894 (Bm1) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2502 := blockCostW [pushAt 3053 2 3828] 3
+    (blockOfW _ (pcFactW s 3053 3895 ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2555)
+      (stepW_push s 3895 2 (3828 : UInt256) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by decide) (by decide) (by norm_num))) hs.fork (by decide) (by rfl) (by rfl)
+  have c2503 := blockCostW [opAt 3054 .JUMP] 8
+    (blockOfW _ (pcFactW s 3054 3898 ([(3828 : UInt256), zero, byte, offset, outerW, acc, base, m] ++ rest) (by norm_num) pc2556)
+      (stepW_jump s 3898 3828 ((3828 : UInt256)) ([zero, byte, offset, outerW, acc, base, m] ++ rest) (by simp; omega) (by norm_num) rfl hdest)) hs.fork (by decide) (by rfl) (by rfl)
   simp only [soundW, Challenge.EvmProof.GasSteps.trans_cost,
     Challenge.EvmProof.Stepper.runLocatedBlock_sound_cost, Nat.reduceAdd]
   omega

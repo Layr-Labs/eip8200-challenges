@@ -48,45 +48,45 @@ def program : List Instr :=
 def memory0 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := mem
 def state0 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := s
 def memory1 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory0 mem inv a b n) (cells0 inv a b n)
-def state1 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7886, memory := memory1 s.memory inv a b n, stack := frame1 inv a b n rest}
+def state1 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7948, memory := memory1 s.memory inv a b n, stack := frame1 inv a b n rest}
 def memory2 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory1 mem inv a b n) (cells1 inv a b n)
-def state2 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8012, memory := memory2 s.memory inv a b n, stack := frame2 inv a b n rest}
+def state2 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8074, memory := memory2 s.memory inv a b n, stack := frame2 inv a b n rest}
 def memory3 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory2 mem inv a b n) (cells2 inv a b n)
-def state3 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8138, memory := memory3 s.memory inv a b n, stack := frame3 inv a b n rest}
+def state3 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8200, memory := memory3 s.memory inv a b n, stack := frame3 inv a b n rest}
 def memory4 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory3 mem inv a b n) (cells3 inv a b n)
-def state4 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8264, memory := memory4 s.memory inv a b n, stack := frame4 inv a b n rest}
+def state4 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8326, memory := memory4 s.memory inv a b n, stack := frame4 inv a b n rest}
 def memory5 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory4 mem inv a b n) (cells4 inv a b n)
-def state5 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8391, memory := memory5 s.memory inv a b n, stack := frame5 inv a b n rest}
+def state5 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8453, memory := memory5 s.memory inv a b n, stack := frame5 inv a b n rest}
 def memory6 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory5 mem inv a b n) (cells5 inv a b n)
-def state6 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8518, memory := memory6 s.memory inv a b n, stack := frame6 inv a b n rest}
+def state6 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8580, memory := memory6 s.memory inv a b n, stack := frame6 inv a b n rest}
 def memory7 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory6 mem inv a b n) (cells6 inv a b n)
-def state7 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8646, memory := memory7 s.memory inv a b n, stack := frame7 inv a b n rest}
+def state7 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8708, memory := memory7 s.memory inv a b n, stack := frame7 inv a b n rest}
 def memory8 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory7 mem inv a b n) (cells7 inv a b n)
-def state8 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8773, memory := memory8 s.memory inv a b n, stack := frame8 inv a b n rest}
+def state8 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8835, memory := memory8 s.memory inv a b n, stack := frame8 inv a b n rest}
 def memory9 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory8 mem inv a b n) (cells8 inv a b n)
-def state9 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8900, memory := memory9 s.memory inv a b n, stack := frame9 inv a b n rest}
+def state9 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8962, memory := memory9 s.memory inv a b n, stack := frame9 inv a b n rest}
 def memory10 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory9 mem inv a b n) (cells9 inv a b n)
-def state10 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9027, memory := memory10 s.memory inv a b n, stack := frame10 inv a b n rest}
+def state10 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9089, memory := memory10 s.memory inv a b n, stack := frame10 inv a b n rest}
 def memory11 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory10 mem inv a b n) (cells10 inv a b n)
-def state11 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9156, memory := memory11 s.memory inv a b n, stack := frame11 inv a b n rest}
+def state11 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9218, memory := memory11 s.memory inv a b n, stack := frame11 inv a b n rest}
 def memory12 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory11 mem inv a b n) (cells11 inv a b n)
-def state12 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9283, memory := memory12 s.memory inv a b n, stack := frame12 inv a b n rest}
+def state12 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9345, memory := memory12 s.memory inv a b n, stack := frame12 inv a b n rest}
 def memory13 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory12 mem inv a b n) (cells12 inv a b n)
-def state13 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9405, memory := memory13 s.memory inv a b n, stack := frame13 inv a b n rest}
+def state13 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9467, memory := memory13 s.memory inv a b n, stack := frame13 inv a b n rest}
 def memory14 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory13 mem inv a b n) (cells13 inv a b n)
-def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9522, memory := memory14 s.memory inv a b n, stack := frame14 inv a b n rest}
+def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9584, memory := memory14 s.memory inv a b n, stack := frame14 inv a b n rest}
 def memory15 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory14 mem inv a b n) (cells14 inv a b n)
-def state15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9655, memory := memory15 s.memory inv a b n, stack := frame15 inv a b n rest}
+def state15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9717, memory := memory15 s.memory inv a b n, stack := frame15 inv a b n rest}
 def memory16 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory15 mem inv a b n) (cells15 inv a b n)
 def state16 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9778, memory := memory16 s.memory inv a b n, stack := frame16 inv a b n rest}
 def memory17 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory16 mem inv a b n) (cells16 inv a b n)
-def state17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9901, memory := memory17 s.memory inv a b n, stack := frame17 inv a b n rest}
+def state17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 9963, memory := memory17 s.memory inv a b n, stack := frame17 inv a b n rest}
 def memory18 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory17 mem inv a b n) (cells17 inv a b n)
-def state18 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10023, memory := memory18 s.memory inv a b n, stack := frame18 inv a b n rest}
+def state18 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10085, memory := memory18 s.memory inv a b n, stack := frame18 inv a b n rest}
 def memory19 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory18 mem inv a b n) (cells18 inv a b n)
-def state19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10147, memory := memory19 s.memory inv a b n, stack := frame19 inv a b n rest}
+def state19 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10209, memory := memory19 s.memory inv a b n, stack := frame19 inv a b n rest}
 def memory20 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory19 mem inv a b n) (cells19 inv a b n)
-def state20 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10185, memory := memory20 s.memory inv a b n, stack := frame20 inv a b n rest}
+def state20 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10247, memory := memory20 s.memory inv a b n, stack := frame20 inv a b n rest}
 theorem memory0_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
     (start count : Nat) (hs : (256 ≤ start ∧ start+count ≤ 768) ∨ 1312 ≤ start) :
     MachineState.readPadded (memory0 mem inv a b n) start count =
@@ -331,22 +331,22 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions program
-      {s with pc := UInt256.ofNat 7761, stack := frame0 inv a b n rest} =
+      {s with pc := UInt256.ofNat 7823, stack := frame0 inv a b n rest} =
       some (state20 s inv a b n rest) := by
   have m0 := h
 
   have m1 := memory0_output (state0 s inv a b n rest) inv a b n rest m0
-  have h0 : runInstructions productColumn0Program {s with pc := UInt256.ofNat 7761, stack := frame0 inv a b n rest} = some (state1 s inv a b n rest) :=
+  have h0 : runInstructions productColumn0Program {s with pc := UInt256.ofNat 7823, stack := frame0 inv a b n rest} = some (state1 s inv a b n rest) :=
     run0 (state0 s inv a b n rest) inv a b n rest m0 hcap hact
   have m2 := memory1_output (state1 s inv a b n rest) inv a b n rest m1
   have h1 : runInstructions productColumn1Program (state1 s inv a b n rest) = some (state2 s inv a b n rest) := by
     have hx := run1 (state1 s inv a b n rest) inv a b n rest m1 hcap hact
-    rw [reset_self (state1 s inv a b n rest) (UInt256.ofNat 7886) (frame1 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state1 s inv a b n rest) (UInt256.ofNat 7948) (frame1 inv a b n rest) rfl rfl] at hx
     exact hx
   have m3 := memory2_output (state2 s inv a b n rest) inv a b n rest m2
   have h2 : runInstructions productColumn2Program (state2 s inv a b n rest) = some (state3 s inv a b n rest) := by
     have hx := run2 (state2 s inv a b n rest) inv a b n rest m2 hcap hact
-    rw [reset_self (state2 s inv a b n rest) (UInt256.ofNat 8012) (frame2 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state2 s inv a b n rest) (UInt256.ofNat 8074) (frame2 inv a b n rest) rfl rfl] at hx
     exact hx
   have m4 := memory3_output (state3 s inv a b n rest) inv a b n rest m3
   have m5 := memory4_output (state4 s inv a b n rest) inv a b n rest m4
@@ -354,47 +354,47 @@ theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
   have m7 := memory6_output (state6 s inv a b n rest) inv a b n rest m6
   have h6 : runInstructions productColumn6Program (state6 s inv a b n rest) = some (state7 s inv a b n rest) := by
     have hx := run6 (state6 s inv a b n rest) inv a b n rest m6 hcap hact
-    rw [reset_self (state6 s inv a b n rest) (UInt256.ofNat 8518) (frame6 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state6 s inv a b n rest) (UInt256.ofNat 8580) (frame6 inv a b n rest) rfl rfl] at hx
     exact hx
   have m8 := memory7_output (state7 s inv a b n rest) inv a b n rest m7
   have h7 : runInstructions productColumn7Program (state7 s inv a b n rest) = some (state8 s inv a b n rest) := by
     have hx := run7 (state7 s inv a b n rest) inv a b n rest m7 hcap hact
-    rw [reset_self (state7 s inv a b n rest) (UInt256.ofNat 8646) (frame7 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state7 s inv a b n rest) (UInt256.ofNat 8708) (frame7 inv a b n rest) rfl rfl] at hx
     exact hx
   have m9 := memory8_output (state8 s inv a b n rest) inv a b n rest m8
   have h8 : runInstructions productColumn8Program (state8 s inv a b n rest) = some (state9 s inv a b n rest) := by
     have hx := run8 (state8 s inv a b n rest) inv a b n rest m8 hcap hact
-    rw [reset_self (state8 s inv a b n rest) (UInt256.ofNat 8773) (frame8 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state8 s inv a b n rest) (UInt256.ofNat 8835) (frame8 inv a b n rest) rfl rfl] at hx
     exact hx
   have m10 := memory9_output (state9 s inv a b n rest) inv a b n rest m9
   have h9 : runInstructions productColumn9Program (state9 s inv a b n rest) = some (state10 s inv a b n rest) := by
     have hx := run9 (state9 s inv a b n rest) inv a b n rest m9 hcap hact
-    rw [reset_self (state9 s inv a b n rest) (UInt256.ofNat 8900) (frame9 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state9 s inv a b n rest) (UInt256.ofNat 8962) (frame9 inv a b n rest) rfl rfl] at hx
     exact hx
   have m11 := memory10_output (state10 s inv a b n rest) inv a b n rest m10
   have h10 : runInstructions productColumn10Program (state10 s inv a b n rest) = some (state11 s inv a b n rest) := by
     have hx := run10 (state10 s inv a b n rest) inv a b n rest m10 hcap hact
-    rw [reset_self (state10 s inv a b n rest) (UInt256.ofNat 9027) (frame10 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state10 s inv a b n rest) (UInt256.ofNat 9089) (frame10 inv a b n rest) rfl rfl] at hx
     exact hx
   have m12 := memory11_output (state11 s inv a b n rest) inv a b n rest m11
   have h11 : runInstructions productColumn11Program (state11 s inv a b n rest) = some (state12 s inv a b n rest) := by
     have hx := run11 (state11 s inv a b n rest) inv a b n rest m11 hcap hact
-    rw [reset_self (state11 s inv a b n rest) (UInt256.ofNat 9156) (frame11 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state11 s inv a b n rest) (UInt256.ofNat 9218) (frame11 inv a b n rest) rfl rfl] at hx
     exact hx
   have m13 := memory12_output (state12 s inv a b n rest) inv a b n rest m12
   have h12 : runInstructions productColumn12Program (state12 s inv a b n rest) = some (state13 s inv a b n rest) := by
     have hx := run12 (state12 s inv a b n rest) inv a b n rest m12 hcap hact
-    rw [reset_self (state12 s inv a b n rest) (UInt256.ofNat 9283) (frame12 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state12 s inv a b n rest) (UInt256.ofNat 9345) (frame12 inv a b n rest) rfl rfl] at hx
     exact hx
   have m14 := memory13_output (state13 s inv a b n rest) inv a b n rest m13
   have h13 : runInstructions productColumn13Program (state13 s inv a b n rest) = some (state14 s inv a b n rest) := by
     have hx := run13 (state13 s inv a b n rest) inv a b n rest m13 hcap hact
-    rw [reset_self (state13 s inv a b n rest) (UInt256.ofNat 9405) (frame13 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state13 s inv a b n rest) (UInt256.ofNat 9467) (frame13 inv a b n rest) rfl rfl] at hx
     exact hx
   have m15 := memory14_output (state14 s inv a b n rest) inv a b n rest m14
   have h14 : runInstructions productColumn14Program (state14 s inv a b n rest) = some (state15 s inv a b n rest) := by
     have hx := run14 (state14 s inv a b n rest) inv a b n rest m14 hcap hact
-    rw [reset_self (state14 s inv a b n rest) (UInt256.ofNat 9522) (frame14 inv a b n rest) rfl rfl] at hx
+    rw [reset_self (state14 s inv a b n rest) (UInt256.ofNat 9584) (frame14 inv a b n rest) rfl rfl] at hx
     exact hx
   have m16 := memory15_output (state15 s inv a b n rest) inv a b n rest m15
   have m17 := memory16_output (state16 s inv a b n rest) inv a b n rest m16
@@ -526,9 +526,9 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   dsimp only
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
-def block : Block Artifact.artifact .Osaka 7761 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5891 2040 7761 program
-    (by change 5891 + 2040 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block : Block Artifact.artifact .Osaka 7823 program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5866 2040 7823 program
+    (by change 5866 + 2040 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -537,10 +537,10 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 7761, stack := frame0 inv a b n rest}
+    GasSteps {s with pc := UInt256.ofNat 7823, stack := frame0 inv a b n rest}
       (state20 s inv a b n rest) :=
   block.steps
-    (s := {s with pc := UInt256.ofNat 7761, stack := frame0 inv a b n rest})
+    (s := {s with pc := UInt256.ofNat 7823, stack := frame0 inv a b n rest})
     (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact)
 
 noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
@@ -553,7 +553,7 @@ noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     (N : Nat) (hn0 : (n 0).toNat = N % radix)
     (hinv : (N*inv.toNat+1) % 2^256 = 0) :
     PSigma (fun _ : GasSteps
-      {s with pc := UInt256.ofNat 7761, stack := frame0 inv a b n rest}
+      {s with pc := UInt256.ofNat 7823, stack := frame0 inv a b n rest}
       (state20 s inv a b n rest) =>
     HistoricalSearch.MixedMontgomery.weighted radix 9
       (fun i => (outputWord (state20 s inv a b n rest) i).toNat) * radix^9 =

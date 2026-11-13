@@ -29,258 +29,258 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open CycleSubmission.Execution HistoricalSearch.CRTControl Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
-def unpackFinalBlock : Block Artifact.artifact .Osaka 7670 unpackFinalProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5837 54 7670 unpackFinalProgram
-    (by change 5837 + 54 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def unpackFinalBlock : Block Artifact.artifact .Osaka 7732 unpackFinalProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 5812 54 7732 unpackFinalProgram
+    (by change 5812 + 54 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def canonicalsubBlock : Block Artifact.artifact .Osaka 10346 canonicalsubProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8036 5 10346 canonicalsubProgram
-    (by change 8036 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def packFinalBlock : Block Artifact.artifact .Osaka 10356 packFinalProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8042 82 10356 packFinalProgram
-    (by change 8042 + 82 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare0Block : Block Artifact.artifact .Osaka 10185 canonicalCompare0Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7931 4 10185 canonicalCompare0Program
-    (by change 7931 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare0JumpBlock : Block Artifact.artifact .Osaka 10191 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7935 1 10191 jumpiProgram
-    (by change 7935 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare1Block : Block Artifact.artifact .Osaka 10192 canonicalCompare1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7936 4 10192 canonicalCompare1Program
-    (by change 7936 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare1JumpBlock : Block Artifact.artifact .Osaka 10198 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7940 1 10198 jumpiProgram
-    (by change 7940 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare2Block : Block Artifact.artifact .Osaka 10199 canonicalCompare2Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7941 5 10199 canonicalCompare2Program
-    (by change 7941 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare2JumpBlock : Block Artifact.artifact .Osaka 10207 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7946 1 10207 jumpiProgram
-    (by change 7946 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare3Block : Block Artifact.artifact .Osaka 10208 canonicalCompare3Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7947 5 10208 canonicalCompare3Program
-    (by change 7947 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare3JumpBlock : Block Artifact.artifact .Osaka 10216 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7952 1 10216 jumpiProgram
-    (by change 7952 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare4Block : Block Artifact.artifact .Osaka 10217 canonicalCompare4Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7953 5 10217 canonicalCompare4Program
-    (by change 7953 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare4JumpBlock : Block Artifact.artifact .Osaka 10225 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7958 1 10225 jumpiProgram
-    (by change 7958 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare5Block : Block Artifact.artifact .Osaka 10226 canonicalCompare5Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7959 5 10226 canonicalCompare5Program
-    (by change 7959 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare5JumpBlock : Block Artifact.artifact .Osaka 10234 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7964 1 10234 jumpiProgram
-    (by change 7964 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare6Block : Block Artifact.artifact .Osaka 10235 canonicalCompare6Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7965 5 10235 canonicalCompare6Program
-    (by change 7965 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare6JumpBlock : Block Artifact.artifact .Osaka 10243 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7970 1 10243 jumpiProgram
-    (by change 7970 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare7Block : Block Artifact.artifact .Osaka 10244 canonicalCompare7Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7971 5 10244 canonicalCompare7Program
-    (by change 7971 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare7JumpBlock : Block Artifact.artifact .Osaka 10252 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7976 1 10252 jumpiProgram
-    (by change 7976 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare8Block : Block Artifact.artifact .Osaka 10253 canonicalCompare8Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7977 5 10253 canonicalCompare8Program
-    (by change 7977 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare8JumpBlock : Block Artifact.artifact .Osaka 10261 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7982 1 10261 jumpiProgram
-    (by change 7982 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare9Block : Block Artifact.artifact .Osaka 10262 canonicalCompare9Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7983 5 10262 canonicalCompare9Program
-    (by change 7983 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare9JumpBlock : Block Artifact.artifact .Osaka 10270 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7988 1 10270 jumpiProgram
-    (by change 7988 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare10Block : Block Artifact.artifact .Osaka 10271 canonicalCompare10Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7989 5 10271 canonicalCompare10Program
-    (by change 7989 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare10JumpBlock : Block Artifact.artifact .Osaka 10279 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7994 1 10279 jumpiProgram
-    (by change 7994 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare11Block : Block Artifact.artifact .Osaka 10280 canonicalCompare11Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7995 5 10280 canonicalCompare11Program
-    (by change 7995 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare11JumpBlock : Block Artifact.artifact .Osaka 10288 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8000 1 10288 jumpiProgram
-    (by change 8000 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare12Block : Block Artifact.artifact .Osaka 10289 canonicalCompare12Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8001 4 10289 canonicalCompare12Program
-    (by change 8001 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare12JumpBlock : Block Artifact.artifact .Osaka 10295 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8005 1 10295 jumpiProgram
-    (by change 8005 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare13Block : Block Artifact.artifact .Osaka 10296 canonicalCompare13Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8006 4 10296 canonicalCompare13Program
-    (by change 8006 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare13JumpBlock : Block Artifact.artifact .Osaka 10302 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8010 1 10302 jumpiProgram
-    (by change 8010 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare14Block : Block Artifact.artifact .Osaka 10303 canonicalCompare14Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8011 5 10303 canonicalCompare14Program
+def canonicalsubBlock : Block Artifact.artifact .Osaka 10408 canonicalsubProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8011 5 10408 canonicalsubProgram
     (by change 8011 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def canonicalCompare14JumpBlock : Block Artifact.artifact .Osaka 10312 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8016 1 10312 jumpiProgram
+def packFinalBlock : Block Artifact.artifact .Osaka 10418 packFinalProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8017 82 10418 packFinalProgram
+    (by change 8017 + 82 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare0Block : Block Artifact.artifact .Osaka 10247 canonicalCompare0Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7906 4 10247 canonicalCompare0Program
+    (by change 7906 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare0JumpBlock : Block Artifact.artifact .Osaka 10253 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7910 1 10253 jumpiProgram
+    (by change 7910 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare1Block : Block Artifact.artifact .Osaka 10254 canonicalCompare1Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7911 4 10254 canonicalCompare1Program
+    (by change 7911 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare1JumpBlock : Block Artifact.artifact .Osaka 10260 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7915 1 10260 jumpiProgram
+    (by change 7915 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare2Block : Block Artifact.artifact .Osaka 10261 canonicalCompare2Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7916 5 10261 canonicalCompare2Program
+    (by change 7916 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare2JumpBlock : Block Artifact.artifact .Osaka 10269 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7921 1 10269 jumpiProgram
+    (by change 7921 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare3Block : Block Artifact.artifact .Osaka 10270 canonicalCompare3Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7922 5 10270 canonicalCompare3Program
+    (by change 7922 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare3JumpBlock : Block Artifact.artifact .Osaka 10278 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7927 1 10278 jumpiProgram
+    (by change 7927 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare4Block : Block Artifact.artifact .Osaka 10279 canonicalCompare4Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7928 5 10279 canonicalCompare4Program
+    (by change 7928 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare4JumpBlock : Block Artifact.artifact .Osaka 10287 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7933 1 10287 jumpiProgram
+    (by change 7933 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare5Block : Block Artifact.artifact .Osaka 10288 canonicalCompare5Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7934 5 10288 canonicalCompare5Program
+    (by change 7934 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare5JumpBlock : Block Artifact.artifact .Osaka 10296 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7939 1 10296 jumpiProgram
+    (by change 7939 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare6Block : Block Artifact.artifact .Osaka 10297 canonicalCompare6Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7940 5 10297 canonicalCompare6Program
+    (by change 7940 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare6JumpBlock : Block Artifact.artifact .Osaka 10305 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7945 1 10305 jumpiProgram
+    (by change 7945 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare7Block : Block Artifact.artifact .Osaka 10306 canonicalCompare7Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7946 5 10306 canonicalCompare7Program
+    (by change 7946 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare7JumpBlock : Block Artifact.artifact .Osaka 10314 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7951 1 10314 jumpiProgram
+    (by change 7951 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare8Block : Block Artifact.artifact .Osaka 10315 canonicalCompare8Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7952 5 10315 canonicalCompare8Program
+    (by change 7952 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare8JumpBlock : Block Artifact.artifact .Osaka 10323 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7957 1 10323 jumpiProgram
+    (by change 7957 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare9Block : Block Artifact.artifact .Osaka 10324 canonicalCompare9Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7958 5 10324 canonicalCompare9Program
+    (by change 7958 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare9JumpBlock : Block Artifact.artifact .Osaka 10332 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7963 1 10332 jumpiProgram
+    (by change 7963 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare10Block : Block Artifact.artifact .Osaka 10333 canonicalCompare10Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7964 5 10333 canonicalCompare10Program
+    (by change 7964 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare10JumpBlock : Block Artifact.artifact .Osaka 10341 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7969 1 10341 jumpiProgram
+    (by change 7969 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare11Block : Block Artifact.artifact .Osaka 10342 canonicalCompare11Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7970 5 10342 canonicalCompare11Program
+    (by change 7970 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare11JumpBlock : Block Artifact.artifact .Osaka 10350 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7975 1 10350 jumpiProgram
+    (by change 7975 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare12Block : Block Artifact.artifact .Osaka 10351 canonicalCompare12Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7976 4 10351 canonicalCompare12Program
+    (by change 7976 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare12JumpBlock : Block Artifact.artifact .Osaka 10357 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7980 1 10357 jumpiProgram
+    (by change 7980 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare13Block : Block Artifact.artifact .Osaka 10358 canonicalCompare13Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7981 4 10358 canonicalCompare13Program
+    (by change 7981 + 4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare13JumpBlock : Block Artifact.artifact .Osaka 10364 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7985 1 10364 jumpiProgram
+    (by change 7985 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare14Block : Block Artifact.artifact .Osaka 10365 canonicalCompare14Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7986 5 10365 canonicalCompare14Program
+    (by change 7986 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare14JumpBlock : Block Artifact.artifact .Osaka 10374 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7991 1 10374 jumpiProgram
+    (by change 7991 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare15Block : Block Artifact.artifact .Osaka 10375 canonicalCompare15Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7992 5 10375 canonicalCompare15Program
+    (by change 7992 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare15JumpBlock : Block Artifact.artifact .Osaka 10384 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7997 1 10384 jumpiProgram
+    (by change 7997 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare16Block : Block Artifact.artifact .Osaka 10385 canonicalCompare16Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7998 6 10385 canonicalCompare16Program
+    (by change 7998 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare16JumpBlock : Block Artifact.artifact .Osaka 10397 jumpiProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8004 1 10397 jumpiProgram
+    (by change 8004 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalCompare17Block : Block Artifact.artifact .Osaka 10398 canonicalCompare17Program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8005 6 10398 canonicalCompare17Program
+    (by change 8005 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def canonicalJumpBlock : Block Artifact.artifact .Osaka 10417 jumpProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8016 1 10417 jumpProgram
     (by change 8016 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def canonicalCompare15Block : Block Artifact.artifact .Osaka 10313 canonicalCompare15Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8017 5 10313 canonicalCompare15Program
-    (by change 8017 + 5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare15JumpBlock : Block Artifact.artifact .Osaka 10322 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8022 1 10322 jumpiProgram
-    (by change 8022 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare16Block : Block Artifact.artifact .Osaka 10323 canonicalCompare16Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8023 6 10323 canonicalCompare16Program
-    (by change 8023 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare16JumpBlock : Block Artifact.artifact .Osaka 10335 jumpiProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8029 1 10335 jumpiProgram
-    (by change 8029 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalCompare17Block : Block Artifact.artifact .Osaka 10336 canonicalCompare17Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8030 6 10336 canonicalCompare17Program
-    (by change 8030 + 6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-def canonicalJumpBlock : Block Artifact.artifact .Osaka 10355 jumpProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8041 1 10355 jumpProgram
-    (by change 8041 + 1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-theorem validJump10857 : Decode.isValidJumpDest Artifact.bytecode 10346 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8036
-    (show Artifact.instructions[8036]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8036 = 10346 := by
+theorem validJump10857 : Decode.isValidJumpDest Artifact.bytecode 10408 = true := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8011
+    (show Artifact.instructions[8011]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8011 = 10408 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
-theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 10356 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8042
-    (show Artifact.instructions[8042]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8042 = 10356 := by
+theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 10418 = true := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8017
+    (show Artifact.instructions[8017]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8017 = 10418 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
-theorem validJump11014 : Decode.isValidJumpDest Artifact.bytecode 10494 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8131
-    (show Artifact.instructions[8131]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8131 = 10494 := by
+theorem validJump11014 : Decode.isValidJumpDest Artifact.bytecode 10555 = true := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8105
+    (show Artifact.instructions[8105]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 8105 = 10555 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

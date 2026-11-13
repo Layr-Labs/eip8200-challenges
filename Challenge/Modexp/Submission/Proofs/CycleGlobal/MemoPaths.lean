@@ -58,13 +58,13 @@ def tailPath :
 
 @[simp] theorem widthPCs (i : Nat) (hi : 476 ≤ i) (hii : i ≤ 481) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([674, 680, 682, 683, 684, 687] : List Nat)[i - 476]! := by
+      ([674,680,682,683,684,687] : List Nat)[i - 476]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 
 @[simp] theorem tailPCs (i : Nat) (hi : 482 ≤ i) (hii : i ≤ 495) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([688, 689, 690, 692, 693, 695, 696, 698, 699, 700, 702, 703, 704, 707] : List Nat)[i - 482]! := by
+      ([688,689,690,692,693,695,696,698,699,700,702,703,704,707] : List Nat)[i - 482]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

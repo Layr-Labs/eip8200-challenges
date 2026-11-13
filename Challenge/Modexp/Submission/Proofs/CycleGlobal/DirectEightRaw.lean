@@ -36,46 +36,46 @@ def frame (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : Caller
 def state (s : State) (mem : ByteArray) (pc : Nat) (count width : UInt256) (bsize esize : Nat) : State :=
  {s with pc := UInt256.ofNat pc, memory := mem, stack := [count,width]++SlimFrames.outer mem 8 bsize esize 256}
 def guardProgram : List Instr :=
- [.op .JUMPDEST,.push 2 2112,.op .MLOAD,.push 32 (UInt256.ofNat (2^256-2^146-1)),
- .op .LT,.push 1 207,.op .JUMPI]
+ [.op .JUMPDEST,.push 2 2112,.op .MLOAD,.op .NOT,.push 1 146,.op .SHR,
+ .op .ISZERO,.push 1 207,.op .JUMPI]
 def finishProgram : List Instr :=
  [.op (.Dup ⟨1,by decide⟩),.push 2 2112,.push 2 2368,.op .MCOPY,
  .op (.Swap ⟨12,by decide⟩),.push 0 0,.op .NOT,.op (.Swap ⟨4,by decide⟩),
- .op .POP,.push 2 2720,.op .MLOAD,.push 2 5390,.op .JUMP]
+ .op .POP,.push 2 2720,.op .MLOAD,.push 2 5235,.op .JUMP]
 
 def entered (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : State :=
- {s with pc := UInt256.ofNat 5390, memory := memory mem, stack := saved (frame mem count width bsize esize)}
+ {s with pc := UInt256.ofNat 5235, memory := memory mem, stack := saved (frame mem count width bsize esize)}
 theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat ≠ 0) :
- runInstructions guardProgram (state s mem 3134 count width bsize esize) =
- some (state s mem 3176 count width bsize esize) := by
+ runInstructions guardProgram (state s mem 3081 count width bsize esize) =
+ some (state s mem 3094 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
  have hb : ¬ (2^256-2^146-1 < (MachineState.readWord mem 2112).toNat) := by
   intro h
   exact hg ((CycleSubmission.Global.DirectBoundMath.zero_iff _).mpr h)
  simp only [guardWord] at hg
- simp [CycleSubmission.Global.DirectBoundMath.guard_eq,hb,guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,
+ simp [guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,
   runInstructions,Stepper.runInstr,UInt256.isZero,UInt256.isTrue,State.activeWordsAfterUInt256,hf,hg,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
 theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat = 0)
  (hd : Decode.isValidJumpDest s.executionEnv.code 207 = true) :
- runInstructions guardProgram (state s mem 3134 count width bsize esize) =
+ runInstructions guardProgram (state s mem 3081 count width bsize esize) =
  some (state s mem 207 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
  have hb : 2^256-2^146-1 < (MachineState.readWord mem 2112).toNat :=
   (CycleSubmission.Global.DirectBoundMath.zero_iff _).mp hg
  simp only [guardWord] at hg
- simp [CycleSubmission.Global.DirectBoundMath.guard_eq,hb,guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,
+ simp [guardProgram,state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,
   runInstructions,Stepper.runInstr,UInt256.isZero,UInt256.isTrue,State.activeWordsAfterUInt256,hf,hg,hd,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
 theorem run_finish (s : State) (mem : ByteArray) (count : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 5390 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 5235 = true) :
  runInstructions finishProgram
-   (state s mem 3176 count (UInt256.ofNat 256) bsize esize) =
+   (state s mem 3094 count (UInt256.ofNat 256) bsize esize) =
  some (entered s mem count (UInt256.ofNat 256) bsize esize) := by
  have hmax : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat (2^256-1) := by decide
  have hf := Exp.activeWords_fix2 s 2368 256 2112 256 (by decide) (by decide)

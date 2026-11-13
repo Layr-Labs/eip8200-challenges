@@ -11,18 +11,19 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 
 def canonicalsubpart0Program : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 10356,
+  [
+  .op .JUMPDEST,
+   .push 2 10418,
    .op (.Swap ⟨11, by decide⟩),
    .op .POP,
-   .push 2 10494]
+   .push 2 10555]
 
 def canonicalsubpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10355, memory := s.memory, stack := (UInt256.ofNat 10494) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: (UInt256.ofNat 10356) :: x12 :: x13 :: rest}
+  {s with pc := UInt256.ofNat 10417, memory := s.memory, stack := (UInt256.ofNat 10555) :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: (UInt256.ofNat 10418) :: x12 :: x13 :: rest}
 
 theorem canonicalsubpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 10346, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 10408, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
       some (canonicalsubpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -31,20 +32,21 @@ theorem canonicalsubpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11
 
 
 def canonicalsubProgram : List Instr :=
-  [.op .JUMPDEST,
-   .push 2 10356,
+  [
+  .op .JUMPDEST,
+   .push 2 10418,
    .op (.Swap ⟨11, by decide⟩),
    .op .POP,
-   .push 2 10494]
+   .push 2 10555]
 
 def canonicalsubModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10355, memory := s.memory, stack := (UInt256.ofNat 10494) :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 10356) :: n3 :: a8 :: rest}
+  {s with pc := UInt256.ofNat 10417, memory := s.memory, stack := (UInt256.ofNat 10555) :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 10418) :: n3 :: a8 :: rest}
 
 theorem canonicalsub_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions canonicalsubProgram {s with pc := UInt256.ofNat 10346, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions canonicalsubProgram {s with pc := UInt256.ofNat 10408, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
       some (canonicalsubModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
-  have h0 : runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 10346, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10355, memory := s.memory, stack := (UInt256.ofNat 10494) :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 10356) :: n3 :: a8 :: rest} := by
+  have h0 : runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 10408, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10417, memory := s.memory, stack := (UInt256.ofNat 10555) :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: (UInt256.ofNat 10418) :: n3 :: a8 :: rest} := by
     simpa only [canonicalsubpart0Model] using canonicalsubpart0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
   exact h0
 

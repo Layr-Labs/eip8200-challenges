@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Cycle.ProductExecution
-import Challenge.Modexp.Submission.Proofs.Cycle.SquareExecution
+import Challenge.Modexp.Submission.Proofs.Cycle.PersistentSquareLoop
 import Challenge.Modexp.Submission.Proofs.Cycle.Canonical
 set_option warningAsError true
 set_option maxRecDepth 30000
@@ -28,7 +28,7 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (ha : ∀ i < 9, (a i).toNat < radix) (hb : ∀ i < 9, (b i).toNat < radix)
     (hn : ∀ i < 9, (n i).toNat < radix)
     (N : Nat) (hn0 : (n 0).toNat = N % radix) (hinv : (N*inv.toNat+1) % 2^256 = 0) :
-    GasSteps {s with pc := UInt256.ofNat 7761, stack := ProductMeaning.frame0 inv a b n rest}
+    GasSteps {s with pc := UInt256.ofNat 7823, stack := ProductMeaning.frame0 inv a b n rest}
       (result s inv a b n rest) := by
   have h1 := ProductExecution.gasSteps s inv a b n rest env hm hcap hact
   have hm2 := ProductExecution.normalizer_input s inv a b n rest hm
@@ -37,10 +37,10 @@ noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (productQ8 inv a b n) (productQ7 inv a b n) rest (env.transfer rfl rfl)
     hm2 hcap hact hlow (fun i hi => hn i (by omega))
   have he : {middle s inv a b n rest with
-      pc := UInt256.ofNat 10185
+      pc := UInt256.ofNat 10247
       stack := NormalizeMeaning.frame (productd inv a b n) n
         (productQ8 inv a b n) (productQ7 inv a b n) rest} = middle s inv a b n rest :=
-    SquareExecution.reset_self _ _ _ rfl (ProductExecution.output_frame s inv a b n rest)
+    PersistentSquareLoop.reset_self _ _ _ rfl (ProductExecution.output_frame s inv a b n rest)
   rw [he] at h2
   exact h1.trans h2
 
@@ -54,7 +54,7 @@ theorem frame_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
       (slot0 inv a b n) (productQ7 inv a b n) rest :=
   Canonical.frame_output _ _ _ _ _ _
 theorem pc_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) :
-    (result s inv a b n rest).pc = UInt256.ofNat 10356 := Canonical.pc_output _ _ _ _ _ _
+    (result s inv a b n rest).pc = UInt256.ofNat 10418 := Canonical.pc_output _ _ _ _ _ _
 theorem executionEnv_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) :
     (result s inv a b n rest).executionEnv = s.executionEnv := Canonical.executionEnv_eq _ _ _ _ _ _
 theorem halt_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) :
