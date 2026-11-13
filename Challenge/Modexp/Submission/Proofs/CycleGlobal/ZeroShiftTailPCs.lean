@@ -1,8 +1,8 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.PCCertificate
 set_option maxRecDepth 40000
 namespace CycleSubmission.Global.ZeroShiftTailPCs
-@[simp] theorem pc8382 : CycleSubmission.Artifact.artifact.instructionPC 8417 = 10926 := by
+@[simp] theorem pc8382 : CycleSubmission.Artifact.artifact.instructionPC 8413 = 10926 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem pc8384 : CycleSubmission.Artifact.artifact.instructionPC 8419 = 10928 := by
+@[simp] theorem pc8384 : CycleSubmission.Artifact.artifact.instructionPC 8415 = 10928 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 end CycleSubmission.Global.ZeroShiftTailPCs
