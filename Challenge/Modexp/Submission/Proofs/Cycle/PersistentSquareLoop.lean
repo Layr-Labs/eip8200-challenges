@@ -14,9 +14,9 @@ open CycleSubmission.WordArithmetic
 open CycleSubmission.ControlArithmetic (value)
 open CycleSubmission.SquareStep (zeroWords)
 
-def counter (s : State) : UInt256 := s.stack.getD 15 (UInt256.ofNat 0)
+def counter (s : State) : UInt256 := s.stack.getD 14 (UInt256.ofNat 0)
 def frame (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) : List UInt256 :=
- ((SquareMeaning.frame0 inv a zeroWords n ((a 8)::(rest.take 1 ++ rest.drop 2))).set 10 (a 5)).set 13 (UInt256.ofNat (2^240-1))
+ (SquareMeaning.frame0 inv a zeroWords n rest).set 10 (a 5)
 
 theorem reset_self (s : State) (pc : UInt256) (stack : List UInt256)
  (hp : s.pc = pc) (hs : s.stack = stack) : {s with pc := pc, stack := stack} = s := by

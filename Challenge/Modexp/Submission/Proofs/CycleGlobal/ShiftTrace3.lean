@@ -71,9 +71,9 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2341 = 2987 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8391 = 10727 := by
+@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8384 = 10875 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8391 = 10727 := by
+@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8384 = 10875 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 
 theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
@@ -144,7 +144,7 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
     exact CycleSubmission.DifferenceBranch.difference_nonzero_of_flags
       (wN (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) q (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) hor
   unfold tnOf wN at htnTrue
-  have hpc : midPC n = 10720 := by simp [midPC,hw]
+  have hpc : midPC n = 10868 := by simp [midPC,hw]
   have hA : MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 +
       (Monpro.l1Step um q NEG n n).carry =
       (Monpro.l1Step um q NEG n n).carry + MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 :=
@@ -231,7 +231,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
   unfold negOf bwOf cwOf wN at hneg
   unfold tnOf wN at htz
   simp only [midGtSwap] at hneg
-  have hpc : midPC n = 10720 := by simp [midPC,hw]
+  have hpc : midPC n = 10868 := by simp [midPC,hw]
   have hA : MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 +
       (Monpro.l1Step um q NEG n n).carry =
       (Monpro.l1Step um q NEG n n).carry + MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 :=
