@@ -62,8 +62,8 @@ def pcSubCheck : Nat := 3122
 def pcCsubCall : Nat := 3042
 def pcUnc : Nat := 3060
 def pcAfterCsub : Nat := 2646
-def pcCsubExit : Nat := 3049
-def pcShiftDone : Nat := 3049
+def pcCsubExit : Nat := 3048
+def pcShiftDone : Nat := 3048
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pc
            stack := outer n bsize esize msize
@@ -125,13 +125,12 @@ def negDoneState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
     stack := MachineState.readWord (negStep mem n n).memory 0 :: outer n bsize esize msize }
 def preClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2459
-           stack := preL (MachineState.readWord mem 0) :: preL (MachineState.readWord mem 0) ::
+           stack := preL (MachineState.readWord mem 0) ::
              MachineState.readWord mem 0 :: outer n bsize esize msize
            memory := mem }
 def postClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2460
            stack := UInt256.clz (preL (MachineState.readWord mem 0)) ::
-             preL (MachineState.readWord mem 0) ::
              MachineState.readWord mem 0 :: outer n bsize esize msize
            memory := mem }
 def preNewtonState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=

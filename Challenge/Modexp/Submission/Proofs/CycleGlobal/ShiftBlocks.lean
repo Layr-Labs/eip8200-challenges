@@ -24,40 +24,40 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 /-- The add-round body up to its store (`blk3157` instructions 0..22). -/
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2375 .JUMPDEST,
-   opAt 2376 (.Dup ⟨0,by decide⟩),
-   opAt 2377 .MLOAD,
-   pushAt 2378 2 2112,
-   opAt 2379 (.Dup ⟨2,by decide⟩),
-   opAt 2380 .SUB,
-   opAt 2381 .MLOAD,
-   opAt 2382 (.Dup ⟨1,by decide⟩),
-   opAt 2383 .ADD,
-   opAt 2384 (.Swap ⟨0,by decide⟩),
-   opAt 2385 (.Dup ⟨1,by decide⟩),
-   opAt 2386 .LT,
-   opAt 2387 (.Swap ⟨0,by decide⟩),
-   opAt 2388 (.Dup ⟨3,by decide⟩),
-   opAt 2389 .ADD,
-   opAt 2390 (.Swap ⟨2,by decide⟩),
-   opAt 2391 (.Dup ⟨3,by decide⟩),
-   opAt 2392 .LT,
-   opAt 2393 .OR,
-   opAt 2394 (.Swap ⟨1,by decide⟩),
-   opAt 2395 (.Dup ⟨1,by decide⟩),
-   opAt 2396 .MSTORE]
+  [opAt 2374 .JUMPDEST,
+   opAt 2375 (.Dup ⟨0,by decide⟩),
+   opAt 2376 .MLOAD,
+   pushAt 2377 2 2112,
+   opAt 2378 (.Dup ⟨2,by decide⟩),
+   opAt 2379 .SUB,
+   opAt 2380 .MLOAD,
+   opAt 2381 (.Dup ⟨1,by decide⟩),
+   opAt 2382 .ADD,
+   opAt 2383 (.Swap ⟨0,by decide⟩),
+   opAt 2384 (.Dup ⟨1,by decide⟩),
+   opAt 2385 .LT,
+   opAt 2386 (.Swap ⟨0,by decide⟩),
+   opAt 2387 (.Dup ⟨3,by decide⟩),
+   opAt 2388 .ADD,
+   opAt 2389 (.Swap ⟨2,by decide⟩),
+   opAt 2390 (.Dup ⟨3,by decide⟩),
+   opAt 2391 .LT,
+   opAt 2392 .OR,
+   opAt 2393 (.Swap ⟨1,by decide⟩),
+   opAt 2394 (.Dup ⟨1,by decide⟩),
+   opAt 2395 .MSTORE]
 
 /-- The exit test of the add-round body (`blk3157` instructions 23..30). -/
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 2397 1 31,
-   opAt 2398 .NOT,
-   opAt 2399 .ADD,
-   pushAt 2400 2 2111,
-   opAt 2401 (.Dup ⟨1,by decide⟩),
-   opAt 2402 .GT,
-   pushAt 2403 2 3067,
-   opAt 2404 .JUMPI]
+  [pushAt 2396 1 31,
+   opAt 2397 .NOT,
+   opAt 2398 .ADD,
+   pushAt 2399 2 2111,
+   opAt 2400 (.Dup ⟨1,by decide⟩),
+   opAt 2401 .GT,
+   pushAt 2402 2 3067,
+   opAt 2403 .JUMPI]
 
 /-- The five padding `JUMPDEST`s on the add-round fall-through (indices 2413 to 2417). -/
 def blk3157c :
