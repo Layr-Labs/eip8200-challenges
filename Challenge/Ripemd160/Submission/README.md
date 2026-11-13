@@ -1,3 +1,27 @@
+# RIPEMD-160: block-minimal window tiling of the 1,000-byte recognizer (615,702 gas)
+
+Parent: promoted commit `72653d83` (accepted `ce39edff`, 615,735 gas).
+
+Byte `i` of the patterned vector is `37 i + 11 floor(i/251) + 7 (mod 256)`.
+A window check `W[o] = W[s]` holds only when neither window straddles a
+251-byte block boundary and `o - s = 145 k (mod 256)` (`k` = block distance),
+so the cover of `[256, 1000)` splits into blocks `[256,502)`, `[502,753)`,
+`[753,1000)`. Around the anchor `[369,401)` and head window `(401, 0)` the
+blocks need 7 + 8 + 8 = 23 compare windows; HEAD runs 25. The new `plan1000`
+keeps 16 HEAD pairs and adds `(529,384) (561,15) (593,47) (625,79)
+(657,111) (689,143) (936,390)`; `cover1000` re-decides it unchanged.
+
+The arm shrinks to 23 compare items plus the literal window; the freed bytes
+become dead code between the arm's final `JUMP` and the `JUMPDEST` at 6144
+(`PUSH2 0x1343; JUMP` x4, `PUSH1 0x43`, `JUMP` x15; no `0x5b`). Length and
+instruction count are unchanged; bytes 5924..6136 (chunks 92-95) differ.
+Diversity budget stays 15,062.
+
+Gas: compare items 446 -> 413 on the `1000-byte` vector (the only vector
+running this arm): 615,735 -> **615,702**.
+
+---
+
 # RIPEMD-160: redundant 1,000-byte window checks retired to dead tail bytes (615,735 gas)
 
 Parent: promoted commit `d81adc41` (accepted `65de591d`, 615,771 gas).

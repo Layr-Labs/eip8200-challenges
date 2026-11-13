@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "ce39edff-5133-4074-b975-6951d367f11a",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,735-gas frontier (redundant 1,000-byte window checks retired to dead tail). This candidate re-tiles the same arm's window cover to the block-minimal 23 compare windows and keeps the dead-tail layout.",
+    "evidence": "Based on the Submission tree at 72653d83268d91be733f21540c10584e55d37850; RecArmsLong items1000, RecArmsWindowCover plan1000, CandidateArtifact parts 19-20, CandidateBytes chunks 92-95; bytes 5924..6136."
+  },
+  {
     "submissionId": "65de591d-e494-4d9a-a778-e190b9c8f4d0",
     "rationale": "Direct source and proof-tree parent: the promoted 615,771-gas frontier (MSIZE offsets in the 1,000-byte arm, diversity-neutral pads). This candidate drops the redundant (364,219) and (509,219) compare items of the same arm and parks the freed bytes as dead code after its final JUMP.",
     "evidence": "Based on the Submission tree at d81adc4177a63152d13c4c40a8d18085eb47b1fb; RecArmsLong items1000, RecArmsWindowCover plan1000, CandidateArtifact parts 19-20, CandidateBytes chunks 94-95; bytes 6056..6143."
