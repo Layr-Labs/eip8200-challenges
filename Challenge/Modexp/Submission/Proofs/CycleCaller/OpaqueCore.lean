@@ -18,6 +18,7 @@ noncomputable opaque run (s : State) (f : Caller) (k N A B x : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : f.pbi = MachineState.readWord s.memory 2720)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
@@ -26,6 +27,6 @@ noncomputable opaque run (s : State) (f : Caller) (k N A B x : Nat)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938) :
     Finish.Outcome {s with pc := UInt256.ofNat 5390, stack := saved f}
       (Precompile.natToBytes (B*x^(2^k)%N) 256) :=
-  Core.run s f k N A B x hk hk16 env hcap hact hcounter hn ha hb hinv hN hodd hB hform hAtop
+  Core.run s f k N A B x hk hk16 env hcap hact hcache hcounter hn ha hb hinv hN hodd hB hform hAtop
 
 end CycleSubmission.CallerCore

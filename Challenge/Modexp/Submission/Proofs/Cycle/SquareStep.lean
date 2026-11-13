@@ -23,12 +23,12 @@ def result (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt
 noncomputable def gasSteps (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (h : SquareMeaning.Memory0 s.memory inv a zeroWords n)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : rest[1]? = some inv) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < WordArithmetic.radix)
     (hz : (overflowFlag (squared inv a zeroWords n)).toNat = 0) :
     GasSteps {s with pc := UInt256.ofNat 5575, stack := SquareMeaning.frame0 inv a zeroWords n rest}
       (result s inv a n rest) := by
-  have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcap hact ha
+  have h1 := SquareExecution.gasSteps s inv a zeroWords n rest env h hcache hcap hact ha
   have h2 := SquareNormalize.gasSteps (middle s inv a n rest) (squared inv a zeroWords n) n rest hz
   have he : SquareNormalize.initial (middle s inv a n rest) (squared inv a zeroWords n) n rest =
       middle s inv a n rest :=

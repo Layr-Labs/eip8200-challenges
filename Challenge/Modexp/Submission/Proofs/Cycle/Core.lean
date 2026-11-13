@@ -16,6 +16,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : f.pbi = MachineState.readWord s.memory 2720)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
@@ -54,14 +55,14 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
       omega
     have h6 : (A + K + 1) * 2^112 = A * 2^112 + (K + 1) * 2^112 := by ring
     omega
-  obtain ⟨start, inv, a, n, enter, frame, pc, memory, en, halt, active,
+  obtain ⟨start, inv, invEq, a, n, enter, frame, pc, memory, en, halt, active,
     counter, aBound, nBound, n0, nValue, inverse, base, form, callsStart, small⟩ :=
     EntryContract.prepare s f k N A B x env hcap hact hcounter hn ha hb hinv hform hsmallA
   have envStart := env.transfer en halt
   have actStart : 88 ≤ start.activeWords.toNat := by rw [active]; exact hact
   obtain ⟨last, out, rounds, lastMem, lastFrame, lastPc, lastEnv, lastHalt,
     lastActive, lastBound, lastSmall, lastForm, keepsBase, callsLast⟩ :=
-    SquareLoop.run start inv a n (saved f) k N x hk hk16 envStart memory counter cap actStart
+    SquareLoop.run start inv a n (saved f) k N x hk hk16 envStart memory counter (by simpa [saved] using congrArg some (hcache.trans invEq.symm)) cap actStart
       aBound nBound n0 nValue inverse hN hNR hodd hN4 small form
   have counterStart : CounterControl.counter start = f.counter := counter.trans hcounter.symm
   have startReset : {start with pc := UInt256.ofNat 5575, stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (CounterControl.counter start :: saved f)} = start :=
@@ -101,6 +102,7 @@ theorem correct_from_entry (s : State) (f : Caller) (k N A B x : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : f.pbi = MachineState.readWord s.memory 2720)
     (hcounter : f.counter = UInt256.ofNat (k-1))
     (hn : FastRepresents s.memory 0 8 N) (ha : FastRepresents s.memory 2368 8 A)
     (hb : FastRepresents s.memory 256 8 B)
@@ -111,6 +113,6 @@ theorem correct_from_entry (s : State) (f : Caller) (k N A B x : Nat)
     ∃ gas0, ∀ gas, gas0 ≤ gas →
       Eval (withGas {s with pc := UInt256.ofNat 5390, stack := saved f} gas)
         (.returned (Precompile.natToBytes (B*x^(2^k)%N) 256)) :=
-  (run s f k N A B x hk hk16 env hcap hact hcounter hn ha hb hinv hN hodd hB hform hAtop).eventually hstack
+  (run s f k N A B x hk hk16 env hcap hact hcache hcounter hn ha hb hinv hN hodd hB hform hAtop).eventually hstack
 
 end CycleSubmission.Core

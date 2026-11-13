@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Algorithm
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastP6
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
 import Challenge.EvmProof.Memory
@@ -20,10 +21,10 @@ def memo (s : State) : State :=
 def rawWord (input : ByteArray) : UInt256 :=
  UInt256.shiftRight (MachineState.readWord input (96+baseSize input+exponentSize input)) (UInt256.ofNat 160)
 def memory (s : State) : ByteArray :=
- MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded 0 32) 0
+ s.memory
 def finalState (s : State) : State :=
  {s with
-   pc := UInt256.ofNat 10986
+   pc := UInt256.ofNat 10983
    stack := []
    memory := memory s
    activeWords := UInt256.ofNat 1
@@ -107,28 +108,17 @@ theorem rawWord_value (input : ByteArray) :
   (96+baseSize input+exponentSize input) 12) :=
  Bytes.shiftRight_readWord input (96+baseSize input+exponentSize input) 12 (by decide) (by decide)
 
-theorem memory_output (s : State) :
+theorem memory_output (s : State) (hmem : s.memory = ByteArray.empty) :
  MachineState.readPadded (memory s) 0 12 = Precompile.natToBytes 0 12 := by
- have h : MachineState.readPadded (memory s) 0 12 =
-   MachineState.readPadded (Data.Bytes.natToBytesPadded 0 32) 0 12 := by
-  apply Memory.readPadded_congr
-  intro i hi
-  simp only [memory,Nat.zero_add]
-  rw [MachineState.writeBytes_getElem?_getD,if_pos (by
-   constructor
-   · omega
-   · simp [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  simp
- rw [h]
- simp only [Precompile.natToBytes,Memory.natToBytesPadded_eq_natToBE]
- rfl
+ rw [memory, hmem]
+ exact Algorithm.zeroBytes 0 12
 
 theorem isDone (s : State) (hcall : s.callStack = []) :
  (finalState s).isDone = true := by
  simp [finalState,State.isDone,State.isHalted,State.isRunning,hcall]
 
 theorem result (s : State) (input : ByteArray) (hsize : modulusSize input = 12)
- (hz : (rawWord input).toNat = 0) :
+ (hz : (rawWord input).toNat = 0) (hmem : s.memory = ByteArray.empty) :
  (finalState s).toResult = .returned (spec input) := by
  have hm : Precompile.bytesToNatPadded input (96+baseSize input+exponentSize input) 12 = 0 := by
   rw [rawWord_value,Word.word_toNat_ofNat] at hz
@@ -136,7 +126,7 @@ theorem result (s : State) (input : ByteArray) (hsize : modulusSize input = 12)
   rw [Nat.mod_eq_of_lt (by norm_num at hlt ⊢; omega)] at hz
   exact hz
  change ExecutionResult.returned (MachineState.readPadded (memory s) 0 12) = _
- rw [memory_output]
+ rw [memory_output s hmem]
  simp [spec,hsize,hm,Precompile.modPow]
 #print axioms run_width_miss
 #print axioms run_nonzero

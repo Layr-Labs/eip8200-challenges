@@ -17,7 +17,7 @@ def guardWord (mem : ByteArray) : UInt256 :=
  UInt256.shiftRight (UInt256.lnot (MachineState.readWord mem 2112)) (UInt256.ofNat 146)
 def memory (mem : ByteArray) : ByteArray := StagedOperand.stage mem 2112 8
 def frame (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : Caller where
- pbi := MachineState.readWord mem 1376
+ pbi := MachineState.readWord mem 2720
  hd := CycleSubmission.Global.Fast.Shift.hdSlot mem
  w3 := width
  ent := MachineState.readWord mem 1312
@@ -39,8 +39,10 @@ def guardProgram : List Instr :=
  [.op .JUMPDEST,.push 2 2112,.op .MLOAD,.push 32 (UInt256.ofNat (2^256-2^146-1)),
  .op .LT,.push 1 207,.op .JUMPI]
 def finishProgram : List Instr :=
- [.push 2 256,.push 2 2112,.push 2 2368,.op .MCOPY,.op (.Swap ⟨12,by decide⟩),
- .push 0 0,.op .NOT,.op (.Swap ⟨4,by decide⟩),.push 2 5390,.op .JUMP]
+ [.op (.Dup ⟨1,by decide⟩),.push 2 2112,.push 2 2368,.op .MCOPY,
+ .op (.Swap ⟨12,by decide⟩),.push 0 0,.op .NOT,.op (.Swap ⟨4,by decide⟩),
+ .op .POP,.push 2 2720,.op .MLOAD,.push 2 5390,.op .JUMP]
+
 def entered (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : State :=
  {s with pc := UInt256.ofNat 5390, memory := memory mem, stack := saved (frame mem count width bsize esize)}
 theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
@@ -69,18 +71,31 @@ theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize es
   runInstructions,Stepper.runInstr,UInt256.isZero,UInt256.isTrue,State.activeWordsAfterUInt256,hf,hg,hd,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
  all_goals omega
-theorem run_finish (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
+theorem run_finish (s : State) (mem : ByteArray) (count : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat)
  (hd : Decode.isValidJumpDest s.executionEnv.code 5390 = true) :
- runInstructions finishProgram (state s mem 3176 count width bsize esize) =
- some (entered s mem count width bsize esize) := by
+ runInstructions finishProgram
+   (state s mem 3176 count (UInt256.ofNat 256) bsize esize) =
+ some (entered s mem count (UInt256.ofNat 256) bsize esize) := by
  have hmax : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat (2^256-1) := by decide
- have hf := Exp.activeWords_fix2 s 2368 256 2112 256 (by decide) (by decide) (by norm_num) (by norm_num) hact
- simp [hmax,finishProgram,state,entered,frame,saved,memory,StagedOperand.stage,SlimFrames.outer,
-  CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,runInstructions,Stepper.runInstr,List.exchange,
-  State.activeWordsAfterUInt256_2,hf,hd,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
-  Word.succ_ofNat_mod,Word.ofNat_add_mod]
+ have hf := Exp.activeWords_fix2 s 2368 256 2112 256 (by decide) (by decide)
+   (by norm_num) (by norm_num) hact
+ have hl := Monpro.activeWords_fix s 2720 32 (by decide) (by norm_num) hact
+ have hr := StagedOperand.read_stage_outside mem 2112 8 2720
+   (by norm_num : 2720 + 32 ≤ 2368 ∨ 2624 ≤ 2720)
+ have hr' : MachineState.readWord
+   (MachineState.writeBytes mem (MachineState.readPadded mem 2112 256) 2368) 2720 =
+   MachineState.readWord mem 2720 := by
+  simpa [StagedOperand.stage] using hr
+ simp [hmax,finishProgram,state,entered,
+   frame,saved,memory,
+   StagedOperand.stage,CycleSubmission.Global.SlimFrames.outer,
+   CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,
+   CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,runInstructions,Stepper.runInstr,List.exchange,
+   State.activeWordsAfterUInt256_2,State.activeWordsAfterUInt256,hf,hl,hd,
+   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,hr']
  all_goals decide
+
 theorem readWord (mem : ByteArray) (addr : Nat) (hd : addr+32 ≤ 2368 ∨ 2624 ≤ addr) :
  MachineState.readWord (memory mem) addr = MachineState.readWord mem addr :=
  StagedOperand.read_stage_outside mem 2112 8 addr (by simpa using hd)

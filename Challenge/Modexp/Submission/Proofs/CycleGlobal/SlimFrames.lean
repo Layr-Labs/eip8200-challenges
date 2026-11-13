@@ -13,9 +13,9 @@ def frameState (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : St
 def ridingFrame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
  {s with pc := UInt256.ofNat pc, memory := mem, stack := UInt256.ofNat (32*n) :: outer mem n bsize esize msize}
 def special (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
- {s with pc := UInt256.ofNat 3194, memory := mem, stack := [UInt256.ofNat k, UInt256.ofNat (32*n)] ++ outer mem n bsize esize msize}
+ {s with pc := UInt256.ofNat 3197, memory := mem, stack := [UInt256.ofNat (k-1), UInt256.ofNat (32*n)] ++ outer mem n bsize esize msize}
 def guardFrame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
- {s with pc := UInt256.ofNat pc, memory := mem, stack := [UInt256.ofNat 16,UInt256.ofNat (32*n)] ++ outer mem n bsize esize msize}
+ {s with pc := UInt256.ofNat pc, memory := mem, stack := [UInt256.ofNat 15,UInt256.ofNat (32*n)] ++ outer mem n bsize esize msize}
 def bailState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
  guardFrame s mem 207 n bsize esize msize
 end CycleSubmission.Global.SlimFrames

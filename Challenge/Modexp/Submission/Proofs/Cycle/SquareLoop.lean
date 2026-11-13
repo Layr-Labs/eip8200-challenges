@@ -57,7 +57,7 @@ noncomputable def oneRound (s : State) (inv : UInt256) (a n : Nat → UInt256) (
     (env : Environment Artifact.artifact .Osaka s)
     (hm : SquareMeaning.Memory0 s.memory inv a zeroWords n)
     (hc : CounterControl.counter s = UInt256.ofNat (k-1))
-    (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9, (a i).toNat < radix) (hn : ∀ i < 9, (n i).toNat < radix)
     (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
     (hinv : (N*inv.toNat+1) % 2^256 = 0)
@@ -69,7 +69,7 @@ noncomputable def oneRound (s : State) (inv : UInt256) (a n : Nat → UInt256) (
   have hsmall' : value (digits inv a n) + 2*N ≤ radix^9 := by
     simpa only [digits, ControlArithmetic.normalized, if_pos hz] using hsq
   refine ⟨Round.result s inv a n rest, digits inv a n,
-    Round.gasSteps s inv a n rest env hm hcap hact (fun i hi => ha i (by omega)) hz,
+    Round.gasSteps s inv a n rest env hm hcache hcap hact (fun i hi => ha i (by omega)) hz,
     Round.memory_output s inv a n rest hm,
     Round.frame_output s inv a n rest,
     Round.pc_output s inv a n rest k hk hk16 hc,
@@ -89,7 +89,7 @@ noncomputable def run (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest 
     (env : Environment Artifact.artifact .Osaka s)
     (hm : SquareMeaning.Memory0 s.memory inv a zeroWords n)
     (hc : CounterControl.counter s = UInt256.ofNat (k-1))
-    (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
+    (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9, (a i).toNat < radix) (hn : ∀ i < 9, (n i).toNat < radix)
     (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
     (hinv : (N*inv.toNat+1) % 2^256 = 0)
@@ -97,7 +97,7 @@ noncomputable def run (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest 
     (hN4 : 4*N ≤ radix^9) (hsmall : value a + 2*N ≤ radix^9)
     (hform : value a ≡ x*radix^9 [MOD N]) : Outcome s inv a n rest k N x := by
   obtain ⟨st, out, ht, hmem, hstack, hpc, henv, hhalt, hactive, hbound, hsm, hnext, hcounter, hkeep, hcalls⟩ :=
-    oneRound s inv a n rest k N x hk hk16 env hm hc hcap hact ha hn hn0 hNvalue hinv hN hNR hodd hN4 hsmall hform
+    oneRound s inv a n rest k N x hk hk16 env hm hc hcache hcap hact ha hn hn0 hNvalue hinv hN hNR hodd hN4 hsmall hform
   by_cases he : k = 1
   · subst k
     refine ⟨st, out, ht, hmem, hstack, ?_, henv, hhalt, hactive, hbound, hsm, ?_, hkeep, hcalls⟩
@@ -108,7 +108,7 @@ noncomputable def run (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest 
     have act : 88 ≤ st.activeWords.toNat := by rw [hactive]; exact hact
     obtain ⟨tstate, tout, ttrace, tmem, tframe, tpc, tenv, thalt, tact, tbound, tsm, tform, tkeep, tcalls⟩ :=
       run st inv out n rest (k-1) N (x*x) (by omega) (by omega)
-      en hmem (hcounter hmore) hcap act hbound hn hn0 hNvalue hinv hN hNR hodd hN4 hsm hnext
+      en hmem (hcounter hmore) hcache hcap act hbound hn hn0 hNvalue hinv hN hNR hodd hN4 hsm hnext
     have hstart : {st with pc := UInt256.ofNat 5575, stack := SquareMeaning.frame0 inv out zeroWords n (CounterControl.counter st :: rest)} = st :=
       SquareExecution.reset_self st _ _ (by simpa only [if_neg he] using hpc) hstack
     have htail : GasSteps st tstate := by

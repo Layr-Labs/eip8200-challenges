@@ -1,5 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Cycle.NormalizeMeaning
-import Challenge.Modexp.Submission.Proofs.Prepared.R9Shared.Complete
+import Challenge.Modexp.Submission.Proofs.Cycle.CachedInverse
 
 import Challenge.Modexp.Submission.Proofs.Cycle.Artifact
 set_option warningAsError true
@@ -20,7 +20,7 @@ theorem reset_self (s : State) (pc : UInt256) (stack : List UInt256)
     {s with pc := pc, stack := stack} = s := by
   rw [← hp, ← hs]
 
-def program : List Instr := R9InvConsumeComplete.program
+def program : List Instr := CachedInverse.squareProgram
 
 def memory0 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := mem
 def state0 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := s
@@ -238,13 +238,13 @@ theorem memory15_keeps (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt25
   exact h.trans (memory14_keeps mem inv a b n start count hs)
 
 theorem run (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
-    (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
+    (h : Memory0 s.memory inv a b n) (hcache : rest[1]? = some inv) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < radix) :
     runInstructions program
       {s with pc := UInt256.ofNat 5575, stack := frame0 inv a b n rest} =
       some (state15 s inv a b n rest) := by
-  have hh := R9InvConsumeComplete.run s inv a b n rest hcap hact h ha
+  have hh := CachedInverse.run s inv a b n rest hcache hcap hact h ha
   simpa only [program, R9InvConsumeComplete.historyMemory, state15, memory0, memory1, memory2, memory3, memory4, memory5, memory6, memory7, memory8, memory9, memory10, memory11, memory12, memory13, memory14, memory15, cells0, cells1, cells2, cells3, cells4, cells5, cells6, cells7, cells8, cells9, cells10, cells11, cells12, cells13, cells14, HistoricalSearch.CRTMemoryCells.storeCells, HistoricalSearch.CRTMemoryCells.writeCell] using hh
 
 theorem memory_output (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) (h : Memory0 s.memory inv a b n) :
@@ -303,26 +303,26 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 
 def block : Block Artifact.artifact .Osaka 5575 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4266 1574 5575 program
-    (by change 4266 + 1574 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4266 1573 5575 program
+    (by change 4266 + 1573 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 
 noncomputable def gasSteps (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
-    (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
+    (h : Memory0 s.memory inv a b n) (hcache : rest[1]? = some inv) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8, (a i).toNat < radix) :
     GasSteps {s with pc := UInt256.ofNat 5575, stack := frame0 inv a b n rest}
       (state15 s inv a b n rest) :=
   block.steps
     (s := {s with pc := UInt256.ofNat 5575, stack := frame0 inv a b n rest})
-    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcap hact ha)
+    (env.transfer rfl rfl) rfl (run s inv a b n rest h hcache hcap hact ha)
 
 noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
-    (h : Memory0 s.memory inv a b n) (hcap : rest.length ≤ 960)
+    (h : Memory0 s.memory inv a b n) (hcache : rest[1]? = some inv) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9, (a i).toNat < radix)
     (hb : ∀ i < 9, (b i).toNat < radix)
@@ -338,7 +338,7 @@ noncomputable def correct (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (a i).toNat) +
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (squareq inv a b n i).toNat) *
     HistoricalSearch.MixedMontgomery.weighted radix 9 (fun i => (n i).toNat)) := by
-  refine ⟨gasSteps s inv a b n rest env h hcap hact (fun i hi => ha i (by omega)), ?_⟩
+  refine ⟨gasSteps s inv a b n rest env h hcache hcap hact (fun i hi => ha i (by omega)), ?_⟩
   rw [output_value s inv a b n rest h]
   exact (squareTrace inv a b n).exact_product ha hb hn N hn0 hinv
 

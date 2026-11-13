@@ -29,6 +29,7 @@ theorem counter (s : State) (f : Caller) :
 structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   state : State
   inv : UInt256
+  inv_eq : inv = MachineState.readWord s.memory 2720
   a : Nat → UInt256
   n : Nat → UInt256
   trace : GasSteps {s with pc := UInt256.ofNat 5390, stack := saved f} state
@@ -59,7 +60,7 @@ noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (hform : A ≡ x*2^2048 [MOD N]) (hsmall : A*2^112 + 2*N ≤ radix^9) : Outcome s f k N B x := by
   have hA := scaled_represents ha
   have hN := ordinary_represents hn
-  refine ⟨EntryBinding.entered s f, MachineState.readWord s.memory 2720,
+  refine ⟨EntryBinding.entered s f, MachineState.readWord s.memory 2720, rfl,
     scaled s.memory 2368, ordinary s.memory 0,
     EntryBinding.gasSteps s f env hcap hact, rfl, rfl, memory_output s f,
     rfl, rfl, rfl, ?_, hA.1, hN.1, ?_, hN.2, hinv, ?_, ?_, rfl, ?_⟩
