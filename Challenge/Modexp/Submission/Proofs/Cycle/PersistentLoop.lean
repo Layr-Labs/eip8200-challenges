@@ -11,7 +11,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
 open CycleSubmission.WordArithmetic
 open CycleSubmission.ControlArithmetic (value)
 open CycleSubmission.SquareStep (zeroWords)
-abbrev counter := PersistentSquareLoop.counter
+abbrev counter := CachedInverse.publicCounter
 
 structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256)
  (count N x : Nat) where
@@ -20,7 +20,7 @@ structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
  trace : GasSteps {s with pc := UInt256.ofNat 5387, stack := SquareMeaning.frame0 inv a zeroWords n (counter s :: rest)} state
  memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
  frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (counter state :: rest)
- pc : state.pc = UInt256.ofNat 7678
+ pc : state.pc = UInt256.ofNat 7528
  env : state.executionEnv = s.executionEnv
  halt : state.halt = s.halt
  active : state.activeWords = s.activeWords
@@ -32,7 +32,7 @@ structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
  calls : state.callStack = s.callStack
 
 theorem installed_counter (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
- counter (PersistentBinding.installed s inv a n rest) = counter s := by rfl
+ PersistentSquareLoop.counter (PersistentBinding.installed s inv a n rest) = counter s := by rfl
 
 attribute [local irreducible] CycleSubmission.LimbMemory.store CycleSubmission.PersistentBinding.installed
 
@@ -53,11 +53,11 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  have hmi : LimbMemory.Holds si.memory inv a zeroWords n :=
   by simpa only [si, PersistentBinding.installed] using LimbMemory.install s.memory inv a zeroWords n hm
  have hci : PersistentSquareLoop.counter si = UInt256.ofNat (k-1) := by
-  change counter (PersistentBinding.installed s inv a n rest) = _
+  change PersistentSquareLoop.counter (PersistentBinding.installed s inv a n rest) = _
   rw [installed_counter]
   exact hc
  have hacti : 88 ≤ si.activeWords.toNat := by simpa only [si, PersistentBinding.installed] using hact
- obtain ⟨st,out,ht0,hmOut,hsOut,hpOut,heOut,hhOut,haOut,hboundOut,hsmOut,hfmOut,hkeepOut,hcallsOut⟩ := PersistentSquareLoop.run 5395 7668 PersistentRound.certificate si inv a n rest k N x
+ obtain ⟨st,out,ht0,hmOut,hsOut,hpOut,heOut,hhOut,haOut,hboundOut,hsmOut,hfmOut,hkeepOut,hcallsOut⟩ := PersistentSquareLoop.run 5395 7513 PersistentRound.certificate si inv a n rest k N x
   hk hk16 ei hmi hci hcache hcap hacti ha hn hn0 hNvalue hinv hN hNR hodd hN4 hsmall hform
  have hstart : {si with pc := UInt256.ofNat 5395,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter si::rest)} = si := by
   apply PersistentSquareLoop.reset_self
@@ -68,26 +68,24 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  rw [hstart] at ht
  have eout : Environment Artifact.artifact .Osaka st := ei.transfer heOut hhOut
  have hactout : 88 ≤ st.activeWords.toNat := by rw [haOut]; exact hacti
- have hr := PersistentBinding.restore_steps st inv out n rest eout hcap hactout hmOut.at1664
- have hrestore : {st with pc := UInt256.ofNat 7668,stack := PersistentSquareLoop.frame inv out n (counter st::rest)} = st :=
+ have hr := PersistentBinding.restore_steps st inv out n rest eout hcap hactout hcache hmOut.at2720
+ have hrestore : {st with pc := UInt256.ofNat 7513,stack := PersistentSquareLoop.frame inv out n (PersistentSquareLoop.counter st::rest)} = st :=
   PersistentSquareLoop.reset_self _ _ _ hpOut hsOut
  rw [hrestore] at hr
- let sf : State := {st with pc := UInt256.ofNat 7678,memory := LimbMemory.store st.memory 96 (out 5),stack := SquareMeaning.frame0 inv out zeroWords n (counter st::rest)}
- have hcounter : counter sf = counter st := by rfl
+ let sf : State := {st with pc := UInt256.ofNat 7528,memory := LimbMemory.store st.memory 96 (out 5),stack := SquareMeaning.frame0 inv out zeroWords n (PersistentSquareLoop.counter st::rest)}
+ have hcounter : counter sf = PersistentSquareLoop.counter st := by rfl
  refine ⟨sf,out,(PersistentBinding.install_steps s inv a n rest env hm hcache hcap hact).trans (ht.trans hr),
   LimbMemory.flush st.memory inv out zeroWords n hmOut,?_,rfl,
   (by simpa only [sf,si, PersistentBinding.installed] using heOut),
   (by simpa only [sf,si, PersistentBinding.installed] using hhOut),
   (by simpa only [sf,si, PersistentBinding.installed] using haOut),hboundOut,hsmOut,hfmOut,?_,
   (by simpa only [sf,si, PersistentBinding.installed] using hcallsOut)⟩
- · change SquareMeaning.frame0 inv out zeroWords n (counter st::rest) = _
+ · change SquareMeaning.frame0 inv out zeroWords n (PersistentSquareLoop.counter st::rest) = _
    rw [hcounter]
  · intro start count hlo hhi
    change MachineState.readPadded (LimbMemory.store st.memory 96 (out 5)) start count = _
    exact (LimbMemory.store_keeps_base st.memory 96 (out 5) start count hlo hhi (Or.inl (by decide))).trans
-    ((hkeepOut start count hlo hhi).trans (by
-     simpa only [si, PersistentBinding.installed] using
-      LimbMemory.store_keeps_base s.memory 1664 LimbMemory.mask start count hlo hhi (Or.inr (by decide))))
+    (by simpa only [si, PersistentBinding.installed] using hkeepOut start count hlo hhi)
 
 #print axioms run
 end CycleSubmission.PersistentLoop
