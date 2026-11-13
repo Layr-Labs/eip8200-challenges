@@ -1,3 +1,30 @@
+# RIPEMD-160: PC-sourced 720 store offset in the ordinary message prologue (615,671 gas)
+
+Parent: promoted commit `5bbac375` (accepted `f300667a`, 615,702 gas).
+
+The ordinary per-block message prologue (`PrepOrdinary5`, bytes 707..734,
+executed once per normal compression entered through the 461 loop) stored
+three resident words with `DUP9 PUSH2 720 MSTORE; DUP8 PUSH2 828 MSTORE;
+DUP11 PUSH2 612 MSTORE`. The three 32-byte stores are pairwise disjoint
+(720..751, 828..859, 612..643) and no load sits between them, so their order
+is free. They are now issued as `DUP8 PUSH3 828 MSTORE; DUP11 PUSH3 612
+MSTORE; DUP9 PC MSTORE`: the two widened pushes place the `PC` opcode at
+exactly PC 720, so `PC` (2 gas) replaces `PUSH2 720` (3 gas). The window keeps
+its 28 bytes and 17 instructions; every PC outside 707..734 is unchanged.
+This is the same `PC`-as-offset device the prologue already uses at PC 666.
+
+Gas: 1 per ordinary-prologue execution. On the corpus that is every normal
+block of the generated 64-byte (11 x 1) and 128-byte (10 x 2) inputs = 31:
+615,702 -> **615,671**.
+
+Proof: `Ordinary5.template`/`memory`, `OrdinaryMemory.memory17..19` and
+`OrdinaryCertificate.plan` follow the new store order (the final layout is
+identical, so the `decide` certificates and `model_exact` are unchanged in
+form); `CandidateArtifact` part 1 and `CandidateBytes` chunk 11 carry the new
+bytes.
+
+---
+
 # RIPEMD-160: block-minimal window tiling of the 1,000-byte recognizer (615,702 gas)
 
 Parent: promoted commit `72653d83` (accepted `ce39edff`, 615,735 gas).
