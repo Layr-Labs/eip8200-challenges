@@ -288,7 +288,7 @@ theorem valid_at (index pc : Nat) (hj : Control.Artifact.submissionArtifact.inst
   exact h
 
 theorem valid_fail : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4651 = true :=
-  valid_at 3351 4651 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3350 4651 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 theorem lor_ofNat_zero (a : UInt256) : UInt256.lor a (UInt256.ofNat 0) = a := DirectLiteralRawV4.lor_zero a
 

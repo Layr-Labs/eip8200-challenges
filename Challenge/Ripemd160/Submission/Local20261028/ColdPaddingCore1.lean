@@ -52,39 +52,39 @@ def padEntry (input : ByteArray) : State :=
 (116..123) and the footer loop tail (3412..3416) in this layout. -/
 
 @[simp] theorem padPc99 :
-    Control.Artifact.submissionArtifact.instructionPC 4018 = 6389 := by
+    Control.Artifact.submissionArtifact.instructionPC 4017 = 6389 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci99 :
-    Control.Artifact.instructionPC 4018 = 6389 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4018 = 6389
+    Control.Artifact.instructionPC 4017 = 6389 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4017 = 6389
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc108 :
-    Control.Artifact.submissionArtifact.instructionPC 4027 = 6404 := by
+    Control.Artifact.submissionArtifact.instructionPC 4026 = 6404 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci108 :
-    Control.Artifact.instructionPC 4027 = 6404 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4027 = 6404
+    Control.Artifact.instructionPC 4026 = 6404 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4026 = 6404
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc109 :
-    Control.Artifact.submissionArtifact.instructionPC 4028 = 6406 := by
+    Control.Artifact.submissionArtifact.instructionPC 4027 = 6406 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci109 :
-    Control.Artifact.instructionPC 4028 = 6406 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4028 = 6406
+    Control.Artifact.instructionPC 4027 = 6406 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4027 = 6406
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc110 :
-    Control.Artifact.submissionArtifact.instructionPC 4029 = 6407 := by
+    Control.Artifact.submissionArtifact.instructionPC 4028 = 6407 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci110 :
-    Control.Artifact.instructionPC 4029 = 6407 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4029 = 6407
+    Control.Artifact.instructionPC 4028 = 6407 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4028 = 6407
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc114 :
@@ -179,79 +179,79 @@ def padEntry (input : ByteArray) : State :=
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3607 :
-    Control.Artifact.submissionArtifact.instructionPC 4100 = 6496 := by
+    Control.Artifact.submissionArtifact.instructionPC 4099 = 6496 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3607 :
-    Control.Artifact.instructionPC 4100 = 6496 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4100 = 6496
+    Control.Artifact.instructionPC 4099 = 6496 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4099 = 6496
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3608 :
-    Control.Artifact.submissionArtifact.instructionPC 4101 = 6497 := by
+    Control.Artifact.submissionArtifact.instructionPC 4100 = 6497 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3608 :
-    Control.Artifact.instructionPC 4101 = 6497 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4101 = 6497
+    Control.Artifact.instructionPC 4100 = 6497 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4100 = 6497
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3609 :
-    Control.Artifact.submissionArtifact.instructionPC 4102 = 6498 := by
+    Control.Artifact.submissionArtifact.instructionPC 4101 = 6498 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3609 :
-    Control.Artifact.instructionPC 4102 = 6498 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4102 = 6498
+    Control.Artifact.instructionPC 4101 = 6498 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4101 = 6498
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3610 :
-    Control.Artifact.submissionArtifact.instructionPC 4103 = 6499 := by
+    Control.Artifact.submissionArtifact.instructionPC 4102 = 6499 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3610 :
-    Control.Artifact.instructionPC 4103 = 6499 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4103 = 6499
+    Control.Artifact.instructionPC 4102 = 6499 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4102 = 6499
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3611 :
-    Control.Artifact.submissionArtifact.instructionPC 4104 = 6500 := by
+    Control.Artifact.submissionArtifact.instructionPC 4103 = 6500 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3611 :
-    Control.Artifact.instructionPC 4104 = 6500 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4104 = 6500
+    Control.Artifact.instructionPC 4103 = 6500 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4103 = 6500
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3612 :
-    Control.Artifact.submissionArtifact.instructionPC 4105 = 6501 := by
+    Control.Artifact.submissionArtifact.instructionPC 4104 = 6501 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3612 :
-    Control.Artifact.instructionPC 4105 = 6501 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4105 = 6501
+    Control.Artifact.instructionPC 4104 = 6501 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4104 = 6501
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPc3613 :
-    Control.Artifact.submissionArtifact.instructionPC 4106 = 6503 := by
+    Control.Artifact.submissionArtifact.instructionPC 4105 = 6503 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 set_option maxRecDepth 100000 in
 @[simp] theorem padPci3613 :
-    Control.Artifact.instructionPC 4106 = 6503 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4106 = 6503
+    Control.Artifact.instructionPC 4105 = 6503 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4105 = 6503
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem initializedCalldata (input : ByteArray) :

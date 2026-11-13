@@ -1,4 +1,30 @@
-# RIPEMD-160: three padding-word folds and two shuffle removals per compression
+# RIPEMD-160: round-49 filler removal in the normal compressor (615,971 gas)
+
+This candidate removes one more fall-through-only `JUMPDEST` from the hot
+normal-compressor path of the promoted 616,013-gas artifact (submission
+`5f01fde9`), keeping the bytecode at exactly 10,511 bytes.
+
+**Normal49.** Paired round 49 of the normal compressor (`RawPaired49`,
+bytes 3253..3293) ended with `PUSH1 0x17; SHR; DUP4; AND; JUMPDEST`. The
+`JUMPDEST` at PC 3293 is not a jump target: no pushed constant equals 3293,
+and the computed jumps (PC 4623 trampoline table, 4821 length dispatch,
+6408 and 6500 output loops) all land in other regions. It is rewritten to
+`PUSH2 0x0017; SHR; DUP4; AND`; the widened push absorbs the freed byte, so
+PC 3294 and every later byte are unchanged. One instruction and 1 gas are
+removed per normal compression (42 executions on the corpus):
+616,013 -> **615,971**. This is the same technique as the promoted A1 edit
+in round 16 (PC 1774).
+
+Decoded instructions: 7,015 -> 7,014. Byte-diversity budget unchanged at
+15,065 (limit 15,066).
+
+Decoded-byte SHA-256:
+`faec025122cdd90d5b35fc21f5a3722c6c1fae38018b6b76f8bd0d393a01bde8`.
+
+---
+
+## Inherited description (parent 5f01fde9 and earlier)
+
 
 This candidate stacks two independent local savings on the promoted
 616,790-gas parent and keeps the bytecode at 10,511 bytes.

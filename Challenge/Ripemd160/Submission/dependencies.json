@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "5f01fde9-3006-4434-9b32-3d338c121fef",
+    "rationale": "Direct source and proof-tree parent: the promoted 616,013-gas frontier (Pad49 + A1 filler removals). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
+    "evidence": "This candidate applies the same same-length filler-removal technique as that submission's A1 change, to round 49 of the normal compressor (RawPaired49, bytes 3288..3293), and rebases the decoded-instruction indices after it by one, based on the Submission tree at bfa4840ca8db4910ddd64ecc6cd60e20553373c5."
+  },
+  {
     "submissionId": "354bc894-43bd-4043-bdbc-c3c94a430b78",
     "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and correctness infrastructure is retained.",
     "evidence": "This candidate changes three padding-block round templates (constant message word folded into the round key), the templates of paired rounds 15, 16, 48 and 49 in both compressors (one stack shuffle removed in each pair), four gas-neutral commutative operand orders, and the byte/PC bindings and schedules of the rounds that move, based on the Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
