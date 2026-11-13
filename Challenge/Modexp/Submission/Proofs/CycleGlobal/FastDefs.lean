@@ -94,7 +94,7 @@ private theorem fastPCAnchor15 :
   interval_cases i <;> rfl
 @[simp] theorem fastPC2 (i : Nat) (hi : 456 ≤ i) (hii : i ≤ 467) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([649, 650, 653, 654, 655, 656, 657, 658, 659, 660, 661, 664] : List Nat)[i - 456]! := by
+      ([649, 650, 653, 654, 655, 656, 657, 658, 659, 660, 663, 664] : List Nat)[i - 456]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem fastPC8 (i : Nat) (hi : 468 ≤ i) (hii : i ≤ 473) :
@@ -135,7 +135,7 @@ theorem jumpDest3412 :
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3461 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2671
+  have h := CycleSubmission.Global.Binding.jumpDest 2668
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
@@ -145,12 +145,12 @@ theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 6
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3687 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2835
+  have h := CycleSubmission.Global.Binding.jumpDest 2832
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3676 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2828
+  have h := CycleSubmission.Global.Binding.jumpDest 2825
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h

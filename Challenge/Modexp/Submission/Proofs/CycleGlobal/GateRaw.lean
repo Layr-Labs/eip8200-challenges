@@ -35,7 +35,7 @@ def prefixProgram : List Instr :=
 def testProgram : List Instr :=
  [.op (.Dup ⟨15,by decide⟩),.push 1 96,.op .ADD,.op .CALLDATALOAD,
   .push 1 232,.op .SHR,.push 3 65537,.op .EQ,.push 2 512,.op .MLOAD,
-  .op .AND,.op .JUMPDEST,.push 2 15,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
+  .op .AND,.push 3 15,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
   .push 2 3197,.op .JUMPI]
 def guardProgram : List Instr := prefixProgram ++ testProgram
 def frame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
