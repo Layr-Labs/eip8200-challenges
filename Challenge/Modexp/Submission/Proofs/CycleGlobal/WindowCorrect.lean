@@ -91,7 +91,7 @@ def handledOf (route : WindowRoute.Route)
 
       · exact ⟨ZeroMod12.finalState (initialState CycleSubmission.Artifact.bytecode input 0),
           ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
-          ZeroMod12.isDone _ rfl, ZeroMod12.result _ input h12 hz⟩
+          ZeroMod12.isDone _ rfl, ZeroMod12.result _ input h12 hz rfl⟩
 
 private noncomputable def chosenFinal (route : WindowRoute.Route)
     (fastHandled : ∀ input : ByteArray, ValidInput input →

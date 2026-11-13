@@ -728,7 +728,7 @@ private theorem instructionsPart65_wf :
   all_goals decide
 
 private def instructionsPart66 : List Instr :=
-  [i35,i31,i3,i37,i3,i31,i38,i43,.push 2 673,i34,i23,i23,i18,.push 1 12,i23,i65]
+  [i35,i31,i3,i37,i3,i31,i38,i43,.push 2 673,i34,.push 1 12,i23,i65,.op .STOP,.op .STOP,.op .STOP]
 
 private theorem instructionsPart66_wf :
     instructionsPart66.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
