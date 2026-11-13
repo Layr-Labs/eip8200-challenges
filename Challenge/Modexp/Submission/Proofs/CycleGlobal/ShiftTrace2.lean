@@ -62,7 +62,7 @@ theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, jumpDest5366]
+      Challenge.EvmProof.Word.ofNat_add_mod]
 
 theorem run_shiftHead_go_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hw : n = 4)
@@ -87,7 +87,7 @@ theorem run_shiftHead_go_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod, jumpDest5366]
+      Challenge.EvmProof.Word.ofNat_add_mod]
 
 /-- `blk3018`: `MCOPY(TN, TS, s32)` (the retained accumulator shifted up one limb) and `t[0] := 0`. -/
 theorem run_shiftBody (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

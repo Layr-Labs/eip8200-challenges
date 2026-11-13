@@ -29,13 +29,12 @@ theorem booleanMiss (a b c d : UInt256)
      decide
  · by_cases h2 : c = d <;> simp [CycleSubmission.Global.DirectWordMath.eq_word,h1,h2] <;> decide
 
-def prefixProgram : List Instr :=
- [.op .JUMPDEST,.op (.Swap ⟨15,by decide⟩),.op (.Dup ⟨0,by decide⟩),
-  .push 1 3,.op .EQ,.push 2 512,.op .MSTORE,.op (.Swap ⟨15,by decide⟩)]
+def prefixProgram : List Instr := [.op .JUMPDEST]
 def testProgram : List Instr :=
  [.op (.Dup ⟨15,by decide⟩),.push 1 96,.op .ADD,.op .CALLDATALOAD,
-  .push 1 232,.op .SHR,.push 3 65537,.op .EQ,.push 2 512,.op .MLOAD,
-  .op .AND,.op .JUMPDEST,.push 2 15,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
+  .push 1 232,.op .SHR,.push 11 65537,.op .EQ,
+  .push 1 32,.op .CALLDATALOAD,.push 1 3,.op .EQ,.op .AND,
+  .push 3 15,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
   .push 2 3197,.op .JUMPI]
 def guardProgram : List Instr := prefixProgram ++ testProgram
 def frame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
@@ -65,7 +64,7 @@ theorem pointer (bsize : Nat) (hb : bsize ≤ 1024) :
 
 def storedFrame (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
  {s with
-   pc := UInt256.ofNat 2317
+   pc := UInt256.ofNat 2307
    memory := GateScratch.memory mem esize
    stack := SlimFrames.outer mem n bsize esize msize}
 
@@ -84,10 +83,11 @@ theorem run_prefix (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 theorem run_test_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true)
+ (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3) :
  runInstructions testProgram (storedFrame s mem n bsize 3 msize) =
    some (CycleSubmission.Global.SlimFrames.special s (GateScratch.memory mem 3) n bsize 3 msize 16) := by
- simp only [CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.guardFrame, GateScratch.outer]
+ simp only [CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.guardFrame, GateScratch.memory]
  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 512 32) = s.activeWords :=
   Monpro.activeWords_fix s 512 32 (by decide) (by norm_num) hact
  have hp : (96+bsize) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 96+bsize := Nat.mod_eq_of_lt (by omega)
@@ -97,17 +97,18 @@ theorem run_test_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  have hs : UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat 3) = UInt256.ofNat 0 := by decide
  have ho : UInt256.lor (UInt256.ofNat 0) (UInt256.ofNat 0) = UInt256.ofNat 0 := by decide
  simp [testProgram,storedFrame,List.exchange, CycleSubmission.Global.SlimFrames.special, runInstructions, Stepper.runInstr, frame,
-   CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer, CycleSubmission.Global.DirectWordMath.eq_word,GateScratch.value, GateScratch.outer, GateScratch.readValue, Memory.readWord_writeWord, State.activeWordsAfterUInt256, haw, pointer bsize hb, hp, he', hx, hs, ho,
+   CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer, CycleSubmission.Global.DirectWordMath.eq_word,GateScratch.value, GateScratch.memory,  Memory.readWord_writeWord, State.activeWordsAfterUInt256, haw, pointer bsize hb, hp, hsize, he', hx, hs, ho,
    hd, UInt256.isZero, UInt256.isTrue, Word.literal_eq_ofNat, Word.word_toNat_ofNat,
    Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
 theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (hc : UInt256.isTrue (guardValue s bsize esize))
- :
+
+ (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize) :
  runInstructions testProgram (storedFrame s mem n bsize esize msize) =
    some (CycleSubmission.Global.SlimFrames.guardFrame s (GateScratch.memory mem esize) 2345 n bsize esize msize) := by
- simp only [CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.guardFrame, GateScratch.outer]
+ simp only [CycleSubmission.Global.SlimFrames.special, CycleSubmission.Global.SlimFrames.guardFrame, GateScratch.memory]
  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 512 32) = s.activeWords :=
   Monpro.activeWords_fix s 512 32 (by decide) (by norm_num) hact
  have hp : (96+bsize) % 115792089237316195423570985008687907853269984665640564039457584007913129639936 = 96+bsize := Nat.mod_eq_of_lt (by omega)
@@ -115,25 +116,27 @@ theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
    (UInt256.ofNat 65537) (exponentWord s bsize) hc
  simp only [exponentWord] at hmask
  simp [testProgram,storedFrame,List.exchange, runInstructions, Stepper.runInstr, frame, CycleSubmission.Global.SlimFrames.bailState, SlimFrames.guardFrame, SlimFrames.ridingFrame, CycleSubmission.Global.SlimFrames.ridingFrame, CycleSubmission.Global.SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer,
-   GateScratch.value, GateScratch.outer, GateScratch.readValue, Memory.readWord_writeWord, State.activeWordsAfterUInt256, haw, pointer bsize hb, hp, hmask, UInt256.isZero, UInt256.isTrue,
+   GateScratch.value, GateScratch.memory,  Memory.readWord_writeWord, State.activeWordsAfterUInt256, haw, pointer bsize hb, hp, hsize, hmask, UInt256.isZero, UInt256.isTrue,
    Word.literal_eq_ofNat, Word.word_toNat_ofNat, Word.succ_ofNat_mod, Word.ofNat_add_mod]
 
 theorem run_guard_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3197 = true)
+ (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3) :
  runInstructions guardProgram (frame s mem 2306 n bsize 3 msize) =
  some (SlimFrames.special s (GateScratch.memory mem 3) n bsize 3 msize 16) := by
  exact runInstructions_append_some _ _ _ _ _ (run_prefix s mem n bsize 3 msize hact)
-  (run_test_hit s mem n bsize msize hb hact he hd)
+  (run_test_hit s mem n bsize msize hb hact he hd hsize)
 
 theorem run_guard_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
- (hc : UInt256.isTrue (guardValue s bsize esize)) :
+ (hc : UInt256.isTrue (guardValue s bsize esize))
+ (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize) :
  runInstructions guardProgram (frame s mem 2306 n bsize esize msize) =
  some (SlimFrames.guardFrame s (GateScratch.memory mem esize) 2345 n bsize esize msize) := by
  exact runInstructions_append_some _ _ _ _ _ (run_prefix s mem n bsize esize msize hact)
-  (run_test_miss s mem n bsize esize msize hb hact hc)
+  (run_test_miss s mem n bsize esize msize hb hact hc hsize)
 
 theorem miss_size (s : State) (bsize esize : Nat)
  (he : UInt256.ofNat esize ≠ UInt256.ofNat 3) : UInt256.isTrue (guardValue s bsize esize) := by
