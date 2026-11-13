@@ -1,3 +1,35 @@
+# RIPEMD-160: single-swap restack of the first-block PrefixAfter tail (615,572 gas)
+
+Parent: promoted commit `59b3f549` (accepted `bf0fdb3b`, 615,671 gas).
+
+The `PrefixAfter` window (PC 10185..10421, `PrepPrefixAfter.template`) runs
+once per first compression (11 times on the corpus). From the round value
+`b` it builds the stack `[P, H, N, T, E, x0..]` for the shared continuation
+at 930. The old order computed `e`, `f`, `g`, `H`, `E` and then `T`, and
+needed `SWAP2; SWAP1; SWAP3; SWAP2` to restack (57 instructions, 177 gas
+from the resident `PUSH2 144` on).
+
+The new order builds the frame bottom-up: `T` from `DUP1` of `b`, then the
+constant `N`, then `e` and `E = (e << 144) | x8` from `DUP1` of `e`; a single
+`SWAP4` drops `E` into `b`'s slot and lifts `b` for its last use in
+`f = ((M | b) ^ e) + m[728] + C`, which also consumes `e`. `g` and `H` then
+land on top of `N` with no further swaps. 54 instructions, 168 gas: -9 gas
+per execution, 615,671 -> **615,572**.
+
+Width: three pushes are widened (`PUSH2 23`, `PUSH3 144`, `PUSH3 24`) so the
+window keeps 237 bytes; PC 10422 and every later byte are unchanged. The
+instruction count drops 7,008 -> 7,005 (part 36: 96 -> 93), so the
+`jumpSite` slice index moves 7006 -> 7003. Byte-diversity budget 15,065
+(limit 15,066).
+
+Proof: `PrefixAfter.outputs` is unchanged; `run` gains one rewrite
+`xor_lor_literal` (`(M | y) ^ z = z ^ (y | M)`, from
+`RawExpressionAC.xor_comm` / `lor_comm`). `FirstPrologue.after`,
+`CandidateArtifact` part 36, `CandidateBytes` chunks 159..162 and
+`bytecode.hex` carry the new bytes.
+
+---
+
 # RIPEMD-160: PC-sourced 720 store offset in the ordinary message prologue (615,671 gas)
 
 Parent: promoted commit `5bbac375` (accepted `f300667a`, 615,702 gas).

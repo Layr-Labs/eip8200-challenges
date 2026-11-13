@@ -60,6 +60,10 @@ private theorem hsub_xor_literal (y : UInt256) :
       UInt256.add (UInt256.ofNat 5708990770823839524233143877797980550169194198)
         (UInt256.xor y (UInt256.lnot (UInt256.ofNat 48402048319894885521722115772514))) :=
   sub_xor_literal y
+private theorem xor_lor_literal (y z : UInt256) :
+    UInt256.xor (UInt256.lor (UInt256.ofNat 115792089237316195423570985008687907853269984589643833456955557596096051140672) y) z =
+      UInt256.xor z (UInt256.lor y (UInt256.ofNat 115792089237316195423570985008687907853269984589643833456955557596096051140672)) := by
+  rw [RawExpressionAC.xor_comm, RawExpressionAC.lor_comm (UInt256.ofNat 115792089237316195423570985008687907853269984589643833456955557596096051140672) y]
 namespace PrefixAfter
 def template : List Instr := [
 .push ⟨4, by decide⟩ (UInt256.ofNat 937819299),
@@ -76,26 +80,39 @@ def template : List Instr := [
 .op .ADD,
 .op (.Dup ⟨2, by decide⟩),
 .op .AND,
-.push ⟨2, by decide⟩ (UInt256.ofNat 144),
-.push ⟨14, by decide⟩ (UInt256.ofNat 48402048319894885521722115772514),
+.op (.Dup ⟨0, by decide⟩),
 .op (.Dup ⟨2, by decide⟩),
+.op .MUL,
+.push ⟨2, by decide⟩ (UInt256.ofNat 23),
+.op .SHR,
+.push ⟨3, by decide⟩ (UInt256.ofNat 144),
+.op .SHL,
+.op (.Dup ⟨9, by decide⟩),
+.op .OR,
+.push ⟨32, by decide⟩ (UInt256.ofNat 1079401746668943083099658476574876559591009258535258467804039595810196103937),
+.push ⟨14, by decide⟩ (UInt256.ofNat 48402048319894885521722115772514),
+.op (.Dup ⟨3, by decide⟩),
 .op .XOR,
 .push ⟨20, by decide⟩ (UInt256.ofNat 5708990770823839524233143877797980550169194197),
 .op .SUB,
-.op (.Dup ⟨4, by decide⟩),
+.op (.Dup ⟨5, by decide⟩),
 .op .AND,
-.op (.Dup ⟨3, by decide⟩),
+.op (.Dup ⟨4, by decide⟩),
 .op .MUL,
-.push ⟨2, by decide⟩ (UInt256.ofNat 24),
+.push ⟨3, by decide⟩ (UInt256.ofNat 24),
 .op .SHR,
-.op (.Dup ⟨10, by decide⟩),
+.op (.Dup ⟨11, by decide⟩),
 .op .ADD,
-.op (.Dup ⟨4, by decide⟩),
+.op (.Dup ⟨5, by decide⟩),
 .op .AND,
-.push ⟨32, by decide⟩ (UInt256.ofNat 115792089237316195423570985008687907853269984589643833456955557596096051140672),
-.op (.Dup ⟨3, by decide⟩),
+.op (.Dup ⟨0, by decide⟩),
+.push ⟨1, by decide⟩ (UInt256.ofNat 144),
+.op .SHL,
+.op (.Dup ⟨13, by decide⟩),
 .op .OR,
-.op (.Dup ⟨1, by decide⟩),
+.op (.Swap ⟨3, by decide⟩),
+.push ⟨32, by decide⟩ (UInt256.ofNat 115792089237316195423570985008687907853269984589643833456955557596096051140672),
+.op .OR,
 .op .XOR,
 .push ⟨2, by decide⟩ (UInt256.ofNat 728),
 .op .MLOAD,
@@ -112,26 +129,10 @@ def template : List Instr := [
 .op .ADD,
 .op (.Dup ⟨5, by decide⟩),
 .op .AND,
-.op (.Dup ⟨2, by decide⟩),
+.push ⟨2, by decide⟩ (UInt256.ofNat 144),
 .op .SHL,
 .op (.Dup ⟨13, by decide⟩),
 .op .OR,
-.op (.Swap ⟨1, by decide⟩),
-.op .SHL,
-.op (.Dup ⟨11, by decide⟩),
-.op .OR,
-.push ⟨32, by decide⟩ (UInt256.ofNat 1079401746668943083099658476574876559591009258535258467804039595810196103937),
-.op (.Swap ⟨0, by decide⟩),
-.op (.Swap ⟨2, by decide⟩),
-.op (.Dup ⟨4, by decide⟩),
-.op .MUL,
-.push ⟨2, by decide⟩ (UInt256.ofNat 23),
-.op .SHR,
-.push ⟨2, by decide⟩ (UInt256.ofNat 144),
-.op .SHL,
-.op (.Dup ⟨11, by decide⟩),
-.op .OR,
-.op (.Swap ⟨1, by decide⟩),
 .push ⟨32, by decide⟩ (UInt256.ofNat 1694783724641757432256729705924912625215692456039486305160589352908033810928)]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
@@ -167,7 +168,7 @@ theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, hzero,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat,
     Word.literal_eq_ofNat, add_literals, hadd_literals, sub_literal, hsub_literal,
-    sub_xor_literal, hsub_xor_literal]
+    sub_xor_literal, hsub_xor_literal, xor_lor_literal]
   all_goals repeat first | apply And.intro | rfl
 #print axioms exact_bytes
 #print axioms run
