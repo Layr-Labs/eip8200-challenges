@@ -1,3 +1,33 @@
+# RIPEMD-160: redundant 1,000-byte window checks retired to dead tail bytes (615,735 gas)
+
+Parent: promoted commit `d81adc41` (accepted `65de591d`, 615,771 gas).
+
+The 1,000-byte patterned recognizer (PC 5829, instructions 3673..3848) ORs
+28 calldata window differences and then jumps to the shared chain at 4931.
+Two of those pairs, `(364, 219)` and `(509, 219)`, are implied by the rest of
+the cover: `WindowCover.cover1000` still holds (`by decide`) for the plan
+without them. Both compare items (`PUSH2 o; CALLDATALOAD; PUSH1 219;
+CALLDATALOAD; XOR; OR`, 18 gas each) are dropped from `items1000`.
+
+The arm tail (`eq 470 69`, the literal window at 369, `eq 514 369`,
+`eq 915 369`, `PUSH2 4931; JUMP`) moves 18 bytes earlier. The freed 18 bytes
+(12 instructions) sit after the arm's unconditional `JUMP` and before the
+`JUMPDEST` at 6144, so they are never executed: `PUSH2 0x1343; JUMP` three
+times, then six `JUMP`. No `0x5b` byte is added, so the valid-jumpdest set is
+unchanged; length (10,511) and instruction count are unchanged, so every PC
+and instruction index outside 6056..6143 is unchanged. Byte-diversity
+budget: 15,066 -> 15,062 (limit 15,066).
+
+Gas: 36 on the `1000-byte` vector only (the `1000 a's` vector branches to
+6144 before the arm): 615,771 -> **615,735**.
+
+Proof: `items1000` and `plan1000` lose the two entries;
+`CandidateArtifact` parts 19/20 and `CandidateBytes` chunks 94/95 are
+regenerated. `a1000Template` keeps its shape (store, head, items, jump), so
+`run_items`, `plan1000_mem` and `result1000` are reused unchanged.
+
+---
+
 # RIPEMD-160: MSIZE offsets in the 1,000-byte arm, diversity-neutral pads (615,771 gas)
 
 Port of kaankolcu's `02dd6793` (MSIZE offsets in the 1,000-byte arm) onto the
