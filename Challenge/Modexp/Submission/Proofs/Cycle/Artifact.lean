@@ -269,7 +269,7 @@ private theorem instructionsPart14_wf :
   all_goals decide
 
 private def instructionsPart15 : List Instr :=
-  [i0,i23,i29,i5,i26,i0,.op .CLZ,i0,i55,i3,.push 2 1600,i18,.push 1 255,i29,.push 2 1536,i18,i16,.op .DIV,i0,.push 2 1568,i18,i0,i0,i23,i29,.op .MOD,.push 2 1632,i18,.push 2 2752,i2,i2,i0,i14,i6,i0,i81,i6,.push 1 2,.op .XOR,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i15,i6,.push 1 2,i29,i6,i0,i15,i6,.push 2 1664,i18,i6,i23,i29,i64,i18,.push 2 2306,i19,i55,.op .XOR,.push 2 2588,i34,.push 2 2656,i2,i31,i23,.op .BYTE,i81,.op .EQ,.push 2 1621,i6,i3,i20,i35,i2,i36,i43,.push 2 1536,i2,.push 2 1568,i2,.push 2 1664,i2,.push 2 1632,i2,.push 2 1504,i2,.push 2 1472,i2,.push 2 1440,i2,.push 2 1408,i2,i83,i2,i82,i2,.push 2 1312,i2]
+  [i0,i23,i29,i5,i26,i20,.op .CLZ,i0,i55,i3,.push 2 1600,i18,.push 1 255,i29,i0,.push 2 1536,i18,i43,i0,.push 2 1568,i18,i0,i0,i23,i29,.op .MOD,.push 2 1632,i18,.push 2 2752,i2,i2,i0,i14,i6,i0,i81,i6,.push 1 2,.op .XOR,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i14,i6,.push 1 2,i29,i6,i0,i15,i6,.push 1 2,i29,i6,i0,i15,i6,.push 2 1664,i18,i6,i23,i29,i64,i18,.push 2 2306,i19,i55,.op .XOR,.push 2 2588,i34,.push 2 2656,i2,i31,i23,.op .BYTE,i81,.op .EQ,.push 2 1621,i6,i3,i20,i35,i2,i36,i43,.push 2 1536,i2,.push 2 1568,i2,.push 2 1664,i2,.push 2 1632,i2,.push 2 1504,i2,.push 2 1472,i2,.push 2 1440,i2,.push 2 1408,i2,i83,i2,i82,i2,.push 2 1312,i2]
 
 private theorem instructionsPart15_wf :
     instructionsPart15.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
@@ -296,7 +296,7 @@ private theorem instructionsPart17_wf :
   all_goals decide
 
 private def instructionsPart18 : List Instr :=
-  [i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,i56,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,i45,i2,i5,i3,i0,i45,i18,i5,i46,i17,i46,i29,i29,i3,i54,i2,i3,i29,i0,i20,i20,.push 3 3055,i34,i16,i40,i20,i76,i20,i3,i0,i14,i34,i20,i40,i74,i44,.push 1 0,i20,i54,i18,i40,i20,i23,.push 2 2784,i2,i20,i0,i2,i45,i14,i29,i2,i5,i3,i16,i5,i52,i16,i7,i3,i28,i7,i52,i59,i15,i5,i18,.push 1 31,i76,i3,.push 2 2111,i5,i46,.push 2 3067,i34,i40,i54,i2,i5,i3,i0,i54,i18,i52,i85,.push 2 3061,i34,i54,i2,i0,i85,.push 2 3042,i34,i23,i23,i20,i45,i2,.push 32 115792089237316195423570985008687818650289190543147997896584493414467105718271,i52,.push 1 207,i34]
+  [i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,i56,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,i45,i2,i5,i3,i0,i45,i18,i5,i46,i17,i46,i29,i29,i3,i54,i2,i3,i29,i0,i20,.push 4 3055,i34,i16,i40,i20,i76,i3,i0,i14,i34,i20,i40,i74,i44,.op .STOP,.op .STOP,.op .STOP,i20,i54,i18,i40,i20,i23,.push 2 2784,i2,i20,i0,i2,i45,i14,i29,i2,i5,i3,i16,i5,i52,i16,i7,i3,i28,i7,i52,i59,i15,i5,i18,.push 1 31,i76,i3,.push 2 2111,i5,i46,.push 2 3067,i34,i40,i54,i2,i5,i3,i0,i54,i18,i52,i85,.push 2 3061,i34,i54,i2,i0,i85,.push 2 3042,i34,i23,i23,i20,i45,i2,.push 32 115792089237316195423570985008687818650289190543147997896584493414467105718271,i52,.push 1 207,i34]
 
 private theorem instructionsPart18_wf :
     instructionsPart18.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
@@ -719,7 +719,7 @@ private theorem instructionsPart64_wf :
   all_goals decide
 
 private def instructionsPart65 : List Instr :=
-  [i29,i29,i5,i27,i6,i7,i25,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2176,i2,i5,i3,i0,.push 2 2176,i18,i5,i46,i17,i46,i29,i29,i3,i5,i24,i6,i7,i27,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2144,i2,i5,i3,i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,i56,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,i45,i2,i5,i3,i0,i45,i18,i5,i46,i17,i46,i29,i29,i3,i54,i2,i3,i29,i0,i20,i20,.push 2 3055,i34,i16,i40,i76,i3,i0,i14,i34,i40,i74,i44,i20,i5,i76,i5,i3,.push 2 717,i34,.push 2 10616,i44,i20,i40,.push 2 673,i44,i20,.push 1 12,.op .XOR,.push 2 3416,i34,i23,i31,i35]
+  [i29,i29,i5,i27,i6,i7,i25,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2176,i2,i5,i3,i0,.push 2 2176,i18,i5,i46,i17,i46,i29,i29,i3,i5,i24,i6,i7,i27,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2144,i2,i5,i3,i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,i56,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,i45,i2,i5,i3,i0,i45,i18,i5,i46,i17,i46,i29,i29,i3,i54,i2,i3,i29,i0,.push 4 3055,i34,i16,i40,i76,i3,i0,i14,i34,i40,i74,i44,i20,i5,i76,i5,i3,.push 2 717,i34,.push 2 10616,i44,i20,i40,.push 2 673,i44,i20,.push 1 12,.op .XOR,.push 2 3416,i34,i23,i31,i35,i31,i3]
 
 private theorem instructionsPart65_wf :
     instructionsPart65.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
@@ -728,7 +728,7 @@ private theorem instructionsPart65_wf :
   all_goals decide
 
 private def instructionsPart66 : List Instr :=
-  [i31,i3,i37,i3,i31,i38,i43,.push 2 673,i34,.push 1 12,i23,i65,.op .STOP,.op .STOP,.op .STOP]
+  [i37,i3,i31,i38,i43,.push 2 673,i34,.push 1 12,i23,i65,.op .STOP,.op .STOP,.op .STOP,.op .STOP,.op .STOP]
 
 private theorem instructionsPart66_wf :
     instructionsPart66.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
@@ -765,7 +765,7 @@ def artifact : ProgramArtifact where
 theorem wellFormed : AllWellFormed artifact .Osaka := by
   unfold AllWellFormed artifact instructions
   simp only [List.all_append,instructionsPart0_wf,instructionsPart1_wf,instructionsPart2_wf,instructionsPart3_wf,instructionsPart4_wf,instructionsPart5_wf,instructionsPart6_wf,instructionsPart7_wf,instructionsPart8_wf,instructionsPart9_wf,instructionsPart10_wf,instructionsPart11_wf,instructionsPart12_wf,instructionsPart13_wf,instructionsPart14_wf,instructionsPart15_wf,instructionsPart16_wf,instructionsPart17_wf,instructionsPart18_wf,instructionsPart19_wf,instructionsPart20_wf,instructionsPart21_wf,instructionsPart22_wf,instructionsPart23_wf,instructionsPart24_wf,instructionsPart25_wf,instructionsPart26_wf,instructionsPart27_wf,instructionsPart28_wf,instructionsPart29_wf,instructionsPart30_wf,instructionsPart31_wf,instructionsPart32_wf,instructionsPart33_wf,instructionsPart34_wf,instructionsPart35_wf,instructionsPart36_wf,instructionsPart37_wf,instructionsPart38_wf,instructionsPart39_wf,instructionsPart40_wf,instructionsPart41_wf,instructionsPart42_wf,instructionsPart43_wf,instructionsPart44_wf,instructionsPart45_wf,instructionsPart46_wf,instructionsPart47_wf,instructionsPart48_wf,instructionsPart49_wf,instructionsPart50_wf,instructionsPart51_wf,instructionsPart52_wf,instructionsPart53_wf,instructionsPart54_wf,instructionsPart55_wf,instructionsPart56_wf,instructionsPart57_wf,instructionsPart58_wf,instructionsPart59_wf,instructionsPart60_wf,instructionsPart61_wf,instructionsPart62_wf,instructionsPart63_wf,instructionsPart64_wf,instructionsPart65_wf,instructionsPart66_wf,instructionsPart67_wf,Bool.and_self]
-theorem bytecodeSize : bytecode.size = 10987 := by
+theorem bytecodeSize : bytecode.size = 10989 := by
   simp only [bytecode,ByteArray.size_append]
   decide
 end CycleSubmission.Artifact
