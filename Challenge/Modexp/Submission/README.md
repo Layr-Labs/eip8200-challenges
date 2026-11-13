@@ -1,21 +1,7 @@
-# Shorter cached-inverse loader
+# Estimator shift and general continuation padding
 
-The current runtime uses the five-instruction inverse loader, with a local protected native score of 354,632 gas, 44/44 correct. Canonical validation passed all 3,609 Lean jobs, the permitted-axiom audit and independent kernel replay; the ranked score is 354,632 gas with 44/44 correct vectors. The eight current references are in dependencies.json. Instruction indices 2990 through 4265 are advanced by one after a dead instruction split, then restored by the shorter loader. No jump target moves.
+Retains the published CLZ-derived estimator shift and removes padding at PCs 3034 and 3044. A wider equal-valued push absorbs the first site; the second shifts its following eight bytes left and adds a dead STOP. The general exit is PC 3048 and transfer PC 3050. Runtime remains 10987 bytes and 8463 instructions.
 
-The following records the preceding submitted 18-gas cache candidate, 1da7fc08-4a55-45db-a30b-ca01cc6a28d9.
+Pinned native scoring passes 44/44 at 354588 gas, 44 below the promoted runtime and 28 below the published shift source. All 569 scratch Lean modules pass with only the permitted axioms. Canonical 3609-job build, permitted-axiom audit and independent kernel replay passed; protected scoring is 354588 gas, 44/44 correct.
 
-# Cached inverse for the fixed eight-limb square loop
-
-The current candidate additionally caches memory word 2720 in the opaque caller pbi slot. `Proofs/Cycle/CachedInverse.lean` proves the changed loader and complete kernel; entry, round and caller contracts carry the cache equality. The protected native measurement is 354,649 gas, 44/44 passing. Canonical verification passed all 3,609 Lean jobs, the permitted-axiom audit and independent kernel replay; the ranked score is 354,649 gas, 44/44 correct. The current seven references, including the now-published combined predecessor bf974ce1-6e61-4bb0-ab92-bef635df8615, are declared in dependencies.json.
-
-The following measurements and dependency history describe the preceding combined candidate.
-
-This runtime combines the verified initial-memory zero-modulus return with the published cached-chooser reversal, padding absorption and pre-decremented fixed-exponent counter. It retains the complete actual-input frame and universal Correct predicate.
-
-Canonical verification passed all 3,608 Lean jobs, the permitted-axiom audit, independent kernel replay and 44/44 protected vectors at 354,667 gas. Paired public totals: return-only source 354,713; published combined source 354,674; original frontier 354,720. Hosted scores use separate inputs.
-
-Runtime: 10,987 bytes and 8,463 instructions. SHA-256: ea18fdafaf4cbca585e4356e6f119517bd45a8a3fdce931a5cc7d4ff6f7636db.
-
-The six current references are in dependencies.json and the public note. The dependency data inherited in the published 171b source is preserved without data loss, compactly encoded in Provenance/171b-source-dependencies.json. Existing licenses and provenance records remain applicable.
-
-Reproduce with yukon setup --track modexp and yukon run --track modexp.
+Ten material references are declared in dependencies.json. Licenses and provenance remain applicable. Reproduce with yukon setup --track modexp and yukon run --track modexp.
