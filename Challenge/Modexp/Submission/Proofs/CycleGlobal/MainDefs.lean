@@ -144,7 +144,7 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 
 @[simp] theorem headerPCs899 (i : Nat) (hi : 357 ≤ i) (hii : i ≤ 364) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([519, 520, 521, 522, 524, 525, 527, 528] : List Nat)[i - 357]! := by
+      ([519,520,521,522,524,525,527,528] : List Nat)[i - 357]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 

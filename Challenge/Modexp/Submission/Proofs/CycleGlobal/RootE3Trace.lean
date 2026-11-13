@@ -43,12 +43,12 @@ structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize
         n bsize esize msize n)
   prologueE3 : Eligible input n bsize esize →
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 3927) s
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 3803) s
         (e3Prepared mem input n) n bsize esize msize (n / 2))
   directSwitch : (n = 4 ∨ n = 8) → ∀ isInline : Bool, ∀ phaseMem : ByteArray,
     GasSteps (if isInline then
-        CycleSubmission.Global.Fast.Shift.csubExit4State (UInt256.ofNat 3927) s phaseMem n bsize esize msize
-      else CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 3927) s phaseMem n bsize esize msize)
+        CycleSubmission.Global.Fast.Shift.csubExit4State (UInt256.ofNat 3803) s phaseMem n bsize esize msize
+      else CycleSubmission.Global.Fast.Shift.shiftDoneState (UInt256.ofNat 3803) s phaseMem n bsize esize msize)
       (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2298)
         s
         (CycleSubmission.Global.DirectCopy.memory phaseMem n) n bsize esize msize (n / 4))
@@ -113,7 +113,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
   have hbasePrep := hbase0
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
-  obtain ⟨inlineFirst, firstLoop⟩ := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 3927) s (e3Prepared mem input n)
+  obtain ⟨inlineFirst, firstLoop⟩ := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 3803) s (e3Prepared mem input n)
     n bsize esize msize mm minv _ (2 * k) (by omega) (by omega) hn hn8 hbs e hm
     (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm) hhit.2.2
   have invFirst := CycleSubmission.Global.Fast.Shift.stepInv_stepMems (by omega) hn8 invPrep (2 * k)

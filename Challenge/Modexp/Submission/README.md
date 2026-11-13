@@ -1,1 +1,1 @@
-Guard loads exact exponent offset from2656, discharging hptr via actual hf.eoff. Runtime10989bytes8455instructions. Canonical3609-job build and independent kernel accepted354513gas44/44correct. Eighteen published material dependencies.
+Cached limb5 and proven memory1664mask restoration. Normal complete Solution and independent default Lean kernel accepted354355gas44/44,10937bytes8429instructions. All21material references disclosed in public note;20-entry initial declaration plus an explicit pending separate correction for061b88c1after API count-limit rejection.
