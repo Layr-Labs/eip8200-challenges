@@ -260,10 +260,10 @@ def gasSteps_run : (m b : Nat) → b + m = 8 →
 
  
 def startPCC : Nat → Nat
-  | 5 => 10768
-  | 6 => 10800
-  | 7 => 10832
-  | _ => 10868
+  | 5 => 10620
+  | 6 => 10652
+  | 7 => 10684
+  | _ => 10720
 
  
 def gasSteps_blockC (b : Nat) (hb : b < 8) (hb5 : 5 ≤ b) (s : State) (m : MacState) (bi : UInt256)
@@ -292,14 +292,14 @@ def gasSteps_blockC (b : Nat) (hb : b < 8) (hb5 : 5 ≤ b) (s : State) (m : MacS
     rw [← hr, ← hsj] at hs
     have hx : rest[(6 : Fin 16).val - 3]? =
         some (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) := hs
-    have h := run_ride s (UInt256.ofNat 10768) m bi n j 2176 6
+    have h := run_ride s (UInt256.ofNat 10620) m bi n j 2176 6
       (by rw [show n - 1 - j = 2 from by omega]; decide)
       (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) rfl
       rest hrest (by decide) (by decide) (by omega) hx hact hn (by omega)
     simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.reduceAdd] at h
-    show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 10768) m bi rest)
-      (chainState s (UInt256.ofNat 10800) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
-    exact block5c.steps (environment (chainState s (UInt256.ofNat 10768) m bi rest)
+    show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 10620) m bi rest)
+      (chainState s (UInt256.ofNat 10652) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
+    exact block5c.steps (environment (chainState s (UInt256.ofNat 10620) m bi rest)
       hcode hfork hrun hnp) rfl h
   · have hsj : n - 1 - j = 7 - 6 := by omega
     have hs := hslot (by omega)
@@ -307,23 +307,23 @@ def gasSteps_blockC (b : Nat) (hb : b < 8) (hb5 : 5 ≤ b) (s : State) (m : MacS
     rw [← hr, ← hsj] at hs
     have hx : rest[(5 : Fin 16).val - 3]? =
         some (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) := hs
-    have h := run_ride s (UInt256.ofNat 10800) m bi n j 2144 5
+    have h := run_ride s (UInt256.ofNat 10652) m bi n j 2144 5
       (by rw [show n - 1 - j = 1 from by omega]; decide)
       (MachineState.readWord m.memory (1280 + 32 * (n - 1 - j))) rfl
       rest hrest (by decide) (by decide) (by omega) hx hact hn (by omega)
     simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.reduceAdd] at h
-    show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 10800) m bi rest)
-      (chainState s (UInt256.ofNat 10832) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
-    exact block6c.steps (environment (chainState s (UInt256.ofNat 10800) m bi rest)
+    show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 10652) m bi rest)
+      (chainState s (UInt256.ofNat 10684) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
+    exact block6c.steps (environment (chainState s (UInt256.ofNat 10652) m bi rest)
       hcode hfork hrun hnp) rfl h
-  · have h := run_block s (UInt256.ofNat 10832) m bi 1280 n j 1280 2112
+  · have h := run_block s (UInt256.ofNat 10684) m bi 1280 n j 1280 2112
       (by rw [show n - 1 - j = 0 from by omega]; decide)
       (by rw [show n - 1 - j = 0 from by omega]; decide)
       rest hrest hact (by omega) hn (by omega)
     simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.reduceAdd] at h
-    show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 10832) m bi rest)
-      (chainState s (UInt256.ofNat 10868) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
-    exact block7c.steps (environment (chainState s (UInt256.ofNat 10832) m bi rest)
+    show Challenge.EvmProof.GasSteps (chainState s (UInt256.ofNat 10684) m bi rest)
+      (chainState s (UInt256.ofNat 10720) (SquareModel.l1StepOn m bi 1280 n j) bi rest)
+    exact block7c.steps (environment (chainState s (UInt256.ofNat 10684) m bi rest)
       hcode hfork hrun hnp) rfl h
 
 def gasSteps_runC : (m b : Nat) → b + m = 8 →
@@ -344,7 +344,7 @@ def gasSteps_runC : (m b : Nat) → b + m = 8 →
     1 ≤ b → 5 ≤ b →
     Challenge.EvmProof.GasSteps
       (chainState s (UInt256.ofNat (startPCC b)) q bi rest)
-      (chainState s (UInt256.ofNat 10868) (SquareModel.l1Run q bi 1280 n j m) bi rest)
+      (chainState s (UInt256.ofNat 10720) (SquareModel.l1Run q bi 1280 n j m) bi rest)
   | 0, b, hbm, s, q, bi, n, j, rest, um, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ => by
       obtain rfl : b = 8 := by omega
       exact Challenge.EvmProof.GasSteps.refl _
@@ -381,10 +381,10 @@ def gasSteps_exit (s : State) (q : MacState) (bi : UInt256) (rest : List UInt256
 
  
 
-def sectionPC (n : Nat) : Nat := if n = 4 then 10750 else 2734
+def sectionPC (n : Nat) : Nat := if n = 4 then 10602 else 2734
 
  
-def sectionEndPC (n : Nat) : Nat := if n = 4 then 10868 else 2980
+def sectionEndPC (n : Nat) : Nat := if n = 4 then 10720 else 2980
 
  
 def gasSteps_block0 (s : State) (um : ByteArray) (q : UInt256)
@@ -426,17 +426,17 @@ def gasSteps_zero4 (s : State) (um : ByteArray) (q : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (setupState s (UInt256.ofNat 10750) um q (maxWord :: rest))
-      (chainState s (UInt256.ofNat 10768) (SquareModel.l1StepOn ⟨um, UInt256.ofNat 0⟩ q 1280 4 0) q rest) := by
+      (setupState s (UInt256.ofNat 10602) um q (maxWord :: rest))
+      (chainState s (UInt256.ofNat 10620) (SquareModel.l1StepOn ⟨um, UInt256.ofNat 0⟩ q 1280 4 0) q rest) := by
   have hs := hslot 4 (by omega)
   have hx : rest[(6 : Fin 16).val - 2]? =
       some (MachineState.readWord (⟨um, UInt256.ofNat 0⟩ : MacState).memory (1280 + 32 * (4 - 1 - 0))) := hs
-  have h := run_ride_top_np s (UInt256.ofNat 10750) ⟨um, UInt256.ofNat 0⟩ q 4 0 2208 6
+  have h := run_ride_top_np s (UInt256.ofNat 10602) ⟨um, UInt256.ofNat 0⟩ q 4 0 2208 6
       (by decide) (MachineState.readWord um (1280 + 32 * (4 - 1 - 0))) rfl
       rest hrest (by decide) (by omega) hx (by decide) hact (by decide) (by decide) rfl
       (by simpa using htop)
   simp only [Challenge.EvmProof.Word.ofNat_add_mod, Nat.reduceAdd] at h
-  exact zero4Block.steps (environment (setupState s (UInt256.ofNat 10750) um q (maxWord :: rest))
+  exact zero4Block.steps (environment (setupState s (UInt256.ofNat 10602) um q (maxWord :: rest))
     hcode hfork hrun hnp) rfl h
 
  
@@ -469,7 +469,7 @@ def gasSteps_macChain (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArr
       rest um hrest hlong hslot hread hrun hcode hfork hnp hact (by decide) rfl
       (fun h => absurd h (by decide)) (fun h => absurd h (by decide)) (by decide) (by decide)
     rw [← l1Run_succ_left] at hr
-    have hE : sectionEndPC 4 = 10868 := rfl
+    have hE : sectionEndPC 4 = 10720 := rfl
     rw [hE]
     exact (hz.trans hr).cast rfl (by rw [SquareModel.l1Step_eq_l1Run])
   else by
