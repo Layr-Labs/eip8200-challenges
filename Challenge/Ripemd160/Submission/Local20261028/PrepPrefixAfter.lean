@@ -2,6 +2,7 @@ import Challenge.Ripemd160.Submission.Local20261028.CandidateBytes
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.StackRoundTrace
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PairedScheduleLift
 import Challenge.Ripemd160.Submission.Proofs.Bytecode.PcEncoding
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.J2RawTransition
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
@@ -20,13 +21,22 @@ private theorem add_literals (a b : Nat) :
   exact (Nat.add_mod a b (2^256)).symm
 private theorem hadd_literals (a b : Nat) :
     UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a+b) := add_literals a b
+private theorem complement_literal :
+    UInt256.lnot (UInt256.ofNat 937819298) =
+      UInt256.sub (UInt256.ofNat 0) (UInt256.ofNat 937819299) := by decide +kernel
+private theorem sub_literal (x : UInt256) :
+    UInt256.sub x (UInt256.ofNat 937819299) =
+      UInt256.add (UInt256.lnot (UInt256.ofNat 937819298)) x := by
+  rw [complement_literal, RawExpressionAC.add_comm, J2Raw.add_negative_eq_sub]
+private theorem hsub_literal (x : UInt256) :
+    x - UInt256.ofNat 937819299 =
+      UInt256.add (UInt256.lnot (UInt256.ofNat 937819298)) x := sub_literal x
 namespace PrefixAfter
 def template : List Instr := [
-.push ⟨1, by decide⟩ (UInt256.ofNat 94),
+.push ⟨4, by decide⟩ (UInt256.ofNat 937819299),
+.push ⟨2, by decide⟩ (UInt256.ofNat 94),
 .op .MLOAD,
-.push ⟨4, by decide⟩ (UInt256.ofNat 937819298),
-.op .NOT,
-.op .ADD,
+.op .SUB,
 .op (.Dup ⟨2, by decide⟩),
 .op .AND,
 .op (.Dup ⟨1, by decide⟩),
@@ -128,7 +138,7 @@ theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     runInstrSeq, DataStepper.runInstr, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, hzero,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat,
-    Word.literal_eq_ofNat, add_literals, hadd_literals]
+    Word.literal_eq_ofNat, add_literals, hadd_literals, sub_literal, hsub_literal]
   all_goals repeat first | apply And.intro | rfl
 #print axioms exact_bytes
 #print axioms run

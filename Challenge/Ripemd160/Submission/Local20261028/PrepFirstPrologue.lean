@@ -146,11 +146,10 @@ def before : List Instr := [
   .op (.Dup ⟨11, by decide⟩),
   .op .OR]
 def after : List Instr := [
-  .push ⟨1, by decide⟩ (UInt256.ofNat 94),
+  .push ⟨4, by decide⟩ (UInt256.ofNat 937819299),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 94),
   .op .MLOAD,
-  .push ⟨4, by decide⟩ (UInt256.ofNat 937819298),
-  .op .NOT,
-  .op .ADD,
+  .op .SUB,
   .op (.Dup ⟨2, by decide⟩),
   .op .AND,
   .op (.Dup ⟨1, by decide⟩),

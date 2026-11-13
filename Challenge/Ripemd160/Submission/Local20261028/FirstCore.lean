@@ -102,13 +102,13 @@ def prefix_gas (s : State) (cont : UInt256) (rho : List UInt256)
 
 def jumpTemplate : List Instr := [.push ⟨2,by decide⟩ (UInt256.ofNat 930), .op .JUMP]
 def jumpSite : GenericRoundSite CandidateArtifact.artifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 7008 (by rfl)
-    (by change 7008 + (jumpTemplate).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 7007 (by rfl)
+    (by change 7007 + (jumpTemplate).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem jumpSite_pc : jumpSite.startPC = UInt256.ofNat 10422 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7008) = UInt256.ofNat 10422
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7007) = UInt256.ofNat 10422
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid_join : Decode.isValidJumpDest CandidateArtifact.artifact.code 930 = true := by
