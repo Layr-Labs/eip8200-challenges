@@ -191,7 +191,7 @@ def gasSteps_arm1 (input : ByteArray) :
       {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651, stack := []} := by
   have h1 := Scan.run_store input (UInt256.ofNat 4717) 1
   have h2 := Scan.run_prefix (prepared input 1) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717))
-    1 (by decide) [] (by simp) rfl rfl
+    1 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := Scan.run_result (prepared input 1)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717)) (prefixTemplate 1))
@@ -231,7 +231,7 @@ def gasSteps_arm31 (input : ByteArray) :
       {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5310 else UInt256.ofNat 4651, stack := []} := by
   have h1 := Scan.run_store input (UInt256.ofNat 5246) 31
   have h2 := Scan.run_prefix (prepared input 31) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5246))
-    31 (by decide) [] (by simp) rfl rfl
+    31 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := Scan.run_result (prepared input 31)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5246)) (prefixTemplate 31))
@@ -270,7 +270,7 @@ def gasSteps_arm32_entry (input : ByteArray) :
     GasSteps (atState (base input) 5313 []) (atState (prepared input 32) 5200 [startValue input 32]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5313) 32
   have h2 := Scan.run_start (prepared input 32) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5313))
-    32 (by decide) [] (by simp) rfl rfl
+    32 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 32)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5313)) (startTemplate 32))
@@ -316,7 +316,7 @@ def gasSteps_arm55_entry (input : ByteArray) :
     GasSteps (atState (base input) 5342 []) (atState (prepared input 55) 5200 [startValue input 55]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5342) 55
   have h2 := Scan.run_start (prepared input 55) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5342))
-    55 (by decide) [] (by simp) rfl rfl
+    55 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 55)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5342)) (startTemplate 55))
@@ -358,11 +358,11 @@ theorem arm56_form : ∀ i ∈ arm56Template.dropLast, RecognitionLift.Advances 
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
-def gasSteps_arm56_entry (input : ByteArray) :
+def gasSteps_arm56_entry (input : ByteArray) (hsize : input.size = 56) :
     GasSteps (atState (base input) 5400 []) (atState (prepared input 56) 5200 [startValue input 56]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5400) 56
   have h2 := Scan.run_start (prepared input 56) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5400))
-    56 (by decide) [] (by simp) rfl rfl
+    56 (by decide) [] (by simp) rfl rfl (fun _ => hsize)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 56)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5400)) (startTemplate 56))
@@ -380,10 +380,10 @@ theorem value56 (input : ByteArray) :
     rev input (startValue input 56) 1 = ZeroTailModel.result input 56 :=
   Scan.value_partial input 56 (by decide)
 
-def gasSteps_arm56 (input : ByteArray) :
+def gasSteps_arm56 (input : ByteArray) (hsize : input.size = 56) :
     GasSteps (atState (base input) 5400 [])
       {prepared input 56 with pc := if (ZeroTailModel.result input 56).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
-  have g := (gasSteps_arm56_entry input).trans (gasSteps_chain1 input 56 (startValue input 56))
+  have g := (gasSteps_arm56_entry input hsize).trans (gasSteps_chain1 input 56 (startValue input 56))
   rw [value56] at g
   exact g
 
@@ -408,7 +408,7 @@ def gasSteps_arm63_entry (input : ByteArray) :
     GasSteps (atState (base input) 5459 []) (atState (prepared input 63) 5200 [startValue input 63]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5459) 63
   have h2 := Scan.run_start (prepared input 63) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5459))
-    63 (by decide) [] (by simp) rfl rfl
+    63 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 63)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5459)) (startTemplate 63))
@@ -454,7 +454,7 @@ def gasSteps_arm64_entry (input : ByteArray) :
     GasSteps (atState (base input) 5523 []) (atState (prepared input 64) 5162 [startValue input 64]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5523) 64
   have h2 := Scan.run_start (prepared input 64) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5523))
-    64 (by decide) [] (by simp) rfl rfl
+    64 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 64)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5523)) (startTemplate 64))
@@ -500,7 +500,7 @@ def gasSteps_arm65_entry (input : ByteArray) :
     GasSteps (atState (base input) 5552 []) (atState (prepared input 65) 5162 [startValue input 65]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5552) 65
   have h2 := Scan.run_start (prepared input 65) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552))
-    65 (by decide) [] (by simp) rfl rfl
+    65 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 65)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552)) (startTemplate 65))
@@ -546,7 +546,7 @@ def gasSteps_arm119_entry (input : ByteArray) :
     GasSteps (atState (base input) 5589 []) (atState (prepared input 119) 5123 [startValue input 119]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5589) 119
   have h2 := Scan.run_start (prepared input 119) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5589))
-    119 (by decide) [] (by simp) rfl rfl
+    119 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 119)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5589)) (startTemplate 119))
@@ -592,7 +592,7 @@ def gasSteps_arm120_entry (input : ByteArray) :
     GasSteps (atState (base input) 5648 []) (atState (prepared input 120) 5123 [startValue input 120]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5648) 120
   have h2 := Scan.run_start (prepared input 120) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5648))
-    120 (by decide) [] (by simp) rfl rfl
+    120 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 120)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5648)) (startTemplate 120))
@@ -638,7 +638,7 @@ def gasSteps_arm128_entry (input : ByteArray) :
     GasSteps (atState (base input) 5708 []) (atState (prepared input 128) 5084 [startValue input 128]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5708) 128
   have h2 := Scan.run_start (prepared input 128) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5708))
-    128 (by decide) [] (by simp) rfl rfl
+    128 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 128)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5708)) (startTemplate 128))
@@ -684,7 +684,7 @@ def gasSteps_arm256_entry (input : ByteArray) :
     GasSteps (atState (base input) 5737 []) (atState (prepared input 256) 4931 [startValue input 256]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5737) 256
   have h2 := Scan.run_start (prepared input 256) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5737))
-    256 (by decide) [] (by simp) rfl rfl
+    256 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 256)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5737)) (startTemplate 256))

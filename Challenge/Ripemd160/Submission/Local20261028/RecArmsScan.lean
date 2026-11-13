@@ -218,10 +218,11 @@ theorem run_prefix_rest (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) 
 
 theorem run_prefix (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (ha : s.activeWords = UInt256.ofNat 1) :
+    (ha : s.activeWords = UInt256.ofNat 1)
+    (hsz : n = 56 → s.executionEnv.calldata.size = 56) :
     runInstrSeq (prefixTemplate n) {s with pc:=pc,stack:=rho} =
       some {s with pc:=pcAfter pc (prefixTemplate n),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata n::rho} := by
-  have h1 := RipemdSubmission20261101.RecognizerLiteral.run s pc n rho hs hrun
+  have h1 := RipemdSubmission20261101.RecognizerLiteral.run s pc n rho hs hrun hsz
   have h2 := run_prefix_rest s (pcAfter pc (RipemdSubmission20261101.RecognizerLiteral.template n)) n hk rho hs hrun ha
   have h := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
   simpa only [prefixTemplate, DenseScheduleTrace.pcAfter_append] using h
@@ -271,14 +272,15 @@ def startValue (input : ByteArray) (n : Nat) : UInt256 :=
 
 theorem run_start (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (ha : s.activeWords = UInt256.ofNat 1) :
+    (ha : s.activeWords = UInt256.ofNat 1)
+    (hsz : n = 56 → s.executionEnv.calldata.size = 56) :
     runInstrSeq (startTemplate n) {s with pc:=pc,stack:=rho} =
       some {s with pc:=pcAfter pc (startTemplate n),stack:=startValue s.executionEnv.calldata n::rho} := by
   by_cases hf : n % 32 = 0
   · simp (discharger := omega) [startTemplate, startValue, hf, runInstrSeq, DataStepper.runInstr,
       pcAfter, hrun, show rho.length < 1024 by omega, UInt256.succ, Instr.size]
     exact ⟨rfl, rfl⟩
-  · simpa only [startTemplate, startValue, if_neg hf] using run_prefix s pc n hk rho hs hrun ha
+  · simpa only [startTemplate, startValue, if_neg hf] using run_prefix s pc n hk rho hs hrun ha hsz
 
 theorem valid_at (index pc : Nat) (hj : Control.Artifact.submissionArtifact.instructions[index]? = some (.op .JUMPDEST))
     (hp : Control.Artifact.submissionArtifact.instructionPC index = pc) :
