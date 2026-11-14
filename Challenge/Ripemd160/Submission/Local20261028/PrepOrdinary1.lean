@@ -22,9 +22,9 @@ private theorem hadd_literals (a b : Nat) :
     UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a+b) := add_literals a b
 namespace Ordinary1
 def template : List Instr := [
-.push ⟨1, by decide⟩ (UInt256.ofNat 138),
+.push ⟨3, by decide⟩ (UInt256.ofNat 138),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 168),
+.push ⟨3, by decide⟩ (UInt256.ofNat 168),
 .op .MLOAD,
 .push ⟨2, by decide⟩ (UInt256.ofNat 262),
 .op .MLOAD,
@@ -36,10 +36,6 @@ def template : List Instr := [
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 224),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 134),
-.op .MLOAD,
-.push ⟨22, by decide⟩ (UInt256.ofNat 63353157587505792712163362468939828208675924746436608),
-.op .ADD,
 .push ⟨2, by decide⟩ (UInt256.ofNat 258),
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 180),
@@ -47,25 +43,29 @@ def template : List Instr := [
 .push ⟨1, by decide⟩ (UInt256.ofNat 146),
 .op .MLOAD,
 .op (.Dup ⟨0, by decide⟩),
-.push ⟨2, by decide⟩ (UInt256.ofNat 594),
-.op .MSTORE]
+.op .PC,
+.op .MSTORE,
+.push ⟨1, by decide⟩ (UInt256.ofNat 134),
+.op .MLOAD,
+.push ⟨22, by decide⟩ (UInt256.ofNat 63353157587505792712163362468939828208675924746436608),
+.op .ADD]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
-  [(MachineState.readWord (s.memory) 146), (MachineState.readWord (s.memory) 180), (MachineState.readWord (s.memory) 258), (UInt256.add ((UInt256.ofNat 63353157587505792712163362468939828208675924746436608)) ((MachineState.readWord (s.memory) 134))), (MachineState.readWord (s.memory) 224), (MachineState.readWord (s.memory) 228), (MachineState.readWord (s.memory) 266), (MachineState.readWord (s.memory) 236), (MachineState.readWord (s.memory) 262), (MachineState.readWord (s.memory) 168), (MachineState.readWord (s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
+  [(UInt256.add ((UInt256.ofNat 63353157587505792712163362468939828208675924746436608)) ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 146)).toNat 32) 594)) 134))), (MachineState.readWord (s.memory) 146), (MachineState.readWord (s.memory) 180), (MachineState.readWord (s.memory) 258), (MachineState.readWord (s.memory) 224), (MachineState.readWord (s.memory) 228), (MachineState.readWord (s.memory) 266), (MachineState.readWord (s.memory) 236), (MachineState.readWord (s.memory) 262), (MachineState.readWord (s.memory) 168), (MachineState.readWord (s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 146)).toNat 32) 594)
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 556).take 65 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 556).take 67 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (512+44)).take 65 = _
+  change (CandidateBytes.bytes.drop (512+44)).take 67 = _
   rw [← List.drop_drop, CandidateBytes.drop8]
   decide +kernel
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := (UInt256.ofNat 556), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 621), stack := outputs x rho s, memory := memory x s} := by
+      some {s with pc := (UInt256.ofNat 623), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address size : Nat) (ha : address+size ≤ 1088) :

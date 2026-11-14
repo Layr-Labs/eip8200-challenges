@@ -22,28 +22,29 @@ private theorem hadd_literals (a b : Nat) :
     UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a+b) := add_literals a b
 namespace Ordinary6
 def template : List Instr := [
-.op (.Dup ⟨6, by decide⟩),
+.op (.Dup ⟨1, by decide⟩),
+.push ⟨1, by decide⟩ (UInt256.ofNat 72),
+.op .MSTORE,
+.op (.Dup ⟨5, by decide⟩),
 .push ⟨2, by decide⟩ (UInt256.ofNat 864),
 .op .MSTORE,
-.op (.Dup ⟨8, by decide⟩),
+.op (.Dup ⟨7, by decide⟩),
 .push ⟨1, by decide⟩ (UInt256.ofNat 54),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 1008),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 414),
 .op .MSTORE,
-.op (.Dup ⟨2, by decide⟩),
+.op (.Dup ⟨1, by decide⟩),
 .push ⟨2, by decide⟩ (UInt256.ofNat 540),
-.op .MSTORE,
-.push ⟨2, by decide⟩ (UInt256.ofNat 936),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 522),
 .op .MSTORE]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
-  [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24] ++ rho
+  [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
-  [x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 6).toNat 32) 864)) (Data.Bytes.natToBytesPadded (x 8).toNat 32) 54)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 1008)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 414)) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 540)) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 936)) (Data.Bytes.natToBytesPadded (x 3).toNat 32) 522)
+  [x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23] ++ rho
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 72)) (Data.Bytes.natToBytesPadded (x 5).toNat 32) 864)) (Data.Bytes.natToBytesPadded (x 7).toNat 32) 54)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 1008)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 414)) (Data.Bytes.natToBytesPadded (x 3).toNat 32) 540)) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 522)
 theorem exact_bytes :
     (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 735).take 30 =
       PcEncoding.assembleBytes template := by

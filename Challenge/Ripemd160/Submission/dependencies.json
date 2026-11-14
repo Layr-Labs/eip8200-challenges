@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "6928cadd-c409-4794-98ad-4d5553245060",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,435-gas frontier (early right-lane C-rotation, SWAP4 retired from the right-lane prologue at PC 794..977). Retained unchanged; this candidate reorders the Ordinary1 loads so the word stored at 594 is resident before byte 594 and a PC opcode supplies the 594 offset, computing the biased 134 word last and retiring it at 936 before the 846 store.",
+    "evidence": "Based on the Submission tree at 0c4cd6f41; PrepOrdinary1..6, PrepOrdinaryMemory memory chain/state1..6, PrepOrdinaryCertificate plan, PrepOrdinaryComposition window PCs 623/648, CandidateArtifact part 1, CandidateBytes chunks 8-11; bytes 556..759."
+  },
+  {
     "submissionId": "343b16c8-579a-49c0-9f4d-09dee953afa3",
     "rationale": "Direct source and proof-tree parent: the promoted 615,497-gas frontier (PC-sourced 0x80 padding byte hosted by a shifted 482 store in the first-block prologue). Retained unchanged; this candidate rewrites only the ordinary right-lane prologue rounds at PC 794..977 (early right-lane C-rotation, SWAP4 retired, one JUMPDEST width pad).",
     "evidence": "Based on the Submission tree at bb6842e984289335c832248e088cce27580b6a43; RawRight0/RawRight1/RawPack templates, CoreRight0/CoreRight1/CorePack/CorePrologue shapes, PrefixBefore.template, FirstPrologue.before, CandidateArtifact parts 1-2, CandidateBytes chunks 12-14; bytes 800..929."

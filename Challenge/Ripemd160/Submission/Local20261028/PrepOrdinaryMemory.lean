@@ -37,15 +37,15 @@ def memory16 (s : State) : ByteArray := writeWord (memory15 s) 630 (MachineState
 def memory17 (s : State) : ByteArray := writeWord (memory16 s) 828 (MachineState.readWord (fanMemory s.memory) 236)
 def memory18 (s : State) : ByteArray := writeWord (memory17 s) 612 (MachineState.readWord (fanMemory s.memory) 180)
 def memory19 (s : State) : ByteArray := writeWord (memory18 s) 720 (MachineState.readWord (fanMemory s.memory) 262)
-def memory20 (s : State) : ByteArray := writeWord (memory19 s) 846 (MachineState.readWord (fanMemory s.memory) 146)
-def memory21 (s : State) : ByteArray := writeWord (memory20 s) 72 (MachineState.readWord (fanMemory s.memory) 258)
-def memory22 (s : State) : ByteArray := writeWord (memory21 s) 558 (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134))
-def memory23 (s : State) : ByteArray := writeWord (memory22 s) 864 (MachineState.readWord (fanMemory s.memory) 236)
-def memory24 (s : State) : ByteArray := writeWord (memory23 s) 54 (MachineState.readWord (fanMemory s.memory) 168)
-def memory25 (s : State) : ByteArray := writeWord (memory24 s) 1008 (MachineState.readWord (fanMemory s.memory) 180)
-def memory26 (s : State) : ByteArray := writeWord (memory25 s) 414 (MachineState.readWord (fanMemory s.memory) 258)
-def memory27 (s : State) : ByteArray := writeWord (memory26 s) 540 (MachineState.readWord (fanMemory s.memory) 228)
-def memory28 (s : State) : ByteArray := writeWord (memory27 s) 936 (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134))
+def memory20 (s : State) : ByteArray := writeWord (memory19 s) 558 (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134))
+def memory21 (s : State) : ByteArray := writeWord (memory20 s) 936 (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134))
+def memory22 (s : State) : ByteArray := writeWord (memory21 s) 846 (MachineState.readWord (fanMemory s.memory) 146)
+def memory23 (s : State) : ByteArray := writeWord (memory22 s) 72 (MachineState.readWord (fanMemory s.memory) 258)
+def memory24 (s : State) : ByteArray := writeWord (memory23 s) 864 (MachineState.readWord (fanMemory s.memory) 236)
+def memory25 (s : State) : ByteArray := writeWord (memory24 s) 54 (MachineState.readWord (fanMemory s.memory) 168)
+def memory26 (s : State) : ByteArray := writeWord (memory25 s) 1008 (MachineState.readWord (fanMemory s.memory) 180)
+def memory27 (s : State) : ByteArray := writeWord (memory26 s) 414 (MachineState.readWord (fanMemory s.memory) 258)
+def memory28 (s : State) : ByteArray := writeWord (memory27 s) 540 (MachineState.readWord (fanMemory s.memory) 228)
 def memory29 (s : State) : ByteArray := writeWord (memory28 s) 522 (MachineState.readWord (fanMemory s.memory) 224)
 def memory30 (s : State) : ByteArray := writeWord (memory29 s) 504 (MachineState.readWord (fanMemory s.memory) 228)
 def memory31 (s : State) : ByteArray := writeWord (memory30 s) 396 (MachineState.readWord (fanMemory s.memory) 266)
@@ -55,7 +55,7 @@ def memory34 (s : State) : ByteArray := writeWord (memory33 s) 468 (MachineState
 def memory35 (s : State) : ByteArray := writeWord (memory34 s) 450 (MachineState.readWord (fanMemory s.memory) 168)
 def memory36 (s : State) : ByteArray := writeWord (memory35 s) 792 (MachineState.readWord (fanMemory s.memory) 138)
 def state1 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 621, stack := [(MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory1 s}
+  {s with pc := UInt256.ofNat 623, stack := [(UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory1 s}
 theorem eq1 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     OrdinaryTable.result1 s x rho = state1 s x rho := by
   simp only [OrdinaryTable.result1, OrdinaryTable.args1, eq0, state0, state1,
@@ -66,7 +66,7 @@ theorem eq1 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     read_raw_disjoint, read_writeWord_disjoint]
   all_goals rfl
 def state2 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 646, stack := [(MachineState.readWord (fanMemory s.memory) 232), (MachineState.readWord (fanMemory s.memory) 172), (MachineState.readWord (fanMemory s.memory) 142), (MachineState.readWord (fanMemory s.memory) 176), (MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory4 s}
+  {s with pc := UInt256.ofNat 648, stack := [(MachineState.readWord (fanMemory s.memory) 232), (MachineState.readWord (fanMemory s.memory) 172), (MachineState.readWord (fanMemory s.memory) 142), (MachineState.readWord (fanMemory s.memory) 176), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory4 s}
 theorem eq2 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     OrdinaryTable.result2 s x rho = state2 s x rho := by
   simp only [OrdinaryTable.result2, OrdinaryTable.args2, eq1, state1, state2,
@@ -77,7 +77,7 @@ theorem eq2 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     read_raw_disjoint, read_writeWord_disjoint]
   all_goals rfl
 def state3 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 680, stack := [(MachineState.readWord (fanMemory s.memory) 142), (MachineState.readWord (fanMemory s.memory) 176), (MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory10 s}
+  {s with pc := UInt256.ofNat 680, stack := [(MachineState.readWord (fanMemory s.memory) 142), (MachineState.readWord (fanMemory s.memory) 176), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory10 s}
 theorem eq3 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     OrdinaryTable.result3 s x rho = state3 s x rho := by
   simp only [OrdinaryTable.result3, OrdinaryTable.args3, eq2, state2, state3,
@@ -88,7 +88,7 @@ theorem eq3 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     read_raw_disjoint, read_writeWord_disjoint]
   all_goals rfl
 def state4 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 707, stack := [(MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory16 s}
+  {s with pc := UInt256.ofNat 707, stack := [(UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 146), (MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory16 s}
 theorem eq4 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     OrdinaryTable.result4 s x rho = state4 s x rho := by
   simp only [OrdinaryTable.result4, OrdinaryTable.args4, eq3, state3, state4,
@@ -99,7 +99,7 @@ theorem eq4 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     read_raw_disjoint, read_writeWord_disjoint]
   all_goals rfl
 def state5 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 735, stack := [(MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (UInt256.add (UInt256.ofNat 63353157587505792712163362468939828208675924746436608) (MachineState.readWord (fanMemory s.memory) 134)), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory22 s}
+  {s with pc := UInt256.ofNat 735, stack := [(MachineState.readWord (fanMemory s.memory) 180), (MachineState.readWord (fanMemory s.memory) 258), (MachineState.readWord (fanMemory s.memory) 224), (MachineState.readWord (fanMemory s.memory) 228), (MachineState.readWord (fanMemory s.memory) 266), (MachineState.readWord (fanMemory s.memory) 236), (MachineState.readWord (fanMemory s.memory) 262), (MachineState.readWord (fanMemory s.memory) 168), (MachineState.readWord (fanMemory s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory22 s}
 theorem eq5 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     OrdinaryTable.result5 s x rho = state5 s x rho := by
   simp only [OrdinaryTable.result5, OrdinaryTable.args5, eq4, state4, state5,

@@ -1,3 +1,39 @@
+# RIPEMD-160: PC-sourced 594 store via a hoisted message-word load in the ordinary prologue (615,404 gas)
+
+Parent: promoted commit `0c4cd6f4` (accepted `6928cadd`, 615,435 gas).
+
+The ordinary message prologue (`PrepOrdinary0..7`, PC 530..793, 31 runs on
+the corpus) loaded eleven fan-memory words in `Ordinary1`, computing the
+biased word `K + m134` eighth and the word at 146 last, then stored the 146
+word at 594 with `DUP1 PUSH2 594 MSTORE`. Its `PC` already lands three other
+store offsets (666, 720, 792).
+
+`Ordinary1` now loads the 146 word tenth, stores it with `DUP1 PC MSTORE`
+whose `PC` byte sits exactly at 594, and computes `K + m134` last, so the
+biased word is the top of the loaded group instead of the fourth slot. The
+`PUSH1 138` and `PUSH1 168` loads are widened to `PUSH3` so the `PC` lands on 594; the window
+grows by two bytes (556..622), which the `Ordinary3` pad `PUSH12 18` returns
+as `PUSH10 18`, so the 666, 720 and 792 `PC` sites and every byte from 680
+on keep their positions.
+
+With the biased word on top after the `Ordinary2` loads are consumed,
+`Ordinary5` writes 558 with `DUP1` and retires the word with `PUSH2 936
+MSTORE` before the 846 store; the `DUP PUSH1 72 MSTORE` moves to the head of
+`Ordinary6`, which no longer stores 936. Window byte ranges: `Ordinary1`
+556..622, `Ordinary2` 623..647, `Ordinary3` 648..679; `Ordinary4..7`
+unchanged. Instruction count unchanged.
+
+The store order changes only for 558 and 936 (now steps 20 and 21, before
+846). Neither overlaps any store between its old and new step, so
+`OrdinaryCertificate.plan` folds to the same byte layout and
+`unchanged_sources` / `biased_sources` are unchanged statements.
+
+Gas: `PC` (2) replaces `PUSH2 594` (3); every other instruction is the same
+opcode at the same cost: -1 per ordinary prologue, 31 executions:
+615,435 -> **615,404**.
+
+---
+
 # RIPEMD-160: early right-lane C-rotation, SWAP4 retired from the ordinary prologue (614,967 gas)
 
 Parent: promoted commit `bb6842e9` (accepted `343b16c8`, 615,497 gas).
