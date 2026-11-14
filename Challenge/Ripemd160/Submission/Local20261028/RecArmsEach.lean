@@ -550,7 +550,81 @@ def gasSteps_arm64 (input : ByteArray) :
   exact g
 
 
-def arm65Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 65) ++ startTemplate 65 ++ jumpTemplate 5162
+def byte65Template : List Instr :=
+  [.push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .CALLDATALOAD,
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .BYTE,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 71), .op .XOR]
+
+def byte65Value (input : ByteArray) : UInt256 :=
+  UInt256.xor (UInt256.ofNat 71) (UInt256.byteAt ⟨0⟩ (MachineState.readWord input 64))
+
+theorem run_byte65 (s : State) (pc : UInt256) (rho : List UInt256)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    runInstrSeq byte65Template {s with pc := pc, stack := rho} =
+      some {s with pc := pcAfter pc byte65Template, stack := byte65Value s.executionEnv.calldata :: rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
+  have h64 : ({val := 64} : UInt256).toNat = 64 := rfl
+  have h64' : (UInt256.ofNat 64).toNat = 64 := rfl
+  simp (discharger := omega) [byte65Template, byte65Value, runInstrSeq, DataStepper.runInstr,
+    pcAfter, hrun, show rho.length < 1024 by omega, hcap, hzero, h64, h64', UInt256.succ, Instr.size,
+    Nat.add_assoc, Word.literal_eq_ofNat, List.getElem?_cons_zero, List.exchange]
+  repeat first | apply And.intro | rfl
+
+private theorem tail_past_size (input : ByteArray) (m : Nat) (hsize : input.size ≤ m) (w : Nat) :
+    EvmSemantics.EVM.Precompile.bytesToNatPadded input m w = 0 := by
+  induction w with
+  | zero => simp
+  | succ w ih =>
+    have hb := AbcSizeGuard.byte_getD input (m + w)
+    unfold AbcSizeGuard.byte at hb
+    rw [Challenge.EvmProof.Bytes.bytesToNatPadded_succ, ih, hb,
+      Memory.getElem?_getD_eq_zero_of_size_le input (m + w) (by omega)]
+    rfl
+
+private theorem readWord_64 (input : ByteArray) (hsize : input.size = 65) :
+    MachineState.readWord input 64 =
+      UInt256.ofNat ((YulSemantics.EVM.byteFrom input.toList 64).toNat * 2 ^ 248) := by
+  apply Word.word_ext
+  have hsplit := Challenge.EvmProof.Bytes.bytesToNatPadded_add input 64 1 31
+  have hone := Challenge.EvmProof.Bytes.bytesToNatPadded_succ input 64 0
+  simp only [Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width, Nat.zero_mul,
+    Nat.zero_add, Nat.add_zero] at hone
+  rw [hone, tail_past_size input (64 + 1) (by omega) 31] at hsplit
+  have hb : (YulSemantics.EVM.byteFrom input.toList 64).toNat < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList 64).toNat_lt
+  have hlt : (YulSemantics.EVM.byteFrom input.toList 64).toNat * 2 ^ 248 < 2 ^ 256 :=
+    calc (YulSemantics.EVM.byteFrom input.toList 64).toNat * 2 ^ 248
+        < 256 * 2 ^ 248 := Nat.mul_lt_mul_of_pos_right hb (by positivity)
+      _ = 2 ^ 256 := by norm_num
+  rw [Challenge.EvmProof.Bytes.readWord_toNat, Word.word_toNat_ofNat,
+    show (32 : Nat) = 1 + 31 by rfl, hsplit, Nat.add_zero,
+    show (256 : Nat) ^ 31 = 2 ^ 248 by norm_num]
+  exact (Nat.mod_eq_of_lt hlt).symm
+
+private theorem byte65_key : ∀ b, b < 256 →
+    ((UInt256.xor (UInt256.ofNat 71) (UInt256.ofNat b)).toNat = 0 ↔
+      (UInt256.xor (ZeroTailModel.expectedLast 65) (UInt256.ofNat (b * 2 ^ 248))).toNat = 0) := by
+  decide +kernel
+
+theorem byte65_zero_iff (input : ByteArray) (hsize : input.size = 65) :
+    (byte65Value input).toNat = 0 ↔ (ZeroTailModel.tailDiff input 65).toNat = 0 := by
+  have hb : (YulSemantics.EVM.byteFrom input.toList 64).toNat < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList 64).toNat_lt
+  rw [byte65Value, Challenge.EvmProof.Bytes.byteAt_zero_readWord, ZeroTailModel.tailDiff,
+    show 32 * DirectLiteralModel.last 65 = 64 by decide, readWord_64 input hsize]
+  exact byte65_key _ hb
+
+private theorem word_toNat_eq_zero_iff (x : UInt256) : x.toNat = 0 ↔ x = 0 := by
+  constructor
+  · intro h
+    apply Word.word_ext
+    rw [h]
+    rfl
+  · rintro rfl
+    rfl
+
+def arm65Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 65) ++ byte65Template ++ jumpTemplate 5162
 theorem arm65_slice :
     (Control.Artifact.submissionArtifact.instructions.drop 3593).take arm65Template.length = arm65Template := by rfl
 def arm65Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm65Template :=
@@ -567,19 +641,19 @@ theorem arm65_form : ∀ i ∈ arm65Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm65_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5552 []) (atState (prepared input 65) 5162 [startValue input 65]) := by
+    GasSteps (atState (base input) 5552 []) (atState (prepared input 65) 5162 [byte65Value input]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5552) 65
-  have h2 := Scan.run_start (prepared input 65) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552))
-    65 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
+  have h2 := run_byte65 (prepared input 65) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552))
+    [] (by simp) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 65)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552)) (startTemplate 65))
-    5162 [startValue input 65] (by simp) rfl (by
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552)) byte65Template)
+    5162 [byte65Value input] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5162).toNat = true
       exact valid_chain2)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h' : runInstrSeq arm65Template (atState (base input) 5552 []) =
-      some (atState (prepared input 65) 5162 [startValue input 65]) := by
+      some (atState (prepared input 65) 5162 [byte65Value input]) := by
     simpa only [arm65Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm65Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using arm65_pc.symm) arm65_form h'
@@ -588,11 +662,24 @@ theorem value65 (input : ByteArray) :
     rev input (startValue input 65) 2 = ZeroTailModel.result input 65 :=
   Scan.value_partial input 65 (by decide)
 
-def gasSteps_arm65 (input : ByteArray) :
+theorem byte65_rev_iff (input : ByteArray) (hsize : input.size = 65) :
+    (rev input (byte65Value input) 2).toNat = 0 ↔ (ZeroTailModel.result input 65).toNat = 0 := by
+  have hk := byte65_zero_iff input hsize
+  rw [word_toNat_eq_zero_iff, word_toNat_eq_zero_iff] at hk
+  have hs : startValue input 65 = ZeroTailModel.tailDiff input 65 := by
+    simp [startValue]
+  rw [← value65 input, hs, word_toNat_eq_zero_iff, word_toNat_eq_zero_iff,
+    ZeroTailModel.rev_zero_iff, ZeroTailModel.rev_zero_iff, hk]
+
+def gasSteps_arm65 (input : ByteArray) (hsize : input.size = 65) :
     GasSteps (atState (base input) 5552 [])
       {prepared input 65 with pc := if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
-  have g := (gasSteps_arm65_entry input).trans (gasSteps_chain2 input 65 (startValue input 65))
-  rw [value65] at g
+  have g := (gasSteps_arm65_entry input).trans (gasSteps_chain2 input 65 (byte65Value input))
+  have hif : (if (rev input (byte65Value input) 2).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651) =
+      (if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5243
+        else UInt256.ofNat 4651) :=
+    if_congr (byte65_rev_iff input hsize) rfl rfl
+  rw [hif] at g
   exact g
 
 

@@ -1,3 +1,29 @@
+# RIPEMD-160: BYTE-0 last-word check for the 65-byte chained recognizer arm (615,307 gas)
+
+Parent: promoted commit `93106912` (validated `f4bb164c`, 615,308 gas).
+
+The patterned 65-byte arm (JUMPDEST 5552, instruction 3593) built its
+last-word difference as `PUSH1 0x47; PUSH1 248; SHL; PUSH1 64;
+CALLDATALOAD; XOR` (18 gas) before jumping into the two-word chain at 5162.
+The arm is reached only when `CALLDATASIZE = 65`, so the word at offset 64
+is `b64 << 248`; the check now reads the byte directly:
+`PUSH1 64; CALLDATALOAD; PUSH0; BYTE; PUSH2 0x0047; XOR` (17 gas, bytes
+5576..5584). Width (9 bytes) and instruction count (6) are unchanged, so no
+PC or instruction index outside the window moves. The chain ORs the start
+value with the two full-word differences and branches once on zero; the
+byte difference `0x47 XOR b64` is zero exactly when the old 256-bit
+difference was. -1 gas on the `65-byte` vector: 615,308 -> **615,307**.
+
+Proof: `RecArmsEach.byte65Template` / `run_byte65` give the new start
+value; `readWord_64` (size-65 calldata word at 64 is `b64 * 2^248`, tail by
+`tail_past_size`) and the kernel-decided `byte65_key` prove
+`byte65_zero_iff`; `byte65_rev_iff` lifts it through
+`ZeroTailModel.rev_zero_iff`, so `gasSteps_arm65` (now taking
+`input.size = 65`, passed by `RecArmsDispatch`) keeps its conclusion.
+`CandidateArtifact` part 18, `CandidateBytes` chunk 87, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: BYTE-0 tail check for the one-byte recognizer arm (615,308 gas)
 
 Parent: promoted commit `90c49473` (validated `37a224de`, 615,309 gas).

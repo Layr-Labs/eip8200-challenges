@@ -76,7 +76,7 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
   · have g := hguard.trans (((gasSteps_short64 input h).trans (gasSteps_tramp64 input)).trans (Each.gasSteps_arm64 input))
     exact Finish.arm_correct input hfit 64 (h ▸ hn) h 5243 g
       (Finish.finish_gasSteps input 64 5243 Finish.finishSite2 Finish.finishSite2_pc)
-  · have g := hguard.trans (((gasSteps_short65 input h).trans (gasSteps_tramp65 input)).trans (Each.gasSteps_arm65 input))
+  · have g := hguard.trans (((gasSteps_short65 input h).trans (gasSteps_tramp65 input)).trans (Each.gasSteps_arm65 input h))
     exact Finish.arm_correct input hfit 65 (h ▸ hn) h 5243 g
       (Finish.finish_gasSteps input 65 5243 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short119 input h).trans (gasSteps_tramp119 input)).trans (Each.gasSteps_arm119 input))
