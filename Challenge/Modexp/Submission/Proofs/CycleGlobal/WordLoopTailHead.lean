@@ -14,16 +14,16 @@ open EvmSemantics.EVM
 open Word
 def bitFinishTailHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 7916 .JUMPDEST,
-   opAt 7917 .POP,
-   opAt 7918 .POP,
-   opAt 7919 .POP]
+  [opAt 7912 .JUMPDEST,
+   opAt 7913 .POP,
+   opAt 7914 .POP,
+   opAt 7915 .POP]
 def bitFinishTailFinishPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 7920 1 1,
-   opAt 7921 .ADD,
-   pushAt 7922 1 187,
-   opAt 7923 .JUMP]
+  [pushAt 7916 1 1,
+   opAt 7917 .ADD,
+   pushAt 7918 1 187,
+   opAt 7919 .JUMP]
 def bitFinishTailMidState (input : ByteArray) (outer : Nat)
     (acc base : UInt256) : State :=
   { bitLoopState input outer 8 0 0 acc base with
@@ -33,9 +33,9 @@ def bitFinishTailMidState (input : ByteArray) (outer : Nat)
       UInt256.ofNat (exponentSize input),UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96,UInt256.ofNat (expOffset input),
       UInt256.ofNat (modulusOffset input),UInt256.ofNat 1186]++callerRest input }
-@[simp] private theorem exitPCs (i : Nat) (hi : 7916 ≤ i) (hii : i ≤ 7937) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 7912 ≤ i) (hii : i ≤ 7933) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10460,10461,10462,10463,10464,10466,10467,10469,10470,10471,10472,10473,10474,10476,10477,10479,10480,10481,10482,10483,10484,10485] : List Nat)[i - 7916]! := by
+      ([10460,10461,10462,10463,10464,10466,10467,10469,10470,10471,10472,10473,10474,10476,10477,10479,10480,10481,10482,10483,10484,10485] : List Nat)[i - 7912]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 set_option linter.unusedSimpArgs false in
