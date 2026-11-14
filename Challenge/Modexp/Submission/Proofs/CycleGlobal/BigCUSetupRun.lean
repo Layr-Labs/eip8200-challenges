@@ -19,7 +19,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC.Unsigned
 
 /-- Exact U raw interval [236,271). -/
 def setupProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .push 2 9248,
    .op .CALLDATASIZE,
    .push 0 0,
@@ -47,24 +48,41 @@ def setupProgram : List Instr :=
 
 /-- Exact U raw interval [271,290). -/
 def zLoopProgram : List Instr :=
-  [.op .JUMPDEST, .push 0 0, .op .NOT, .op .ADD, .op (.Dup dA0), .push 2 1024, .op .ADD, .op .MLOAD, .op (.Dup dA1), .op (.Swap sA2), .op .OR, .op (.Swap sA1), .push 1 242, .op .JUMPI]
+  [
+  .op .JUMPDEST,
+   .push 0 0,
+   .op .NOT,
+   .op .ADD,
+   .op (.Dup dA0),
+   .push 2 1024,
+   .op .ADD,
+   .op .MLOAD,
+   .op (.Dup dA1),
+   .op (.Swap sA2),
+   .op .OR,
+   .op (.Swap sA1),
+   .push 1 242,
+   .op .JUMPI]
 
 /-- Exact U raw interval [290,295). -/
 def zExitProgram : List Instr :=
-  [.op .POP,
+  [
+  .op .POP,
    .push 2 268,
    .op .JUMPI]
 
 /-- Exact U raw interval [295,299). -/
 def zeroRetProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .op (.Dup dA2),
    .push 0 0,
    .op .RETURN]
 
 /-- Exact U raw interval [299,310). -/
 def nzProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .push 1 1,
    .op (.Dup dA3),
    .push 2 3071,

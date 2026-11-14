@@ -15,7 +15,7 @@ open Challenge.Modexp.Submission.Proofs.Fast.Model
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
 
 def result (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) : State :=
- {s with pc := UInt256.ofNat (if (PersistentSquareLoop.counter s).toNat = 0 then 7513 else 5395), memory := R9InvConsumeComplete.historyMemory s.memory inv a zeroWords n, stack := PersistentCounter.frame inv (PersistentSquareLoop.counter s-UInt256.ofNat 1) (squared inv a zeroWords n) zeroWords n rest}
+ {s with pc := UInt256.ofNat (if (PersistentSquareLoop.counter s).toNat = 0 then 5610 else 3492), memory := R9InvConsumeComplete.historyMemory s.memory inv a zeroWords n, stack := PersistentCounter.frame inv (PersistentSquareLoop.counter s-UInt256.ofNat 1) (squared inv a zeroWords n) zeroWords n rest}
 
 theorem counter_result (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) :
  PersistentSquareLoop.counter (result s inv a n rest) =
@@ -32,7 +32,7 @@ noncomputable def steps (s : State) (inv : UInt256) (a n : Nat → UInt256) (res
  (hm : LimbMemory.Holds s.memory inv a zeroWords n)
  (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
  (ha : ∀ i < 8, (a i).toNat < radix) :
- GasSteps {s with pc := UInt256.ofNat 5395, stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter s :: rest)}
+ GasSteps {s with pc := UInt256.ofNat 3492, stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter s :: rest)}
   (result s inv a n rest) := by
  cases rest with
  | nil => simp at hcache
@@ -42,7 +42,7 @@ noncomputable def steps (s : State) (inv : UInt256) (a n : Nat → UInt256) (res
   exact PersistentBinding.round_steps s inv (PersistentSquareLoop.counter s) a zeroWords n rest env
    (by simp at hcap; omega) hact hm ha
 
-noncomputable def certificate : PersistentSquareLoop.StepCertificate 5395 7513 := by
+noncomputable def certificate : PersistentSquareLoop.StepCertificate 3492 5610 := by
  intro s inv a n rest k N x hk hk16 env hm hc hcache hcap hact ha hn hn0 hNvalue hinv hN hNR hodd hN4 hsmall hform
  have hno := SquareStep.no_overflow inv a n ha hn N hn0 hNvalue hinv hN hN4 hsmall
  have harith := SquareStep.arithmetic inv a n ha hn N hn0 hNvalue hinv hN hNR hodd
@@ -53,7 +53,7 @@ noncomputable def certificate : PersistentSquareLoop.StepCertificate 5395 7513 :
    steps s inv a n rest env hm hcache hcap hact (fun i hi => ha i (by omega)),
    PersistentCounter.memory_output s.memory inv a zeroWords n hm,
    frame_result s inv a n rest,?_,rfl,rfl,rfl,harith.1,hno.2,?_,?_,?_,rfl⟩
- · change UInt256.ofNat (if (PersistentSquareLoop.counter s).toNat = 0 then 7513 else 5395) = _
+ · change UInt256.ofNat (if (PersistentSquareLoop.counter s).toNat = 0 then 5610 else 3492) = _
    rw [hc]
    interval_cases k <;> rfl
  · change value (squared inv a zeroWords n) % N = ((x*x)*radix^9) % N

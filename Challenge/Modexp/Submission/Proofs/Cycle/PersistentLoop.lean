@@ -17,10 +17,10 @@ structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
  (count N x : Nat) where
  state : State
  output : Nat → UInt256
- trace : GasSteps {s with pc := UInt256.ofNat 5387, stack := SquareMeaning.frame0 inv a zeroWords n (counter s :: rest)} state
+ trace : GasSteps {s with pc := UInt256.ofNat 3484, stack := SquareMeaning.frame0 inv a zeroWords n (counter s :: rest)} state
  memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
  frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (counter state :: rest)
- pc : state.pc = UInt256.ofNat 7526
+ pc : state.pc = UInt256.ofNat 5623
  env : state.executionEnv = s.executionEnv
  halt : state.halt = s.halt
  active : state.activeWords = s.activeWords
@@ -57,9 +57,9 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
   rw [installed_counter]
   exact hc
  have hacti : 88 ≤ si.activeWords.toNat := by simpa only [si, PersistentBinding.installed] using hact
- obtain ⟨st,out,ht0,hmOut,hsOut,hpOut,heOut,hhOut,haOut,hboundOut,hsmOut,hfmOut,hkeepOut,hcallsOut⟩ := PersistentSquareLoop.run 5395 7513 PersistentRound.certificate si inv a n rest k N x
+ obtain ⟨st,out,ht0,hmOut,hsOut,hpOut,heOut,hhOut,haOut,hboundOut,hsmOut,hfmOut,hkeepOut,hcallsOut⟩ := PersistentSquareLoop.run 3492 5610 PersistentRound.certificate si inv a n rest k N x
   hk hk16 ei hmi hci hcache hcap hacti ha hn hn0 hNvalue hinv hN hNR hodd hN4 hsmall hform
- have hstart : {si with pc := UInt256.ofNat 5395,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter si::rest)} = si := by
+ have hstart : {si with pc := UInt256.ofNat 3492,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter si::rest)} = si := by
   apply PersistentSquareLoop.reset_self
   · simp only [si, PersistentBinding.installed]
   · rw [show PersistentSquareLoop.counter si = counter s from installed_counter s inv a n rest]
@@ -69,10 +69,10 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  have eout : Environment Artifact.artifact .Osaka st := ei.transfer heOut hhOut
  have hactout : 88 ≤ st.activeWords.toNat := by rw [haOut]; exact hacti
  have hr := PersistentBinding.restore_steps st inv out n rest eout hcap hactout hcache hmOut.at2720
- have hrestore : {st with pc := UInt256.ofNat 7513,stack := PersistentSquareLoop.frame inv out n (PersistentSquareLoop.counter st::rest)} = st :=
+ have hrestore : {st with pc := UInt256.ofNat 5610,stack := PersistentSquareLoop.frame inv out n (PersistentSquareLoop.counter st::rest)} = st :=
   PersistentSquareLoop.reset_self _ _ _ hpOut hsOut
  rw [hrestore] at hr
- let sf : State := {st with pc := UInt256.ofNat 7526,memory := LimbMemory.store st.memory 96 (out 5),stack := SquareMeaning.frame0 inv out zeroWords n (PersistentSquareLoop.counter st::rest)}
+ let sf : State := {st with pc := UInt256.ofNat 5623,memory := LimbMemory.store st.memory 96 (out 5),stack := SquareMeaning.frame0 inv out zeroWords n (PersistentSquareLoop.counter st::rest)}
  have hcounter : counter sf = PersistentSquareLoop.counter st := by rfl
  refine ⟨sf,out,(PersistentBinding.install_steps s inv a n rest env hm hcache hcap hact).trans (ht.trans hr),
   LimbMemory.flush st.memory inv out zeroWords n hmOut,?_,rfl,

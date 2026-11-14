@@ -10,8 +10,8 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
-  base : Block artifact fork 717 WindowTwentyOneEntry.baseProgram
-  modulus : Block artifact fork 718 WindowTwentyOneEntry.modulusProgram
+  base : Block artifact fork 955 WindowTwentyOneEntry.baseProgram
+  modulus : Block artifact fork 956 WindowTwentyOneEntry.modulusProgram
 
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
     (env : Environment artifact fork template) (input : ByteArray) :
@@ -28,7 +28,7 @@ private def lift {artifact : ProgramArtifact} {fork : Fork} {pc : Nat} {instruct
     (hpc : s.pc = UInt256.ofNat pc) : GasSteps s t := block.steps env hpc hrun
 
 def entryState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 717)
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 955)
     (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
 
 def core_steps {artifact : ProgramArtifact} {fork : Fork}
@@ -42,7 +42,7 @@ def core_steps {artifact : ProgramArtifact} {fork : Fork}
   have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
     (shiftWord input) (coreStack input tail) (by simp [coreStack]; omega) rfl
   have hm' : runInstructions WindowTwentyOneEntry.modulusProgram
-      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 718)
+      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 956)
         (WindowTwentyOneInput.modulusWord input :: coreStack input tail)) =
       some (normalized template input tail) := by
     simpa only [normalized, WindowTwentyOneTablePrelude.initial, WindowTwentyOneEntry.framed,

@@ -20,19 +20,22 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC.Unsigned
 
 /-- Exact U bytes [482,486). -/
 def entryProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .push 2 1024]
 
 /-- Exact U bytes [486,492). -/
 def initProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .push 1 1,
    .push 1 64,
    .op .CALLDATALOAD]
 
 /-- Exact U bytes [492,527). -/
 def cellProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .push 0 0,
    .op .NOT,
    .op .ADD,
@@ -68,19 +71,22 @@ def cellProgram : List Instr :=
 
 /-- Exact U bytes [527,532). -/
 def guardProgram : List Instr :=
-  [.op (.Dup dA0),
+  [
+  .op (.Dup dA0),
    .push 2 461,
    .op .JUMPI]
 
 /-- Exact U bytes [532,537). -/
 def decideProgram : List Instr :=
-  [.op .POP,
+  [
+  .op .POP,
    .push 2 514,
    .op .JUMPI]
 
 /-- Exact U bytes [537,546). -/
 def retryProgram : List Instr :=
-  [.op (.Swap sA1),
+  [
+  .op (.Swap sA1),
    .op .POP,
    .push 2 8192,
    .push 2 455,
@@ -88,7 +94,8 @@ def retryProgram : List Instr :=
 
 /-- Exact U bytes [546,551). -/
 def finishProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .op .POP,
    .op (.Swap sA0),
    .op .POP,
