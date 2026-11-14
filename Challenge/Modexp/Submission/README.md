@@ -1,1 +1,1 @@
-Four R5 product mask literals with an explicit universal mask-memory invariant and unchanged arithmetic result. Canonical353339gas44/44,10992bytes8318instructions; unchanged default Lean kernel accepted. See the public submission note for the exact runtime and complete42-reference provenance.
+MAX-word shift-counter decrement with exact universal zero-path and complemented repair-return proofs. Canonical353234gas44/44,10990bytes8316instructions; unchanged default Lean kernel accepted. See the public submission note for the exact runtime and complete43-reference provenance.

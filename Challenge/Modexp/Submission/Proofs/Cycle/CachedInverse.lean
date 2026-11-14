@@ -18,23 +18,23 @@ def installPrefix : List Instr := []
 theorem run_installPrefix (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat) :
  runInstructions installPrefix
- {s with pc := UInt256.ofNat 3476,stack := entryFrame inv a b n (count::inv::rest)} =
- some {s with pc := UInt256.ofNat 3476,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} := by rfl
+ {s with pc := UInt256.ofNat 3478,stack := entryFrame inv a b n (count::inv::rest)} =
+ some {s with pc := UInt256.ofNat 3478,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} := by rfl
 def persistentProgram : List Instr := [.op .JUMPDEST]++R9InvConsumeComplete.program
 def persistentInitial (s : State) (inv count : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
- {s with pc := UInt256.ofNat 3476,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)}
+ {s with pc := UInt256.ofNat 3478,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)}
 theorem run_persistent (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 958) (hact : 88 ≤ s.activeWords.toNat)
  (hmem : LimbMemory.Holds s.memory inv a b n) (ha : ∀ i < 8,(a i).toNat < 2^240) :
  runInstructions persistentProgram (persistentInitial s inv count a b n rest) =
- some {s with pc := UInt256.ofNat 5786,memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := R9InvConsumeComplete.persistentFrame15 inv a b n (count::rest)} := by
+ some {s with pc := UInt256.ofNat 5788,memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := R9InvConsumeComplete.persistentFrame15 inv a b n (count::rest)} := by
  have hc : (count::rest).length ≤ 960 := by simp; omega
  have hh := R9InvConsumeComplete.run s inv a b n (count::rest) hc hact hmem ha
  have hlen : (R9InvConsumeComplete.initialFrame inv a b n (count::rest)).length < 1024 := by
   simp [R9InvConsumeComplete.initialFrame,SquareMeaning.frame0,List.set]
   omega
  have hp : runInstructions [.op .JUMPDEST] (persistentInitial s inv count a b n rest) =
-  some {s with pc := UInt256.ofNat 3477,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} := by
+  some {s with pc := UInt256.ofNat 3479,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} := by
   simp [persistentInitial,runInstructions,Stepper.runInstr,Word.succ_ofNat_mod,hlen]
  exact runInstructions_append_some _ _ _ _ _ hp hh
 def restoreMaskProgram : List Instr :=
@@ -54,8 +54,8 @@ theorem run_restoreMask (s : State) (inv count : UInt256) (a b n : Nat → UInt2
  (rest : List UInt256) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
  (hinv : MachineState.readWord s.memory 2720 = inv) :
  runInstructions restoreMaskProgram
- {s with pc := UInt256.ofNat 5795,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} =
- some {s with pc := UInt256.ofNat 5841,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a b n (count::inv::rest)} := by
+ {s with pc := UInt256.ofNat 5797,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} =
+ some {s with pc := UInt256.ofNat 5843,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a b n (count::inv::rest)} := by
  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
  have hmask : UInt256.shiftRight (UInt256.lnot (UInt256.ofNat 0)) (UInt256.ofNat 16) = UInt256.ofNat (2^240-1) := by decide
  have hf := Monpro.activeWords_fix s 96 32 (by decide) (by norm_num) hact

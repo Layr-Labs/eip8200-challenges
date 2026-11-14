@@ -83,26 +83,26 @@ def phaseBlocks : StackPhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .O
   exitHead := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2499 1 3206 (StackPhaseRun.headProgram false)
-        (by change 2499+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2497 1 3204 (StackPhaseRun.headProgram false)
+        (by change 2497+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8282 1 10941 (StackPhaseRun.headProgram true)
-        (by change 8282+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8280 1 10939 (StackPhaseRun.headProgram true)
+        (by change 8280+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
   transfer := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2500 2 3207 (StackPhaseRun.transferProgram)
-        (by change 2500+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2498 2 3205 (StackPhaseRun.transferProgram)
+        (by change 2498+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8283 2 10942 (StackPhaseRun.transferProgram)
-        (by change 8283+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8281 2 10940 (StackPhaseRun.transferProgram)
+        (by change 8281+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
