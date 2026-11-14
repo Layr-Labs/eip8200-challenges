@@ -143,8 +143,8 @@ include env hcap hact h_n0 h_M hcache hn0 hn1 hn2 hn3 hn4 hNval
 /-- The value below `N`: one round ends at `r5_done` with the digits unchanged. -/
 theorem finish_lt (a : D5) (h0 : a.d0.toNat < radix) (h1 : a.d1.toNat < radix)
     (h2 : a.d2.toNat < radix) (h3 : a.d3.toNat < radix) (h4 : a.d4.toNat < 2^65) (hT : val a < N) :
-    Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10090 a.d0 a.d1 a.d2 a.d3 a.d4)
-      (normAt s n1 n2 n3 n4 P inv cntp rest 10178 a.d0 a.d1 a.d2 a.d3 a.d4)) := by
+    Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10135 a.d0 a.d1 a.d2 a.d3 a.d4)
+      (normAt s n1 n2 n3 n4 P inv cntp rest 10223 a.d0 a.d1 a.d2 a.d3 a.d4)) := by
   by_cases hlt : (UInt256.lt a.d4 n4).toNat = 0
   · have hc := NormMath.chain a.d0 a.d1 a.d2 a.d3 a.d4 n0 n1 n2 n3 n4 _ _ _ _ _ rfl rfl rfl rfl rfl
       h0 h1 h2 h3 h4 hn0 hn1 hn2 hn3 hn4
@@ -161,8 +161,8 @@ theorem norm_spec (a : D5) (h0 : a.d0.toNat < radix) (h1 : a.d1.toNat < radix)
     (h2 : a.d2.toNat < radix) (h3 : a.d3.toNat < radix) (h4 : a.d4.toNat < 2^65) (hT : val a < 2*N) :
     ∃ e : D5,e.d0.toNat < radix ∧ e.d1.toNat < radix ∧ e.d2.toNat < radix ∧ e.d3.toNat < radix ∧
       e.d4.toNat < 2^65 ∧ val e = val a % N ∧
-      Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10090 a.d0 a.d1 a.d2 a.d3 a.d4)
-        (normAt s n1 n2 n3 n4 P inv cntp rest 10178 e.d0 e.d1 e.d2 e.d3 e.d4)) := by
+      Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10135 a.d0 a.d1 a.d2 a.d3 a.d4)
+        (normAt s n1 n2 n3 n4 P inv cntp rest 10223 e.d0 e.d1 e.d2 e.d3 e.d4)) := by
   by_cases hlt : val a < N
   · exact ⟨a,h0,h1,h2,h3,h4,(Nat.mod_eq_of_lt hlt).symm,
       finish_lt s env n0 n1 n2 n3 n4 P inv cntp rest N hcap hact h_n0 h_M hcache hn0 hn1 hn2 hn3 hn4 hNval
@@ -224,7 +224,7 @@ theorem from_head (s : State) (env : Environment CycleSubmission.Artifact.artifa
   set X := (iter n1 n2 n3 n4 P inv n0 (k - 1 + 1) x c).1 with hX
   set C := (iter n1 n2 n3 n4 P inv n0 (k - 1 + 1) x c).2 with hC
   have gp := product s env X.d0 X.d1 X.d2 X.d3 X.d4 n1 n2 n3 n4 P inv n0 b0 b1 b2 b3 b4 n0 Digits.M (C::rest)
-    (by simp only [List.length_cons]; omega) hact h_b0 h_b1 h_b2 h_b3 h_b4 h_n0 h_inv h_M h_n0
+    (by simp only [List.length_cons]; omega) hact h_b0 h_b1 h_b2 h_b3 h_b4 h_n0 h_inv h_M h_n0 h_M
   obtain ⟨t0,t1,t2,t3,hT,hTw⟩ := product_spec n0 n1 n2 n3 n4 P inv ninv N hinv hP hn1 hn2 hn3 hn4
     hn0 hN hNval hodd X n0 b0 b1 b2 b3 b4 B (w^(2^(k-1+1))) hXok hXw hb hB hBN
   set T := prOut X n1 n2 n3 n4 P inv n0 b0 b1 b2 b3 b4 n0 Digits.M with hTdef

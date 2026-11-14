@@ -12,9 +12,9 @@ open Challenge.Modexp Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.Fast
 def entry (s : State) (input : ByteArray) : State :=
- {s with pc := UInt256.ofNat 10863,stack := [UInt256.ofNat (modulusSize input)]}
+ {s with pc := UInt256.ofNat 10907,stack := [UInt256.ofNat (modulusSize input)]}
 def oldEntry (s : State) : State :=
- {s with pc := UInt256.ofNat 10202,stack := []}
+ {s with pc := UInt256.ofNat 10246,stack := []}
 def memo (s : State) : State :=
  {s with pc := UInt256.ofNat 903,stack := []}
 def rawWord (input : ByteArray) : UInt256 :=
@@ -23,7 +23,7 @@ def memory (s : State) : ByteArray :=
  s.memory
 def finalState (s : State) : State :=
  {s with
-   pc := UInt256.ofNat 10891
+   pc := UInt256.ofNat 10935
    stack := []
    memory := memory s
    activeWords := UInt256.ofNat 1

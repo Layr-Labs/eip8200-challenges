@@ -18,7 +18,7 @@ def cells15 (inv : UInt256) (a b n : Nat → UInt256) : List (Nat × UInt256) :=
   [(832,(productD2 inv a b n))]
 def result15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 10284
+    pc := UInt256.ofNat 10328
     memory := storeCells s.memory (cells15 inv a b n)
     stack := frame16 inv a b n rest}
 theorem model15_eq (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256)

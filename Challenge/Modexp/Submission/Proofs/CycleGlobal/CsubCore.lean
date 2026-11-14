@@ -42,13 +42,13 @@ def csFixedState (s : State) (memory : ByteArray) (n j pc : Nat)
   { s with pc := UInt256.ofNat pc
            stack := (if j = 0 then [] else [(csStep memory n j).flag])++[pdst,ret]++rest
            memory := (csStep memory n j).memory }
-@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 7988 = 10446 := by
+@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 7986 = 10490 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 7989 = 10447 := by
+@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 7987 = 10491 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 7990 = 10450 := by
+@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 7988 = 10494 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 634 = 899 := by
@@ -75,11 +75,11 @@ theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
   have hword128 : (128 : UInt256).toNat = 128 := by decide
   have hword256 : (256 : UInt256).toNat = 256 := by decide
   have hword4972 : (810 : UInt256).toNat = 810 := by decide
-  have hword5022 : (10431 : UInt256).toNat = 10431 := by decide
+  have hword5022 : (10475 : UInt256).toNat = 10475 := by decide
   have hword5131 : (898 : UInt256).toNat = 898 := by decide
   have hword2225 : (873 : UInt256).toNat = 873 := by decide
   have hwordEq4972 : (810 : UInt256) = UInt256.ofNat 810 := by decide
-  have hwordEq5022 : (10431 : UInt256) = UInt256.ofNat 10431 := by decide
+  have hwordEq5022 : (10475 : UInt256) = UInt256.ofNat 10475 := by decide
   have hwordEq5131 : (898 : UInt256) = UInt256.ofNat 898 := by decide
   have hwordEq2225 : (873 : UInt256) = UInt256.ofNat 873 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
@@ -733,19 +733,19 @@ theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     (hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 4)) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry4
       (subEntryState s memory pdst ret rest) =
-      some (csFixedState s memory 4 0 10432 pdst ret rest) := by
+      some (csFixedState s memory 4 0 10476 pdst ret rest) := by
   have hactS := activeWords_fix s 2688 32 (by decide) (by decide) hact
   have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
   have hword9344 : (2688 : UInt256).toNat = 2688 := by decide
   have hword128 : (128 : UInt256).toNat = 128 := by decide
   have hword256 : (256 : UInt256).toNat = 256 := by decide
   have hword4972 : (810 : UInt256).toNat = 810 := by decide
-  have hword5022 : (10431 : UInt256).toNat = 10431 := by decide
-  have hword5131 : (10431 : UInt256).toNat = 10431 := by decide
+  have hword5022 : (10475 : UInt256).toNat = 10475 := by decide
+  have hword5131 : (10475 : UInt256).toNat = 10475 := by decide
   have hword2225 : (873 : UInt256).toNat = 873 := by decide
   have hwordEq4972 : (810 : UInt256) = UInt256.ofNat 810 := by decide
-  have hwordEq5022 : (10431 : UInt256) = UInt256.ofNat 10431 := by decide
-  have hwordEq5131 : (10431 : UInt256) = UInt256.ofNat 10431 := by decide
+  have hwordEq5022 : (10475 : UInt256) = UInt256.ofNat 10475 := by decide
+  have hwordEq5131 : (10475 : UInt256) = UInt256.ofNat 10475 := by decide
   have hwordEq2225 : (873 : UInt256) = UInt256.ofNat 873 := by decide
   have hwordZero : ({ val := 0 } : UInt256) = UInt256.ofNat 0 := by decide
   simp (config := { maxSteps := 800000 })
@@ -764,7 +764,7 @@ theorem run_csFixedStep4_0 (s : State) (memory : ByteArray) (pdst ret : UInt256)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedStep4_0
-      (csFixedState s memory 4 0 10432 pdst ret rest) =
+      (csFixedState s memory 4 0 10476 pdst ret rest) =
       some (csFixedState s memory 4 1 802 pdst ret rest) := by
   have capacity (j : Nat) (hj : j ≤ 9) : rest.length + j < 1024 := by omega
   have ha0 := activeWords_fix s 96 32 (by decide) (by decide) hact

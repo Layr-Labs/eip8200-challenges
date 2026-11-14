@@ -1,7 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Cycle.ControlArithmetic
 import Challenge.Modexp.Submission.Proofs.Cycle.FinalBlocks
 import Challenge.Modexp.Submission.Proofs.Cycle.NormalizeMeaning
-import Challenge.Modexp.Submission.Proofs.Prepared.OverlapPacking
+import Challenge.Modexp.Submission.Proofs.Prepared.LowOverlapPacking
 import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 set_option maxRecDepth 40000
 set_option maxHeartbeats 8000000
@@ -14,13 +14,13 @@ open CycleSubmission.NormalizeMeaning
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs
 def result (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) : State :=
- {s with pc := UInt256.ofNat 8586,memory := OverlapPackingMemory.memory9 s.memory a,stack := frame a n slot0 slot1 rest}
+ {s with pc := UInt256.ofNat 8576,memory := LowOverlapPackingMemory.memory9 s.memory a,stack := frame a n slot0 slot1 rest}
 theorem model_eq (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
  (hm : MemoryInput s.memory a n) :
  CycleSubmission.Execution.packFinalModel s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7) modulusP
   (n 8) slot1 mask slot0 (n 3) (a 8) rest = result s a n slot0 slot1 rest := by
- simp (disch := decide) only [CycleSubmission.Execution.packFinalModel,result,OverlapPackingMemory.memory9,
-   OverlapPackingMemory.store,frame,CycleSubmission.Prepared.Arithmetic.read_disjoint,
+ simp (disch := decide) only [CycleSubmission.Execution.packFinalModel,result,LowOverlapPackingMemory.memory9,
+   LowOverlapPackingMemory.store,frame,CycleSubmission.Prepared.Arithmetic.read_disjoint,
    List.cons_append,List.nil_append,readWord_writeWord,hm.a0,hm.a3,hm.a4,hm.a5,hm.a6,hm.a7]
 theorem run (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
  (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
@@ -33,9 +33,9 @@ theorem run (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : 
  exact h
 theorem bytes (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
  (ha : ∀ i < 9,(a i).toNat < 2^240) (_hv : CycleSubmission.ControlArithmetic.value a < 2^2048) :
- MachineState.readPadded (result s a n slot0 slot1 rest).memory 2112 256 =
+ MachineState.readPadded (result s a n slot0 slot1 rest).memory 16 256 =
  Precompile.natToBytes (CycleSubmission.ControlArithmetic.value a) 256 := by
- have h := OverlapPackingMemory.returned9 s.memory a
+ have h := LowOverlapPackingMemory.returned9 s.memory a
   (by simpa only [show (256:Nat)^30 = 2^240 by decide] using ha)
  simpa only [result,Precompile.natToBytes,CycleSubmission.ControlArithmetic.value,
   show (256:Nat)^30 = 2^240 by decide] using h

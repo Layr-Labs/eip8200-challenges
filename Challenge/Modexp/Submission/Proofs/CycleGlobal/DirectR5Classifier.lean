@@ -14,8 +14,8 @@ def program : List Instr :=
    .push 2 3288,
    .op .JUMPI]
 theorem run4 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256) (hcap : rest.length ≤ 1000) :
- runInstructions program {s with pc := UInt256.ofNat 8596,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} =
- some {s with pc := UInt256.ofNat 8605,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} := by
+ runInstructions program {s with pc := UInt256.ofNat 8585,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} =
+ some {s with pc := UInt256.ofNat 8594,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} := by
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega
@@ -24,7 +24,7 @@ theorem run4 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16)
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run8 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256) (hcap : rest.length ≤ 1000)
  (hd : Decode.isValidJumpDest s.executionEnv.code 3288 = true) :
- runInstructions program {s with pc := UInt256.ofNat 8596,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} =
+ runInstructions program {s with pc := UInt256.ofNat 8585,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} =
  some {s with pc := UInt256.ofNat 3288,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} := by
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega

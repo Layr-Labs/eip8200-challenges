@@ -21,7 +21,7 @@ def cells (a n : Nat → UInt256) : List (Nat × UInt256) :=
    (96,output a n 5),(128,output a n 6),(160,output a n 7)]
 def result (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 10583
+    pc := UInt256.ofNat 10627
     memory := storeCells s.memory (cells a n)
     stack := ret::frame (output a n) n (n 0) slot1 rest}
 structure MemoryInput (mem : ByteArray) (a n : Nat → UInt256) : Prop where
@@ -51,7 +51,7 @@ theorem run (s : State) (a n : Nat → UInt256) (ret slot1 : UInt256) (rest : Li
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel.runInstructions
-      normalizeProgram {s with pc := UInt256.ofNat 10462,stack := frame a n ret slot1 rest} =
+      normalizeProgram {s with pc := UInt256.ofNat 10506,stack := frame a n ret slot1 rest} =
         some (result s a n ret slot1 rest) := by
   have hx := normalize_run s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7) modulusP
     (n 8) slot1 mask ret (n 3) (a 8) rest hcap hact
