@@ -28,8 +28,8 @@ def template : List Instr := [
 .op (.Dup ⟨6, by decide⟩),
 .push ⟨1, by decide⟩ (UInt256.ofNat 90),
 .op .MSTORE,
-.op (.Dup ⟨3, by decide⟩),
-.push ⟨2, by decide⟩ (UInt256.ofNat 792),
+.op (.Dup ⟨12, by decide⟩),
+.push ⟨2, by decide⟩ (UInt256.ofNat 900),
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 648),
 .op .MSTORE,
@@ -42,7 +42,7 @@ def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24, x 25, x 26, x 27] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20, x 21, x 22, x 23, x 24, x 25, x 26, x 27] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 360)) (Data.Bytes.natToBytesPadded (x 6).toNat 32) 90)) (Data.Bytes.natToBytesPadded (x 3).toNat 32) 792)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 648)) (Data.Bytes.natToBytesPadded (x 10).toNat 32) 738)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 630)
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 360)) (Data.Bytes.natToBytesPadded (x 6).toNat 32) 90)) (Data.Bytes.natToBytesPadded (x 12).toNat 32) 900)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 648)) (Data.Bytes.natToBytesPadded (x 10).toNat 32) 738)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 630)
 theorem exact_bytes :
     (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 680).take 27 =
       PcEncoding.assembleBytes template := by

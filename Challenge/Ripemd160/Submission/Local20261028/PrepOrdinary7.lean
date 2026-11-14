@@ -33,15 +33,15 @@ def template : List Instr := [
 .op .MSTORE,
 .push ⟨2, by decide⟩ (UInt256.ofNat 468),
 .op .MSTORE,
-.push ⟨2, by decide⟩ (UInt256.ofNat 450),
+.push ⟨4, by decide⟩ (UInt256.ofNat 450),
 .op .MSTORE,
-.push ⟨2, by decide⟩ (UInt256.ofNat 1008),
+.op .PC,
 .op .MSTORE]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19, x 20] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 504)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 396)) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 486)) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 972)) (Data.Bytes.natToBytesPadded (x 3).toNat 32) 468)) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 450)) (Data.Bytes.natToBytesPadded (x 5).toNat 32) 1008)
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 504)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 396)) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 486)) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 972)) (Data.Bytes.natToBytesPadded (x 3).toNat 32) 468)) (Data.Bytes.natToBytesPadded (x 4).toNat 32) 450)) (Data.Bytes.natToBytesPadded (x 5).toNat 32) 792)
 theorem exact_bytes :
     (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 765).take 29 =
       PcEncoding.assembleBytes template := by

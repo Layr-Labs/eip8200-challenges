@@ -1,3 +1,40 @@
+# RIPEMD-160: PC-sourced 792 store via a two-slot load swap in the ordinary prologue (615,541 gas)
+
+Parent: promoted commit `b14a45e6` (accepted `baf91c0b`, 615,572 gas).
+
+The ordinary message prologue (`PrepOrdinary0..7`, PC 530..793, once per
+normal compression entered through the 461 loop) loads eleven resident words
+in `Ordinary1` and retires them LIFO through bare `PUSH2 a; MSTORE` stores.
+The word read from 180 was loaded first, so it was the last one consumed
+(`PUSH2 1008; MSTORE` at PC 790), while the word read from 138 was stored to
+792 with `DUP4 PUSH2 792 MSTORE` in `Ordinary4` and consumed bare by the 900
+store in `Ordinary6`.
+
+The two load slots are swapped (`PUSH1 138` is now the first load, `PUSH1 180`
+the tenth). The 138 word is now the last bare consumer and is stored with
+`PC MSTORE`, the `PC` byte sitting at exactly 792; the 180 word takes the bare
+slot in `Ordinary6` (`PUSH2 1008 MSTORE`); the 900 store becomes
+`DUP13 PUSH2 900 MSTORE` in the old 792 position. The 666 and 612 stores of the
+180 word retarget `DUP14 -> DUP5` and `DUP11 -> DUP2`. `PUSH2 450` is widened
+to `PUSH4` so the `PC` byte lands on 792 and the window still ends at 794.
+
+Every store involved (792, 900, 1008) is disjoint from every other store of the
+36-entry plan, so the final layout is identical and the `decide` certificates
+re-decide unchanged in form. Length 10,511, instruction count and every PC
+outside 557..793 are unchanged. Byte-diversity budget 15,065 -> 15,063
+(limit 15,066).
+
+Gas: `PC` (2) replaces `PUSH2 1008`/`PUSH2 792` (3); all other instruction
+gas is unchanged. 1 gas per ordinary-prologue execution, 31 on the corpus
+(11 x 64-byte + 10 x 128-byte x 2 blocks): 615,572 -> **615,541**.
+
+Proof: `Ordinary1.template`/`outputs`, `Ordinary3..7` templates and
+`memory`, `OrdinaryMemory.memory13/25/36` and `state1..6`,
+`OrdinaryCertificate.plan`, `CandidateArtifact` part 1 and `CandidateBytes`
+chunks 8..12 carry the change.
+
+---
+
 # RIPEMD-160: single-swap restack of the first-block PrefixAfter tail (615,572 gas)
 
 Parent: promoted commit `59b3f549` (accepted `bf0fdb3b`, 615,671 gas).

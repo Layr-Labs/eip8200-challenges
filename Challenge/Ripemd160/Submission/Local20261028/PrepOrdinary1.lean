@@ -22,7 +22,7 @@ private theorem hadd_literals (a b : Nat) :
     UInt256.ofNat a + UInt256.ofNat b = UInt256.ofNat (a+b) := add_literals a b
 namespace Ordinary1
 def template : List Instr := [
-.push ⟨1, by decide⟩ (UInt256.ofNat 180),
+.push ⟨1, by decide⟩ (UInt256.ofNat 138),
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 168),
 .op .MLOAD,
@@ -42,7 +42,7 @@ def template : List Instr := [
 .op .ADD,
 .push ⟨2, by decide⟩ (UInt256.ofNat 258),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 138),
+.push ⟨1, by decide⟩ (UInt256.ofNat 180),
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 146),
 .op .MLOAD,
@@ -52,7 +52,7 @@ def template : List Instr := [
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
-  [(MachineState.readWord (s.memory) 146), (MachineState.readWord (s.memory) 138), (MachineState.readWord (s.memory) 258), (UInt256.add ((UInt256.ofNat 63353157587505792712163362468939828208675924746436608)) ((MachineState.readWord (s.memory) 134))), (MachineState.readWord (s.memory) 224), (MachineState.readWord (s.memory) 228), (MachineState.readWord (s.memory) 266), (MachineState.readWord (s.memory) 236), (MachineState.readWord (s.memory) 262), (MachineState.readWord (s.memory) 168), (MachineState.readWord (s.memory) 180), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
+  [(MachineState.readWord (s.memory) 146), (MachineState.readWord (s.memory) 180), (MachineState.readWord (s.memory) 258), (UInt256.add ((UInt256.ofNat 63353157587505792712163362468939828208675924746436608)) ((MachineState.readWord (s.memory) 134))), (MachineState.readWord (s.memory) 224), (MachineState.readWord (s.memory) 228), (MachineState.readWord (s.memory) 266), (MachineState.readWord (s.memory) 236), (MachineState.readWord (s.memory) 262), (MachineState.readWord (s.memory) 168), (MachineState.readWord (s.memory) 138), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 146)).toNat 32) 594)
 theorem exact_bytes :
     (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 556).take 65 =

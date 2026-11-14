@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "baf91c0b-c911-47a7-8322-9ec8af9f342f",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,572-gas frontier (single-swap bottom-up restack of the first-block PrefixAfter frame). Retained unchanged; this candidate swaps the load slots of the 138 and 180 message words in the ordinary prologue so the disjoint 792 store becomes the last bare consumer and takes its offset from PC.",
+    "evidence": "Based on the Submission tree at b14a45e665327ed9a9e8878d10296610d450c33b; PrepOrdinary1/3/4/5/6/7, PrepOrdinaryMemory memory13/25/36 and state1-6, PrepOrdinaryCertificate plan, CandidateArtifact part 1, CandidateBytes chunks 8-12; bytes 557..793."
+  },
+  {
     "submissionId": "bf0fdb3b-237b-4c46-b8a6-b2e361c73c2c",
     "rationale": "Direct source and proof-tree parent: the promoted 615,671-gas frontier (PC-sourced 720 store offset in the ordinary message prologue). Retained unchanged; this candidate restacks only the first-block PrefixAfter window (single SWAP4 frame build), whose earlier literal folds come from 54dea2f0 and b1d795c1.",
     "evidence": "Based on the Submission tree at 59b3f5497e051aad0ec1998b956fd1f7950f50bf; PrepPrefixAfter template, FirstPrologue.after, CandidateArtifact part 36, CandidateBytes chunks 159-162; bytes 10199..10421."
