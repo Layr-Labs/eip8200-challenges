@@ -17,8 +17,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 def frame (s : State) (mem : ByteArray) (pc : Nat) (stack : List UInt256) : State :=
   { s with memory := mem,pc := UInt256.ofNat pc,stack := stack }
-def exitPC (b : Bool) : Nat := if b then 10941 else 3206
-def transferPC (b : Bool) : Nat := if b then 10942 else 3207
+def exitPC (b : Bool) : Nat := if b then 10939 else 3204
+def transferPC (b : Bool) : Nat := if b then 10940 else 3205
 def headProgram (b : Bool) : List Instr :=
   [.op .POP]
 def transferProgram : List Instr := [.op (.Swap ⟨12,by decide⟩),.op .JUMP]

@@ -11,45 +11,45 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-def classifyBlock : Block CycleSubmission.Artifact.artifact .Osaka 8585 DirectR5Classifier.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6520 6 8585 DirectR5Classifier.program
-  (by change 6520+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def classifyBlock : Block CycleSubmission.Artifact.artifact .Osaka 8613 DirectR5Classifier.program :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6517 6 8613 DirectR5Classifier.program
+  (by change 6517+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 8594 DirectR5Reuse.program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6526 4 8594 DirectR5Reuse.program
-  (by change 6526+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 8622 DirectR5Reuse.program :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6523 4 8622 DirectR5Reuse.program
+  (by change 6523+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3288 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2560 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2560 = 3288 := by
+theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3290 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2562 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2562 = 3290 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
-theorem jumpDestR5 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 8600 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 6530 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 6530 = 8600 := by
+theorem jumpDestR5 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 8628 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 6527 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 6527 = 8628 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 def classify8 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256)
  (hcap : rest.length ≤ 1000) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
- GasSteps {s with pc := UInt256.ofNat 8585,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest}
- {s with pc := UInt256.ofNat 3288,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} :=
- classifyBlock.steps (s := {s with pc := UInt256.ofNat 8585,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest})
+ GasSteps {s with pc := UInt256.ofNat 8613,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest}
+ {s with pc := UInt256.ofNat 3290,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} :=
+ classifyBlock.steps (s := {s with pc := UInt256.ofNat 8613,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest})
   (env.transfer rfl rfl) rfl (DirectR5Classifier.run8 {s with memory := mem} count hpos hle rest hcap (by rw [env.code]; exact jumpDestCommon))
 def enter4 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (bsize esize msize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
- GasSteps {s with pc := UInt256.ofNat 8585,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize}
+ GasSteps {s with pc := UInt256.ofNat 8613,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize}
  (DirectR5Reuse.result s mem (UInt256.ofNat (count-1)) bsize esize msize) := by
  have hc : (SlimFrames.outer mem 4 bsize esize msize).length ≤ 1000 := by
   simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
  have g1 := classifyBlock.steps
-  (s := {s with pc := UInt256.ofNat 8585,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
+  (s := {s with pc := UInt256.ofNat 8613,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
   (env.transfer rfl rfl) rfl (DirectR5Classifier.run4 {s with memory := mem} count hpos hle _ hc)
  have g3 := headerBlock.steps
-  (s := {s with pc := UInt256.ofNat 8594,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
+  (s := {s with pc := UInt256.ofNat 8622,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize})
   (env.transfer rfl rfl) rfl (DirectR5Reuse.run s mem (UInt256.ofNat (count-1)) bsize esize msize hact (by rw [env.code]; exact jumpDestR5))
  exact g1.trans g3
 #print axioms classify8
