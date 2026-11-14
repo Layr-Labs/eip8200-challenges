@@ -73,7 +73,7 @@ def state14 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List U
 def memory15 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory14 mem inv a b n) (cells14 inv a b n)
 def state15 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 7826,memory := memory15 s.memory inv a b n,stack := frame15 inv a b n rest}
 def memory16 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory15 mem inv a b n) (cells15 inv a b n)
-def state16 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10284,memory := memory16 s.memory inv a b n,stack := frame16 inv a b n rest}
+def state16 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 10328,memory := memory16 s.memory inv a b n,stack := frame16 inv a b n rest}
 def memory17 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory16 mem inv a b n) (cells16 inv a b n)
 def state17 (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest : List UInt256) : State := {s with pc := UInt256.ofNat 8072,memory := memory17 s.memory inv a b n,stack := frame17 inv a b n rest}
 def memory18 (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : ByteArray := HistoricalSearch.CRTMemoryCells.storeCells (memory17 mem inv a b n) (cells17 inv a b n)
@@ -492,8 +492,8 @@ theorem output_value (s : State) (inv : UInt256) (a b n : Nat → UInt256) (rest
   dsimp only
   rw [output_eq s inv a b n rest h i (Finset.mem_range.mp hi)]
 def block : Block Artifact.artifact .Osaka 5932 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4330 2040 5932 program
-    (by change 4330+2040 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 4331 2040 5932 program
+    (by change 4331+2040 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

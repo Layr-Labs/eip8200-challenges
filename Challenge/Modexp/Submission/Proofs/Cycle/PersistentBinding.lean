@@ -12,26 +12,26 @@ namespace CycleSubmission.PersistentBinding
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice WindowNibbleKernel
-theorem install_pc : Artifact.artifact.instructionPC 2695 = 3476 := by
- rw [PCCertificate.selectedPC 2695 (by decide)]; rfl
+theorem install_pc : Artifact.artifact.instructionPC 2696 = 3476 := by
+ rw [PCCertificate.selectedPC 2696 (by decide)]; rfl
 def installBlock : Block Artifact.artifact .Osaka 3476 CachedInverse.installPrefix :=
- WindowTwentyOneSlice.block Artifact.wellFormed 2695 0 3476 CachedInverse.installPrefix
-  (by change 2695+0 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block Artifact.wellFormed 2696 0 3476 CachedInverse.installPrefix
+  (by change 2696+0 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
   install_pc (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl) (by decide)
-theorem round_pc : Artifact.artifact.instructionPC 2695 = 3476 := by
- rw [PCCertificate.selectedPC 2695 (by decide)]; rfl
+theorem round_pc : Artifact.artifact.instructionPC 2696 = 3476 := by
+ rw [PCCertificate.selectedPC 2696 (by decide)]; rfl
 def roundBlock : Block Artifact.artifact .Osaka 3476 PersistentCounter.roundProgram :=
- WindowTwentyOneSlice.block Artifact.wellFormed 2695 1570 3476 PersistentCounter.roundProgram
-  (by change 2695+1570 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block Artifact.wellFormed 2696 1570 3476 PersistentCounter.roundProgram
+  (by change 2696+1570 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
   round_pc (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl) (by decide)
-theorem restore_pc : Artifact.artifact.instructionPC 4265 = 5795 := by
- rw [PCCertificate.selectedPC 4265 (by decide)]; rfl
+theorem restore_pc : Artifact.artifact.instructionPC 4266 = 5795 := by
+ rw [PCCertificate.selectedPC 4266 (by decide)]; rfl
 def restoreBlock : Block Artifact.artifact .Osaka 5795 CachedInverse.restoreMaskProgram :=
- WindowTwentyOneSlice.block Artifact.wellFormed 4265 11 5795 CachedInverse.restoreMaskProgram
-  (by change 4265+11 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block Artifact.wellFormed 4266 11 5795 CachedInverse.restoreMaskProgram
+  (by change 4266+11 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
   restore_pc (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl) (by decide)
 theorem valid_kernel : Decode.isValidJumpDest Artifact.bytecode 3476 = true := by
- have h := Global.Binding.jumpDest 2695 (by rfl)
+ have h := Global.Binding.jumpDest 2696 (by rfl)
  rw [round_pc] at h
  exact h
 noncomputable def round_steps (s : State) (inv count : UInt256) (a b n : Nat → UInt256)

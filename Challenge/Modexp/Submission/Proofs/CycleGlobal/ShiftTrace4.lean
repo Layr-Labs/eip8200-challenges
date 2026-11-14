@@ -194,7 +194,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 10339) s
+      (shiftLoopState (UInt256.ofNat 10383) s
         (preMem (negStep mem n n).memory) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -307,8 +307,8 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
 def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2566
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2008 5 2566 ShiftProducerSplitRun.copyProgram
-    (by change 2008+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2009 5 2566 ShiftProducerSplitRun.copyProgram
+    (by change 2009+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

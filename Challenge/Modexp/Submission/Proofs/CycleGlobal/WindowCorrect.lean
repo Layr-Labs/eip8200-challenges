@@ -68,7 +68,7 @@ def handledOf (route : WindowRoute.Route)
             done,result⟩
         · exact WindowBodyCorrect.handledOf route input hvalid
             (((EarlyWordCorrect.legacy input hvalid hsize).trans steps).trans
-              (Memo.gasSteps_miss input hmemo))
+              (Memo.gasSteps_miss input hvalid hmemo))
       · exact bigBailHandled input hvalid h32 hupper
           ((EarlyWordCorrect.legacy input hvalid hsize).trans steps)
       · -- an empty modulus returns the empty byte array straight from the test at pc 737

@@ -38,59 +38,59 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
-@[simp] theorem preparedPC1917 : CycleSubmission.Artifact.artifact.instructionPC 2044 = 2624 := by
+@[simp] theorem preparedPC1917 : CycleSubmission.Artifact.artifact.instructionPC 2045 = 2624 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1918 : CycleSubmission.Artifact.artifact.instructionPC 2045 = 2625 := by
+@[simp] theorem preparedPC1918 : CycleSubmission.Artifact.artifact.instructionPC 2046 = 2625 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1919 : CycleSubmission.Artifact.artifact.instructionPC 2046 = 2627 := by
+@[simp] theorem preparedPC1919 : CycleSubmission.Artifact.artifact.instructionPC 2047 = 2627 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1920 : CycleSubmission.Artifact.artifact.instructionPC 2047 = 2628 := by
+@[simp] theorem preparedPC1920 : CycleSubmission.Artifact.artifact.instructionPC 2048 = 2628 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1921 : CycleSubmission.Artifact.artifact.instructionPC 2048 = 2629 := by
+@[simp] theorem preparedPC1921 : CycleSubmission.Artifact.artifact.instructionPC 2049 = 2629 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1922 : CycleSubmission.Artifact.artifact.instructionPC 2049 = 2632 := by
+@[simp] theorem preparedPC1922 : CycleSubmission.Artifact.artifact.instructionPC 2050 = 2632 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1923 : CycleSubmission.Artifact.artifact.instructionPC 2050 = 2633 := by
+@[simp] theorem preparedPC1923 : CycleSubmission.Artifact.artifact.instructionPC 2051 = 2633 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1924 : CycleSubmission.Artifact.artifact.instructionPC 2051 = 2635 := by
+@[simp] theorem preparedPC1924 : CycleSubmission.Artifact.artifact.instructionPC 2052 = 2635 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1925 : CycleSubmission.Artifact.artifact.instructionPC 2052 = 2636 := by
+@[simp] theorem preparedPC1925 : CycleSubmission.Artifact.artifact.instructionPC 2053 = 2636 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1926 : CycleSubmission.Artifact.artifact.instructionPC 2053 = 2637 := by
+@[simp] theorem preparedPC1926 : CycleSubmission.Artifact.artifact.instructionPC 2054 = 2637 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1928 : CycleSubmission.Artifact.artifact.instructionPC 2055 = 2641 := by
+@[simp] theorem preparedPC1928 : CycleSubmission.Artifact.artifact.instructionPC 2056 = 2641 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1930 : CycleSubmission.Artifact.artifact.instructionPC 2057 = 2643 := by
+@[simp] theorem preparedPC1930 : CycleSubmission.Artifact.artifact.instructionPC 2058 = 2643 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1931 : CycleSubmission.Artifact.artifact.instructionPC 2058 = 2644 := by
+@[simp] theorem preparedPC1931 : CycleSubmission.Artifact.artifact.instructionPC 2059 = 2644 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC1932 : CycleSubmission.Artifact.artifact.instructionPC 2059 = 2645 := by
+@[simp] theorem preparedPC1932 : CycleSubmission.Artifact.artifact.instructionPC 2060 = 2645 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2143 = 2753 := by
+@[simp] theorem preparedPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2144 = 2753 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2137 = 2745 := by
+@[simp] theorem followupPC2659 : CycleSubmission.Artifact.artifact.instructionPC 2138 = 2745 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2141 = 2751 := by
+@[simp] theorem followupPC2665 : CycleSubmission.Artifact.artifact.instructionPC 2142 = 2751 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 /-- A pc inside `blkNbTail`. -/
-@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2159 = 2781 := by
+@[simp] theorem followupPC1871 : CycleSubmission.Artifact.artifact.instructionPC 2160 = 2781 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 theorem notThirtyOneOfNat : UInt256.lnot (UInt256.ofNat 31) = UInt256.ofNat
@@ -718,8 +718,8 @@ theorem run_nbTail (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize m
   have haw2656 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have heq11 : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat 1) = UInt256.ofNat 1 := by decide
-  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 7805 + UInt256.ofNat 2534 = UInt256.ofNat 2534 := by decide
-  have hzeroAddRight : UInt256.ofNat 2534 + UInt256.ofNat 0 * UInt256.ofNat 7805 = UInt256.ofNat 2534 := by decide
+  have hzeroAdd : UInt256.ofNat 0 * UInt256.ofNat 7849 + UInt256.ofNat 2534 = UInt256.ofNat 2534 := by decide
+  have hzeroAddRight : UInt256.ofNat 2534 + UInt256.ofNat 0 * UInt256.ofNat 7849 = UInt256.ofNat 2534 := by decide
   have haw32 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 32 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have hz0 : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by decide

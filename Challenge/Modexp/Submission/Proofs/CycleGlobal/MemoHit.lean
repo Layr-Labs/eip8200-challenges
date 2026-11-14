@@ -14,6 +14,6 @@ theorem hitHandled (input : ByteArray) (hvalid : ValidInput input)
         final.isDone = true ∧ final.toResult = .returned (Challenge.Modexp.spec input) := by
   refine ⟨MemoAnswer.finalState input,?_,(MemoAnswer.result input hvalid hmatch).1,
     (MemoAnswer.result input hvalid hmatch).2⟩
-  exact ⟨(gasSteps_hit input hmatch).trans (MemoAnswer.steps input)⟩
+  exact ⟨(gasSteps_hit input hvalid hmatch).trans (MemoAnswer.steps input)⟩
 #print axioms hitHandled
 end CycleSubmission.Global.Memo

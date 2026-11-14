@@ -12,8 +12,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.CRTControl
 def entryBlock : Block Artifact.artifact .Osaka 3318 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2581 114 3318 entryProgram
-    (by change 2581+114 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2582 114 3318 entryProgram
+    (by change 2582+114 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
