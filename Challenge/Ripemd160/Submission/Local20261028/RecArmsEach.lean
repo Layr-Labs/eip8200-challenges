@@ -38,12 +38,12 @@ theorem valid_chain1 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain1 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5200 [a])
-      {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5200) a [] (by simp) rfl rfl 1 (by decide) valid_fail
-  have hend : pcAfter (UInt256.ofNat 5200) (chainTemplate 1) = UInt256.ofNat 5243 := by decide
+  have hend : pcAfter (UInt256.ofNat 5200) (chainTemplate 1) = UInt256.ofNat 5242 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain1Template (atState (prepared input n) 5200 [a]) =
-      some {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain1Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain1_pc.symm) chain1_form h'
 
@@ -69,12 +69,12 @@ theorem valid_chain2 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain2 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5162 [a])
-      {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5162) a [] (by simp) rfl rfl 2 (by decide) valid_fail
-  have hend : pcAfter (UInt256.ofNat 5162) (chainTemplate 2) = UInt256.ofNat 5243 := by decide
+  have hend : pcAfter (UInt256.ofNat 5162) (chainTemplate 2) = UInt256.ofNat 5242 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain2Template (atState (prepared input n) 5162 [a]) =
-      some {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain2Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain2_pc.symm) chain2_form h'
 
@@ -100,12 +100,12 @@ theorem valid_chain3 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain3 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5123 [a])
-      {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5123) a [] (by simp) rfl rfl 3 (by decide) valid_fail
-  have hend : pcAfter (UInt256.ofNat 5123) (chainTemplate 3) = UInt256.ofNat 5243 := by decide
+  have hend : pcAfter (UInt256.ofNat 5123) (chainTemplate 3) = UInt256.ofNat 5242 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain3Template (atState (prepared input n) 5123 [a]) =
-      some {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain3Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain3_pc.symm) chain3_form h'
 
@@ -131,12 +131,12 @@ theorem valid_chain4 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain4 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5084 [a])
-      {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5084) a [] (by simp) rfl rfl 4 (by decide) valid_fail
-  have hend : pcAfter (UInt256.ofNat 5084) (chainTemplate 4) = UInt256.ofNat 5243 := by decide
+  have hend : pcAfter (UInt256.ofNat 5084) (chainTemplate 4) = UInt256.ofNat 5242 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain4Template (atState (prepared input n) 5084 [a]) =
-      some {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain4Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain4_pc.symm) chain4_form h'
 
@@ -162,12 +162,12 @@ theorem valid_chain8 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain8 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 4931 [a])
-      {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 4931) a [] (by simp) rfl rfl 8 (by decide) valid_fail
-  have hend : pcAfter (UInt256.ofNat 4931) (chainTemplate 8) = UInt256.ofNat 5243 := by decide
+  have hend : pcAfter (UInt256.ofNat 4931) (chainTemplate 8) = UInt256.ofNat 5242 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain8Template (atState (prepared input n) 4931 [a]) =
-      some {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain8Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain8_pc.symm) chain8_form h'
 
@@ -289,7 +289,7 @@ def arm31Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm3
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm31Template) (by decide)) (by decide)
-theorem arm31_pc : arm31Site.startPC = UInt256.ofNat 5246 := by
+theorem arm31_pc : arm31Site.startPC = UInt256.ofNat 5245 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3532) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm31_form : ∀ i ∈ arm31Template.dropLast, RecognitionLift.Advances i :=
@@ -297,23 +297,23 @@ theorem arm31_form : ∀ i ∈ arm31Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm31 (input : ByteArray) :
-    GasSteps (atState (base input) 5246 [])
-      {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5310 else UInt256.ofNat 4651, stack := []} := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5246) 31
-  have h2 := Scan.run_prefix (prepared input 31) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5246))
+    GasSteps (atState (base input) 5245 [])
+      {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5309 else UInt256.ofNat 4651, stack := []} := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5245) 31
+  have h2 := Scan.run_prefix (prepared input 31) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5245))
     31 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := Scan.run_result (prepared input 31)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5246)) (prefixTemplate 31))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5245)) (prefixTemplate 31))
     (ZeroTailModel.tailDiff input 31) [] (by simp) rfl (by rw [prepared_code]; exact valid_fail)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have hend : pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5246))
-      (prefixTemplate 31)) Scan.resultTemplate = UInt256.ofNat 5310 := by decide
+  have hend : pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5245))
+      (prefixTemplate 31)) Scan.resultTemplate = UInt256.ofNat 5309 := by decide
   rw [hend] at hall
   have hres : ZeroTailModel.result input 31 = ZeroTailModel.tailDiff input 31 := by
     simp [ZeroTailModel.result, last, rev]
-  have h' : runInstrSeq arm31Template (atState (base input) 5246 []) =
-      some {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5310 else UInt256.ofNat 4651, stack := []} := by
+  have h' : runInstrSeq arm31Template (atState (base input) 5245 []) =
+      some {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5309 else UInt256.ofNat 4651, stack := []} := by
     rw [hres]
     simpa only [arm31Template, atState, List.append_assoc] using hall
   exact RecognitionLift.gasSteps_of_raw arm31Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -329,7 +329,7 @@ def arm32Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm3
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm32Template) (by decide)) (by decide)
-theorem arm32_pc : arm32Site.startPC = UInt256.ofNat 5313 := by
+theorem arm32_pc : arm32Site.startPC = UInt256.ofNat 5312 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3545) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm32_form : ∀ i ∈ arm32Template.dropLast, RecognitionLift.Advances i :=
@@ -337,18 +337,18 @@ theorem arm32_form : ∀ i ∈ arm32Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm32_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5313 []) (atState (prepared input 32) 5200 [startValue input 32]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5313) 32
-  have h2 := Scan.run_start (prepared input 32) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5313))
+    GasSteps (atState (base input) 5312 []) (atState (prepared input 32) 5200 [startValue input 32]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5312) 32
+  have h2 := Scan.run_start (prepared input 32) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5312))
     32 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 32)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5313)) (startTemplate 32))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5312)) (startTemplate 32))
     5200 [startValue input 32] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5200).toNat = true
       exact valid_chain1)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm32Template (atState (base input) 5313 []) =
+  have h' : runInstrSeq arm32Template (atState (base input) 5312 []) =
       some (atState (prepared input 32) 5200 [startValue input 32]) := by
     simpa only [arm32Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm32Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -359,8 +359,8 @@ theorem value32 (input : ByteArray) :
   Scan.value_full input 32 (by decide) (by decide)
 
 def gasSteps_arm32 (input : ByteArray) :
-    GasSteps (atState (base input) 5313 [])
-      {prepared input 32 with pc := if (ZeroTailModel.result input 32).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+    GasSteps (atState (base input) 5312 [])
+      {prepared input 32 with pc := if (ZeroTailModel.result input 32).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm32_entry input).trans (gasSteps_chain1 input 32 (startValue input 32))
   rw [value32] at g
   exact g
@@ -375,26 +375,26 @@ def arm55Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm5
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm55Template) (by decide)) (by decide)
-theorem arm55_pc : arm55Site.startPC = UInt256.ofNat 5342 := by
+theorem arm55_pc : arm55Site.startPC = UInt256.ofNat 5341 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3552) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm55_form : ∀ i ∈ arm55Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
-def gasSteps_arm55_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5342 []) (atState (prepared input 55) 5200 [startValue input 55]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5342) 55
-  have h2 := Scan.run_start (prepared input 55) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5342))
-    55 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
+def gasSteps_arm55_entry (input : ByteArray) (hsize : input.size = 55) :
+    GasSteps (atState (base input) 5341 []) (atState (prepared input 55) 5200 [startValue input 55]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5341) 55
+  have h2 := Scan.run_start (prepared input 55) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5341))
+    55 (by decide) [] (by simp) rfl rfl (fun _ => hsize)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 55)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5342)) (startTemplate 55))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5341)) (startTemplate 55))
     5200 [startValue input 55] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5200).toNat = true
       exact valid_chain1)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm55Template (atState (base input) 5342 []) =
+  have h' : runInstrSeq arm55Template (atState (base input) 5341 []) =
       some (atState (prepared input 55) 5200 [startValue input 55]) := by
     simpa only [arm55Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm55Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -404,10 +404,10 @@ theorem value55 (input : ByteArray) :
     rev input (startValue input 55) 1 = ZeroTailModel.result input 55 :=
   Scan.value_partial input 55 (by decide)
 
-def gasSteps_arm55 (input : ByteArray) :
-    GasSteps (atState (base input) 5342 [])
-      {prepared input 55 with pc := if (ZeroTailModel.result input 55).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
-  have g := (gasSteps_arm55_entry input).trans (gasSteps_chain1 input 55 (startValue input 55))
+def gasSteps_arm55 (input : ByteArray) (hsize : input.size = 55) :
+    GasSteps (atState (base input) 5341 [])
+      {prepared input 55 with pc := if (ZeroTailModel.result input 55).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
+  have g := (gasSteps_arm55_entry input hsize).trans (gasSteps_chain1 input 55 (startValue input 55))
   rw [value55] at g
   exact g
 
@@ -421,7 +421,7 @@ def arm56Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm5
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm56Template) (by decide)) (by decide)
-theorem arm56_pc : arm56Site.startPC = UInt256.ofNat 5400 := by
+theorem arm56_pc : arm56Site.startPC = UInt256.ofNat 5401 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3564) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm56_form : ∀ i ∈ arm56Template.dropLast, RecognitionLift.Advances i :=
@@ -429,18 +429,18 @@ theorem arm56_form : ∀ i ∈ arm56Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm56_entry (input : ByteArray) (hsize : input.size = 56) :
-    GasSteps (atState (base input) 5400 []) (atState (prepared input 56) 5200 [startValue input 56]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5400) 56
-  have h2 := Scan.run_start (prepared input 56) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5400))
+    GasSteps (atState (base input) 5401 []) (atState (prepared input 56) 5200 [startValue input 56]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5401) 56
+  have h2 := Scan.run_start (prepared input 56) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5401))
     56 (by decide) [] (by simp) rfl rfl (fun _ => hsize)
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 56)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5400)) (startTemplate 56))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5401)) (startTemplate 56))
     5200 [startValue input 56] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5200).toNat = true
       exact valid_chain1)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm56Template (atState (base input) 5400 []) =
+  have h' : runInstrSeq arm56Template (atState (base input) 5401 []) =
       some (atState (prepared input 56) 5200 [startValue input 56]) := by
     simpa only [arm56Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm56Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -451,8 +451,8 @@ theorem value56 (input : ByteArray) :
   Scan.value_partial input 56 (by decide)
 
 def gasSteps_arm56 (input : ByteArray) (hsize : input.size = 56) :
-    GasSteps (atState (base input) 5400 [])
-      {prepared input 56 with pc := if (ZeroTailModel.result input 56).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+    GasSteps (atState (base input) 5401 [])
+      {prepared input 56 with pc := if (ZeroTailModel.result input 56).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm56_entry input hsize).trans (gasSteps_chain1 input 56 (startValue input 56))
   rw [value56] at g
   exact g
@@ -467,7 +467,7 @@ def arm63Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm6
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm63Template) (by decide)) (by decide)
-theorem arm63_pc : arm63Site.startPC = UInt256.ofNat 5459 := by
+theorem arm63_pc : arm63Site.startPC = UInt256.ofNat 5460 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3576) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm63_form : ∀ i ∈ arm63Template.dropLast, RecognitionLift.Advances i :=
@@ -475,18 +475,18 @@ theorem arm63_form : ∀ i ∈ arm63Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm63_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5459 []) (atState (prepared input 63) 5200 [startValue input 63]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5459) 63
-  have h2 := Scan.run_start (prepared input 63) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5459))
+    GasSteps (atState (base input) 5460 []) (atState (prepared input 63) 5200 [startValue input 63]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5460) 63
+  have h2 := Scan.run_start (prepared input 63) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5460))
     63 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 63)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5459)) (startTemplate 63))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5460)) (startTemplate 63))
     5200 [startValue input 63] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5200).toNat = true
       exact valid_chain1)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm63Template (atState (base input) 5459 []) =
+  have h' : runInstrSeq arm63Template (atState (base input) 5460 []) =
       some (atState (prepared input 63) 5200 [startValue input 63]) := by
     simpa only [arm63Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm63Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -497,8 +497,8 @@ theorem value63 (input : ByteArray) :
   Scan.value_partial input 63 (by decide)
 
 def gasSteps_arm63 (input : ByteArray) :
-    GasSteps (atState (base input) 5459 [])
-      {prepared input 63 with pc := if (ZeroTailModel.result input 63).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+    GasSteps (atState (base input) 5460 [])
+      {prepared input 63 with pc := if (ZeroTailModel.result input 63).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm63_entry input).trans (gasSteps_chain1 input 63 (startValue input 63))
   rw [value63] at g
   exact g
@@ -513,7 +513,7 @@ def arm64Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm6
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm64Template) (by decide)) (by decide)
-theorem arm64_pc : arm64Site.startPC = UInt256.ofNat 5523 := by
+theorem arm64_pc : arm64Site.startPC = UInt256.ofNat 5524 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3586) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm64_form : ∀ i ∈ arm64Template.dropLast, RecognitionLift.Advances i :=
@@ -521,18 +521,18 @@ theorem arm64_form : ∀ i ∈ arm64Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm64_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5523 []) (atState (prepared input 64) 5162 [startValue input 64]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5523) 64
-  have h2 := Scan.run_start (prepared input 64) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5523))
+    GasSteps (atState (base input) 5524 []) (atState (prepared input 64) 5162 [startValue input 64]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5524) 64
+  have h2 := Scan.run_start (prepared input 64) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5524))
     64 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 64)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5523)) (startTemplate 64))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5524)) (startTemplate 64))
     5162 [startValue input 64] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5162).toNat = true
       exact valid_chain2)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm64Template (atState (base input) 5523 []) =
+  have h' : runInstrSeq arm64Template (atState (base input) 5524 []) =
       some (atState (prepared input 64) 5162 [startValue input 64]) := by
     simpa only [arm64Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm64Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -543,8 +543,8 @@ theorem value64 (input : ByteArray) :
   Scan.value_full input 64 (by decide) (by decide)
 
 def gasSteps_arm64 (input : ByteArray) :
-    GasSteps (atState (base input) 5523 [])
-      {prepared input 64 with pc := if (ZeroTailModel.result input 64).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+    GasSteps (atState (base input) 5524 [])
+      {prepared input 64 with pc := if (ZeroTailModel.result input 64).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm64_entry input).trans (gasSteps_chain2 input 64 (startValue input 64))
   rw [value64] at g
   exact g
@@ -553,7 +553,7 @@ def gasSteps_arm64 (input : ByteArray) :
 def byte65Template : List Instr :=
   [.push ⟨1, by decide⟩ (UInt256.ofNat 64), .op .CALLDATALOAD,
    .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .BYTE,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 71), .op .XOR]
+   .push ⟨1, by decide⟩ (UInt256.ofNat 71), .op .XOR]
 
 def byte65Value (input : ByteArray) : UInt256 :=
   UInt256.xor (UInt256.ofNat 71) (UInt256.byteAt ⟨0⟩ (MachineState.readWord input 64))
@@ -633,7 +633,7 @@ def arm65Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm6
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm65Template) (by decide)) (by decide)
-theorem arm65_pc : arm65Site.startPC = UInt256.ofNat 5552 := by
+theorem arm65_pc : arm65Site.startPC = UInt256.ofNat 5553 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3593) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm65_form : ∀ i ∈ arm65Template.dropLast, RecognitionLift.Advances i :=
@@ -641,18 +641,18 @@ theorem arm65_form : ∀ i ∈ arm65Template.dropLast, RecognitionLift.Advances 
 
 
 def gasSteps_arm65_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5552 []) (atState (prepared input 65) 5162 [byte65Value input]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5552) 65
-  have h2 := run_byte65 (prepared input 65) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552))
+    GasSteps (atState (base input) 5553 []) (atState (prepared input 65) 5162 [byte65Value input]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5553) 65
+  have h2 := run_byte65 (prepared input 65) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5553))
     [] (by simp) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 65)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5552)) byte65Template)
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5553)) byte65Template)
     5162 [byte65Value input] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5162).toNat = true
       exact valid_chain2)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm65Template (atState (base input) 5552 []) =
+  have h' : runInstrSeq arm65Template (atState (base input) 5553 []) =
       some (atState (prepared input 65) 5162 [byte65Value input]) := by
     simpa only [arm65Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm65Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -672,11 +672,11 @@ theorem byte65_rev_iff (input : ByteArray) (hsize : input.size = 65) :
     ZeroTailModel.rev_zero_iff, ZeroTailModel.rev_zero_iff, hk]
 
 def gasSteps_arm65 (input : ByteArray) (hsize : input.size = 65) :
-    GasSteps (atState (base input) 5552 [])
-      {prepared input 65 with pc := if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+    GasSteps (atState (base input) 5553 [])
+      {prepared input 65 with pc := if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm65_entry input).trans (gasSteps_chain2 input 65 (byte65Value input))
-  have hif : (if (rev input (byte65Value input) 2).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651) =
-      (if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5243
+  have hif : (if (rev input (byte65Value input) 2).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651) =
+      (if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5242
         else UInt256.ofNat 4651) :=
     if_congr (byte65_rev_iff input hsize) rfl rfl
   rw [hif] at g
@@ -723,7 +723,7 @@ theorem value119 (input : ByteArray) :
 
 def gasSteps_arm119 (input : ByteArray) :
     GasSteps (atState (base input) 5589 [])
-      {prepared input 119 with pc := if (ZeroTailModel.result input 119).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 119 with pc := if (ZeroTailModel.result input 119).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm119_entry input).trans (gasSteps_chain3 input 119 (startValue input 119))
   rw [value119] at g
   exact g
@@ -769,7 +769,7 @@ theorem value120 (input : ByteArray) :
 
 def gasSteps_arm120 (input : ByteArray) :
     GasSteps (atState (base input) 5652 [])
-      {prepared input 120 with pc := if (ZeroTailModel.result input 120).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 120 with pc := if (ZeroTailModel.result input 120).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm120_entry input).trans (gasSteps_chain3 input 120 (startValue input 120))
   rw [value120] at g
   exact g
@@ -815,7 +815,7 @@ theorem value128 (input : ByteArray) :
 
 def gasSteps_arm128 (input : ByteArray) :
     GasSteps (atState (base input) 5717 [])
-      {prepared input 128 with pc := if (ZeroTailModel.result input 128).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 128 with pc := if (ZeroTailModel.result input 128).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm128_entry input).trans (gasSteps_chain4 input 128 (startValue input 128))
   rw [value128] at g
   exact g
@@ -861,7 +861,7 @@ theorem value256 (input : ByteArray) :
 
 def gasSteps_arm256 (input : ByteArray) :
     GasSteps (atState (base input) 5746 [])
-      {prepared input 256 with pc := if (ZeroTailModel.result input 256).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 256 with pc := if (ZeroTailModel.result input 256).toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm256_entry input).trans (gasSteps_chain8 input 256 (startValue input 256))
   rw [value256] at g
   exact g

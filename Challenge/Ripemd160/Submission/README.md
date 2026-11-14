@@ -1,3 +1,29 @@
+# RIPEMD-160: Calldata-size shift operand for the 55-byte recognizer literal (615,299 gas)
+
+Parent: promoted commit `bc4f945d` (validated `76c2f807`, 615,300 gas).
+
+The patterned 55-byte arm (instruction 3552) rebuilt its last-word literal
+as `PUSH23 X; PUSH1 72; SHL`. The arm is entered only with
+`CALLDATASIZE = 55`, so the literal is re-based to
+`PUSH26 (X << 17); CALLDATASIZE; SHL`, the same word
+`ZeroTailModel.expectedLast 55`; `CALLDATASIZE` (2 gas) replaces `PUSH1 72`
+(3 gas). -1 gas on the `55-byte` vector: 615,300 -> **615,299**.
+
+The arm grows by 2 bytes with the same instruction count. The bytes come
+from two width-pad pushes in the recognizer: the shared chain result
+`PUSH3 4651` (now `PUSH2`, `chainResultTemplate`) and the 65-byte arm's
+`PUSH2 0x47` (now `PUSH1`, `byte65Template`). Instruction indices are
+unchanged everywhere; arm 119 (5589) and every later PC are fixed.
+
+Moved PCs: chain success MSIZE 5243 -> 5242, arm 31 5246 -> 5245 (its
+MSIZE 5310 -> 5309), arm 32 5313 -> 5312, arm 55 5342 -> 5341, arm 56
+5400 -> 5401, arm 63 5459 -> 5460, arm 64 5523 -> 5524, arm 65
+5552 -> 5553, retargeted at the same-width trampoline pushes.
+`RecognizerLiteral.run`'s calldata-size hypothesis widens to
+`n = 55 ∨ n = 56 → size = n`.
+
+---
+
 # RIPEMD-160: Memory-size shift operand for the 119-byte recognizer literal (615,300 gas)
 
 Parent: promoted commit `23abf6ae` (validated `83c2b330`, 615,301 gas).

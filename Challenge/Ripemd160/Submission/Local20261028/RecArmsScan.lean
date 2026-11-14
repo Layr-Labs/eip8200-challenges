@@ -48,8 +48,8 @@ def armIndex : Fin 12 → Nat
  | ⟨6, _⟩ => 3588 | ⟨7, _⟩ => 3595 | ⟨8, _⟩ => 3607 | ⟨9, _⟩ => 3619 | ⟨10, _⟩ => 3629 | ⟨11, _⟩ => 3636
 
 def armPC : Fin 12 → Nat
- | ⟨0, _⟩ => 4717 | ⟨1, _⟩ => 5246 | ⟨2, _⟩ => 5313 | ⟨3, _⟩ => 5342 | ⟨4, _⟩ => 5400 | ⟨5, _⟩ => 5459
- | ⟨6, _⟩ => 5523 | ⟨7, _⟩ => 5552 | ⟨8, _⟩ => 5589 | ⟨9, _⟩ => 5652 | ⟨10, _⟩ => 5717 | ⟨11, _⟩ => 5746
+ | ⟨0, _⟩ => 4717 | ⟨1, _⟩ => 5245 | ⟨2, _⟩ => 5312 | ⟨3, _⟩ => 5341 | ⟨4, _⟩ => 5401 | ⟨5, _⟩ => 5460
+ | ⟨6, _⟩ => 5524 | ⟨7, _⟩ => 5553 | ⟨8, _⟩ => 5589 | ⟨9, _⟩ => 5652 | ⟨10, _⟩ => 5717 | ⟨11, _⟩ => 5746
 
 /-- Number of chain words below the arm's own tail (zero for the two one-word arms). -/
 def chainWords : Fin 12 → Nat
@@ -63,7 +63,7 @@ def chainIndex : Nat → Nat
 
 /-- Index and PC of the success `MSIZE` after the result branch. -/
 def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 3405 else if i.val = 1 then 3544 else 3531
-def returnPC (i : Fin 12) : Nat := if i.val = 0 then 4753 else if i.val = 1 then 5310 else 5243
+def returnPC (i : Fin 12) : Nat := if i.val = 0 then 4753 else if i.val = 1 then 5309 else 5242
 
 /-! ## Templates -/
 
@@ -87,9 +87,8 @@ def startTemplate (n : Nat) : List Instr :=
 def resultTemplate : List Instr :=
   [.push ⟨2, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
 
-/-- The shared chain's own result branch: a three-byte push of the failure PC. -/
 def chainResultTemplate : List Instr :=
-  [.push ⟨3, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
 
 def revE : Nat → List Instr
   | 0 => []
@@ -219,7 +218,7 @@ theorem run_prefix_rest (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) 
 theorem run_prefix (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1)
-    (hsz : n = 56 → s.executionEnv.calldata.size = 56) :
+    (hsz : n = 55 ∨ n = 56 → s.executionEnv.calldata.size = n) :
     runInstrSeq (prefixTemplate n) {s with pc:=pc,stack:=rho} =
       some {s with pc:=pcAfter pc (prefixTemplate n),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata n::rho} := by
   have h1 := RipemdSubmission20261101.RecognizerLiteral.run s pc n rho hs hrun ha hsz
@@ -273,7 +272,7 @@ def startValue (input : ByteArray) (n : Nat) : UInt256 :=
 theorem run_start (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1)
-    (hsz : n = 56 → s.executionEnv.calldata.size = 56) :
+    (hsz : n = 55 ∨ n = 56 → s.executionEnv.calldata.size = n) :
     runInstrSeq (startTemplate n) {s with pc:=pc,stack:=rho} =
       some {s with pc:=pcAfter pc (startTemplate n),stack:=startValue s.executionEnv.calldata n::rho} := by
   by_cases hf : n % 32 = 0

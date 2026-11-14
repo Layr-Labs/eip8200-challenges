@@ -359,7 +359,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     (hv : v.toNat = 0 → input = RecognitionAccumulator.reference n)
     (hpre : GasSteps (initialState Control.submissionBytecode input 0)
       {prepared input n with
-        pc := if v.toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []}) :
+        pc := if v.toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []}) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState Control.submissionBytecode input gas) (.returned (spec input)) := by
   have hpos : 0 < input.size := by
@@ -367,7 +367,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     omega
   by_cases hz : v.toNat = 0
   · rw [if_pos hz] at hpre
-    obtain ⟨t, ⟨gt⟩, h1, h2, h3⟩ := Finish.finish_gasSteps input n 5243 Finish.finishSite2 Finish.finishSite2_pc
+    obtain ⟨t, ⟨gt⟩, h1, h2, h3⟩ := Finish.finish_gasSteps input n 5242 Finish.finishSite2 Finish.finishSite2_pc
     apply Finish.of_returned input t (hpre.trans gt) h1 h2
     rw [h3]
     exact Finish.output_spec input n hn (hv hz)
