@@ -42,7 +42,7 @@ def cacheFrame (_inv : UInt256) (a _b n : Nat → UInt256) (count : UInt256) (re
  [(n 2),(n 6),(n 4),(a 1),(a 2),(n 5),(n 7),CycleSubmission.WordArithmetic.P,(n 8),(n 1),(a 5),(n 0),(n 3),(a 7),(a 8),count]++rest
 def result (s : State) (f : Caller) : State :=
   {s with
-    pc := UInt256.ofNat 3476
+    pc := UInt256.ofNat 3478
     memory := storeCells s.memory (cells s.memory f)
     stack := cacheFrame (MachineState.readWord s.memory 2720)
       (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (UInt256.ofNat 0-f.counter) (saved f).tail}
@@ -58,7 +58,7 @@ theorem model_eq (s : State) (f : Caller) :
     List.cons_append,List.nil_append,List.tail_cons,CycleSubmission.Prepared.Arithmetic.andC]
 theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
     (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entryProgram {s with pc := UInt256.ofNat 3318,stack := saved f} =
+    runInstructions entryProgram {s with pc := UInt256.ofNat 3320,stack := saved f} =
       some (result s f) := by
   have h := entry_run s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
     f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail (by omega) hact

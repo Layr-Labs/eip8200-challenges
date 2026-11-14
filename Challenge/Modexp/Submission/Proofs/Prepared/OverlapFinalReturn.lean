@@ -9,9 +9,9 @@ set_option maxHeartbeats 4000000
 namespace OverlapFinalReturn
 def program9 : List Instr := [.push 2 256,.push 1 16,.op .RETURN]
 def result9 (s : State) (stack : List UInt256) : State :=
- {s with pc := UInt256.ofNat 8581,stack := stack,halt := .Returned,hReturn := MachineState.readPadded s.memory 16 256}
+ {s with pc := UInt256.ofNat 8583,stack := stack,halt := .Returned,hReturn := MachineState.readPadded s.memory 16 256}
 theorem run9 (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions program9 {s with pc := UInt256.ofNat 8576,stack := stack} = some (result9 s stack) := by
+ runInstructions program9 {s with pc := UInt256.ofNat 8578,stack := stack} = some (result9 s stack) := by
  have h0 : stack.length < 1024 := by omega
  have h1 : stack.length+1 < 1024 := by omega
  have h2 : stack.length+1+1 < 1024 := by omega
