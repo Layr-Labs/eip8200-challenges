@@ -25,9 +25,6 @@ open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-theorem jumpD4643 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
-    (UInt256.ofNat 660).toNat = true :=
-  by simpa only [show (UInt256.ofNat 660).toNat = 660 by decide] using jumpDest4608
 /-! ## Facts at `BDONE` on the hit path -/
 /-- The words the whole hit path leaves alone: everything outside `ACC`, `BASE`,
 `NEG`, the estimator words, `SUBB` and the `t` area. -/

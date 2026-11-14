@@ -28,7 +28,7 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
-@[simp] theorem packedJumpPC2411 : CycleSubmission.Artifact.artifact.instructionPC 475 = 674 := by
+@[simp] theorem packedJumpPC2411 : CycleSubmission.Artifact.artifact.instructionPC 474 = 673 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 attribute [local simp] CompactConstants.notThirtyOne
@@ -178,7 +178,7 @@ theorem run_hit (s : State) (mem input : ByteArray) (n bsize esize msize : Nat)
       Challenge.EvmProof.Stepper.runInstr,
       hitState,frameState,pcHit,pcCsubReturn,RetainedT.entryState,hitMem,ShiftProducerCanonical.hitMemory,
       FullBase.copyBaseMem,Exp.storeWord,outer,Exp.outer,
-      hcode,hrun,hdata,hsize,haw2,haw3,RetainedT.jumpDest4486,Exp.push0_word,
+      hcode,hrun,hdata,hsize,haw2,haw3,Exp.push0_word,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,

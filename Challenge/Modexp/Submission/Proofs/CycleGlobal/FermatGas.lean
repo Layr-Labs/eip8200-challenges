@@ -19,7 +19,7 @@ def withModulus (template : State) (input : ByteArray) (tail : List UInt256)
     (WindowTwentyOneInput.modulusWord input::coreStack input tail)
 /-- The join point at 48 with the core frame. -/
 def joinState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  withModulus template input tail (UInt256.ofNat 10944)
+  withModulus template input tail (UInt256.ofNat 10942)
 private def fermatHandled {artifact : ProgramArtifact} {fork : Fork}
     (paths : FermatNext.Paths artifact fork) (template : State) (env : Environment artifact fork template)
     (hcall : template.callStack = []) (input : ByteArray) (tail : List UInt256) (htail : tail.length ≤ 590)
@@ -127,7 +127,7 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
     (input : ByteArray) (tail : List UInt256) (htail : tail.length ≤ 590)
     (hmatch : WindowTwentyOneInput.Matches input)
     (hbn : FermatProgram.bn.toNat.Prime) (hsecp : FermatProgram.secp.toNat.Prime) :
-    ∃ final : State,Nonempty (GasSteps (withModulus template input tail 10944) final) ∧
+    ∃ final : State,Nonempty (GasSteps (withModulus template input tail 10942) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input) := by
   let ec := WindowDispatchCore.context_env template env input
   let m := WindowTwentyOneInput.modulusWord input
@@ -139,12 +139,12 @@ def handled {artifact : ProgramArtifact} {fork : Fork}
   have hraw := FermatNext.run_join (context template input) m e (shiftWord input::tail)
     (by simp; omega) hj
   refine handledFrom paths legacy template env hcall input tail htail hmatch hbn hsecp
-    (withModulus template input tail 10944) ?_ ?_
+    (withModulus template input tail 10942) ?_ ?_
   · intro hs
     have hr := hraw
     rw [if_pos hs] at hr
-    have first : GasSteps (withModulus template input tail 10944)
-        (withModulus template input tail 10953) :=
+    have first : GasSteps (withModulus template input tail 10942)
+        (withModulus template input tail 10951) :=
       paths.join.steps (ec.transfer rfl rfl) rfl hr
     have hpr := FermatNext.run_toPrime (context template input) (m::coreStack input tail)
       (by simp [coreStack]; omega) hp
@@ -397,7 +397,7 @@ def genSteps {artifact : ProgramArtifact} {fork : Fork}
   have h238 : Decode.isValidJumpDest (context template input).executionEnv.code 207 = true := by
     rw [ec.code]
     exact paths.bigJump
-  have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 10944 = true := by
+  have h31 : Decode.isValidJumpDest (context template input).executionEnv.code 10942 = true := by
     rw [ec.code]
     exact paths.joinJump
   have hword : MachineState.readWord (context template input).executionEnv.calldata 0 =

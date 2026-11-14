@@ -12,5 +12,5 @@ theorem correct (s : State) (env : Environment Artifact.artifact .Osaka s)
     ∃ final : State,Nonempty (GasSteps s final) ∧ final.isDone = true ∧
       final.toResult = .returned (Challenge.Modexp.spec s.executionEnv.calldata) :=
   BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
-    BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks s env hpc hstk haw hcs hvalid hpos
+    BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks s env hpc (by omega) haw hcs hvalid hpos
 end CycleSubmission.Global.Fallback
