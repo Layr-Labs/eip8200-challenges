@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ColdCounterRun
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftCache
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftTailPCs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftPrefix
@@ -488,7 +489,7 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3204
       (subCheckState z s mem n bsize esize msize k) =
-      some (csubCallState z s mem n bsize esize msize k) := by
+      some (ColdCounterRun.state z s mem n bsize esize msize k) := by
   have hnotzero : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 := by decide
   have hTN : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -499,7 +500,7 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      subCheckState,csubCallState,slotKState,rideSlots,entrySlots,aprevSlot,hdSlot,headWord,loopPC,shiftEntry,
+      subCheckState,ColdCounterRun.state,csubCallState,slotKState,rideSlots,entrySlots,aprevSlot,hdSlot,headWord,loopPC,shiftEntry,
       pcSubCheck,pcCsubCall,
       outer,Exp.outer,hcode,hrun,hTN,htn,jumpDest5311,UInt256.isZero,UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -579,7 +580,7 @@ theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       (csubCallState z s mem n bsize esize msize 1) =
       some (csubExitState z s mem n bsize esize msize) := by
   have hdecMax : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
-  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2494 = 3201 := by
+  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2493 = 3200 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
     rfl
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide

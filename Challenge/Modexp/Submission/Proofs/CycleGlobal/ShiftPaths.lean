@@ -562,15 +562,14 @@ def blk3204 :
    opAt 2554 (.Swap ⟨0,by decide⟩),
    opAt 2555 .NOT,
    opAt 2556 (.Swap ⟨0,by decide⟩),
-   pushAt 2557 2 3199,
+   pushAt 2557 2 10990,
    opAt 2558 .JUMPI]
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 2492 .JUMPDEST,
-   opAt 2493 .ADD,
-   opAt 2494 (.Dup ⟨0,by decide⟩),
-   opAt 2495 (.Dup ⟨2,by decide⟩),
-   opAt 2496 .JUMPI]
+  [opAt 2492 .ADD,
+   opAt 2493 (.Dup ⟨0,by decide⟩),
+   opAt 2494 (.Dup ⟨2,by decide⟩),
+   opAt 2495 .JUMPI]
 def blk3253x :
     List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
   []
@@ -640,9 +639,14 @@ theorem jumpDestUnc : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3
   have hp : runtimeArtifact.instructionPC 2500 = 3207 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
-theorem jumpDest5311 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3199 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2492 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
-  have hp : runtimeArtifact.instructionPC 2492 = 3199 := by
+theorem jumpDest5311 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10990 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 8312 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have hp : CycleSubmission.Artifact.artifact.instructionPC 8312 = 10990 := by
+    rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+  simpa only [hp] using h
+theorem coldExitDestination : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3203 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 2496 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have hp : CycleSubmission.Artifact.artifact.instructionPC 2496 = 3203 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
 theorem jumpDest2471 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2527 = true := by

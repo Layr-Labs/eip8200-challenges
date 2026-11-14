@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ColdCounterRun
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftEstimate
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.LazyTopMath
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftCopyAt
@@ -308,7 +309,7 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
 def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2566
     ShiftProducerSplitRun.copyProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2007 5 2566 ShiftProducerSplitRun.copyProgram
-    (by change 2007+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by change 2007+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -377,6 +378,44 @@ abbrev stepMid (mem : ByteArray) (n : Nat) : ByteArray :=
   midMem (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)
 abbrev stepNeg (mem : ByteArray) (n : Nat) : UInt256 :=
   negOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)
+def coldPrefixBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10990
+    CycleSubmission.ColdCounterSplit.coldPrefix :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8312 5 10990 CycleSubmission.ColdCounterSplit.coldPrefix
+    (by change 8312+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def coldExitBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10995
+    CycleSubmission.ColdCounterSplit.coldExit :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8317 2 10995 CycleSubmission.ColdCounterSplit.coldExit
+    (by change 8317+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+def gasSteps_coldMore (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
+    (hk : 2 ≤ k) (hk32 : k ≤ 32) (e : Env s) :
+    Challenge.EvmProof.GasSteps (ColdCounterRun.state z s mem n bsize esize msize k)
+      (afterCsubState z s mem n bsize esize msize k) := by
+  have hh : (headWord mem n).toNat = loopPC mem n := by
+    unfold headWord
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (loopPC_lt mem n)]
+  have hd : Decode.isValidJumpDest s.executionEnv.code (headWord mem n).toNat = true := by
+    rw [hh,e.code]
+    exact jumpDestLoop mem n
+  exact coldPrefixBlock.steps (bindingEnv e) rfl
+    (ColdCounterRun.run_more z s mem n bsize esize msize k hk hk32 hd)
+def gasSteps_coldLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+    (e : Env s) :
+    Challenge.EvmProof.GasSteps (ColdCounterRun.state z s mem n bsize esize msize 1)
+      (csubExitState z s mem n bsize esize msize) := by
+  have first : Challenge.EvmProof.GasSteps (ColdCounterRun.state z s mem n bsize esize msize 1)
+      (ColdCounterRun.exitState z s mem n bsize esize msize) :=
+    coldPrefixBlock.steps (bindingEnv e) rfl (ColdCounterRun.run_last z s mem n bsize esize msize)
+  have second : Challenge.EvmProof.GasSteps (ColdCounterRun.exitState z s mem n bsize esize msize)
+      (ColdCounterRun.joinState z s mem n bsize esize msize) :=
+    coldExitBlock.steps (bindingEnv e) rfl
+      (ColdCounterRun.run_exit z s mem n bsize esize msize (by rw [e.code]; exact coldExitDestination))
+  simpa only [ColdCounterRun.joinState,csubExitState,pcCsubExit] using first.trans second
 def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k mm minv : Nat)
     {r : Nat}
     (hk : 1 ≤ k) (hk32 : k ≤ 32) (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n)
@@ -394,6 +433,8 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     (hfast : n = 4 ∨ n = 8) :
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (csubCallState z s (LazyTopStep.next mem n mm) n bsize esize msize k) ⊕
+    Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
+      (ColdCounterRun.state z s (LazyTopStep.next mem n mm) n bsize esize msize k) ⊕
     Challenge.EvmProof.GasSteps (shiftLoopState z s mem n bsize esize msize k)
       (csubCall4State z s (LazyTopStep.next mem n mm) n bsize esize msize k) := by
   have rf' : RepairFacts (stepMid mem n) n mm (stepNeg mem n) := rf
@@ -508,7 +549,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       (subCheckState z s
         (addRounds (stepMid mem n) n (addCount (stepMid mem n) n mm (stepNeg mem n)))
         n bsize esize msize k)
-      (csubCallState z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) :=
+      (ColdCounterRun.state z s (fixMem (stepMid mem n) n mm (stepNeg mem n)) n bsize esize msize k) :=
     Challenge.EvmProof.GasSteps.cast
       (soundEnv blk3204 e
         (run_subCheck_done z s
@@ -518,6 +559,9 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
   have g3 : Challenge.EvmProof.GasSteps
       (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
       (csubCallState z s (LazyTopStep.next mem n mm) n bsize esize msize k) ⊕
+    Challenge.EvmProof.GasSteps
+      (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
+      (ColdCounterRun.state z s (LazyTopStep.next mem n mm) n bsize esize msize k) ⊕
     Challenge.EvmProof.GasSteps
       (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
       (csubCall4State z s (LazyTopStep.next mem n mm) n bsize esize msize k) := by
@@ -536,7 +580,7 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
           soundEnv blk3125h e
             (run_mid_zero_h4 z s (stepU mem n) (stepQ mem n) n bsize esize msize k hw hn32 e.act296 h0 htz
               e.code e.run)
-        exact .inr (Challenge.EvmProof.GasSteps.cast start rfl (by rw [LazyTopStep.next_zero mem n mm h0]; rfl))
+        exact .inr (.inr (Challenge.EvmProof.GasSteps.cast start rfl (by rw [LazyTopStep.next_zero mem n mm h0]; rfl)))
       · have start : Challenge.EvmProof.GasSteps
             (midState z s (stepU mem n) (stepQ mem n) n bsize esize msize k)
             (csubCallState z s (stepMac mem n).memory n bsize esize msize k) :=
@@ -565,11 +609,12 @@ def gasSteps_stepPre (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       have adds := gasSteps_addRounds z s (stepMid mem n) n bsize esize msize k
         (addCount (stepMid mem n) n mm (stepNeg mem n)) (by omega) hn32 e hc1 htlMid
         rf'.addRoundsOut (rf'.addLastOut hc1)
-      exact .inl (Challenge.EvmProof.GasSteps.cast ((start.trans adds).trans tail) rfl
-        (by rw [LazyTopStep.next_nonzero mem n mm h0]; rfl))
+      exact .inr (.inl (Challenge.EvmProof.GasSteps.cast ((start.trans adds).trans tail) rfl
+        (by rw [LazyTopStep.next_nonzero mem n mm h0]; rfl)))
   exact match g3 with
     | .inl h => .inl (Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans h) rfl rfl)
-    | .inr h => .inr (Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans h) rfl rfl)
+    | .inr (.inl h) => .inr (.inl (Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans h) rfl rfl))
+    | .inr (.inr h) => .inr (.inr (Challenge.EvmProof.GasSteps.cast ((g1.trans g2).trans h) rfl rfl))
 def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k mm minv : Nat)
     {r : Nat}
     (hk : 2 ≤ k) (hk32 : k ≤ 32) (hn : 2 ≤ n) (hn32 : n ≤ 8) (hbs : bsize = 32 * n)
@@ -593,7 +638,10 @@ def gasSteps_step (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
       (h.trans (soundEnv blk3253 e
         (run_csubCall z s (LazyTopStep.next mem n mm) n bsize esize msize k hk hk32 e.code e.run)))
       rfl rfl
-  | .inr h => Challenge.EvmProof.GasSteps.cast
+  | .inr (.inl h) => Challenge.EvmProof.GasSteps.cast
+      (h.trans (gasSteps_coldMore z s (LazyTopStep.next mem n mm) n bsize esize msize k hk hk32 e))
+      rfl rfl
+  | .inr (.inr h) => Challenge.EvmProof.GasSteps.cast
       (h.trans (soundEnv blk3253h e
         (run_csubCall_h4 z s (LazyTopStep.next mem n mm) n bsize esize msize k hk hk32 e.code e.run)))
       rfl rfl
@@ -617,9 +665,12 @@ def gasSteps_stepLast (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
       (if isInline then csubExit4State z s (LazyTopStep.next mem n mm) n bsize esize msize
        else shiftDoneState z s (LazyTopStep.next mem n mm) n bsize esize msize) := by
   rcases gasSteps_stepPre z s mem n bsize esize msize 1 mm minv le_rfl (by decide) hn hn32 hbs hmpos hmm
-      htop e inv hbase hr rf hfast with h | h
+      htop e inv hbase hr rf hfast with h | h | h
   · exact ⟨false,(h.trans
       (soundEnv blk3253 e (run_csubCall_last z s (LazyTopStep.next mem n mm) n bsize esize msize e.run))).trans
+      (soundEnv blk3253x e (run_csubExit z s (LazyTopStep.next mem n mm) n bsize esize msize e.code e.run))⟩
+  · exact ⟨false,(h.trans
+      (gasSteps_coldLast z s (LazyTopStep.next mem n mm) n bsize esize msize e)).trans
       (soundEnv blk3253x e (run_csubExit z s (LazyTopStep.next mem n mm) n bsize esize msize e.code e.run))⟩
   · exact ⟨true,h.trans
       (soundEnv blk3253h e (run_csubCall_last_h4 z s (LazyTopStep.next mem n mm) n bsize esize msize e.run))⟩

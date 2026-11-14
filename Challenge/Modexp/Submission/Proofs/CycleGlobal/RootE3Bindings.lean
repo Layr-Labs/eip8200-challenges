@@ -83,8 +83,8 @@ def phaseBlocks : StackPhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .O
   exitHead := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2497 1 3204 (StackPhaseRun.headProgram false)
-        (by change 2497+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2496 2 3203 (StackPhaseRun.headProgram false)
+        (by change 2496+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)

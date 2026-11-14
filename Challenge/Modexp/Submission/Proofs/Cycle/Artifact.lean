@@ -320,7 +320,7 @@ private theorem instructionsPart18_wf :
 
 
 private def instructionsPart19 : List Instr :=
-  [i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2144,i2,i5,i3,i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 1280,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2112,i2,i5,i3,i0,.push 2 2112,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 2080,i2,i3,i29,i0,.push 2 3207,i34,i40,i20,i3,i0,i14,i34,i40,i74,i44,i20,.push 2 2080,i18,i40,i20,i23,.push 2 2784,i2,i20,i0,i2,.push 2 2112,i14,i29,i2,i5,i3,i16,i5,i52,i16,i7,i3,i28,i7,i52,i59,i15,i5,i18,.push 1 31,i76,i3,.push 2 2111,i5,i46,.push 2 3219,i34,i40,.push 2 2080,i2,i5,i3,i0,.push 2 2080,i18,i52,i85,.push 2 3213,i34,.push 2 2080,i2,i0,i85,i16,i76,i16,.push 2 3199,i34,i76]
+  [i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2144,i2,i5,i3,i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 1280,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2112,i2,i5,i3,i0,.push 2 2112,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 2080,i2,i3,i29,i0,.push 2 3207,i34,i40,i3,i0,i14,i34,i20,i40,i74,i44,i20,.push 2 2080,i18,i40,i20,i23,.push 2 2784,i2,i20,i0,i2,.push 2 2112,i14,i29,i2,i5,i3,i16,i5,i52,i16,i7,i3,i28,i7,i52,i59,i15,i5,i18,.push 1 31,i76,i3,.push 2 2111,i5,i46,.push 2 3219,i34,i40,.push 2 2080,i2,i5,i3,i0,.push 2 2080,i18,i52,i85,.push 2 3213,i34,.push 2 2080,i2,i0,i85,i16,i76,i16,.push 2 10990,i34,i76]
 
 private theorem instructionsPart19_wf :
     instructionsPart19.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
@@ -770,7 +770,7 @@ private theorem instructionsPart63_wf :
 
 
 private def instructionsPart64 : List Instr :=
-  [.push 2 2176,i2,i5,i3,i0,.push 2 2176,i18,i5,i46,i17,i46,i29,i29,i3,i5,i24,i6,i7,i27,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2144,i2,i5,i3,i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 1280,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2112,i2,i5,i3,i0,.push 2 2112,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 2080,i2,i3,i29,i0,.push 2 3207,i34,i40,i3,i0,i14,i34,i40,i74,i44,i20,i5,i76,i5,i3,.push 2 946,i34,.push 2 10684,i44,i20,i40,.push 2 902,i44,i20,.push 1 12,.op .XOR,.push 2 10302,i34,i23,i31,.push 1 32,i31,i3,.push 1 96,i3,i31,.push 1 160,i43,.push 2 902,i34,.push 1 12,i23,i65]
+  [.push 2 2176,i2,i5,i3,i0,.push 2 2176,i18,i5,i46,i17,i46,i29,i29,i3,i5,i24,i6,i7,i27,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2144,i2,i5,i3,i0,.push 2 2144,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 1280,i2,i7,i7,i14,i6,i15,i19,i1,i0,i14,i46,i29,i5,i7,i3,.push 2 2112,i2,i5,i3,i0,.push 2 2112,i18,i5,i46,i17,i46,i29,i29,i3,.push 2 2080,i2,i3,i29,i0,.push 2 3207,i34,i40,i3,i0,i14,i34,i40,i74,i44,i20,i5,i76,i5,i3,.push 2 946,i34,.push 2 10684,i44,i20,i40,.push 2 902,i44,i20,.push 1 12,.op .XOR,.push 2 10302,i34,i23,i31,.push 1 32,i31,i3,.push 1 96,i3,i31,.push 1 160,i43,.push 2 902,i34,.push 1 12,i23,i65,i20,i3,i0,i14,i34,.push 2 3203,i44]
 
 private theorem instructionsPart64_wf :
     instructionsPart64.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
@@ -796,7 +796,7 @@ theorem instructionChunks_flatten : instructionChunks.flatten = instructions := 
 theorem instruction_get (i : Nat) : instructions[i]? = CycleSubmission.ChunkLookup.get? instructionChunks i := by
   rw [← instructionChunks_flatten]
   exact (CycleSubmission.ChunkLookup.get?_eq instructionChunks instructionChunks_valid i).symm
-theorem instructionCount : instructions.length = 8312 := by decide
+theorem instructionCount : instructions.length = 8319 := by decide
 theorem assembly : assemble instructions = bytecode := by rfl
 def artifact : ProgramArtifact where
   code := bytecode
@@ -805,7 +805,7 @@ def artifact : ProgramArtifact where
 theorem wellFormed : AllWellFormed artifact .Osaka := by
   unfold AllWellFormed artifact instructions
   simp only [List.all_append,instructionsPart0_wf,instructionsPart1_wf,instructionsPart2_wf,instructionsPart3_wf,instructionsPart4_wf,instructionsPart5_wf,instructionsPart6_wf,instructionsPart7_wf,instructionsPart8_wf,instructionsPart9_wf,instructionsPart10_wf,instructionsPart11_wf,instructionsPart12_wf,instructionsPart13_wf,instructionsPart14_wf,instructionsPart15_wf,instructionsPart16_wf,instructionsPart17_wf,instructionsPart18_wf,instructionsPart19_wf,instructionsPart20_wf,instructionsPart21_wf,instructionsPart22_wf,instructionsPart23_wf,instructionsPart24_wf,instructionsPart25_wf,instructionsPart26_wf,instructionsPart27_wf,instructionsPart28_wf,instructionsPart29_wf,instructionsPart30_wf,instructionsPart31_wf,instructionsPart32_wf,instructionsPart33_wf,instructionsPart34_wf,instructionsPart35_wf,instructionsPart36_wf,instructionsPart37_wf,instructionsPart38_wf,instructionsPart39_wf,instructionsPart40_wf,instructionsPart41_wf,instructionsPart42_wf,instructionsPart43_wf,instructionsPart44_wf,instructionsPart45_wf,instructionsPart46_wf,instructionsPart47_wf,instructionsPart48_wf,instructionsPart49_wf,instructionsPart50_wf,instructionsPart51_wf,instructionsPart52_wf,instructionsPart53_wf,instructionsPart54_wf,instructionsPart55_wf,instructionsPart56_wf,instructionsPart57_wf,instructionsPart58_wf,instructionsPart59_wf,instructionsPart60_wf,instructionsPart61_wf,instructionsPart62_wf,instructionsPart63_wf,instructionsPart64_wf,instructionsPart65_wf,Bool.and_self]
-theorem bytecodeSize : bytecode.size = 10990 := by
+theorem bytecodeSize : bytecode.size = 10999 := by
   simp only [bytecode,ByteArray.size_append]
   decide
 end CycleSubmission.Artifact
