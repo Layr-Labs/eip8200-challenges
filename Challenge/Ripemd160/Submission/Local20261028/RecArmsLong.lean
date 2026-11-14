@@ -181,11 +181,11 @@ def head1000 : List Instr := [pushNat 401, .op .CALLDATALOAD, .op .XOR]
 
 def a376Template : List Instr :=
   DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 376) ++ head376 ++
-    itemsTemplate items376 ++ jumpTemplate 4931
+    itemsTemplate items376 ++ jumpTemplate 4956
 
 def a1000Template : List Instr :=
   DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 1000) ++ head1000 ++
-    itemsTemplate items1000 ++ jumpTemplate 4931
+    itemsTemplate items1000 ++ jumpTemplate 4956
 
 theorem run_head376 (s : State) (pc : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
@@ -247,7 +247,7 @@ def val376 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 256
 def val1000 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 0 401)) items1000
 
 def gasSteps_a376_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5775 []) (atState (prepared input 376) 4931 [val376 input]) := by
+    GasSteps (atState (base input) 5775 []) (atState (prepared input 376) 4956 [val376 input]) := by
   have h1 := Scan.run_store input (UInt256.ofNat 5775) 376
   have h2 := run_head376 (prepared input 376) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5775))
     [] (by simp) rfl
@@ -259,18 +259,18 @@ def gasSteps_a376_entry (input : ByteArray) :
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 376)
     (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5775)) head376) (itemsTemplate items376))
-    4931 [val376 input] (by simp) rfl (by
-      change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4931).toNat = true
+    4956 [val376 input] (by simp) rfl (by
+      change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4956).toNat = true
       exact Each.valid_chain8)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h123 rfl h4
   have h' : runInstrSeq a376Template (atState (base input) 5775 []) =
-      some (atState (prepared input 376) 4931 [val376 input]) := by
+      some (atState (prepared input 376) 4956 [val376 input]) := by
     simpa only [a376Template, atState, List.append_assoc, prepared_calldata, val376] using hall
   exact RecognitionLift.gasSteps_of_raw a376Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using a376_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide)) h'
 
 def gasSteps_a1000_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5838 [W input 0]) (atState (prepared input 1000) 4931 [val1000 input]) := by
+    GasSteps (atState (base input) 5838 [W input 0]) (atState (prepared input 1000) 4956 [val1000 input]) := by
   have h1 := run_store1 input (UInt256.ofNat 5838) 1000 (W input 0)
   have h2 := run_head1000 (prepared input 1000) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838))
     [] (by simp) rfl
@@ -282,12 +282,12 @@ def gasSteps_a1000_entry (input : ByteArray) :
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 1000)
     (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838)) head1000) (itemsTemplate items1000))
-    4931 [val1000 input] (by simp) rfl (by
-      change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4931).toNat = true
+    4956 [val1000 input] (by simp) rfl (by
+      change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4956).toNat = true
       exact Each.valid_chain8)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h123 rfl h4
   have h' : runInstrSeq a1000Template (atState (base input) 5838 [W input 0]) =
-      some (atState (prepared input 1000) 4931 [val1000 input]) := by
+      some (atState (prepared input 1000) 4956 [val1000 input]) := by
     simpa only [a1000Template, atState, List.append_assoc, prepared_calldata, val1000] using hall
   exact RecognitionLift.gasSteps_of_raw a1000Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using a1000_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide)) h'
@@ -359,7 +359,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     (hv : v.toNat = 0 → input = RecognitionAccumulator.reference n)
     (hpre : GasSteps (initialState Control.submissionBytecode input 0)
       {prepared input n with
-        pc := if v.toNat = 0 then UInt256.ofNat 5242 else UInt256.ofNat 4651, stack := []}) :
+        pc := if v.toNat = 0 then UInt256.ofNat 5267 else UInt256.ofNat 4651, stack := []}) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState Control.submissionBytecode input gas) (.returned (spec input)) := by
   have hpos : 0 < input.size := by
@@ -367,7 +367,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     omega
   by_cases hz : v.toNat = 0
   · rw [if_pos hz] at hpre
-    obtain ⟨t, ⟨gt⟩, h1, h2, h3⟩ := Finish.finish_gasSteps input n 5242 Finish.finishSite2 Finish.finishSite2_pc
+    obtain ⟨t, ⟨gt⟩, h1, h2, h3⟩ := Finish.finish_gasSteps input n 5267 Finish.finishSite2 Finish.finishSite2_pc
     apply Finish.of_returned input t (hpre.trans gt) h1 h2
     rw [h3]
     exact Finish.output_spec input n hn (hv hz)

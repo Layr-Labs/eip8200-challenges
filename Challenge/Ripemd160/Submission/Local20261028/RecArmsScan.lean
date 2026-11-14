@@ -44,12 +44,12 @@ def nval : Fin 12 → Nat
  | ⟨6, _⟩ => 64 | ⟨7, _⟩ => 65 | ⟨8, _⟩ => 119 | ⟨9, _⟩ => 120 | ⟨10, _⟩ => 128 | ⟨11, _⟩ => 256
 
 def armIndex : Fin 12 → Nat
- | ⟨0, _⟩ => 3393 | ⟨1, _⟩ => 3534 | ⟨2, _⟩ => 3547 | ⟨3, _⟩ => 3554 | ⟨4, _⟩ => 3566 | ⟨5, _⟩ => 3578
- | ⟨6, _⟩ => 3588 | ⟨7, _⟩ => 3595 | ⟨8, _⟩ => 3607 | ⟨9, _⟩ => 3619 | ⟨10, _⟩ => 3629 | ⟨11, _⟩ => 3636
+ | ⟨0, _⟩ => 3393 | ⟨1, _⟩ => 3539 | ⟨2, _⟩ => 3552 | ⟨3, _⟩ => 3559 | ⟨4, _⟩ => 3571 | ⟨5, _⟩ => 3583
+ | ⟨6, _⟩ => 3593 | ⟨7, _⟩ => 3600 | ⟨8, _⟩ => 3612 | ⟨9, _⟩ => 3624 | ⟨10, _⟩ => 3634 | ⟨11, _⟩ => 3484
 
 def armPC : Fin 12 → Nat
- | ⟨0, _⟩ => 4717 | ⟨1, _⟩ => 5245 | ⟨2, _⟩ => 5312 | ⟨3, _⟩ => 5341 | ⟨4, _⟩ => 5401 | ⟨5, _⟩ => 5460
- | ⟨6, _⟩ => 5524 | ⟨7, _⟩ => 5553 | ⟨8, _⟩ => 5589 | ⟨9, _⟩ => 5652 | ⟨10, _⟩ => 5717 | ⟨11, _⟩ => 5746
+ | ⟨0, _⟩ => 4717 | ⟨1, _⟩ => 5270 | ⟨2, _⟩ => 5337 | ⟨3, _⟩ => 5366 | ⟨4, _⟩ => 5426 | ⟨5, _⟩ => 5485
+ | ⟨6, _⟩ => 5549 | ⟨7, _⟩ => 5578 | ⟨8, _⟩ => 5614 | ⟨9, _⟩ => 5677 | ⟨10, _⟩ => 5742 | ⟨11, _⟩ => 4931
 
 /-- Number of chain words below the arm's own tail (zero for the two one-word arms). -/
 def chainWords : Fin 12 → Nat
@@ -57,13 +57,13 @@ def chainWords : Fin 12 → Nat
  | ⟨6, _⟩ => 2 | ⟨7, _⟩ => 2 | ⟨8, _⟩ => 3 | ⟨9, _⟩ => 3 | ⟨10, _⟩ => 4 | ⟨11, _⟩ => 8
 
 def chainPC : Nat → Nat
-  | 8 => 4931 | 4 => 5084 | 3 => 5123 | 2 => 5162 | 1 => 5200 | _ => 0
+  | 8 => 4956 | 4 => 5109 | 3 => 5148 | 2 => 5187 | 1 => 5225 | _ => 0
 def chainIndex : Nat → Nat
-  | 8 => 3484 | 4 => 3505 | 3 => 3511 | 2 => 3517 | 1 => 3523 | _ => 0
+  | 8 => 3489 | 4 => 3510 | 3 => 3516 | 2 => 3522 | 1 => 3528 | _ => 0
 
 /-- Index and PC of the success `MSIZE` after the result branch. -/
-def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 3405 else if i.val = 1 then 3544 else 3531
-def returnPC (i : Fin 12) : Nat := if i.val = 0 then 4753 else if i.val = 1 then 5309 else 5242
+def returnIndex (i : Fin 12) : Nat := if i.val = 0 then 3405 else if i.val = 1 then 3549 else 3536
+def returnPC (i : Fin 12) : Nat := if i.val = 0 then 4753 else if i.val = 1 then 5334 else 5267
 
 /-! ## Templates -/
 
@@ -101,6 +101,9 @@ def armTemplate (i : Fin 12) : List Instr :=
   if chainWords i = 0 then
     DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord (nval i)) ++
       prefixTemplate (nval i) ++ resultTemplate
+  else if nval i = 256 then
+    DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord (nval i)) ++
+      startTemplate (nval i)
   else
     DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord (nval i)) ++
       startTemplate (nval i) ++ jumpTemplate (chainPC (chainWords i))

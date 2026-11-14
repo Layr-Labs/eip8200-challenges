@@ -44,19 +44,19 @@ def finishSiteAt (idx : Nat)
 
 def finishSite0 := finishSiteAt 3403 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
-def finishSite1 := finishSiteAt 3542 (by rfl)
+def finishSite1 := finishSiteAt 3547 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
-def finishSite2 := finishSiteAt 3529 (by rfl)
+def finishSite2 := finishSiteAt 3534 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
 
 theorem finishSite0_pc : finishSite0.startPC = UInt256.ofNat 4753 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3403) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 5309 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3542) = _
+theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 5334 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3547) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem finishSite2_pc : finishSite2.startPC = UInt256.ofNat 5242 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3529) = _
+theorem finishSite2_pc : finishSite2.startPC = UInt256.ofNat 5267 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3534) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-! ## Digest -/

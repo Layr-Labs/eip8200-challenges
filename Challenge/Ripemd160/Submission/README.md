@@ -1,3 +1,29 @@
+# RIPEMD-160: 256-byte recognizer arm laid out as a fall-through into the eight-word chain (615,288 gas)
+
+Parent: promoted commit `dc46627e` (validated `956f3fe4`, 615,299 gas).
+
+The 256-byte patterned arm stored its digest, pushed an empty accumulator
+and ended in `PUSH2 4931; JUMP` to the eight-word chain entry. The block
+immediately above that entry is the generic-path output, which ends in
+`RETURN`, so the gap is free: the arm (JUMPDEST, digest store, `PUSH0`) now
+sits at 4931 and falls into the chain JUMPDEST at 4956. `PUSH2` + `JUMP`
+(11 gas) leave the 256-byte path: 615,299 -> **615,288**.
+
+The removed jump's two instructions and four bytes reappear as dead
+`STOP; PUSH2 0` directly before the 376-byte arm (5771..5774), so code
+length (10,511), instruction count (7,003) and every PC/index outside
+4931..5774 are unchanged; arm 376 (5775) and arm 1000 (5838) keep their
+offsets and only retarget their chain jump to 4956.
+
+Moved: chain entries 4931/5084/5123/5162/5200 -> 4956/5109/5148/5187/5225
+(indices +5), shared success MSIZE 5242 -> 5267, arm 31 5245 -> 5270 (MSIZE
+5309 -> 5334), arms 32..128 +25 bytes, arm 256 5746 -> 4931 (index 3634 ->
+3482). Retargeted at the same-width size-table trampolines, the 256 equality
+dispatch, and the 376/1000 chain jumps. `arm256Template` drops its
+`jumpTemplate` and `gasSteps_arm256_entry` ends at the fall-through PC.
+
+---
+
 # RIPEMD-160: Calldata-size shift operand for the 55-byte recognizer literal (615,299 gas)
 
 Parent: promoted commit `bc4f945d` (validated `76c2f807`, 615,300 gas).

@@ -59,39 +59,39 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
     exact Finish.arm_correct input hfit 1 (h ▸ hn) h 4753 g
       (Finish.finish_gasSteps input 1 4753 Finish.finishSite0 Finish.finishSite0_pc)
   · have g := hguard.trans (((gasSteps_short31 input h).trans (gasSteps_tramp31 input)).trans (Each.gasSteps_arm31 input))
-    exact Finish.arm_correct input hfit 31 (h ▸ hn) h 5309 g
-      (Finish.finish_gasSteps input 31 5309 Finish.finishSite1 Finish.finishSite1_pc)
+    exact Finish.arm_correct input hfit 31 (h ▸ hn) h 5334 g
+      (Finish.finish_gasSteps input 31 5334 Finish.finishSite1 Finish.finishSite1_pc)
   · have g := hguard.trans (((gasSteps_short32 input h).trans (gasSteps_tramp32 input)).trans (Each.gasSteps_arm32 input))
-    exact Finish.arm_correct input hfit 32 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 32 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 32 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 32 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short55 input h).trans (gasSteps_tramp55 input)).trans (Each.gasSteps_arm55 input h))
-    exact Finish.arm_correct input hfit 55 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 55 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 55 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 55 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short56 input h).trans (gasSteps_tramp56 input)).trans (Each.gasSteps_arm56 input h))
-    exact Finish.arm_correct input hfit 56 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 56 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 56 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 56 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short63 input h).trans (gasSteps_tramp63 input)).trans (Each.gasSteps_arm63 input))
-    exact Finish.arm_correct input hfit 63 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 63 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 63 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 63 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short64 input h).trans (gasSteps_tramp64 input)).trans (Each.gasSteps_arm64 input))
-    exact Finish.arm_correct input hfit 64 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 64 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 64 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 64 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short65 input h).trans (gasSteps_tramp65 input)).trans (Each.gasSteps_arm65 input h))
-    exact Finish.arm_correct input hfit 65 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 65 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 65 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 65 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short119 input h).trans (gasSteps_tramp119 input)).trans (Each.gasSteps_arm119 input))
-    exact Finish.arm_correct input hfit 119 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 119 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 119 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 119 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short120 input h).trans (gasSteps_tramp120 input)).trans (Each.gasSteps_arm120 input))
-    exact Finish.arm_correct input hfit 120 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 120 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 120 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 120 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans (((gasSteps_short128 input h).trans (gasSteps_tramp128 input)).trans (Each.gasSteps_arm128 input))
-    exact Finish.arm_correct input hfit 128 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 128 5242 Finish.finishSite2 Finish.finishSite2_pc)
+    exact Finish.arm_correct input hfit 128 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 128 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans ((GasSteps.cast (Control.Patterned128Entry.gasSteps_256 input hfit h
-        (valid_at 3634 5746 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl).trans (Each.gasSteps_arm256 input))
-    exact Finish.arm_correct input hfit 256 (h ▸ hn) h 5242 g
-      (Finish.finish_gasSteps input 256 5242 Finish.finishSite2 Finish.finishSite2_pc)
+        (valid_at 3482 4931 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl).trans (Each.gasSteps_arm256 input))
+    exact Finish.arm_correct input hfit 256 (h ▸ hn) h 5267 g
+      (Finish.finish_gasSteps input 256 5267 Finish.finishSite2 Finish.finishSite2_pc)
   · exact Long.correct376 input hfit h (hguard.trans (GasSteps.cast
       (Control.Patterned128Entry.gasSteps_376 input hfit h
         (valid_at 3641 5775 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl))

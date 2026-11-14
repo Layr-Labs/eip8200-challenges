@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "956f3fe4-5d51-47e5-bbdf-e69da319890f",
+    "rationale": "Direct source and proof-tree parent: the validated 615,299-gas frontier (calldata-size shift operand for the 55-byte arm). Retained unchanged; this candidate moves the 256-byte recognizer arm (digest store plus empty accumulator) into the RETURN-terminated gap directly above the eight-word chain entry so it falls through instead of jumping, keeping code length and instruction count by leaving its old jump bytes as dead STOP; PUSH2 0 before the 376-byte arm.",
+    "evidence": "Based on the Submission tree at dc46627edb41c562d6b35632fe4475d9d40d5e7d; RecArmsScan layout constants and armTemplate, RecArmsEach chain/arm site certificates and the fall-through gasSteps_arm256_entry, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecPatternedSites long256, RecDispatch31/32/55/56/63/64/65/119/120/128; CandidateArtifact parts 17-19, CandidateBytes chunks 72-95."
+  },
+  {
     "submissionId": "76c2f807-4e4f-4241-b390-59dfaff1f526",
     "rationale": "Direct source and proof-tree parent: the validated 615,300-gas frontier (memory-size shift operand for the 119-byte arm). Retained unchanged; this candidate re-bases the 55-byte arm's literal as PUSH26 (X << 17); CALLDATASIZE; SHL (the arm is reached only with CALLDATASIZE = 55), funded by narrowing the shared chain result PUSH3 4651 and the 65-byte arm's PUSH2 0x47 to minimal width, so instruction indices are unchanged and only PCs 5239..5588 move.",
     "evidence": "Based on the Submission tree at bc4f945d45b13ca52a8de1edde53cb488cba5af2; PrepRecognizerLiterals template 55 / value55 / run (disjunctive calldata-size hypothesis), RecArmsScan armPC/returnPC/chainResultTemplate/run_prefix/run_start, RecArmsEach gasSteps_arm55(_entry)/byte65Template and arm PCs, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecDispatch31/32/55/56/63/64/65; CandidateArtifact parts 17/18, CandidateBytes chunks 72/73/81-87."
