@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "e48295cc-2ee3-4d76-9663-e588fff87c02",
+    "rationale": "Direct source and proof-tree parent: the validated 615,341-gas frontier (early right-lane C-rotation in the padding-block prologue). Retained unchanged; this candidate rewrites only the 56-byte patterned recognizer literal at PC 5424..5450: PUSH24 X; PUSH1 65; SHL becomes PUSH25 (X << 9); CALLDATASIZE; SHL, valid because the arm is reached only when CALLDATASIZE = 56.",
+    "evidence": "Based on the Submission tree at 2783859ae4656567b97410a91dd730dbf7dc549f; RecognizerLiteral template 56/value56/run hsz, RecArmsScan run_prefix/run_start hsz, RecArmsEach arm entries, RecArmsDispatch arm56, CandidateArtifact part 18, CandidateBytes chunks 84-85; bytes 5424..5450."
+  },
+  {
     "submissionId": "92a9a66d-8512-450b-855d-7bf74d12228c",
     "rationale": "Direct source and proof-tree parent: the promoted 615,404-gas frontier (PC-sourced 594 store via a hoisted message-word load in the ordinary prologue, bytes 556..759). Retained unchanged; this candidate applies the early right-lane C-rotation to the padding-block prologue (front 89..127, middle 6504..6641), retiring its SWAP4, and re-tiles the 128 stub with a one-byte continuation push.",
     "evidence": "Based on the Submission tree at 3c52899ad820b420e769e81d7d3b82787ac3d4e9; PadRawRight0/PadRawRight1/PadRawPack templates, PadCoreRight0/PadCoreRight1/PadCorePack/PadPrologue shapes, PadSites front/middle, ColdLoopRaw.setContTemplate, stub-128 loop/entry sites, CandidateArtifact parts 0 and 21, CandidateBytes chunks 1, 2, 101, 102; bytes 95..142 and 6505..6541."

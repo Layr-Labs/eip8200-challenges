@@ -1,3 +1,23 @@
+# RIPEMD-160: calldata-size shift operand for the 56-byte recognizer literal (615,340 gas)
+
+Parent: promoted commit `2783859a` (validated `e48295cc`, 615,341 gas).
+
+The patterned 56-byte recognizer arm (JUMPDEST 5400) builds its expected
+final calldata word as `PUSH24 X; PUSH1 65; SHL`. The arm is reached only
+after the length dispatch has fixed `CALLDATASIZE = 56`, so the shift operand
+is now `CALLDATASIZE` (2 gas) and the literal carries the remaining 9 bits:
+`PUSH25 (X << 9); CALLDATASIZE; SHL` (bytes 5424..5450). Width (27 bytes) and
+instruction count (3) are unchanged; no PC or instruction index outside the
+window moves. -1 gas on the `56-byte` vector: 615,341 -> **615,340**.
+
+Proof: `RecognizerLiteral.template 56`, `value56` and `run` take
+`hsz : n = 56 -> calldata.size = 56`; `RecArmsScan.run_prefix`/`run_start`
+thread it; `RecArmsEach` discharges it by `decide` for every other arm and by
+the dispatch size fact for arm 56; `RecArmsDispatch` passes `h`.
+`CandidateArtifact` part 18, `CandidateBytes` chunks 84-85, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: early right-lane C-rotation on the padding-block prologue, SWAP4 retired (615,341 gas)
 
 Parent: promoted commit `3c52899a` (accepted `92a9a66d`, 615,404 gas).
