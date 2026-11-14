@@ -7,9 +7,8 @@ theorem residual (d inv lo rho : UInt256) (h : d * inv = UInt256.ofNat 1) :
   have hv : d.val * inv.val = (1 : Fin UInt256.size) := congrArg UInt256.val h
   apply Challenge.EvmProof.Word.word_ext
   change (lo.val - d.val * (inv.val * (lo.val - rho.val))).val = rho.val.val
-  rw [← mul_assoc, hv, one_mul, sub_sub_cancel]
+  rw [← mul_assoc,hv,one_mul,sub_sub_cancel]
 #print axioms residual
-
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift

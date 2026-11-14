@@ -11,7 +11,6 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
-
 def run (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
  (hk : 1 ≤ k) (hk16 : k ≤ 16)
  (env : Environment CycleSubmission.Artifact.artifact .Osaka s)

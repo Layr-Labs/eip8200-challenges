@@ -1,56 +1,49 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRowModel
-
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
-
 def quotientA : List Instr :=
-  [.op (.Dup dA8), .op (.Dup dA11), .op .MLOAD, .op .MUL]
+  [.op (.Dup dA8),.op (.Dup dA11),.op .MLOAD,.op .MUL]
 def quotientB : List Instr :=
-  [.op (.Dup dA7), .op (.Dup dA0), .op (.Dup dA2),
-   .op (.Dup dA13), .op .MULMOD, .op (.Dup dA13), .op .MLOAD, .op .ADDMOD]
-def quotientJump : List Instr := [.op (.Dup dA9), .op .JUMP]
-def exitProgram : List Instr := (quotientA ++ quotientB) ++ quotientJump
-
+  [.op (.Dup dA7),.op (.Dup dA0),.op (.Dup dA2),
+   .op (.Dup dA13),.op .MULMOD,.op (.Dup dA13),.op .MLOAD,.op .ADDMOD]
+def quotientJump : List Instr := [.op (.Dup dA9),.op .JUMP]
+def exitProgram : List Instr := (quotientA++quotientB)++quotientJump
 def endFrame (flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  flag :: P :: hd :: tt :: next :: stride :: M :: target :: inv :: m0 :: UInt256.ofNat 2336 ::
-    m96 :: m64 :: m32 :: x :: rest
-
+  flag::P::hd::tt::next::stride::M::target::inv::m0::UInt256.ofNat 2336 ::
+    m96::m64::m32::x::rest
 theorem run_quotientA (s : State)
     (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory 2336
     runInstructions quotientA
-      { s with pc := pc, stack := endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
+      { s with pc := pc,stack := endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
     some { s with pc := advancePC 4 pc,
-                  stack := (t0*inv) :: endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
+                  stack := (t0*inv)::endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
   have h15 : rest.length + 15 < 1024 := by omega
   have h16 : rest.length + 16 < 1024 := by omega
   have h17 : rest.length + 17 < 1024 := by omega
   have ht : (UInt256.ofNat 2336).toNat = 2336 := by decide
   have hT := activeWords_fix s 2336 32 (by decide) (by decide) hact
-  simp [quotientA, endFrame, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    List.exchange, h15, h16, h17, State.activeWordsAfterUInt256, ht, hT, advancePC]
-
+  simp [quotientA,endFrame,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    List.exchange,h15,h16,h17,State.activeWordsAfterUInt256,ht,hT,advancePC]
 theorem run_quotientB (s : State)
     (pc mu flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat) :
     let t0 := MachineState.readWord s.memory 2336
     runInstructions quotientB
-      { s with pc := pc, stack := mu :: endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
+      { s with pc := pc,stack := mu::endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
     some { s with pc := advancePC 8 pc,
-                  stack := UInt256.addMod t0 (UInt256.mulMod m0 mu M) M :: mu ::
+                  stack := UInt256.addMod t0 (UInt256.mulMod m0 mu M) M::mu ::
                     endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
   have h16 : rest.length + 16 < 1024 := by omega
   have h17 : rest.length + 17 < 1024 := by omega
@@ -59,22 +52,20 @@ theorem run_quotientB (s : State)
   have h20 : rest.length + 20 < 1024 := by omega
   have ht : (UInt256.ofNat 2336).toNat = 2336 := by decide
   have hT := activeWords_fix s 2336 32 (by decide) (by decide) hact
-  simp [quotientB, endFrame, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    List.exchange, h16, h17, h18, h19, h20, State.activeWordsAfterUInt256, ht, hT, advancePC]
-
+  simp [quotientB,endFrame,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    List.exchange,h16,h17,h18,h19,h20,State.activeWordsAfterUInt256,ht,hT,advancePC]
 theorem run_quotientJump (s : State)
     (pc c0 mu flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002)
     (hjump : Decode.isValidJumpDest s.executionEnv.code target.toNat = true) :
     runInstructions quotientJump
-      { s with pc := pc, stack := c0 :: mu :: endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
+      { s with pc := pc,stack := c0::mu::endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
     some { s with pc := target,
-                  stack := c0 :: mu :: endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
+                  stack := c0::mu::endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
   have h17 : rest.length + 17 < 1024 := by omega
   have h18 : rest.length + 18 < 1024 := by omega
-  simp [quotientJump, endFrame, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    h17, h18, hjump]
-
+  simp [quotientJump,endFrame,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    h17,h18,hjump]
 theorem run_exit (s : State)
     (pc flag P hd tt next stride M target inv m0 m96 m64 m32 x : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1002) (hact : 88 ≤ s.activeWords.toNat)
@@ -82,9 +73,9 @@ theorem run_exit (s : State)
     let t0 := MachineState.readWord s.memory 2336
     let mu := t0*inv
     runInstructions exitProgram
-      { s with pc := pc, stack := endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
+      { s with pc := pc,stack := endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } =
     some { s with pc := target,
-                  stack := UInt256.addMod t0 (UInt256.mulMod m0 mu M) M :: mu ::
+                  stack := UInt256.addMod t0 (UInt256.mulMod m0 mu M) M::mu ::
                     endFrame flag P hd tt next stride M target inv m0 m96 m64 m32 x rest } := by
   let t0 := MachineState.readWord s.memory 2336
   have h0 := run_quotientA s pc flag P hd tt next stride M target inv m0 m96 m64 m32 x rest hcap hact
@@ -94,5 +85,4 @@ theorem run_exit (s : State)
     flag P hd tt next stride M target inv m0 m96 m64 m32 x rest hcap hjump
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   exact runInstructions_append_some _ _ _ _ _ h01 h2
-
 end Challenge.Modexp.Submission.Proofs.Fast.R8ZeroFirstRow

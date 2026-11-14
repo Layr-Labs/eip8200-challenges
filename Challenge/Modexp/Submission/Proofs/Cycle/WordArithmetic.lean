@@ -9,7 +9,6 @@ open EvmSemantics
 open Challenge.EvmProof.Word
 open HistoricalSearch.CRTColumn HistoricalSearch.ProductAccumulate
 open HistoricalSearch.ColumnExpressions HistoricalSearch.WordCancellation
-
 def radix : Nat := 2^240
 def P : UInt256 := UInt256.ofNat residueModulus
 def quotient (e : Expr) (inv : UInt256) : UInt256 := maskedDigit e.low inv 240 240
@@ -17,23 +16,19 @@ def post (e : Expr) (inv n0 : UInt256) : Expr :=
   .add e (.product (quotient e inv) n0)
 def cancelledCarry (e : Expr) (inv n0 : UInt256) : UInt256 :=
   UInt256.mulMod ((post e inv n0).high P) (UInt256.ofNat 2048) P
-
 theorem pValue : P.toNat = residueModulus := by
-  norm_num [P, word_toNat_ofNat, residueModulus]
-
+  norm_num [P,word_toNat_ofNat,residueModulus]
 theorem digitValue (e : Expr) :
     (UInt256.land (UInt256.ofNat (2^240-1)) e.low).toNat = e.value % radix := by
   rw [land_comm]
   change (e.low &&& UInt256.ofNat (2^240-1)).toNat = _
-  rw [mask_toNat _ 240 (by decide), lowValue]
+  rw [mask_toNat _ 240 (by decide),lowValue]
   exact Nat.mod_mod_of_dvd _ (Nat.pow_dvd_pow 2 (by decide : 240 ≤ 256))
-
 theorem quotientBound (e : Expr) (inv : UInt256) :
     (quotient e inv).toNat < radix := by
   unfold quotient maskedDigit
   rw [mask_toNat _ 240 (by decide)]
   exact Nat.mod_lt _ (Nat.two_pow_pos _)
-
 theorem cancelled_contract (e : Expr) (inv n0 : UInt256) (N C : Nat)
     (hcount : e.count ≤ 18) (hlit : e.literalsBounded C)
     (hc : C ≤ 18*(radix-1))
@@ -55,26 +50,25 @@ theorem cancelled_contract (e : Expr) (inv n0 : UInt256) (N C : Nat)
     nlinarith
   have hzero : (post e inv n0).value % radix = 0 := hq.2.1
   have hCP : C ≤ residueModulus-1 := by
-    norm_num [radix, residueModulus] at hc ⊢
+    norm_num [radix,residueModulus] at hc ⊢
     omega
-  have hmon : ∀ x : Expr, x.literalsBounded C → x.literalsBounded (residueModulus-1) := by
+  have hmon : ∀ x : Expr,x.literalsBounded C → x.literalsBounded (residueModulus-1) := by
     intro x
     induction x with
     | product a b => exact fun _ => True.intro
     | literal a => exact fun ha => le_trans ha hCP
-    | add a b ia ib => exact fun hab => ⟨ia hab.1, ib hab.2⟩
+    | add a b ia ib => exact fun hab => ⟨ia hab.1,ib hab.2⟩
   have hh := highInvariant P pValue (post e inv n0)
     (show (post e inv n0).count ≤ 19 by change e.count+1 ≤ 19; omega)
-    (show (post e inv n0).literalsBounded (residueModulus-1) from ⟨hmon e hlit, True.intro⟩)
+    (show (post e inv n0).literalsBounded (residueModulus-1) from ⟨hmon e hlit,True.intro⟩)
   have hp : 0 < P.toNat := by rw [pValue]; norm_num [residueModulus]
   have hout : (cancelledCarry e inv n0).toNat = (post e inv n0).value / radix := by
-    rw [cancelledCarry, mulMod_toNat _ _ _ hp, pValue]
+    rw [cancelledCarry,mulMod_toNat _ _ _ hp,pValue]
     change (((post e inv n0).high P).toNat * 2048) % residueModulus = _
     exact CycleSubmission.Bounds.cancelledRecovery _ C _ hc hs hh.2 hzero
-  refine ⟨hqbound, hzero, hout, ?_⟩
+  refine ⟨hqbound,hzero,hout,?_⟩
   rw [hout]
   exact (CycleSubmission.Bounds.fullColumnBounds _ C hc hs).1
-
 theorem rounded_contract (H lo : UInt256) (S C : Nat)
     (hc : C ≤ 18*(radix-1)) (hs : S ≤ 18*(radix-1)^2+C)
     (hlo : lo.toNat = S % wordRadix)
@@ -85,7 +79,6 @@ theorem rounded_contract (H lo : UInt256) (S C : Nat)
     (by decide) (by decide) hc hs H.val.isLt hH
   have hword : UInt256.ofNat (S % wordRadix) = lo := by
     rw [← hlo]; exact (word_eq_ofNat_toNat lo).symm
-  rw [← word_eq_ofNat_toNat H, hword] at h
+  rw [← word_eq_ofNat_toNat H,hword] at h
   exact h
-
 end CycleSubmission.WordArithmetic

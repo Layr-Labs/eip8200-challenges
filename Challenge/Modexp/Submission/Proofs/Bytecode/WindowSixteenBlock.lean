@@ -1,91 +1,77 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGroup
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneMath
-
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
-
 /-!
 Sixteen-operation modulus batches proposed by GPT 6 Pro.
 Pure execution lemmas cover the four-batch prefix and full sixteen-digit block.
 Concrete bytecode bindings and the final fifteen-digit block are separate.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowSixteenBlock
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 namespace Stage
-
 def stage16Program : List Instr :=
   [.op (.Dup dA1),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Dup dA0),
-   .op (.Dup dA0), .op (.Swap sA15)]
-
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Dup dA0),
+   .op (.Dup dA0),.op (.Swap sA15)]
 private theorem run_liftModulus (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions [.op (.Dup dA1)]
       (WindowTwentyOneStage.framed template pc
-        ([accumulator, modulus, exponent, mask, counter] ++ rest)) =
+        ([accumulator,modulus,exponent,mask,counter]++rest)) =
     some (WindowTwentyOneStage.framed template pc.succ
-      ([modulus, accumulator, modulus, exponent, mask, counter] ++ rest)) := by
+      ([modulus,accumulator,modulus,exponent,mask,counter]++rest)) := by
   have hcap : rest.length + 5 < 1024 := by omega
-  simp [runInstructions, WindowTwentyOneStage.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap, Nat.add_assoc]
-
+  simp [runInstructions,WindowTwentyOneStage.framed,
+    Challenge.EvmProof.Stepper.runInstr,hcap,Nat.add_assoc]
 private theorem run_swap16 (template : State)
     (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions [.op (.Swap sA15)]
       (WindowTwentyOneStage.framed template pc
         (List.replicate 16 modulus ++
-          ([accumulator, modulus, exponent, mask, counter] ++ rest))) =
+          ([accumulator,modulus,exponent,mask,counter]++rest))) =
     some (WindowTwentyOneStage.framed template pc.succ
-      ((accumulator :: List.replicate 16 modulus) ++
-        [modulus, exponent, mask, counter] ++ rest)) := by
+      ((accumulator::List.replicate 16 modulus) ++
+        [modulus,exponent,mask,counter]++rest)) := by
   have hcap : rest.length + 21 < 1024 := by omega
-  simp [runInstructions, WindowTwentyOneStage.framed,
-    Challenge.EvmProof.Stepper.runInstr, hcap, Nat.add_assoc,
-    List.replicate, List.exchange]
-
+  simp [runInstructions,WindowTwentyOneStage.framed,
+    Challenge.EvmProof.Stepper.runInstr,hcap,Nat.add_assoc,
+    List.replicate,List.exchange]
 theorem run_stage16 (template : State) (pc accumulator modulus exponent mask counter : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions stage16Program
       (WindowTwentyOneStage.framed template pc
-        ([accumulator, modulus, exponent, mask, counter] ++ rest)) =
+        ([accumulator,modulus,exponent,mask,counter]++rest)) =
     some (WindowTwentyOneStage.framed template (advancePC 17 pc)
-      ((accumulator :: List.replicate 16 modulus) ++
-        [modulus, exponent, mask, counter] ++ rest)) := by
+      ((accumulator::List.replicate 16 modulus) ++
+        [modulus,exponent,mask,counter]++rest)) := by
   have h0 := run_liftModulus template pc accumulator modulus exponent mask counter rest hrest
   have h1 := WindowTwentyOneStage.run_topCopies template pc.succ modulus
-    ([accumulator, modulus, exponent, mask, counter] ++ rest) 15
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
+    ([accumulator,modulus,exponent,mask,counter]++rest) 15
+    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega)
   have h2 := run_swap16 template (advancePC 15 pc.succ)
     accumulator modulus exponent mask counter rest hrest
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1
   have hall := runInstructions_append_some _ _ _ _ _ h01 h2
   have hpc : (advancePC 15 pc.succ).succ = advancePC 17 pc := rfl
-  simpa only [stage16Program, hpc, List.replicate, List.cons_append, List.nil_append] using hall
-
+  simpa only [stage16Program,hpc,List.replicate,List.cons_append,List.nil_append] using hall
 end Stage
-
 namespace Lookup
-
 def lookupImmediateProgram (laddr : Nat) : List Instr :=
-  [.push 2 (UInt256.ofNat laddr), .op .MLOAD,
-   .push 2 (UInt256.ofNat 480), .op .AND,
-   .op .MLOAD, .op .MULMOD]
-
+  [.push 2 (UInt256.ofNat laddr),.op .MLOAD,
+   .push 2 (UInt256.ofNat 480),.op .AND,
+   .op .MLOAD,.op .MULMOD]
 theorem run_lookupImmediate (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator : UInt256)
     (tail : List UInt256) (laddr : Nat)
@@ -97,50 +83,44 @@ theorem run_lookupImmediate (template : State) (pc : UInt256) (mem : ByteArray)
     (hcap : tail.length + 4 < 1024) :
     runInstructions (lookupImmediateProgram laddr)
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: modulus :: tail)) =
+        (accumulator::modulus::tail)) =
     some (WindowTwentyOneLookup.framed template (advancePC 10 pc) mem 18
       (UInt256.mulMod (WindowMath.tableWord base modulus index)
-        accumulator modulus :: tail)) := by
+        accumulator modulus::tail)) := by
   have hcap2 : tail.length + 2 < 1024 := by omega
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hl : (UInt256.ofNat laddr).toNat = laddr := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have h18 : (UInt256.ofNat 18).toNat = 18 := rfl
   have hactive := WindowTwentyOneLookup.activeWordsAfter_table index hindex
   have hactive' := WindowCopyMemory.activeWordsAfter_eighteen laddr hladdr
   have hpush3 : UInt256.ofNat 3 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp (disch := omega)
-    [runInstructions, lookupImmediateProgram, WindowTwentyOneLookup.framed,
-      Challenge.EvmProof.Stepper.runInstr, hcap, hcap2, hcap3,
-      hl, h18, haddress, hread, hactive, hactive',
-      State.activeWordsAfterUInt256, advancePC, succ_eq_add, hpush3, word_add_assoc]
-
+    [runInstructions,lookupImmediateProgram,WindowTwentyOneLookup.framed,
+      Challenge.EvmProof.Stepper.runInstr,hcap,hcap2,hcap3,
+      hl,h18,haddress,hread,hactive,hactive',
+      State.activeWordsAfterUInt256,advancePC,succ_eq_add,hpush3,word_add_assoc]
 end Lookup
-
 namespace Block
-
 def squareProgram : List Instr :=
   WindowTwentyOneStage.pairProgram
-
 def squares : Nat → List Instr
   | 0 => []
-  | count + 1 => squareProgram ++ squares count
-
+  | count + 1 => squareProgram++squares count
 private theorem run_square (template : State) (pc : UInt256) (mem : ByteArray)
     (active : Nat) (modulus accumulator : UInt256) (tail : List UInt256)
     (hcap : tail.length + 3 < 1024) :
     runInstructions squareProgram
       (WindowTwentyOneLookup.framed template pc mem active
-        (accumulator :: modulus :: tail)) =
+        (accumulator::modulus::tail)) =
     some (WindowTwentyOneLookup.framed template (advancePC 2 pc) mem active
-      (UInt256.mulMod accumulator accumulator modulus :: tail)) := by
+      (UInt256.mulMod accumulator accumulator modulus::tail)) := by
   have hcap2 : tail.length + 2 < 1024 := by omega
   simp (disch := omega)
-    [runInstructions, squareProgram, WindowTwentyOneStage.pairProgram,
+    [runInstructions,squareProgram,WindowTwentyOneStage.pairProgram,
       WindowTwentyOneLookup.framed,
-      Challenge.EvmProof.Stepper.runInstr, hcap, hcap2,
-      List.getElem?_cons_zero, advancePC]
-
+      Challenge.EvmProof.Stepper.runInstr,hcap,hcap2,
+      List.getElem?_cons_zero,advancePC]
 private theorem squareWordAfter_succ (modulus accumulator : UInt256) (count : Nat) :
     WindowMath.squareWordAfter modulus count
         (UInt256.mulMod accumulator accumulator modulus) =
@@ -150,24 +130,23 @@ private theorem squareWordAfter_succ (modulus accumulator : UInt256) (count : Na
   | succ count ih =>
       simpa only [WindowMath.squareWordAfter] using
         congrArg (fun value => UInt256.mulMod value value modulus) ih
-
 theorem run_squares (template : State) (pc : UInt256) (mem : ByteArray)
     (active : Nat) (modulus accumulator : UInt256) (tail : List UInt256)
     (count : Nat) (hcount : count ≤ 4)
     (hcap : tail.length + count + 2 < 1024) :
     runInstructions (squares count)
       (WindowTwentyOneLookup.framed template pc mem active
-        (accumulator :: List.replicate count modulus ++ tail)) =
+        (accumulator::List.replicate count modulus++tail)) =
     some (WindowTwentyOneLookup.framed template (advancePC (2 * count) pc)
-      mem active (WindowMath.squareWordAfter modulus count accumulator :: tail)) := by
+      mem active (WindowMath.squareWordAfter modulus count accumulator::tail)) := by
   induction count generalizing pc accumulator with
   | zero =>
-      simp only [squares, runInstructions, WindowMath.squareWordAfter,
-        List.replicate_zero, List.nil_append, List.cons_append, advancePC]
+      simp only [squares,runInstructions,WindowMath.squareWordAfter,
+        List.replicate_zero,List.nil_append,List.cons_append,advancePC]
   | succ count ih =>
       have hs := run_square template pc mem active modulus accumulator
-        (List.replicate count modulus ++ tail) (by
-          simp only [List.length_append, List.length_replicate]
+        (List.replicate count modulus++tail) (by
+          simp only [List.length_append,List.length_replicate]
           omega)
       have hi := ih (pc := advancePC 2 pc)
         (accumulator := UInt256.mulMod accumulator accumulator modulus)
@@ -178,12 +157,10 @@ theorem run_squares (template : State) (pc : UInt256) (mem : ByteArray)
         rw [← advancePC_add]
         congr 1
         omega
-      simpa only [squares, List.replicate_succ, List.cons_append,
-        List.nil_append, hpc, squareWordAfter_succ, Nat.mul_succ] using hall
-
+      simpa only [squares,List.replicate_succ,List.cons_append,
+        List.nil_append,hpc,squareWordAfter_succ,Nat.mul_succ] using hall
 def lookupDup (slot laddr : Nat) (hslot : slot ≤ 11) : List Instr :=
   WindowTwentyOneLookup.program slot hslot laddr
-
 theorem run_lookupDup (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (remaining slot : Nat)
@@ -198,14 +175,14 @@ theorem run_lookupDup (template : State) (pc : UInt256) (mem : ByteArray)
     (hrest : rest.length ≤ 1000) :
     runInstructions (lookupDup slot laddr hslot')
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: List.replicate remaining modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) =
+        (accumulator::List.replicate remaining modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) =
     some (WindowTwentyOneLookup.framed template (advancePC 8 pc) mem 18
       (UInt256.mulMod (WindowMath.tableWord base modulus index)
-        accumulator modulus :: List.replicate (remaining - 1) modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) := by
+        accumulator modulus::List.replicate (remaining - 1) modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) := by
   let tail := List.replicate (remaining - 1) modulus ++
-    ([exponent, UInt256.ofNat 480, counter] ++ rest)
+    ([exponent,UInt256.ofNat 480,counter]++rest)
   have hmask : tail[slot + 1]? = some (UInt256.ofNat 480) := by
     dsimp only [tail]
     rw [hslot]
@@ -215,22 +192,21 @@ theorem run_lookupDup (template : State) (pc : UInt256) (mem : ByteArray)
     have hrem : remaining - (remaining - 1) = 1 := by omega
     simp [hrem]
   have hcap : tail.length + 4 < 1024 := by
-    simp only [tail, List.length_append, List.length_replicate,
-      List.length_cons, List.length_nil]
+    simp only [tail,List.length_append,List.length_replicate,
+      List.length_cons,List.length_nil]
     omega
   have hrun := WindowTwentyOneLookup.run_lookup template pc mem base modulus
     accumulator tail slot hslot' laddr hladdr index hindex hmask hread haddress hcap
   have hrep : List.replicate remaining modulus =
-      modulus :: List.replicate (remaining - 1) modulus := by
+      modulus::List.replicate (remaining - 1) modulus := by
     calc
       List.replicate remaining modulus =
           List.replicate ((remaining - 1) + 1) modulus := by
             congr 1
             omega
-      _ = modulus :: List.replicate (remaining - 1) modulus := by
+      _ = modulus::List.replicate (remaining - 1) modulus := by
         rw [List.replicate_succ]
-  simpa only [lookupDup, tail, hrep, List.cons_append] using hrun
-
+  simpa only [lookupDup,tail,hrep,List.cons_append] using hrun
 theorem run_lookupImmediateAt (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (remaining : Nat) (hremaining : 1 ≤ remaining)
@@ -245,39 +221,37 @@ theorem run_lookupImmediateAt (template : State) (pc : UInt256) (mem : ByteArray
     (hrest : rest.length ≤ 1000) :
     runInstructions (Lookup.lookupImmediateProgram laddr)
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: List.replicate remaining modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) =
+        (accumulator::List.replicate remaining modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) =
     some (WindowTwentyOneLookup.framed template (advancePC 10 pc) mem 18
       (UInt256.mulMod (WindowMath.tableWord base modulus index)
-        accumulator modulus :: List.replicate (remaining - 1) modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) := by
+        accumulator modulus::List.replicate (remaining - 1) modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) := by
   let tail := List.replicate (remaining - 1) modulus ++
-    ([exponent, UInt256.ofNat 480, counter] ++ rest)
+    ([exponent,UInt256.ofNat 480,counter]++rest)
   have hcap : tail.length + 4 < 1024 := by
-    simp only [tail, List.length_append, List.length_replicate,
-      List.length_cons, List.length_nil]
+    simp only [tail,List.length_append,List.length_replicate,
+      List.length_cons,List.length_nil]
     omega
   have hrun := Lookup.run_lookupImmediate template pc mem base modulus accumulator
     tail laddr hladdr index hindex hread haddress hcap
   have hrep : List.replicate remaining modulus =
-      modulus :: List.replicate (remaining - 1) modulus := by
+      modulus::List.replicate (remaining - 1) modulus := by
     calc
       List.replicate remaining modulus =
           List.replicate ((remaining - 1) + 1) modulus := by
             congr 1
             omega
-      _ = modulus :: List.replicate (remaining - 1) modulus := by
+      _ = modulus::List.replicate (remaining - 1) modulus := by
         rw [List.replicate_succ]
-  simpa only [tail, hrep, List.cons_append] using hrun
-
+  simpa only [tail,hrep,List.cons_append] using hrun
 theorem replicate_split (modulus : UInt256) (remaining left : Nat)
     (hleft : left ≤ remaining) :
     List.replicate remaining modulus =
-      List.replicate left modulus ++ List.replicate (remaining - left) modulus := by
+      List.replicate left modulus++List.replicate (remaining - left) modulus := by
   rw [← List.replicate_add]
   congr 1
   omega
-
 theorem run_stageAt (template : State) (pc : UInt256) (mem : ByteArray)
     (modulus accumulator exponent counter : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
@@ -288,10 +262,9 @@ theorem run_stageAt (template : State) (pc : UInt256) (mem : ByteArray)
   let core := WindowTwentyOneLookup.framed template pc mem 18 []
   have hs := Stage.run_stage16 core pc accumulator modulus exponent
     (UInt256.ofNat 480) counter rest hrest
-  simpa only [WindowTwentyOneGroup.state, core, WindowTwentyOneStage.framed,
-    WindowTwentyOneLookup.framed, List.replicate_zero, List.nil_append,
-    List.cons_append, List.append_assoc] using hs
-
+  simpa only [WindowTwentyOneGroup.state,core,WindowTwentyOneStage.framed,
+    WindowTwentyOneLookup.framed,List.replicate_zero,List.nil_append,
+    List.cons_append,List.append_assoc] using hs
 theorem run_phaseImmediate (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (remaining count : Nat)
@@ -305,23 +278,23 @@ theorem run_phaseImmediate (template : State) (pc : UInt256) (mem : ByteArray)
       (UInt256.land (UInt256.ofNat 480) (MachineState.readWord mem laddr)).toNat =
         32 * index)
     (hrest : rest.length ≤ 1000) :
-    runInstructions (squares count ++ Lookup.lookupImmediateProgram laddr)
+    runInstructions (squares count++Lookup.lookupImmediateProgram laddr)
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: List.replicate remaining modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) =
+        (accumulator::List.replicate remaining modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) =
     some (WindowTwentyOneLookup.framed template
       (advancePC (2 * count + 10) pc) mem 18
       (UInt256.mulMod (WindowMath.squareWordAfter modulus count accumulator)
           (WindowMath.tableWord base modulus index) modulus ::
         List.replicate (remaining - count - 1) modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) := by
+          ([exponent,UInt256.ofNat 480,counter]++rest))) := by
   have hsplit := replicate_split modulus remaining count (by omega)
   let tail := List.replicate (remaining - count) modulus ++
-    ([exponent, UInt256.ofNat 480, counter] ++ rest)
+    ([exponent,UInt256.ofNat 480,counter]++rest)
   have hs := run_squares template pc mem 18 modulus accumulator tail count
     hcount (by
-      simp only [tail, List.length_append, List.length_replicate,
-        List.length_cons, List.length_nil]
+      simp only [tail,List.length_append,List.length_replicate,
+        List.length_cons,List.length_nil]
       omega)
   have hl := run_lookupImmediateAt template (advancePC (2 * count) pc) mem
     base modulus (WindowMath.squareWordAfter modulus count accumulator) exponent counter
@@ -333,10 +306,9 @@ theorem run_phaseImmediate (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc : advancePC 10 (advancePC (2 * count) pc) =
       advancePC (2 * count + 10) pc := by
     rw [← advancePC_add]
-  simpa only [tail, hsplit, squares, hpc, List.replicate_zero,
-    List.replicate_succ, List.cons_append, List.nil_append,
+  simpa only [tail,hsplit,squares,hpc,List.replicate_zero,
+    List.replicate_succ,List.cons_append,List.nil_append,
     List.append_assoc] using hall
-
 theorem run_phaseDup (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (remaining count slot : Nat)
@@ -351,23 +323,23 @@ theorem run_phaseDup (template : State) (pc : UInt256) (mem : ByteArray)
       (UInt256.land (UInt256.ofNat 480) (MachineState.readWord mem laddr)).toNat =
         32 * index)
     (hrest : rest.length ≤ 1000) :
-    runInstructions (squares count ++ lookupDup slot laddr hslot')
+    runInstructions (squares count++lookupDup slot laddr hslot')
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: List.replicate remaining modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) =
+        (accumulator::List.replicate remaining modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) =
     some (WindowTwentyOneLookup.framed template
       (advancePC (2 * count + 8) pc) mem 18
       (UInt256.mulMod (WindowMath.squareWordAfter modulus count accumulator)
           (WindowMath.tableWord base modulus index) modulus ::
         List.replicate (remaining - count - 1) modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) := by
+          ([exponent,UInt256.ofNat 480,counter]++rest))) := by
   have hsplit := replicate_split modulus remaining count (by omega)
   let tail := List.replicate (remaining - count) modulus ++
-    ([exponent, UInt256.ofNat 480, counter] ++ rest)
+    ([exponent,UInt256.ofNat 480,counter]++rest)
   have hs := run_squares template pc mem 18 modulus accumulator tail count
     hcount (by
-      simp only [tail, List.length_append, List.length_replicate,
-        List.length_cons, List.length_nil]
+      simp only [tail,List.length_append,List.length_replicate,
+        List.length_cons,List.length_nil]
       omega)
   have hl := run_lookupDup template (advancePC (2 * count) pc) mem base modulus
     (WindowMath.squareWordAfter modulus count accumulator) exponent counter rest
@@ -379,10 +351,9 @@ theorem run_phaseDup (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc : advancePC 8 (advancePC (2 * count) pc) =
       advancePC (2 * count + 8) pc := by
     rw [← advancePC_add]
-  simpa only [tail, hsplit, squares, lookupDup, hpc, List.replicate_zero,
-    List.replicate_succ, List.cons_append, List.nil_append,
+  simpa only [tail,hsplit,squares,lookupDup,hpc,List.replicate_zero,
+    List.replicate_succ,List.cons_append,List.nil_append,
     List.append_assoc] using hall
-
 private theorem run_digitImmediate (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (remaining : Nat)
@@ -395,21 +366,21 @@ private theorem run_digitImmediate (template : State) (pc : UInt256) (mem : Byte
       (UInt256.land (UInt256.ofNat 480) (MachineState.readWord mem laddr)).toNat =
         32 * index)
     (hrest : rest.length ≤ 1000) :
-    runInstructions (squares 4 ++ Lookup.lookupImmediateProgram laddr)
+    runInstructions (squares 4++Lookup.lookupImmediateProgram laddr)
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: List.replicate remaining modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) =
+        (accumulator::List.replicate remaining modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) =
     some (WindowTwentyOneLookup.framed template (advancePC 18 pc) mem 18
       (WindowMath.nibbleWordStep modulus base accumulator index ::
         List.replicate (remaining - 5) modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) := by
+          ([exponent,UInt256.ofNat 480,counter]++rest))) := by
   have hsplit := replicate_split modulus remaining 4 (by omega)
   let tail := List.replicate (remaining - 4) modulus ++
-    ([exponent, UInt256.ofNat 480, counter] ++ rest)
+    ([exponent,UInt256.ofNat 480,counter]++rest)
   have hs := run_squares template pc mem 18 modulus accumulator tail 4
     (by decide) (by
-      simp only [tail, List.length_append, List.length_replicate,
-        List.length_cons, List.length_nil]
+      simp only [tail,List.length_append,List.length_replicate,
+        List.length_cons,List.length_nil]
       omega)
   have hl := run_lookupImmediateAt template (advancePC 8 pc) mem base modulus
     (WindowMath.squareWordAfter modulus 4 accumulator) exponent counter rest
@@ -420,10 +391,9 @@ private theorem run_digitImmediate (template : State) (pc : UInt256) (mem : Byte
   have hpc : advancePC 10 (advancePC 8 pc) = advancePC 18 pc := by
     rw [← advancePC_add]
   have hsub : remaining - 4 - 1 = remaining - 5 := by omega
-  simpa only [tail, hsplit, squares, hpc, hsub, WindowMath.nibbleWordStep,
-    List.replicate_zero, List.replicate_succ, List.cons_append,
+  simpa only [tail,hsplit,squares,hpc,hsub,WindowMath.nibbleWordStep,
+    List.replicate_zero,List.replicate_succ,List.cons_append,
     List.nil_append] using hall
-
 private theorem run_digitDup (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus accumulator exponent counter : UInt256)
     (rest : List UInt256) (remaining slot : Nat)
@@ -437,21 +407,21 @@ private theorem run_digitDup (template : State) (pc : UInt256) (mem : ByteArray)
       (UInt256.land (UInt256.ofNat 480) (MachineState.readWord mem laddr)).toNat =
         32 * index)
     (hrest : rest.length ≤ 1000) :
-    runInstructions (squares 4 ++ lookupDup slot laddr hslot')
+    runInstructions (squares 4++lookupDup slot laddr hslot')
       (WindowTwentyOneLookup.framed template pc mem 18
-        (accumulator :: List.replicate remaining modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) =
+        (accumulator::List.replicate remaining modulus ++
+          ([exponent,UInt256.ofNat 480,counter]++rest))) =
     some (WindowTwentyOneLookup.framed template (advancePC 16 pc) mem 18
       (WindowMath.nibbleWordStep modulus base accumulator index ::
         List.replicate (remaining - 5) modulus ++
-          ([exponent, UInt256.ofNat 480, counter] ++ rest))) := by
+          ([exponent,UInt256.ofNat 480,counter]++rest))) := by
   have hsplit := replicate_split modulus remaining 4 (by omega)
   let tail := List.replicate (remaining - 4) modulus ++
-    ([exponent, UInt256.ofNat 480, counter] ++ rest)
+    ([exponent,UInt256.ofNat 480,counter]++rest)
   have hs := run_squares template pc mem 18 modulus accumulator tail 4
     (by decide) (by
-      simp only [tail, List.length_append, List.length_replicate,
-        List.length_cons, List.length_nil]
+      simp only [tail,List.length_append,List.length_replicate,
+        List.length_cons,List.length_nil]
       omega)
   have hl := run_lookupDup template (advancePC 8 pc) mem base modulus
     (WindowMath.squareWordAfter modulus 4 accumulator) exponent counter rest
@@ -463,90 +433,74 @@ private theorem run_digitDup (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc : advancePC 8 (advancePC 8 pc) = advancePC 16 pc := by
     rw [← advancePC_add]
   have hsub : remaining - 4 - 1 = remaining - 5 := by omega
-  simpa only [tail, hsplit, squares, lookupDup, hpc, hsub,
-    WindowMath.nibbleWordStep, List.replicate_zero, List.replicate_succ,
-    List.cons_append, List.nil_append] using hall
-
+  simpa only [tail,hsplit,squares,lookupDup,hpc,hsub,
+    WindowMath.nibbleWordStep,List.replicate_zero,List.replicate_succ,
+    List.cons_append,List.nil_append] using hall
 def immediateAt (index : Nat) : List Instr :=
   Lookup.lookupImmediateProgram (WindowCopyMemory.laddr index)
-
 def dupAt (slot index : Nat) (hslot : slot ≤ 11) : List Instr :=
   lookupDup slot (WindowCopyMemory.laddr index) hslot
-
 def batch0 (off : Nat) : List Instr :=
   Stage.stage16Program ++
-    squares 4 ++ immediateAt (off + 0) ++
-    squares 4 ++ dupAt 7 (off + 1) (by decide) ++
-    squares 4 ++ dupAt 2 (off + 2) (by decide) ++
+    squares 4++immediateAt (off + 0) ++
+    squares 4++dupAt 7 (off + 1) (by decide) ++
+    squares 4++dupAt 2 (off + 2) (by decide) ++
     squares 1
-
 def batch1 (off : Nat) : List Instr :=
   Stage.stage16Program ++
-    squares 3 ++ immediateAt (off + 3) ++
-    squares 4 ++ dupAt 8 (off + 4) (by decide) ++
-    squares 4 ++ dupAt 3 (off + 5) (by decide) ++
+    squares 3++immediateAt (off + 3) ++
+    squares 4++dupAt 8 (off + 4) (by decide) ++
+    squares 4++dupAt 3 (off + 5) (by decide) ++
     squares 2
-
 def batch2 (off : Nat) : List Instr :=
   Stage.stage16Program ++
-    squares 2 ++ immediateAt (off + 6) ++
-    squares 4 ++ dupAt 9 (off + 7) (by decide) ++
-    squares 4 ++ dupAt 4 (off + 8) (by decide) ++
+    squares 2++immediateAt (off + 6) ++
+    squares 4++dupAt 9 (off + 7) (by decide) ++
+    squares 4++dupAt 4 (off + 8) (by decide) ++
     squares 3
-
 def batch3 (off : Nat) : List Instr :=
   Stage.stage16Program ++
-    squares 1 ++ immediateAt (off + 9) ++
-    squares 4 ++ dupAt 10 (off + 10) (by decide) ++
-    squares 4 ++ dupAt 5 (off + 11) (by decide) ++
+    squares 1++immediateAt (off + 9) ++
+    squares 4++dupAt 10 (off + 10) (by decide) ++
+    squares 4++dupAt 5 (off + 11) (by decide) ++
     squares 4
-
 def batch4 (off : Nat) : List Instr :=
   Stage.stage16Program ++
     immediateAt (off + 12) ++
-    squares 4 ++ dupAt 11 (off + 13) (by decide) ++
-    squares 4 ++ dupAt 6 (off + 14) (by decide) ++
-    squares 4 ++ dupAt 1 (off + 15) (by decide)
-
+    squares 4++dupAt 11 (off + 13) (by decide) ++
+    squares 4++dupAt 6 (off + 14) (by decide) ++
+    squares 4++dupAt 1 (off + 15) (by decide)
 def program80Prefix (off : Nat) : List Instr :=
-  batch0 off ++ batch1 off ++ batch2 off ++ batch3 off
-
+  batch0 off++batch1 off++batch2 off++batch3 off
 def program80 (off : Nat) : List Instr :=
-  program80Prefix off ++ batch4 off
-
+  program80Prefix off++batch4 off
 theorem program80Prefix_instruction_count (off : Nat) :
     (program80Prefix off).length = 244 := by
-  simp only [program80Prefix, batch0, batch1, batch2, batch3,
-    immediateAt, dupAt, lookupDup, squares, squareProgram,
-    WindowTwentyOneStage.pairProgram, Lookup.lookupImmediateProgram,
-    WindowTwentyOneLookup.program, List.length_append, List.length_cons,
+  simp only [program80Prefix,batch0,batch1,batch2,batch3,
+    immediateAt,dupAt,lookupDup,squares,squareProgram,
+    WindowTwentyOneStage.pairProgram,Lookup.lookupImmediateProgram,
+    WindowTwentyOneLookup.program,List.length_append,List.length_cons,
     List.length_nil]
   decide
-
 theorem program80_instruction_count (off : Nat) : (program80 off).length = 309 := by
-  simp only [program80, program80Prefix, batch0, batch1, batch2, batch3, batch4,
-    immediateAt, dupAt, lookupDup, squares, squareProgram,
-    WindowTwentyOneStage.pairProgram, Lookup.lookupImmediateProgram,
-    WindowTwentyOneLookup.program, List.length_append, List.length_cons,
+  simp only [program80,program80Prefix,batch0,batch1,batch2,batch3,batch4,
+    immediateAt,dupAt,lookupDup,squares,squareProgram,
+    WindowTwentyOneStage.pairProgram,Lookup.lookupImmediateProgram,
+    WindowTwentyOneLookup.program,List.length_append,List.length_cons,
     List.length_nil]
   decide
-
 private theorem land_comm (a b : UInt256) : UInt256.land a b = UInt256.land b a := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Word.word_toNat_land,
-    Challenge.EvmProof.Word.word_toNat_land, Nat.and_comm]
-
+    Challenge.EvmProof.Word.word_toNat_land,Nat.and_comm]
 theorem laddr_bound (index : Nat) (hindex : index < 62) :
     WindowCopyMemory.laddr index + 32 ≤ 576 := by
   unfold WindowCopyMemory.laddr
   split <;> omega
-
 def blockDigit (exponent : UInt256) (off index : Nat) : Nat :=
   WindowTwentyOneMath.nibble exponent.toNat (1 + off + index)
-
 def blockMemory (mem : ByteArray) (exponent : UInt256) : ByteArray :=
   WindowCopyMemory.copyMem mem (UInt256.shiftLeft exponent (UInt256.ofNat 1))
-
 theorem block_address (mem : ByteArray) (exponent : UInt256)
     (off index : Nat) (hindex : off + index < 62) :
     (UInt256.land (UInt256.ofNat 480)
@@ -562,27 +516,25 @@ theorem block_address (mem : ByteArray) (exponent : UInt256)
       32 * blockDigit exponent off index
   have haddr := WindowCopyMemory.land480_laddr mem
     (UInt256.shiftLeft exponent (UInt256.ofNat 1)) (off + index) hindex
-  rw [haddr, land_comm]
+  rw [haddr,land_comm]
   have hshift := WindowTwentyOneBits.shifted_lookupAddress exponent 1
     (off + index) (by omega) hindex (by omega)
   rw [show 1 + (off + index) = 1 + off + index by omega] at hshift
-  simpa [blockMemory, blockDigit, WindowTwentyOneBits.lookupAddress,
+  simpa [blockMemory,blockDigit,WindowTwentyOneBits.lookupAddress,
     WindowTwentyOneMath.nibble] using
     hshift
-
 theorem block_table (mem : ByteArray) (exponent base modulus : UInt256)
     (index : Nat) (hindex : index < 16)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i) :
     MachineState.readWord
         (blockMemory mem exponent) (32 * index) =
       WindowMath.tableWord base modulus index := by
-  rw [blockMemory, WindowCopyMemory.readWord_copyMem_low _ _ _ (by omega)]
+  rw [blockMemory,WindowCopyMemory.readWord_copyMem_low _ _ _ (by omega)]
   exact htable index hindex
-
 theorem block_lookupFacts (mem : ByteArray) (exponent base modulus : UInt256)
     (off position : Nat) (hbound : off + position < 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i) :
     blockDigit exponent off position < 16 ∧
       WindowCopyMemory.laddr (off + position) + 32 ≤ 576 ∧
@@ -598,8 +550,7 @@ theorem block_lookupFacts (mem : ByteArray) (exponent base modulus : UInt256)
   have htable' := block_table mem exponent base modulus
     (blockDigit exponent off position) hd htable
   have haddress := block_address mem exponent off position hbound
-  exact ⟨hd, laddr_bound (off + position) hbound, htable', haddress⟩
-
+  exact ⟨hd,laddr_bound (off + position) hbound,htable',haddress⟩
 theorem squareWordAfter_add (modulus accumulator : UInt256) (left right : Nat) :
     WindowMath.squareWordAfter modulus left
         (WindowMath.squareWordAfter modulus right accumulator) =
@@ -613,11 +564,10 @@ theorem squareWordAfter_add (modulus accumulator : UInt256) (left right : Nat) :
       rw [ih]
       rw [show left + 1 + right = (left + right) + 1 by omega]
       rfl
-
 theorem run_batch0 (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 12 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (batch0 off)
@@ -650,8 +600,8 @@ theorem run_batch0 (template : State) (pc : UInt256) (mem : ByteArray)
     rest 7 4 2 (by decide) (by decide) (by decide) (by decide)
     (WindowCopyMemory.laddr (off + 2)) f2.2.1 d2 f2.1 f2.2.2.1 f2.2.2.2 hrest
   have hsq := run_squares template (advancePC 67 pc) cm 18 modulus a3
-    ([modulus, shifted, UInt256.ofNat 480, counter] ++ rest) 1 (by decide) (by
-      simp only [List.length_append, List.length_cons, List.length_nil]
+    ([modulus,shifted,UInt256.ofNat 480,counter]++rest) 1 (by decide) (by
+      simp only [List.length_append,List.length_cons,List.length_nil]
       omega)
   have hpc0 : advancePC 18 (advancePC 17 pc) = advancePC 35 pc := by
     rw [← advancePC_add]
@@ -662,62 +612,61 @@ theorem run_batch0 (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc3 : advancePC 2 (advancePC 67 pc) = advancePC 69 pc := by
     rw [← advancePC_add]
   have hp0' :
-      runInstructions (squares 4 ++ Lookup.lookupImmediateProgram
+      runInstructions (squares 4++Lookup.lookupImmediateProgram
           (WindowCopyMemory.laddr (off + 0)))
         (WindowTwentyOneGroup.state template (advancePC 17 pc) cm 18 modulus
           accumulator shifted counter 16 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 35 pc) cm 18 modulus
         a1 shifted counter 11 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      d0, a1, Lookup.lookupImmediateProgram, hpc0, List.replicate_succ,
-      List.replicate_succ', List.cons_append, List.nil_append, List.append_assoc,
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      d0,a1,Lookup.lookupImmediateProgram,hpc0,List.replicate_succ,
+      List.replicate_succ',List.cons_append,List.nil_append,List.append_assoc,
       WindowMath.nibbleWordStep] using hp0
   have hp1' :
-      runInstructions (squares 4 ++ lookupDup 7
+      runInstructions (squares 4++lookupDup 7
           (WindowCopyMemory.laddr (off + 1)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 35 pc) cm 18 modulus
           a1 shifted counter 11 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 51 pc) cm 18 modulus
         a2 shifted counter 6 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      d1, a1, a2, lookupDup, WindowTwentyOneLookup.program, hpc1,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp1
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      d1,a1,a2,lookupDup,WindowTwentyOneLookup.program,hpc1,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp1
   have hp2' :
-      runInstructions (squares 4 ++ lookupDup 2
+      runInstructions (squares 4++lookupDup 2
           (WindowCopyMemory.laddr (off + 2)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 51 pc) cm 18 modulus
           a2 shifted counter 6 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 67 pc) cm 18 modulus
         a3 shifted counter 1 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      d2, a2, a3, lookupDup, WindowTwentyOneLookup.program, hpc2,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp2
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      d2,a2,a3,lookupDup,WindowTwentyOneLookup.program,hpc2,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp2
   have hsq' :
       runInstructions (squares 1)
         (WindowTwentyOneGroup.state template (advancePC 67 pc) cm 18 modulus
           a3 shifted counter 1 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 69 pc) cm 18 modulus
         (WindowMath.squareWordAfter modulus 1 a3) shifted counter 0 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      cm, shifted, hpc3, List.replicate_succ, List.replicate_succ',
-      List.cons_append, List.nil_append, List.append_assoc] using hsq
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,
+      cm,shifted,hpc3,List.replicate_succ,List.replicate_succ',
+      List.cons_append,List.nil_append,List.append_assoc] using hsq
   have h01 := runInstructions_append_some _ _ _ _ _ hs hp0'
   have h012 := runInstructions_append_some _ _ _ _ _ h01 hp1'
   have h0123 := runInstructions_append_some _ _ _ _ _ h012 hp2'
   have hall := runInstructions_append_some _ _ _ _ _ h0123 hsq'
   have ha3 : a3 = WindowTwentyOneMath.advance base modulus exponent.toNat
       (1 + off) 3 accumulator := by
-    simp [a1, a2, a3, d0, d1, d2, blockDigit, WindowTwentyOneMath.advance,
-      WindowMath.nibbleWordStep, Nat.add_assoc]
-  simpa [batch0, immediateAt, dupAt, lookupDup, WindowTwentyOneLookup.program,
-    ha3, cm, shifted, List.append_assoc] using hall
-
+    simp [a1,a2,a3,d0,d1,d2,blockDigit,WindowTwentyOneMath.advance,
+      WindowMath.nibbleWordStep,Nat.add_assoc]
+  simpa [batch0,immediateAt,dupAt,lookupDup,WindowTwentyOneLookup.program,
+    ha3,cm,shifted,List.append_assoc] using hall
 theorem run_batch1 (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 12 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (batch1 off)
@@ -755,8 +704,8 @@ theorem run_batch1 (template : State) (pc : UInt256) (mem : ByteArray)
     rest 8 4 3 (by decide) (by decide) (by decide) (by decide)
     (WindowCopyMemory.laddr (off + 5)) f5.2.1 d5 f5.1 f5.2.2.1 f5.2.2.2 hrest
   have hsq := run_squares template (advancePC 65 pc) cm 18 modulus a6
-    ([modulus, shifted, UInt256.ofNat 480, counter] ++ rest) 2 (by decide) (by
-      simp only [List.length_append, List.length_cons, List.length_nil]
+    ([modulus,shifted,UInt256.ofNat 480,counter]++rest) 2 (by decide) (by
+      simp only [List.length_append,List.length_cons,List.length_nil]
       omega)
   have hpc0 : advancePC 16 (advancePC 17 pc) = advancePC 33 pc := by
     rw [← advancePC_add]
@@ -767,46 +716,46 @@ theorem run_batch1 (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc3 : advancePC 4 (advancePC 65 pc) = advancePC 69 pc := by
     rw [← advancePC_add]
   have hp0' :
-      runInstructions (squares 3 ++ Lookup.lookupImmediateProgram
+      runInstructions (squares 3++Lookup.lookupImmediateProgram
           (WindowCopyMemory.laddr (off + 3)))
         (WindowTwentyOneGroup.state template (advancePC 17 pc) cm 18 modulus
           seed shifted counter 16 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 33 pc) cm 18 modulus
         a4 shifted counter 12 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a4, seed, d3, Lookup.lookupImmediateProgram, hpc0, List.replicate_succ,
-      List.replicate_succ', List.cons_append, List.nil_append, List.append_assoc] using hp0
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a4,seed,d3,Lookup.lookupImmediateProgram,hpc0,List.replicate_succ,
+      List.replicate_succ',List.cons_append,List.nil_append,List.append_assoc] using hp0
   have hp1' :
-      runInstructions (squares 4 ++ lookupDup 8
+      runInstructions (squares 4++lookupDup 8
           (WindowCopyMemory.laddr (off + 4)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 33 pc) cm 18 modulus
           a4 shifted counter 12 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 49 pc) cm 18 modulus
         a5 shifted counter 7 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a4, a5, d4, lookupDup, WindowTwentyOneLookup.program, hpc1,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp1
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a4,a5,d4,lookupDup,WindowTwentyOneLookup.program,hpc1,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp1
   have hp2' :
-      runInstructions (squares 4 ++ lookupDup 3
+      runInstructions (squares 4++lookupDup 3
           (WindowCopyMemory.laddr (off + 5)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 49 pc) cm 18 modulus
           a5 shifted counter 7 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 65 pc) cm 18 modulus
         a6 shifted counter 2 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a5, a6, d5, lookupDup, WindowTwentyOneLookup.program, hpc2,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp2
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a5,a6,d5,lookupDup,WindowTwentyOneLookup.program,hpc2,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp2
   have hsq' :
       runInstructions (squares 2)
         (WindowTwentyOneGroup.state template (advancePC 65 pc) cm 18 modulus
           a6 shifted counter 2 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 69 pc) cm 18 modulus
         (WindowMath.squareWordAfter modulus 2 a6) shifted counter 0 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      cm, shifted, hpc3, List.replicate_succ, List.replicate_succ',
-      List.cons_append, List.nil_append, List.append_assoc] using hsq
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,
+      cm,shifted,hpc3,List.replicate_succ,List.replicate_succ',
+      List.cons_append,List.nil_append,List.append_assoc] using hsq
   have h01 := runInstructions_append_some _ _ _ _ _ hs hp0'
   have h012 := runInstructions_append_some _ _ _ _ _ h01 hp1'
   have hall := runInstructions_append_some _ _ _ _ _ h012 hp2'
@@ -817,17 +766,16 @@ theorem run_batch1 (template : State) (pc : UInt256) (mem : ByteArray)
           (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 6 accumulator) := by
     have ha4 : a4 = WindowMath.nibbleWordStep modulus base
         (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 3 accumulator) d3 := by
-      simp [a4, seed, d3, blockDigit, WindowMath.nibbleWordStep,
+      simp [a4,seed,d3,blockDigit,WindowMath.nibbleWordStep,
         squareWordAfter_add]
-    simp [a4, a5, a6, d3, d4, d5, blockDigit, ha4,
-      WindowMath.nibbleWordStep, WindowTwentyOneMath.advance, Nat.add_assoc]
-  simpa [batch1, immediateAt, dupAt, lookupDup, WindowTwentyOneLookup.program,
-    ha6, cm, shifted, List.append_assoc] using hall'
-
+    simp [a4,a5,a6,d3,d4,d5,blockDigit,ha4,
+      WindowMath.nibbleWordStep,WindowTwentyOneMath.advance,Nat.add_assoc]
+  simpa [batch1,immediateAt,dupAt,lookupDup,WindowTwentyOneLookup.program,
+    ha6,cm,shifted,List.append_assoc] using hall'
 theorem run_batch2 (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 12 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (batch2 off)
@@ -865,8 +813,8 @@ theorem run_batch2 (template : State) (pc : UInt256) (mem : ByteArray)
     rest 9 4 4 (by decide) (by decide) (by decide) (by decide)
     (WindowCopyMemory.laddr (off + 8)) f8.2.1 d8 f8.1 f8.2.2.1 f8.2.2.2 hrest
   have hsq := run_squares template (advancePC 63 pc) cm 18 modulus a9
-    ([modulus, shifted, UInt256.ofNat 480, counter] ++ rest) 3 (by decide) (by
-      simp only [List.length_append, List.length_cons, List.length_nil]
+    ([modulus,shifted,UInt256.ofNat 480,counter]++rest) 3 (by decide) (by
+      simp only [List.length_append,List.length_cons,List.length_nil]
       omega)
   have hpc0 : advancePC 14 (advancePC 17 pc) = advancePC 31 pc := by
     rw [← advancePC_add]
@@ -877,46 +825,46 @@ theorem run_batch2 (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc3 : advancePC 6 (advancePC 63 pc) = advancePC 69 pc := by
     rw [← advancePC_add]
   have hp0' :
-      runInstructions (squares 2 ++ Lookup.lookupImmediateProgram
+      runInstructions (squares 2++Lookup.lookupImmediateProgram
           (WindowCopyMemory.laddr (off + 6)))
         (WindowTwentyOneGroup.state template (advancePC 17 pc) cm 18 modulus
           seed shifted counter 16 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 31 pc) cm 18 modulus
         a7 shifted counter 13 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a7, seed, d6, Lookup.lookupImmediateProgram, hpc0, List.replicate_succ,
-      List.replicate_succ', List.cons_append, List.nil_append, List.append_assoc] using hp0
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a7,seed,d6,Lookup.lookupImmediateProgram,hpc0,List.replicate_succ,
+      List.replicate_succ',List.cons_append,List.nil_append,List.append_assoc] using hp0
   have hp1' :
-      runInstructions (squares 4 ++ lookupDup 9
+      runInstructions (squares 4++lookupDup 9
           (WindowCopyMemory.laddr (off + 7)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 31 pc) cm 18 modulus
           a7 shifted counter 13 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 47 pc) cm 18 modulus
         a8 shifted counter 8 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a7, a8, d7, lookupDup, WindowTwentyOneLookup.program, hpc1,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp1
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a7,a8,d7,lookupDup,WindowTwentyOneLookup.program,hpc1,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp1
   have hp2' :
-      runInstructions (squares 4 ++ lookupDup 4
+      runInstructions (squares 4++lookupDup 4
           (WindowCopyMemory.laddr (off + 8)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 47 pc) cm 18 modulus
           a8 shifted counter 8 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 63 pc) cm 18 modulus
         a9 shifted counter 3 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a8, a9, d8, lookupDup, WindowTwentyOneLookup.program, hpc2,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp2
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a8,a9,d8,lookupDup,WindowTwentyOneLookup.program,hpc2,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp2
   have hsq' :
       runInstructions (squares 3)
         (WindowTwentyOneGroup.state template (advancePC 63 pc) cm 18 modulus
           a9 shifted counter 3 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 69 pc) cm 18 modulus
         (WindowMath.squareWordAfter modulus 3 a9) shifted counter 0 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      cm, shifted, hpc3, List.replicate_succ, List.replicate_succ',
-      List.cons_append, List.nil_append, List.append_assoc] using hsq
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,
+      cm,shifted,hpc3,List.replicate_succ,List.replicate_succ',
+      List.cons_append,List.nil_append,List.append_assoc] using hsq
   have h01 := runInstructions_append_some _ _ _ _ _ hs hp0'
   have h012 := runInstructions_append_some _ _ _ _ _ h01 hp1'
   have hall := runInstructions_append_some _ _ _ _ _ h012 hp2'
@@ -927,17 +875,16 @@ theorem run_batch2 (template : State) (pc : UInt256) (mem : ByteArray)
           (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 9 accumulator) := by
     have ha7 : a7 = WindowMath.nibbleWordStep modulus base
         (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 6 accumulator) d6 := by
-      simp [a7, seed, d6, blockDigit, WindowMath.nibbleWordStep,
+      simp [a7,seed,d6,blockDigit,WindowMath.nibbleWordStep,
         squareWordAfter_add]
-    simp [a7, a8, a9, d6, d7, d8, blockDigit, ha7,
-      WindowMath.nibbleWordStep, WindowTwentyOneMath.advance, Nat.add_assoc]
-  simpa [batch2, immediateAt, dupAt, lookupDup, WindowTwentyOneLookup.program,
-    ha9, cm, shifted, List.append_assoc] using hall'
-
+    simp [a7,a8,a9,d6,d7,d8,blockDigit,ha7,
+      WindowMath.nibbleWordStep,WindowTwentyOneMath.advance,Nat.add_assoc]
+  simpa [batch2,immediateAt,dupAt,lookupDup,WindowTwentyOneLookup.program,
+    ha9,cm,shifted,List.append_assoc] using hall'
 theorem run_batch3 (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 12 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (batch3 off)
@@ -975,8 +922,8 @@ theorem run_batch3 (template : State) (pc : UInt256) (mem : ByteArray)
     rest 10 4 5 (by decide) (by decide) (by decide) (by decide)
     (WindowCopyMemory.laddr (off + 11)) f11.2.1 d11 f11.1 f11.2.2.1 f11.2.2.2 hrest
   have hsq := run_squares template (advancePC 61 pc) cm 18 modulus a12
-    ([modulus, shifted, UInt256.ofNat 480, counter] ++ rest) 4 (by decide) (by
-      simp only [List.length_append, List.length_cons, List.length_nil]
+    ([modulus,shifted,UInt256.ofNat 480,counter]++rest) 4 (by decide) (by
+      simp only [List.length_append,List.length_cons,List.length_nil]
       omega)
   have hpc0 : advancePC 12 (advancePC 17 pc) = advancePC 29 pc := by
     rw [← advancePC_add]
@@ -987,46 +934,46 @@ theorem run_batch3 (template : State) (pc : UInt256) (mem : ByteArray)
   have hpc3 : advancePC 8 (advancePC 61 pc) = advancePC 69 pc := by
     rw [← advancePC_add]
   have hp0' :
-      runInstructions (squares 1 ++ Lookup.lookupImmediateProgram
+      runInstructions (squares 1++Lookup.lookupImmediateProgram
           (WindowCopyMemory.laddr (off + 9)))
         (WindowTwentyOneGroup.state template (advancePC 17 pc) cm 18 modulus
           seed shifted counter 16 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 29 pc) cm 18 modulus
         a10 shifted counter 14 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a10, seed, d9, Lookup.lookupImmediateProgram, hpc0, List.replicate_succ,
-      List.replicate_succ', List.cons_append, List.nil_append, List.append_assoc] using hp0
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a10,seed,d9,Lookup.lookupImmediateProgram,hpc0,List.replicate_succ,
+      List.replicate_succ',List.cons_append,List.nil_append,List.append_assoc] using hp0
   have hp1' :
-      runInstructions (squares 4 ++ lookupDup 10
+      runInstructions (squares 4++lookupDup 10
           (WindowCopyMemory.laddr (off + 10)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 29 pc) cm 18 modulus
           a10 shifted counter 14 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 45 pc) cm 18 modulus
         a11 shifted counter 9 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a10, a11, d10, lookupDup, WindowTwentyOneLookup.program, hpc1,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp1
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a10,a11,d10,lookupDup,WindowTwentyOneLookup.program,hpc1,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp1
   have hp2' :
-      runInstructions (squares 4 ++ lookupDup 5
+      runInstructions (squares 4++lookupDup 5
           (WindowCopyMemory.laddr (off + 11)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 45 pc) cm 18 modulus
           a11 shifted counter 9 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 61 pc) cm 18 modulus
         a12 shifted counter 4 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a11, a12, d11, lookupDup, WindowTwentyOneLookup.program, hpc2,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp2
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a11,a12,d11,lookupDup,WindowTwentyOneLookup.program,hpc2,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp2
   have hsq' :
       runInstructions (squares 4)
         (WindowTwentyOneGroup.state template (advancePC 61 pc) cm 18 modulus
           a12 shifted counter 4 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 69 pc) cm 18 modulus
         (WindowMath.squareWordAfter modulus 4 a12) shifted counter 0 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed,
-      cm, shifted, hpc3, List.replicate_succ, List.replicate_succ',
-      List.cons_append, List.nil_append, List.append_assoc] using hsq
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,
+      cm,shifted,hpc3,List.replicate_succ,List.replicate_succ',
+      List.cons_append,List.nil_append,List.append_assoc] using hsq
   have h01 := runInstructions_append_some _ _ _ _ _ hs hp0'
   have h012 := runInstructions_append_some _ _ _ _ _ h01 hp1'
   have hall := runInstructions_append_some _ _ _ _ _ h012 hp2'
@@ -1037,17 +984,16 @@ theorem run_batch3 (template : State) (pc : UInt256) (mem : ByteArray)
           (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 12 accumulator) := by
     have ha10 : a10 = WindowMath.nibbleWordStep modulus base
         (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 9 accumulator) d9 := by
-      simp [a10, seed, d9, blockDigit, WindowMath.nibbleWordStep,
+      simp [a10,seed,d9,blockDigit,WindowMath.nibbleWordStep,
         squareWordAfter_add]
-    simp [a10, a11, a12, d9, d10, d11, blockDigit, ha10,
-      WindowMath.nibbleWordStep, WindowTwentyOneMath.advance, Nat.add_assoc]
-  simpa [batch3, immediateAt, dupAt, lookupDup, WindowTwentyOneLookup.program,
-    ha12, cm, shifted, List.append_assoc] using hall'
-
+    simp [a10,a11,a12,d9,d10,d11,blockDigit,ha10,
+      WindowMath.nibbleWordStep,WindowTwentyOneMath.advance,Nat.add_assoc]
+  simpa [batch3,immediateAt,dupAt,lookupDup,WindowTwentyOneLookup.program,
+    ha12,cm,shifted,List.append_assoc] using hall'
 theorem run_batch4 (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 16 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (batch4 off)
@@ -1104,58 +1050,57 @@ theorem run_batch4 (template : State) (pc : UInt256) (mem : ByteArray)
           seed shifted counter 16 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 27 pc) cm 18 modulus
         a13 shifted counter 15 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a13, seed, d12, squares, Lookup.lookupImmediateProgram, hpc0, List.replicate_succ,
-      List.replicate_succ', List.cons_append, List.nil_append, List.append_assoc] using hp0
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a13,seed,d12,squares,Lookup.lookupImmediateProgram,hpc0,List.replicate_succ,
+      List.replicate_succ',List.cons_append,List.nil_append,List.append_assoc] using hp0
   have hp1' :
-      runInstructions (squares 4 ++ lookupDup 11
+      runInstructions (squares 4++lookupDup 11
           (WindowCopyMemory.laddr (off + 13)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 27 pc) cm 18 modulus
           a13 shifted counter 15 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 43 pc) cm 18 modulus
         a14 shifted counter 10 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a13, a14, d13, lookupDup, WindowTwentyOneLookup.program, hpc1,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp1
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a13,a14,d13,lookupDup,WindowTwentyOneLookup.program,hpc1,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp1
   have hp2' :
-      runInstructions (squares 4 ++ lookupDup 6
+      runInstructions (squares 4++lookupDup 6
           (WindowCopyMemory.laddr (off + 14)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 43 pc) cm 18 modulus
           a14 shifted counter 10 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 59 pc) cm 18 modulus
         a15 shifted counter 5 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a14, a15, d14, lookupDup, WindowTwentyOneLookup.program, hpc2,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp2
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a14,a15,d14,lookupDup,WindowTwentyOneLookup.program,hpc2,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp2
   have hp3' :
-      runInstructions (squares 4 ++ lookupDup 1
+      runInstructions (squares 4++lookupDup 1
           (WindowCopyMemory.laddr (off + 15)) (by decide))
         (WindowTwentyOneGroup.state template (advancePC 59 pc) cm 18 modulus
           a15 shifted counter 5 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 75 pc) cm 18 modulus
         a16 shifted counter 0 rest) := by
-    simpa [WindowTwentyOneGroup.state, WindowTwentyOneLookup.framed, cm, shifted,
-      a15, a16, d15, lookupDup, WindowTwentyOneLookup.program, hpc3,
-      List.replicate_succ, List.replicate_succ', List.cons_append, List.nil_append,
-      List.append_assoc, WindowMath.nibbleWordStep] using hp3
+    simpa [WindowTwentyOneGroup.state,WindowTwentyOneLookup.framed,cm,shifted,
+      a15,a16,d15,lookupDup,WindowTwentyOneLookup.program,hpc3,
+      List.replicate_succ,List.replicate_succ',List.cons_append,List.nil_append,
+      List.append_assoc,WindowMath.nibbleWordStep] using hp3
   have h01 := runInstructions_append_some _ _ _ _ _ hs hp0'
   have h012 := runInstructions_append_some _ _ _ _ _ h01 hp1'
   have h0123 := runInstructions_append_some _ _ _ _ _ h012 hp2'
   have hall := runInstructions_append_some _ _ _ _ _ h0123 hp3'
   have ha16 : a16 = WindowTwentyOneMath.advance base modulus exponent.toNat
       (1 + off) 16 accumulator := by
-    simp [a13, a14, a15, a16, d12, d13, d14, d15, blockDigit, seed,
-      WindowMath.nibbleWordStep, WindowTwentyOneMath.advance,
-      WindowMath.squareWordAfter, Nat.add_assoc]
-  simpa [batch4, immediateAt, dupAt, lookupDup, WindowTwentyOneLookup.program,
-    ha16, cm, shifted, List.append_assoc] using hall
-
+    simp [a13,a14,a15,a16,d12,d13,d14,d15,blockDigit,seed,
+      WindowMath.nibbleWordStep,WindowTwentyOneMath.advance,
+      WindowMath.squareWordAfter,Nat.add_assoc]
+  simpa [batch4,immediateAt,dupAt,lookupDup,WindowTwentyOneLookup.program,
+    ha16,cm,shifted,List.append_assoc] using hall
 theorem run_program80Prefix (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 12 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (program80Prefix off)
@@ -1191,14 +1136,14 @@ theorem run_program80Prefix (template : State) (pc : UInt256) (mem : ByteArray)
           (WindowMath.squareWordAfter modulus 1 a3) shifted counter 0 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 138 pc) cm 18 modulus
         (WindowMath.squareWordAfter modulus 2 a6) shifted counter 0 rest) := by
-    simpa [cm, shifted, hpc0] using h1
+    simpa [cm,shifted,hpc0] using h1
   have h2' :
       runInstructions (batch2 off)
         (WindowTwentyOneGroup.state template (advancePC 138 pc) cm 18 modulus
           (WindowMath.squareWordAfter modulus 2 a6) shifted counter 0 rest) =
       some (WindowTwentyOneGroup.state template (advancePC 207 pc) cm 18 modulus
         (WindowMath.squareWordAfter modulus 3 a9) shifted counter 0 rest) := by
-    simpa [cm, shifted, hpc1] using h2
+    simpa [cm,shifted,hpc1] using h2
   have h3' :
       runInstructions (batch3 off)
         (WindowTwentyOneGroup.state template (advancePC 207 pc) cm 18 modulus
@@ -1207,16 +1152,15 @@ theorem run_program80Prefix (template : State) (pc : UInt256) (mem : ByteArray)
         (WindowMath.squareWordAfter modulus 4
           (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 12 accumulator))
         shifted counter 0 rest) := by
-    simpa [cm, shifted, hpc2] using h3
+    simpa [cm,shifted,hpc2] using h3
   have h01 := runInstructions_append_some _ _ _ _ _ h0 h1'
   have h012 := runInstructions_append_some _ _ _ _ _ h01 h2'
   have hall := runInstructions_append_some _ _ _ _ _ h012 h3'
-  simpa [program80Prefix, cm, shifted, List.append_assoc] using hall
-
+  simpa [program80Prefix,cm,shifted,List.append_assoc] using hall
 theorem run_program80 (template : State) (pc : UInt256) (mem : ByteArray)
     (base modulus exponent accumulator counter : UInt256) (off : Nat)
     (hoff : off + 16 ≤ 62)
-    (htable : ∀ i, i < 16 →
+    (htable : ∀ i,i < 16 →
       MachineState.readWord mem (32 * i) = WindowMath.tableWord base modulus i)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
     runInstructions (program80 off)
@@ -1242,10 +1186,8 @@ theorem run_program80 (template : State) (pc : UInt256) (mem : ByteArray)
       some (WindowTwentyOneGroup.state template (advancePC 351 pc) cm 18 modulus
         (WindowTwentyOneMath.advance base modulus exponent.toNat (1 + off) 16 accumulator)
         shifted counter 0 rest) := by
-    simpa [cm, shifted, hpc] using h4
+    simpa [cm,shifted,hpc] using h4
   have hall := runInstructions_append_some _ _ _ _ _ hp h4'
-  simpa [program80, program80Prefix, cm, shifted, List.append_assoc] using hall
-
+  simpa [program80,program80Prefix,cm,shifted,List.append_assoc] using hall
 end Block
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowSixteenBlock

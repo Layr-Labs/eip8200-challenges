@@ -17,11 +17,8 @@ The three basic blocks are
 * `blk1796` (idx 1875..1942, pc 2720..3189) — the fold
   `w ||| w >>> 1 ||| w >>> 2 ||| w >>> 4`, then `>>> 1` and `+ 1`, and the
   jump back. -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 end Challenge.Modexp.Submission.Proofs.Fast

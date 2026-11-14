@@ -2,23 +2,19 @@ import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.FastDefs
 open CycleSubmission.SharedStackArgs
-
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths, group 0 (instructions 977..1027). -/
-
 namespace CycleSubmission.Global.Fast
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 /-- Instructions 977..985, pc 1314..1326. -/
 def blk977 :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
@@ -30,9 +26,8 @@ def blk977 :
    opAt 396 .SUB,
    pushAt 397 1 223,
    opAt 398 .LT,
-   pushAt 399 2 3355,
+   pushAt 399 2 9560,
    opAt 400 .JUMPI]
-
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR
 DUP2 PUSH2 1024 LT OR PUSH2 <BAIL3> JUMPI`) is gone from the bytecode: `ValidInput`
@@ -44,7 +39,6 @@ def blk986 :
    opAt 402 .CALLDATALOAD,
    pushAt 403 0 0,
    opAt 404 .CALLDATALOAD]
-
 /-- Instructions 417..455, pc 598..648: the top-limb, parity, width and Montgomery-inverse
 checks, ORed into one `JUMPI` (the bail target is a `PUSH2` at 645 that absorbed the former
 padding `JUMPDEST`). -/
@@ -88,5 +82,4 @@ def blk1003 :
    opAt 440 .OR,
    pushAt 441 1 207,
    opAt 442 .JUMPI]
-
 end CycleSubmission.Global.Fast

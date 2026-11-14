@@ -1,12 +1,10 @@
 import Challenge.Modexp.Submission.Proofs.Fast.EarlyCsubTrace
-
 set_option warningAsError true
 namespace Challenge.Modexp.Submission.Proofs.Fast.Csub
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
-
 theorem addmod_csub_correct (memory : ByteArray) (pa pb n a b mm pdst : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpa : pa + 32 * n ≤ 2048) (hpb : pb + 32 * n ≤ 2048)
@@ -32,7 +30,6 @@ theorem addmod_csub_correct (memory : ByteArray) (pa pb n a b mm pdst : Nat)
     (amStep memory pa pb n n).flag.toNat pdst hn hn32 hts hmblk htn hcarry hmpos hbound
   rwa [show (amStep memory pa pb n n).flag.toNat * Limbs.radix ^ n +
       lowValue (amStep memory pa pb n n).memory 2112 n n = a + b from by omega] at h
-
 theorem addmod_csub_preserves_region (memory : ByteArray) (pa pb n pdst ptr cnt v : Nat)
     (hn : 2 ≤ n)
     (hdisjT : ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr)
@@ -43,5 +40,4 @@ theorem addmod_csub_preserves_region (memory : ByteArray) (pa pb n pdst ptr cnt 
       ptr cnt v :=
   csub_preserves_region _ n pdst ptr cnt v hn hdisjSubb hdisjDst
     (addmod_preserves_region memory pa pb n ptr cnt v hn hdisjT hrep)
-
 end Challenge.Modexp.Submission.Proofs.Fast.Csub

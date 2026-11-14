@@ -1,20 +1,16 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CsubCore
 import Challenge.Modexp.Submission.Proofs.Fast.EarlyCsubCheck
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 2000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.Csub
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open EarlyCsub
-
 def csResultMemory (memory : ByteArray) (n pdst : Nat) : ByteArray :=
   if Skip memory then
     MachineState.writeBytes memory (MachineState.readPadded memory 2112 (32*n)) pdst
   else subResultMemory memory n pdst
-
 def csReturnedState (s : State) (memory : ByteArray) (n j : Nat)
     (pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with
@@ -23,12 +19,10 @@ def csReturnedState (s : State) (memory : ByteArray) (n j : Nat)
     memory := if Skip memory then
       MachineState.writeBytes memory (MachineState.readPadded memory 2112 (32*n)) pdst.toNat
     else (subReturnedState s memory n j pdst ret rest).memory }
-
 theorem csReturnedState_memory (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) :
     (csReturnedState s memory n n pdst ret rest).memory =
       csResultMemory memory n pdst.toNat := rfl
-
 theorem csub_correct (memory : ByteArray) (n tlow mm tn pdst : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (ht : Model.FastRepresents memory 2112 n tlow)
@@ -43,10 +37,9 @@ theorem csub_correct (memory : ByteArray) (n tlow mm tn pdst : Nat)
     have hs := (skip_iff memory).1 hskip
     have htlt := high_limb_lt (by omega) ht hm hs.2
     have htn0 : tn = 0 := by omega
-    rw [htn0, Nat.zero_mul, Nat.zero_add, Nat.mod_eq_of_lt htlt]
+    rw [htn0,Nat.zero_mul,Nat.zero_add,Nat.mod_eq_of_lt htlt]
     exact fastRepresents_mcopy memory 2112 pdst n tlow (by omega) ht
   · exact csub_sub_correct memory n tlow mm tn pdst hn hn32 ht hm htnv htn1 hmpos hbound
-
 theorem csub_preserves_region (memory : ByteArray) (n pdst ptr cnt v : Nat)
     (hn : 2 ≤ n)
     (hdisjSubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -57,7 +50,6 @@ theorem csub_preserves_region (memory : ByteArray) (n pdst ptr cnt v : Nat)
   split
   · exact fastRepresents_mcopy_disjoint memory 2112 pdst (32*n) ptr cnt v hdisjDst hrep
   · exact csub_sub_preserves_region memory n pdst ptr cnt v hn hdisjSubb hdisjDst hrep
-
 theorem guarded_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
     (hn : 1 ≤ n) (hsubb : addr+32 ≤ 1792 ∨ 1792+32*n ≤ addr)
     (hdst : addr+32 ≤ pdst ∨ pdst+32*n ≤ addr) :
@@ -75,5 +67,4 @@ theorem guarded_readWord_outside (memory : ByteArray) (n pdst addr : Nat)
   · unfold subResultMemory
     rw [hcopy]
     exact csStep_readWord_disjoint memory n addr hn hsubb n le_rfl
-
 end Challenge.Modexp.Submission.Proofs.Fast.Csub

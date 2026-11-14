@@ -17,15 +17,12 @@ Inputs whose modulus is longer than one word are dispatched to the compact
 multi-limb fallback, whose correctness is `BigC.U.bigC_correct`, instantiated with
 the submitted artifact's location certificates.
 -/
-
 namespace CycleSubmission.Global.SubmissionCorrect
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 /-- Every valid input with a modulus longer than 32 bytes returns the MODEXP
 result through the compact fallback. -/
 theorem bigHandled (input : ByteArray) (hvalid : ValidInput input)
@@ -49,13 +46,12 @@ theorem bigHandled (input : ByteArray) (hvalid : ValidInput input)
       forkEq := rfl
       running := rfl
       noPrecompile := deployAddress_not_precompile }
-  obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
+  obtain ⟨final,⟨tail⟩,hdone,hres⟩ :=
     BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
       BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks (BigDispatch.bigEntryState input) env rfl
       (by simp [BigDispatch.bigEntryState])
-      (by simp [BigDispatch.bigEntryState, Main.headerState, initialState]; decide)
-      (by simp [BigDispatch.bigEntryState, Main.headerState, initialState])
+      (by simp [BigDispatch.bigEntryState,Main.headerState,initialState]; decide)
+      (by simp [BigDispatch.bigEntryState,Main.headerState,initialState])
       hvalid hpositive
-  exact ⟨final, ⟨pre.trans tail⟩, hdone, hres⟩
-
+  exact ⟨final,⟨pre.trans tail⟩,hdone,hres⟩
 end CycleSubmission.Global.SubmissionCorrect

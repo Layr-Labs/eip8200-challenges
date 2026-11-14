@@ -2,17 +2,13 @@ import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.WordLoopTailFinish
 noncomputable section
 set_option warningAsError true
-
 namespace CycleSubmission.Global.WordLoops
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open Word
-
-def bitFinishTailPath := bitFinishTailHeadPath ++ bitFinishTailFinishPath
-
+def bitFinishTailPath := bitFinishTailHeadPath++bitFinishTailFinishPath
 theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) (hvalid : ValidInput input)
     (houter : outer < exponentSize input) :
@@ -26,5 +22,4 @@ theorem run_bitFinishTail (input : ByteArray) (outer : Nat)
     (expLoopState input (outer + 1) acc base)
     (run_bitFinishTailHead input outer byte offset acc base) rfl
     (run_bitFinishTailFinish input outer acc base hvalid houter)
-
 end CycleSubmission.Global.WordLoops

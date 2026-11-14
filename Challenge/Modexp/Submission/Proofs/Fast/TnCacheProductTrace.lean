@@ -1,7 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosReadonlyComponents
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheProductTrace
@@ -9,17 +8,14 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel CiosCachedMacCore CiosCached CiosCachedMidDefs Monpro CiosEndAroundCarry CiosCachedMidMemory CiosReadonly
-
 def cacheStack (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) : List UInt256 :=
-  [bi,pbi,pa,pb,flag,tn,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret] ++ rest
-
-def cachedLoadLow : List Instr := [.op (.Dup dA10), .op .MLOAD]
+  [bi,pbi,pa,pb,flag,tn,allOnes,target2,inv,m0,tl,m96,m64,m32,aEnd,dst,ret]++rest
+def cachedLoadLow : List Instr := [.op (.Dup dA10),.op .MLOAD]
 def cachedMakeMu : List Instr :=
-  [.op (.Dup dA0), .op (.Dup dA10), .op .MUL,
+  [.op (.Dup dA0),.op (.Dup dA10),.op .MUL,
    .op (.Swap sA0)]
 def cachedLoadMask : List Instr := [.op (.Dup dA8)]
-
 theorem run_cachedLoadLow (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat) :
@@ -35,76 +31,68 @@ theorem run_cachedLoadLow (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 
       115792089237316195423570985008687907853269984665640564039457584007913129639936 =
       2080+32*n := Nat.mod_eq_of_lt (by omega)
   have hactQ := activeWords_fix s (2080+32*n) 32 (by decide) (by omega) hact
-  simp [cachedLoadLow, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, cacheStack, baseStack, Nat.add_assoc, hc17, hc18, State.activeWordsAfterUInt256,
+  simp [cachedLoadLow,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,cacheStack,baseStack,Nat.add_assoc,hc17,hc18,State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.succ_ofNat_mod,
-    Challenge.EvmProof.Word.word_toNat_ofNat, hmod, hactQ]
-
+    Challenge.EvmProof.Word.word_toNat_ofNat,hmod,hactQ]
 theorem run_cachedMakeMu (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions cachedMakeMu
       (framed s (UInt256.ofNat (pc0 + 2))
-        ([t0] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+        ([t0]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
     some (framed s (UInt256.ofNat (pc0 + 6))
-      ([t0, inv*t0] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+      ([t0,inv*t0]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
-  simp [cachedMakeMu, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, cacheStack, baseStack, Nat.add_assoc, capacity, Nat.add_assoc, List.exchange,
+  simp [cachedMakeMu,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,cacheStack,baseStack,Nat.add_assoc,capacity,Nat.add_assoc,List.exchange,
     Challenge.EvmProof.Word.succ_ofNat_mod]
-
 theorem run_cachedLoadMask (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions cachedLoadMask
       (framed s (UInt256.ofNat (pc0 + 6))
-        ([t0,mu] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+        ([t0,mu]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
     some (framed s (UInt256.ofNat (pc0 + 7))
-      ([maxWord,t0,mu] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+      ([maxWord,t0,mu]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc19 : rest.length + 19 < 1024 := by omega
-  simp [cachedLoadMask, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, cacheStack, baseStack, Nat.add_assoc, hc19, allOnes_value, Challenge.EvmProof.Word.succ_ofNat_mod]
-
+  simp [cachedLoadMask,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,cacheStack,baseStack,Nat.add_assoc,hc19,allOnes_value,Challenge.EvmProof.Word.succ_ofNat_mod]
 def makeModProduct : List Instr :=
-  [.op (.Dup dA2), .op (.Dup dA13), .op .MULMOD]
-
+  [.op (.Dup dA2),.op (.Dup dA13),.op .MULMOD]
 def finishCarry : List Instr :=
-  [.op (.Dup dA9), .op (.Swap sA1), .op .ADDMOD]
-
+  [.op (.Dup dA9),.op (.Swap sA1),.op .ADDMOD]
 theorem run_cachedMakeModProduct (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions makeModProduct
       (framed s (UInt256.ofNat (pc0 + 7))
-        ([maxWord,t0,mu] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+        ([maxWord,t0,mu]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
     some (framed s (UInt256.ofNat (pc0 + 10))
       ([UInt256.mulMod m0 mu maxWord,t0,mu] ++
         cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have capacity (j : Nat) (hj : j ≤ 22) : rest.length + j < 1024 := by omega
   simp [makeModProduct,
-    runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, cacheStack, baseStack, Nat.add_assoc, capacity, Nat.add_assoc,
-    allOnes_value, maxWord, Challenge.EvmProof.Word.succ_ofNat_mod]
-
+    runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,cacheStack,baseStack,Nat.add_assoc,capacity,Nat.add_assoc,
+    allOnes_value,maxWord,Challenge.EvmProof.Word.succ_ofNat_mod]
 theorem run_cachedFinishCarry (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret mm mu t0 : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998) :
     runInstructions finishCarry
       (framed s (UInt256.ofNat (pc0 + 10))
-        ([mm,t0,mu] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
+        ([mm,t0,mu]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) =
     some (framed s (UInt256.ofNat (pc0 + 13))
-      ([UInt256.addMod t0 mm maxWord,mu] ++ cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
+      ([UInt256.addMod t0 mm maxWord,mu]++cacheStack bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret rest)) := by
   have hc20 : rest.length + 20 < 1024 := by omega
   have hc21 : rest.length + 21 < 1024 := by omega
   simp [finishCarry,
-    runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    framed, cacheStack, baseStack, Nat.add_assoc, hc20, hc21, allOnes_value,
-    List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod]
-
+    runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    framed,cacheStack,baseStack,Nat.add_assoc,hc20,hc21,allOnes_value,
+    List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod]
 def cachedProduct : List Instr :=
-  [.op (.Dup dA8), .op (.Dup dA11), .op .MLOAD,
-   .op .MUL, .op (.Dup dA7), .op (.Dup dA0),
-   .op (.Dup dA2), .op (.Dup dA13), .op .MULMOD,
-   .op (.Dup dA13), .op .MLOAD, .op .ADDMOD]
-
+  [.op (.Dup dA8),.op (.Dup dA11),.op .MLOAD,
+   .op .MUL,.op (.Dup dA7),.op (.Dup dA0),
+   .op (.Dup dA2),.op (.Dup dA13),.op .MULMOD,
+   .op (.Dup dA13),.op .MLOAD,.op .ADDMOD]
 theorem run_cachedProduct (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat) :
@@ -122,20 +110,18 @@ theorem run_cachedProduct (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 
     apply Challenge.EvmProof.Word.word_ext
     change ((MachineState.readWord s.memory (2080+32*n)).val * inv.val).val =
       (inv.val * (MachineState.readWord s.memory (2080+32*n)).val).val
-    rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
+    rw [Fin.val_mul,Fin.val_mul,Nat.mul_comm]
   have hactQ := activeWords_fix s (2080+32*n) 32 (by decide) (by omega) hact
-  simp (config := { maxSteps := 400000 }) [cachedProduct, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, framed, cacheStack, baseStack,
-    Nat.add_assoc, capacity, Nat.add_assoc, hmul, allOnes_value,
-    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, hmod, hactQ, List.exchange]
-
+  simp (config := { maxSteps := 400000 }) [cachedProduct,runInstructions,
+    Challenge.EvmProof.Stepper.runInstr,framed,cacheStack,baseStack,
+    Nat.add_assoc,capacity,Nat.add_assoc,hmul,allOnes_value,
+    State.activeWordsAfterUInt256,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,hmod,hactQ,List.exchange]
 def cachedProduct4 : List Instr :=
-  [.op (.Dup dA12), .push 2 2208, .op .MLOAD,
-   .op .MUL, .op (.Dup dA7), .op (.Dup dA0),
-   .op (.Dup dA2), .op (.Dup dA13), .op .MULMOD,
-   .push 2 2208, .op .MLOAD, .op .ADDMOD]
-
+  [.op (.Dup dA12),.push 2 2208,.op .MLOAD,
+   .op .MUL,.op (.Dup dA7),.op (.Dup dA0),
+   .op (.Dup dA2),.op (.Dup dA13),.op .MULMOD,
+   .push 2 2208,.op .MLOAD,.op .ADDMOD]
 theorem run_cachedProduct4 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
     (hact : 88 ≤ s.activeWords.toNat) :
@@ -152,18 +138,17 @@ theorem run_cachedProduct4 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2
     apply Challenge.EvmProof.Word.word_ext
     change ((MachineState.readWord s.memory 2208).val * inv.val).val =
       (inv.val * (MachineState.readWord s.memory 2208).val).val
-    rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
+    rw [Fin.val_mul,Fin.val_mul,Nat.mul_comm]
   have hactQ := activeWords_fix s 2208 32 (by decide) (by omega) hact
   have h2208 : (2208 : UInt256).toNat = 2208 := by decide
   have h2208' : (UInt256.ofNat 2208).toNat = 2208 := by decide
   rw [hQ]
-  simp (config := { maxSteps := 400000 }) [cachedProduct4, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, framed, cacheStack, baseStack,
-    Nat.add_assoc, capacity, Nat.add_assoc, hmul, allOnes_value,
-    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
-    h2208, h2208', hactQ, List.exchange]
-
+  simp (config := { maxSteps := 400000 }) [cachedProduct4,runInstructions,
+    Challenge.EvmProof.Stepper.runInstr,framed,cacheStack,baseStack,
+    Nat.add_assoc,capacity,Nat.add_assoc,hmul,allOnes_value,
+    State.activeWordsAfterUInt256,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,
+    h2208,h2208',hactQ,List.exchange]
 theorem run_cachedProduct4_model (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (n : Nat) (rest : List UInt256) (hcap : rest.length ≤ 998) (hn : n = 4)
@@ -178,7 +163,7 @@ theorem run_cachedProduct4_model (pc0 : Nat) (s : State)
       ([rowC0 s.memory n,rowMu s.memory n] ++
         cacheStack bi pbi pa pb flag tn target2 tl m64 m0 aEnd m96 inv m32 dst ret rest)) := by
   subst hn
-  rw [hc.inverse, hm0]
+  rw [hc.inverse,hm0]
   have hr := run_cachedProduct4 pc0 s bi pbi pa pb flag tn target2 tl
     (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (32*4-32))
     aEnd m96 m64 m32 dst ret rest hcap hact
@@ -189,14 +174,12 @@ theorem run_cachedProduct4_model (pc0 : Nat) (s : State)
     (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (2080+32*4)) hminv hguard
   dsimp only at hr
   rw [N0Carry.addMod_comm] at hr
-  simpa only [hcarry, rowC0, rowMu] using hr
-
+  simpa only [hcarry,rowC0,rowMu] using hr
 def cachedProduct8 : List Instr :=
-  [.op (.Dup dA12), .push 2 2336, .op .MLOAD,
-   .op .MUL, .op (.Dup dA7), .op (.Dup dA0),
-   .op (.Dup dA2), .op (.Dup dA14), .op .MULMOD,
-   .push 2 2336, .op .MLOAD, .op .ADDMOD]
-
+  [.op (.Dup dA12),.push 2 2336,.op .MLOAD,
+   .op .MUL,.op (.Dup dA7),.op (.Dup dA0),
+   .op (.Dup dA2),.op (.Dup dA14),.op .MULMOD,
+   .push 2 2336,.op .MLOAD,.op .ADDMOD]
 theorem run_cachedProduct8 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
     (hact : 88 ≤ s.activeWords.toNat) :
@@ -212,19 +195,18 @@ theorem run_cachedProduct8 (pc0 : Nat) (s : State) (bi pbi pa pb flag tn target2
     apply Challenge.EvmProof.Word.word_ext
     change ((MachineState.readWord s.memory (2080+32*8)).val * inv.val).val =
       (inv.val * (MachineState.readWord s.memory (2080+32*8)).val).val
-    rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
+    rw [Fin.val_mul,Fin.val_mul,Nat.mul_comm]
   have hactQ := activeWords_fix s (2080+32*8) 32 (by decide) (by omega) hact
   have h2336 : (2336 : UInt256).toNat = 2336 := by decide
   have h2336' : (UInt256.ofNat 2336).toNat = 2336 := by decide
   have hQ : (2080+32*8 : Nat) = 2336 := by decide
   rw [hQ] at hmul hactQ ⊢
-  simp (config := { maxSteps := 400000 }) [cachedProduct8, runInstructions,
-    Challenge.EvmProof.Stepper.runInstr, framed, cacheStack, baseStack,
-    Nat.add_assoc, capacity, Nat.add_assoc, hmul, allOnes_value,
-    State.activeWordsAfterUInt256, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod,
-    h2336, h2336', hactQ, List.exchange]
-
+  simp (config := { maxSteps := 400000 }) [cachedProduct8,runInstructions,
+    Challenge.EvmProof.Stepper.runInstr,framed,cacheStack,baseStack,
+    Nat.add_assoc,capacity,Nat.add_assoc,hmul,allOnes_value,
+    State.activeWordsAfterUInt256,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,
+    h2336,h2336',hactQ,List.exchange]
 theorem run_cachedProduct8_model (pc0 : Nat) (s : State)
     (bi pbi pa pb flag tn target2 tl inv m0 aEnd m96 m64 m32 dst ret : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 998)
@@ -237,7 +219,7 @@ theorem run_cachedProduct8_model (pc0 : Nat) (s : State)
     some (framed s (UInt256.ofNat (pc0 + 16))
       ([rowC0 s.memory 8,rowMu s.memory 8] ++
         cacheStack bi pbi pa pb flag tn target2 tl m64 m0 aEnd m96 inv m32 dst ret rest)) := by
-  rw [hc.lowAddress, hc.inverse]
+  rw [hc.lowAddress,hc.inverse]
   have hr := run_cachedProduct8 pc0 s bi pbi pa pb flag tn target2
     (MachineState.readWord s.memory 224) (MachineState.readWord s.memory 2720) m0
     aEnd m96 m64 m32 dst ret rest hcap hact
@@ -248,10 +230,5 @@ theorem run_cachedProduct8_model (pc0 : Nat) (s : State)
     (MachineState.readWord s.memory 2720) (MachineState.readWord s.memory (2080+32*8)) hminv hguard
   dsimp only at hr
   rw [N0Carry.addMod_comm] at hr
-  simpa only [hcarry, rowC0, rowMu, Nat.reduceMul, Nat.reduceSub, Nat.reduceAdd] using hr
-
-
-
-
-
+  simpa only [hcarry,rowC0,rowMu,Nat.reduceMul,Nat.reduceSub,Nat.reduceAdd] using hr
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheProductTrace

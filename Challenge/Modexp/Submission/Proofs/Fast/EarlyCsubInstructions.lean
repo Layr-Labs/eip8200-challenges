@@ -1,41 +1,34 @@
 import Challenge.Modexp.Submission.Proofs.Fast.EarlyCsubCheck
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneSlice
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 2000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.EarlyCsub
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
-
 theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
     (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
-  simp only [hsz, if_false]
+  simp only [hsz,if_false]
   have hle : (off + sz - 1) / 32 + 1 ≤ curr := by omega
   exact Nat.max_eq_left hle
-
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
     (hoff : off + sz ≤ 2816) (hact : 88 ≤ s.activeWords.toNat) :
     UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat off sz) =
       s.activeWords := by
   rw [activeWordsAfter_fix _ off sz hsz hoff hact]
   exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
-
-
 def checkProgram : List Instr :=
-  [.push 0 0, .op .MLOAD, .push 2 2112, .op .MLOAD,
-   .op .LT, .push 2 2080, .op .MLOAD, .op .LT,
-   .push 2 4223, .op .JUMPI]
-def jumpProgram : List Instr := [.push 2 4025, .op .JUMP]
+  [.push 0 0,.op .MLOAD,.push 2 2112,.op .MLOAD,
+   .op .LT,.push 2 2080,.op .MLOAD,.op .LT,
+   .push 2 4223,.op .JUMPI]
+def jumpProgram : List Instr := [.push 2 4025,.op .JUMP]
 def copyProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 2112, .push 2 2688, .op .MLOAD,
-   .op (.Swap ⟨1, by decide⟩), .op .MCOPY, .op .JUMP]
-
+  [.op .JUMPDEST,.push 2 2112,.push 2 2688,.op .MLOAD,
+   .op (.Swap ⟨1,by decide⟩),.op .MCOPY,.op .JUMP]
 def checkBlock : Block Artifact.submissionArtifact .Osaka 3902 checkProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3071 10 3902 checkProgram
     (by decide) (by rfl) (by rfl) (by decide)
@@ -45,18 +38,15 @@ def jumpBlock : Block Artifact.submissionArtifact .Osaka 3918 jumpProgram :=
 def copyBlock : Block Artifact.submissionArtifact .Osaka 4223 copyProgram :=
   WindowTwentyOneSlice.block Artifact.allWellFormed 3289 7 4223 copyProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 def atState (s : State) (mem : ByteArray) (pc : Nat) (dst ret : UInt256)
     (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat pc, stack := [dst,ret] ++ rest, memory := mem }
-
+  { s with pc := UInt256.ofNat pc,stack := [dst,ret]++rest,memory := mem }
 def copiedState (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
     (rest : List UInt256) : State :=
   { s with
     pc := ret
     stack := rest
     memory := MachineState.writeBytes mem (MachineState.readPadded mem 2112 (32*n)) dst.toNat }
-
 theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
@@ -76,16 +66,15 @@ theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List
   have haT := activeWords_fix s 2112 32 (by decide) (by omega) hact
   have haN := activeWords_fix s 2080 32 (by decide) (by omega) hact
   by_cases hskip : Skip mem
-  · have hz : (jumpWord mem).toNat ≠ 0 := by rw [jumpWord_toNat, if_pos hskip]; decide
+  · have hz : (jumpWord mem).toNat ≠ 0 := by rw [jumpWord_toNat,if_pos hskip]; decide
     simp [checkProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
       atState,State.activeWordsAfterUInt256,h0,h8256,h8224,h5165,
       ha0,haT,haN,Nat.add_assoc,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,hc2,hc3,hc4,hc5,←jumpWord_lt,UInt256.isTrue,hskip,hz,
       hcode,jumpDestEarlyCopy,heq5165]
-  · have hz : (jumpWord mem).toNat = 0 := by rw [jumpWord_toNat, if_neg hskip]
+  · have hz : (jumpWord mem).toNat = 0 := by rw [jumpWord_toNat,if_neg hskip]
     simp [checkProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
       atState,State.activeWordsAfterUInt256,h0,h8256,h8224,h5165,
       ha0,haT,haN,Nat.add_assoc,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,hc2,hc3,hc4,hc5,←jumpWord_lt,UInt256.isTrue,hskip,hz]
-
 theorem run_jump (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode) :
@@ -98,7 +87,6 @@ theorem run_jump (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List 
   have h4925 : (4025 : UInt256).toNat = 4025 := by decide
   simp [jumpProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
     atState,hc2,hc3,Nat.add_assoc,hcode,h4925,jumpDestSub,heq4925]
-
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8)
@@ -123,7 +111,6 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256) (re
     atState,copiedState,hs32,h8256,h9344,hsz,hcode,hjump,hc2,hc3,hc4,hc5,
     State.activeWordsAfterUInt256,State.activeWordsAfterUInt256_2,hactS,hactD,hactT,hc1,Nat.add_assoc,
     Challenge.EvmProof.Word.word_toNat_ofNat,List.exchange]
-
 def environment (s : State)
     (hcode : s.executionEnv.code = Challenge.Modexp.submissionBytecode)
     (hfork : s.fork = .Osaka) (hrun : s.halt = .Running)
@@ -132,5 +119,4 @@ def environment (s : State)
     Environment Artifact.submissionArtifact .Osaka s :=
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
     hcode,hfork,hrun,hnp⟩
-
 end Challenge.Modexp.Submission.Proofs.Fast.EarlyCsub

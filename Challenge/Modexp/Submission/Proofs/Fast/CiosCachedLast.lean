@@ -1,9 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedL2
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
-
 open CycleSubmission.SharedStackArgs
-
 /-!
 # The last second-loop cell consumes `mu`
 
@@ -14,56 +12,44 @@ tail used to drop it with `SWAP1 POP`.  Here the `MULMOD` reads copies of `x` an
 and the same instruction count as `macFusedProgram`, stores the same word (`macSum`) at the
 same address and leaves the same carry (`macCarry`).
 -/
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLast
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open Challenge.Modexp.Submission.Proofs.Fast CiosCached CiosCachedMacCore
-
 def entryProgram (w : Fin 33) (x : UInt256) : List Instr :=
-  [.op (.Dup dA8), .push w x, .op .MLOAD, .op (.Dup dA0),
-   .op (.Dup dA4), .op .MUL, .op (.Swap sA3), .op .MULMOD]
-
+  [.op (.Dup dA8),.push w x,.op .MLOAD,.op (.Dup dA0),
+   .op (.Dup dA4),.op .MUL,.op (.Swap sA3),.op .MULMOD]
 def headProgram : List Instr :=
-  [.op (.Dup dA0), .op (.Dup dA3),
-   .op .GT, .op .SUB, .op (.Dup dA1),
-   .op (.Dup dA3), .op .ADD]
-
+  [.op (.Dup dA0),.op (.Dup dA3),
+   .op .GT,.op .SUB,.op (.Dup dA1),
+   .op (.Dup dA3),.op .ADD]
 def memoryProgram (tl ts : UInt256) : List Instr :=
-  [.push 2 tl, .op .MLOAD, .op (.Dup dA1), .op .ADD,
-   .op (.Dup dA0), .push 2 ts, .op .MSTORE,
-   .op (.Dup dA1), .op .GT]
-
+  [.push 2 tl,.op .MLOAD,.op (.Dup dA1),.op .ADD,
+   .op (.Dup dA0),.push 2 ts,.op .MSTORE,
+   .op (.Dup dA1),.op .GT]
 def tailProgram : List Instr :=
-  [.op (.Swap sA2), .op .GT, .op .SUB, .op .ADD, .op .SUB]
-
+  [.op (.Swap sA2),.op .GT,.op .SUB,.op .ADD,.op .SUB]
 def restProgram (tl ts : UInt256) : List Instr :=
-  (headProgram ++ memoryProgram tl ts) ++ tailProgram
-
+  (headProgram++memoryProgram tl ts)++tailProgram
 def l2LastProgram (w : Fin 33) (x tl ts : UInt256) : List Instr :=
-  entryProgram w x ++ restProgram tl ts
-
+  entryProgram w x++restProgram tl ts
 private theorem mul_comm' (a b : UInt256) : a * b = b * a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val * b.val).val = (b.val * a.val).val
-  rw [Fin.val_mul, Fin.val_mul, Nat.mul_comm]
-
+  rw [Fin.val_mul,Fin.val_mul,Nat.mul_comm]
 private theorem add_sub_comm' (a e p : UInt256) : (a + e) - p = (a - p) + e := by
   apply Challenge.EvmProof.Word.word_ext
-  rw [Challenge.EvmProof.Word.word_toNat_sub, Challenge.EvmProof.Word.word_toNat_add,
-    Challenge.EvmProof.Word.word_toNat_add, Challenge.EvmProof.Word.word_toNat_sub]
+  rw [Challenge.EvmProof.Word.word_toNat_sub,Challenge.EvmProof.Word.word_toNat_add,
+    Challenge.EvmProof.Word.word_toNat_add,Challenge.EvmProof.Word.word_toNat_sub]
   have ha : a.toNat < 2 ^ 256 := a.val.isLt
   have he : e.toNat < 2 ^ 256 := e.val.isLt
   have hp : p.toNat < 2 ^ 256 := p.val.isLt
   omega
-
 theorem run_entry (w : Fin 33)
     (template : State) (pc x carry mu bi pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
@@ -72,11 +58,11 @@ theorem run_entry (w : Fin 33)
       template.activeWords.toNat x.toNat 32) = template.activeWords) :
     runInstructions (entryProgram w x)
       (framed template pc
-        ([carry, mu, bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) =
+        ([carry,mu,bi,pbi,paEnd,pbEnd,flag,negative32,allOnes,destination,returnPC]++rest)) =
     some (framed template (pc + UInt256.ofNat (w.val + 8))
-      ([UInt256.mulMod mu (MachineState.readWord template.memory x.toNat) maxWord, carry,
-        mu * MachineState.readWord template.memory x.toNat, bi,
-        pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)) := by
+      ([UInt256.mulMod mu (MachineState.readWord template.memory x.toNat) maxWord,carry,
+        mu * MachineState.readWord template.memory x.toNat,bi,
+        pbi,paEnd,pbEnd,flag,negative32,allOnes,destination,returnPC]++rest)) := by
   have capacity (j : Nat) (hj : j ≤ 15) : rest.length + j < 1024 := by omega
   have hN : allOnes = maxWord := allOnes_value
   by_cases hw : w.val = 0
@@ -85,72 +71,67 @@ theorem run_entry (w : Fin 33)
     have hzero : ({ val := 0 } : UInt256).toNat = 0 := rfl
     change UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat 0 32) = template.activeWords at hactive
-    simp [runInstructions, entryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hw, capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hzero, hactive, hN,
-      succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
+    simp [runInstructions,entryProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+      hw,capacity,Nat.add_assoc,State.activeWordsAfterUInt256,hzero,hactive,hN,
+      succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,
       List.exchange]
-  · simp [runInstructions, entryProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hw, capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, hN,
-      succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc,
+  · simp [runInstructions,entryProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+      hw,capacity,Nat.add_assoc,State.activeWordsAfterUInt256,hactive,hN,
+      succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,
       List.exchange]
     exact congrArg (fun n : Nat => pc + UInt256.ofNat n) (by omega)
-
 theorem run_head (template : State) (pc mm c lo : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
-    runInstructions headProgram (framed template pc ([mm, c, lo] ++ rest)) =
+    runInstructions headProgram (framed template pc ([mm,c,lo]++rest)) =
     some (framed template (pc + UInt256.ofNat 7)
-      ([lo + c, UInt256.lt mm lo - mm, c, lo] ++ rest)) := by
+      ([lo + c,UInt256.lt mm lo - mm,c,lo]++rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  simp (disch := omega) [runInstructions, headProgram, framed,
-    Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, UInt256.gt, UInt256.lt,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp (disch := omega) [runInstructions,headProgram,framed,
+    Challenge.EvmProof.Stepper.runInstr,List.getElem?_cons_zero,
+    List.getElem?_cons_succ,hcap,Nat.add_assoc,UInt256.gt,UInt256.lt,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 private theorem run_load_word (template : State) (pc sum borrow c lo tl : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat tl.toNat 32) = template.activeWords) :
-    runInstructions [.push 2 tl, .op .MLOAD]
-      (framed template pc ([sum, borrow, c, lo] ++ rest)) =
+    runInstructions [.push 2 tl,.op .MLOAD]
+      (framed template pc ([sum,borrow,c,lo]++rest)) =
     some (framed template (pc + UInt256.ofNat 4)
-      ([MachineState.readWord template.memory tl.toNat, sum, borrow, c, lo] ++ rest)) := by
+      ([MachineState.readWord template.memory tl.toNat,sum,borrow,c,lo]++rest)) := by
   have hc4 : rest.length + 4 < 1024 := by omega
   have hc5 : rest.length + 5 < 1024 := by omega
-  simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc4, hc5, State.activeWordsAfterUInt256, hload, Nat.add_assoc,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+    hc4,hc5,State.activeWordsAfterUInt256,hload,Nat.add_assoc,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 private theorem run_form_sum (template : State) (pc t sum borrow c lo : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
-    runInstructions [.op (.Dup dA1), .op .ADD]
-      (framed template pc ([t, sum, borrow, c, lo] ++ rest)) =
+    runInstructions [.op (.Dup dA1),.op .ADD]
+      (framed template pc ([t,sum,borrow,c,lo]++rest)) =
     some (framed template (pc + UInt256.ofNat 2)
-      ([sum + t, sum, borrow, c, lo] ++ rest)) := by
+      ([sum + t,sum,borrow,c,lo]++rest)) := by
   have hc5 : rest.length + 5 < 1024 := by omega
   have hc6 : rest.length + 6 < 1024 := by omega
-  simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-    List.getElem?_cons_zero, List.getElem?_cons_succ, hc5, hc6, Nat.add_assoc,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+    List.getElem?_cons_zero,List.getElem?_cons_succ,hc5,hc6,Nat.add_assoc,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 private theorem run_store_word (template : State) (pc value sum borrow c lo ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat ts.toNat 32) = template.activeWords) :
-    runInstructions [.op (.Dup dA0), .push 2 ts, .op .MSTORE,
-        .op (.Dup dA1), .op .GT]
-      (framed template pc ([value, sum, borrow, c, lo] ++ rest)) =
+    runInstructions [.op (.Dup dA0),.push 2 ts,.op .MSTORE,
+        .op (.Dup dA1),.op .GT]
+      (framed template pc ([value,sum,borrow,c,lo]++rest)) =
     some (framed
       { template with
         memory := MachineState.writeBytes template.memory
           (Data.Bytes.natToBytesPadded value.toNat 32) ts.toNat }
       (pc + UInt256.ofNat 7)
-      ([UInt256.lt value sum, sum, borrow, c, lo] ++ rest)) := by
+      ([UInt256.lt value sum,sum,borrow,c,lo]++rest)) := by
   have capacity (j : Nat) (hj : j ≤ 7) : rest.length + j < 1024 := by omega
-  simp [runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-    List.getElem?_cons_zero, List.getElem?_cons_succ, capacity, Nat.add_assoc, hrest, Nat.add_assoc,
-    State.activeWordsAfterUInt256, hstore, UInt256.gt, UInt256.lt,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+    List.getElem?_cons_zero,List.getElem?_cons_succ,capacity,Nat.add_assoc,hrest,Nat.add_assoc,
+    State.activeWordsAfterUInt256,hstore,UInt256.gt,UInt256.lt,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_memory (template : State) (pc sum borrow c lo tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -158,7 +139,7 @@ theorem run_memory (template : State) (pc sum borrow c lo tl ts : UInt256)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat ts.toNat 32) = template.activeWords) :
     runInstructions (memoryProgram tl ts)
-      (framed template pc ([sum, borrow, c, lo] ++ rest)) =
+      (framed template pc ([sum,borrow,c,lo]++rest)) =
     some (framed
       { template with
         memory := MachineState.writeBytes template.memory
@@ -166,7 +147,7 @@ theorem run_memory (template : State) (pc sum borrow c lo tl ts : UInt256)
             (sum + MachineState.readWord template.memory tl.toNat).toNat 32) ts.toNat }
       (pc + UInt256.ofNat 13)
       ([UInt256.lt (sum + MachineState.readWord template.memory tl.toNat)
-          sum, sum, borrow, c, lo] ++ rest)) := by
+          sum,sum,borrow,c,lo]++rest)) := by
   have hl := run_load_word template pc sum borrow c lo tl rest hrest hload
   have hs := run_form_sum template (pc + UInt256.ofNat 4)
     (MachineState.readWord template.memory tl.toNat) sum borrow c lo rest hrest
@@ -175,20 +156,18 @@ theorem run_memory (template : State) (pc sum borrow c lo tl ts : UInt256)
     sum borrow c lo ts rest hrest hstore
   have both := runInstructions_append_some _ _ _ _ _ hl hs
   have all := runInstructions_append_some _ _ _ _ _ both hw
-  simpa only [memoryProgram, List.cons_append, List.nil_append, pc_add_add, Nat.reduceAdd] using all
-
+  simpa only [memoryProgram,List.cons_append,List.nil_append,pc_add_add,Nat.reduceAdd] using all
 theorem run_tail (template : State) (pc extra sum borrow c lo : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024) :
     runInstructions tailProgram
-      (framed template pc ([extra, sum, borrow, c, lo] ++ rest)) =
+      (framed template pc ([extra,sum,borrow,c,lo]++rest)) =
     some (framed template (pc + UInt256.ofNat 5)
-      ([((UInt256.gt c sum - borrow) + extra) - lo] ++ rest)) := by
+      ([((UInt256.gt c sum - borrow) + extra) - lo]++rest)) := by
   have hcap (n : Nat) (hn : n ≤ 8) : rest.length + n < 1024 := by omega
-  simp (disch := omega) [runInstructions, tailProgram, framed,
-    Challenge.EvmProof.Stepper.runInstr, List.getElem?_cons_zero,
-    List.getElem?_cons_succ, hcap, Nat.add_assoc, List.exchange,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp (disch := omega) [runInstructions,tailProgram,framed,
+    Challenge.EvmProof.Stepper.runInstr,List.getElem?_cons_zero,
+    List.getElem?_cons_succ,hcap,Nat.add_assoc,List.exchange,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_rest (template : State) (pc x y c tl ts : UInt256)
     (rest : List UInt256) (hrest : rest.length + 8 < 1024)
     (hload : UInt256.ofNat (MachineState.activeWordsAfter
@@ -196,7 +175,7 @@ theorem run_rest (template : State) (pc x y c tl ts : UInt256)
     (hstore : UInt256.ofNat (MachineState.activeWordsAfter
       template.activeWords.toNat ts.toNat 32) = template.activeWords) :
     runInstructions (restProgram tl ts)
-      (framed template pc ([UInt256.mulMod y x maxWord, c, y * x] ++ rest)) =
+      (framed template pc ([UInt256.mulMod y x maxWord,c,y * x]++rest)) =
     some (framed
       { template with
         memory := MachineState.writeBytes template.memory
@@ -204,7 +183,7 @@ theorem run_rest (template : State) (pc x y c tl ts : UInt256)
             (macSum x y (MachineState.readWord template.memory tl.toNat) c).toNat 32)
           ts.toNat }
       (pc + UInt256.ofNat 25)
-      ([macCarry x y (MachineState.readWord template.memory tl.toNat) c] ++ rest)) := by
+      ([macCarry x y (MachineState.readWord template.memory tl.toNat) c]++rest)) := by
   let t := MachineState.readWord template.memory tl.toNat
   let mm := UInt256.mulMod y x maxWord
   let B := UInt256.lt mm (x * y) - mm
@@ -225,29 +204,27 @@ theorem run_rest (template : State) (pc x y c tl ts : UInt256)
     rw [add_sub_comm']
     change partialCarry x y c + UInt256.lt ((x * y + c) + t) (x * y + c) = macCarry x y t c
     rw [Challenge.EvmProof.Word.word_add_comm (partialCarry x y c)]
-    simpa only [UInt256.gt, UInt256.lt,
+    simpa only [UInt256.gt,UInt256.lt,
       Challenge.EvmProof.Word.word_add_comm (x * y + c) t] using carry_eq x y t c
   have hs : (x * y + c) + t = macSum x y t c := by
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact sum_eq x y t c
   have hpc : ((pc + UInt256.ofNat 7) + UInt256.ofNat 13) + UInt256.ofNat 5 =
       pc + UInt256.ofNat 25 := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+    simp [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
   change runInstructions (restProgram tl ts) _ =
     some (framed stored _ ([((UInt256.gt c (x * y + c) - B) +
-      UInt256.lt ((x * y + c) + t) (x * y + c)) - x * y] ++ rest)) at all
-  rw [hc, hpc] at all
-  simpa only [stored, t, hs] using all
-
+      UInt256.lt ((x * y + c) + t) (x * y + c)) - x * y]++rest)) at all
+  rw [hc,hpc] at all
+  simpa only [stored,t,hs] using all
 def lastState (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (pbi paEnd pbEnd flag destination returnPC : UInt256)
     (rest : List UInt256) : State :=
   { template with
     pc := pc
-    stack := [(l2Step mem mu c0 n k).carry, bi, pbi, paEnd, pbEnd, flag,
-      negative32, allOnes, destination, returnPC] ++ rest
+    stack := [(l2Step mem mu c0 n k).carry,bi,pbi,paEnd,pbEnd,flag,
+      negative32,allOnes,destination,returnPC]++rest
     memory := (l2Step mem mu c0 n k).memory }
-
 theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteArray)
     (bi mu c0 : UInt256) (n k : Nat) (x tl ts : UInt256)
     (hx : x.toNat = 32 * (n - 2 - k)) (htl : tl.toNat = 2112 + 32 * (n - 2 - k))
@@ -271,24 +248,23 @@ theorem run_stepLast (w : Fin 33) (template : State) (pc : UInt256) (mem : ByteA
     activeWords_fix template _ 32 (by decide) (by omega) hactive
   let st : State := { template with memory := (l2Step mem mu c0 n k).memory }
   have hM : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat x.toNat 32) =
-      st.activeWords := by simpa only [st, hx] using hactM
+      st.activeWords := by simpa only [st,hx] using hactM
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat tl.toNat 32) =
-      st.activeWords := by simpa only [st, htl] using hactT
+      st.activeWords := by simpa only [st,htl] using hactT
   have hW : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat ts.toNat 32) =
-      st.activeWords := by simpa only [st, hts] using hactW
+      st.activeWords := by simpa only [st,hts] using hactW
   have hl := run_entry w st pc x (l2Step mem mu c0 n k).carry mu bi
     pbi paEnd pbEnd flag destination returnPC rest hrest hpush hM
   have hf := run_rest st (pc + UInt256.ofNat (w.val + 8))
     (MachineState.readWord st.memory x.toNat) mu (l2Step mem mu c0 n k).carry tl ts
-    ([bi, pbi, paEnd, pbEnd, flag, negative32, allOnes, destination, returnPC] ++ rest)
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hW
+    ([bi,pbi,paEnd,pbEnd,flag,negative32,allOnes,destination,returnPC]++rest)
+    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) hT hW
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : (pc + UInt256.ofNat (w.val + 8)) + UInt256.ofNat 25 =
       pc + UInt256.ofNat (w.val + 33) := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc]
-  simpa only [l2LastProgram, st, CiosCachedL2.state, lastState, framed, l2Step, hx, htl, hts, hpc,
-    List.cons_append, List.nil_append] using hall
-
+    simp [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc]
+  simpa only [l2LastProgram,st,CiosCachedL2.state,lastState,framed,l2Step,hx,htl,hts,hpc,
+    List.cons_append,List.nil_append] using hall
 theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1005) (hact : 88 ≤ s.activeWords.toNat)
@@ -302,14 +278,12 @@ theorem run_l2Last (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (by rw [show n - 2 - (n - 2) = 0 by omega]; decide)
     (by rw [show n - 1 - (n - 2) = 1 by omega]; decide)
     (UInt256.ofNat (ptrAt (pb+32*n-32) i)) hd
-    (UInt256.ofNat (pb-32)) ent (l2Target n) pdst (ret :: rest)
+    (UInt256.ofNat (pb-32)) ent (l2Target n) pdst (ret::rest)
     (by simp only [List.length_cons]; omega) hact hn32 (by omega) (by decide)
   have hnn : n - 2 + 1 = n - 1 := by omega
   have hpc : UInt256.ofNat 3823 + UInt256.ofNat ((0 : Fin 33).val + 33) = UInt256.ofNat 3856 := by
     decide
-  rw [hnn, hpc] at h
-  simpa only [List.cons_append, List.nil_append, CiosCachedL2.state, lastState, l2At,
+  rw [hnn,hpc] at h
+  simpa only [List.cons_append,List.nil_append,CiosCachedL2.state,lastState,l2At,
     tailState] using h
-
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCachedLast
-

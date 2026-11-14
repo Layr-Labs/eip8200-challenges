@@ -25,71 +25,57 @@ The `ADDMOD` subroutine itself is developed in `Fast.Csub`; here it enters
 only through an abstract single-step contract, so this module does not depend
 on that development.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.Double
-
 open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-
 -- Lean 4.31 ships `List.getElem?_cons_zero` without the `simp` attribute, so the
 -- program-counter tables of `Fast.Defs` (which end in `[…][i - lo]!`) do not
 -- reduce inside the block-reduction `simp` calls without it.
 attribute [local simp] List.getElem?_cons_zero
-
 /-! ## States at the block boundaries
 
 Every state is stated over an arbitrary carrier `s` and overrides only `pc`,
 `stack` and `memory`; `activeWords` is carried by `s` and never changes here
 because `DOUBLE256` itself contains no memory opcode. -/
-
 def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [UInt256.ofNat k, UInt256.ofNat px, ret] ++ rest
-
+  [UInt256.ofNat k,UInt256.ofNat px,ret]++rest
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 794
-           stack := [UInt256.ofNat px, ret] ++ rest
+           stack := [UInt256.ofNat px,ret]++rest
            memory := mem }
-
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 797
            stack := loopStack px k ret rest
            memory := mem }
-
 def callState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 817
-           stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 804] ++ loopStack px k ret rest
+           stack := [UInt256.ofNat px,UInt256.ofNat px,UInt256.ofNat px,
+                     UInt256.ofNat 804]++loopStack px k ret rest
            memory := mem }
-
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 804
            stack := loopStack px k ret rest
            memory := mem }
-
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 1083
            stack := loopStack px 0 ret rest
            memory := mem }
-
 def doneState (s : State) (mem : ByteArray) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := ret
            stack := rest
            memory := mem }
-
 /-! ## Block reductions -/
-
 /-! ## Gas traces for the individual blocks -/
-
 /-! ## The doubling loop
 
 `ADDMOD` enters here through the indexed contract
@@ -101,28 +87,22 @@ def doneState (s : State) (mem : ByteArray) (ret : UInt256)
 
 where `mems i` is the memory after `i` calls.  `Fast.Csub` supplies it; the
 instantiation is `gasSteps_double256_addmod` below. -/
-
 def iterMem (f : ByteArray → ByteArray) (mem : ByteArray) : Nat → ByteArray
   | 0 => mem
   | i + 1 => f (iterMem f mem i)
-
 @[simp] theorem iterMem_zero (f : ByteArray → ByteArray) (mem : ByteArray) :
     iterMem f mem 0 = mem := rfl
-
 theorem iterMem_succ (f : ByteArray → ByteArray) (mem : ByteArray) (i : Nat) :
     iterMem f mem (i + 1) = f (iterMem f mem i) := rfl
-
 def loopFamily (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
     (mems : Nat → ByteArray) (i : Nat) : State :=
   loopState s (mems i) px (256 - i) ret rest
-
 /-! ## The functional postcondition
 
 `ADDMOD(px, px, px)` doubles the value of the block at `px` modulo `m`; 256
 such steps multiply it by `radix`.  Both facts are stated over an abstract
 step contract so that they compose with `Fast.Csub.addmod_csub_correct`
 without this module depending on it. -/
-
 theorem iterMem_represents (f : ByteArray → ByteArray) (mem : ByteArray)
     (px n m x : Nat) (hm : 0 < m)
     (hstep : ∀ (mem' : ByteArray) (y : Nat),
@@ -133,9 +113,8 @@ theorem iterMem_represents (f : ByteArray → ByteArray) (mem : ByteArray)
   induction i with
   | zero => simpa using hrep
   | succ i ih =>
-      rw [iterMem_succ, Model.doubleChain_succ]
+      rw [iterMem_succ,Model.doubleChain_succ]
       exact hstep _ _ ih (Model.doubleChain_lt hm hx i)
-
 theorem double256_represents (f : ByteArray → ByteArray) (mem : ByteArray)
     (px n m x : Nat) (hm : 0 < m)
     (hstep : ∀ (mem' : ByteArray) (y : Nat),
@@ -145,10 +124,8 @@ theorem double256_represents (f : ByteArray → ByteArray) (mem : ByteArray)
     Model.FastRepresents (iterMem f mem 256) px n (x * Limbs.radix % m) := by
   have h := iterMem_represents f mem px n m x hm hstep hrep hx 256
   rwa [Model.doubleChain_256 hx] at h
-
 theorem double256_lt (m x : Nat) (hm : 0 < m) : x * Limbs.radix % m < m :=
   Nat.mod_lt _ hm
-
 theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
     (ptr cnt v : Nat)
     (hpres : ∀ (mem' : ByteArray),
@@ -158,26 +135,21 @@ theorem iterMem_preserves (f : ByteArray → ByteArray) (mem : ByteArray)
   induction i with
   | zero => simpa using hrep
   | succ i ih => exact hpres _ ih
-
 /-! ## Wiring in the concrete `ADDMOD` subroutine
 
 `Fast.Csub` proves `ADDMOD` from its entry at pc 2347 down to the `CSUB` entry
 at pc 2432, and `CSUB` from there to the return jump.  Composing the two gives
 the indexed contract the loop above consumes, with memory transformer
 `dblStep px n`. -/
-
 def dblStep (px n : Nat) (mem : ByteArray) : ByteArray :=
   Csub.csResultMemory (Csub.amResultMemory mem px px n) n px
-
 structure Vars (mem : ByteArray) (n : Nat) : Prop where
   s32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)
   ml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32)
   tl : MachineState.readWord mem 2784 = UInt256.ofNat (2080 + 32 * n)
-
 theorem loopStack_length (px k : Nat) (ret : UInt256) (rest : List UInt256) :
     (loopStack px k ret rest).length = rest.length + 3 := by
   simp [loopStack]
-
 theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
     MachineState.readWord (Csub.amResultMemory mem pa pb n) addr =
@@ -185,45 +157,39 @@ theorem readWord_amResultMemory_high (mem : ByteArray) (pa pb n addr : Nat)
   rw [Csub.amResultMemory_def,
     Csub.readWord_write_disjoint _ _ _ _ (Or.inr (by omega)),
     Csub.amStep_readWord_disjoint mem pa pb n addr hn (Or.inr (by omega)) n le_rfl]
-
 theorem readWord_csResultMemory_high (mem : ByteArray) (n pdst addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpdst : pdst + 32 * n ≤ 2656) (haddr : 2656 ≤ addr) :
     MachineState.readWord (Csub.csResultMemory mem n pdst) addr =
       MachineState.readWord mem addr :=
   Csub.guarded_readWord_outside mem n pdst addr hn (Or.inr (by omega))
     (Or.inr (by omega))
-
 theorem vars_dblStep (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpxFit : px + 32 * n ≤ 2048) (hv : Vars mem n) : Vars (dblStep px n mem) n := by
-  refine ⟨?_, ?_, ?_⟩
-  · rw [dblStep, readWord_csResultMemory_high _ n px 2688 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 2688 (by omega) hn32 (by omega)]
+  refine ⟨?_,?_,?_⟩
+  · rw [dblStep,readWord_csResultMemory_high _ n px 2688 (by omega) hn32 (by omega)
+      (by omega),readWord_amResultMemory_high _ px px n 2688 (by omega) hn32 (by omega)]
     exact hv.s32
-  · rw [dblStep, readWord_csResultMemory_high _ n px 2752 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 2752 (by omega) hn32 (by omega)]
+  · rw [dblStep,readWord_csResultMemory_high _ n px 2752 (by omega) hn32 (by omega)
+      (by omega),readWord_amResultMemory_high _ px px n 2752 (by omega) hn32 (by omega)]
     exact hv.ml
-  · rw [dblStep, readWord_csResultMemory_high _ n px 2784 (by omega) hn32 (by omega)
-      (by omega), readWord_amResultMemory_high _ px px n 2784 (by omega) hn32 (by omega)]
+  · rw [dblStep,readWord_csResultMemory_high _ n px 2784 (by omega) hn32 (by omega)
+      (by omega),readWord_amResultMemory_high _ px px n 2784 (by omega) hn32 (by omega)]
     exact hv.tl
-
 theorem vars_iterMem (mem : ByteArray) (px n : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hpxFit : px + 32 * n ≤ 2048) (hv : Vars mem n) (i : Nat) :
     Vars (iterMem (dblStep px n) mem i) n := by
   induction i with
   | zero => exact hv
   | succ i ih => exact vars_dblStep _ px n hn hn32 hpxFit ih
-
 theorem csReturned_eq (s : State) (mem : ByteArray) (px n k : Nat) (ret : UInt256)
     (rest : List UInt256) (hpx : px < 2 ^ 256) :
     Csub.csReturnedState s (Csub.amResultMemory mem px px n) n n (UInt256.ofNat px)
         (UInt256.ofNat 804) (loopStack px k ret rest) =
       retState s (dblStep px n mem) px k ret rest := by
   have hpxN : (UInt256.ofNat px).toNat = px := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hpx]
-  simp only [Csub.csReturnedState, Csub.subReturnedState, Csub.subResultMemory, retState, dblStep, Csub.csResultMemory, hpxN]
-
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt hpx]
+  simp only [Csub.csReturnedState,Csub.subReturnedState,Csub.subResultMemory,retState,dblStep,Csub.csResultMemory,hpxN]
 /-! ## Functional correctness against the concrete `ADDMOD` -/
-
 theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (_hpxLow : 32 * n ≤ px)
     (hm : Model.FastRepresents mem 0 n mm) (hmpos : 0 < mm)
@@ -231,7 +197,6 @@ theorem dblStep_represents (mem : ByteArray) (px n mm x : Nat)
     Model.FastRepresents (dblStep px n mem) px n ((x + x) % mm) :=
   Csub.addmod_csub_correct mem px px n x x mm px hn hn32 (by omega) (by omega)
     hx hx hm hmpos (by omega)
-
 theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n)
     (hdisjT : ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr)
     (hdisjSubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -240,7 +205,6 @@ theorem dblStep_preserves (mem : ByteArray) (px n ptr cnt v : Nat) (hn : 2 ≤ n
     Model.FastRepresents (dblStep px n mem) ptr cnt v :=
   Csub.addmod_csub_preserves_region mem px px n px ptr cnt v hn hdisjT hdisjSubb
     hdisjDst hrep
-
 theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
@@ -249,15 +213,14 @@ theorem iterMem_dblStep_invariant (mem : ByteArray) (px n mm x : Nat)
       Model.FastRepresents (iterMem (dblStep px n) mem i) px n
         (Model.doubleChain mm x i) := by
   induction i with
-  | zero => exact ⟨hm, hx⟩
+  | zero => exact ⟨hm,hx⟩
   | succ i ih =>
-      refine ⟨?_, ?_⟩
+      refine ⟨?_,?_⟩
       · exact dblStep_preserves _ px n 0 n mm hn (by omega) (by omega)
           (Or.inr (by omega)) ih.1
-      · rw [iterMem_succ, Model.doubleChain_succ]
+      · rw [iterMem_succ,Model.doubleChain_succ]
         exact dblStep_represents _ px n mm _ hn hn32 hpxFit hpxLow ih.1 hmpos ih.2
           (Model.doubleChain_lt hmpos hxlt i)
-
 theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
@@ -267,14 +230,12 @@ theorem double256_addmod_represents (mem : ByteArray) (px n mm x : Nat)
   have h := (iterMem_dblStep_invariant mem px n mm x hn hn32 hpxFit hpxLow hmpos hm hx
     hxlt 256).2
   rwa [Model.doubleChain_256 hxlt] at h
-
 theorem double256_addmod_modulus (mem : ByteArray) (px n mm x : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hpxFit : px + 32 * n ≤ 2048) (hpxLow : 32 * n ≤ px)
     (hmpos : 0 < mm) (hm : Model.FastRepresents mem 0 n mm)
     (hx : Model.FastRepresents mem px n x) (hxlt : x < mm) :
     Model.FastRepresents (iterMem (dblStep px n) mem 256) 0 n mm :=
   (iterMem_dblStep_invariant mem px n mm x hn hn32 hpxFit hpxLow hmpos hm hx hxlt 256).1
-
 theorem double256_addmod_preserves (mem : ByteArray) (px n ptr cnt v : Nat)
     (hn : 2 ≤ n)
     (hdisjT : ptr + 32 * cnt ≤ 2080 ∨ 2112 + 32 * n ≤ ptr)
@@ -285,5 +246,4 @@ theorem double256_addmod_preserves (mem : ByteArray) (px n ptr cnt v : Nat)
   induction i with
   | zero => exact hrep
   | succ i ih => exact dblStep_preserves _ px n ptr cnt v hn hdisjT hdisjSubb hdisjDst ih
-
 end Challenge.Modexp.Submission.Proofs.Fast.Double

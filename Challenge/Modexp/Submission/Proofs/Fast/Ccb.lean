@@ -11,59 +11,45 @@ loop. The legacy single-doubling entry is absent from the selected bytecode.
 This module proves the shared loop and return contracts used by the current
 seed path against the actual instruction locations.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.Ccb
-
 open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-
 -- Lean 4.31 ships `List.getElem?_cons_zero` without the `simp` attribute, so the
 -- program-counter tables of `Fast.Defs` (which end in `[…][i - lo]!`) do not
 -- reduce inside the block-reduction `simp` calls without it.
 attribute [local simp] List.getElem?_cons_zero
-
 /-! ## States at the block boundaries -/
-
 def loopStack (px k : Nat) (ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [UInt256.ofNat k, UInt256.ofNat px, ret] ++ rest
-
+  [UInt256.ofNat k,UInt256.ofNat px,ret]++rest
 def loopState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 848
            stack := loopStack px k ret rest
            memory := mem }
-
 def mpCallState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3181
-           stack := [UInt256.ofNat px, UInt256.ofNat px, UInt256.ofNat px,
-                     UInt256.ofNat 854] ++ loopStack px k ret rest
+           stack := [UInt256.ofNat px,UInt256.ofNat px,UInt256.ofNat px,
+                     UInt256.ofNat 854]++loopStack px k ret rest
            memory := mem }
-
 def retState (s : State) (mem : ByteArray) (px k : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 854
            stack := loopStack px k ret rest
            memory := mem }
-
 def exitState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 868
            stack := loopStack px 0 ret rest
            memory := mem }
-
 /-! ## Block reductions -/
-
 /-! ## Gas traces for the individual blocks -/
-
 /-! ## The squaring loop -/
-
 def loopFamily (s : State) (px : Nat) (ret : UInt256) (rest : List UInt256)
     (mems : Nat → ByteArray) (i : Nat) : State :=
   loopState s (mems i) px (8 - i) ret rest
-
 end Challenge.Modexp.Submission.Proofs.Fast.Ccb

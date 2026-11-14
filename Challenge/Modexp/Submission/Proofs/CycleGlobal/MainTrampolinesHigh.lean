@@ -4,25 +4,20 @@ noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 2000000
-
 namespace CycleSubmission.Global.Main
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 set_option linter.unusedSimpArgs false in
 theorem run_tramp7Dest (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp7DestPath
       (trampolineState input 519) = some (headerEntryState input) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
     (n := 519) (by norm_num : 519 + 1 < 2 ^ 256)
-  simp [tramp7DestPath, opAt, Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    trampolineState, headerEntryState, initialState, hsucc,
+  simp [tramp7DestPath,opAt,Challenge.EvmProof.Stepper.runLocatedBlock,
+    Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
+    trampolineState,headerEntryState,initialState,hsucc,
     Challenge.EvmProof.Word.word_toNat_ofNat]
-
-
 end CycleSubmission.Global.Main

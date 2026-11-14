@@ -9,7 +9,6 @@ namespace CycleSubmission.Execution
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-
 def productColumn16Model (s : State) (carry word0 word1 word2 word3 word4 word5 word6 word7 word8 word9 word10 word11 word12 word13 word14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1920
   let v1 : UInt256 := v0 * word1
@@ -57,6 +56,5 @@ def productColumn16Model (s : State) (carry word0 word1 word2 word3 word4 word5 
   let v43 : UInt256 := v42 + v37
   let v44 : UInt256 := MachineState.readWord v33 160
   let v45 : UInt256 := MachineState.readWord v33 1984
-  {s with pc := UInt256.ofNat 9757, memory := v33, stack := v41 :: v44 :: word8 :: v43 :: v45 :: word1 :: word2 :: word3 :: word4 :: word5 :: word6 :: word7 :: word8 :: word9 :: word10 :: word11 :: word12 :: word13 :: word14 :: rest}
-
+  {s with pc := UInt256.ofNat 7854,memory := v33,stack := v41::v44::word8::v43::v45::word1::word2::word3::word4::word5::word6::word7::word8::word9::word10::word11::word12::word13::word14::rest}
 end CycleSubmission.Execution

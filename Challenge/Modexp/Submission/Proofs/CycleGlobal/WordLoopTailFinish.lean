@@ -5,29 +5,23 @@ noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
-
 namespace CycleSubmission.Global.WordLoops
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Word
-
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
-
-@[simp] private theorem exitPCs (i : Nat) (hi : 2994 ≤ i) (hii : i ≤ 3015) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 7620 ≤ i) (hii : i ≤ 7641) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([3824,3825,3826,3827,3828,3830,3831,3833,3834,3835,3836,3837,3838,3840,3841,3843,3844,3845,3846,3847,3848,3849] : List Nat)[i - 2994]! := by
+      ([9804,9805,9806,9807,9808,9810,9811,9813,9814,9815,9816,9817,9818,9820,9821,9823,9824,9825,9826,9827,9828,9829] : List Nat)[i - 7620]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-
 @[simp] private theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 187 = true :=
   CycleSubmission.Global.Binding.jumpDest 118 (by rfl)
-
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
@@ -35,7 +29,7 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     Challenge.EvmProof.Stepper.runLocatedBlock bitFinishTailFinishPath
       (bitFinishTailMidState input outer acc base) =
         some (expLoopState input (outer + 1) acc base) := by
-  rcases hvalid with ⟨_, hb, he, hm⟩
+  rcases hvalid with ⟨_,hb,he,hm⟩
   have hsucc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := outer) (b := 1) (by omega : outer + 1 < 2 ^ 256)
   have hincLeft : UInt256.ofNat 1 + UInt256.ofNat outer =
@@ -46,12 +40,11 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
   have h589 : (187 : UInt256).toNat = 187 := by decide
   have h589Word : (187 : UInt256) = UInt256.ofNat 187 := by decide
   simp (config := { maxSteps := 125000 })
-    [bitFinishTailFinishPath, Word.opAt, Word.pushAt, Word.wfOp,
+    [bitFinishTailFinishPath,Word.opAt,Word.pushAt,Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      bitFinishTailMidState, bitLoopState, bitTail, expLoopState, nonzeroState,
-      callerRest, Dispatch.wordEntryState, Main.headerState, initialState,
-      exitPCs, Challenge.EvmProof.Word.word_toNat_ofNat,
-      hsucc, hincLeft, honeWord, h589, h589Word, jump589]
-
+      Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
+      bitFinishTailMidState,bitLoopState,bitTail,expLoopState,nonzeroState,
+      callerRest,Dispatch.wordEntryState,Main.headerState,initialState,
+      exitPCs,Challenge.EvmProof.Word.word_toNat_ofNat,
+      hsucc,hincLeft,honeWord,h589,h589Word,jump589]
 end CycleSubmission.Global.WordLoops

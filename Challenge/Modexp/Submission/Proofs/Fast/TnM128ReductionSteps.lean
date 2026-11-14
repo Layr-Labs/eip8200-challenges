@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128R4Reduction
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128R8Reduction
-
 set_option warningAsError true
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnM128ReductionSteps
 open EvmSemantics EvmSemantics.EVM
@@ -8,10 +7,8 @@ open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
 open CiosReadonly CiosCachedMidMemory
-
 def middlePC (n : Nat) : Nat := if n = 4 then 5494 else 3607
 def l2PC (n : Nat) : Nat := if n = 4 then 3758 else 3655
-
 noncomputable def reduction_steps (s : State)
     (env : Environment TnM128CandidateArtifact.submissionArtifact .Osaka s)
     (q : MacState) (bi tn : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8)
@@ -27,12 +24,12 @@ noncomputable def reduction_steps (s : State)
     GasSteps
       (framed {s with memory := q.memory} (UInt256.ofNat (middlePC n))
         ((if n = 4 then [q.carry,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret]
-          else [q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret]) ++ rest))
+          else [q.carry,bi,pbi,hd,pb,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,aEnd,dst,ret])++rest))
       (framed {s with memory := (TnCacheSquareModel.fromL1 q tn n).memory}
         (if UInt256.isTrue (UInt256.ofNat 32+pbi) then hd else UInt256.ofNat 3874)
         (TnCacheFrameOps.frame (UInt256.ofNat 32+pbi) hd pb ent
           m32 m128 m64
-          (m0 :: tl :: m96 :: inv :: (TnCacheSquareModel.fromL1 q tn n).tn :: aEnd :: dst :: ret :: rest))) := by
+          (m0::tl::m96::inv::(TnCacheSquareModel.fromL1 q tn n).tn::aEnd::dst::ret::rest))) := by
   by_cases h4 : n = 4
   · subst n
     exact TnM128R4Reduction.reduction_steps s env q tn pbi hd pb ent m128 tl inv m0
@@ -41,5 +38,4 @@ noncomputable def reduction_steps (s : State)
     subst n
     exact TnM128R8Reduction.reduction_steps s env q bi tn pbi hd pb ent m128 tl inv m0
       aEnd m96 m64 m32 dst ret rest hcap hact hc he hi hcache (hpb rfl) hjd
-
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128ReductionSteps

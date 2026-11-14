@@ -4,15 +4,12 @@ noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 2000000
-
 namespace CycleSubmission.Global.Main
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 set_option linter.unusedSimpArgs false in
 theorem run_headerLoad (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock headerLoadPath
@@ -35,13 +32,11 @@ theorem run_headerLoad (input : ByteArray) :
   have h32 : (32 : UInt256).toNat = 32 := by decide
   have h64 : (64 : UInt256).toNat = 64 := by decide
   simp (config := { maxSteps := 200000 })
-    [headerLoadPath, opAt, pushAt,
+    [headerLoadPath,opAt,pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
-      Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-      headerEntryState, headerLoadedState, initialState, headerWord,
-      baseSize, exponentSize, modulusSize,
-      Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt,
-      hs1197, hs1198, ha1199, hs1201, ha1202, hs1204, ha1060, h0, h32, h64]; rfl
-
-
+      Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
+      headerEntryState,headerLoadedState,initialState,headerWord,
+      baseSize,exponentSize,modulusSize,
+      Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt,
+      hs1197,hs1198,ha1199,hs1201,ha1202,hs1204,ha1060,h0,h32,h64]; rfl
 end CycleSubmission.Global.Main

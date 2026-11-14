@@ -3,11 +3,9 @@ import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedFused
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedRowFrames
 import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandSnapshot
 import Challenge.Modexp.Submission.Proofs.Fast.SquareModel
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxHeartbeats 2000000
-
 /-!
 # The uniform first-loop block of the kernel
 
@@ -22,29 +20,22 @@ producing `SquareModel.l1StepOn q bi pa n j`; the multiply rows are the instance
 `q = Monpro.l1Step mem bi pa n j` (`SquareModel.l1Step_succ_eq`, by `rfl`), the
 square rows use the prologue state and `SquareModel.l1Run`.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheL1Trace
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore StagedOperand
-
 def loadProgram (off : UInt256) : List Instr :=
-  [.push 2 (UInt256.ofNat 2368 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
-
+  [.push 2 (UInt256.ofNat 2368 + off),.op .MLOAD,.op (.Dup ⟨8,by decide⟩)]
 def l1Program (off t : UInt256) : List Instr :=
-  loadProgram off ++ CiosCached.macFusedProgram t t
-
+  loadProgram off++CiosCached.macFusedProgram t t
 def stepProgram (off t : UInt256) : List Instr :=
-  [.op .JUMPDEST] ++ l1Program off t
-
+  [.op .JUMPDEST]++l1Program off t
 def qState (template : State) (pc : UInt256) (q : MacState)
     (bi pbi hd pbEnd flag tn destination returnPC : UInt256) (rest : List UInt256) : State :=
   { template with
     pc := pc
-    stack := [q.carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest
+    stack := [q.carry,bi,pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest
     memory := q.memory }
-
 theorem run_load (template : State)
     (pc off carry bi pbi hd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
@@ -52,24 +43,22 @@ theorem run_load (template : State)
       template.activeWords.toNat (UInt256.ofNat 2368 + off).toNat 32) = template.activeWords) :
     runInstructions (loadProgram off)
       (framed template pc
-        ([carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) =
+        ([carry,bi,pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest)) =
     some (framed template (pc + UInt256.ofNat 5)
-      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 2368 + off).toNat,
-        carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) := by
+      ([maxWord,MachineState.readWord template.memory (UInt256.ofNat 2368 + off).toNat,
+        carry,bi,pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest)) := by
   have capacity (j : Nat) (hj : j ≤ 12) : rest.length + j < 1024 := by omega
   simp only [Challenge.EvmProof.Word.word_toNat_add,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     show (2 : Nat)^256 = 115792089237316195423570985008687907853269984665640564039457584007913129639936 from by decide,
     Nat.reduceMod] at hactive
-  simp [runInstructions, loadProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, allOnes_value,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [runInstructions,loadProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+    capacity,Nat.add_assoc,State.activeWordsAfterUInt256,hactive,allOnes_value,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem snapshot_read (mem : ByteArray) (pa n j : Nat) (h : Snapshot mem pa n) (hj : j < n) :
     MachineState.readWord mem (2368 + 32 * (n - 1 - j)) =
       MachineState.readWord mem (pa + 32 * (n - 1 - j)) :=
   h (n - 1 - j) (by omega)
-
 theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
@@ -83,7 +72,7 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
     some (qState template (pc + UInt256.ofNat 36) (SquareModel.l1StepOn q bi pa n j)
       bi pbi hd pbEnd flag tn destination returnPC rest) := by
   have hsaddr : (UInt256.ofNat 2368 + off).toNat = 2368 + 32*(n-1-j) := by
-    rw [CiosCachedL1.base_offset_toNat 2368 off (by omega), hoff]
+    rw [CiosCachedL1.base_offset_toNat 2368 off (by omega),hoff]
   have hsread : MachineState.readWord q.memory (UInt256.ofNat 2368 + off).toNat =
       MachineState.readWord q.memory (pa + 32*(n-1-j)) := by
     rw [hsaddr]
@@ -97,24 +86,23 @@ theorem run_l1 (template : State) (pc : UInt256) (q : MacState)
   let st : State := { template with memory := q.memory }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
       (UInt256.ofNat 2368 + off).toNat 32) = st.activeWords := by
-    simpa only [st, hsaddr] using hactA
+    simpa only [st,hsaddr] using hactA
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
-      st.activeWords := by simpa only [st, ht] using hactT
+      st.activeWords := by simpa only [st,ht] using hactT
   have hl := run_load st pc off q.carry bi pbi hd
     pbEnd flag tn destination returnPC rest hrest hA
   rw [show MachineState.readWord st.memory (UInt256.ofNat 2368 + off).toNat =
     MachineState.readWord q.memory (pa + 32*(n-1-j)) from hsread] at hl
   have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 5)
     (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry t t
-    ([pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
+    ([pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest)
+    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : (pc + UInt256.ofNat 5) + UInt256.ofNat 31 =
       pc + UInt256.ofNat 36 := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-  simpa only [l1Program, st, qState, framed, SquareModel.l1StepOn, ht, hpc,
-    List.cons_append, List.nil_append] using hall
-
+    simp [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+  simpa only [l1Program,st,qState,framed,SquareModel.l1StepOn,ht,hpc,
+    List.cons_append,List.nil_append] using hall
 theorem run_step (template : State) (pc : UInt256) (q : MacState)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
@@ -131,22 +119,18 @@ theorem run_step (template : State) (pc : UInt256) (q : MacState)
   have hjd : runInstructions [.op .JUMPDEST]
       (qState template pc q bi pbi hd pbEnd flag tn destination returnPC rest) =
       some (qState template (pc + UInt256.ofNat 1) q bi pbi hd pbEnd flag tn destination returnPC rest) := by
-    simp [runInstructions, Challenge.EvmProof.Stepper.runInstr, qState, hc, succ_eq_add]
+    simp [runInstructions,Challenge.EvmProof.Stepper.runInstr,qState,hc,succ_eq_add]
   have hl := run_l1 template (pc + UInt256.ofNat 1) q bi pa n j off t hoff ht
     pbi hd pbEnd flag tn destination returnPC rest hrest hactive hn hj hsnapshot
   have h := runInstructions_append_some _ _ _ _ _ hjd hl
   have hpc : pc + UInt256.ofNat 1 + UInt256.ofNat 36 = pc + UInt256.ofNat 37 := by
-    rw [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
+    rw [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
   rw [hpc] at h
   exact h
-
-
 def loadProgramW3 (off : UInt256) : List Instr :=
-  [.push 3 (UInt256.ofNat 2368 + off), .op .MLOAD, .op (.Dup ⟨8, by decide⟩)]
-
+  [.push 3 (UInt256.ofNat 2368 + off),.op .MLOAD,.op (.Dup ⟨8,by decide⟩)]
 def stepProgramW3 (off t : UInt256) : List Instr :=
-  loadProgramW3 off ++ CiosCached.macFusedProgram t t
-
+  loadProgramW3 off++CiosCached.macFusedProgram t t
 theorem run_loadW3 (template : State)
     (pc off carry bi pbi hd pbEnd flag tn destination returnPC : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1006)
@@ -154,19 +138,18 @@ theorem run_loadW3 (template : State)
       template.activeWords.toNat (UInt256.ofNat 2368 + off).toNat 32) = template.activeWords) :
     runInstructions (loadProgramW3 off)
       (framed template pc
-        ([carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) =
+        ([carry,bi,pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest)) =
     some (framed template (pc + UInt256.ofNat 6)
-      ([maxWord, MachineState.readWord template.memory (UInt256.ofNat 2368 + off).toNat,
-        carry, bi, pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)) := by
+      ([maxWord,MachineState.readWord template.memory (UInt256.ofNat 2368 + off).toNat,
+        carry,bi,pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest)) := by
   have capacity (j : Nat) (hj : j ≤ 12) : rest.length + j < 1024 := by omega
   simp only [Challenge.EvmProof.Word.word_toNat_add,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     show (2 : Nat)^256 = 115792089237316195423570985008687907853269984665640564039457584007913129639936 from by decide,
     Nat.reduceMod] at hactive
-  simp [runInstructions, loadProgramW3, framed, Challenge.EvmProof.Stepper.runInstr,
-    capacity, Nat.add_assoc, State.activeWordsAfterUInt256, hactive, allOnes_value,
-    succ_eq_add, word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [runInstructions,loadProgramW3,framed,Challenge.EvmProof.Stepper.runInstr,
+    capacity,Nat.add_assoc,State.activeWordsAfterUInt256,hactive,allOnes_value,
+    succ_eq_add,word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_stepW3 (template : State) (pc : UInt256) (q : MacState)
     (bi : UInt256) (pa n j : Nat) (off t : UInt256)
     (hoff : off.toNat = 32 * (n - 1 - j))
@@ -180,7 +163,7 @@ theorem run_stepW3 (template : State) (pc : UInt256) (q : MacState)
     some (qState template (pc + UInt256.ofNat 37) (SquareModel.l1StepOn q bi pa n j)
       bi pbi hd pbEnd flag tn destination returnPC rest) := by
   have hsaddr : (UInt256.ofNat 2368 + off).toNat = 2368 + 32*(n-1-j) := by
-    rw [CiosCachedL1.base_offset_toNat 2368 off (by omega), hoff]
+    rw [CiosCachedL1.base_offset_toNat 2368 off (by omega),hoff]
   have hsread : MachineState.readWord q.memory (UInt256.ofNat 2368 + off).toNat =
       MachineState.readWord q.memory (pa + 32*(n-1-j)) := by
     rw [hsaddr]
@@ -194,22 +177,21 @@ theorem run_stepW3 (template : State) (pc : UInt256) (q : MacState)
   let st : State := { template with memory := q.memory }
   have hA : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat
       (UInt256.ofNat 2368 + off).toNat 32) = st.activeWords := by
-    simpa only [st, hsaddr] using hactA
+    simpa only [st,hsaddr] using hactA
   have hT : UInt256.ofNat (MachineState.activeWordsAfter st.activeWords.toNat t.toNat 32) =
-      st.activeWords := by simpa only [st, ht] using hactT
+      st.activeWords := by simpa only [st,ht] using hactT
   have hl := run_loadW3 st pc off q.carry bi pbi hd
     pbEnd flag tn destination returnPC rest hrest hA
   rw [show MachineState.readWord st.memory (UInt256.ofNat 2368 + off).toNat =
     MachineState.readWord q.memory (pa + 32*(n-1-j)) from hsread] at hl
   have hf := CiosCachedFused.run_fused st (pc + UInt256.ofNat 6)
     (MachineState.readWord q.memory (pa + 32*(n-1-j))) bi q.carry t t
-    ([pbi, hd, pbEnd, flag, tn, allOnes, destination, returnPC] ++ rest)
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) hT hT
+    ([pbi,hd,pbEnd,flag,tn,allOnes,destination,returnPC]++rest)
+    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) hT hT
   have hall := runInstructions_append_some _ _ _ _ _ hl hf
   have hpc : (pc + UInt256.ofNat 6) + UInt256.ofNat 31 =
       pc + UInt256.ofNat 37 := by
-    simp [word_add_assoc, Challenge.EvmProof.Word.ofNat_add_mod]
-  simpa only [stepProgramW3, st, qState, framed, SquareModel.l1StepOn, ht, hpc,
-    List.cons_append, List.nil_append] using hall
-
+    simp [word_add_assoc,Challenge.EvmProof.Word.ofNat_add_mod]
+  simpa only [stepProgramW3,st,qState,framed,SquareModel.l1StepOn,ht,hpc,
+    List.cons_append,List.nil_append] using hall
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheL1Trace

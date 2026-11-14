@@ -1,38 +1,28 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedPrograms
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.CiosCached
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
 open WindowNibbleKernel
-
 def negative32 : UInt256 := UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639904
 def allOnes : UInt256 := UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935
 def isFour (n : Nat) : UInt256 :=
   UInt256.eq (UInt256.ofNat 128) (UInt256.ofNat (32*n))
-
 @[simp] theorem isFour_four : isFour 4 = UInt256.ofNat 1 := by decide
 @[simp] theorem isFour_eight : isFour 8 = UInt256.ofNat 0 := by decide
-
-
 def l1Target (_n : Nat) : UInt256 :=
   UInt256.ofNat 3347
-
 def l2Target (_n : Nat) : UInt256 :=
   UInt256.ofNat 3655
-
 @[simp] theorem l1Target_four : l1Target 4 = UInt256.ofNat 3347 := rfl
 @[simp] theorem l1Target_eight : l1Target 8 = UInt256.ofNat 3347 := rfl
 @[simp] theorem l2Target_four : l2Target 4 = UInt256.ofNat 3655 := by decide
 @[simp] theorem l2Target_eight : l2Target 8 = UInt256.ofNat 3655 := by decide
-
 /-! ## Row frames
 
 The kernel keeps, below the per-step words, the row frame
@@ -42,33 +32,28 @@ The kernel keeps, below the per-step words, the row frame
 `hd` is the row head the tail returns to (`JUMPI` via `DUP3`; 4289 for the multiply,
 the `sq_row` pc 2464 for the square) and `ent` is the first-loop entry
 (`l1Target n` for the multiply; the square rows advance it by 38 per row). -/
-
 def l1Q (pc : Nat) (s : State) (q : MacState) (bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := [q.carry, bi,
+           stack := [q.carry,bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd,UInt256.ofNat (pb - 32),ent,negative32,allOnes,l2Target n,pdst,ret]++rest
            memory := q.memory }
-
 def l1At (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (pa pb n i j : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   l1Q pc s (l1Step mem bi pa n j) bi pb n i hd ent pdst ret rest
-
 def firstAt (pc : Nat) (s : State) (mem : ByteArray) (bi : UInt256)
     (pb n i : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := [bi, UInt256.ofNat (ptrAt (pb+32*n-32) i),
-             hd, UInt256.ofNat (pb-32), ent,
-             negative32, allOnes, l2Target n, pdst, ret] ++ rest
+           stack := [bi,UInt256.ofNat (ptrAt (pb+32*n-32) i),
+             hd,UInt256.ofNat (pb-32),ent,
+             negative32,allOnes,l2Target n,pdst,ret]++rest
            memory := mem }
-
 def l2At (pc : Nat) (s : State) (mid : ByteArray) (bi mu c0 : UInt256)
     (pb n i k : Nat) (hd ent pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pc
-           stack := [(l2Step mid mu c0 n k).carry, mu, bi,
+           stack := [(l2Step mid mu c0 n k).carry,mu,bi,
                      UInt256.ofNat (ptrAt (pb + 32 * n - 32) i),
-                     hd, UInt256.ofNat (pb - 32), ent, negative32, allOnes, l2Target n, pdst, ret] ++ rest
+                     hd,UInt256.ofNat (pb - 32),ent,negative32,allOnes,l2Target n,pdst,ret]++rest
            memory := (l2Step mid mu c0 n k).memory }
-
 end Challenge.Modexp.Submission.Proofs.Fast.CiosCached

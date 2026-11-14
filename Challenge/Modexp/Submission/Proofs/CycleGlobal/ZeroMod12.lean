@@ -11,26 +11,24 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.Fast
-
 def entry (s : State) (input : ByteArray) : State :=
- {s with pc := UInt256.ofNat 10760, stack := [UInt256.ofNat (modulusSize input)]}
+ {s with pc := UInt256.ofNat 10761,stack := [UInt256.ofNat (modulusSize input)]}
 def oldEntry (s : State) : State :=
- {s with pc := UInt256.ofNat 3313, stack := []}
+ {s with pc := UInt256.ofNat 9518,stack := []}
 def memo (s : State) : State :=
- {s with pc := UInt256.ofNat 674, stack := []}
+ {s with pc := UInt256.ofNat 912,stack := []}
 def rawWord (input : ByteArray) : UInt256 :=
  UInt256.shiftRight (MachineState.readWord input (96+baseSize input+exponentSize input)) (UInt256.ofNat 160)
 def memory (s : State) : ByteArray :=
  s.memory
 def finalState (s : State) : State :=
  {s with
-   pc := UInt256.ofNat 10788
+   pc := UInt256.ofNat 10789
    stack := []
    memory := memory s
    activeWords := UInt256.ofNat 1
    halt := .Returned
    hReturn := MachineState.readPadded (memory s) 0 12}
-
 theorem run_width_miss (s : State) (input : ByteArray)
  (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
  (hsize : modulusSize input ≤ 1024) (hne : modulusSize input ≠ 12) :
@@ -38,7 +36,7 @@ theorem run_width_miss (s : State) (input : ByteArray)
  have hword : UInt256.ofNat (modulusSize input) ≠ UInt256.ofNat 12 := by
   intro h
   have hh := congrArg UInt256.toNat h
-  simp only [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (show modulusSize input < 2^256 by omega)] at hh
+  simp only [Word.word_toNat_ofNat,Nat.mod_eq_of_lt (show modulusSize input < 2^256 by omega)] at hh
   exact hne (by simpa using hh)
  have hx : (UInt256.xor (UInt256.ofNat 12) (UInt256.ofNat (modulusSize input))).toNat ≠ 0 := by
   intro h
@@ -49,7 +47,6 @@ theorem run_width_miss (s : State) (input : ByteArray)
   Stepper.runLocatedBlock,Stepper.runLocated,Stepper.runInstr,entry,oldEntry,
   hrun,hcode,jumpDestZeroExp,hx,UInt256.isTrue,Word.literal_eq_ofNat,
   Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
-
 theorem pointer (input : ByteArray) (hb : baseSize input ≤ 1024)
  (he : exponentSize input ≤ 1024) :
  (UInt256.ofNat 96 + (UInt256.ofNat (exponentSize input) + UInt256.ofNat (baseSize input))).toNat =
@@ -57,7 +54,6 @@ theorem pointer (input : ByteArray) (hb : baseSize input ≤ 1024)
  rw [Word.ofNat_add_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,
   Nat.mod_eq_of_lt (show 96+(exponentSize input+baseSize input)<2^256 by omega)]
  omega
-
 theorem run_nonzero (s : State) (input : ByteArray)
  (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
  (hdata : s.executionEnv.calldata = input)
@@ -75,10 +71,9 @@ theorem run_nonzero (s : State) (input : ByteArray)
  have hx : UInt256.xor (UInt256.ofNat 12) (UInt256.ofNat 12) = UInt256.ofNat 0 := by decide
  simp (config := { maxSteps := 600000 }) [packedZero12PCs,blkZero12Nonzero,opAt,pushAt,wfOp,
   Stepper.runLocatedBlock,Stepper.runLocated,Stepper.runInstr,entry,memo,
-  hrun,hcode,hdata,hz0,hoff,hbase,hexp,hsize,hx,pointer input hb he,rawWord, hne,
+  hrun,hcode,hdata,hz0,hoff,hbase,hexp,hsize,hx,pointer input hb he,rawWord,hne,
   UInt256.isTrue,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
   Word.succ_ofNat_mod,Word.ofNat_add_mod,jumpDest698]
-
 theorem run_zero (s : State) (input : ByteArray)
  (hrun : s.halt = .Running) (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
  (hdata : s.executionEnv.calldata = input)
@@ -102,21 +97,17 @@ theorem run_zero (s : State) (input : ByteArray)
   Word.succ_ofNat_mod,Word.ofNat_add_mod,State.activeWordsAfterUInt256,
   State.activeWordsAfterUInt256_2,MachineState.activeWordsAfter]
  all_goals simp [Nat.max_eq_right hwords]
-
 theorem rawWord_value (input : ByteArray) :
  rawWord input = UInt256.ofNat (Precompile.bytesToNatPadded input
   (96+baseSize input+exponentSize input) 12) :=
  Bytes.shiftRight_readWord input (96+baseSize input+exponentSize input) 12 (by decide) (by decide)
-
 theorem memory_output (s : State) (hmem : s.memory = ByteArray.empty) :
  MachineState.readPadded (memory s) 0 12 = Precompile.natToBytes 0 12 := by
- rw [memory, hmem]
+ rw [memory,hmem]
  exact Algorithm.zeroBytes 0 12
-
 theorem isDone (s : State) (hcall : s.callStack = []) :
  (finalState s).isDone = true := by
  simp [finalState,State.isDone,State.isHalted,State.isRunning,hcall]
-
 theorem result (s : State) (input : ByteArray) (hsize : modulusSize input = 12)
  (hz : (rawWord input).toNat = 0) (hmem : s.memory = ByteArray.empty) :
  (finalState s).toResult = .returned (spec input) := by

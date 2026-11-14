@@ -3,25 +3,20 @@ namespace CycleSubmission.Global.DirectCopy
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs Challenge.Modexp.Submission.Proofs.Fast
 open Shift
-
 def memory (mem : ByteArray) (n : Nat) : ByteArray := Exp.mcopyMem mem 256 2112 (32*n)
-
 theorem readWord (mem : ByteArray) (n addr : Nat)
     (h : addr+32 ≤ 256 ∨ 256+32*n ≤ addr) :
     MachineState.readWord (memory mem n) addr = MachineState.readWord mem addr :=
   Exp.readWord_mcopyMem_disjoint _ _ _ _ _ h
-
 theorem preserves (mem : ByteArray) (n ptr cnt value : Nat)
     (h : 256+32*n ≤ ptr ∨ ptr+32*cnt ≤ 256)
     (hr : Model.FastRepresents mem ptr cnt value) :
     Model.FastRepresents (memory mem n) ptr cnt value :=
   Exp.fastRepresents_mcopyMem_disjoint _ 256 2112 (32*n) ptr cnt value h hr
-
 theorem copyValue (mem : ByteArray) (n value : Nat) (hn : 1 ≤ n)
     (hr : Model.FastRepresents mem 2112 n value) :
     Model.FastRepresents (memory mem n) 256 n value :=
   Exp.fastRepresents_mcopyMem _ 256 2112 n value hn hr
-
 theorem invariant (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8)
     (inv : StepInv mem n bsize mm minv) : StepInv (memory mem n) n bsize mm minv where
   pre := by
@@ -41,6 +36,5 @@ theorem invariant (mem : ByteArray) (n bsize mm minv : Nat) (hn8 : n ≤ 8)
     eoff := (readWord mem n 2656 (Or.inr (by omega))).trans inv.frame.eoff }
   modulus := preserves mem n 0 n mm (Or.inr (by omega)) inv.modulus
   neg := preserves mem n NEG n _ (Or.inl (by unfold NEG; omega)) inv.neg
-
 #print axioms invariant
 end CycleSubmission.Global.DirectCopy

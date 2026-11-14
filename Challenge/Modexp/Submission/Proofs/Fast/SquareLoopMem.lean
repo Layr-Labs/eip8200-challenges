@@ -1,7 +1,6 @@
 import Challenge.Modexp.Submission.Proofs.Fast.LazyLoopMemory
 import Challenge.Modexp.Submission.Proofs.Fast.LazySquareMemory
 import Challenge.Modexp.Submission.Proofs.Fast.R8RowZeroExact
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 2000000
@@ -9,13 +8,10 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.SquareLoopMem
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CarryRowModel StagedOperand SquareModel SquareResult
-
 def roundDst (_c : Nat) : Nat := 2368
-
 def sqRound (s : State) (n c : Nat) (mem : ByteArray) : ByteArray :=
   LazyCsub.resultMemory
     (SquareLoopBlocks.countMem (sqRowsCarry (mpZeroed s mem n) n n) c) n (roundDst c)
-
 theorem writeBytes_writeBytes_same (bs bytes : ByteArray) (start : Nat) :
     MachineState.writeBytes (MachineState.writeBytes bs bytes start) bytes start =
       MachineState.writeBytes bs bytes start := by
@@ -30,14 +26,12 @@ theorem writeBytes_writeBytes_same (bs bytes : ByteArray) (start : Nat) :
     ← Challenge.EvmProof.Memory.getD0_eq_getElem _ i hi',
     MachineState.writeBytes_getElem?_getD (MachineState.writeBytes bs bytes start)]
   split_ifs with h
-  · rw [MachineState.writeBytes_getElem?_getD bs, if_pos h]
+  · rw [MachineState.writeBytes_getElem?_getD bs,if_pos h]
   · rfl
-
 theorem mpZeroed_idem (s : State) (mem : ByteArray) (n : Nat) :
     mpZeroed s (mpZeroed s mem n) n = mpZeroed s mem n := by
   unfold mpZeroed
   exact writeBytes_writeBytes_same _ _ _
-
 theorem scratchZero_sqRound (s : State) (n c : Nat) (M : ByteArray) (hn1 : 1 ≤ n)
     (hn : n ≤ 8) : R8RowZeroExact.ScratchZero (sqRound s n c M) := by
   have h0 := (R8RowZeroExact.scratchZero_mpZeroed s M n hn1).sqRowsCarry n n
@@ -46,35 +40,26 @@ theorem scratchZero_sqRound (s : State) (n c : Nat) (M : ByteArray) (hn1 : 1 ≤
   split
   · exact h1.write _ 2368 (Or.inr (by decide))
   · exact (h1.csStep n hn n).write _ 2368 (Or.inr (by decide))
-
 def sqRunMem (s : State) (n : Nat) : Nat → ByteArray → ByteArray
-  | 0, mem => mem
-  | k + 1, mem => sqRunMem s n k (sqRound s n k mem)
-
+  | 0,mem => mem
+  | k + 1,mem => sqRunMem s n k (sqRound s n k mem)
 def sqLoopMem (s : State) (n : Nat) : Nat → ByteArray → ByteArray
-  | 0, mem => mem
-  | k + 1, mem => sqRunMem s n (k + 1) (stage mem 2112 n)
-
+  | 0,mem => mem
+  | k + 1,mem => sqRunMem s n (k + 1) (stage mem 2112 n)
 theorem sqLoopMem_zero (s : State) (n : Nat) (mem : ByteArray) : sqLoopMem s n 0 mem = mem := rfl
-
 theorem sqLoopMem_succ (s : State) (n k : Nat) (mem : ByteArray) :
     sqLoopMem s n (k + 1) mem = sqRunMem s n (k + 1) (stage mem 2112 n) := rfl
-
 theorem sqRunMem_zero (s : State) (n : Nat) (mem : ByteArray) : sqRunMem s n 0 mem = mem := rfl
-
 theorem sqRunMem_succ (s : State) (n k : Nat) (mem : ByteArray) :
     sqRunMem s n (k + 1) mem = sqRunMem s n k (sqRound s n k mem) := rfl
-
 theorem sqRound_mpZeroed (s : State) (n c : Nat) (mem : ByteArray) :
     sqRound s n c (mpZeroed s mem n) = sqRound s n c mem := by
   unfold sqRound; rw [mpZeroed_idem]
-
 theorem sqRunMem_mpZeroed (s : State) (n k : Nat) (mem : ByteArray) (hk : 1 ≤ k) :
     sqRunMem s n k (mpZeroed s mem n) = sqRunMem s n k mem := by
   cases k with
   | zero => omega
-  | succ j => rw [sqRunMem_succ, sqRunMem_succ, sqRound_mpZeroed]
-
+  | succ j => rw [sqRunMem_succ,sqRunMem_succ,sqRound_mpZeroed]
 theorem tn_le_one (s : State) (mem : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤ 8)
     (_hfast : p + 2 = 4 ∨ p + 2 = 8)
     (ha : Model.FastRepresents mem 2368 (p + 2) a)
@@ -94,11 +79,9 @@ theorem tn_le_one (s : State) (mem : ByteArray) (p a mm : Nat) (hn32 : p + 2 ≤
     exact hminv
   exact LazySquareMemory.carry_tn_le_one (mpZeroed s mem (p + 2)) p a mm (by omega)
     ha0 hm0 hmpos hminv0 (tValue_mpZeroed s mem (p + 2))
-
 def sqRoundValue (s : State) (n c : Nat) (mem : ByteArray) (mm : Nat) : Nat :=
   LazySquareMemory.roundValue
     (SquareLoopBlocks.countMem (sqRowsCarry (mpZeroed s mem n) n n) c) n mm
-
 theorem sqRound_represents (s : State) (mem : ByteArray) (p a mm c : Nat) (hn32 : p + 2 ≤ 8)
     (_hfast : p + 2 = 4 ∨ p + 2 = 8)
     (ha : Model.FastRepresents mem 2368 (p + 2) a)
@@ -120,7 +103,6 @@ theorem sqRound_represents (s : State) (mem : ByteArray) (p a mm c : Nat) (hn32 
     exact hminv
   exact (LazySquareMemory.carry_result (mpZeroed s mem (p+2)) p a mm c (roundDst c)
     hn32 ha0 hm0 hodd hminv0 (tValue_mpZeroed s mem (p+2))).1
-
 theorem sqRound_readWord_outside (s : State) (mem : ByteArray) (n c addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (_hfast : n = 4 ∨ n = 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -130,17 +112,15 @@ theorem sqRound_readWord_outside (s : State) (mem : ByteArray) (n c addr : Nat)
     MachineState.readWord (sqRound s n c mem) addr = MachineState.readWord mem addr := by
   have hd : addr + 32 ≤ roundDst c ∨ roundDst c + 32 * n ≤ addr := by
     simp only [roundDst]; omega
-  rw [sqRound, LazyCsub.result_readWord_outside _ n (roundDst c) addr hn hsubb hd,
+  rw [sqRound,LazyCsub.result_readWord_outside _ n (roundDst c) addr hn hsubb hd,
     SquareLoopBlocks.readWord_countMem_disjoint _ c addr hcount,
     readWord_sqRowsCarry _ n addr hn32 hscratch n le_rfl,
     readWord_mpZeroed s _ n addr hn32 hscratch]
-
 theorem sqRound_readWord_high (s : State) (mem : ByteArray) (n c addr : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hfast : n = 4 ∨ n = 8) (haddr : 2656 ≤ addr) :
     MachineState.readWord (sqRound s n c mem) addr = MachineState.readWord mem addr :=
   sqRound_readWord_outside s mem n c addr hn hn32 hfast (Or.inr (by omega)) (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr haddr)
-
 theorem sqRound_fastRepresents_outside (s : State) (mem : ByteArray) (n c ptr cnt v : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hfast : n = 4 ∨ n = 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -153,7 +133,6 @@ theorem sqRound_fastRepresents_outside (s : State) (mem : ByteArray) (n c ptr cn
   intro j hj
   rw [sqRound_readWord_outside s mem n c (ptr + 32 * j) hn hn32 hfast (by omega) (by omega)
     (by omega) (by omega)]
-
 theorem sqRunMem_readWord_outside (s : State) (mem : ByteArray) (n k addr : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -164,15 +143,13 @@ theorem sqRunMem_readWord_outside (s : State) (mem : ByteArray) (n k addr : Nat)
   induction k generalizing mem with
   | zero => rfl
   | succ k ih =>
-      rw [sqRunMem_succ, ih (sqRound s n k mem),
+      rw [sqRunMem_succ,ih (sqRound s n k mem),
         sqRound_readWord_outside s mem n k addr hn hn32 hfast hsubb hscratch hdst hcount]
-
 theorem sqRunMem_readWord_high (s : State) (mem : ByteArray) (n k addr : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
     MachineState.readWord (sqRunMem s n k mem) addr = MachineState.readWord mem addr :=
   sqRunMem_readWord_outside s mem n k addr hfast hn hn32 (Or.inr (by omega)) (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr haddr)
-
 theorem sqRunMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4 ∨ n = 8)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) :
     MachineState.readWord (sqRunMem s n k mem) 2688 = MachineState.readWord mem 2688 ∧
@@ -185,7 +162,6 @@ theorem sqRunMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4 
    sqRunMem_readWord_high s mem n k 2752 hfast hn hn32 (by omega),
    sqRunMem_readWord_high s mem n k 2784 hfast hn hn32 (by omega),
    sqRunMem_readWord_high s mem n k 2656 hfast hn hn32 (by omega)⟩
-
 theorem sqRunMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr cnt v : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -197,15 +173,13 @@ theorem sqRunMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr c
   intro j hj
   rw [sqRunMem_readWord_outside s mem n k (ptr + 32 * j) hfast hn hn32 (by omega) (by omega)
     (by omega) (by omega)]
-
 theorem sqRunMem_eq_run (s : State) (n k : Nat) (mem : ByteArray) (_h4 : n ≠ 4) :
     sqRunMem s n k mem = LazyLoopMemory.run s n k mem := by
   induction k generalizing mem with
   | zero => rfl
   | succ k ih =>
-      rw [sqRunMem_succ, LazyLoopMemory.run, ih]
+      rw [sqRunMem_succ,LazyLoopMemory.run,ih]
       congr 1
-
 theorem sqRunMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (_hfast : p+2 = 4 ∨ p+2 = 8) (hn32 : p+2 ≤ 8) (hk : 1 ≤ k) (h4 : p+2 ≠ 4)
     (ha : Model.FastRepresents mem 2368 (p+2) a)
@@ -213,12 +187,11 @@ theorem sqRunMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (_har : a < Limbs.radix^(p+2)) (_hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32*(p+2)-32)).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2^256 = 0) :
-    ∃ v, Model.FastRepresents (sqRunMem s (p+2) k mem) 2368 (p+2) v ∧
+    ∃ v,Model.FastRepresents (sqRunMem s (p+2) k mem) 2368 (p+2) v ∧
       v < Limbs.radix^(p+2) ∧
       v % mm = ((fun x => Model.montMul mm (Limbs.radix^(p+2)) x x)^[k] a) := by
   rw [sqRunMem_eq_run s (p+2) k mem h4]
   exact LazyLoopMemory.run_represents s mem p a mm k hn32 hk ha hm hodd hminv
-
 theorem sqLoopMem_readWord_outside (s : State) (mem : ByteArray) (n k addr : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -229,15 +202,13 @@ theorem sqLoopMem_readWord_outside (s : State) (mem : ByteArray) (n k addr : Nat
   cases k with
   | zero => rfl
   | succ k =>
-      rw [sqLoopMem_succ, sqRunMem_readWord_outside s _ n (k + 1) addr hfast hn hn32 hsubb hscratch hdst hcount,
+      rw [sqLoopMem_succ,sqRunMem_readWord_outside s _ n (k + 1) addr hfast hn hn32 hsubb hscratch hdst hcount,
         read_stage_outside mem 2112 n addr (by omega)]
-
 theorem sqLoopMem_readWord_high (s : State) (mem : ByteArray) (n k addr : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8) (haddr : 2656 ≤ addr) :
     MachineState.readWord (sqLoopMem s n k mem) addr = MachineState.readWord mem addr :=
   sqLoopMem_readWord_outside s mem n k addr hfast hn hn32 (Or.inr (by omega)) (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr haddr)
-
 theorem sqLoopMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4 ∨ n = 8)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) :
     MachineState.readWord (sqLoopMem s n k mem) 2688 = MachineState.readWord mem 2688 ∧
@@ -250,7 +221,6 @@ theorem sqLoopMem_frame (s : State) (mem : ByteArray) (n k : Nat) (hfast : n = 4
    sqLoopMem_readWord_high s mem n k 2752 hfast hn hn32 (by omega),
    sqLoopMem_readWord_high s mem n k 2784 hfast hn hn32 (by omega),
    sqLoopMem_readWord_high s mem n k 2656 hfast hn hn32 (by omega)⟩
-
 theorem sqLoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr cnt v : Nat)
     (hfast : n = 4 ∨ n = 8) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -262,7 +232,6 @@ theorem sqLoopMem_fastRepresents_outside (s : State) (mem : ByteArray) (n k ptr 
   intro j hj
   rw [sqLoopMem_readWord_outside s mem n k (ptr + 32 * j) hfast hn hn32 (by omega) (by omega)
     (by omega) (by omega)]
-
 theorem sqLoopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (hfast : p + 2 = 4 ∨ p + 2 = 8) (hn32 : p + 2 ≤ 8) (hk : 1 ≤ k) (h4 : p+2 ≠ 4)
     (ha : Model.FastRepresents mem 2112 (p + 2) a)
@@ -270,7 +239,7 @@ theorem sqLoopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
     (hodd : mm % 2 = 1) (har : a < Limbs.radix^(p+2)) (hmpos : 0 < mm)
     (hminv : ((MachineState.readWord mem (32 * (p + 2) - 32)).toNat *
       (MachineState.readWord mem 2720).toNat + 1) % 2 ^ 256 = 0) :
-    ∃ v, Model.FastRepresents (sqLoopMem s (p+2) k mem) 2368 (p+2) v ∧
+    ∃ v,Model.FastRepresents (sqLoopMem s (p+2) k mem) 2368 (p+2) v ∧
       v < Limbs.radix^(p+2) ∧
       v % mm = ((fun x => Model.montMul mm (Limbs.radix^(p+2)) x x)^[k] a) := by
   cases k with
@@ -287,5 +256,4 @@ theorem sqLoopMem_represents (s : State) (mem : ByteArray) (p a mm k : Nat)
         exact hminv
       exact sqRunMem_represents s (stage mem 2112 (p + 2)) p a mm (k + 1) hfast hn32 (by omega) h4
         (represents_stage mem (p + 2) a ha) hm' hodd har hmpos hminv'
-
 end Challenge.Modexp.Submission.Proofs.Fast.SquareLoopMem

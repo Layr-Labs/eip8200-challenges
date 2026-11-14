@@ -12,11 +12,9 @@ open Challenge.Modexp.Submission.Proofs.Fast FixedExponentRoute
 open CycleSubmission CycleSubmission.Global
 private theorem prepend {input : ByteArray} {start middle : State}
     (head : GasSteps start middle) (tail : Handled input middle) : Handled input start := by
-  obtain ⟨final, ⟨tr⟩, hd, hr⟩ := tail
-  exact ⟨final, ⟨head.trans tr⟩, hd, hr⟩
-
+  obtain ⟨final,⟨tr⟩,hd,hr⟩ := tail
+  exact ⟨final,⟨head.trans tr⟩,hd,hr⟩
 noncomputable def run8 (s : State) (mem : ByteArray) (n bsize esize k N A B mi : Nat)
-    
     (hn : n = 8) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
@@ -32,10 +30,8 @@ noncomputable def run8 (s : State) (mem : ByteArray) (n bsize esize k N A B mi :
   subst n
   exact CycleSubmission.Global.TailRoutes.terminal8 s mem bsize esize k N A B mi hk hk16 env hact hcds
     hf hmi hinv hmod ha hb hN (Nat.odd_iff.mpr hodd) hB hg
-
 theorem special (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize k N A B mi : Nat)
-    
     (hn : n = 4 ∨ n = 8) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
@@ -72,19 +68,17 @@ theorem special (input : ByteArray) (s : State) (mem : ByteArray)
       have hms8 : msize = 256 := by omega
       subst hms8
       have head := CycleSubmission.Global.TailRoutes.bail8 s mem bsize esize k mi hk hk16 env hact hcds hf (by omega)
-      obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
+      obtain ⟨done,⟨tail⟩,hd,hr⟩ := Fallback.correct
         (DirectEightEntry.bailState s mem bsize esize k)
         (env.transfer rfl rfl) rfl
-        (by simp [List.append_nil, DirectEightEntry.bailState, DirectEightRaw.state, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer] <;> omega)
+        (by simp [List.append_nil,DirectEightEntry.bailState,DirectEightRaw.state,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer] <;> omega)
         hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
-        (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
-      exact ⟨done, ⟨head.trans tail⟩, hd, by
+        (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata,← hms]; omega)
+      exact ⟨done,⟨head.trans tail⟩,hd,by
         change done.toResult = .returned (Challenge.Modexp.spec s.executionEnv.calldata) at hr
         simpa only [hdata] using hr⟩
-
 theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize N A B mi : Nat)
-    
     (hn : n = 4 ∨ n = 8)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
@@ -113,16 +107,16 @@ theorem ordinary (input : ByteArray) (s : State) (mem : ByteArray)
   have bail (tr : GasSteps (GateRaw.entryState s mem n bsize esize msize)
       (SlimFrames.bailState s (GateScratch.memory mem esize) n bsize esize msize)) :
       Handled input (GateRaw.entryState s mem n bsize esize msize) := by
-    obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
+    obtain ⟨done,⟨tail⟩,hd,hr⟩ := Fallback.correct
       (SlimFrames.bailState s (GateScratch.memory mem esize) n bsize esize msize) (env.transfer rfl rfl) rfl
-      (by simp [List.append_nil, SlimFrames.bailState, SlimFrames.guardFrame, SlimFrames.ridingFrame, SlimFrames.frameState, FixedDirectStates.outer, SlimFrames.outer, CycleSubmission.Global.Fast.Shift.entrySlots, CycleSubmission.Global.Fast.Shift.aprevSlot, CycleSubmission.Global.Fast.Shift.hdSlot, Exp.outer] <;> omega)
+      (by simp [List.append_nil,SlimFrames.bailState,SlimFrames.guardFrame,SlimFrames.ridingFrame,SlimFrames.frameState,FixedDirectStates.outer,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer] <;> omega)
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
-      (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata, ← hms]; omega)
-    refine ⟨done, ⟨tr.trans tail⟩, hd, ?_⟩
+      (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rw [hdata,← hms]; omega)
+    refine ⟨done,⟨tr.trans tail⟩,hd,?_⟩
     change done.toResult = .returned (Challenge.Modexp.spec s.executionEnv.calldata) at hr
     simpa only [hdata] using hr
   have hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize := by
-    rw [hdata, hes]
+    rw [hdata,hes]
     rfl
   by_cases he3 : esize = 3
   · rcases he3 with rfl

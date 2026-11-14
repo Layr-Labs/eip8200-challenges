@@ -1,169 +1,142 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
-
 set_option warningAsError true
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
-
 def framed (template : State) (pc : UInt256) (stack : List UInt256) : State :=
-  { template with pc := pc, stack := stack }
-
+  { template with pc := pc,stack := stack }
 theorem isTrue_isZero (value : UInt256) :
     UInt256.isTrue (UInt256.isZero value) ↔ value.toNat = 0 := by
   unfold UInt256.isTrue
   rw [Challenge.EvmProof.Word.word_toNat_isZero]
   by_cases h : value.toNat = 0 <;> simp [h]
-
 def testProgram (target : UInt256) : List Instr :=
-  [.op .ISZERO, .push 2 target, .op .JUMPI]
-
+  [.op .ISZERO,.push 2 target,.op .JUMPI]
 theorem run_test (template : State) (pc target value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code target.toNat = true) :
-    runInstructions (testProgram target) (framed template pc (value :: rest)) =
+    runInstructions (testProgram target) (framed template pc (value::rest)) =
     some (framed template (if value.toNat = 0 then target else advancePC 5 pc) rest) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
   have hpush : UInt256.ofNat 3 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   by_cases hv : value.toNat = 0 <;>
-    simp [runInstructions, testProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap1, hcap2, htarget, isTrue_isZero, hv, advancePC, succ_eq_add,
-      hpush, word_add_assoc]
-
+    simp [runInstructions,testProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+      hcap1,hcap2,htarget,isTrue_isZero,hv,advancePC,succ_eq_add,
+      hpush,word_add_assoc]
 def widthDiff (baseSize exponentSize modulusSize : UInt256) : UInt256 :=
   UInt256.lor (UInt256.xor modulusSize (UInt256.ofNat 32))
     (UInt256.lor (UInt256.xor exponentSize (UInt256.ofNat 32))
       (UInt256.gt baseSize (UInt256.ofNat 32)))
-
 private theorem xor_comm (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val ^^^ b.val).val = (b.val ^^^ a.val).val
-  rw [Fin.xor_val, Fin.xor_val, Nat.xor_comm]
-
+  rw [Fin.xor_val,Fin.xor_val,Nat.xor_comm]
 def widthValueProgram : List Instr :=
-  [.op .JUMPDEST, .push 1 32, .op (.Dup ⟨1, by decide⟩), .op .GT,
-   .op (.Dup ⟨2, by decide⟩), .push 1 32, .op .XOR, .op .OR,
-   .op (.Dup ⟨3, by decide⟩), .push 1 32, .op .XOR, .op .OR]
-
+  [.op .JUMPDEST,.push 1 32,.op (.Dup ⟨1,by decide⟩),.op .GT,
+   .op (.Dup ⟨2,by decide⟩),.push 1 32,.op .XOR,.op .OR,
+   .op (.Dup ⟨3,by decide⟩),.push 1 32,.op .XOR,.op .OR]
 theorem run_width_value (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997) :
     runInstructions widthValueProgram
-      (framed template (UInt256.ofNat 743) ([baseSize, exponentSize, modulusSize] ++ tail)) =
-    some (framed template (UInt256.ofNat 758)
-      (widthDiff baseSize exponentSize modulusSize :: [baseSize, exponentSize, modulusSize] ++ tail)) := by
+      (framed template (UInt256.ofNat 981) ([baseSize,exponentSize,modulusSize]++tail)) =
+    some (framed template (UInt256.ofNat 996)
+      (widthDiff baseSize exponentSize modulusSize::[baseSize,exponentSize,modulusSize]++tail)) := by
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hcap4 : tail.length + 4 < 1024 := by omega
   have hcap5 : tail.length + 5 < 1024 := by omega
   have hcap6 : tail.length + 6 < 1024 := by omega
-  simp [runInstructions, widthValueProgram, framed, widthDiff,
-    Challenge.EvmProof.Stepper.runInstr, hcap3, hcap4, hcap5, hcap6, Nat.add_assoc, xor_comm,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.succ_ofNat_mod,
+  simp [runInstructions,widthValueProgram,framed,widthDiff,
+    Challenge.EvmProof.Stepper.runInstr,hcap3,hcap4,hcap5,hcap6,Nat.add_assoc,xor_comm,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
 def shortTestProgram (target : UInt256) : List Instr :=
-  [.op .ISZERO, .push 1 target, .op .JUMPI]
-
+  [.op .ISZERO,.push 1 target,.op .JUMPI]
 theorem run_short_test (template : State) (pc target value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code target.toNat = true) :
-    runInstructions (shortTestProgram target) (framed template pc (value :: rest)) =
+    runInstructions (shortTestProgram target) (framed template pc (value::rest)) =
     some (framed template (if value.toNat = 0 then target else advancePC 4 pc) rest) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
   have hpush : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   by_cases hv : value.toNat = 0 <;>
-    simp [runInstructions, shortTestProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap1, hcap2, htarget, isTrue_isZero, hv, advancePC, succ_eq_add,
-      hpush, word_add_assoc]
-
-
-
+    simp [runInstructions,shortTestProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+      hcap1,hcap2,htarget,isTrue_isZero,hv,advancePC,succ_eq_add,
+      hpush,word_add_assoc]
 def shortBranchProgram (target : UInt256) : List Instr :=
-  [.push 1 target, .op .JUMPI]
-
+  [.push 1 target,.op .JUMPI]
 theorem run_short_branch (template : State) (pc target value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code target.toNat = true) :
-    runInstructions (shortBranchProgram target) (framed template pc (value :: rest)) =
+    runInstructions (shortBranchProgram target) (framed template pc (value::rest)) =
     some (framed template (if value.toNat = 0 then advancePC 3 pc else target) rest) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
   have hpush : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   by_cases hv : value.toNat = 0 <;>
-    simp [runInstructions, shortBranchProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap1, hcap2, htarget, UInt256.isTrue, hv, advancePC, succ_eq_add,
-      hpush, word_add_assoc]
-
+    simp [runInstructions,shortBranchProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+      hcap1,hcap2,htarget,UInt256.isTrue,hv,advancePC,succ_eq_add,
+      hpush,word_add_assoc]
 /-- The width test at 1752 branches straight to the legacy word entry 144 on a
 miss and falls through to the hit tail on a match. -/
-def widthProgram : List Instr := widthValueProgram ++ shortBranchProgram (UInt256.ofNat 131)
-
+def widthProgram : List Instr := widthValueProgram++shortBranchProgram (UInt256.ofNat 131)
 theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 131 = true) :
     runInstructions widthProgram
-      (framed template (UInt256.ofNat 743) ([baseSize, exponentSize, modulusSize] ++ tail)) =
+      (framed template (UInt256.ofNat 981) ([baseSize,exponentSize,modulusSize]++tail)) =
     some (framed template
       (if (widthDiff baseSize exponentSize modulusSize).toNat = 0
-        then UInt256.ofNat 761 else UInt256.ofNat 131)
-      ([baseSize, exponentSize, modulusSize] ++ tail)) := by
+        then UInt256.ofNat 999 else UInt256.ofNat 131)
+      ([baseSize,exponentSize,modulusSize]++tail)) := by
   have hv := run_width_value template baseSize exponentSize modulusSize tail htail
-  have ht := run_short_branch template (UInt256.ofNat 758) (UInt256.ofNat 131)
-    (widthDiff baseSize exponentSize modulusSize) ([baseSize, exponentSize, modulusSize] ++ tail)
-    (by simp only [List.length_append, List.length_cons, List.length_nil]; omega) htarget
+  have ht := run_short_branch template (UInt256.ofNat 996) (UInt256.ofNat 131)
+    (widthDiff baseSize exponentSize modulusSize) ([baseSize,exponentSize,modulusSize]++tail)
+    (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
-  have hpc : advancePC 3 (UInt256.ofNat 758) = UInt256.ofNat 761 := by decide
-  simpa only [widthProgram, framed, hpc] using both
-
+  have hpc : advancePC 3 (UInt256.ofNat 996) = UInt256.ofNat 999 := by decide
+  simpa only [widthProgram,framed,hpc] using both
 /-- Hit tail at 861: drop the two copies on top of the route frame and enter the
 general-width entry at 103 with the remaining ten words. -/
-def hitTailProgram : List Instr := [.op .POP, .op .POP, .push 1 97, .op .JUMP]
-
+def hitTailProgram : List Instr := [.op .POP,.op .POP,.push 1 97,.op .JUMP]
 theorem run_hit_tail (template : State) (x y : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 97 = true) :
-    runInstructions hitTailProgram (framed template (UInt256.ofNat 761) (x :: y :: rest)) =
+    runInstructions hitTailProgram (framed template (UInt256.ofNat 999) (x::y::rest)) =
     some (framed template (UInt256.ofNat 97) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
-  simp [runInstructions, hitTailProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hcap0, hcap1, hcap2, Challenge.EvmProof.Word.literal_eq_ofNat,
-    Challenge.EvmProof.Word.word_toNat_ofNat, htarget,
+  simp [runInstructions,hitTailProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+    hcap0,hcap1,hcap2,Challenge.EvmProof.Word.literal_eq_ofNat,
+    Challenge.EvmProof.Word.word_toNat_ofNat,htarget,
     Challenge.EvmProof.Word.succ_ofNat_mod]
-
 /-- Entry of the one-word core at pc 872. -/
 def baseProgram : List Instr :=
   [.op .JUMPDEST]
-
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 717) (value :: rest)) =
-    some (framed template (UInt256.ofNat 718) (value :: rest)) := by
+    runInstructions baseProgram (framed template (UInt256.ofNat 955) (value::rest)) =
+    some (framed template (UInt256.ofNat 956) (value::rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
-  simp [runInstructions, baseProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hcap1, Challenge.EvmProof.Word.succ_ofNat_mod]
-
-
+  simp [runInstructions,baseProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+    hcap1,Challenge.EvmProof.Word.succ_ofNat_mod]
 /-- 746: keep a spare copy of the modulus word under the working copy and copy the
 width-normalized base word the entry left at depth two under the modulus. -/
 def modulusProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .op (.Dup ⟨3, by decide⟩)]
-
+  [.op (.Dup ⟨0,by decide⟩),.op (.Dup ⟨3,by decide⟩)]
 set_option linter.unusedSimpArgs false in
 theorem run_modulus (template : State)
     (value base : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
     (hbase : rest[1]? = some base) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 718) (value :: rest)) =
-    some (framed template (UInt256.ofNat 720)
-      (base :: value :: value :: rest)) := by
+    runInstructions modulusProgram (framed template (UInt256.ofNat 956) (value::rest)) =
+    some (framed template (UInt256.ofNat 958)
+      (base::value::value::rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega
   have hcap3 : rest.length + 3 < 1024 := by omega
-  simp [runInstructions, modulusProgram, framed, Challenge.EvmProof.Stepper.runInstr,
-    hcap1, hcap2, hbase, Challenge.EvmProof.Word.succ_ofNat_mod,
+  simp [runInstructions,modulusProgram,framed,Challenge.EvmProof.Stepper.runInstr,
+    hcap1,hcap2,hbase,Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry

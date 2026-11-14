@@ -1,15 +1,12 @@
 import Challenge.Modexp.Submission.Proofs.Fast.EarlyCsubModel
 import Challenge.Modexp.Submission.Proofs.Fast.EarlyCsubInstructions
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 2000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.Csub
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open EarlyCsub
-
 def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
     (pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008)
@@ -48,5 +45,4 @@ def gasSteps_csub (s : State) (memory : ByteArray) (n : Nat)
     have hc' : Challenge.EvmProof.GasSteps (csEntryState s memory pdst ret rest)
         (subEntryState s memory pdst ret rest) := hc.trans hj
     simpa only [csReturnedState,if_neg hskip,subReturnedState] using hc'.trans hk
-
 end Challenge.Modexp.Submission.Proofs.Fast.Csub

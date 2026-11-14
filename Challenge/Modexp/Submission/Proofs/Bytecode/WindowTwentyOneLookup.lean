@@ -1,25 +1,19 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowCopyMemory
-
 set_option warningAsError true
-
 /-!
 Artifact-independent lookup for every staged digit.  The table index is read from the
 exponent copies the trampoline stored above the table (`WindowCopyMemory`): an
 unaligned `MLOAD` at the digit's copy address, masked with the frame's `480`.
 Concrete bytecode bindings are supplied separately.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLookup
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
-
 def program (slot : Nat) (hslot : slot ≤ 11) (laddr : Nat) : List Instr :=
-  [.push 2 (UInt256.ofNat laddr), .op .MLOAD,
-   .op (.Dup ⟨slot + 4, by omega⟩), .op .AND,
-   .op .MLOAD, .op .MULMOD]
-
+  [.push 2 (UInt256.ofNat laddr),.op .MLOAD,
+   .op (.Dup ⟨slot + 4,by omega⟩),.op .AND,
+   .op .MLOAD,.op .MULMOD]
 /-- The loop frame: memory and active-word count are explicit (table only before the
 first trampoline pass, table plus exponent copies afterwards). -/
 def framed (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
@@ -29,12 +23,10 @@ def framed (template : State) (pc : UInt256) (mem : ByteArray) (active : Nat)
     stack := stack
     memory := mem
     activeWords := UInt256.ofNat active }
-
 theorem activeWordsAfter_table (index : Nat) (hindex : index < 16) :
     MachineState.activeWordsAfter 18 (32 * index) 32 = 18 := by
   simp [MachineState.activeWordsAfter]
   omega
-
 /-- Consume the first staged modulus; the remaining tail is exactly preserved.
 For the three positions in a group, `slot` is 11, 6 or 1 respectively. -/
 theorem run_lookup (template : State) (pc : UInt256) (mem : ByteArray)
@@ -48,33 +40,31 @@ theorem run_lookup (template : State) (pc : UInt256) (mem : ByteArray)
       (UInt256.land (UInt256.ofNat 480) (MachineState.readWord mem laddr)).toNat = 32 * index)
     (hcap : tail.length + 4 < 1024) :
     runInstructions (program slot hslot laddr)
-      (framed template pc mem 18 (accumulator :: modulus :: tail)) =
+      (framed template pc mem 18 (accumulator::modulus::tail)) =
     some (framed template (advancePC 8 pc) mem 18
       (UInt256.mulMod (WindowMath.tableWord base modulus index)
-        accumulator modulus :: tail)) := by
+        accumulator modulus::tail)) := by
   have hcap2 : tail.length + 2 < 1024 := by omega
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hl : (UInt256.ofNat laddr).toNat = laddr := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have h18 : (UInt256.ofNat 18).toNat = 18 := rfl
   have hactive := activeWordsAfter_table index hindex
   have hactive' := WindowCopyMemory.activeWordsAfter_eighteen laddr hladdr
   have hpush3 : UInt256.ofNat 3 = UInt256.ofNat 1 + UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp (disch := omega)
-    [runInstructions, program, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap, hcap2, hcap3, List.getElem?_cons_succ, hl, h18,
-      hmask, haddress, hread, hactive, hactive', State.activeWordsAfterUInt256,
-      advancePC, succ_eq_add, hpush3, word_add_assoc]
-
+    [runInstructions,program,framed,Challenge.EvmProof.Stepper.runInstr,
+      hcap,hcap2,hcap3,List.getElem?_cons_succ,hl,h18,
+      hmask,haddress,hread,hactive,hactive',State.activeWordsAfterUInt256,
+      advancePC,succ_eq_add,hpush3,word_add_assoc]
 /-- The FINAL digit of the ladder (nibble 0).  Two thirty-two-byte exponent rows admit
 exactly thirty-one clean addresses each, so nibble 0 is the one digit no `laddr` reaches;
 it is read from the frame's own shifted exponent instead.  Seven instructions and
 **eight bytes**, the same width as `program`, so the pc advance is unchanged. -/
 def programLast : List Instr :=
-  [.op (.Dup ⟨3, by omega⟩), .push 1 4, .op .SHL,
-   .op (.Dup ⟨5, by omega⟩), .op .AND,
-   .op .MLOAD, .op .MULMOD]
-
+  [.op (.Dup ⟨3,by omega⟩),.push 1 4,.op .SHL,
+   .op (.Dup ⟨5,by omega⟩),.op .AND,
+   .op .MLOAD,.op .MULMOD]
 /-- As `run_lookup`, but the table index comes from `tail[1]` (the frame's shifted
 exponent) masked with `tail[2]` (the frame's 480), instead of from memory at `laddr`. -/
 theorem run_lookupLast (template : State) (pc : UInt256) (mem : ByteArray)
@@ -88,19 +78,18 @@ theorem run_lookupLast (template : State) (pc : UInt256) (mem : ByteArray)
       (UInt256.land (UInt256.ofNat 480) (UInt256.shiftLeft exponent 4)).toNat = 32 * index)
     (hcap : tail.length + 4 < 1024) :
     runInstructions programLast
-      (framed template pc mem 18 (accumulator :: modulus :: tail)) =
+      (framed template pc mem 18 (accumulator::modulus::tail)) =
     some (framed template (advancePC 8 pc) mem 18
       (UInt256.mulMod (WindowMath.tableWord base modulus index)
-        accumulator modulus :: tail)) := by
+        accumulator modulus::tail)) := by
   have hcap2 : tail.length + 2 < 1024 := by omega
   have hcap3 : tail.length + 3 < 1024 := by omega
   have h18 : (UInt256.ofNat 18).toNat = 18 := rfl
   have hactive := activeWordsAfter_table index hindex
   have hpush2 : UInt256.ofNat 2 = UInt256.ofNat 1 + UInt256.ofNat 1 := by decide
   simp (disch := omega)
-    [runInstructions, programLast, framed, Challenge.EvmProof.Stepper.runInstr,
-      hcap, hcap2, hcap3, List.getElem?_cons_succ, h18,
-      hexp, hmask, haddress, hread, hactive, State.activeWordsAfterUInt256,
-      advancePC, succ_eq_add, hpush2, word_add_assoc]
-
+    [runInstructions,programLast,framed,Challenge.EvmProof.Stepper.runInstr,
+      hcap,hcap2,hcap3,List.getElem?_cons_succ,h18,
+      hexp,hmask,haddress,hread,hactive,State.activeWordsAfterUInt256,
+      advancePC,succ_eq_add,hpush2,word_add_assoc]
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneLookup

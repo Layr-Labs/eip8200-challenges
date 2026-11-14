@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.Fast.CarryRowModel
 import Challenge.Modexp.Submission.Proofs.Fast.StagedOperandMemory
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
@@ -9,10 +8,8 @@ namespace Challenge.Modexp.Submission.Proofs.Fast.CarryResult
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast
 open Monpro CarryRowModel CarryScratchAgreement StagedOperand
-
 def selectedRows (mem : ByteArray) (pa pb n i : Nat) : ByteArray :=
   if eligible mem n then rowsCarry mem pa pb n i else rowsMem mem pa pb n i
-
 theorem selectedRows_agree (mem : ByteArray) (pa pb n i : Nat)
     (hpa : pa+32*n ≤ 2048) (hpb : pb+32*n ≤ 2048)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hi : i ≤ n) :
@@ -21,7 +18,6 @@ theorem selectedRows_agree (mem : ByteArray) (pa pb n i : Nat)
   split
   · exact rows_agree mem pa pb n i hpa hpb hn hn32 hi
   · exact refl _
-
 theorem selectedRows_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
     (hn : n ≤ 8) (hout : addr+32 ≤ 2048 ∨ 2624 ≤ addr) :
     MachineState.readWord (selectedRows mem pa pb n i) addr = MachineState.readWord mem addr := by
@@ -29,19 +25,15 @@ theorem selectedRows_readWord_outside (mem : ByteArray) (pa pb n i addr : Nat)
   split
   · exact readWord_rowsCarry mem pa pb n addr hn hout i
   · exact rowsMem_readWord_outside mem pa pb n i addr hn hout
-
 def monproMem (s : State) (mem : ByteArray) (pa pb n pdst : Nat) : ByteArray :=
   Csub.csResultMemory (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst
-
 theorem monproMem_def (s : State) (mem : ByteArray) (pa pb n pdst : Nat) :
     monproMem s mem pa pb n pdst =
       Csub.csResultMemory (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n pdst := rfl
-
 theorem csReturnedState_memory_monproMem (s : State) (mem : ByteArray) (pa pb n : Nat)
     (pdst ret : UInt256) (rest : List UInt256) :
     (Csub.csReturnedState s (selectedRows (mpZeroed s (inputMemory mem pa n) n) pa pb n n) n n pdst ret
       rest).memory = monproMem s mem pa pb n pdst.toNat := rfl
-
 theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : addr + 32 ≤ 1792 ∨ 1792 + 32 * n ≤ addr)
@@ -54,7 +46,6 @@ theorem monproMem_readWord_outside (s : State) (mem : ByteArray)
     selectedRows_readWord_outside _ pa pb n n addr hn32 hscratch,
     mpZeroed_readWord_outside s (inputMemory mem pa n) n addr (by omega),
     read_inputMemory_outside mem pa n addr hscratch]
-
 theorem monproMem_readWord_high (s : State) (mem : ByteArray)
     (pa pb n pdst addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdst : pdst + 32 * n ≤ 2048) (haddr : 2624 ≤ addr) :
@@ -62,7 +53,6 @@ theorem monproMem_readWord_high (s : State) (mem : ByteArray)
       MachineState.readWord mem addr :=
   monproMem_readWord_outside s mem pa pb n pdst addr hn hn32 (Or.inr (by omega))
     (Or.inr (by omega)) (Or.inr (by omega))
-
 theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hdst : pdst + 32 * n ≤ 2048) :
     MachineState.readWord (monproMem s mem pa pb n pdst) 2688 =
@@ -80,7 +70,6 @@ theorem monproMem_frame (s : State) (mem : ByteArray) (pa pb n pdst : Nat)
    monproMem_readWord_high s mem pa pb n pdst 2752 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2784 hn hn32 hdst (by omega),
    monproMem_readWord_high s mem pa pb n pdst 2656 hn hn32 hdst (by omega)⟩
-
 theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
     (pa pb n pdst ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hsubb : ptr + 32 * cnt ≤ 1792 ∨ 1792 + 32 * n ≤ ptr)
@@ -93,8 +82,6 @@ theorem monproMem_fastRepresents_outside (s : State) (mem : ByteArray)
   intro j hj
   exact (monproMem_readWord_outside s mem pa pb n pdst (ptr + 32 * j) hn hn32
     (by omega) (by omega) (by omega)).symm
-
-
 theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
     (a b mm : Nat) (hn32 : p+2 ≤ 8)
     (hpa : pa+32*(p+2) ≤ 2048) (hpb : pb+32*(p+2) ≤ 2048)
@@ -125,5 +112,4 @@ theorem monproMem_represents (s : State) (mem : ByteArray) (pa pb p pdst : Nat)
   have hres := csResult_agree _ _ hrow (p+2) pdst (by omega) hn32 htn
   have hrep := Monpro.monproMem_represents s prepared pa pb p pdst a b mm hn32 hpa hpb ha' hb' hm' hodd ham hminv'
   exact (fastRepresents_iff _ _ hres pdst (p+2) _ (Or.inl hpd)).2 hrep
-
 end Challenge.Modexp.Submission.Proofs.Fast.CarryResult

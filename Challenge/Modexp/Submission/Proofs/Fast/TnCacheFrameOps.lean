@@ -1,45 +1,35 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.TnCacheMemory
 import Challenge.Modexp.Submission.Proofs.Fast.CiosCachedMacWords
-
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnCacheFrameOps
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
-
 def frame (pbi hd pb ent tn target inv : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi,hd,pb,ent,tn,allOnes,target,inv] ++ rest
-
-def reset : List Instr := [.push 0 0, .op (.Swap sA4), .op .POP]
-
-def flush : List Instr := [.op (.Dup dA4), .push 2 2080, .op .MSTORE]
-
+  [pbi,hd,pb,ent,tn,allOnes,target,inv]++rest
+def reset : List Instr := [.push 0 0,.op (.Swap sA4),.op .POP]
+def flush : List Instr := [.op (.Dup dA4),.push 2 2080,.op .MSTORE]
 def advanceShort : List Instr :=
-  [.push 1 31, .op .NOT, .op .ADD, .op (.Dup dA2),
-   .op (.Dup dA1), .op .GT, .op (.Dup dA2), .op .JUMPI]
-
+  [.push 1 31,.op .NOT,.op .ADD,.op (.Dup dA2),
+   .op (.Dup dA1),.op .GT,.op (.Dup dA2),.op .JUMPI]
 def advance : List Instr :=
-  [.push 1 32, .op .ADD, .op (.Dup dA0), .op (.Dup dA2), .op .JUMPI]
-
+  [.push 1 32,.op .ADD,.op (.Dup dA0),.op (.Dup dA2),.op .JUMPI]
 theorem run_reset (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) :
     runInstructions reset (framed s (UInt256.ofNat pc0) (frame pbi hd pb ent tn target inv rest)) =
     some (framed s (UInt256.ofNat (pc0+3)) (frame pbi hd pb ent 0 target inv rest)) := by
   have hc8 : rest.length+8 < 1024 := by omega
   have hc9 : rest.length+9 < 1024 := by omega
-  simp [reset, frame, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc8, hc9, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+  simp [reset,frame,runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+    hc8,hc9,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
-
 theorem run_flush (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions flush (framed s (UInt256.ofNat pc0) (frame pbi hd pb ent tn target inv rest)) =
@@ -50,12 +40,11 @@ theorem run_flush (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256
   have hc10 : rest.length+10 < 1024 := by omega
   have haw := activeWords_fix s 2080 32 (by decide) (by omega) hact
   have haddr : (2080 : UInt256).toNat = 2080 := by decide
-  simp [flush, frame, runInstructions, framed, TnCacheMemory.lift,
-    Challenge.EvmProof.Stepper.runInstr, hc8, hc9, hc10, Nat.add_assoc, haw, haddr,
+  simp [flush,frame,runInstructions,framed,TnCacheMemory.lift,
+    Challenge.EvmProof.Stepper.runInstr,hc8,hc9,hc10,Nat.add_assoc,haw,haddr,
     State.activeWordsAfterUInt256,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_advance (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
@@ -67,11 +56,10 @@ theorem run_advance (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt2
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
   by_cases ht : UInt256.isTrue (UInt256.ofNat 32+pbi) <;>
-    simp [advance, frame, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-      hc8, hc9, hc10, Nat.add_assoc, ht, htarget,
-      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+    simp [advance,frame,runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+      hc8,hc9,hc10,Nat.add_assoc,ht,htarget,
+      Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_advanceShort (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1006)
     (htarget : Decode.isValidJumpDest s.executionEnv.code hd.toNat = true) :
@@ -84,46 +72,41 @@ theorem run_advanceShort (pc0 : Nat) (s : State) (pbi hd pb ent tn target inv : 
   have hc9 : rest.length+9 < 1024 := by omega
   have hc10 : rest.length+10 < 1024 := by omega
   by_cases ht : UInt256.isTrue (UInt256.gt (negative32+pbi) pb) <;>
-    simp [advanceShort, hnegative, frame, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-      hc8, hc9, hc10, Nat.add_assoc, ht, htarget,
-      Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-      Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
-def reset13 : List Instr := [.push 0 0, .op (.Swap sA12), .op .POP]
-
-def flush13 : List Instr := [.op (.Dup dA12), .push 2 2080, .op .MSTORE]
-
+    simp [advanceShort,hnegative,frame,runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+      hc8,hc9,hc10,Nat.add_assoc,ht,htarget,
+      Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+      Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
+def reset13 : List Instr := [.push 0 0,.op (.Swap sA12),.op .POP]
+def flush13 : List Instr := [.op (.Dup dA12),.push 2 2080,.op .MSTORE]
 theorem run_reset13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1001) :
     runInstructions reset13 (framed s (UInt256.ofNat pc0)
-      (frame pbi hd pb ent w5 target w8 (r0 :: r1 :: r2 :: r3 :: tn :: rest))) =
+      (frame pbi hd pb ent w5 target w8 (r0::r1::r2::r3::tn::rest))) =
     some (framed s (UInt256.ofNat (pc0+3))
-      (frame pbi hd pb ent w5 target w8 (r0 :: r1 :: r2 :: r3 :: 0 :: rest))) := by
+      (frame pbi hd pb ent w5 target w8 (r0::r1::r2::r3::0::rest))) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
   have hc14 : rest.length+14 < 1024 := by omega
-  simp [reset13, frame, runInstructions, framed, Challenge.EvmProof.Stepper.runInstr,
-    hc12, hc13, hc14, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
+  simp [reset13,frame,runInstructions,framed,Challenge.EvmProof.Stepper.runInstr,
+    hc12,hc13,hc14,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
   rfl
-
 theorem run_flush13 (pc0 : Nat) (s : State) (pbi hd pb ent w5 target w8 r0 r1 r2 r3 tn : UInt256)
     (rest : List UInt256) (hcap : rest.length ≤ 1001) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions flush13 (framed s (UInt256.ofNat pc0)
-      (frame pbi hd pb ent w5 target w8 (r0 :: r1 :: r2 :: r3 :: tn :: rest))) =
+      (frame pbi hd pb ent w5 target w8 (r0::r1::r2::r3::tn::rest))) =
     some (framed {s with memory := TnCacheMemory.lift s.memory tn}
-      (UInt256.ofNat (pc0+5)) (frame pbi hd pb ent w5 target w8 (r0 :: r1 :: r2 :: r3 :: tn :: rest))) := by
+      (UInt256.ofNat (pc0+5)) (frame pbi hd pb ent w5 target w8 (r0::r1::r2::r3::tn::rest))) := by
   have hc12 : rest.length+12 < 1024 := by omega
   have hc13 : rest.length+13 < 1024 := by omega
   have hc14 : rest.length+14 < 1024 := by omega
   have hc15 : rest.length+15 < 1024 := by omega
   have haw := activeWords_fix s 2080 32 (by decide) (by omega) hact
   have haddr : (2080 : UInt256).toNat = 2080 := by decide
-  simp [flush13, frame, runInstructions, framed, TnCacheMemory.lift,
-    Challenge.EvmProof.Stepper.runInstr, hc12, hc13, hc14, hc15, Nat.add_assoc, haw, haddr,
+  simp [flush13,frame,runInstructions,framed,TnCacheMemory.lift,
+    Challenge.EvmProof.Stepper.runInstr,hc12,hc13,hc14,hc15,Nat.add_assoc,haw,haddr,
     State.activeWordsAfterUInt256,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 end Challenge.Modexp.Submission.Proofs.Fast.TnCacheFrameOps

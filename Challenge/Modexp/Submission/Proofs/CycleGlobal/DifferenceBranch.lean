@@ -16,7 +16,7 @@ namespace CycleSubmission.DifferenceBranch
      UInt256.gt (UInt256.lt a q) carry = UInt256.ofNat 0 := by
   have he := sub_zero_eq a q h
   subst q
-  simp [UInt256.lt, UInt256.gt, UInt256.toNat, UInt256.ofNat]
+  simp [UInt256.lt,UInt256.gt,UInt256.toNat,UInt256.ofNat]
  theorem difference_nonzero_of_flags (a q carry : UInt256)
      (h : (UInt256.gt (UInt256.lt a q) carry).toNat ≠ 0 ∨ (a-q).toNat ≠ 0) :
      (a-q).toNat ≠ 0 := by

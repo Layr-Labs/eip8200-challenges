@@ -5,7 +5,6 @@ set_option maxHeartbeats 2000000
 namespace HistoricalSearch.FixedExponent
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 theorem mulMod_power (base modulus left right : UInt256) (a b c : Nat) (hsum : a+b=c)
     (hm : 0 < modulus.toNat)
     (hl : left.toNat % modulus.toNat = base.toNat ^ a % modulus.toNat)
@@ -13,9 +12,8 @@ theorem mulMod_power (base modulus left right : UInt256) (a b c : Nat) (hsum : a
     (UInt256.mulMod left right modulus).toNat % modulus.toNat =
       base.toNat ^ c % modulus.toNat := by
   rw [← hsum]
-  rw [WindowMath.mulMod_toNat _ _ _ hm, Nat.mod_mod,
-    Nat.mul_mod left.toNat right.toNat, hl, hr, ← Nat.mul_mod, ← Nat.pow_add]
-
+  rw [WindowMath.mulMod_toNat _ _ _ hm,Nat.mod_mod,
+    Nat.mul_mod left.toNat right.toNat,hl,hr,← Nat.mul_mod,← Nat.pow_add]
 def value (base modulus : UInt256) : UInt256 :=
   let x0 := base
   let x1 := UInt256.mulMod x0 x0 modulus
@@ -325,7 +323,6 @@ def value (base modulus : UInt256) : UInt256 :=
   let x305 := UInt256.mulMod x304 x304 modulus
   let x306 := UInt256.mulMod x3 x305 modulus
   x306
-
 theorem value_toNat (base modulus : UInt256) (hm : 0 < modulus.toNat) :
   (value base modulus).toNat =
     base.toNat ^ 21888242871839275222246405745257275088696311157297823662689037894645226208581 % modulus.toNat := by
@@ -1255,5 +1252,4 @@ theorem value_toNat (base modulus : UInt256) (hm : 0 < modulus.toNat) :
     exact Nat.mod_lt _ hm
   rw [Nat.mod_eq_of_lt hlt] at h306
   exact h306
-
 end HistoricalSearch.FixedExponent

@@ -1,11 +1,9 @@
 import Challenge.Modexp.Spec
 import Challenge.EvmProof.Bytes
 import Mathlib.Tactic.Ring
-
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 2000000
-
 /-!
 # Four-bit window arithmetic
 
@@ -13,12 +11,9 @@ Artifact-independent semantics for one exponent byte and for a prefix of
 bytes.  The execution proof only has to show that its table lookup implements
 `nibbleStep`; this module then supplies the MODEXP exponent invariant.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowMath
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 theorem mulMod_toNat (left right modulus : UInt256)
     (hmodulus : 0 < modulus.toNat) :
     (UInt256.mulMod left right modulus).toNat =
@@ -29,32 +24,26 @@ theorem mulMod_toNat (left right modulus : UInt256)
   rw [Challenge.EvmProof.Word.word_toNat_ofNat]
   apply Nat.mod_eq_of_lt
   exact (Nat.mod_lt _ hmodulus).trans modulus.val.isLt
-
 private theorem left_mod_mul (a b modulus : Nat) :
     ((a % modulus) * b) % modulus = (a * b) % modulus := by
-  rw [Nat.mul_mod, Nat.mod_mod, ← Nat.mul_mod]
-
+  rw [Nat.mul_mod,Nat.mod_mod,← Nat.mul_mod]
 private theorem mul_mod_reduced (a b modulus : Nat) :
     ((a % modulus) * (b % modulus)) % modulus =
       (a * b) % modulus :=
   (Nat.mul_mod a b modulus).symm
-
 private theorem right_mod_mul (a b modulus : Nat) :
     (a * (b % modulus)) % modulus = (a * b) % modulus := by
-  rw [Nat.mul_comm a, left_mod_mul, Nat.mul_comm b]
-
+  rw [Nat.mul_comm a,left_mod_mul,Nat.mul_comm b]
 def squareAfter (modulus : Nat) : Nat → Nat → Nat
-  | 0, acc => acc
-  | count + 1, acc =>
+  | 0,acc => acc
+  | count + 1,acc =>
       let previous := squareAfter modulus count acc
       (previous * previous) % modulus
-
 def squareWordAfter (modulus : UInt256) : Nat → UInt256 → UInt256
-  | 0, acc => acc
-  | count + 1, acc =>
+  | 0,acc => acc
+  | count + 1,acc =>
       let previous := squareWordAfter modulus count acc
       UInt256.mulMod previous previous modulus
-
 theorem squareWordAfter_toNat (modulus acc : UInt256) (count : Nat)
     (hmodulus : 0 < modulus.toNat) :
     (squareWordAfter modulus count acc).toNat =
@@ -62,16 +51,15 @@ theorem squareWordAfter_toNat (modulus acc : UInt256) (count : Nat)
   induction count with
   | zero => rfl
   | succ count ih =>
-      rw [squareWordAfter, squareAfter,
-        mulMod_toNat _ _ _ hmodulus, ih]
-
+      rw [squareWordAfter,squareAfter,
+        mulMod_toNat _ _ _ hmodulus,ih]
 theorem squareAfter_succ_eq (modulus acc count : Nat) :
     squareAfter modulus (count + 1) acc =
       acc ^ (2 ^ (count + 1)) % modulus := by
   induction count with
-  | zero => simp [squareAfter, pow_two]
+  | zero => simp [squareAfter,pow_two]
   | succ count ih =>
-      rw [squareAfter, ih, mul_mod_reduced]
+      rw [squareAfter,ih,mul_mod_reduced]
       congr 1
       calc
         acc ^ (2 ^ (count + 1)) * acc ^ (2 ^ (count + 1)) =
@@ -79,15 +67,13 @@ theorem squareAfter_succ_eq (modulus acc count : Nat) :
         _ = acc ^ (2 ^ (count + 1) * 2) := by rw [← Nat.pow_mul]
         _ = acc ^ (2 ^ (count + 1 + 1)) := by
           congr 1
-
 theorem squareWordFour_toNat (modulus acc : UInt256)
     (hmodulus : 0 < modulus.toNat) :
     (squareWordAfter modulus 4 acc).toNat =
       acc.toNat ^ 16 % modulus.toNat := by
   rw [squareWordAfter_toNat modulus acc 4 hmodulus,
-    show 4 = 3 + 1 by omega, squareAfter_succ_eq]
+    show 4 = 3 + 1 by omega,squareAfter_succ_eq]
   norm_num
-
 /-- Exact table word shape: slots zero and one are stored unreduced; every
 later slot is the preceding word multiplied by the base modulo `modulus`. -/
 def tableWord (base modulus : UInt256) : Nat → UInt256
@@ -95,7 +81,6 @@ def tableWord (base modulus : UInt256) : Nat → UInt256
   | index + 1 =>
       if index = 0 then base
       else UInt256.mulMod (tableWord base modulus index) base modulus
-
 theorem tableWord_mod (base modulus : UInt256) (index : Nat)
     (hmodulus : 0 < modulus.toNat) :
     (tableWord base modulus index).toNat % modulus.toNat =
@@ -106,7 +91,7 @@ theorem tableWord_mod (base modulus : UInt256) (index : Nat)
       by_cases hzero : index = 0
       · subst index
         simp [tableWord]
-      · rw [tableWord, if_neg hzero, mulMod_toNat _ _ _ hmodulus,
+      · rw [tableWord,if_neg hzero,mulMod_toNat _ _ _ hmodulus,
           Nat.mod_mod]
         calc
           (tableWord base modulus index).toNat * base.toNat %
@@ -121,19 +106,16 @@ theorem tableWord_mod (base modulus : UInt256) (index : Nat)
             left_mod_mul (base.toNat ^ index) base.toNat modulus.toNat
           _ = base.toNat ^ (index + 1) % modulus.toNat := by
             rw [Nat.pow_succ]
-
 def nibbleStep (modulus base acc nibble : Nat) : Nat :=
   (acc ^ 16 * base ^ nibble) % modulus
-
 def nibbleWordStep (modulus base acc : UInt256) (nibble : Nat) : UInt256 :=
   UInt256.mulMod (squareWordAfter modulus 4 acc)
     (tableWord base modulus nibble) modulus
-
 theorem nibbleWordStep_toNat (modulus base acc : UInt256) (nibble : Nat)
     (hmodulus : 0 < modulus.toNat) :
     (nibbleWordStep modulus base acc nibble).toNat =
       nibbleStep modulus.toNat base.toNat acc.toNat nibble := by
-  rw [nibbleWordStep, mulMod_toNat _ _ _ hmodulus,
+  rw [nibbleWordStep,mulMod_toNat _ _ _ hmodulus,
     squareWordFour_toNat modulus acc hmodulus]
   unfold nibbleStep
   calc
@@ -149,33 +131,27 @@ theorem nibbleWordStep_toNat (modulus base acc : UInt256) (nibble : Nat)
       rw [tableWord_mod base modulus nibble hmodulus]
     _ = (acc.toNat ^ 16 * base.toNat ^ nibble) % modulus.toNat :=
       mul_mod_reduced (acc.toNat ^ 16) (base.toNat ^ nibble) modulus.toNat
-
 def byteStep (modulus base acc byte : Nat) : Nat :=
   nibbleStep modulus base
     (nibbleStep modulus base acc (byte / 16)) (byte % 16)
-
 def byteWordStep (modulus base acc : UInt256) (byte : Nat) : UInt256 :=
   nibbleWordStep modulus base
     (nibbleWordStep modulus base acc (byte / 16)) (byte % 16)
-
 theorem byteWordStep_toNat (modulus base acc : UInt256) (byte : Nat)
     (hmodulus : 0 < modulus.toNat) :
     (byteWordStep modulus base acc byte).toNat =
       byteStep modulus.toNat base.toNat acc.toNat byte := by
-  rw [byteWordStep, nibbleWordStep_toNat _ _ _ _ hmodulus,
+  rw [byteWordStep,nibbleWordStep_toNat _ _ _ _ hmodulus,
     nibbleWordStep_toNat _ _ _ _ hmodulus]
   rfl
-
 def exponentByte (input : ByteArray) (offset index : Nat) : Nat :=
   (YulSemantics.EVM.byteFrom input.toList (offset + index)).toNat
-
 def afterBytes (input : ByteArray) (offset modulus base : Nat) :
     Nat → Nat → Nat
-  | 0, acc => acc
-  | count + 1, acc => byteStep modulus base
+  | 0,acc => acc
+  | count + 1,acc => byteStep modulus base
       (afterBytes input offset modulus base count acc)
       (exponentByte input offset count)
-
 theorem afterBytes_add (input : ByteArray)
     (offset modulus base left right acc : Nat) :
     afterBytes input offset modulus base (left + right) acc =
@@ -184,14 +160,13 @@ theorem afterBytes_add (input : ByteArray)
   induction right with
   | zero => rfl
   | succ right ih =>
-      rw [Nat.add_succ, afterBytes, ih, afterBytes]
+      rw [Nat.add_succ,afterBytes,ih,afterBytes]
       have hbyte : exponentByte input offset (left + right) =
           exponentByte input (offset + left) right := by
         unfold exponentByte
         congr 2
         omega
       rw [hbyte]
-
 def chunkWordStep (modulus base acc word : UInt256) : UInt256 :=
   let after0 := byteWordStep modulus base acc
     (UInt256.byteAt (UInt256.ofNat 0) word).toNat
@@ -201,7 +176,6 @@ def chunkWordStep (modulus base acc word : UInt256) : UInt256 :=
     (UInt256.byteAt (UInt256.ofNat 2) word).toNat
   byteWordStep modulus base after2
     (UInt256.byteAt (UInt256.ofNat 3) word).toNat
-
 theorem chunkWordStep_toNat (modulus base acc word : UInt256)
     (hmodulus : 0 < modulus.toNat) :
     (chunkWordStep modulus base acc word).toNat =
@@ -218,7 +192,6 @@ theorem chunkWordStep_toNat (modulus base acc word : UInt256)
     byteWordStep_toNat _ _ _ _ hmodulus,
     byteWordStep_toNat _ _ _ _ hmodulus,
     byteWordStep_toNat _ _ _ _ hmodulus]
-
 private theorem byteAtRead_toNat (input : ByteArray) (offset index : Nat)
     (hindex : index < 32) :
     (UInt256.byteAt (UInt256.ofNat index)
@@ -231,7 +204,6 @@ private theorem byteAtRead_toNat (input : ByteArray) (offset index : Nat)
       ((YulSemantics.EVM.byteFrom input.toList (offset + index)).toNat_lt.trans
         (by norm_num))] at h
   exact h
-
 theorem chunkReadWord_toNat (input : ByteArray) (offset : Nat)
     (modulus base acc : UInt256) (hmodulus : 0 < modulus.toNat) :
     (chunkWordStep modulus base acc (MachineState.readWord input offset)).toNat =
@@ -242,16 +214,14 @@ theorem chunkReadWord_toNat (input : ByteArray) (offset : Nat)
     byteAtRead_toNat input offset 2 (by norm_num),
     byteAtRead_toNat input offset 3 (by norm_num)]
   rfl
-
 /-- Word-level loop model used by the concrete bytecode: one calldata word is
 loaded for every four processed exponent bytes. -/
 def afterChunksWord (input : ByteArray) (offset : Nat)
     (modulus base : UInt256) : Nat → UInt256 → UInt256
-  | 0, acc => acc
-  | count + 1, acc =>
+  | 0,acc => acc
+  | count + 1,acc =>
       chunkWordStep modulus base (afterChunksWord input offset modulus base
         count acc) (MachineState.readWord input (offset + 4 * count))
-
 theorem afterChunksWord_toNat (input : ByteArray) (offset : Nat)
     (modulus base acc : UInt256) (count : Nat)
     (hmodulus : 0 < modulus.toNat) :
@@ -266,7 +236,6 @@ theorem afterChunksWord_toNat (input : ByteArray) (offset : Nat)
       rw [show 4 * (count + 1) = 4 * count + 4 by omega,
         afterBytes_add input offset modulus.toNat base.toNat (4 * count) 4
           acc.toNat]
-
 /-- Two four-bit steps are one base-256 Horner step. -/
 theorem byteStep_eq (modulus base acc byte : Nat) :
     byteStep modulus base acc byte =
@@ -285,18 +254,16 @@ theorem byteStep_eq (modulus base acc byte : Nat) :
       left_mod_mul (inner ^ 16) (base ^ low) modulus
     _ = (acc ^ 256 * base ^ byte) % modulus := by
       congr 1
-      dsimp [inner, high, low]
-      rw [Nat.mul_pow, ← Nat.pow_mul, ← Nat.pow_mul,
-        show 16 * 16 = 256 by norm_num, Nat.mul_assoc, ← Nat.pow_add]
+      dsimp [inner,high,low]
+      rw [Nat.mul_pow,← Nat.pow_mul,← Nat.pow_mul,
+        show 16 * 16 = 256 by norm_num,Nat.mul_assoc,← Nat.pow_add]
       congr 2
       rw [Nat.mul_comm (byte / 16) 16]
       exact Nat.div_add_mod byte 16
-
 theorem byteStep_lt (modulus base acc byte : Nat) (hmodulus : 0 < modulus) :
     byteStep modulus base acc byte < modulus := by
   unfold byteStep nibbleStep
   exact Nat.mod_lt _ hmodulus
-
 theorem afterBytes_lt (input : ByteArray) (offset modulus base acc count : Nat)
     (hmodulus : 0 < modulus) (hacc : acc < modulus) :
     afterBytes input offset modulus base count acc < modulus := by
@@ -305,7 +272,6 @@ theorem afterBytes_lt (input : ByteArray) (offset modulus base acc count : Nat)
   | succ count ih =>
       rw [afterBytes]
       exact byteStep_lt modulus base _ _ hmodulus
-
 /-- A processed byte prefix is the corresponding base-256 exponent prefix. -/
 theorem afterBytes_eq (input : ByteArray) (offset modulus base acc count : Nat)
     (hacc : acc < modulus) :
@@ -314,10 +280,10 @@ theorem afterBytes_eq (input : ByteArray) (offset modulus base acc count : Nat)
         base ^ (Precompile.bytesToNatPadded input offset count)) % modulus := by
   induction count with
   | zero =>
-      simp [afterBytes, Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width,
+      simp [afterBytes,Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width,
         Nat.mod_eq_of_lt hacc]
   | succ count ih =>
-      rw [afterBytes, byteStep_eq, ih,
+      rw [afterBytes,byteStep_eq,ih,
         Challenge.EvmProof.Bytes.bytesToNatPadded_succ]
       let a := acc ^ (256 ^ count)
       let b := base ^ (Precompile.bytesToNatPadded input offset count)
@@ -338,9 +304,8 @@ theorem afterBytes_eq (input : ByteArray) (offset modulus base acc count : Nat)
                 (Precompile.bytesToNatPadded input offset count * 256 +
                   digit)) % modulus := by
           congr 1
-          simp only [a, b, Nat.pow_succ, Nat.pow_mul, Nat.pow_add]
+          simp only [a,b,Nat.pow_succ,Nat.pow_mul,Nat.pow_add]
           ring
-
 /-- Starting from the reduced multiplicative identity yields ordinary modular
 exponentiation by the processed byte prefix. -/
 theorem afterBytes_one (input : ByteArray) (offset modulus base count : Nat)
@@ -360,7 +325,6 @@ theorem afterBytes_one (input : ByteArray) (offset modulus base count : Nat)
   · have hidentity : 1 % modulus = 1 := Nat.mod_eq_of_lt (by omega)
     rw [hidentity]
     simp
-
 /-- Processing at least one byte makes the literal EVM accumulator `1`
 equivalent to the mathematically reduced identity `1 % modulus`. -/
 theorem afterBytes_literal_one (input : ByteArray)
@@ -372,10 +336,9 @@ theorem afterBytes_literal_one (input : ByteArray)
     simp
   by_cases hone : modulus = 1
   · subst modulus
-    rw [afterBytes, afterBytes]
+    rw [afterBytes,afterBytes]
     unfold byteStep nibbleStep
-    rw [Nat.mod_one, Nat.mod_one]
+    rw [Nat.mod_one,Nat.mod_one]
   have hlt : 1 < modulus := by omega
   rw [Nat.mod_eq_of_lt hlt]
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowMath

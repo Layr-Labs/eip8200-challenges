@@ -12,36 +12,33 @@ open Challenge.Modexp.Submission.Proofs.Fast.Model
 open CycleSubmission.EntryMeaning CycleSubmission.InputWords CycleSubmission.WordArithmetic
 open CycleSubmission.ControlArithmetic (value)
 open HistoricalSearch.CRTMemoryCells
-
 theorem keeps_base (s : State) (f : Caller) (start count : Nat)
     (hs : 256 ≤ start) (he : start+count ≤ 768) :
     MachineState.readPadded (EntryBinding.entered s f).memory start count =
       MachineState.readPadded s.memory start count := by
   apply readPadded_storeCells
   intro c hc
-  simp only [cells, List.mem_cons, List.mem_nil_iff, or_false] at hc
+  simp only [cells,List.mem_cons,List.mem_nil_iff,or_false] at hc
   rcases hc with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> dsimp <;> omega
-
 theorem counter (s : State) (f : Caller) :
     PersistentLoop.counter (EntryBinding.entered s f) = f.counter := by
   rfl
-
 structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   state : State
   inv : UInt256
   inv_eq : inv = MachineState.readWord s.memory 2720
   a : Nat → UInt256
   n : Nat → UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 5231, stack := saved f} state
-  frame : state.stack = SquareMeaning.frame0 inv a SquareStep.zeroWords n (f.counter :: saved f)
-  pc : state.pc = UInt256.ofNat 5387
+  trace : GasSteps {s with pc := UInt256.ofNat 3328,stack := saved f} state
+  frame : state.stack = SquareMeaning.frame0 inv a SquareStep.zeroWords n (f.counter::saved f)
+  pc : state.pc = UInt256.ofNat 3484
   memory : SquareMeaning.Memory0 state.memory inv a SquareStep.zeroWords n
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
   counter : PersistentLoop.counter state = UInt256.ofNat (k-1)
-  aBound : ∀ i < 9, (a i).toNat < radix
-  nBound : ∀ i < 9, (n i).toNat < radix
+  aBound : ∀ i < 9,(a i).toNat < radix
+  nBound : ∀ i < 9,(n i).toNat < radix
   n0 : (n 0).toNat = N % radix
   nValue : value n = N
   inverse : (N*inv.toNat+1) % 2^256 = 0
@@ -49,7 +46,6 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   form : value a ≡ x*radix^9 [MOD N]
   calls : state.callStack = s.callStack
   small : value a + 2*N ≤ radix^9
-
 noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : f.tail.length ≤ 943) (hact : 88 ≤ s.activeWords.toNat)
@@ -60,13 +56,13 @@ noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     (hform : A ≡ x*2^2048 [MOD N]) (hsmall : A*2^112 + 2*N ≤ radix^9) : Outcome s f k N B x := by
   have hA := scaled_represents ha
   have hN := ordinary_represents hn
-  refine ⟨EntryBinding.entered s f, MachineState.readWord s.memory 2720, rfl,
-    scaled s.memory 2368, ordinary s.memory 0,
-    EntryBinding.gasSteps s f env hcap hact, rfl, rfl, memory_output s f,
-    rfl, rfl, rfl, ?_, hA.1, hN.1, ?_, hN.2, hinv, ?_, ?_, rfl, ?_⟩
-  · rw [counter, hcounter]
+  refine ⟨EntryBinding.entered s f,MachineState.readWord s.memory 2720,rfl,
+    scaled s.memory 2368,ordinary s.memory 0,
+    EntryBinding.gasSteps s f env hcap hact,rfl,rfl,memory_output s f,
+    rfl,rfl,rfl,?_,hA.1,hN.1,?_,hN.2,hinv,?_,?_,rfl,?_⟩
+  · rw [counter,hcounter]
   · have h := low_value hn 0 (by decide)
-    simpa only [radix, ordinary, show (0:Nat)<8 by decide, if_true, Nat.mul_zero, Nat.pow_zero, Nat.div_one] using h
+    simpa only [radix,ordinary,show (0:Nat)<8 by decide,if_true,Nat.mul_zero,Nat.pow_zero,Nat.div_one] using h
   · apply (fastRepresents_congr (a := (EntryBinding.entered s f).memory) (b := s.memory) ?_ B).mpr hb
     intro j hj
     unfold MachineState.readWord
@@ -76,13 +72,11 @@ noncomputable def prepare (s : State) (f : Caller) (k N A B x : Nat)
     rw [hA.2]
     have h := hform.mul_right (2^112)
     have hr : (2:Nat)^2048*2^112 = radix^9 := by
-      rw [radix, ← Nat.pow_add, ← Nat.pow_mul]
+      rw [radix,← Nat.pow_add,← Nat.pow_mul]
     calc
       A*2^112%N = ((x*2^2048)*2^112)%N := h
-      _ = (x*radix^9)%N := by rw [Nat.mul_assoc, hr]
-
+      _ = (x*radix^9)%N := by rw [Nat.mul_assoc,hr]
   · change (HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (scaled s.memory 2368 i).toNat)) + 2*N ≤ radix^9
     rw [hA.2]
     exact hsmall
-
 end CycleSubmission.EntryContract

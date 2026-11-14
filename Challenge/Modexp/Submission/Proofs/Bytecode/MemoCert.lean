@@ -1,5 +1,4 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.MemoLogic
-
 set_option warningAsError true
 set_option maxRecDepth 100000
 set_option maxHeartbeats 2000000
@@ -7,7 +6,6 @@ set_option maxHeartbeats 2000000
 -- whose exponent exceeds 256 unless this is raised.  With `warningAsError` on, omitting it
 -- is a build error rather than a silent `sorryAx`.
 set_option exponentiation.threshold 200000
-
 /-!
 # The specified result of the recognised tuple
 
@@ -16,20 +14,15 @@ specification is a constant on the recognised set.  The modulus is a power of
 two and the exponent is sixteen bits, so the arithmetic is one kernel
 evaluation rather than a square-and-multiply chain.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.MemoCert
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 /-- `3 ^ 65535 mod 2^255`. -/
 def answer : Nat :=
   0x3b01b01ac41f2d6e917c6d6a221ce793802469026d9ab7578fa2e79e4da6aaab
-
 private theorem pad_lt (input : ByteArray) (offset width : Nat) :
     Precompile.bytesToNatPadded input offset width < 256 ^ width :=
   Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input offset width
-
 /-- Every calldata byte the specification reads, forced by the four comparisons
 together with the challenge's own bound on the declared modulus size. -/
 theorem pins (input : ByteArray) (hvalid : ValidInput input)
@@ -38,8 +31,8 @@ theorem pins (input : ByteArray) (hvalid : ValidInput input)
       Precompile.bytesToNatPadded input 96 1 = 3 ∧
       Precompile.bytesToNatPadded input 97 2 = 65535 ∧
       Precompile.bytesToNatPadded input 99 32 = 2 ^ 255 := by
-  obtain ⟨hb, he, h68w, h100w⟩ := hmatch
-  obtain ⟨-, -, -, hmle⟩ := hvalid
+  obtain ⟨hb,he,h68w,h100w⟩ := hmatch
+  obtain ⟨-,-,-,hmle⟩ := hvalid
   have h68 : Precompile.bytesToNatPadded input 68 32 = 137506062208 := by
     have h := congrArg UInt256.toNat h68w
     rwa [Challenge.EvmProof.Bytes.readWord_toNat,
@@ -78,7 +71,7 @@ theorem pins (input : ByteArray) (hvalid : ValidInput input)
   norm_num at s4
   have hms : modulusSize input = 32 := by
     have hmdef : modulusSize input = Precompile.bytesToNatPadded input 64 32 := rfl
-    rw [hmdef, s4, h6828.1] at hmle ⊢
+    rw [hmdef,s4,h6828.1] at hmle ⊢
     have hz : Precompile.bytesToNatPadded input 64 4 = 0 := by omega
     rw [hz]
   -- the modulus value: byte 99 is 0x80 and bytes 100..130 are zero
@@ -89,19 +82,17 @@ theorem pins (input : ByteArray) (hvalid : ValidInput input)
   have h10031 : Precompile.bytesToNatPadded input 100 31 = 0 := by
     rw [h100] at s6; omega
   have hmod : Precompile.bytesToNatPadded input 99 32 = 2 ^ 255 := by
-    rw [s5, hb97.2, h10031]; norm_num
-  exact ⟨hms, hb96.1, hb97.1, hmod⟩
-
+    rw [s5,hb97.2,h10031]; norm_num
+  exact ⟨hms,hb96.1,hb97.1,hmod⟩
 theorem spec_eq (input : ByteArray) (hvalid : ValidInput input)
     (hmatch : MemoLogic.Matches input) :
     Challenge.Modexp.spec input = Precompile.natToBytes answer 32 := by
-  obtain ⟨hms, hbase, hexp, hmod⟩ := pins input hvalid hmatch
-  obtain ⟨hb, he, -, -⟩ := hmatch
+  obtain ⟨hms,hbase,hexp,hmod⟩ := pins input hvalid hmatch
+  obtain ⟨hb,he,-,-⟩ := hmatch
   have hpow : Precompile.modPow 3 65535 (2 ^ 255) = answer := by
     rw [Challenge.Modexp.Submission.Proofs.Algorithm.modPow_eq,
       if_neg (by norm_num : ¬ (2 : Nat) ^ 255 = 0)]
     rfl
-  simp only [Challenge.Modexp.spec, hb, he, hms, hbase, hexp, hmod, hpow,
+  simp only [Challenge.Modexp.spec,hb,he,hms,hbase,hexp,hmod,hpow,
     if_neg (by norm_num : ¬ (32 : Nat) = 0)]
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.MemoCert

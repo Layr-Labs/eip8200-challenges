@@ -12,7 +12,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission CycleSubmission.Global
 noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
-    
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
@@ -22,6 +21,5 @@ noncomputable def head4 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
       (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128) := by
   simpa [SlimFrames.special] using
     (DirectR5Entry.enter4 s mem k hk hk16 bsize esize 128 hact env)
-
 #print axioms head4
 end CycleSubmission.Global.TailFour

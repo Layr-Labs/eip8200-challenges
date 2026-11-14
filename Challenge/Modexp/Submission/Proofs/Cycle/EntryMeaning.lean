@@ -12,7 +12,6 @@ open CycleSubmission.InputWords CycleSubmission.Execution
 open HistoricalSearch.CRTMemoryCells Challenge.EvmProof.Memory
 open CycleSubmission.NormalizeMeaning (readStore)
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
-
 structure Caller where
   pbi : UInt256
   hd : UInt256
@@ -30,46 +29,39 @@ structure Caller where
   counter : UInt256
   ret : UInt256
   tail : List UInt256
-
 def saved (f : Caller) : List UInt256 :=
-  [f.pbi, f.hd, f.w3, f.ent, f.m32, UInt256.ofNat (2^256-1), f.m128, f.m64,
-   f.m0, f.tl, f.m96, f.inv, f.tn, f.aprev, f.counter, f.ret] ++ f.tail
-
+  [f.pbi,f.hd,f.w3,f.ent,f.m32,UInt256.ofNat (2^256-1),f.m128,f.m64,
+   f.m0,f.tl,f.m96,f.inv,f.tn,f.aprev,f.counter,f.ret]++f.tail
 set_option linter.unusedVariables false in
 def cells (mem : ByteArray) (f : Caller) : List (Nat × UInt256) :=
-  [(1344, ordinary mem 0 0), (1376, ordinary mem 0 1),
-   (1600, ordinary mem 0 8), (1568, ordinary mem 0 7),
-   (768, scaled mem 2368 0), (32, scaled mem 2368 3), (64, scaled mem 2368 4),
-   (96, scaled mem 2368 5), (128, scaled mem 2368 6), (160, scaled mem 2368 7)]
-
+  [(1344,ordinary mem 0 0),(1376,ordinary mem 0 1),
+   (1600,ordinary mem 0 8),(1568,ordinary mem 0 7),
+   (768,scaled mem 2368 0),(32,scaled mem 2368 3),(64,scaled mem 2368 4),
+   (96,scaled mem 2368 5),(128,scaled mem 2368 6),(160,scaled mem 2368 7)]
 def result (s : State) (f : Caller) : State :=
   {s with
-    pc := UInt256.ofNat 5387
+    pc := UInt256.ofNat 3484
     memory := storeCells s.memory (cells s.memory f)
     stack := CycleSubmission.SquareMeaning.frame0 (MachineState.readWord s.memory 2720)
-      (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (f.counter :: saved f)}
-
+      (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (f.counter::saved f)}
 theorem model_eq (s : State) (f : Caller) :
     entryModel s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
       f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail = result s f := by
-  simp (disch := decide) only [entryModel, readStore]
+  simp (disch := decide) only [entryModel,readStore]
   rfl
-
 theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
     (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entryProgram {s with pc := UInt256.ofNat 5231, stack := saved f} =
+    runInstructions entryProgram {s with pc := UInt256.ofNat 3328,stack := saved f} =
       some (result s f) := by
   have h := entry_run s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
     f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail hcap hact
   rw [model_eq] at h
   exact h
-
 theorem memory_output (s : State) (f : Caller) :
     CycleSubmission.SquareMeaning.Memory0 (result s f).memory
       (MachineState.readWord s.memory 2720) (scaled s.memory 2368)
       (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) := by
   constructor <;>
-    simp (disch := decide) only [result, cells, storeCells, writeCell,
-      readStore, readWord_writeWord]
-
+    simp (disch := decide) only [result,cells,storeCells,writeCell,
+      readStore,readWord_writeWord]
 end CycleSubmission.EntryMeaning

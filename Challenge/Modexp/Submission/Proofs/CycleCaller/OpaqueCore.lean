@@ -12,7 +12,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast.Model
 open CycleSubmission.EntryMeaning CycleSubmission.InputWords CycleSubmission.WordArithmetic
 open CycleSubmission.ControlArithmetic (value)
-
 /-- Kernel-checked opacity boundary for callers composing the complete route. -/
 noncomputable opaque run (s : State) (f : Caller) (k N A B x : Nat)
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
@@ -25,8 +24,7 @@ noncomputable opaque run (s : State) (f : Caller) (k N A B x : Nat)
     (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938) :
-    Finish.Outcome {s with pc := UInt256.ofNat 5231, stack := saved f}
+    Finish.Outcome {s with pc := UInt256.ofNat 3328,stack := saved f}
       (Precompile.natToBytes (B*x^(2^k)%N) 256) :=
   Core.run s f k N A B x hk hk16 env hcap hact hcache hcounter hn ha hb hinv hN hodd hB hform hAtop
-
 end CycleSubmission.CallerCore

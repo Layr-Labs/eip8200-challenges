@@ -1,6 +1,5 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.MainGas
-
 /-!
 # MODEXP bytecode entry and header validation
 

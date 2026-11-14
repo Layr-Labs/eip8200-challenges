@@ -1,19 +1,15 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftPaths
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Loop-body blocks of the shift-reduce routine split before their exit tests, so
 that each block reduction stays small enough for the kernel. -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 def blk3157a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2409 .JUMPDEST,
@@ -38,7 +34,6 @@ def blk3157a :
    opAt 2428 (.Swap sA1),
    opAt 2429 (.Dup dA1),
    opAt 2430 .MSTORE]
-
 def blk3157b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2431 1 31,
@@ -49,9 +44,7 @@ def blk3157b :
    opAt 2436 .GT,
    pushAt 2437 2 3081,
    opAt 2438 .JUMPI]
-
 def blk3157c :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
-
 end Challenge.Modexp.Submission.Proofs.Fast

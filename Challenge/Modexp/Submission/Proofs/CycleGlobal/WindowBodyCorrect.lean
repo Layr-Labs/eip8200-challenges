@@ -1,34 +1,28 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SubmissionCorrect
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.WindowRoute
-
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 20000
 set_option maxHeartbeats 5000000
-
 /-!
 # Reference-body correctness with the fixed-width route
 
 This module composes the new route with the unchanged one-word and wide-modulus
 proofs.  It intentionally does not define any concrete route instructions.
 -/
-
 namespace CycleSubmission.Global.WindowBodyCorrect
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 /-- A complete successful execution from the submission's initial state. -/
 abbrev Handled (input : ByteArray) : Prop :=
   ∃ final : State,
     Nonempty (Challenge.EvmProof.GasSteps
       (initialState CycleSubmission.Artifact.bytecode input 0) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input)
-
 /-- The old nonzero one-word proof, factored at pc 599 so it can follow a miss
 from the appended route.  Every lemma used below is inherited unchanged from
 `WordCorrect`. -/
@@ -45,7 +39,7 @@ def gasSteps_wordNonzeroFromEntry (input : ByteArray)
       (Word.baseLoopState input (baseSize input) (WordCorrect.wordBase input))
       (Word.expLoopState input 0 (WordCorrect.wordInitialAcc input)
         (WordCorrect.wordBase input)) := by
-    simpa [WordCorrect.wordBase, WordCorrect.wordInitialAcc] using
+    simpa [WordCorrect.wordBase,WordCorrect.wordInitialAcc] using
       Word.gasSteps_baseFinish input (WordCorrect.wordBase input)
         hvalid hword
   let exponentLoop : Challenge.EvmProof.GasSteps
@@ -60,7 +54,6 @@ def gasSteps_wordNonzeroFromEntry (input : ByteArray)
     (WordCorrect.wordResult input) (WordCorrect.wordBase input) hvalid hword
   exact (((((start.trans setup).trans baseLoop).trans baseFinish).trans
     exponentLoop).trans finish)
-
 /-- The old one-word implementation is a complete fallback from pc 599. -/
 def legacyWordHandled (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
@@ -80,7 +73,6 @@ def legacyWordHandled (input : ByteArray) (hvalid : ValidInput input)
       WordExit.wordFinalState_isDone input (WordCorrect.wordResult input)
         (WordCorrect.wordBase input),
       WordCorrect.wordFinalState_result input hvalid hmsize hword hmodpos⟩
-
 /-- Compose an initial-state prefix with a packaged successful suffix. -/
 private theorem prepend {input : ByteArray} {middle : State}
     (entryTrace : Challenge.EvmProof.GasSteps
@@ -89,9 +81,8 @@ private theorem prepend {input : ByteArray} {middle : State}
       Nonempty (Challenge.EvmProof.GasSteps middle final) ∧
         final.isDone = true ∧ final.toResult = .returned (spec input)) :
     Handled input := by
-  rcases suffix with ⟨final, ⟨tail⟩, hdone, hresult⟩
-  exact ⟨final, ⟨entryTrace.trans tail⟩, hdone, hresult⟩
-
+  rcases suffix with ⟨final,⟨tail⟩,hdone,hresult⟩
+  exact ⟨final,⟨entryTrace.trans tail⟩,hdone,hresult⟩
 /-- Correctness of the complete reference body when its one-word dispatch is
 replaced by a route satisfying `WindowRoute.Route`. -/
 def handledOf (route : WindowRoute.Route) (input : ByteArray)
@@ -110,6 +101,4 @@ def handledOf (route : WindowRoute.Route) (input : ByteArray)
     exact prepend (header.trans (route.enter input hvalid hpositive hword))
       (legacyWordHandled input hvalid hpositive hword)
   · exact SubmissionCorrect.bigHandled input hvalid (by omega) entry
-
 end CycleSubmission.Global.WindowBodyCorrect
-
