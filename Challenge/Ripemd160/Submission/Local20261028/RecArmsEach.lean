@@ -777,33 +777,33 @@ def gasSteps_arm120 (input : ByteArray) :
 
 def arm128Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 128) ++ startTemplate 128 ++ jumpTemplate 5084
 theorem arm128_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3629).take arm128Template.length = arm128Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3627).take arm128Template.length = arm128Template := by rfl
 def arm128Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm128Template :=
-  StackSiteBuilder.ofSlice arm128Template 3629 arm128_slice
-    (by change 3629 + arm128Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm128Template 3627 arm128_slice
+    (by change 3627 + arm128Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm128Template) (by decide)) (by decide)
-theorem arm128_pc : arm128Site.startPC = UInt256.ofNat 5708 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3629) = _
+theorem arm128_pc : arm128Site.startPC = UInt256.ofNat 5713 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3627) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm128_form : ∀ i ∈ arm128Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 def gasSteps_arm128_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5708 []) (atState (prepared input 128) 5084 [startValue input 128]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5708) 128
-  have h2 := Scan.run_start (prepared input 128) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5708))
+    GasSteps (atState (base input) 5713 []) (atState (prepared input 128) 5084 [startValue input 128]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5713) 128
+  have h2 := Scan.run_start (prepared input 128) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5713))
     128 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 128)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5708)) (startTemplate 128))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5713)) (startTemplate 128))
     5084 [startValue input 128] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 5084).toNat = true
       exact valid_chain4)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm128Template (atState (base input) 5708 []) =
+  have h' : runInstrSeq arm128Template (atState (base input) 5713 []) =
       some (atState (prepared input 128) 5084 [startValue input 128]) := by
     simpa only [arm128Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm128Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -814,7 +814,7 @@ theorem value128 (input : ByteArray) :
   Scan.value_full input 128 (by decide) (by decide)
 
 def gasSteps_arm128 (input : ByteArray) :
-    GasSteps (atState (base input) 5708 [])
+    GasSteps (atState (base input) 5713 [])
       {prepared input 128 with pc := if (ZeroTailModel.result input 128).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm128_entry input).trans (gasSteps_chain4 input 128 (startValue input 128))
   rw [value128] at g
@@ -823,33 +823,33 @@ def gasSteps_arm128 (input : ByteArray) :
 
 def arm256Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 256) ++ startTemplate 256 ++ jumpTemplate 4931
 theorem arm256_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3636).take arm256Template.length = arm256Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3634).take arm256Template.length = arm256Template := by rfl
 def arm256Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm256Template :=
-  StackSiteBuilder.ofSlice arm256Template 3636 arm256_slice
-    (by change 3636 + arm256Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm256Template 3634 arm256_slice
+    (by change 3634 + arm256Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm256Template) (by decide)) (by decide)
-theorem arm256_pc : arm256Site.startPC = UInt256.ofNat 5737 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3636) = _
+theorem arm256_pc : arm256Site.startPC = UInt256.ofNat 5742 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3634) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm256_form : ∀ i ∈ arm256Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 def gasSteps_arm256_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5737 []) (atState (prepared input 256) 4931 [startValue input 256]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5737) 256
-  have h2 := Scan.run_start (prepared input 256) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5737))
+    GasSteps (atState (base input) 5742 []) (atState (prepared input 256) 4931 [startValue input 256]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5742) 256
+  have h2 := Scan.run_start (prepared input 256) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5742))
     256 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_jump (prepared input 256)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5737)) (startTemplate 256))
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5742)) (startTemplate 256))
     4931 [startValue input 256] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4931).toNat = true
       exact valid_chain8)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
-  have h' : runInstrSeq arm256Template (atState (base input) 5737 []) =
+  have h' : runInstrSeq arm256Template (atState (base input) 5742 []) =
       some (atState (prepared input 256) 4931 [startValue input 256]) := by
     simpa only [arm256Template, atState, List.append_assoc, prepared_calldata] using hall
   exact RecognitionLift.gasSteps_of_raw arm256Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -860,7 +860,7 @@ theorem value256 (input : ByteArray) :
   Scan.value_full input 256 (by decide) (by decide)
 
 def gasSteps_arm256 (input : ByteArray) :
-    GasSteps (atState (base input) 5737 [])
+    GasSteps (atState (base input) 5742 [])
       {prepared input 256 with pc := if (ZeroTailModel.result input 256).toNat = 0 then UInt256.ofNat 5243 else UInt256.ofNat 4651, stack := []} := by
   have g := (gasSteps_arm256_entry input).trans (gasSteps_chain8 input 256 (startValue input 256))
   rw [value256] at g

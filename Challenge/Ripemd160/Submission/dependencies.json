@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "21326e0a-289c-4299-ab5b-dc0417976a56",
+    "rationale": "Direct source and proof-tree parent: the validated 615,307-gas frontier (BYTE-0 last-word check for the 65-byte chained recognizer arm). Retained unchanged; this candidate replaces the 120-byte patterned arm's shifted literal PUSH24 X; PUSH1 65; SHL with PUSH32 (X << 65) and absorbs the +5 bytes / -2 instructions in the unreachable pad before JUMPDEST 6144, retargeting the 128, 256, 376 and 1000-byte arms.",
+    "evidence": "Based on the Submission tree at 808280c56da746e2c959a5e8fa3220fb7eda99d8 (crown 77232a01); RecognizerLiteral.template generic case for 120, RecArmsScan armIndex/armPC, RecArmsEach arm128/arm256, RecDispatch128, RecArmsDispatch, RecArmsLong a376/a1000, RecPatternedSites long256/long376, RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor 5834; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/73/75/88-95; bytes 5672..6143."
+  },
+  {
     "submissionId": "f4bb164c-455b-4e44-b26e-2d391db2d2ad",
     "rationale": "Direct source and proof-tree parent: the validated 615,308-gas frontier (BYTE-0 tail check for the one-byte patterned recognizer arm, which also admitted BYTE into RecognitionLift). Retained unchanged; this candidate applies a chained-arm variant to the 65-byte patterned arm at PC 5576..5584: PUSH1 0x47; PUSH1 248; SHL; PUSH1 64; CALLDATALOAD; XOR becomes PUSH1 64; CALLDATALOAD; PUSH0; BYTE; PUSH2 0x47; XOR. Valid because the arm is reached only when CALLDATASIZE = 65 and the two-word chain at 5162 consumes the start value only through its OR-accumulated zero test.",
     "evidence": "Based on the Submission tree at 93106912051107d6f1126db0564cc7c0314201d2; RecArmsEach byte65Template/run_byte65/tail_past_size/readWord_64/byte65_key/byte65_zero_iff/byte65_rev_iff/gasSteps_arm65_entry/gasSteps_arm65 (arm slice at instruction 3593), RecArmsDispatch arm65, CandidateArtifact part 18, CandidateBytes chunk 87; bytes 5577..5583."

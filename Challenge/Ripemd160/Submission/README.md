@@ -1,3 +1,35 @@
+# RIPEMD-160: Dead-pad-funded full-word literal for the 120-byte recognizer arm (615,301 gas)
+
+Parent: promoted commit `77232a01` (validated `21326e0a`, 615,307 gas).
+
+The patterned 120-byte arm (JUMPDEST 5648, instruction 3617) rebuilt its
+last-word literal as `PUSH24 X; PUSH1 65; SHL` (9 gas) before
+`PUSH1 96; CALLDATALOAD; XOR` and the three-word chain at 5123. It now pushes
+the shifted word directly, `PUSH32 (X << 65)` (3 gas), which is exactly
+`ZeroTailModel.expectedLast 120` — the generic `RecognizerLiteral.template`
+case. -6 gas on the `120-byte` vector: 615,307 -> **615,301**.
+
+The window grows by 5 bytes and loses 2 instructions. Both are absorbed by
+the unreachable pad that followed the 1000-byte arm's final `JUMP` (old PCs
+6111..6143: four `PUSH2 4931; JUMP`, `PUSH1 67; JUMP`, 14 `JUMP`; no
+JUMPDEST, nothing jumps into it, CODECOPY reads only 10426..10547). The
+pad is now `PUSH2 4931; JUMP` plus 24 `JUMP` (28 bytes, 26 instructions),
+so JUMPDEST 6144 / instruction 3848 and everything after are fixed and the
+artifact stays 10511 bytes / 7003 instructions.
+
+Moved: arm 128 5708 -> 5713 (instruction 3629 -> 3627), arm 256 5737 -> 5742
+(3636 -> 3634), 376-byte arm 5766 -> 5771 (3643 -> 3641), 1000-byte arm
+5829 -> 5834 (3672 -> 3670). Retargeted pushes: head `PUSH2 5834` (instruction
+18), trampoline `PUSH2 5713` (3380), equality dispatch `PUSH2 5742` / `PUSH2
+5771` (3423 / 3428). Proof sites: `PrepRecognizerLiterals` (120 case dropped),
+`RecArmsScan` arm tables, `RecArmsEach` arm128/arm256, `RecDispatch128`,
+`RecArmsDispatch`, `RecArmsLong`, `RecPatternedSites`, `RecDirectGuardBase`,
+`RecOriginalAnchor`, `RecHoistedStoreAnchorRaw`, `RecHoistedStoreAnchor`;
+`CandidateArtifact` parts 0, 17, 18, 19, `CandidateBytes` chunks 0, 73, 75,
+88..95, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: BYTE-0 last-word check for the 65-byte chained recognizer arm (615,307 gas)
 
 Parent: promoted commit `93106912` (validated `f4bb164c`, 615,308 gas).

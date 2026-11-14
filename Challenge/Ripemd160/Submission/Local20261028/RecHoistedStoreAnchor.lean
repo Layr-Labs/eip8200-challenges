@@ -7,17 +7,17 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.H
 open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open HoistedStoreSites
 
-theorem valid_data : Decode.isValidJumpDest HoistedStoreArtifact.code 5829 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 3672 = 5829 := by
+theorem valid_data : Decode.isValidJumpDest HoistedStoreArtifact.code 5834 = true := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 3670 = 5834 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 3672 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 3670 (by rfl)
   rw [hp] at h
   exact h
 
 def taken (s : State) (rho : List UInt256) (e : Env s) (hs : rho.length ≤ 976)
     (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0) :
     GasSteps {s with pc := UInt256.ofNat 21, stack := rho}
-      {s with pc := UInt256.ofNat 5829, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} :=
+      {s with pc := UInt256.ofNat 5834, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} :=
   HoistedStoreEntry.lift .anchor s _ e rho
     (HoistedStoreAnchorRaw.run_anchor_taken s rho (by omega) e.run hne
       (by rw [e.code]; exact valid_data))

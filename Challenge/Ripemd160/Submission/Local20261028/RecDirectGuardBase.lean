@@ -54,8 +54,6 @@ def sizePrefix : List Located :=
    opAt 8 .SUB,
    pushAt 9 2 4756]
 
-/-- Anchor gate: low 64 bits of calldata[0] other than `0x61` jump straight to
-the recogniser's private 1000-byte arm at 5829 (the size is already 1000). -/
 def anchorPrefix : List Located :=
   [pushAt 11 0 0,
    opAt 12 .CALLDATALOAD,
@@ -64,7 +62,7 @@ def anchorPrefix : List Located :=
    opAt 15 .XOR,
    pushAt 16 1 192,
    opAt 17 .SHL,
-   pushAt 18 2 5829]
+   pushAt 18 2 5834]
 
 def entryDest : Located := opAt 133 .JUMPDEST
 
