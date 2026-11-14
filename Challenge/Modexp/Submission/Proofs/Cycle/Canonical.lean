@@ -27,19 +27,19 @@ noncomputable def subtraction (s : State) (a n : Nat → UInt256) (slot0 slot1 :
       (NormalizeBinding.returned s a n (UInt256.ofNat 8527) slot1 rest) := by
   let ready : State := {s with
     pc := UInt256.ofNat 8526
-    stack := UInt256.ofNat 10506::frame a n (UInt256.ofNat 8527) slot1 rest}
+    stack := UInt256.ofNat 10562::frame a n (UInt256.ofNat 8527) slot1 rest}
   have hr := canonicalsub_run s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7) modulusP
     (n 8) slot1 mask slot0 (n 3) (a 8) rest hcap hact
   have h1 := FinalBlocks.canonicalsubBlock.steps
     (s := {s with pc := UInt256.ofNat 8517,stack := frame a n slot0 slot1 rest})
     (env.transfer rfl rfl) rfl hr
-  have valid : Decode.isValidJumpDest ready.executionEnv.code 10506 = true := by
+  have valid : Decode.isValidJumpDest ready.executionEnv.code 10562 = true := by
     rw [show ready.executionEnv.code = Artifact.bytecode from env.code]
     exact FinalBlocks.validJump11014
   have cap : ready.stack.length < 1024 := by
     simp only [ready,frame,List.length_cons,List.length_append,List.length_nil]
     omega
-  have hj := jump_run ready (UInt256.ofNat 10506) (frame a n (UInt256.ofNat 8527) slot1 rest) rfl cap valid
+  have hj := jump_run ready (UInt256.ofNat 10562) (frame a n (UInt256.ofNat 8527) slot1 rest) rfl cap valid
   have h2 := FinalBlocks.canonicalJumpBlock.steps (s := ready) (env.transfer rfl rfl) rfl hj
   have h3 := NormalizeBinding.gasSteps s a n (UInt256.ofNat 8527) slot1 rest
     env hm hcap hact NormalizeBinding.validJump10867

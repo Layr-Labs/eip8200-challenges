@@ -43,22 +43,22 @@ def gasStep_clz {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas,cost] using
     StepRunning.clz (withGas s gas) a rest hop hgas hstack hcap
 /-- The estimator's `CLZ` is instruction 1940. -/
-theorem clz_index : CycleSubmission.Artifact.instructions[2067]? = some (.op .CLZ) := by
+theorem clz_index : CycleSubmission.Artifact.instructions[2065]? = some (.op .CLZ) := by
   rfl
 /-- ... at program counter 2502 (0x09c6). -/
-@[simp] theorem clz_pc : CycleSubmission.Artifact.artifact.instructionPC 2067 = 2654 := by
+@[simp] theorem clz_pc : CycleSubmission.Artifact.artifact.instructionPC 2065 = 2654 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 theorem decodedOp_clz (s : State)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 2654) :
     s.decodedOp = some .CLZ := by
-  have hpcNat : s.pc.toNat = CycleSubmission.Artifact.artifact.instructionPC 2067 := by
+  have hpcNat : s.pc.toNat = CycleSubmission.Artifact.artifact.instructionPC 2065 := by
     rw [hpc,clz_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .CLZ) := by
     rw [hfork]
     exact ⟨by decide,trivial,by decide⟩
-  exact Stepper.decodes_of_artifact CycleSubmission.Artifact.artifact s 2067 (.op .CLZ)
+  exact Stepper.decodes_of_artifact CycleSubmission.Artifact.artifact s 2065 (.op .CLZ)
     hcode hpcNat clz_index hwf
 theorem succ_2672 : (UInt256.ofNat 2654).succ = UInt256.ofNat 2655 := by
   decide

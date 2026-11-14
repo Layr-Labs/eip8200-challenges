@@ -18,8 +18,8 @@ variable (s : State) (rest : List UInt256)
   (Bm1 byte offset outerW acc base m : UInt256) (hs : Frame s) (hrest : rest.length < 1000)
 /-- Exponent bit `0`: one pass of head, body and control with the counter at `0`. -/
 def gasSteps_copy0 :
-    GasSteps (stW s 10435 ([Bm1,0,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,1,byte,offset,outerW,(value 0 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,0,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,1,byte,offset,outerW,(value 0 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 0).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 0).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 0 Bm1 byte acc m) base m hs hrest 0 (by decide)))).cast rfl ?_
@@ -30,8 +30,8 @@ def gasSteps_copy0 :
   simp
 /-- Exponent bit `1`: one pass of head, body and control with the counter at `1`. -/
 def gasSteps_copy1 :
-    GasSteps (stW s 10435 ([Bm1,1,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,2,byte,offset,outerW,(value 1 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,1,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,2,byte,offset,outerW,(value 1 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 1).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 1).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 1 Bm1 byte acc m) base m hs hrest 1 (by decide)))).cast rfl ?_
@@ -42,8 +42,8 @@ def gasSteps_copy1 :
   simp
 /-- Exponent bit `2`: one pass of head, body and control with the counter at `2`. -/
 def gasSteps_copy2 :
-    GasSteps (stW s 10435 ([Bm1,2,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,3,byte,offset,outerW,(value 2 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,2,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,3,byte,offset,outerW,(value 2 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 2).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 2).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 2 Bm1 byte acc m) base m hs hrest 2 (by decide)))).cast rfl ?_
@@ -54,8 +54,8 @@ def gasSteps_copy2 :
   simp
 /-- Exponent bit `3`: one pass of head, body and control with the counter at `3`. -/
 def gasSteps_copy3 :
-    GasSteps (stW s 10435 ([Bm1,3,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,4,byte,offset,outerW,(value 3 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,3,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,4,byte,offset,outerW,(value 3 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 3).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 3).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 3 Bm1 byte acc m) base m hs hrest 3 (by decide)))).cast rfl ?_
@@ -66,8 +66,8 @@ def gasSteps_copy3 :
   simp
 /-- Exponent bit `4`: one pass of head, body and control with the counter at `4`. -/
 def gasSteps_copy4 :
-    GasSteps (stW s 10435 ([Bm1,4,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,5,byte,offset,outerW,(value 4 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,4,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,5,byte,offset,outerW,(value 4 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 4).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 4).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 4 Bm1 byte acc m) base m hs hrest 4 (by decide)))).cast rfl ?_
@@ -78,8 +78,8 @@ def gasSteps_copy4 :
   simp
 /-- Exponent bit `5`: one pass of head, body and control with the counter at `5`. -/
 def gasSteps_copy5 :
-    GasSteps (stW s 10435 ([Bm1,5,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,6,byte,offset,outerW,(value 5 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,5,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,6,byte,offset,outerW,(value 5 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 5).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 5).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 5 Bm1 byte acc m) base m hs hrest 5 (by decide)))).cast rfl ?_
@@ -90,8 +90,8 @@ def gasSteps_copy5 :
   simp
 /-- Exponent bit `6`: one pass of head, body and control with the counter at `6`. -/
 def gasSteps_copy6 :
-    GasSteps (stW s 10435 ([Bm1,6,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10435 ([Bm1,7,byte,offset,outerW,(value 6 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,6,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,7,byte,offset,outerW,(value 6 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 6).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 6).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 6 Bm1 byte acc m) base m hs hrest 6 (by decide)))).cast rfl ?_
@@ -102,8 +102,8 @@ def gasSteps_copy6 :
   simp
 /-- Exponent bit `7`: one pass of head, body and control with the counter at `7`. -/
 def gasSteps_copy7 :
-    GasSteps (stW s 10435 ([Bm1,7,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10470 ([Bm1,8,byte,offset,outerW,(value 7 Bm1 byte acc m),base,m]++rest)) := by
+    GasSteps (stW s 10491 ([Bm1,7,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10526 ([Bm1,8,byte,offset,outerW,(value 7 Bm1 byte acc m),base,m]++rest)) := by
   refine ((start s rest Bm1 byte offset outerW acc base m hs hrest 7).trans
     ((body s rest Bm1 byte offset outerW acc base m hs hrest 7).trans
       (control s rest Bm1 byte offset outerW (stepValue 7 7 Bm1 byte acc m) base m hs hrest 7 (by decide)))).cast rfl ?_

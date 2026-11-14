@@ -143,8 +143,8 @@ include env hcap hact h_n0 h_M hcache hn0 hn1 hn2 hn3 hn4 hNval
 /-- The value below `N`: one round ends at `r5_done` with the digits unchanged. -/
 theorem finish_lt (a : D5) (h0 : a.d0.toNat < radix) (h1 : a.d1.toNat < radix)
     (h2 : a.d2.toNat < radix) (h3 : a.d3.toNat < radix) (h4 : a.d4.toNat < 2^65) (hT : val a < N) :
-    Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10135 a.d0 a.d1 a.d2 a.d3 a.d4)
-      (normAt s n1 n2 n3 n4 P inv cntp rest 10223 a.d0 a.d1 a.d2 a.d3 a.d4)) := by
+    Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10191 a.d0 a.d1 a.d2 a.d3 a.d4)
+      (normAt s n1 n2 n3 n4 P inv cntp rest 10279 a.d0 a.d1 a.d2 a.d3 a.d4)) := by
   by_cases hlt : (UInt256.lt a.d4 n4).toNat = 0
   · have hc := NormMath.chain a.d0 a.d1 a.d2 a.d3 a.d4 n0 n1 n2 n3 n4 _ _ _ _ _ rfl rfl rfl rfl rfl
       h0 h1 h2 h3 h4 hn0 hn1 hn2 hn3 hn4
@@ -161,8 +161,8 @@ theorem norm_spec (a : D5) (h0 : a.d0.toNat < radix) (h1 : a.d1.toNat < radix)
     (h2 : a.d2.toNat < radix) (h3 : a.d3.toNat < radix) (h4 : a.d4.toNat < 2^65) (hT : val a < 2*N) :
     ∃ e : D5,e.d0.toNat < radix ∧ e.d1.toNat < radix ∧ e.d2.toNat < radix ∧ e.d3.toNat < radix ∧
       e.d4.toNat < 2^65 ∧ val e = val a % N ∧
-      Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10135 a.d0 a.d1 a.d2 a.d3 a.d4)
-        (normAt s n1 n2 n3 n4 P inv cntp rest 10223 e.d0 e.d1 e.d2 e.d3 e.d4)) := by
+      Nonempty (GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10191 a.d0 a.d1 a.d2 a.d3 a.d4)
+        (normAt s n1 n2 n3 n4 P inv cntp rest 10279 e.d0 e.d1 e.d2 e.d3 e.d4)) := by
   by_cases hlt : val a < N
   · exact ⟨a,h0,h1,h2,h3,h4,(Nat.mod_eq_of_lt hlt).symm,
       finish_lt s env n0 n1 n2 n3 n4 P inv cntp rest N hcap hact h_n0 h_M hcache hn0 hn1 hn2 hn3 hn4 hNval

@@ -60,8 +60,8 @@ theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
   exact cons_run _ _ _ _ _ hP1
     (cons_run _ _ _ _ _ hP2 (cons_run _ _ _ _ _ hRet rfl))
 def block : Block Artifact.artifact .Osaka 8576 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6516 3 8576 program
-    (by change 6516+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6514 3 8576 program
+    (by change 6514+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

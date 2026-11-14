@@ -15,9 +15,9 @@ def canonicalsubpart0Program : List Instr :=
    .push 2 8527,
    .op (.Swap ⟨11,by decide⟩),
    .op .POP,
-   .push 2 10506]
+   .push 2 10562]
 def canonicalsubpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 8526,memory := s.memory,stack := (UInt256.ofNat 10506)::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::(UInt256.ofNat 8527)::x12::x13::rest}
+  {s with pc := UInt256.ofNat 8526,memory := s.memory,stack := (UInt256.ofNat 10562)::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::(UInt256.ofNat 8527)::x12::x13::rest}
 theorem canonicalsubpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 8517,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
@@ -32,14 +32,14 @@ def canonicalsubProgram : List Instr :=
    .push 2 8527,
    .op (.Swap ⟨11,by decide⟩),
    .op .POP,
-   .push 2 10506]
+   .push 2 10562]
 def canonicalsubModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 8526,memory := s.memory,stack := (UInt256.ofNat 10506)::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::(UInt256.ofNat 8527)::n3::a8::rest}
+  {s with pc := UInt256.ofNat 8526,memory := s.memory,stack := (UInt256.ofNat 10562)::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::(UInt256.ofNat 8527)::n3::a8::rest}
 theorem canonicalsub_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions canonicalsubProgram {s with pc := UInt256.ofNat 8517,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} =
       some (canonicalsubModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
-  have h0 : runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 8517,memory := s.memory,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 8526,memory := s.memory,stack := (UInt256.ofNat 10506)::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::(UInt256.ofNat 8527)::n3::a8::rest} := by
+  have h0 : runInstructions canonicalsubpart0Program {s with pc := UInt256.ofNat 8517,memory := s.memory,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 8526,memory := s.memory,stack := (UInt256.ofNat 10562)::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::(UInt256.ofNat 8527)::n3::a8::rest} := by
     simpa only [canonicalsubpart0Model] using canonicalsubpart0_run (s) (n2) (n6) (n4) a1 a2 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
   exact h0
 end CycleSubmission.Execution

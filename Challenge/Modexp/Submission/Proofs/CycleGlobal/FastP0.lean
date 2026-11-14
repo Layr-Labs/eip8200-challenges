@@ -26,7 +26,7 @@ def blk977 :
    opAt 396 .SUB,
    pushAt 397 1 223,
    opAt 398 .LT,
-   pushAt 399 2 10288,
+   pushAt 399 2 10344,
    opAt 400 .JUMPI]
 /-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR

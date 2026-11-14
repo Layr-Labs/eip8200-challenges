@@ -18,13 +18,13 @@ def postProgram : List Instr := [
   .push 0 0,
    .op .RETURN]
 def pre : Block Artifact.artifact .Osaka 933 preProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 655 3 933 preProgram
+  WindowTwentyOneSlice.block Artifact.wellFormed 653 3 933 preProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def post : Block Artifact.artifact .Osaka 940 postProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 660 2 940 postProgram
+  WindowTwentyOneSlice.block Artifact.wellFormed 658 2 940 postProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def answerBytes : ByteArray := Data.Bytes.natToBytesPadded MemoCert.answer 32
-private def memoPrefix : ByteArray := ByteArray.mk #[96,34,53,96,64,53,1,98,32,0,32,24,97,2,52,87,96,96,53,96,128,53,96,160,53,129,129,3,97,31,255,96,1,53,3,28,97,3,178,87,95,53,96,32,24,96,96,87,91,129,129,20,97,3,178,87,97,41,132,86,127,59,1,176,26,196,31,45,110,145,124,109,106,34,28,231,147,128,36,105,2,109,154,183,87,143,162,231,158,77,166,170,171,95,91,91,91,96,32,95,53,129,129,17,96,207,87,144,3,96,96,53,129,96,3,27,28,129,96,128,3,53,130,96,160,3,53,97]
+private def memoPrefix : ByteArray := ByteArray.mk #[96,34,53,96,64,53,1,98,32,0,32,24,97,2,52,87,96,96,53,96,128,53,96,160,53,129,129,3,97,31,255,96,1,53,3,28,97,3,178,87,95,53,96,32,24,96,96,87,91,129,129,20,97,3,178,87,97,41,188,86,127,59,1,176,26,196,31,45,110,145,124,109,106,34,28,231,147,128,36,105,2,109,154,183,87,143,162,231,158,77,166,170,171,95,91,91,91,96,32,95,53,129,129,17,96,207,87,144,3,96,96,53,129,96,3,27,28,129,96,128,3,53,130,96,160,3,53,97]
 private theorem prefixSplit : ∃ tail : ByteArray,Artifact.bytecode = memoPrefix++tail := by
   unfold Artifact.bytecode
   simp only [ByteArray.append_assoc]
@@ -72,7 +72,7 @@ theorem run_pre (input : ByteArray) :
 def steps_pre (input : ByteArray) : GasSteps (entry input) (copyArgs input) :=
   pre.steps (envEntry input) rfl (run_pre input)
 theorem copy_decodes (input : ByteArray) : (copyArgs input).decodedOp = some .CODECOPY := by
-  have h := Stepper.decodes_of_artifact Artifact.artifact (copyArgs input) 658 (.op .CODECOPY)
+  have h := Stepper.decodes_of_artifact Artifact.artifact (copyArgs input) 656 (.op .CODECOPY)
     rfl (by rfl) (by rfl) (by exact ⟨by decide,by trivial,by rfl⟩)
   exact h
 def steps_copy (input : ByteArray) : GasSteps (copyArgs input) (copied input) := by
@@ -83,7 +83,7 @@ def steps_copy (input : ByteArray) : GasSteps (copyArgs input) (copied input) :=
   rw [hr] at h
   exact h
 theorem size_decodes (input : ByteArray) : (copied input).decodedOp = some .MSIZE := by
-  have h := Stepper.decodes_of_artifact Artifact.artifact (copied input) 659 (.op .MSIZE)
+  have h := Stepper.decodes_of_artifact Artifact.artifact (copied input) 657 (.op .MSIZE)
     rfl (by rfl) (by rfl) (by exact ⟨by decide,by trivial,by rfl⟩)
   exact h
 def steps_size (input : ByteArray) : GasSteps (copied input) (sized input) := by

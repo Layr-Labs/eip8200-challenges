@@ -1,1 +1,1 @@
-Combined memo guard with a bounded packed size test, one branch, and universal hit/miss execution proofs. Canonical353356gas44/44,10936bytes8322instructions; unchanged default Lean kernel accepted. See the public submission note for the exact runtime and complete40-reference provenance.
+Four R5 product mask literals with an explicit universal mask-memory invariant and unchanged arithmetic result. Canonical353339gas44/44,10992bytes8318instructions; unchanged default Lean kernel accepted. See the public submission note for the exact runtime and complete42-reference provenance.
