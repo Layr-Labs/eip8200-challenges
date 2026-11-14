@@ -1,3 +1,31 @@
+# RIPEMD-160: early right-lane C-rotation, SWAP4 retired from the ordinary prologue (614,967 gas)
+
+Parent: promoted commit `bb6842e9` (accepted `343b16c8`, 615,497 gas).
+
+The right-lane prologue window (PC 794..977: `RawRight0`, `RawRight1`,
+`RawPack`) runs once per compressed block (265 times on the corpus). Round 1
+used to end with `DUP15 DUP7 MUL PUSH1 23 SHR` (rotated `C` for round 2) and
+the pack window opened with `SWAP4` to exchange it with the round-0 `e` copy
+left by a `DUP9`. Now round 0 computes the rotation directly in that slot
+(`DUP11 DUP3 MUL PUSH1 23 SHR`, input `b` via the `rho[2]` alias), round 1
+reads `e` from the suffix head (`DUP13`, alias `rho[0]`), the round-1 tail is
+`PUSH4 K DUP13`, and the `SWAP4` disappears. +14 -14 -3 +1 (width pad) = -2
+gas per block, 615,497 -> **614,967**.
+
+Width: one `JUMPDEST` pad at PC 929 (before the 930 loop entry) keeps the
+window at 183 bytes / 111 instructions; boundaries 794, 871, 930, 977 and all
+later PCs and instruction indices are unchanged (round 0/1 split moves
+830 -> 835).
+
+Proof: stack at 977 (and `PrefixBefore.outputs` at 930) unchanged.
+`RawRight0` slot 1, `RawRight1` input slot 1 / output slots 0 and 4 and a
+new `rho[0]` alias, `RawPack.inputStack` order `a,k,b,c,d,e`; `CoreRight0`,
+`CoreRight1`, `CorePack`, `CorePrologue` restated accordingly;
+`PrefixBefore.template` = `FirstPrologue.before`; `CandidateArtifact`
+parts 1/2, `CandidateBytes` chunks 12..14 and `bytecode.hex` carry the bytes.
+
+---
+
 # RIPEMD-160: PC-sourced 0x80 padding byte relocated beside a shifted 482 store in the first-block prologue (615,497 gas)
 
 Parent: promoted commit `62e72056` (accepted `784a8fe6`, 615,508 gas).

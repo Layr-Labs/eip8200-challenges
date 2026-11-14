@@ -36,8 +36,7 @@ structure Input where
 private theorem neutral_hadd (a b : UInt256) : a + b = UInt256.add a b := rfl
 private theorem neutral_hmul (a b : UInt256) : a * b = UInt256.mul a b := rfl
 def template : List Instr :=
-  [ .op (.Swap ⟨3, by decide⟩),
-    .op (.Dup ⟨3, by decide⟩),
+  [ .op (.Dup ⟨3, by decide⟩),
     .op (.Dup ⟨5, by decide⟩),
     .op .NOT,
     .op .OR,
@@ -87,10 +86,11 @@ def template : List Instr :=
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
     .op .JUMPDEST,
+    .op .JUMPDEST,
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
-  [ x.rd, x.k, x.rb, x.rc, x.ra, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
+  [ x.ra, x.k, x.rb, x.rc, x.rd, x.re, x.factor, x.lower, x.cache140, x.cache350, x.cache310, x.cache190, x.h4, x.h3, x.h2, x.h1, x.h0, x.off, x.limit ] ++ rho
 def actualOutput (memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 :=
   [ (UInt256.lor (UInt256.ofNat 95780971281817308448866066055358605703522833630494720) x.lower),
     (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),

@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "343b16c8-579a-49c0-9f4d-09dee953afa3",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,497-gas frontier (PC-sourced 0x80 padding byte hosted by a shifted 482 store in the first-block prologue). Retained unchanged; this candidate rewrites only the ordinary right-lane prologue rounds at PC 794..977 (early right-lane C-rotation, SWAP4 retired, one JUMPDEST width pad).",
+    "evidence": "Based on the Submission tree at bb6842e984289335c832248e088cce27580b6a43; RawRight0/RawRight1/RawPack templates, CoreRight0/CoreRight1/CorePack/CorePrologue shapes, PrefixBefore.template, FirstPrologue.before, CandidateArtifact parts 1-2, CandidateBytes chunks 12-14; bytes 800..929."
+  },
+  {
     "submissionId": "784a8fe6-2e65-47d8-a561-be10a9b2e2ff",
     "rationale": "Direct source and proof-tree parent: the promoted 615,508-gas frontier (shifted 814 store replaces the NOT-masked 828 store in the first-block prologue). Retained unchanged; this candidate moves the first-block 0x80 padding byte at 787 into a PC-sourced MSTORE8 hosted by the bytes freed when the 468 masked store becomes a 112-bit left shift stored at 482.",
     "evidence": "Based on the Submission tree at 62e7205698a1e134a231e98fdef30c59515a88a2; PrepFirst1, PrepFirst3, PrepFirstMemory memory6/memory17, PrepFirstCertificate symbols6/symbols17/shl112_byte, CandidateArtifact part 35, CandidateBytes chunks 156-158; bytes 9987..10118."

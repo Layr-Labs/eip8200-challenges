@@ -27,7 +27,11 @@ def template : List Instr := [
 .op .MUL,
 .push ⟨1, by decide⟩ (UInt256.ofNat 23),
 .op .SHR,
-.op (.Dup ⟨8, by decide⟩),
+.op (.Dup ⟨10, by decide⟩),
+.op (.Dup ⟨2, by decide⟩),
+.op .MUL,
+.push ⟨1, by decide⟩ (UInt256.ofNat 23),
+.op .SHR,
 .op (.Dup ⟨8, by decide⟩),
 .op (.Dup ⟨13, by decide⟩),
 .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
@@ -71,16 +75,11 @@ def template : List Instr := [
 .op .MUL,
 .push ⟨1, by decide⟩ (UInt256.ofNat 24),
 .op .SHR,
-.op (.Dup ⟨3, by decide⟩),
+.op (.Dup ⟨12, by decide⟩),
 .op .ADD,
 .op .AND,
 .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
-.op (.Dup ⟨14, by decide⟩),
-.op (.Dup ⟨6, by decide⟩),
-.op .MUL,
-.push ⟨1, by decide⟩ (UInt256.ofNat 23),
-.op .SHR,
-.op (.Swap ⟨3, by decide⟩),
+.op (.Dup ⟨12, by decide⟩),
 .op (.Dup ⟨3, by decide⟩),
 .op (.Dup ⟨5, by decide⟩),
 .op .NOT,
@@ -129,7 +128,8 @@ def template : List Instr := [
 .push ⟨1, by decide⟩ (UInt256.ofNat 144),
 .op .SHL,
 .op (.Dup ⟨11, by decide⟩),
-.op .OR]
+.op .OR,
+.op .JUMPDEST]
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=

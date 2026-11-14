@@ -15,7 +15,9 @@ def input (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (k : UInt256)
   ⟨word memory h4 (.k) q right k, word memory h4 (.a) q right k, word memory h4 (.b) q right k, word memory h4 (.c) q right k, word memory h4 (.d) q right k, word memory h4 (.e) q right k, word memory h4 (.factor) q right k, word memory h4 (.lower) q right k, word memory h4 (.cache 140) q right k, word memory h4 (.cache 350) q right k, word memory h4 (.cache 310) q right k, word memory h4 (.cache 190) q right k, word memory h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     RawRight0.outputStack memory (input memory h4 q right (UInt256.ofNat 1352829926)) rho =
-      stack memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 memory q) (right) (UInt256.ofNat 1352829926) rho := by
+      stack memory h4 [ .b ] (CoreModel.right0 memory q) (right) (UInt256.ofNat 1352829926)
+        (UInt256.shiftRight (UInt256.mul factorPlusWord (CoreModel.right0 memory q).c) (UInt256.ofNat 23) ::
+          stack memory h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 memory q) (right) (UInt256.ofNat 1352829926) rho) := by
   simp only [RawRight0.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, CoreCommon.word, CoreModel.load, GeneralMessageLayout.addresses,
     CoreModel.initial, CoreModel.pair, CoreModel.pairWord, CoreModel.left,
@@ -36,9 +38,9 @@ theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
  :
     StackRoundTrace.runInstrSeq RawRight0.template {s with pc := UInt256.ofNat 794, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q right (UInt256.ofNat 1352829926) rho} =
-      some {s with pc := UInt256.ofNat 830, stack := stack s.memory h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by
+      some {s with pc := UInt256.ofNat 835, stack := stack s.memory h4 [ .b ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) (UInt256.shiftRight (UInt256.mul factorPlusWord (CoreModel.right0 s.memory q).c) (UInt256.ofNat 23) :: stack s.memory h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) rho)} := by
   have h := RawRight0.run_actual s (UInt256.ofNat 794) (input s.memory h4 q right (UInt256.ofNat 1352829926)) rho hs halias haliasC haliasD haliasA (by rfl) hh4 hr ha
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 794) RawRight0.template = UInt256.ofNat 830 := by decide +kernel
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 794) RawRight0.template = UInt256.ofNat 835 := by decide +kernel
   rw [hend] at h
   rw [output_eq] at h
   exact h

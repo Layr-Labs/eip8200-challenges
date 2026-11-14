@@ -22,7 +22,7 @@ theorem run (s : State) (h : WordLane) (off limit : UInt256) (rho : List UInt256
   have h0 := CoreRight0.run s h.e h h (CorePack.suffix h off limit rho) hlen
     rfl rfl rfl rfl rfl hr ha
   have h1 := CoreRight1.run s h.e (CoreModel.right0 s.memory h) h
-    (CorePack.suffix h off limit rho) hlen rfl rfl hr ha
+    (CorePack.suffix h off limit rho) hlen rfl rfl rfl hr ha
   have h01 := DenseScheduleTrace.runInstrSeq_append_running h0 hr h1
   have h2 := CorePack.run s h (CoreModel.right1 s.memory (CoreModel.right0 s.memory h))
     off limit rho (by omega) hr ha

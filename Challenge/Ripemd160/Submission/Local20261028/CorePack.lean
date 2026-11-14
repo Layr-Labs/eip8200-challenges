@@ -24,7 +24,7 @@ def input (memory : ByteArray) (h q : WordLane) (off limit : UInt256) : RawPack.
 theorem input_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
     (rho : List UInt256) :
     RawPack.inputStack (input memory h q off limit) rho =
-      stack memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140,
+      stack memory h.e [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140,
         .cache 350, .cache 310, .cache 190, .cache 500]
         q h (UInt256.ofNat 1352829926) (suffix h off limit rho) := by
   simp [RawPack.inputStack, input, stack, CoreCommon.word, CoreModel.load, GeneralMessageLayout.addresses, suffix]
@@ -57,7 +57,7 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
 theorem run (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPack.template
-      {s with pc := UInt256.ofNat 871, stack := stack s.memory h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)} =
+      {s with pc := UInt256.ofNat 871, stack := stack s.memory h.e [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)} =
       some {s with pc := UInt256.ofNat 977, stack := stack s.memory h.e [.pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] (CoreModel.pair h (CoreModel.right2 s.memory q)) h (StaggerAlgorithm.physicalKey 0) (suffix h off limit rho)} := by
   have raw := RawPack.run_actual s (UInt256.ofNat 871) (input s.memory h q off limit) rho hs hr ha (by rfl)
   have hend : StackRoundTrace.pcAfter (UInt256.ofNat 871) RawPack.template = UInt256.ofNat 977 := by decide +kernel
