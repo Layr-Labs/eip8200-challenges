@@ -1,9 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
 /-!
 # R4：4-limb 平方例程的字级模型
 
@@ -14,87 +12,69 @@ R4 把 4-limb 平方的累加行 `t` 常驻栈上，按行展开；约化行是�
 记号：`o` 源 limb，`d` 行乘数，`c` 进位，`t` 原累加 limb，`k = 2^256 - 1`
 （`MULMOD` 的模数，栈上的 `allOnes`）。
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.R4Math
-
 open EvmSemantics
-
 def zSum (o d c : UInt256) : UInt256 := c + o * d
-
 def zCarry (o d c k : UInt256) : UInt256 :=
   (UInt256.gt c (c + o * d) - (UInt256.gt (o * d) (UInt256.mulMod d o k) - UInt256.mulMod d o k)) -
     o * d
-
 def dHi (a k : UInt256) : UInt256 :=
   (⟨0⟩ : UInt256) - (a * a + (UInt256.gt (a * a) (UInt256.mulMod a a k) - UInt256.mulMod a a k))
-
 def mSum (o d c t : UInt256) : UInt256 := (c + o * d) + t
-
 def mCarry (o d c t k : UInt256) : UInt256 :=
   zCarry o d c k + UInt256.lt (mSum o d c t) t
-
 def sCarry (o d c t k : UInt256) : UInt256 :=
   zCarry o d c k + UInt256.gt (zSum o d c) (mSum o d c t)
-
 def redC (n0 m t0 k : UInt256) : UInt256 :=
   UInt256.gt t0 (t0 + UInt256.mulMod n0 m k) + (t0 + UInt256.mulMod n0 m k)
-
-
 /-! ## 行模型
 
 `W5` 是栈上的五个累加字 `t0..t4`（`t4` 为最高字）。`row0` 是累加区为零的行 0；
 `row1..row3` 是积行（对角格 + 交叉格 + `t4` 吸收进位，返回溢出位 `v`）；`red` 是共享的
 约化子程序（`m = np * t0`，结果整体下移一个 limb）。 -/
-
 structure W5 where
   t0 : UInt256
   t1 : UInt256
   t2 : UInt256
   t3 : UInt256
   t4 : UInt256
-
 def row0 (a0 a1 a2 a3 k : UInt256) : W5 :=
   let d := a0 + a0
   let c0 := dHi a0 k
   let c1 := zCarry a1 d c0 k
   let c2 := zCarry a2 d c1 k
-  { t0 := a0 * a0, t1 := zSum a1 d c0, t2 := zSum a2 d c1, t3 := zSum a3 d c2,
+  { t0 := a0 * a0,t1 := zSum a1 d c0,t2 := zSum a2 d c1,t3 := zSum a3 d c2,
     t4 := zCarry a3 d c2 k }
-
 def row1 (a0 a1 a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
   let tb := UInt256.sgt ⟨0⟩ a0
   let d := (a1 + a1) + tb
   let c1 := mCarry a1 a1 (a1 * tb) P.t1 k
   let c2 := mCarry a2 d c1 P.t2 k
   let c3 := mCarry a3 d c2 P.t3 k
-  ({ t0 := P.t0, t1 := mSum a1 a1 (a1 * tb) P.t1, t2 := mSum a2 d c1 P.t2,
-     t3 := mSum a3 d c2 P.t3, t4 := P.t4 + c3 },
+  ({ t0 := P.t0,t1 := mSum a1 a1 (a1 * tb) P.t1,t2 := mSum a2 d c1 P.t2,
+     t3 := mSum a3 d c2 P.t3,t4 := P.t4 + c3 },
    UInt256.lt (P.t4 + c3) P.t4)
-
 def row2 (a1 a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
   let tb := UInt256.sgt ⟨0⟩ a1
   let d := (a2 + a2) + tb
   let c2 := mCarry a2 a2 (a2 * tb) P.t2 k
   let c3 := mCarry a3 d c2 P.t3 k
-  ({ t0 := P.t0, t1 := P.t1, t2 := mSum a2 a2 (a2 * tb) P.t2, t3 := mSum a3 d c2 P.t3,
+  ({ t0 := P.t0,t1 := P.t1,t2 := mSum a2 a2 (a2 * tb) P.t2,t3 := mSum a3 d c2 P.t3,
      t4 := P.t4 + c3 },
    UInt256.lt (P.t4 + c3) P.t4)
-
 def row3 (a2 a3 k : UInt256) (P : W5) : W5 × UInt256 :=
   let tb := UInt256.sgt ⟨0⟩ a2
   let c3 := mCarry a3 a3 (a3 * tb) P.t3 k
-  ({ t0 := P.t0, t1 := P.t1, t2 := P.t2, t3 := mSum a3 a3 (a3 * tb) P.t3, t4 := P.t4 + c3 },
+  ({ t0 := P.t0,t1 := P.t1,t2 := P.t2,t3 := mSum a3 a3 (a3 * tb) P.t3,t4 := P.t4 + c3 },
    UInt256.lt (P.t4 + c3) P.t4)
-
 def red (n0 n1 n2 n3 np k : UInt256) (P : W5) (v : UInt256) : W5 :=
   let m := np * P.t0
   let c0 := redC n0 m P.t0 k
   let c1 := sCarry n1 m c0 P.t1 k
   let c2 := sCarry n2 m c1 P.t2 k
   let c3 := sCarry n3 m c2 P.t3 k
-  { t0 := mSum n1 m c0 P.t1, t1 := mSum n2 m c1 P.t2, t2 := mSum n3 m c2 P.t3,
-    t3 := P.t4 + c3, t4 := v + UInt256.lt (P.t4 + c3) P.t4 }
-
+  { t0 := mSum n1 m c0 P.t1,t1 := mSum n2 m c1 P.t2,t2 := mSum n3 m c2 P.t3,
+    t3 := P.t4 + c3,t4 := v + UInt256.lt (P.t4 + c3) P.t4 }
 def final (a0 a1 a2 a3 n0 n1 n2 n3 np k : UInt256) : W5 :=
   let W1 := red n0 n1 n2 n3 np k (row0 a0 a1 a2 a3 k) ⟨0⟩
   let R1 := row1 a0 a1 a2 a3 k W1
@@ -103,61 +83,45 @@ def final (a0 a1 a2 a3 n0 n1 n2 n3 np k : UInt256) : W5 :=
   let W3 := red n0 n1 n2 n3 np k R2.1 R2.2
   let R3 := row3 a2 a3 k W3
   red n0 n1 n2 n3 np k R3.1 R3.2
-
 def sub4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
   let b0 := UInt256.lt P.t0 n0
   let b1 := UInt256.lor (UInt256.gt b0 (n1 + b0)) (UInt256.lt P.t1 (n1 + b0))
   let b2 := UInt256.lor (UInt256.gt b1 (n2 + b1)) (UInt256.lt P.t2 (n2 + b1))
-  { t0 := P.t0 - n0, t1 := P.t1 - (n1 + b0), t2 := P.t2 - (n2 + b1), t3 := P.t3 - (n3 + b2),
+  { t0 := P.t0 - n0,t1 := P.t1 - (n1 + b0),t2 := P.t2 - (n2 + b1),t3 := P.t3 - (n3 + b2),
     t4 := ⟨0⟩ }
-
 def red4 (n0 n1 n2 n3 : UInt256) (P : W5) : W5 :=
   if P.t4 = ⟨0⟩ then P else sub4 n0 n1 n2 n3 P
-
 /-! ## 字级算术引理
 
 `k` 在字节码里是栈上的全 1 字；下列引理都在 `k = maxWord` 下陈述，用处先 `subst`。 -/
-
 open Challenge.EvmProof.Word
 open Challenge.Modexp.Submission.Proofs.Fast.Monpro
-
 theorem toNat_lt (a : UInt256) : a.toNat < 2 ^ 256 := a.val.isLt
-
 theorem toNat_mul (a b : UInt256) : (a * b).toNat = a.toNat * b.toNat % 2 ^ 256 :=
   word_toNat_mul a b
-
 theorem toNat_ltw (a b : UInt256) :
     (UInt256.lt a b).toNat = if a.toNat < b.toNat then 1 else 0 := word_toNat_lt a b
-
 theorem gt_eq_lt (a b : UInt256) : UInt256.gt a b = UInt256.lt b a := rfl
-
 theorem toNat_gtw (a b : UInt256) :
     (UInt256.gt a b).toNat = if b.toNat < a.toNat then 1 else 0 := by
   rw [gt_eq_lt]; exact word_toNat_lt b a
-
 theorem toNat_zero : ((⟨0⟩ : UInt256)).toNat = 0 := rfl
-
 theorem zero_add_w (a : UInt256) : (⟨0⟩ : UInt256) + a = a := by
   apply word_ext
-  rw [word_toNat_add, toNat_zero, Nat.zero_add]
+  rw [word_toNat_add,toNat_zero,Nat.zero_add]
   exact Nat.mod_eq_of_lt (toNat_lt a)
-
 theorem lt_zero_w (a : UInt256) : UInt256.lt a ⟨0⟩ = ⟨0⟩ := by
   apply word_ext
-  rw [toNat_ltw, toNat_zero, if_neg (Nat.not_lt_zero _)]
-
+  rw [toNat_ltw,toNat_zero,if_neg (Nat.not_lt_zero _)]
 /-! ### 与 `Monpro` 的 MAC 步对齐 -/
-
 theorem zSum_eq (o d c : UInt256) : zSum o d c = macSum o d ⟨0⟩ c := by
   unfold zSum macSum
   rw [zero_add_w]
-
 theorem zCarry_eq (o d c : UInt256) : zCarry o d c maxWord = macCarry o d ⟨0⟩ c := by
   unfold zCarry macCarry mulHi
   rw [MacAlt.mulMod_comm o d]
   simp only [gt_eq_lt]
-  rw [MacAlt.subSubFold, zero_add_w, lt_zero_w, zero_add_w]
-
+  rw [MacAlt.subSubFold,zero_add_w,lt_zero_w,zero_add_w]
 theorem dHi_eq (a : UInt256) : dHi a maxWord = mulHi a a := by
   unfold dHi mulHi
   simp only [gt_eq_lt]
@@ -165,41 +129,35 @@ theorem dHi_eq (a : UInt256) : dHi a maxWord = mulHi a a := by
   have hm := toNat_lt (UInt256.mulMod a a maxWord)
   have hl := toNat_lt (a * a)
   have hb := toNat_lt (UInt256.lt (UInt256.mulMod a a maxWord) (a * a))
-  simp only [word_toNat_sub, word_toNat_add, toNat_zero]
+  simp only [word_toNat_sub,word_toNat_add,toNat_zero]
   generalize (UInt256.mulMod a a maxWord).toNat = M at *
   generalize (a * a).toNat = L at *
   generalize (UInt256.lt (UInt256.mulMod a a maxWord) (a * a)).toNat = B at *
   omega
-
 theorem zCell_spec (o d c : UInt256) :
     (zCarry o d c maxWord).toNat * 2 ^ 256 + (zSum o d c).toNat = o.toNat * d.toNat + c.toNat := by
   have h := macSpec o d ⟨0⟩ c
   have h0 := toNat_zero
-  rw [zCarry_eq, zSum_eq]
+  rw [zCarry_eq,zSum_eq]
   omega
-
 theorem dHi_spec (a : UInt256) :
     (dHi a maxWord).toNat * 2 ^ 256 + (a * a).toNat = a.toNat * a.toNat := by
   rw [dHi_eq]; exact mulHi_spec a a
-
 /-! ### 带累加 limb 的格：通用 `K` 上的核心 -/
-
 private theorem prod_le {K x y : Nat} (hx : x < K) (hy : y < K) : x * y ≤ (K - 1) * (K - 1) :=
   Nat.mul_le_mul (by omega) (by omega)
-
 private theorem sq_facts {K : Nat} (hK : 0 < K) :
     (K - 1) * (K - 1) + (K - 1) = (K - 1) * K ∧ (K - 1) * K + K = K * K := by
-  obtain ⟨K', rfl⟩ : ∃ K', K = K' + 1 := ⟨K - 1, by omega⟩
+  obtain ⟨K',rfl⟩ : ∃ K',K = K' + 1 := ⟨K - 1,by omega⟩
   simp only [Nat.add_sub_cancel]
   constructor <;> ring
-
 private theorem cell_core {K Z S X c t : Nat} (P : Prop) [Decidable P] (hK : 0 < K)
     (hx : X ≤ (K - 1) * (K - 1)) (hc : c < K) (ht : t < K) (hS : S < K)
     (hz : Z * K + S = X + c) (hP : P ↔ K ≤ S + t) :
     ((Z + (if P then 1 else 0)) % K) * K + (S + t) % K = X + c + t := by
-  obtain ⟨hA, hB⟩ := sq_facts hK
+  obtain ⟨hA,hB⟩ := sq_facts hK
   rcases Nat.lt_or_ge (S + t) K with h | h
-  · rw [Nat.mod_eq_of_lt h, if_neg (fun hp => absurd (hP.mp hp) (by omega)), Nat.add_zero]
+  · rw [Nat.mod_eq_of_lt h,if_neg (fun hp => absurd (hP.mp hp) (by omega)),Nat.add_zero]
     have hZ : Z < K := by
       by_contra hn
       have := Nat.mul_le_mul_right K (Nat.le_of_not_lt hn)
@@ -207,15 +165,14 @@ private theorem cell_core {K Z S X c t : Nat} (P : Prop) [Decidable P] (hK : 0 <
     rw [Nat.mod_eq_of_lt hZ]
     omega
   · have hv : (S + t) % K = S + t - K := by
-      rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt (by omega)]
-    rw [hv, if_pos (hP.mpr h)]
+      rw [Nat.mod_eq_sub_mod h,Nat.mod_eq_of_lt (by omega)]
+    rw [hv,if_pos (hP.mpr h)]
     have hZ : Z + 1 < K := by
       by_contra hn
       have := Nat.mul_le_mul_right K (show K - 1 ≤ Z by omega)
       omega
-    rw [Nat.mod_eq_of_lt hZ, Nat.add_mul, Nat.one_mul]
+    rw [Nat.mod_eq_of_lt hZ,Nat.add_mul,Nat.one_mul]
     omega
-
 theorem mCell_spec (o d c t : UInt256) :
     (mCarry o d c t maxWord).toNat * 2 ^ 256 + (mSum o d c t).toNat =
       o.toNat * d.toNat + c.toNat + t.toNat := by
@@ -223,7 +180,7 @@ theorem mCell_spec (o d c t : UInt256) :
   have hS := toNat_lt (zSum o d c)
   have ht := toNat_lt t
   unfold mCarry
-  rw [show mSum o d c t = zSum o d c + t from rfl, word_toNat_add, word_toNat_add, toNat_ltw,
+  rw [show mSum o d c t = zSum o d c + t from rfl,word_toNat_add,word_toNat_add,toNat_ltw,
     word_toNat_add]
   exact cell_core _ (by norm_num) (prod_le (toNat_lt o) (toNat_lt d)) (toNat_lt c) ht hS hz
     (by
@@ -231,8 +188,7 @@ theorem mCell_spec (o d c t : UInt256) :
       · intro hp; by_contra hn
         rw [Nat.mod_eq_of_lt (by omega)] at hp; omega
       · intro hp
-        rw [Nat.mod_eq_sub_mod hp, Nat.mod_eq_of_lt (by omega)]; omega)
-
+        rw [Nat.mod_eq_sub_mod hp,Nat.mod_eq_of_lt (by omega)]; omega)
 theorem sCell_spec (o d c t : UInt256) :
     (sCarry o d c t maxWord).toNat * 2 ^ 256 + (mSum o d c t).toNat =
       o.toNat * d.toNat + c.toNat + t.toNat := by
@@ -240,7 +196,7 @@ theorem sCell_spec (o d c t : UInt256) :
   have hS := toNat_lt (zSum o d c)
   have ht := toNat_lt t
   unfold sCarry
-  rw [show mSum o d c t = zSum o d c + t from rfl, word_toNat_add, word_toNat_add, toNat_gtw,
+  rw [show mSum o d c t = zSum o d c + t from rfl,word_toNat_add,word_toNat_add,toNat_gtw,
     word_toNat_add]
   exact cell_core _ (by norm_num) (prod_le (toNat_lt o) (toNat_lt d)) (toNat_lt c) ht hS hz
     (by
@@ -248,26 +204,22 @@ theorem sCell_spec (o d c t : UInt256) :
       · intro hp; by_contra hn
         rw [Nat.mod_eq_of_lt (by omega)] at hp; omega
       · intro hp
-        rw [Nat.mod_eq_sub_mod hp, Nat.mod_eq_of_lt (by omega)]; omega)
-
+        rw [Nat.mod_eq_sub_mod hp,Nat.mod_eq_of_lt (by omega)]; omega)
 /-! ### 约化首格 -/
-
 private theorem mod_pred (X : Nat) :
     X % (2 ^ 256 - 1) = (X / 2 ^ 256 + X % 2 ^ 256) % (2 ^ 256 - 1) := by
   have hmodeq : (2 : Nat) ^ 256 ≡ 1 [MOD 2 ^ 256 - 1] := by
     unfold Nat.ModEq; norm_num
   have hstep := (hmodeq.mul_right (X / 2 ^ 256)).add_right (X % 2 ^ 256)
-  rw [Nat.one_mul, Nat.div_add_mod] at hstep
+  rw [Nat.one_mul,Nat.div_add_mod] at hstep
   exact hstep
-
 private theorem high_lt' {K X Y : Nat} (hK : 2 ≤ K) (hX : X < K) (hY : Y < K) :
     X * Y / K + 1 < K := by
-  obtain ⟨K', rfl⟩ : ∃ K', K = K' + 2 := ⟨K - 2, by omega⟩
+  obtain ⟨K',rfl⟩ : ∃ K',K = K' + 2 := ⟨K - 2,by omega⟩
   have h1 : X * Y ≤ (K' + 1) * (K' + 1) := Nat.mul_le_mul (by omega) (by omega)
   have h2 : X * Y / (K' + 2) < K' + 1 := by
     rw [Nat.div_lt_iff_lt_mul (by omega)]; nlinarith
   omega
-
 private theorem mont_zero (n0 np t0 : UInt256)
     (hinv : (n0.toNat * np.toNat + 1) % 2 ^ 256 = 0) :
     (n0.toNat * (np * t0).toNat + t0.toNat) % 2 ^ 256 = 0 := by
@@ -279,73 +231,67 @@ private theorem mont_zero (n0 np t0 : UInt256)
         ≡ n0.toNat * (np.toNat * t0.toNat) + t0.toNat [MOD 2 ^ 256] := h1
       _ = (n0.toNat * np.toNat + 1) * t0.toNat := by ring
   unfold Nat.ModEq at e
-  rw [e, Nat.mul_mod, hinv, Nat.zero_mul, Nat.zero_mod]
-
+  rw [e,Nat.mul_mod,hinv,Nat.zero_mul,Nat.zero_mod]
 private theorem redc_core {K H L M X t : Nat} (hK : 2 ≤ K) (hH : H + 1 < K) (hL : L < K)
     (ht : t < K) (hX : X = K * H + L) (hM : M = (H + L) % (K - 1)) (hz : (L + t) % K = 0) :
     (((if (t + M) % K < t then 1 else 0) + (t + M) % K) % K) * K = t + X := by
   have hLt : L + t = 0 ∨ L + t = K := by
     rcases Nat.lt_or_ge (L + t) K with h | h
     · left; rw [Nat.mod_eq_of_lt h] at hz; exact hz
-    · right; rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt (by omega)] at hz; omega
+    · right; rw [Nat.mod_eq_sub_mod h,Nat.mod_eq_of_lt (by omega)] at hz; omega
   have hMv : (H + L < K - 1 ∧ M = H + L) ∨ (K - 1 ≤ H + L ∧ M = H + L - (K - 1)) := by
     rcases Nat.lt_or_ge (H + L) (K - 1) with h | h
-    · exact Or.inl ⟨h, by rw [hM, Nat.mod_eq_of_lt h]⟩
-    · exact Or.inr ⟨h, by rw [hM, Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt (by omega)]⟩
+    · exact Or.inl ⟨h,by rw [hM,Nat.mod_eq_of_lt h]⟩
+    · exact Or.inr ⟨h,by rw [hM,Nat.mod_eq_sub_mod h,Nat.mod_eq_of_lt (by omega)]⟩
   have hy : (t + M < K ∧ (t + M) % K = t + M) ∨ (K ≤ t + M ∧ (t + M) % K = t + M - K) := by
     rcases Nat.lt_or_ge (t + M) K with h | h
-    · exact Or.inl ⟨h, Nat.mod_eq_of_lt h⟩
-    · exact Or.inr ⟨h, by rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt (by omega)]⟩
+    · exact Or.inl ⟨h,Nat.mod_eq_of_lt h⟩
+    · exact Or.inr ⟨h,by rw [Nat.mod_eq_sub_mod h,Nat.mod_eq_of_lt (by omega)]⟩
   generalize (t + M) % K = y at *
-  have hw : ∀ g : Nat, g ≤ 1 → y < K →
+  have hw : ∀ g : Nat,g ≤ 1 → y < K →
       (g + y < K ∧ (g + y) % K = g + y) ∨ (K ≤ g + y ∧ (g + y) % K = g + y - K) := by
     intro g hg hyK
     rcases Nat.lt_or_ge (g + y) K with h | h
-    · exact Or.inl ⟨h, Nat.mod_eq_of_lt h⟩
-    · exact Or.inr ⟨h, by rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt (by omega)]⟩
+    · exact Or.inl ⟨h,Nat.mod_eq_of_lt h⟩
+    · exact Or.inr ⟨h,by rw [Nat.mod_eq_sub_mod h,Nat.mod_eq_of_lt (by omega)]⟩
   have hyK : y < K := by omega
   have hres : ((if y < t then 1 else 0) + y) % K = H ∧ L + t = 0 ∨
       ((if y < t then 1 else 0) + y) % K = H + 1 ∧ L + t = K := by
     split_ifs with hg
-    · rcases hw 1 le_rfl hyK with ⟨h1, h2⟩ | ⟨h1, h2⟩ <;> rw [h2] <;> omega
-    · rcases hw 0 (Nat.zero_le _) hyK with ⟨h1, h2⟩ | ⟨h1, h2⟩ <;> rw [h2] <;> omega
-  rcases hres with ⟨h1, h2⟩ | ⟨h1, h2⟩
-  · rw [h1, hX, show t = 0 by omega, show L = 0 by omega, Nat.mul_comm]; ring
-  · rw [h1, hX, Nat.add_mul, Nat.one_mul, Nat.mul_comm H K]; omega
-
+    · rcases hw 1 le_rfl hyK with ⟨h1,h2⟩ | ⟨h1,h2⟩ <;> rw [h2] <;> omega
+    · rcases hw 0 (Nat.zero_le _) hyK with ⟨h1,h2⟩ | ⟨h1,h2⟩ <;> rw [h2] <;> omega
+  rcases hres with ⟨h1,h2⟩ | ⟨h1,h2⟩
+  · rw [h1,hX,show t = 0 by omega,show L = 0 by omega,Nat.mul_comm]; ring
+  · rw [h1,hX,Nat.add_mul,Nat.one_mul,Nat.mul_comm H K]; omega
 theorem redC_spec (n0 np t0 : UInt256)
     (hinv : (n0.toNat * np.toNat + 1) % 2 ^ 256 = 0) :
     (redC n0 (np * t0) t0 maxWord).toNat * 2 ^ 256 = t0.toNat + n0.toNat * (np * t0).toNat := by
   have hz := mont_zero n0 np t0 hinv
   have hH := high_lt' (K := 2 ^ 256) (by norm_num) (toNat_lt n0) (toNat_lt (np * t0))
   unfold redC
-  rw [word_toNat_add, toNat_gtw, word_toNat_add, word_toNat_mulMod_max]
+  rw [word_toNat_add,toNat_gtw,word_toNat_add,word_toNat_mulMod_max]
   generalize n0.toNat * (np * t0).toNat = X at *
   rw [← Nat.mod_add_mod] at hz
   exact redc_core (by norm_num) hH (Nat.mod_lt _ (by norm_num)) (toNat_lt t0)
     (Nat.div_add_mod X _).symm (mod_pred X) hz
-
 local macro "rnum" : tactic =>
   `(tactic| simp only [show (2 : Nat) ^ 256 =
     115792089237316195423570985008687907853269984665640564039457584007913129639936 from by norm_num]
     at *)
-
 theorem add_spec (p c : UInt256) :
     (UInt256.lt (p + c) p).toNat * 2 ^ 256 + (p + c).toNat = p.toNat + c.toNat := by
   have hp := toNat_lt p
   have hc := toNat_lt c
-  simp only [word_toNat_add, toNat_ltw]
+  simp only [word_toNat_add,toNat_ltw]
   rnum
   split_ifs <;> omega
-
 theorem lt_add_left_eq (p c : UInt256) : UInt256.lt (p + c) p = UInt256.lt (p + c) c := by
   apply word_ext
   have hp := toNat_lt p
   have hc := toNat_lt c
-  simp only [word_toNat_add, toNat_ltw]
+  simp only [word_toNat_add,toNat_ltw]
   rnum
   split_ifs <;> omega
-
 theorem pair_unique {a b a' b' : UInt256}
     (h : a.toNat * 2 ^ 256 + b.toNat = a'.toNat * 2 ^ 256 + b'.toNat) : a = a' ∧ b = b' := by
   have hb := toNat_lt b
@@ -353,5 +299,4 @@ theorem pair_unique {a b a' b' : UInt256}
   have ha := toNat_lt a
   have ha' := toNat_lt a'
   constructor <;> apply word_ext <;> rnum <;> omega
-
 end Challenge.Modexp.Submission.Proofs.Fast.R4Math

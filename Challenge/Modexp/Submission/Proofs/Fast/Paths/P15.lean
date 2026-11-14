@@ -22,11 +22,8 @@ The two basic blocks are
 
 Both leave the incoming stack `[px, ret]` exactly as `DOUBLE256` and `CSUB`
 expect it, so neither call site moves. -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 end Challenge.Modexp.Submission.Proofs.Fast

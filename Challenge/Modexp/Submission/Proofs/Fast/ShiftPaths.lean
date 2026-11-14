@@ -1,18 +1,14 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.Defs
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 /-! Basic-block instruction paths for the appended shift-reduce base conversion (generated). -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 def blk2862 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1878 .JUMPDEST,
@@ -22,7 +18,6 @@ def blk2862 :
    opAt 1882 .ISZERO,
    pushAt 1883 1 219,
    opAt 1884 .JUMPI]
-
 def blk2874 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1885 (.Dup dA0),
@@ -32,8 +27,6 @@ def blk2874 :
    pushAt 1889 2 2412,
    pushAt 1890 2 4010,
    opAt 1891 .JUMP]
-
-
 def blkNegW :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1897 (.Dup dA0),
@@ -41,7 +34,6 @@ def blkNegW :
    opAt 1899 .EQ,
    pushAt 1900 2 2336,
    opAt 1901 .JUMPI]
-
 def negS8 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1902 1 224,
@@ -50,7 +42,6 @@ def negS8 :
    opAt 1905 .SUB,
    pushAt 1906 2 1504,
    opAt 1907 .MSTORE]
-
 def negN8a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1908 1 192,
@@ -58,7 +49,6 @@ def negN8a :
    opAt 1910 .NOT,
    pushAt 1911 2 1472,
    opAt 1912 .MSTORE]
-
 def negN8b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1913 1 160,
@@ -66,7 +56,6 @@ def negN8b :
    opAt 1915 .NOT,
    pushAt 1916 2 1440,
    opAt 1917 .MSTORE]
-
 def negN8c :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1918 1 128,
@@ -74,7 +63,6 @@ def negN8c :
    opAt 1920 .NOT,
    pushAt 1921 2 1408,
    opAt 1922 .MSTORE]
-
 def negN8d :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1923 1 96,
@@ -82,7 +70,6 @@ def negN8d :
    opAt 1925 .NOT,
    pushAt 1926 2 1376,
    opAt 1927 .MSTORE]
-
 def negNTa :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1929 1 64,
@@ -90,7 +77,6 @@ def negNTa :
    opAt 1931 .NOT,
    pushAt 1932 2 1344,
    opAt 1933 .MSTORE]
-
 def negNTb :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1934 1 32,
@@ -98,7 +84,6 @@ def negNTb :
    opAt 1936 .NOT,
    pushAt 1937 2 1312,
    opAt 1938 .MSTORE]
-
 def negNTc :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1939 0 0,
@@ -106,7 +91,6 @@ def negNTc :
    opAt 1941 .NOT,
    pushAt 1942 2 1280,
    opAt 1943 .MSTORE]
-
 def negS4 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1848 1 96,
@@ -115,32 +99,25 @@ def negS4 :
    opAt 1851 .SUB,
    pushAt 1852 2 1376,
    opAt 1853 .MSTORE]
-
 def negJ4 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1847 .JUMPDEST]
-
 def negJ4b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1854 2 2470,
    opAt 1855 .JUMP]
-
 def negJT :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1928 .JUMPDEST]
-
 def blkNeg8 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  negS8 ++ negN8a ++ negN8b ++ negN8c ++ negN8d
-
+  negS8++negN8a++negN8b++negN8c++negN8d
 def blkNeg4 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  negJ4 ++ negS4 ++ negJ4b
-
+  negJ4++negS4++negJ4b
 def blkNegT :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
-  negJT ++ negNTa ++ negNTb ++ negNTc
-
+  negJT++negNTa++negNTb++negNTc
 def blk2919a :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1944 0 0,
@@ -151,7 +128,6 @@ def blk2919a :
    opAt 1949 (.Dup dA1),
    opAt 1950 .AND,
    opAt 1951 (.Dup dA0)]
-
 def blk2919b :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1953 (.Dup dA0),
@@ -177,7 +153,6 @@ def blk2919b :
    opAt 1973 .MOD,
    pushAt 1974 2 1632,
    opAt 1975 .MSTORE]
-
 def blkNbHead :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 1976 2 2752,
@@ -186,7 +161,6 @@ def blkNbHead :
    opAt 1979 (.Dup dA0),
    opAt 1980 (.Dup dA2),
    opAt 1981 .MUL]
-
 def blkNbSub :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 1982 (.Dup dA0),
@@ -232,7 +206,6 @@ def blkNbSub :
    opAt 2022 .MUL,
    opAt 2023 (.Swap sA0),
    opAt 2024 .POP]
-
 def blkNbTail :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2025 (.Dup dA1),
@@ -278,11 +251,9 @@ def blkNbTail :
    pushAt 2065 2 1312,
    opAt 2066 .MLOAD,
    opAt 2067 (.Dup dA12)]
-
 def blk3013 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2093 .JUMPDEST]
-
 def blk3018 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2094 (.Dup dA15),
@@ -293,7 +264,6 @@ def blk3018 :
    pushAt 2099 2 2784,
    opAt 2100 .MLOAD,
    opAt 2101 .MSTORE]
-
 def blk3026 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2102 2 2080,
@@ -348,9 +318,6 @@ def blk3026 :
    pushAt 2151 0 0,
    opAt 2152 .SUB,
    opAt 2153 .OR]
-
-
-
 def blk3125 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   -- the three pops that discarded the old pointer loop's carried words are gone; the block now
@@ -376,19 +343,16 @@ def blk3125 :
    opAt 2392 .OR,
    pushAt 2393 2 3073,
    opAt 2394 .JUMPI]
-
 def blkUnc :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2403 .JUMPDEST,
    opAt 2404 .POP]
-
 def blk3153 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2405 .JUMPDEST,
    pushAt 2406 0 0,
    pushAt 2407 2 2784,
    opAt 2408 .MLOAD]
-
 def blk3157 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2409 .JUMPDEST,
@@ -421,7 +385,6 @@ def blk3157 :
    opAt 2436 .GT,
    pushAt 2437 2 3081,
    opAt 2438 .JUMPI]
-
 def blk3192 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2439 .POP,
@@ -436,7 +399,6 @@ def blk3192 :
    opAt 2448 .ISZERO,
    pushAt 2449 2 3075,
    opAt 2450 .JUMPI]
-
 def blk3204 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2451 2 2080,
@@ -445,7 +407,6 @@ def blk3204 :
    opAt 2454 .ISZERO,
    pushAt 2455 2 3061,
    opAt 2456 .JUMPI]
-
 def blk3253 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2395 .JUMPDEST,
@@ -454,65 +415,49 @@ def blk3253 :
    opAt 2398 (.Dup dA0),
    pushAt 2399 2 2704,
    opAt 2400 .JUMPI]
-
 def blk3253x :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [pushAt 2401 2 3146,
    opAt 2402 .JUMP]
-
 theorem jumpDest4608 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2390 = true :=
   Artifact.isValidJumpDest_index 1878 (by rfl)
-
 theorem jumpDestBigC :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 219 = true :=
   Artifact.isValidJumpDest_index 146 (by rfl)
-
 theorem jumpDest4657 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2412 = true :=
   Artifact.isValidJumpDest_index 1892 (by rfl)
-
-
 theorem jumpDestNeg4 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2336 = true :=
   Artifact.isValidJumpDest_index 1847 (by rfl)
-
 theorem jumpDestNegT :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2470 = true :=
   Artifact.isValidJumpDest_index 1928 (by rfl)
-
 theorem jumpDest4839 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2704 = true :=
   Artifact.isValidJumpDest_index 2093 (by rfl)
-
 theorem jumpDest5115 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3075 = true :=
   Artifact.isValidJumpDest_index 2405 (by rfl)
-
 theorem jumpDest5121 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3081 = true :=
   Artifact.isValidJumpDest_index 2409 (by rfl)
-
 theorem jumpDestUnc :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3073 = true :=
   Artifact.isValidJumpDest_index 2403 (by rfl)
-
 theorem jumpDest5311 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3061 = true :=
   Artifact.isValidJumpDest_index 2395 (by rfl)
-
 theorem jumpDest5366 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 3146 = true :=
   Artifact.isValidJumpDest_index 2457 (by rfl)
-
 theorem jumpDest5444 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 5522 = true :=
   Artifact.isValidJumpDest_index 4411 (by rfl)
-
 theorem jumpDest2471 :
     Decode.isValidJumpDest Challenge.Modexp.submissionBytecode 2329 = true :=
   Artifact.isValidJumpDest_index 1843 (by rfl)
-
 def blk2764 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2068 (.Dup dA0),
@@ -540,7 +485,6 @@ def blk2764 :
    pushAt 2090 2 1698,
    opAt 2091 .MLOAD,
    opAt 2092 (.Swap sA0)]
-
 def blk3346 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 2457 .JUMPDEST,
@@ -550,7 +494,6 @@ def blk3346 :
    opAt 2461 .ISZERO,
    pushAt 2462 2 5522,
    opAt 2463 .JUMPI]
-
 def blk5444 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   [opAt 4411 .JUMPDEST,
@@ -573,5 +516,4 @@ def blk5444 :
    pushAt 4428 2 2317,
    opAt 4429 .ADD,
    opAt 4430 .JUMP]
-
 end Challenge.Modexp.Submission.Proofs.Fast

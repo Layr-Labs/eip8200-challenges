@@ -1,74 +1,59 @@
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneCore
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneEntry
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneInput
-
 set_option warningAsError true
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOnePositive
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
-
 def context (template : State) (input : ByteArray) : State :=
   { template with
     executionEnv := { template.executionEnv with calldata := input }
     memory := ByteArray.empty
     activeWords := UInt256.ofNat 0 }
-
 def exponentOffset (input : ByteArray) : UInt256 := UInt256.ofNat (96 + baseSize input)
 def modulusOffset (input : ByteArray) : UInt256 :=
   UInt256.ofNat (96 + baseSize input + exponentSize input)
-
 /-- The base size as the early entry at 22 sees it. -/
 def headerStack (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input)]
-
 /-- The legacy route frame at 1759 (twelve words). -/
 def routeStack (input : ByteArray) : List UInt256 :=
-  [UInt256.ofNat (baseSize input), UInt256.ofNat (exponentSize input),
-   UInt256.ofNat (modulusSize input), UInt256.ofNat 96,
-   exponentOffset input, modulusOffset input, UInt256.ofNat 1158,
-   modulusOffset input, exponentOffset input, UInt256.ofNat (modulusSize input),
-   UInt256.ofNat (exponentSize input), UInt256.ofNat (baseSize input)]
-
+  [UInt256.ofNat (baseSize input),UInt256.ofNat (exponentSize input),
+   UInt256.ofNat (modulusSize input),UInt256.ofNat 96,
+   exponentOffset input,modulusOffset input,UInt256.ofNat 1396,
+   modulusOffset input,exponentOffset input,UInt256.ofNat (modulusSize input),
+   UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)]
 /-- The base word as the route head leaves it: shifted right by the width `8 * (32 - baseSize)`
 (unshifted for a full 32-byte base). The entries at 24 and 101 compute it once; the Fermat exit and
 the core entry copy it. -/
 def shiftWord (input : ByteArray) : UInt256 :=
   WindowTwentyOneInput.baseWord input
-
 /-- The core frame the entries at 24 and 103 build under the modulus word: the
 exponent word, the width shift, then whatever the entry leaves below. -/
 def coreStack (input : ByteArray) (tail : List UInt256) : List UInt256 :=
-  WindowTwentyOneInput.exponentWord input :: shiftWord input :: tail
-
+  WindowTwentyOneInput.exponentWord input::shiftWord input::tail
 def state (template : State) (input : ByteArray) (pc : UInt256) : State :=
   WindowTwentyOneEntry.framed (context template input) pc (routeStack input)
-
 theorem exponent_at (template : State) (input : ByteArray) (hwidth : baseSize input ≤ 32) :
     MachineState.readWord (context template input).executionEnv.calldata
       (exponentOffset input).toNat = WindowTwentyOneInput.exponentWord input := by
   have hsmall : 96 + baseSize input < 2 ^ 256 := by omega
-  simp only [context, exponentOffset, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.exponentWord]
-
+  simp only [context,exponentOffset,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hsmall,WindowTwentyOneInput.exponentWord]
 theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
     MachineState.readWord (context template input).executionEnv.calldata
       (modulusOffset input).toNat = WindowTwentyOneInput.modulusWord input := by
   have hsmall : 96 + baseSize input + 32 < 2 ^ 256 := by have := hmatch.1; omega
-  simp only [context, modulusOffset, hmatch.2.1, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt hsmall, WindowTwentyOneInput.modulusWord]
-
+  simp only [context,modulusOffset,hmatch.2.1,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Nat.mod_eq_of_lt hsmall,WindowTwentyOneInput.modulusWord]
 def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 720)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 958)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
-    (WindowTwentyOneInput.modulusWord input :: coreStack input tail)
-
+    (WindowTwentyOneInput.modulusWord input::coreStack input tail)
 def returned (template : State) (input : ByteArray) (tail : List UInt256) : State :=
   WindowTwentyOneCore.returnedState (context template input) (WindowTwentyOneInput.baseWord input)
     (WindowTwentyOneInput.modulusWord input) (WindowTwentyOneInput.exponentWord input)
-    ((WindowTwentyOneInput.modulusWord input :: coreStack input tail).drop 2)
-
+    ((WindowTwentyOneInput.modulusWord input::coreStack input tail).drop 2)
 /-- The core result is the specification for every accepted input, including a
 zero modulus, where the final `MULMOD` produces the zero word. -/
 theorem returned_spec (template : State) (input : ByteArray) (tail : List UInt256)
@@ -78,15 +63,14 @@ theorem returned_spec (template : State) (input : ByteArray) (tail : List UInt25
   · have hm0 : WindowTwentyOneInput.modulusValue input = 0 := by
       rw [← WindowTwentyOneInput.modulusWord_toNat]
       exact hmodulus
-    rw [returned, WindowTwentyOneCore.core_result_zero _ _ _ _ hmodulus,
-      WindowTwentyOneInput.spec_eq input hmatch, Algorithm.modPow_eq, hm0, if_pos rfl]
+    rw [returned,WindowTwentyOneCore.core_result_zero _ _ _ _ hmodulus,
+      WindowTwentyOneInput.spec_eq input hmatch,Algorithm.modPow_eq,hm0,if_pos rfl]
   · have hpos : 0 < (WindowTwentyOneInput.modulusWord input).toNat := Nat.pos_of_ne_zero hmodulus
     have hm : WindowTwentyOneInput.modulusValue input ≠ 0 := by
       rw [WindowTwentyOneInput.modulusWord_toNat] at hmodulus
       exact hmodulus
-    rw [returned, WindowTwentyOneCore.core_result _ _ _ _ hpos,
+    rw [returned,WindowTwentyOneCore.core_result _ _ _ _ hpos,
       WindowTwentyOneInput.baseWord_toNat_of_le input hmatch.1,
-      WindowTwentyOneInput.exponentWord_toNat, WindowTwentyOneInput.modulusWord_toNat,
-      WindowTwentyOneInput.spec_eq input hmatch, Algorithm.modPow_eq, if_neg hm]
-
+      WindowTwentyOneInput.exponentWord_toNat,WindowTwentyOneInput.modulusWord_toNat,
+      WindowTwentyOneInput.spec_eq input hmatch,Algorithm.modPow_eq,if_neg hm]
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOnePositive

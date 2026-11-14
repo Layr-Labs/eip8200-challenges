@@ -8,37 +8,29 @@ import Challenge.Modexp.Submission.Proofs.Fast.CompactConstants
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ShiftTrace2
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowGuardLogic
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.RetainedTEntry
-
 noncomputable section
 set_option warningAsError false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 8000000
 set_option linter.unusedSimpArgs false
-
 /-!
 # Block reductions of the shift-reduce base conversion,part 3
 
 The middle block,the two repair loops,the `CSUB` call and the loop exits.
 -/
-
-
 namespace CycleSubmission.Global.Fast.Shift
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
-
-
 attribute [local simp] CompactConstants.notThirtyOne notThirtyOneOfNat
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
-
 theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -47,7 +39,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2306) s mem
+      some (shiftLoopState (UInt256.ofNat 2544) s mem
         n bsize esize msize n) := by
   have hne1 : ¬ (1 = esize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936) := by
@@ -98,11 +90,11 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     have he0r : UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize) = UInt256.ofNat 0 := by
       calc
         _ = UInt256.eq (UInt256.ofNat esize) (UInt256.ofNat 1) := by
-          simp only [UInt256.eq, eq_comm]
+          simp only [UInt256.eq,eq_comm]
         _ = _ := he0
     unfold initialPhase
     rw [he0r]
-    simp [UInt256.land, UInt256.ofNat, UInt256.size, Fin.ofNat, Fin.land, Nat.and_zero]
+    simp [UInt256.land,UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,Nat.and_zero]
   rcases hfast with h | h <;> subst h
   all_goals by_cases hshift : (MachineState.readWord mem 1536).toNat = 0
   all_goals simp (config := { maxSteps := 3000000 })
@@ -127,7 +119,6 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   all_goals (first | rfl | simp [UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,
       Nat.and_zero,Nat.zero_and,UInt256.toNat])
   all_goals (first | rfl | decide)
-
 /-- An initialized exponent-three cache enters the half-length first loop. -/
 theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
@@ -140,7 +131,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 3803) s mem
+      some (shiftLoopState (UInt256.ofNat 10213) s mem
         n bsize esize msize (n / 2)) := by
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -207,7 +198,7 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hinitial : initialPhase s mem esize = UInt256.ofNat 1 := by
     unfold initialPhase
-    rw [hbyte3, hsize1]
+    rw [hbyte3,hsize1]
     decide
   rcases hfast with h | h <;> subst h
   all_goals by_cases hshift : (MachineState.readWord mem 1536).toNat = 0
@@ -234,7 +225,6 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   all_goals (first | rfl | simp [UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,
       Nat.and_zero,Nat.zero_and,UInt256.toNat,hmodif,hmodl,hb3m])
   all_goals (first | rfl | decide)
-
 /-- Other single-byte exponents enter the ordinary loop with continuation 2310. -/
 theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hfast : n = 4 ∨ n = 8)
@@ -247,7 +237,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2306) s mem
+      some (shiftLoopState (UInt256.ofNat 2544) s mem
         n bsize esize msize n) := by
   have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -338,7 +328,7 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       exact hbyteNe (Challenge.EvmProof.Word.word_ext h.symm)
     unfold initialPhase
     rw [hb]
-    simp [UInt256.land, UInt256.ofNat, UInt256.size, Fin.ofNat, Fin.land, Nat.zero_and]
+    simp [UInt256.land,UInt256.ofNat,UInt256.size,Fin.ofNat,Fin.land,Nat.zero_and]
   rcases hfast with h | h <;> subst h
   all_goals by_cases hshift : (MachineState.readWord mem 1536).toNat = 0
   all_goals simp (config := { maxSteps := 3000000 })
@@ -365,6 +355,4 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
       Nat.and_zero,Nat.zero_and,UInt256.toNat,hmodif,hmodl,hbn,hbn2,
       hb3mne])
   all_goals (first | rfl | decide)
-
-
 end CycleSubmission.Global.Fast.Shift

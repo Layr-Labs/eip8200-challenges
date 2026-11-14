@@ -2,7 +2,6 @@ import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
@@ -12,17 +11,14 @@ namespace HistoricalSearch.GeneratedColumns
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-
 /-- Keep the semantic model in the inherited subtraction normal form while
 executing no zero addition. This rewrite avoids reducing the byte-array model. -/
 theorem normalizer_add_zero (w : UInt256) : w + UInt256.ofNat 0 = w := by
   apply Challenge.EvmProof.Word.word_ext
   rw [Challenge.EvmProof.Word.word_toNat_add,
     Challenge.EvmProof.Word.word_toNat_ofNat]
-  simp only [Nat.zero_mod, Nat.add_zero]
+  simp only [Nat.zero_mod,Nat.add_zero]
   exact Nat.mod_eq_of_lt w.val.isLt
-
-
 theorem addC (a b : UInt256) : a + b = b + a := Challenge.EvmProof.Word.word_add_comm a b
 theorem mulC (a b : UInt256) : a * b = b * a := by
   apply Challenge.EvmProof.Word.word_ext
@@ -33,25 +29,25 @@ theorem addA (a b c : UInt256) : (a + b) + c = a + (b + c) := by
   change ((a.val + b.val) + c.val).val = (a.val + (b.val + c.val)).val
   rw [add_assoc]
 theorem addL (a b c : UInt256) : a + (b + c) = b + (a + c) := by
-  rw [← addA, addC a b, addA]
+  rw [← addA,addC a b,addA]
 theorem mmC (a b m : UInt256) : UInt256.mulMod a b m = UInt256.mulMod b a m := by
-  simp [UInt256.mulMod, Nat.mul_comm]
+  simp [UInt256.mulMod,Nat.mul_comm]
 theorem amC (a b m : UInt256) : UInt256.addMod a b m = UInt256.addMod b a m := by
-  simp [UInt256.addMod, Nat.add_comm]
+  simp [UInt256.addMod,Nat.add_comm]
 theorem andC (a b : UInt256) : UInt256.land a b = UInt256.land b a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val &&& b.val).val = (b.val &&& a.val).val
-  simp only [Fin.and_val, Nat.and_comm]
+  simp only [Fin.and_val,Nat.and_comm]
 theorem orC (a b : UInt256) : UInt256.lor a b = UInt256.lor b a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val ||| b.val).val = (b.val ||| a.val).val
-  simp only [Fin.or_val, Nat.or_comm]
+  simp only [Fin.or_val,Nat.or_comm]
 theorem xorC (a b : UInt256) : UInt256.xor a b = UInt256.xor b a := by
   apply Challenge.EvmProof.Word.word_ext
   change (a.val ^^^ b.val).val = (b.val ^^^ a.val).val
-  simp only [Fin.xor_val, Nat.xor_comm]
+  simp only [Fin.xor_val,Nat.xor_comm]
 theorem eqC (a b : UInt256) : UInt256.eq a b = UInt256.eq b a := by
-  simp [UInt256.eq, eq_comm]
+  simp [UInt256.eq,eq_comm]
 theorem read_32_write_64 (mem : ByteArray) (v : UInt256) :
     MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v.toNat 32) 64) 32 =
     MachineState.readWord mem 32 := by
@@ -311,19 +307,17 @@ def preparedNormalizepart0Program : List Instr :=
    .op .MLOAD,
    .push 2 1344,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .LT]
-
 def preparedNormalizepart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 768
   let v1 : UInt256 := MachineState.readWord s.memory 1344
   let v2 : UInt256 := UInt256.lt v0 v1
-  {s with pc := UInt256.ofNat 10361, memory := s.memory, stack := v2 :: v1 :: v0 :: x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest}
-
+  {s with pc := UInt256.ofNat 10357,memory := s.memory,stack := v2::v1::v0::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest}
 theorem preparedNormalizepart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart0Program {s with pc := UInt256.ofNat 10349, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: rest} =
+    runInstructions preparedNormalizepart0Program {s with pc := UInt256.ofNat 10345,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::rest} =
       some (preparedNormalizepart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -332,30 +326,26 @@ theorem preparedNormalizepart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x1
   have hf768 := Monpro.activeWords_fix s 768 32 (by decide) (by norm_num) hact
   have ha1344 : (1344 : UInt256).toNat = 1344 := rfl
   have hf1344 := Monpro.activeWords_fix s 1344 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart0Program, preparedNormalizepart0Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha768, hf768, ha1344, hf1344]
-
-
+  simp [hz,hzn,preparedNormalizepart0Program,preparedNormalizepart0Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha768,hf768,ha1344,hf1344]
 def preparedNormalizepart1Program : List Instr :=
   [
-  .op (.Swap ⟨1, by decide⟩),
+  .op (.Swap sA1),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .AND,
    .push 2 768,
    .op .MSTORE,
    .push 2 1376,
    .op .MLOAD]
-
 def preparedNormalizepart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x2 - x1
   let v1 : UInt256 := UInt256.land x13 v0
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 768
   let v3 : UInt256 := MachineState.readWord v2 1376
-  {s with pc := UInt256.ofNat 10373, memory := v2, stack := v3 :: x0 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
-
+  {s with pc := UInt256.ofNat 10369,memory := v2,stack := v3::x0::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem preparedNormalizepart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart1Program {s with pc := UInt256.ofNat 10361, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions preparedNormalizepart1Program {s with pc := UInt256.ofNat 10357,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (preparedNormalizepart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -364,117 +354,101 @@ theorem preparedNormalizepart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x1
   have hf768 := Monpro.activeWords_fix s 768 32 (by decide) (by norm_num) hact
   have ha1376 : (1376 : UInt256).toNat = 1376 := rfl
   have hf1376 := Monpro.activeWords_fix s 1376 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart1Program, preparedNormalizepart1Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha768, hf768, ha1376, hf1376]
-
-
+  simp [hz,hzn,preparedNormalizepart1Program,preparedNormalizepart1Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha768,hf768,ha1376,hf1376]
 def preparedNormalizepart2Program : List Instr :=
   [
   .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA5),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .AND,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .LT]
-
 def preparedNormalizepart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 + x1
   let v1 : UInt256 := x5 - v0
   let v2 : UInt256 := UInt256.land x12 v1
   let v3 : UInt256 := UInt256.lt x5 v0
-  {s with pc := UInt256.ofNat 10381, memory := s.memory, stack := v3 :: x2 :: x3 :: x4 :: v2 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
-
+  {s with pc := UInt256.ofNat 10377,memory := s.memory,stack := v3::x2::x3::x4::v2::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem preparedNormalizepart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart2Program {s with pc := UInt256.ofNat 10373, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions preparedNormalizepart2Program {s with pc := UInt256.ofNat 10369,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (preparedNormalizepart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 17) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, preparedNormalizepart2Program, preparedNormalizepart2Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,preparedNormalizepart2Program,preparedNormalizepart2Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity]
 def preparedNormalizepart3Program : List Instr :=
   [
-  .op (.Dup ⟨1, by decide⟩),
+  .op (.Dup dA1),
    .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA6),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .AND,
-   .op (.Swap ⟨5, by decide⟩)]
-
+   .op (.Swap sA5)]
 def preparedNormalizepart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x1 + x0
   let v1 : UInt256 := x5 - v0
   let v2 : UInt256 := UInt256.land x11 v1
-  {s with pc := UInt256.ofNat 10389, memory := s.memory, stack := x5 :: v0 :: x1 :: x2 :: x3 :: x4 :: v2 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
-
+  {s with pc := UInt256.ofNat 10385,memory := s.memory,stack := x5::v0::x1::x2::x3::x4::v2::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem preparedNormalizepart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart3Program {s with pc := UInt256.ofNat 10381, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+    runInstructions preparedNormalizepart3Program {s with pc := UInt256.ofNat 10377,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (preparedNormalizepart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 17) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, preparedNormalizepart3Program, preparedNormalizepart3Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,preparedNormalizepart3Program,preparedNormalizepart3Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity]
 def preparedNormalizepart4Program : List Instr :=
   [
   .op .LT,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB]
-
 def preparedNormalizepart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.lt x0 x1
   let v1 : UInt256 := x14 + v0
   let v2 : UInt256 := MachineState.readWord s.memory 32
   let v3 : UInt256 := v2 - v1
-  {s with pc := UInt256.ofNat 10398, memory := s.memory, stack := v3 :: v2 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
-
+  {s with pc := UInt256.ofNat 10394,memory := s.memory,stack := v3::v2::v1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem preparedNormalizepart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart4Program {s with pc := UInt256.ofNat 10389, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions preparedNormalizepart4Program {s with pc := UInt256.ofNat 10385,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (preparedNormalizepart4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha32 : (32 : UInt256).toNat = 32 := rfl
   have hf32 := Monpro.activeWords_fix s 32 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart4Program, preparedNormalizepart4Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha32, hf32]
-
-
+  simp [hz,hzn,preparedNormalizepart4Program,preparedNormalizepart4Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha32,hf32]
 def preparedNormalizepart5Program : List Instr :=
   [
-  .op (.Dup ⟨13, by decide⟩),
+  .op (.Dup dA13),
    .op .AND,
    .push 1 32,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .ADD,
    .push 1 64,
    .op .MLOAD]
-
 def preparedNormalizepart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x13 x0
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 32
   let v2 : UInt256 := UInt256.lt x1 x2
   let v3 : UInt256 := x5 + v2
   let v4 : UInt256 := MachineState.readWord v1 64
-  {s with pc := UInt256.ofNat 10409, memory := v1, stack := v4 :: v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
-
+  {s with pc := UInt256.ofNat 10405,memory := v1,stack := v4::v3::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem preparedNormalizepart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart5Program {s with pc := UInt256.ofNat 10398, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions preparedNormalizepart5Program {s with pc := UInt256.ofNat 10394,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (preparedNormalizepart5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -483,90 +457,78 @@ theorem preparedNormalizepart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x1
   have hf32 := Monpro.activeWords_fix s 32 32 (by decide) (by norm_num) hact
   have ha64 : (64 : UInt256).toNat = 64 := rfl
   have hf64 := Monpro.activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart5Program, preparedNormalizepart5Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha32, hf32, ha64, hf64]
-
-
+  simp [hz,hzn,preparedNormalizepart5Program,preparedNormalizepart5Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha32,hf32,ha64,hf64]
 def preparedNormalizepart6Program : List Instr :=
   [
-  .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+  .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 64,
    .op .MSTORE,
    .op .LT]
-
 def preparedNormalizepart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 - x1
   let v1 : UInt256 := UInt256.land x12 v0
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 64
   let v3 : UInt256 := UInt256.lt x0 x1
-  {s with pc := UInt256.ofNat 10418, memory := v2, stack := v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
-
+  {s with pc := UInt256.ofNat 10414,memory := v2,stack := v3::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem preparedNormalizepart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart6Program {s with pc := UInt256.ofNat 10409, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions preparedNormalizepart6Program {s with pc := UInt256.ofNat 10405,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (preparedNormalizepart6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha64 : (64 : UInt256).toNat = 64 := rfl
   have hf64 := Monpro.activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart6Program, preparedNormalizepart6Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha64, hf64]
-
-
+  simp [hz,hzn,preparedNormalizepart6Program,preparedNormalizepart6Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha64,hf64]
 def preparedNormalizepart7Program : List Instr :=
   [
-  .op (.Dup ⟨6, by decide⟩),
+  .op (.Dup dA6),
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩)]
-
+   .op (.Dup dA13)]
 def preparedNormalizepart7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x6 + x0
   let v1 : UInt256 := MachineState.readWord s.memory 96
   let v2 : UInt256 := v1 - v0
-  {s with pc := UInt256.ofNat 10427, memory := s.memory, stack := x11 :: v2 :: v1 :: v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
-
+  {s with pc := UInt256.ofNat 10423,memory := s.memory,stack := x11::v2::v1::v0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem preparedNormalizepart7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart7Program {s with pc := UInt256.ofNat 10418, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+    runInstructions preparedNormalizepart7Program {s with pc := UInt256.ofNat 10414,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (preparedNormalizepart7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha96 : (96 : UInt256).toNat = 96 := rfl
   have hf96 := Monpro.activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart7Program, preparedNormalizepart7Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha96, hf96]
-
-
+  simp [hz,hzn,preparedNormalizepart7Program,preparedNormalizepart7Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha96,hf96]
 def preparedNormalizepart8Program : List Instr :=
   [
   .op .AND,
    .push 1 96,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .ADD,
    .push 1 128,
    .op .MLOAD]
-
 def preparedNormalizepart8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x0 x1
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 96
   let v2 : UInt256 := UInt256.lt x2 x3
   let v3 : UInt256 := x5 + v2
   let v4 : UInt256 := MachineState.readWord v1 128
-  {s with pc := UInt256.ofNat 10437, memory := v1, stack := v4 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
+  {s with pc := UInt256.ofNat 10433,memory := v1,stack := v4::v3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem preparedNormalizepart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart8Program {s with pc := UInt256.ofNat 10427, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions preparedNormalizepart8Program {s with pc := UInt256.ofNat 10423,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (preparedNormalizepart8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
@@ -575,122 +537,104 @@ theorem preparedNormalizepart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x1
   have hf96 := Monpro.activeWords_fix s 96 32 (by decide) (by norm_num) hact
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := Monpro.activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart8Program, preparedNormalizepart8Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha96, hf96, ha128, hf128]
-
-
+  simp [hz,hzn,preparedNormalizepart8Program,preparedNormalizepart8Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha96,hf96,ha128,hf128]
 def preparedNormalizepart9Program : List Instr :=
   [
-  .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+  .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 128,
    .op .MSTORE,
    .op .LT]
-
 def preparedNormalizepart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 - x1
   let v1 : UInt256 := UInt256.land x12 v0
   let v2 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v1.toNat 32) 128
   let v3 : UInt256 := UInt256.lt x0 x1
-  {s with pc := UInt256.ofNat 10446, memory := v2, stack := v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
-
+  {s with pc := UInt256.ofNat 10442,memory := v2,stack := v3::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem preparedNormalizepart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart9Program {s with pc := UInt256.ofNat 10437, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions preparedNormalizepart9Program {s with pc := UInt256.ofNat 10433,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (preparedNormalizepart9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha128 : (128 : UInt256).toNat = 128 := rfl
   have hf128 := Monpro.activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart9Program, preparedNormalizepart9Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha128, hf128]
-
-
+  simp [hz,hzn,preparedNormalizepart9Program,preparedNormalizepart9Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha128,hf128]
 def preparedNormalizepart10Program : List Instr :=
   [
-  .op (.Dup ⟨7, by decide⟩),
+  .op (.Dup dA7),
    .op .ADD,
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩)]
-
+   .op (.Dup dA13)]
 def preparedNormalizepart10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x7 + x0
   let v1 : UInt256 := MachineState.readWord s.memory 160
   let v2 : UInt256 := v1 - v0
-  {s with pc := UInt256.ofNat 10455, memory := s.memory, stack := x11 :: v2 :: v1 :: v0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest}
-
+  {s with pc := UInt256.ofNat 10451,memory := s.memory,stack := x11::v2::v1::v0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest}
 theorem preparedNormalizepart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart10Program {s with pc := UInt256.ofNat 10446, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: rest} =
+    runInstructions preparedNormalizepart10Program {s with pc := UInt256.ofNat 10442,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::rest} =
       some (preparedNormalizepart10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha160 : (160 : UInt256).toNat = 160 := rfl
   have hf160 := Monpro.activeWords_fix s 160 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart10Program, preparedNormalizepart10Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha160, hf160]
-
-
+  simp [hz,hzn,preparedNormalizepart10Program,preparedNormalizepart10Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha160,hf160]
 def preparedNormalizepart11Program : List Instr :=
   [
   .op .AND,
    .push 1 160,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .ADD,
    .push 2 1344,
-   .op (.Swap ⟨14, by decide⟩)]
-
+   .op (.Swap sA14)]
 def preparedNormalizepart11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := UInt256.land x0 x1
   let v1 : ByteArray := MachineState.writeBytes s.memory (Data.Bytes.natToBytesPadded v0.toNat 32) 160
   let v2 : UInt256 := UInt256.lt x2 x3
   let v3 : UInt256 := x12 + v2
-  {s with pc := UInt256.ofNat 10466, memory := v1, stack := x17 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: (UInt256.ofNat 1344) :: rest}
-
+  {s with pc := UInt256.ofNat 10462,memory := v1,stack := x17::v3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::(UInt256.ofNat 1344)::rest}
 theorem preparedNormalizepart11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizepart11Program {s with pc := UInt256.ofNat 10455, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions preparedNormalizepart11Program {s with pc := UInt256.ofNat 10451,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (preparedNormalizepart11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha160 : (160 : UInt256).toNat = 160 := rfl
   have hf160 := Monpro.activeWords_fix s 160 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, preparedNormalizepart11Program, preparedNormalizepart11Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha160, hf160]
-
-
+  simp [hz,hzn,preparedNormalizepart11Program,preparedNormalizepart11Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha160,hf160]
 def preparedNormalizepart12Program : List Instr :=
   [
   .op .SUB,
-   .op (.Swap ⟨13, by decide⟩),
+   .op (.Swap sA13),
    .op .MLOAD,
-   .op (.Swap ⟨11, by decide⟩)]
-
+   .op (.Swap sA11)]
 def preparedNormalizepart12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := x0 - x1
   let v1 : UInt256 := MachineState.readWord s.memory 1344
-  {s with pc := UInt256.ofNat 10470, memory := s.memory, stack := x13 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: v1 :: x14 :: v0 :: rest}
-
+  {s with pc := UInt256.ofNat 10466,memory := s.memory,stack := x13::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::v1::x14::v0::rest}
 theorem preparedNormalizepart12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) (hk_x15 : x15 = UInt256.ofNat 1344) :
-    runInstructions preparedNormalizepart12Program {s with pc := UInt256.ofNat 10466, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions preparedNormalizepart12Program {s with pc := UInt256.ofNat 10462,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (preparedNormalizepart12Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
   have hzn : ({val := 0} : UInt256).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 16) : rest.length + j < 1024 := by omega
   have ha1344 : (1344 : UInt256).toNat = 1344 := rfl
   have hf1344 := Monpro.activeWords_fix s 1344 32 (by decide) (by norm_num) hact
-  simp [hk_x15, hz, hzn, preparedNormalizepart12Program, preparedNormalizepart12Model, runInstructions, Challenge.EvmProof.Stepper.runInstr, List.exchange, Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, Challenge.EvmProof.Word.literal_eq_ofNat, capacity, ha1344, hf1344]
-
-
+  simp [hk_x15,hz,hzn,preparedNormalizepart12Program,preparedNormalizepart12Model,runInstructions,Challenge.EvmProof.Stepper.runInstr,List.exchange,Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,Challenge.EvmProof.Word.literal_eq_ofNat,capacity,ha1344,hf1344]
 def preparedNormalizeProgram : List Instr :=
   [
   .op .JUMPDEST,
@@ -698,103 +642,102 @@ def preparedNormalizeProgram : List Instr :=
    .op .MLOAD,
    .push 2 1344,
    .op .MLOAD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA2),
    .op .LT,
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA1),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .AND,
    .push 2 768,
    .op .MSTORE,
    .push 2 1376,
    .op .MLOAD,
    .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA5),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .AND,
-   .op (.Swap ⟨4, by decide⟩),
+   .op (.Swap sA4),
    .op .LT,
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
    .op .ADD,
-   .op (.Dup ⟨0, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA0),
+   .op (.Dup dA6),
    .op .SUB,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .AND,
-   .op (.Swap ⟨5, by decide⟩),
+   .op (.Swap sA5),
    .op .LT,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 32,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA3),
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 64,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA6),
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 96,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨2, by decide⟩),
+   .op (.Dup dA2),
    .op .ADD,
    .push 1 128,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 128,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨7, by decide⟩),
+   .op (.Dup dA7),
    .op .ADD,
    .push 1 160,
    .op .MLOAD,
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
+   .op (.Dup dA1),
+   .op (.Dup dA1),
    .op .SUB,
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA13),
    .op .AND,
    .push 1 160,
    .op .MSTORE,
    .op .LT,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .ADD,
    .push 2 1344,
-   .op (.Swap ⟨14, by decide⟩),
+   .op (.Swap sA14),
    .op .SUB,
-   .op (.Swap ⟨13, by decide⟩),
+   .op (.Swap sA13),
    .op .MLOAD,
-   .op (.Swap ⟨11, by decide⟩)]
-
+   .op (.Swap sA11)]
 def preparedNormalizeModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 768
   let v1 : UInt256 := MachineState.readWord s.memory 1344
@@ -844,11 +787,10 @@ def preparedNormalizeModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 
   let v45 : UInt256 := n8 + v44
   let v46 : UInt256 := a8 - v45
   let v47 : UInt256 := MachineState.readWord v43 1344
-  {s with pc := UInt256.ofNat 10470, memory := v43, stack := n0 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: v47 :: n3 :: v46 :: rest}
-
+  {s with pc := UInt256.ofNat 10466,memory := v43,stack := n0::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::v47::n3::v46::rest}
 theorem preparedNormalize_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions preparedNormalizeProgram {s with pc := UInt256.ofNat 10349, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions preparedNormalizeProgram {s with pc := UInt256.ofNat 10345,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} =
       some (preparedNormalizeModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   let v0 : UInt256 := MachineState.readWord s.memory 768
   let v1 : UInt256 := MachineState.readWord s.memory 1344
@@ -898,36 +840,34 @@ theorem preparedNormalize_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 
   let v45 : UInt256 := n8 + v44
   let v46 : UInt256 := a8 - v45
   let v47 : UInt256 := MachineState.readWord v43 1344
-  have h0 : runInstructions preparedNormalizepart0Program {s with pc := UInt256.ofNat 10349, memory := s.memory, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10361, memory := s.memory, stack := v2 :: v1 :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart0Model, v0, v1, v2] using preparedNormalizepart0_run (s) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h1 : runInstructions preparedNormalizepart1Program {s with pc := UInt256.ofNat 10361, memory := s.memory, stack := v2 :: v1 :: v0 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10373, memory := v5, stack := v6 :: v2 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart1Model, v3, v4, v5, v6] using preparedNormalizepart1_run (s) (v2) (v1) (v0) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h2 : runInstructions preparedNormalizepart2Program {s with pc := UInt256.ofNat 10373, memory := v5, stack := v6 :: v2 :: n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10381, memory := v5, stack := v10 :: n2 :: n6 :: n4 :: v9 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart2Model, v7, v8, v9, v10] using preparedNormalizepart2_run ({s with memory := v5}) (v6) (v2) (n2) (n6) (n4) (a1) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h3 : runInstructions preparedNormalizepart3Program {s with pc := UInt256.ofNat 10381, memory := v5, stack := v10 :: n2 :: n6 :: n4 :: v9 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10389, memory := v5, stack := a2 :: v11 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart3Model, v11, v12, v13] using preparedNormalizepart3_run ({s with memory := v5}) (v10) (n2) (n6) (n4) (v9) (a2) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h4 : runInstructions preparedNormalizepart4Program {s with pc := UInt256.ofNat 10389, memory := v5, stack := a2 :: v11 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10398, memory := v5, stack := v17 :: v16 :: v15 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart4Model, v14, v15, v16, v17] using preparedNormalizepart4_run ({s with memory := v5}) (a2) (v11) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h5 : runInstructions preparedNormalizepart5Program {s with pc := UInt256.ofNat 10398, memory := v5, stack := v17 :: v16 :: v15 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10409, memory := v19, stack := v22 :: v21 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart5Model, v18, v19, v20, v21, v22] using preparedNormalizepart5_run ({s with memory := v5}) (v17) (v16) (v15) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h6 : runInstructions preparedNormalizepart6Program {s with pc := UInt256.ofNat 10409, memory := v19, stack := v22 :: v21 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10418, memory := v25, stack := v26 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart6Model, v23, v24, v25, v26] using preparedNormalizepart6_run ({s with memory := v19}) (v22) (v21) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h7 : runInstructions preparedNormalizepart7Program {s with pc := UInt256.ofNat 10418, memory := v25, stack := v26 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10427, memory := v25, stack := MASK :: v29 :: v28 :: v27 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart7Model, v27, v28, v29] using preparedNormalizepart7_run ({s with memory := v25}) (v26) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h8 : runInstructions preparedNormalizepart8Program {s with pc := UInt256.ofNat 10427, memory := v25, stack := MASK :: v29 :: v28 :: v27 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10437, memory := v31, stack := v34 :: v33 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart8Model, v30, v31, v32, v33, v34] using preparedNormalizepart8_run ({s with memory := v25}) (MASK) (v29) (v28) (v27) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h9 : runInstructions preparedNormalizepart9Program {s with pc := UInt256.ofNat 10437, memory := v31, stack := v34 :: v33 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10446, memory := v37, stack := v38 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart9Model, v35, v36, v37, v38] using preparedNormalizepart9_run ({s with memory := v31}) (v34) (v33) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h10 : runInstructions preparedNormalizepart10Program {s with pc := UInt256.ofNat 10446, memory := v37, stack := v38 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10455, memory := v37, stack := MASK :: v41 :: v40 :: v39 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} := by
-    simpa only [preparedNormalizepart10Model, v39, v40, v41] using preparedNormalizepart10_run ({s with memory := v37}) (v38) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h11 : runInstructions preparedNormalizepart11Program {s with pc := UInt256.ofNat 10455, memory := v37, stack := MASK :: v41 :: v40 :: v39 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} = some {s with pc := UInt256.ofNat 10466, memory := v43, stack := a8 :: v45 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: (UInt256.ofNat 1344) :: rest} := by
-    simpa only [preparedNormalizepart11Model, v42, v43, v44, v45] using preparedNormalizepart11_run ({s with memory := v37}) (MASK) (v41) (v40) (v39) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) (a8) rest hcap hact
-  have h12 : runInstructions preparedNormalizepart12Program {s with pc := UInt256.ofNat 10466, memory := v43, stack := a8 :: v45 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: (UInt256.ofNat 1344) :: rest} = some {s with pc := UInt256.ofNat 10470, memory := v43, stack := n0 :: n2 :: n6 :: n4 :: v9 :: v13 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: v47 :: n3 :: v46 :: rest} := by
-    simpa only [preparedNormalizepart12Model, v46, v47] using preparedNormalizepart12_run ({s with memory := v43}) (a8) (v45) (n2) (n6) (n4) (v9) (v13) (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) ((UInt256.ofNat 1344)) rest hcap hact (by rfl)
+  have h0 : runInstructions preparedNormalizepart0Program {s with pc := UInt256.ofNat 10345,memory := s.memory,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10357,memory := s.memory,stack := v2::v1::v0::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart0Model,v0,v1,v2] using preparedNormalizepart0_run (s) (n2) (n6) (n4) a1 a2 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h1 : runInstructions preparedNormalizepart1Program {s with pc := UInt256.ofNat 10357,memory := s.memory,stack := v2::v1::v0::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10369,memory := v5,stack := v6::v2::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart1Model,v3,v4,v5,v6] using preparedNormalizepart1_run (s) v2 v1 v0 (n2) (n6) (n4) a1 a2 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h2 : runInstructions preparedNormalizepart2Program {s with pc := UInt256.ofNat 10369,memory := v5,stack := v6::v2::n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10377,memory := v5,stack := v10::n2::n6::n4::v9::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart2Model,v7,v8,v9,v10] using preparedNormalizepart2_run ({s with memory := v5}) v6 v2 (n2) (n6) (n4) a1 a2 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h3 : runInstructions preparedNormalizepart3Program {s with pc := UInt256.ofNat 10377,memory := v5,stack := v10::n2::n6::n4::v9::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10385,memory := v5,stack := a2::v11::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart3Model,v11,v12,v13] using preparedNormalizepart3_run ({s with memory := v5}) v10 (n2) (n6) (n4) v9 a2 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h4 : runInstructions preparedNormalizepart4Program {s with pc := UInt256.ofNat 10385,memory := v5,stack := a2::v11::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10394,memory := v5,stack := v17::v16::v15::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart4Model,v14,v15,v16,v17] using preparedNormalizepart4_run ({s with memory := v5}) a2 v11 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h5 : runInstructions preparedNormalizepart5Program {s with pc := UInt256.ofNat 10394,memory := v5,stack := v17::v16::v15::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10405,memory := v19,stack := v22::v21::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart5Model,v18,v19,v20,v21,v22] using preparedNormalizepart5_run ({s with memory := v5}) v17 v16 v15 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h6 : runInstructions preparedNormalizepart6Program {s with pc := UInt256.ofNat 10405,memory := v19,stack := v22::v21::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10414,memory := v25,stack := v26::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart6Model,v23,v24,v25,v26] using preparedNormalizepart6_run ({s with memory := v19}) v22 v21 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h7 : runInstructions preparedNormalizepart7Program {s with pc := UInt256.ofNat 10414,memory := v25,stack := v26::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10423,memory := v25,stack := MASK::v29::v28::v27::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart7Model,v27,v28,v29] using preparedNormalizepart7_run ({s with memory := v25}) v26 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h8 : runInstructions preparedNormalizepart8Program {s with pc := UInt256.ofNat 10423,memory := v25,stack := MASK::v29::v28::v27::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10433,memory := v31,stack := v34::v33::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart8Model,v30,v31,v32,v33,v34] using preparedNormalizepart8_run ({s with memory := v25}) (MASK) v29 v28 v27 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h9 : runInstructions preparedNormalizepart9Program {s with pc := UInt256.ofNat 10433,memory := v31,stack := v34::v33::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10442,memory := v37,stack := v38::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart9Model,v35,v36,v37,v38] using preparedNormalizepart9_run ({s with memory := v31}) v34 v33 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h10 : runInstructions preparedNormalizepart10Program {s with pc := UInt256.ofNat 10442,memory := v37,stack := v38::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10451,memory := v37,stack := MASK::v41::v40::v39::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} := by
+    simpa only [preparedNormalizepart10Model,v39,v40,v41] using preparedNormalizepart10_run ({s with memory := v37}) v38 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h11 : runInstructions preparedNormalizepart11Program {s with pc := UInt256.ofNat 10451,memory := v37,stack := MASK::v41::v40::v39::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} = some {s with pc := UInt256.ofNat 10462,memory := v43,stack := a8::v45::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::(UInt256.ofNat 1344)::rest} := by
+    simpa only [preparedNormalizepart11Model,v42,v43,v44,v45] using preparedNormalizepart11_run ({s with memory := v37}) (MASK) v41 v40 v39 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) a8 rest hcap hact
+  have h12 : runInstructions preparedNormalizepart12Program {s with pc := UInt256.ofNat 10462,memory := v43,stack := a8::v45::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::n0::n3::(UInt256.ofNat 1344)::rest} = some {s with pc := UInt256.ofNat 10466,memory := v43,stack := n0::n2::n6::n4::v9::v13::n5::n7::P::n8::n1::MASK::v47::n3::v46::rest} := by
+    simpa only [preparedNormalizepart12Model,v46,v47] using preparedNormalizepart12_run ({s with memory := v43}) a8 v45 (n2) (n6) (n4) v9 v13 (n5) (n7) (P) (n8) (n1) (MASK) (n0) (n3) ((UInt256.ofNat 1344)) rest hcap hact (by rfl)
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 h12))))))))))))
-
 #print axioms preparedNormalize_run
-
 def preparedOldModel (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1344
   let v1 : UInt256 := MachineState.readWord s.memory 768
@@ -977,14 +917,11 @@ def preparedOldModel (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 
   let v45 : UInt256 := x8 + v41
   let v46 : UInt256 := x13 - v45
   let v47 : UInt256 := MachineState.readWord v44 1344
-  {s with pc := UInt256.ofNat 10470, memory := v44, stack := x11 :: x0 :: x1 :: x2 :: v10 :: v14 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: v47 :: x12 :: v46 :: rest}
-
+  {s with pc := UInt256.ofNat 10466,memory := v44,stack := x11::x0::x1::x2::v10::v14::x5::x6::x7::x8::x9::x10::v47::x12::v46::rest}
 theorem prepared_old_new (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 : UInt256) (rest : List UInt256) :
     preparedOldModel s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest = preparedNormalizeModel s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 rest := by
-  simp only [preparedOldModel, preparedNormalizeModel, addC, addA, addL, mulC, mmC, amC, andC, orC, xorC, eqC, read_32_write_64, read_32_write_96, read_32_write_128, read_32_write_160, read_32_write_768, read_64_write_32, read_64_write_96, read_64_write_128, read_64_write_160, read_64_write_768, read_96_write_32, read_96_write_64, read_96_write_128, read_96_write_160, read_96_write_768, read_128_write_32, read_128_write_64, read_128_write_96, read_128_write_160, read_128_write_768, read_160_write_32, read_160_write_64, read_160_write_96, read_160_write_128, read_160_write_768, read_768_write_32, read_768_write_64, read_768_write_96, read_768_write_128, read_768_write_160, read_1344_write_32, read_1344_write_64, read_1344_write_96, read_1344_write_128, read_1344_write_160, read_1344_write_768, read_1376_write_32, read_1376_write_64, read_1376_write_96, read_1376_write_128, read_1376_write_160, read_1376_write_768]
-
+  simp only [preparedOldModel,preparedNormalizeModel,addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_32_write_64,read_32_write_96,read_32_write_128,read_32_write_160,read_32_write_768,read_64_write_32,read_64_write_96,read_64_write_128,read_64_write_160,read_64_write_768,read_96_write_32,read_96_write_64,read_96_write_128,read_96_write_160,read_96_write_768,read_128_write_32,read_128_write_64,read_128_write_96,read_128_write_160,read_128_write_768,read_160_write_32,read_160_write_64,read_160_write_96,read_160_write_128,read_160_write_768,read_768_write_32,read_768_write_64,read_768_write_96,read_768_write_128,read_768_write_160,read_1344_write_32,read_1344_write_64,read_1344_write_96,read_1344_write_128,read_1344_write_160,read_1344_write_768,read_1376_write_32,read_1376_write_64,read_1376_write_96,read_1376_write_128,read_1376_write_160,read_1376_write_768]
 def normalizeProgram : List Instr := preparedNormalizeProgram
-
 def normalizeModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) : State :=
   let v0 : UInt256 := MachineState.readWord s.memory 1344
   let v1 : UInt256 := v0 + (UInt256.ofNat 0)
@@ -1036,19 +973,16 @@ def normalizeModel (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UIn
   let v47 : UInt256 := UInt256.lt a8 v46
   let v48 : UInt256 := a8 - v46
   let v49 : UInt256 := MachineState.readWord v45 1344
-  {s with pc := UInt256.ofNat 10470, memory := v45, stack := n0 :: n2 :: n6 :: n4 :: v11 :: v15 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: v49 :: n3 :: v48 :: rest}
-
+  {s with pc := UInt256.ofNat 10466,memory := v45,stack := n0::n2::n6::n4::v11::v15::n5::n7::P::n8::n1::MASK::v49::n3::v48::rest}
 theorem normalizeModel_eq_old (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256) :
     normalizeModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest = preparedOldModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest := by
-  simp only [normalizeModel, preparedOldModel, normalizer_add_zero]
-
+  simp only [normalizeModel,preparedOldModel,normalizer_add_zero]
 theorem normalize_run (s : State) (n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions normalizeProgram {s with pc := UInt256.ofNat 10349, stack := n2 :: n6 :: n4 :: a1 :: a2 :: n5 :: n7 :: P :: n8 :: n1 :: MASK :: n0 :: n3 :: a8 :: rest} =
+    runInstructions normalizeProgram {s with pc := UInt256.ofNat 10345,stack := n2::n6::n4::a1::a2::n5::n7::P::n8::n1::MASK::n0::n3::a8::rest} =
       some (normalizeModel s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest) := by
   change runInstructions preparedNormalizeProgram _ = _
   rw [preparedNormalize_run s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest hcap hact]
   exact congrArg some ((prepared_old_new s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest).symm.trans (normalizeModel_eq_old s n2 n6 n4 a1 a2 n5 n7 P n8 n1 MASK n0 n3 a8 rest).symm)
-
 #print axioms normalize_run
 end HistoricalSearch.GeneratedColumns

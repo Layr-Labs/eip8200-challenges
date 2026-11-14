@@ -1,115 +1,87 @@
 import Challenge.Modexp.Submission.Proofs.Prepared.StackArgs
 import Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareSteps
-
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareExit
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast Monpro CiosCached CiosCachedMacCore
-
 def pcSqExit : Nat := 3973
 def pcC : Nat := 3985
 def pcLast : Nat := 3997
 def pcM4j : Nat := 3999
 def pcH2 : Nat := 4816
-
 def frameStack (tn m128 : UInt256) (_n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : List UInt256 :=
-  [pbi, UInt256.ofNat 5297, w3, ent, m32, allOnes,
-   m128, m64, m0, tl, m96, inv, tn,
-   aprev, pdst, ret] ++ rest
-
+  [pbi,UInt256.ofNat 5297,w3,ent,m32,allOnes,
+   m128,m64,m0,tl,m96,inv,tn,
+   aprev,pdst,ret]++rest
 def frameAt (tn m128 : UInt256) (pc : Nat) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := mem} (UInt256.ofNat pc)
     (frameStack tn m128 n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
-
 def cProgram : List Instr :=
-  [.op (.Dup dA15), .op (.Dup dA7), .op .ADD,
-   .op (.Swap sA15), .push 2 2368, .op (.Swap sA0),
-   .push 2 4214, .op .JUMPI]
-
+  [.op (.Dup dA15),.op (.Dup dA7),.op .ADD,
+   .op (.Swap sA15),.push 2 2368,.op (.Swap sA0),
+   .push 2 4214,.op .JUMPI]
 def n8aProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Swap sA11), .push 2 3973, .op .JUMPI]
-
+  [.op .JUMPDEST,.op (.Swap sA11),.push 2 3973,.op .JUMPI]
 def n8bProgram : List Instr :=
-  [.push 1 255, .op .NOT, .push 2 256, .push 2 2112, .push 2 2368, .op .MCOPY,
-   .op (.Dup dA14), .op (.Dup dA6), .op .ADD, .op (.Swap sA14),
-   .push 2 4816, .op .JUMPI]
-
-def n8cProgram : List Instr := [.push 2 3256, .op .JUMP]
-
+  [.push 1 255,.op .NOT,.push 2 256,.push 2 2112,.push 2 2368,.op .MCOPY,
+   .op (.Dup dA14),.op (.Dup dA6),.op .ADD,.op (.Swap sA14),
+   .push 2 4816,.op .JUMPI]
+def n8cProgram : List Instr := [.push 2 3256,.op .JUMP]
 def rareProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup dA0), .push 2 2080, .op .MSTORE,
-   .push 1 255, .op .NOT, .push 2 4816,
-   .op (.Dup dA15), .op (.Dup dA7), .op .ADD,
-   .op (.Swap sA15), .push 2 2368, .op (.Swap sA0),
-   .push 2 4037, .op .JUMPI]
-
+  [.op .JUMPDEST,.op (.Dup dA0),.push 2 2080,.op .MSTORE,
+   .push 1 255,.op .NOT,.push 2 4816,
+   .op (.Dup dA15),.op (.Dup dA7),.op .ADD,
+   .op (.Swap sA15),.push 2 2368,.op (.Swap sA0),
+   .push 2 4037,.op .JUMPI]
 def m4jProgram : List Instr :=
-  [.op .JUMPDEST, .push 2 3256, .push 2 2368, .push 2 4214, .op .JUMP]
-
+  [.op .JUMPDEST,.push 2 3256,.push 2 2368,.push 2 4214,.op .JUMP]
 def lastProgram : List Instr :=
-  [.op .POP, .op .POP] ++ m4jProgram
-
+  [.op .POP,.op .POP]++m4jProgram
 def n8aBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3942 n8aProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3096 4 3942 n8aProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 def n8bBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3948 n8bProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3100 12 3948 n8bProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 def n8cBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3969 n8cProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3112 2 3969 n8cProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 def rareBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3973 rareProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3114 15 3973 rareProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 def lastBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3997 lastProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3129 7 3997 lastProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 def m4jBlock : Block TnM128CandidateArtifact.submissionArtifact .Osaka 3999 m4jProgram :=
   WindowTwentyOneSlice.block TnM128CandidateArtifact.allWellFormed 3131 5 3999 m4jProgram
     (by decide) (by rfl) (by rfl) (by decide)
-
 theorem jumpDestM4j : Decode.isValidJumpDest TnM128Candidate.bytecode 3999 = true :=
   TnM128CandidateArtifact.isValidJumpDest_index 3131 (by rfl)
-
 theorem jumpDestLazy : Decode.isValidJumpDest TnM128Candidate.bytecode 4214 = true :=
   TnM128CandidateArtifact.isValidJumpDest_index 3284 (by rfl)
-
 abbrev environment := TnM128SquareSteps.environment
-
 private theorem not255 : UInt256.lnot (UInt256.ofNat 255) = UInt256.ofNat (2^256 - 256) := by decide
-
 private theorem not255' : UInt256.lnot (255 : UInt256) = UInt256.ofNat (2^256 - 256) := by decide
-
 private theorem dec_succ (c : Nat) (hc : c ≤ 14) :
     allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := by
   interval_cases c <;> decide
-
 def lazyCsubState (s : State) (mem : ByteArray) (dst ret : UInt256)
     (rest : List UInt256) : State :=
-  framed {s with memory := mem} (UInt256.ofNat 4214) (dst :: ret :: rest)
-
+  framed {s with memory := mem} (UInt256.ofNat 4214) (dst::ret::rest)
 def lastAt (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat pcLast
-           stack := [UInt256.ofNat 2368, UInt256.ofNat pcH2] ++
+           stack := [UInt256.ofNat 2368,UInt256.ofNat pcH2] ++
              frameStack tn m128 n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest
            memory := mem }
-
 theorem run_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
@@ -123,32 +95,25 @@ theorem run_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 4214 = true := by
     rw [hcode]; exact jumpDestLazy
-  simp [lastProgram, m4jProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, frameStack, lastAt, pcLast, lazyCsubState, framed, hjd, hcap15, hc16', capacity, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [lastProgram,m4jProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,frameStack,lastAt,pcLast,lazyCsubState,framed,hjd,hcap15,hc16',capacity,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem jumpDestRare : Decode.isValidJumpDest TnM128Candidate.bytecode 3973 = true :=
   TnM128CandidateArtifact.isValidJumpDest_index 3114 (by rfl)
-
 theorem jumpDestH2 : Decode.isValidJumpDest TnM128Candidate.bytecode 4816 = true :=
   TnM128CandidateArtifact.isValidJumpDest_index 3808 (by rfl)
-
 theorem jumpDestSetup : Decode.isValidJumpDest TnM128Candidate.bytecode 3256 = true :=
   TnM128CandidateArtifact.isValidJumpDest_index 2533 (by rfl)
-
 theorem jumpDestS8 : Decode.isValidJumpDest TnM128Candidate.bytecode 4037 = true :=
   TnM128CandidateArtifact.isValidJumpDest_index 3152 (by rfl)
-
 def dropAt (tn m128 : UInt256) (pc : Nat) (s : State) (mem : ByteArray) (_n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256) : State :=
   framed {s with memory := mem} (UInt256.ofNat pc)
-    ([UInt256.ofNat 5297, w3, ent, m32, allOnes, m128, m64, m0, tl, m96, inv, tn,
-      aprev, pdst, ret] ++ rest)
-
+    ([UInt256.ofNat 5297,w3,ent,m32,allOnes,m128,m64,m0,tl,m96,inv,tn,
+      aprev,pdst,ret]++rest)
 def copyMem (mem : ByteArray) : ByteArray :=
   MachineState.writeBytes mem (MachineState.readPadded mem 2112 256) 2368
-
 theorem run_n8a_zero (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) :
@@ -161,11 +126,10 @@ theorem run_n8a_zero (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   have hc16' : rest.length + 16 < 1024 := by omega
   have hc17 : rest.length + 17 < 1024 := by omega
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
-  simp [n8aProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, dropAt, hfalse, hcap15, hc16', hc17, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [n8aProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,dropAt,hfalse,hcap15,hc16',hc17,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_n8a_rare (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
@@ -180,11 +144,10 @@ theorem run_n8a_rare (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 3973 = true := by
     rw [hcode]; exact jumpDestRare
-  simp [n8aProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, dropAt, htn, hjd, hcap15, hc16', hc17, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [n8aProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,dropAt,htn,hjd,hcap15,hc16',hc17,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_n8b_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
@@ -199,7 +162,7 @@ theorem run_n8b_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have hdec : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := dec_succ c (by omega)
   have hcNat : (UInt256.ofNat (c + 1)).toNat = c + 1 := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have htrue : UInt256.isTrue (UInt256.ofNat (c + 1)) := by
     show (UInt256.ofNat (c + 1)).toNat ≠ 0
     rw [hcNat]; omega
@@ -207,13 +170,12 @@ theorem run_n8b_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     rw [hcode]; exact jumpDestH2
   have hactD := Csub.activeWordsAfter_fix s.activeWords.toNat 2368 256 (by omega) (by omega) hact
   have hactT := Csub.activeWords_fix s 2112 256 (by omega) (by omega) hact
-  simp [n8bProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, dropAt, copyMem, not255, not255', hdec, hcNat, htrue, hjd,
-    State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactD, hactT,
-    hcap15, hc16', capacity, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [n8bProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,dropAt,copyMem,not255,not255',hdec,hcNat,htrue,hjd,
+    State.activeWordsAfterUInt256,State.activeWordsAfterUInt256_2,hactD,hactT,
+    hcap15,hc16',capacity,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_n8b_last (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat) :
@@ -230,13 +192,12 @@ theorem run_n8b_last (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
   have hactD := Csub.activeWordsAfter_fix s.activeWords.toNat 2368 256 (by omega) (by omega) hact
   have hactT := Csub.activeWords_fix s 2112 256 (by omega) (by omega) hact
-  simp [n8bProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, dropAt, copyMem, not255, not255', hdec, hfalse, hzero,
-    State.activeWordsAfterUInt256, State.activeWordsAfterUInt256_2, hactD, hactT,
-    hcap15, hc16', capacity, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [n8bProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,dropAt,copyMem,not255,not255',hdec,hfalse,hzero,
+    State.activeWordsAfterUInt256,State.activeWordsAfterUInt256_2,hactD,hactT,
+    hcap15,hc16',capacity,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_n8c (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
@@ -249,13 +210,11 @@ theorem run_n8c (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   have hc17 : rest.length + 17 < 1024 := by omega
   have hjd : Decode.isValidJumpDest s.executionEnv.code 3256 = true := by
     rw [hcode]; exact jumpDestSetup
-  simp [n8cProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, hjd, hcap15, hc16', hc17,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat]
-
+  simp [n8cProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,hjd,hcap15,hc16',hc17,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat]
 def s8At (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
-  framed {s with memory := mem} (UInt256.ofNat 4037) ([UInt256.ofNat 2368, ret] ++ rest)
-
+  framed {s with memory := mem} (UInt256.ofNat 4037) ([UInt256.ofNat 2368,ret]++rest)
 theorem run_rare_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
@@ -271,7 +230,7 @@ theorem run_rare_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have hdec : allOnes + UInt256.ofNat (c + 1) = UInt256.ofNat c := dec_succ c (by omega)
   have hcNat : (UInt256.ofNat (c + 1)).toNat = c + 1 := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have htrue : UInt256.isTrue (UInt256.ofNat (c + 1)) := by
     show (UInt256.ofNat (c + 1)).toNat ≠ 0
     rw [hcNat]; omega
@@ -279,12 +238,11 @@ theorem run_rare_more (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     rw [hcode]; exact jumpDestS8
   have hactF := Csub.activeWords_fix s 2080 32 (by decide) (by omega) hact
   have hlt1004 : rest.length < 1004 := by omega
-  simp [rareProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, dropAt, s8At, not255, not255', TnCacheMemory.lift, hdec, hcNat, htrue, hjd,
-    State.activeWordsAfterUInt256, hactF, hlt1004, hcap15, hc16', capacity, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [rareProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,dropAt,s8At,not255,not255',TnCacheMemory.lift,hdec,hcNat,htrue,hjd,
+    State.activeWordsAfterUInt256,hactF,hlt1004,hcap15,hc16',capacity,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_rare_last (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat) :
@@ -301,14 +259,12 @@ theorem run_rare_last (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
   have hzero : (UInt256.ofNat 0).toNat = 0 := by decide
   have hactF := Csub.activeWords_fix s 2080 32 (by decide) (by omega) hact
   have hlt1004 : rest.length < 1004 := by omega
-  simp [rareProgram, runInstructions, Challenge.EvmProof.Stepper.runInstr,
-    frameAt, framed, frameStack, dropAt, lastAt, not255, not255', pcLast, pcH2, TnCacheMemory.lift, hdec, hfalse,
-    hzero, State.activeWordsAfterUInt256, hactF, hlt1004, hcap15, hc16', capacity, Nat.add_assoc, List.exchange,
-    Challenge.EvmProof.Word.literal_eq_ofNat, Challenge.EvmProof.Word.word_toNat_ofNat,
-    Challenge.EvmProof.Word.succ_ofNat_mod, Challenge.EvmProof.Word.ofNat_add_mod]
-
+  simp [rareProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
+    frameAt,framed,frameStack,dropAt,lastAt,not255,not255',pcLast,pcH2,TnCacheMemory.lift,hdec,hfalse,
+    hzero,State.activeWordsAfterUInt256,hactF,hlt1004,hcap15,hc16',capacity,Nat.add_assoc,List.exchange,
+    Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.word_toNat_ofNat,
+    Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 /-! ## The loop's blocks as gas steps -/
-
 def gasSteps_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hrun : s.halt = .Running)
@@ -324,8 +280,6 @@ def gasSteps_last (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (environment (lastAt tn m128 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest)
       hcode hfork hrun hnp) rfl
     (run_last tn m128 s mem n pbi w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode)
-
-
 def gasSteps_n8aZero (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
@@ -342,7 +296,6 @@ def gasSteps_n8aZero (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (environment (frameAt (UInt256.ofNat 0) m128 3942 s mem n (UInt256.ofNat 0) w3 ent tl inv m0 m96
       m64 m32 aprev pdst ret rest) hcode hfork hrun hnp) rfl
     (run_n8a_zero m128 s mem n w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap)
-
 def gasSteps_n8aRare (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev pdst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000)
@@ -358,7 +311,6 @@ def gasSteps_n8aRare (tn m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (environment (frameAt tn m128 3942 s mem n (UInt256.ofNat 0) w3 ent tl inv m0 m96 m64 m32
       aprev pdst ret rest) hcode hfork hrun hnp) rfl
     (run_n8a_rare tn m128 s mem n w3 ent tl inv m0 m96 m64 m32 aprev pdst ret rest hcap hcode htn)
-
 def gasSteps_n8bMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
@@ -376,7 +328,6 @@ def gasSteps_n8bMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (environment (dropAt (UInt256.ofNat 0) m128 3948 s mem n w3 ent tl inv m0 m96 m64 m32 aprev
       (UInt256.ofNat (c + 1)) ret rest) hcode hfork hrun hnp) rfl
     (run_n8b_more m128 s mem n c w3 ent tl inv m0 m96 m64 m32 aprev ret rest hcap hact hcode hc15)
-
 def gasSteps_n8bLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
@@ -399,7 +350,6 @@ def gasSteps_n8bLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
       tl inv m0 m96 m64 m32 aprev allOnes ret rest) hcode hfork hrun hnp) rfl
     (run_n8c (UInt256.ofNat 0) m128 s (copyMem mem) n (UInt256.ofNat (2^256 - 256)) w3 ent tl inv m0 m96 m64
       m32 aprev allOnes ret rest hcap hcode))
-
 def gasSteps_rareMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
@@ -418,7 +368,6 @@ def gasSteps_rareMore (m128 : UInt256) (s : State) (mem : ByteArray) (n c : Nat)
     (environment (dropAt (UInt256.ofNat 0) m128 3973 s mem n w3 ent tl inv m0 m96 m64 m32 aprev
       (UInt256.ofNat (c + 1)) ret rest) hcode hfork hrun hnp) rfl
     (run_rare_more m128 s mem n c w3 ent tl inv m0 m96 m64 m32 aprev ret rest hcap hact hcode hc15)
-
 def gasSteps_rareLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (w3 ent tl inv m0 m96 m64 m32 aprev ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1000) (hact : 88 ≤ s.activeWords.toNat)
@@ -440,6 +389,4 @@ def gasSteps_rareLast (m128 : UInt256) (s : State) (mem : ByteArray) (n : Nat)
     (run_rare_last m128 s mem n w3 ent tl inv m0 m96 m64 m32 aprev ret rest hcap hact)).trans
   (gasSteps_last (UInt256.ofNat 0) m128 s (TnCacheMemory.lift mem (UInt256.ofNat 5297)) n
     (UInt256.ofNat (2^256 - 256)) w3 ent tl inv m0 m96 m64 m32 aprev allOnes ret rest hcap hrun hcode hfork hnp)
-
-
 end Challenge.Modexp.Submission.Proofs.Fast.TnM128SquareExit

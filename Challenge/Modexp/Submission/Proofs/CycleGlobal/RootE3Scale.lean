@@ -1,12 +1,9 @@
 import Challenge.Modexp.Submission.Proofs.Fast.FixedDirectOutput
 import Challenge.Modexp.Submission.Proofs.Fast.Model
-
 set_option warningAsError true
 set_option maxHeartbeats 2000000
-
 namespace CycleSubmission.Global.RootE3Scale
 open Challenge.Modexp.Submission.Proofs.Fast.Model
-
 /-- Two existing Montgomery products evaluate a cube with asymmetric input scales. -/
 theorem asymmetric_cube {m R a S T X Y : Nat} (hm : 0 < m)
     (hcop : Nat.Coprime R m) (hx : X ≡ a * S [MOD m])
@@ -27,18 +24,15 @@ theorem asymmetric_cube {m R a S T X Y : Nat} (hm : 0 < m)
   have hresult : montMul m R (montMul m R X X) Y ≡ a ^ 3 [MOD m] :=
     htotal.cancel_right_of_coprime (Nat.Coprime.mul_left hcop hcop).symm
   exact (Nat.mod_eq_of_lt (montMul_lt hm _ _ _)).symm.trans hresult
-
 theorem quarter_scale (B k : Nat) :
     B ^ (3 * k) * B ^ (3 * k) * B ^ (2 * k) = B ^ (4 * k) * B ^ (4 * k) := by
   simp only [← Nat.pow_add]
   congr 1
   omega
-
 theorem asymmetric_cube_quarters {m a B k X Y : Nat} (hm : 0 < m)
     (hcop : Nat.Coprime (B ^ (4 * k)) m)
     (hx : X ≡ a * B ^ (3 * k) [MOD m])
     (hy : Y ≡ a * B ^ (2 * k) [MOD m]) :
     montMul m (B ^ (4 * k)) (montMul m (B ^ (4 * k)) X X) Y = a ^ 3 % m :=
   asymmetric_cube hm hcop hx hy (quarter_scale B k)
-
 end CycleSubmission.Global.RootE3Scale

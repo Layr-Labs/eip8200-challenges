@@ -13,19 +13,15 @@ This module closes the two nested exponent loops and composes their exact
 Keeping this composition separate also lets later correctness and gas-cost
 proofs reuse the cached straight-line certificates.
 -/
-
 namespace CycleSubmission.Global.WordLoops
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Word
-
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
-
 def gasSteps_expEnter (input : ByteArray) (i : Nat) (acc base : UInt256)
     (hvalid : ValidInput input) (hi : i < exponentSize input) :
     Challenge.EvmProof.GasSteps (expLoopState input i acc base)
@@ -39,7 +35,6 @@ def gasSteps_expEnter (input : ByteArray) (i : Nat) (acc base : UInt256)
       CycleSubmission.Artifact.artifact .Osaka expLoadPath rfl rfl
         (run_expLoad input i acc base hvalid hi) rfl
         deployAddress_not_precompile)
-
 def gasSteps_bitCopy0 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -50,8 +45,7 @@ def gasSteps_bitCopy0 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy1 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -62,8 +56,7 @@ def gasSteps_bitCopy1 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy2 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -74,8 +67,7 @@ def gasSteps_bitCopy2 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy3 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -86,8 +78,7 @@ def gasSteps_bitCopy3 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy4 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -98,8 +89,7 @@ def gasSteps_bitCopy4 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy5 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -110,8 +100,7 @@ def gasSteps_bitCopy5 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy6 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -122,8 +111,7 @@ def gasSteps_bitCopy6 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def gasSteps_bitCopy7 (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -134,13 +122,11 @@ def gasSteps_bitCopy7 (input : ByteArray) (outer : Nat)
     (bitLoopState input outer 0 byte offset acc base) (bitTail input)
     (base - UInt256.ofNat 1) byte offset (UInt256.ofNat outer)
     acc base (UInt256.ofNat (modulusValue input))
-    (bitFrame input outer byte offset acc base) (by simp [bitTail, callerRest])
-
+    (bitFrame input outer byte offset acc base) (by simp [bitTail,callerRest])
 def bitAfter (input : ByteArray) (byte : UInt256) (base : UInt256) :
     Nat → UInt256 → UInt256
-  | 0, acc => acc
-  | j + 1, acc => bitStepSel input byte j (bitAfter input byte base j acc) base
-
+  | 0,acc => acc
+  | j + 1,acc => bitStepSel input byte j (bitAfter input byte base j acc) base
 def gasSteps_bitLoop (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps
@@ -165,7 +151,6 @@ def gasSteps_bitLoop (input : ByteArray) (outer : Nat)
     (bitAfter input byte base 6 acc) base).trans <|
   gasSteps_bitCopy7 input outer byte offset
     (bitAfter input byte base 7 acc) base
-
 def gasSteps_bitFinish (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) (hvalid : ValidInput input)
     (houter : outer < exponentSize input) :
@@ -177,14 +162,11 @@ def gasSteps_bitFinish (input : ByteArray) (outer : Nat)
       CycleSubmission.Artifact.artifact .Osaka bitFinishTailPath rfl rfl
         (run_bitFinishTail input outer byte offset acc base hvalid houter) rfl
         deployAddress_not_precompile)
-
 def expStep (input : ByteArray) (i : Nat) (acc base : UInt256) : UInt256 :=
   bitAfter input (byteWord input (expOffset input + i)) base 8 acc
-
 def expAfter (input : ByteArray) (base : UInt256) : Nat → UInt256 → UInt256
-  | 0, acc => acc
-  | i + 1, acc => expStep input i (expAfter input base i acc) base
-
+  | 0,acc => acc
+  | i + 1,acc => expStep input i (expAfter input base i acc) base
 def gasSteps_expIteration (input : ByteArray) (i : Nat) (acc base : UInt256)
     (hvalid : ValidInput input) (hi : i < exponentSize input) :
     Challenge.EvmProof.GasSteps (expLoopState input i acc base)
@@ -195,7 +177,6 @@ def gasSteps_expIteration (input : ByteArray) (i : Nat) (acc base : UInt256)
     (gasSteps_bitLoop input i byte offset acc base).trans
       (gasSteps_bitFinish input i byte offset (bitAfter input byte base 8 acc)
         base hvalid hi)
-
 def gasSteps_expLoop (input : ByteArray) (acc base : UInt256)
     (hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (expLoopState input 0 acc base)
@@ -205,5 +186,4 @@ def gasSteps_expLoop (input : ByteArray) (acc base : UInt256)
       expLoopState input i (expAfter input base i acc) base) (exponentSize input)
     (fun i hi => gasSteps_expIteration input i
       (expAfter input base i acc) base hvalid hi)
-
 end CycleSubmission.Global.WordLoops

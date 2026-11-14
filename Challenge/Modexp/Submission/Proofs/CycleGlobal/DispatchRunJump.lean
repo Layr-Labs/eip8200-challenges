@@ -4,22 +4,19 @@ noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 10000
 set_option maxHeartbeats 1000000
-
 namespace CycleSubmission.Global.Dispatch
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 set_option maxHeartbeats 5000000 in
 set_option linter.unusedSimpArgs false in
 theorem run_wordJump (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordJumpPath
       (Main.headerState input) = some (wordDispatchState input) := by
-  rcases hvalid with ⟨_, _, _, hm⟩
+  rcases hvalid with ⟨_,_,_,hm⟩
   have hm' : modulusSize input < 2 ^ 256 := by omega
   have hmodNat : modulusSize input % 2 ^ 256 ≠ 0 := by
     rw [Nat.mod_eq_of_lt hm']
@@ -29,20 +26,17 @@ theorem run_wordJump (input : ByteArray) (hvalid : ValidInput input)
   have h1237Word : (536 : UInt256) = UInt256.ofNat 536 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat (modulusSize input)) := by
     exact hmodNat
-  simp only [wordDispatchState, Main.headerState]
+  simp only [wordDispatchState,Main.headerState]
   generalize htemplate : initialState CycleSubmission.Artifact.bytecode input 0 = template
   have hcode : template.executionEnv.code = CycleSubmission.Artifact.bytecode := by rw [← htemplate]; rfl
   have hrun : template.halt = .Running := by rw [← htemplate]; rfl
-  simp [wordJumpPath, wordEntryPath, opAt, pushAt,
+  simp [wordJumpPath,wordEntryPath,opAt,pushAt,
     Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    hcode, hrun, hmodNat, h1237,
-    h1237Word, htrue,
+    Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
+    hcode,hrun,hmodNat,h1237,
+    h1237Word,htrue,
     UInt256.isTrue,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.ofNat_add_mod,
     Challenge.EvmProof.Word.succ_ofNat_mod]
-
-
 end CycleSubmission.Global.Dispatch
-

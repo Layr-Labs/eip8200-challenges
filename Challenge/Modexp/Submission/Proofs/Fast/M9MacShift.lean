@@ -1,9 +1,7 @@
 import Challenge.Modexp.Submission.Proofs.Fast.M9MacChain
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftModel
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftStates
-
 set_option warningAsError true
-
 /-!
 # M9: the MAC section in the shift-reduce routine's own vocabulary
 
@@ -22,34 +20,28 @@ prefix: from `macSetupState` pc 2895 with `[q, 2^256-1, k] ++ slots ++ outer` ov
 * `Challenge.Modexp.Submission.Proofs.Fast.Exp.outer (n bsize esize msize : Nat) : List UInt256` (five words).
 * `Challenge.Modexp.Submission.Proofs.Fast.Shift.NEG : Nat := 1280` (`Proofs/Fast/ShiftModel.lean`).
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.M9Mac
-
 open EvmSemantics EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Fast Monpro
-
 theorem entrySlots_ride (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
-    ∀ i : Nat, i < 7 →
-      (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
+    ∀ i : Nat,i < 7 →
+      (UInt256.ofNat k::Shift.entrySlots z um n bsize esize ++
         Exp.outer n bsize esize msize)[8 - i]? =
       some (MachineState.readWord um (1280 + 32 * (7 - i))) := by
   intro i hi
   interval_cases i <;>
-    simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
-
+    simp [Shift.entrySlots,Shift.rideSlots,Exp.outer]
 theorem entrySlots_scratch (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat)
     (hn : n = 4 ∨ n = 8) :
-    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
+    (UInt256.ofNat k::Shift.entrySlots z um n bsize esize ++
       Exp.outer n bsize esize msize)[1]? =
     some (UInt256.ofNat (entryPC n)) := by
   rcases hn with rfl | rfl <;>
-    simp [Shift.entrySlots, Shift.rideSlots, Shift.shiftEntry, entryPC, Exp.outer]
-
+    simp [Shift.entrySlots,Shift.rideSlots,Shift.shiftEntry,entryPC,Exp.outer]
 theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat) :
-    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
+    (UInt256.ofNat k::Shift.entrySlots z um n bsize esize ++
       Exp.outer n bsize esize msize).length = 23 := by
-  simp [Shift.entrySlots, Shift.rideSlots, Exp.outer]
-
+  simp [Shift.entrySlots,Shift.rideSlots,Exp.outer]
 def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
     (htop : n = 8 → MachineState.readWord um 2336 = UInt256.ofNat 0)
@@ -61,20 +53,18 @@ def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : Stat
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
       { s with pc := UInt256.ofNat 2782,
-               stack := q :: Monpro.maxWord :: UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++
+               stack := q::Monpro.maxWord::UInt256.ofNat k::Shift.entrySlots z um n bsize esize ++
                  Exp.outer n bsize esize msize,
                memory := um }
       { s with pc := UInt256.ofNat 3034,
-               stack := (Monpro.l1Step um q Shift.NEG n n).carry :: q :: Monpro.maxWord ::
-                 UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize,
+               stack := (Monpro.l1Step um q Shift.NEG n n).carry::q::Monpro.maxWord ::
+                 UInt256.ofNat k::Shift.entrySlots z um n bsize esize++Exp.outer n bsize esize msize,
                memory := (Monpro.l1Step um q Shift.NEG n n).memory } :=
   gasSteps_macChain n hn s um q
-    (UInt256.ofNat k :: Shift.entrySlots z um n bsize esize ++ Exp.outer n bsize esize msize)
+    (UInt256.ofNat k::Shift.entrySlots z um n bsize esize++Exp.outer n bsize esize msize)
     (by rw [rest_length z um n bsize esize msize k]; omega)
     (by rw [rest_length z um n bsize esize msize k]; omega)
     (entrySlots_ride z um n bsize esize msize k)
     (entrySlots_scratch z um n bsize esize msize k hn)
     htop hrun hcode hfork hnp hact
-
 end Challenge.Modexp.Submission.Proofs.Fast.M9Mac
-

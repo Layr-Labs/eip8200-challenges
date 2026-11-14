@@ -6,11 +6,9 @@ set_option maxHeartbeats 2000000
 namespace CycleSubmission.LimbMemory
 open EvmSemantics
 open Challenge.EvmProof.Memory CycleSubmission.Prepared.Arithmetic
-
 def mask : UInt256 := UInt256.ofNat (2^240-1)
 def store (mem : ByteArray) (address : Nat) (value : UInt256) : ByteArray :=
  MachineState.writeBytes mem (Data.Bytes.natToBytesPadded value.toNat 32) address
-
 /-- The fifth accumulator limb is carried by the stack until the loop exits. -/
 structure Holds (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : Prop where
  at768 : MachineState.readWord mem 768 = a 0
@@ -23,22 +21,18 @@ structure Holds (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256) : Pr
  at64 : MachineState.readWord mem 64 = a 4
  at128 : MachineState.readWord mem 128 = a 6
  at160 : MachineState.readWord mem 160 = a 7
-
 /-- The old mask is stored once, before the repeated kernel begins. -/
 theorem install (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
  (h : SquareMeaning.Memory0 mem inv a b n) : Holds mem inv a b n := by
  exact ⟨h.at768,h.at1344,h.at1376,h.at2720,h.at1568,h.at1600,h.at32,h.at64,h.at128,h.at160⟩
-
 /-- The final carried limb reestablishes the original complete memory contract. -/
 theorem flush (mem : ByteArray) (inv : UInt256) (a b n : Nat → UInt256)
  (h : Holds mem inv a b n) :
  SquareMeaning.Memory0 (store mem 96 (a 5)) inv a b n := by
  constructor <;>
-  simp (disch := decide) only [store, readWord_writeWord, read_disjoint,
+  simp (disch := decide) only [store,readWord_writeWord,read_disjoint,
    h.at768,h.at1344,h.at1376,h.at2720,h.at1568,h.at1600,
    h.at32,h.at64,h.at128,h.at160]
-
-
 /-- Both private cache stores are disjoint from the retained base operand. -/
 theorem store_keeps_base (mem : ByteArray) (address : Nat) (value : UInt256)
  (start count : Nat) (hlo : 256 ≤ start) (hhi : start+count ≤ 768)
@@ -49,7 +43,6 @@ theorem store_keeps_base (mem : ByteArray) (address : Nat) (value : UInt256)
  apply Challenge.EvmProof.Memory.readPadded_writeBytes_disjoint
  simp only [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
  omega
-
 #print axioms install
 #print axioms flush
 end CycleSubmission.LimbMemory

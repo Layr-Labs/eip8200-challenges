@@ -1,7 +1,5 @@
 import Challenge.EvmProof.Word
-
 set_option warningAsError true
-
 /-!
 # Exact nibble addressing under a modular exponent-word shift
 
@@ -9,24 +7,20 @@ The lookup mask is `15 << 5`. Modulo-2^256 truncation after left shifts cannot
 change a nibble whose four selected bits remain inside the word. These lemmas
 cover every such shift and digit, rather than particular exponent values.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBits
-
 open EvmSemantics
-
 theorem mask480_nat (value : Nat) :
     value &&& 480 = ((value >>> 5) % 16) <<< 5 := by
   have hmask : (480 : Nat) = (2 ^ 4 - 1) <<< 5 := by decide
-  rw [hmask, ← Nat.and_two_pow_sub_one_eq_mod (value >>> 5) 4]
+  rw [hmask,← Nat.and_two_pow_sub_one_eq_mod (value >>> 5) 4]
   apply Nat.eq_of_testBit_eq
   intro bit
   by_cases hbit : 5 ≤ bit
-  · simp only [Nat.testBit_and, Nat.testBit_shiftLeft, Nat.testBit_shiftRight,
-      hbit, decide_true, Bool.true_and]
+  · simp only [Nat.testBit_and,Nat.testBit_shiftLeft,Nat.testBit_shiftRight,
+      hbit,decide_true,Bool.true_and]
     rw [show 5 + (bit - 5) = bit by omega]
-  · simp only [Nat.testBit_and, Nat.testBit_shiftLeft, hbit,
-      decide_false, Bool.false_and, Bool.and_false]
-
+  · simp only [Nat.testBit_and,Nat.testBit_shiftLeft,hbit,
+      decide_false,Bool.false_and,Bool.and_false]
 theorem shifted_nibble_nat (value shift offset : Nat)
     (hshift : shift ≤ offset) (hbits : offset + 4 ≤ 256) :
     ((((value <<< shift) % 2 ^ 256) >>> offset) % 16) =
@@ -38,12 +32,11 @@ theorem shifted_nibble_nat (value shift offset : Nat)
   by_cases hbit : bit < 4
   · have hin : offset + bit < 256 := by omega
     have hge : shift ≤ offset + bit := by omega
-    simp only [Nat.testBit_mod_two_pow, Nat.testBit_shiftRight,
-      Nat.testBit_shiftLeft, hbit, hin, hge, decide_true, Bool.true_and]
+    simp only [Nat.testBit_mod_two_pow,Nat.testBit_shiftRight,
+      Nat.testBit_shiftLeft,hbit,hin,hge,decide_true,Bool.true_and]
     congr 1
     omega
-  · simp only [Nat.testBit_mod_two_pow, hbit, decide_false, Bool.false_and]
-
+  · simp only [Nat.testBit_mod_two_pow,hbit,decide_false,Bool.false_and]
 theorem shiftLeft_toNat_mod (value : UInt256) (shift : Nat) (hshift : shift < 256) :
     (UInt256.shiftLeft value (UInt256.ofNat shift)).toNat =
       (value.toNat <<< shift) % 2 ^ 256 := by
@@ -51,24 +44,21 @@ theorem shiftLeft_toNat_mod (value : UInt256) (shift : Nat) (hshift : shift < 25
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,
       Nat.mod_eq_of_lt (Nat.lt_trans hshift (by norm_num))]
   unfold UInt256.shiftLeft
-  rw [hword, if_neg (by omega), Challenge.EvmProof.Word.word_toNat_ofNat]
+  rw [hword,if_neg (by omega),Challenge.EvmProof.Word.word_toNat_ofNat]
   change ((value.toNat <<< shift) % 2 ^ 256) % 2 ^ 256 = _
   rw [Nat.mod_mod]
-
 def lookupAddress (value : UInt256) (shift : Nat) : UInt256 :=
   UInt256.land (UInt256.shiftRight value (UInt256.ofNat shift)) (UInt256.ofNat 480)
-
 theorem lookupAddress_toNat (value : UInt256) (shift : Nat) (hshift : shift < 256) :
     (lookupAddress value shift).toNat =
       32 * ((value.toNat >>> (shift + 5)) % 16) := by
-  rw [lookupAddress, Challenge.EvmProof.Word.word_toNat_land,
+  rw [lookupAddress,Challenge.EvmProof.Word.word_toNat_land,
     Challenge.EvmProof.Word.shiftRight_toNat value hshift,
     Challenge.EvmProof.Word.word_toNat_ofNat]
-  norm_num only [Nat.reducePow, Nat.reduceMod]
-  rw [mask480_nat, ← Nat.shiftRight_add, Nat.shiftLeft_eq]
+  norm_num only [Nat.reducePow,Nat.reduceMod]
+  rw [mask480_nat,← Nat.shiftRight_add,Nat.shiftLeft_eq]
   norm_num only [Nat.reducePow]
   exact Nat.mul_comm _ 32
-
 /-- An exponent shifted by `processed` nibbles exposes the next twenty-one lookup
 addresses using the seven physical groups' shifts 247,243,...,167. -/
 theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
@@ -77,7 +67,7 @@ theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
       (UInt256.shiftLeft exponent (UInt256.ofNat (4 * processed - 3)))
       (244 - 4 * index)).toNat =
       32 * (exponent.toNat / 16 ^ (63 - (processed + index)) % 16) := by
-  rw [lookupAddress_toNat _ _ (by omega), shiftLeft_toNat_mod _ _ (by omega)]
+  rw [lookupAddress_toNat _ _ (by omega),shiftLeft_toNat_mod _ _ (by omega)]
   have hshift : 4 * processed - 3 ≤ 244 - 4 * index + 5 := by omega
   have hbits : 244 - 4 * index + 5 + 4 ≤ 256 := by omega
   rw [shifted_nibble_nat exponent.toNat (4 * processed - 3)
@@ -88,7 +78,6 @@ theorem shifted_lookupAddress (exponent : UInt256) (processed index : Nat)
   have hpow (n : Nat) : (2 : Nat) ^ (4 * n) = 16 ^ n := by
     rw [Nat.pow_mul]
   rw [hpow]
-
 /-- Nibble 0, the one digit no exponent-row address reaches.  Two thirty-two-byte rows
 admit exactly thirty-one clean addresses each, so 62 of the 63 ladder digits come from
 memory and this one is read off the frame's own shifted exponent: the frame carries
@@ -98,15 +87,14 @@ theorem shifted_lookupAddressLast (exponent : UInt256) :
       (UInt256.shiftLeft (UInt256.shiftLeft exponent (UInt256.ofNat 1)) 4)).toNat =
       32 * (exponent.toNat % 16) := by
   have h4 : (4 : UInt256) = UInt256.ofNat 4 := rfl
-  rw [h4, Challenge.EvmProof.Word.word_toNat_land,
+  rw [h4,Challenge.EvmProof.Word.word_toNat_land,
     show (UInt256.ofNat 480).toNat = 480 from rfl,
-    shiftLeft_toNat_mod _ 4 (by omega), shiftLeft_toNat_mod _ 1 (by omega),
-    Nat.and_comm, mask480_nat,
+    shiftLeft_toNat_mod _ 4 (by omega),shiftLeft_toNat_mod _ 1 (by omega),
+    Nat.and_comm,mask480_nat,
     shifted_nibble_nat ((exponent.toNat <<< 1) % 2 ^ 256) 4 5 (by omega) (by omega),
     show (5 : Nat) - 4 = 1 from rfl,
     shifted_nibble_nat exponent.toNat 1 1 (by omega) (by omega),
-    show (1 : Nat) - 1 = 0 from rfl, Nat.shiftRight_zero, Nat.shiftLeft_eq]
+    show (1 : Nat) - 1 = 0 from rfl,Nat.shiftRight_zero,Nat.shiftLeft_eq]
   norm_num only [Nat.reducePow]
   exact Nat.mul_comm _ 32
-
 end Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBits

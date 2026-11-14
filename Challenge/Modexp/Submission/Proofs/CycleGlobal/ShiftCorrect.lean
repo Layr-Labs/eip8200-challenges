@@ -6,11 +6,9 @@ import Challenge.Modexp.Submission.Proofs.CycleGlobal.SetupFacts
 -- certificates are pure `Proofs.Bytecode`.
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.BigCUMain
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.BigCUBlocks
-
 set_option warningAsError false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 16000000
-
 /-!
 # Fast-path certificate with the shift-reduce base conversion
 
@@ -20,24 +18,17 @@ bit set, the shift-reduce routine converts the base and rejoins the exponent
 phase at `BDONE`; otherwise the old `r0` block runs the unchanged RR-leading
 chain.
 -/
-
 namespace CycleSubmission.Global.Fast.Shift
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-
 theorem jumpD4643 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
-    (UInt256.ofNat 2338).toNat = true :=
-  by simpa only [show (UInt256.ofNat 2338).toNat = 2338 by decide] using jumpDest4608
-
+    (UInt256.ofNat 660).toNat = true :=
+  by simpa only [show (UInt256.ofNat 660).toNat = 660 by decide] using jumpDest4608
 /-! ## Facts at `BDONE` on the hit path -/
-
-
-
 /-- The words the whole hit path leaves alone: everything outside `ACC`, `BASE`,
 `NEG`, the estimator words, `SUBB` and the `t` area. -/
 theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
@@ -50,9 +41,8 @@ theorem hitFinal_readWord_disjoint (mem input : ByteArray) (n mm addr : Nat) (hn
     (h2720 : addr + 32 ≤ 2720 ∨ 2752 ≤ addr) :
     MachineState.readWord (hitFinalMem mem input n mm) addr = MachineState.readWord mem addr := by
   unfold hitFinalMem
-  rw [LazyTopMath.stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1, hdisj.2.2.2.2.1, hdisj.2.2.2.2.2⟩ n]
+  rw [LazyTopMath.stepMems_readWord_disjoint _ n mm addr hn ⟨hdisj.2.1,hdisj.2.2.2.2.1,hdisj.2.2.2.2.2⟩ n]
   exact m2_readWord_disjoint mem input n addr hn hn32 hdisj h2720
-
 theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hdisj : (ptr + 32 * cnt ≤ 256 ∨ 256 + 32 * n ≤ ptr) ∧
       (ptr + 32 * cnt ≤ 512 ∨ 512 + 32 * n ≤ ptr) ∧
@@ -66,7 +56,6 @@ theorem hitFinal_preserves (mem input : ByteArray) (n mm ptr cnt v : Nat) (hn : 
   refine (Model.fastRepresents_congr ?_ v).2 hrep
   intro i hi
   exact hitFinal_readWord_disjoint mem input n mm _ hn hn32 (by omega) (by omega)
-
 /-- `ACC` still holds the raw base at `BDONE`. -/
 theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hm : 0 < mm) (hodd : mm % 2 = 1)
@@ -76,7 +65,6 @@ theorem hitFinal_acc (mem input : ByteArray) (n mm : Nat) (hn : 2 ≤ n) (hn32 :
       (Precompile.bytesToNatPadded input 96 (32 * n) % mm) :=
   CycleSubmission.Global.StackPhaseMath.represents_acc_after_steps _ n mm _ n (by omega) hn32
     (CycleSubmission.Global.StackPhaseMath.m2_acc_value mem input n mm hn hn32 hm hodd hmod htop htn0)
-
 /-- The retained `TS` holds the Montgomery residue of the base at `BDONE`. -/
 theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hmpos : 0 < mm) (hodd : mm % 2 = 1)
@@ -90,7 +78,7 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
     refine (Model.fastRepresents_congr ?_ mm).2 hmod
     intro i hi
     exact m1_readWord_disjoint mem input n _ (by omega) hn32
-      ⟨Or.inl (by omega), Or.inl (by omega), Or.inl (by omega), Or.inl (by omega)⟩
+      ⟨Or.inl (by omega),Or.inl (by omega),Or.inl (by omega),Or.inl (by omega)⟩
   have hmod2 : Model.FastRepresents (m2Of mem input n) 0 n mm := by
     unfold m2Of
     refine ShiftCacheModel.represents_cache _ n 0 n _ (Or.inl (by omega)) ?_
@@ -111,7 +99,6 @@ theorem hitFinal_base (mem input : ByteArray) (n mm : Nat)
   exact LazyTopMath.stepMems_represents (m2Of mem input n) n mm _ hn hn32 hmpos hmm htop' hmod2 hneg2
     hbase2 (Nat.mod_lt _ hmpos)
     (PreOK_cacheMem _ n (PreOK_preMem _)) n
-
 private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
     (hlo : 256 ≤ target) (hhi : target + 32 ≤ 2656) :
@@ -131,7 +118,6 @@ private theorem readWord_setupMem_operand (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_empty]
-
 /-- The setup block no longer stores `V_MINV`: it reads 0 at the dispatcher. -/
 private theorem fastSetup_V_MINV_zero (input : ByteArray) (hpath : Setup.FastPath input) :
     MachineState.readWord (Setup.fastSetupMemory input) 2720 = UInt256.ofNat 0 := by
@@ -148,7 +134,6 @@ private theorem fastSetup_V_MINV_zero (input : ByteArray) (hpath : Setup.FastPat
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inr (by omega)),
     Setup.readWord_empty]
-
 private theorem fastSetup_R1_zero_compact (input : ByteArray) (hpath : Setup.FastPath input) :
     Model.FastRepresents (Setup.fastSetupMemory input) 1024 (Setup.limbs input) 0 := by
   have hn := Setup.fastSetup_limbs_le_8 input hpath
@@ -158,7 +143,6 @@ private theorem fastSetup_R1_zero_compact (input : ByteArray) (hpath : Setup.Fas
     readWord_setupMem_operand input (Setup.lowLimb input) (1024 + 32 * j)
       hpath.2.1.2.2 (by omega) (by omega),
     Exp.toNat_ofNat_self (by norm_num)]
-
 /-- The seed store: writing the word 1 at `R1 = 0x0400` over a zeroed block represents
 `radix^(n-1)`, which is the Montgomery-form conversion's precondition.  In the previous layout this
 fact came from the store the setup path made (`Setup.fastSetup_R1`); the store now happens in the
@@ -177,21 +161,19 @@ theorem fastRepresents_seed (mem : ByteArray) (n : Nat) (hn : 1 ≤ n) (hn32 : n
   · intro k hk
     by_cases hkt : k = n - 1
     · subst hkt
-      rw [show n - 1 - (n - 1) = 0 from by omega, Nat.mul_zero, Nat.add_zero, hsw,
+      rw [show n - 1 - (n - 1) = 0 from by omega,Nat.mul_zero,Nat.add_zero,hsw,
         Setup.readWord_mstoreAt_self _ _ _ (by norm_num),
         Exp.toNat_ofNat_self (show (1 : Nat) < 2 ^ 256 by norm_num),
-        Nat.div_self (Nat.pow_pos hrpos), Nat.mod_eq_of_lt Limbs.radix_gt_one]
+        Nat.div_self (Nat.pow_pos hrpos),Nat.mod_eq_of_lt Limbs.radix_gt_one]
     · have hjpos : 1 ≤ n - 1 - k := by omega
       have hz0 : Limbs.radix ^ (n - 1 - k) % Limbs.radix = 0 := by
-        obtain ⟨j, hj⟩ := Nat.exists_eq_add_of_le hjpos
-        rw [hj, pow_add, pow_one, Nat.mul_mod_right]
+        obtain ⟨j,hj⟩ := Nat.exists_eq_add_of_le hjpos
+        rw [hj,pow_add,pow_one,Nat.mul_mod_right]
       rw [Exp.storeWord_readWord_disjoint mem 1024 (1024 + 32 * (n - 1 - k))
           (UInt256.ofNat 1) (Or.inr (by omega)),
         hzero (n - 1 - k) (by omega),
-        Nat.pow_div (show k ≤ n - 1 by omega) hrpos, hz0]
-
+        Nat.pow_div (show k ≤ n - 1 by omega) hrpos,hz0]
 /-! ## The dispatcher case split -/
-
 /-- The fast path's entry check leaves the leading modulus word with bit 255 set. -/
 theorem fastSetup_topBit (input : ByteArray) (hpath : Setup.FastPath input) :
     R1.TopBitSet (Setup.fastSetupMemory input) := by
@@ -204,7 +186,7 @@ theorem fastSetup_topBit (input : ByteArray) (hpath : Setup.FastPath input) :
   have htail := Setup.modulus_tail_lt input
   have hRpos : 0 < Limbs.radix ^ (Setup.limbs input - 1) := Nat.pow_pos Limbs.radix_pos
   have hdiv : Setup.modulus input / Limbs.radix ^ (Setup.limbs input - 1) = Setup.topLimb input := by
-    rw [hsplit, Nat.add_comm, Nat.add_mul_div_right _ _ hRpos, Nat.div_eq_of_lt htail, Nat.zero_add]
+    rw [hsplit,Nat.add_comm,Nat.add_mul_div_right _ _ hRpos,Nat.div_eq_of_lt htail,Nat.zero_add]
   have hw : Setup.topLimb input = (MachineState.readWord input (Setup.modOffset input)).toNat := by
     unfold Setup.topLimb
     rw [Setup.topWidth_eq_32_of_mask input hpath.1 (Setup.fastPath_width input hpath),
@@ -214,11 +196,10 @@ theorem fastSetup_topBit (input : ByteArray) (hpath : Setup.FastPath input) :
     simpa [Limbs.radix] using this
   have ht := Setup.fastPath_topBit input hpath
   unfold R1.TopBitSet
-  rw [hlimb, hdiv, Nat.mod_eq_of_lt hlt, hw]
+  rw [hlimb,hdiv,Nat.mod_eq_of_lt hlt,hw]
   rw [Nat.shiftRight_eq_div_pow] at ht
   by_contra hc
   exact ht (Nat.div_eq_of_lt (by omega))
-
 /-- Everything after `R1B` returns to the dispatcher. -/
 theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     (n bsize esize msize mm minv : Nat)
@@ -266,7 +247,7 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hact296 : 88 ≤ s.activeWords.toNat := hact
-  have e : Env s := ⟨hcode, hfork, hrun, hnp, hact⟩
+  have e : Env s := ⟨hcode,hfork,hrun,hnp,hact⟩
   have hbword : bsize < 2 ^ 256 := lt_of_le_of_lt hb (by norm_num)
   have hmmlt : mm < Limbs.radix ^ n := Model.fastRepresents_lt hmod0
   -- The setup path reaches the dispatcher WITHOUT converting, so the dispatcher's
@@ -292,19 +273,18 @@ theorem handled_of_dispatch (input : ByteArray) (s : State) (mem : ByteArray)
     -- with the bail state's spelling is what lets `rw` fire below.
     have hcd : (bigCState s mem n bsize esize msize).executionEnv.calldata = input := hdata
     have hpos : 0 < Challenge.Modexp.modulusSize input := by omega
-    obtain ⟨final, ⟨tail⟩, hdone, hres⟩ :=
+    obtain ⟨final,⟨tail⟩,hdone,hres⟩ :=
       BigC.U.bigC_correct BigC.UBlocks.setupBlocks BigC.UBlocks.expBlocks
         BigC.UBlocks.mulBlocks BigC.UBlocks.unsignedBlocks
         (bigCState s mem n bsize esize msize)
         (bindingEnv e) rfl
-        (by simp [bigCState, frameState, Exp.outer])
+        (by simp [bigCState,frameState,Exp.outer])
         (show (bigCState s mem n bsize esize msize).activeWords.toNat ≤ 289 from hactLe)
         (show (bigCState s mem n bsize esize msize).callStack = [] from hstack)
         (by rw [hcd]; exact hvalid)
         (by rw [hcd]; exact hpos)
-    refine ⟨final, ⟨hbail.trans tail⟩, hdone, ?_⟩
-    rw [hres, hcd]
-
+    refine ⟨final,⟨hbail.trans tail⟩,hdone,?_⟩
+    rw [hres,hcd]
 /-- **Fast-path certificate.** Every `ValidInput` on the fast path runs from
 the retargeted entry to the MODEXP result. -/
 theorem gasSteps_handled (input : ByteArray)
@@ -337,15 +317,15 @@ theorem gasSteps_handled (input : ByteArray)
   have hxlt : Limbs.radix ^ (Setup.limbs input - 1) < Setup.modulus input :=
     Model.radix_pow_lt_of_odd hn hpath.2.2.1 hodd
   have hact : 88 ≤ (Setup.fastSetupState input).activeWords.toNat := by
-    rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
+    rw [Setup.fastSetup_activeWords input hpath,Exp.toNat_ofNat_self (by norm_num)]
   have hcds : (Setup.fastSetupState input).executionEnv.calldata.size < 2 ^ 256 := by
     rw [SetupFacts.fastSetup_calldata input]
     exact hsize
   -- The upper bound the bails need, from the same lemma as the lower one.
   have hactLe : (Setup.fastSetupState input).activeWords.toNat ≤ 289 := by
-    rw [Setup.fastSetup_activeWords input hpath, Exp.toNat_ofNat_self (by norm_num)]
+    rw [Setup.fastSetup_activeWords input hpath,Exp.toNat_ofNat_self (by norm_num)]
     norm_num
-  obtain ⟨final, ⟨tr⟩, hdone, hres⟩ :=
+  obtain ⟨final,⟨tr⟩,hdone,hres⟩ :=
     handled_of_dispatch input (Setup.fastSetupState input) (Setup.fastSetupMemory input)
       (Setup.limbs input) (Challenge.Modexp.baseSize input)
       (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)
@@ -355,8 +335,8 @@ theorem gasSteps_handled (input : ByteArray)
       (SetupFacts.fastSetup_callStack input) hact hcds hn hn32 hpath.2.1.1 hpath.2.1.2.1 hpath.1
       (Setup.modulusSize_le_s32 input) hfull rfl rfl rfl (Setup.fastSetup_modulus_eq input)
       hodd hradix hmpos hminvlt hminvA hxlt
-      ⟨Setup.fastSetup_V_S32 input hpath, fastSetup_V_MINV_zero input hpath,
-       Setup.fastSetup_V_ML input hpath, Setup.fastSetup_V_TL input hpath,
+      ⟨Setup.fastSetup_V_S32 input hpath,fastSetup_V_MINV_zero input hpath,
+       Setup.fastSetup_V_ML input hpath,Setup.fastSetup_V_TL input hpath,
        Setup.fastSetup_V_EOFF input hpath⟩
       (Setup.fastSetup_modulus input hpath)
       (by unfold Setup.minvValue; rw [Setup.fastSetup_lowLimb input hpath])
@@ -373,9 +353,7 @@ theorem gasSteps_handled (input : ByteArray)
         SetupFacts.readWord_setupMem_high input (Setup.lowLimb input) 2080 hpath.2.1.2.2
           (by omega) (by omega)])
       hvalid hactLe (fastSetup_topBit input hpath)
-  exact ⟨final, ⟨(Challenge.EvmProof.GasSteps.cast
+  exact ⟨final,⟨(Challenge.EvmProof.GasSteps.cast
     (Setup.gasSteps_fastSetup input hsize hpath) rfl (SetupFacts.fastSetup_entry_eq input)).trans
-    tr⟩, hdone, hres⟩
-
+    tr⟩,hdone,hres⟩
 end CycleSubmission.Global.Fast.Shift
-

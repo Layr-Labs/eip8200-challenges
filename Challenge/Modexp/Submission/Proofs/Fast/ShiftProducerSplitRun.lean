@@ -1,36 +1,29 @@
 import Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerCore
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerSplitRun
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open ShiftProducerCanonical
-
 /-! Exact retained-accumulator producer fragments: the hit block calls the
 leading-limb entry 4514 with only the return address, and the copy block moves
 the reduced accumulator from 2112 to ACC. The run theorem is parameterized by
 the actual code's jump fact, without claiming the artifact contains these
 instructions. -/
 def hitProgram : List Instr :=
-  [.op (.Dup ⟨0, by decide⟩), .push 1 96, .push 2 2112, .op .CALLDATACOPY,
-   .push 2 2412, .push 2 4010, .op .JUMP]
-
+  [.op (.Dup ⟨0,by decide⟩),.push 1 96,.push 2 2112,.op .CALLDATACOPY,
+   .push 2 2412,.push 2 4010,.op .JUMP]
 def copyProgram : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨0, by decide⟩), .push 2 2112, .push 2 256,
+  [.op .JUMPDEST,.op (.Dup ⟨0,by decide⟩),.push 2 2112,.push 2 256,
    .op .MCOPY]
-
 def frame (s : State) (mem : ByteArray) (pc n : Nat) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat pc, memory := mem, stack := UInt256.ofNat (32*n) :: rest}
-
+  {s with pc := UInt256.ofNat pc,memory := mem,stack := UInt256.ofNat (32*n)::rest}
 def csubEntry (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 4010, memory := mem, stack := [UInt256.ofNat 2412, UInt256.ofNat (32*n)] ++ rest}
-
+  {s with pc := UInt256.ofNat 4010,memory := mem,stack := [UInt256.ofNat 2412,UInt256.ofNat (32*n)]++rest}
 theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat) (hdata : s.executionEnv.calldata = input)
@@ -52,7 +45,6 @@ theorem run_hit (s : State) (mem input : ByteArray) (n : Nat) (rest : List UInt2
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat) :
@@ -79,5 +71,4 @@ theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
     Challenge.EvmProof.Word.ofNat_add_mod]
-
 end Challenge.Modexp.Submission.Proofs.Fast.ShiftProducerSplitRun

@@ -28,7 +28,6 @@ theorem readWord_setupMem_mid (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_empty]
-
 /-- `ACC`, `BASE` and the `ONE` slot are all zero when the setup hands over. -/
 theorem fastSetup_zero_block (input : ByteArray) (hpath : Setup.FastPath input)
     (ptr : Nat) (hlo : 256 ≤ ptr) (hhi : ptr + 32 * Setup.limbs input ≤ 1024) :
@@ -39,7 +38,6 @@ theorem fastSetup_zero_block (input : ByteArray) (hpath : Setup.FastPath input)
     readWord_setupMem_mid input (Setup.lowLimb input) (ptr + 32 * j) hpath.2.1.2.2
       (by omega) (by omega),
     toNat_ofNat_self (by norm_num)]
-
 /-- Nothing the setup block writes lands between `0x1020` and the variables. -/
 theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     (hm : Challenge.Modexp.modulusSize input ≤ 256)
@@ -60,7 +58,6 @@ theorem readWord_setupMem_high (input : ByteArray) (m0 target : Nat)
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_mstoreAt_ne _ _ _ _ (Or.inl (by omega)),
     Setup.readWord_empty]
-
 /-- The CIOS `t` block is still zero when the setup hands over, which is what
 lets `CSUB` compute `radix ^ n - m` from `t[n] = 1` alone. -/
 theorem fastSetup_tblock_zero (input : ByteArray) (hpath : Setup.FastPath input)
@@ -72,40 +69,30 @@ theorem fastSetup_tblock_zero (input : ByteArray) (hpath : Setup.FastPath input)
     readWord_setupMem_high input (Setup.lowLimb input) (2112 + 32 * j) hpath.2.1.2.2
       (by omega) (by omega),
     toNat_ofNat_self (by norm_num)]
-
 /-! ## The hand-over state, field by field -/
-
 theorem fastSetup_code (input : ByteArray) :
     (Setup.fastSetupState input).executionEnv.code =
       CycleSubmission.Artifact.bytecode := rfl
-
 theorem fastSetup_fork (input : ByteArray) :
     (Setup.fastSetupState input).fork = .Osaka := rfl
-
 theorem fastSetup_halt (input : ByteArray) :
     (Setup.fastSetupState input).halt = .Running := rfl
-
 theorem fastSetup_calldata (input : ByteArray) :
     (Setup.fastSetupState input).executionEnv.calldata = input := rfl
-
 theorem fastSetup_callStack (input : ByteArray) :
     (Setup.fastSetupState input).callStack = [] := rfl
-
 theorem fastSetup_notPrecompile (input : ByteArray) :
     Precompile.isPrecompileWithConfig
       (Setup.fastSetupState input).executionEnv.precompileConfig
       (Setup.fastSetupState input).executionEnv.fork
       (Setup.fastSetupState input).executionEnv.codeAddr = false :=
   Challenge.Modexp.deployAddress_not_precompile
-
 /-- The setup block ends at the dispatcher (pc 3381) with the plain outer frame,
 instead of at the Montgomery-form conversion call.  `Shift.dispState` is definitionally this
 state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
-      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 2338)
+      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 660)
         (outer (Setup.limbs input) (Challenge.Modexp.baseSize input)
           (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)) := rfl
-
-
 end CycleSubmission.Global.Fast.SetupFacts

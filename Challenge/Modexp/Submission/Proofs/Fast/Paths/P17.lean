@@ -12,15 +12,11 @@ the call in that case and rejoins at pc 1692 with the stack untouched.
 * `blk1816` (idx 1943..1948, pc 2744..3189) — the `selOf = R1` test;
 * `blk1822` (idx 1952..1952, pc 1824..2767) — the `MONPRO` call frame;
 * `blk1828` (idx 1955..1957, pc 2768..2772) — the skip, straight to pc 1692. -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 def blk1828 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
-
 end Challenge.Modexp.Submission.Proofs.Fast

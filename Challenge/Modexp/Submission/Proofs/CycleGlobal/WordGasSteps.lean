@@ -2,20 +2,16 @@ import Challenge.Modexp.Submission.Proofs.CycleGlobal.Binding
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.Word
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.WordBaseTail
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.WordBaseFinish
-
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 1000000
-
 namespace CycleSubmission.Global.Word
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hmodulus : 0 < modulusValue input) :
@@ -34,7 +30,6 @@ def gasSteps_start (input : ByteArray) (hvalid : ValidInput input)
       CycleSubmission.Artifact.artifact .Osaka startJumpPath rfl rfl
         (run_startJump_nonzero input hmodulus hmodlt) rfl
         deployAddress_not_precompile)
-
 def gasSteps_baseSetup (input : ByteArray) :
     Challenge.EvmProof.GasSteps (nonzeroState input)
       (baseLoopState input 0 0) := by
@@ -45,7 +40,6 @@ def gasSteps_baseSetup (input : ByteArray) :
   · exact run_baseSetup input
   · rfl
   · exact deployAddress_not_precompile
-
 def gasSteps_baseFinish (input : ByteArray) (base : UInt256)
     (hvalid : ValidInput input) (hword : modulusSize input ≤ 32) :
     Challenge.EvmProof.GasSteps (baseLoopState input (baseSize input) base)
@@ -59,7 +53,6 @@ def gasSteps_baseFinish (input : ByteArray) (base : UInt256)
       CycleSubmission.Artifact.artifact .Osaka baseFinishTailPath rfl rfl
         (run_baseFinishTail input base hvalid hword) rfl
         deployAddress_not_precompile)
-
 def gasSteps_zeroModulus (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32)
     (hmodulus : modulusValue input = 0) :
@@ -76,5 +69,4 @@ def gasSteps_zeroModulus (input : ByteArray) (hvalid : ValidInput input)
     (Challenge.EvmProof.Stepper.runLocatedBlock_sound
       CycleSubmission.Artifact.artifact .Osaka zeroTailPath rfl rfl
         (run_zeroTail input hvalid hmodulus) rfl deployAddress_not_precompile)
-
 end CycleSubmission.Global.Word

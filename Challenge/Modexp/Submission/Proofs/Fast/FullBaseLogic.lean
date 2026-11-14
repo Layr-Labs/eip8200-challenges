@@ -9,23 +9,17 @@ It deliberately contains no control-flow proof: the located execution is kept
 in `FullBasePaths`, while the eventual driver theorem can consume the small
 memory and range lemmas below.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.FullBase
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs
-
 def Matches (memory : ByteArray) (n bsize : Nat) : Prop :=
   bsize = 32 * n ∧ R1.TopBitSet memory
-
 instance (memory : ByteArray) (n bsize : Nat) : Decidable (Matches memory n bsize) := by
   unfold Matches
   infer_instance
-
 def copyBaseMem (memory input : ByteArray) (n : Nat) : ByteArray :=
   MachineState.writeBytes memory (MachineState.readPadded input 96 (32 * n)) 256
-
 theorem readPadded_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
     (h : 32 * i + 32 ≤ sz) :
     MachineState.readPadded (MachineState.writeBytes memory
@@ -38,16 +32,15 @@ theorem readPadded_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
     rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hk1,
       ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hk2,
       Challenge.EvmProof.Memory.readPadded_getElem?_getD,
-      Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos hk, if_pos hk,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,if_pos hk,if_pos hk,
       MachineState.writeBytes_getElem?_getD,
       Challenge.EvmProof.Memory.readPadded_size,
       if_pos (show dst ≤ dst + 32 * i + k ∧ dst + 32 * i + k < dst + sz from
-        ⟨by omega, by omega⟩),
+        ⟨by omega,by omega⟩),
       show dst + 32 * i + k - dst = 32 * i + k from by omega,
       Challenge.EvmProof.Memory.readPadded_getElem?_getD,
       if_pos (show 32 * i + k < sz from by omega)]
     simp only [Nat.add_assoc]
-
 theorem readWord_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
     (h : 32 * i + 32 ≤ sz) :
     MachineState.readWord (MachineState.writeBytes memory
@@ -55,7 +48,6 @@ theorem readWord_copyFrom (memory source : ByteArray) (src dst sz i : Nat)
       MachineState.readWord source (src + 32 * i) := by
   unfold MachineState.readWord
   rw [readPadded_copyFrom memory source src dst sz i h]
-
 theorem copyBaseMem_represents (memory input : ByteArray) (n : Nat) :
     Model.FastRepresents (copyBaseMem memory input n) 256 n
       (Precompile.bytesToNatPadded input 96 (32 * n)) := by
@@ -65,7 +57,6 @@ theorem copyBaseMem_represents (memory input : ByteArray) (n : Nat) :
   unfold copyBaseMem
   rw [readWord_copyFrom memory input 96 256 (32 * n) (n - 1 - k) (by omega)]
   exact Model.readLimb_of_fastRepresents hsource hk
-
 theorem copyBaseMem_preserves (memory input : ByteArray) (n ptr count value : Nat)
     (hdisjoint : 256 + 32 * n ≤ ptr ∨ ptr + 32 * count ≤ 256)
     (hrep : Model.FastRepresents memory ptr count value) :
@@ -75,7 +66,6 @@ theorem copyBaseMem_preserves (memory input : ByteArray) (n ptr count value : Na
   · rw [Challenge.EvmProof.Memory.readPadded_size]
     exact hdisjoint
   · exact hrep
-
 theorem copyBaseMem_readWord_disjoint (memory input : ByteArray) (n addr : Nat)
     (hdisjoint : addr + 32 ≤ 256 ∨ 256 + 32 * n ≤ addr) :
     MachineState.readWord (copyBaseMem memory input n) addr =
@@ -83,13 +73,11 @@ theorem copyBaseMem_readWord_disjoint (memory input : ByteArray) (n addr : Nat)
   unfold copyBaseMem
   apply Challenge.EvmProof.Memory.readWord_writeBytes_disjoint
   simpa only [Challenge.EvmProof.Memory.readPadded_size] using hdisjoint
-
 theorem copyBaseMem_readWord_high (memory input : ByteArray) (n addr : Nat)
     (hn32 : n ≤ 8) (haddr : 512 ≤ addr) :
     MachineState.readWord (copyBaseMem memory input n) addr =
       MachineState.readWord memory addr :=
   copyBaseMem_readWord_disjoint memory input n addr (Or.inr (by omega))
-
 private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     (hend : offset + size ≤ curr * 32) :
     MachineState.activeWordsAfter curr offset size = curr := by
@@ -101,7 +89,6 @@ private theorem activeWordsAfter_eq_of_end_le (curr offset size : Nat)
     have hq : (offset + size - 1) / 32 < curr :=
       (Nat.div_lt_iff_lt_mul (by omega)).2 (by omega)
     omega
-
 theorem copyBase_activeWords (s : State) (n : Nat)
     (hn32 : n ≤ 8) (hactive : 88 ≤ s.activeWords.toNat) :
     s.activeWordsAfterUInt256 256 (32 * n) = s.activeWords := by
@@ -109,12 +96,10 @@ theorem copyBase_activeWords (s : State) (n : Nat)
   rw [activeWordsAfter_eq_of_end_le]
   · exact (Challenge.EvmProof.Word.word_eq_ofNat_toNat _).symm
   · omega
-
 theorem copyBaseMem_modulus {memory input : ByteArray} {n mm : Nat}
     (hn32 : n ≤ 8) (hmod : Model.FastRepresents memory 0 n mm) :
     Model.FastRepresents (copyBaseMem memory input n) 0 n mm :=
   copyBaseMem_preserves memory input n 0 n mm (Or.inr (by omega)) hmod
-
 theorem baseValue_lt_radix (input : ByteArray) (n : Nat) :
     Precompile.bytesToNatPadded input 96 (32 * n) < Limbs.radix ^ n := by
   have h := Limbs.byteValue_fits_limbs input 96 (32 * n)
@@ -122,13 +107,10 @@ theorem baseValue_lt_radix (input : ByteArray) (n : Nat) :
     unfold Limbs.limbCount
     omega
   rwa [hcount] at h
-
 theorem baseValue_lt_two_mul {memory input : ByteArray} {n mm : Nat}
     (hn : 1 ≤ n) (hodd : mm % 2 = 1)
     (hmod : Model.FastRepresents memory 0 n mm) (htop : R1.TopBitSet memory) :
     Precompile.bytesToNatPadded input 96 (32 * n) < 2 * mm :=
   (baseValue_lt_radix input n).trans
     (R1.radix_pow_lt_two_mul hn hodd hmod htop)
-
 end Challenge.Modexp.Submission.Proofs.Fast.FullBase
-

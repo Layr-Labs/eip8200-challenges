@@ -4,29 +4,24 @@ import Challenge.EvmProof.Meter
 noncomputable section
 set_option warningAsError true
 set_option maxRecDepth 10000
-
 namespace CycleSubmission.Global.BigDispatch
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics
 open EvmSemantics.EVM
-
 private def gasSteps_bigCheckExp (input : ByteArray) (hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (Dispatch.wordDispatchState input)
       (bigExpOffsetState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka bigCheckExpPath rfl rfl
       (run_bigCheckExp input hvalid) rfl deployAddress_not_precompile
-
 private def gasSteps_bigCheckMod (input : ByteArray) (hvalid : ValidInput input) :
     Challenge.EvmProof.GasSteps (bigExpOffsetState input)
       (bigOffsetsState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka bigCheckModPath rfl rfl
       (run_bigCheckMod input hvalid) rfl deployAddress_not_precompile
-
 private def gasSteps_bigCheckCompare (input : ByteArray)
     (hvalid : ValidInput input) (hbig : 32 < modulusSize input) :
     Challenge.EvmProof.GasSteps (bigOffsetsState input)
@@ -34,29 +29,23 @@ private def gasSteps_bigCheckCompare (input : ByteArray)
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka bigCheckComparePath rfl rfl
       (run_bigCheckCompare input hvalid hbig) rfl deployAddress_not_precompile
-
 private def gasSteps_bigCheckJump (input : ByteArray) :
     Challenge.EvmProof.GasSteps (bigComparedState input)
       (bigCheckedState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka bigCheckJumpPath rfl rfl
       (run_bigCheckJump input) rfl deployAddress_not_precompile
-
 private theorem gasSteps_bigCheckExp_cost (input : ByteArray)
     (hvalid : ValidInput input) :
     (gasSteps_bigCheckExp input hvalid).cost = 10 := by rfl
-
 private theorem gasSteps_bigCheckMod_cost (input : ByteArray)
     (hvalid : ValidInput input) :
     (gasSteps_bigCheckMod input hvalid).cost = 9 := by rfl
-
 private theorem gasSteps_bigCheckCompare_cost (input : ByteArray)
     (hvalid : ValidInput input) (hbig : 32 < modulusSize input) :
     (gasSteps_bigCheckCompare input hvalid hbig).cost = 9 := by rfl
-
 private theorem gasSteps_bigCheckJump_cost (input : ByteArray) :
     (gasSteps_bigCheckJump input).cost = 13 := by rfl
-
 def gasSteps_bigCheck (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) :
     Challenge.EvmProof.GasSteps (Dispatch.wordDispatchState input)
@@ -65,14 +54,12 @@ def gasSteps_bigCheck (input : ByteArray) (hvalid : ValidInput input)
     (gasSteps_bigCheckMod input hvalid).trans <|
       (gasSteps_bigCheckCompare input hvalid hbig).trans
         (gasSteps_bigCheckJump input)
-
 theorem gasSteps_bigCheck_cost (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input) :
     (gasSteps_bigCheck input hvalid hbig).cost = 41 := by
-  simp [gasSteps_bigCheck, gasSteps_bigCheckExp_cost,
-    gasSteps_bigCheckMod_cost, gasSteps_bigCheckCompare_cost,
+  simp [gasSteps_bigCheck,gasSteps_bigCheckExp_cost,
+    gasSteps_bigCheckMod_cost,gasSteps_bigCheckCompare_cost,
     gasSteps_bigCheckJump_cost]
-
 def gasSteps_bigJump (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
     Challenge.EvmProof.GasSteps (Main.headerState input)
@@ -81,7 +68,6 @@ def gasSteps_bigJump (input : ByteArray) (hvalid : ValidInput input)
     CycleSubmission.Artifact.artifact .Osaka Dispatch.wordJumpPath rfl rfl
       (Dispatch.run_wordJump input hvalid hpositive) rfl
       deployAddress_not_precompile
-
 theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) :
     (gasSteps_bigJump input hvalid hpositive).cost = 16 := by
@@ -94,7 +80,6 @@ theorem gasSteps_bigJump_cost (input : ByteArray) (hvalid : ValidInput input)
   have hcost : Challenge.EvmProof.Stepper.runLocatedBlockCost
       Dispatch.wordJumpPath (Main.headerState input) = 16 := by omega
   simpa [gasSteps_bigJump] using hcost
-
 /-- From the header state to the fallback entry: the dispatcher's jump and its
 size check.  No trampoline frame is built any more. -/
 def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
@@ -102,10 +87,8 @@ def gasSteps_bigEntry (input : ByteArray) (hvalid : ValidInput input)
     Challenge.EvmProof.GasSteps (Main.headerState input) (bigEntryState input) :=
   (gasSteps_bigJump input hvalid hpositive).trans
     (gasSteps_bigCheck input hvalid hbig)
-
 theorem gasSteps_bigEntry_cost (input : ByteArray) (hvalid : ValidInput input)
     (hpositive : 0 < modulusSize input) (hbig : 32 < modulusSize input) :
     (gasSteps_bigEntry input hvalid hpositive hbig).cost = 57 := by
-  simp [gasSteps_bigEntry, gasSteps_bigJump_cost, gasSteps_bigCheck_cost]
-
+  simp [gasSteps_bigEntry,gasSteps_bigJump_cost,gasSteps_bigCheck_cost]
 end CycleSubmission.Global.BigDispatch

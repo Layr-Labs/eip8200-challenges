@@ -3,7 +3,6 @@ import Challenge.Modexp.Submission.Proofs.Prepared.Arithmetic
 import Challenge.Modexp.Submission.Proofs.Fast.Monpro
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleDefs
 open CycleSubmission.SharedStackArgs
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option linter.unusedVariables false
@@ -13,42 +12,35 @@ namespace CycleSubmission.Execution
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-
 open Challenge.EvmProof.Word Challenge.EvmProof.Stepper
 local notation "W" => UInt256
 local notation "N" => UInt256.ofNat
-
 open CycleSubmission.Prepared.Arithmetic
-
 def pr13Newpart0Program : List Instr :=
   [
   .push 2 1920,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Dup dA1),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨3, by decide⟩)]
-
+   .op (.Swap sA3)]
 def pr13Newpart0Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 1920
   let v1 : W := v0 * x0
   let v2 : W := v1 + x3
-  {s with pc := N 9271, memory := s.memory, stack := v0 :: x0 :: x1 :: x2 :: v2 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
+  {s with pc := N 7368,memory := s.memory,stack := v0::x0::x1::x2::v2::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr13Newpart0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart0Program {s with pc := N 9261, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions pr13Newpart0Program {s with pc := N 7358,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr13Newpart0Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha1920 : (1920 : W).toNat = 1920 := rfl
   have hf1920 := Monpro.activeWords_fix s 1920 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart0Program, pr13Newpart0Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha1920, hf1920]
-
-
+  simp [hz,hzn,pr13Newpart0Program,pr13Newpart0Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha1920,hf1920]
 def pr13Newpart1Program : List Instr :=
   [
   .op .MULMOD,
@@ -57,19 +49,17 @@ def pr13Newpart1Program : List Instr :=
    .op .MLOAD,
    .push 2 1888,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩)]
-
+   .op (.Dup dA11),
+   .op (.Dup dA1)]
 def pr13Newpart1Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x0 x1 x2
   let v1 : W := v0 + x3
   let v2 : W := MachineState.readWord s.memory 160
   let v3 : W := MachineState.readWord s.memory 1888
-  {s with pc := N 9282, memory := s.memory, stack := v3 :: x12 :: v3 :: v2 :: v1 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
-
+  {s with pc := N 7379,memory := s.memory,stack := v3::x12::v3::v2::v1::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
 theorem pr13Newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart1Program {s with pc := N 9271, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions pr13Newpart1Program {s with pc := N 7368,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
       some (pr13Newpart1Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -78,118 +68,102 @@ theorem pr13Newpart1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
   have hf160 := Monpro.activeWords_fix s 160 32 (by decide) (by norm_num) hact
   have ha1888 : (1888 : W).toNat = 1888 := rfl
   have hf1888 := Monpro.activeWords_fix s 1888 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart1Program, pr13Newpart1Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha160, hf160, ha1888, hf1888]
-
-
+  simp [hz,hzn,pr13Newpart1Program,pr13Newpart1Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha160,hf160,ha1888,hf1888]
 def pr13Newpart2Program : List Instr :=
   [
-  .op (.Dup ⟨3, by decide⟩),
+  .op (.Dup dA3),
    .op .MULMOD,
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA1),
    .op .MUL,
    .push 2 1856,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .ADD]
-
 def pr13Newpart2Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x3 x0 x1
   let v1 : W := x3 * x2
   let v2 : W := MachineState.readWord s.memory 1856
   let v3 : W := x5 + v1
-  {s with pc := N 9292, memory := s.memory, stack := v3 :: v0 :: x4 :: v2 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest}
-
+  {s with pc := N 7389,memory := s.memory,stack := v3::v0::x4::v2::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
 theorem pr13Newpart2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart2Program {s with pc := N 9282, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: x19 :: rest} =
+    runInstructions pr13Newpart2Program {s with pc := N 7379,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
       some (pr13Newpart2Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 21) : rest.length + j < 1024 := by omega
   have ha1856 : (1856 : W).toNat = 1856 := rfl
   have hf1856 := Monpro.activeWords_fix s 1856 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart2Program, pr13Newpart2Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha1856, hf1856]
-
-
+  simp [hz,hzn,pr13Newpart2Program,pr13Newpart2Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha1856,hf1856]
 def pr13Newpart3Program : List Instr :=
   [
-  .op (.Swap ⟨1, by decide⟩),
+  .op (.Swap sA1),
    .op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA3),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨1, by decide⟩)]
-
+   .op (.Swap sA1)]
 def pr13Newpart3Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x2 + x1
   let v1 : W := UInt256.mulMod x4 x3 x11
   let v2 : W := v1 + v0
-  {s with pc := N 9300, memory := s.memory, stack := x3 :: x0 :: v2 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
+  {s with pc := N 7397,memory := s.memory,stack := x3::x0::v2::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr13Newpart3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart3Program {s with pc := N 9292, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions pr13Newpart3Program {s with pc := N 7389,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr13Newpart3Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 20) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, pr13Newpart3Program, pr13Newpart3Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,pr13Newpart3Program,pr13Newpart3Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity]
 def pr13Newpart4Program : List Instr :=
   [
-  .op (.Dup ⟨3, by decide⟩),
+  .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
    .push 1 192,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD]
-
 def pr13Newpart4Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x3 * x0
   let v1 : W := v0 + x1
   let v2 : W := MachineState.readWord s.memory 192
   let v3 : W := x11 * v2
   let v4 : W := v3 + v1
-  {s with pc := N 9309, memory := s.memory, stack := v4 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
-
+  {s with pc := N 7406,memory := s.memory,stack := v4::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem pr13Newpart4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart4Program {s with pc := N 9300, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions pr13Newpart4Program {s with pc := N 7397,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr13Newpart4Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
   have ha192 : (192 : W).toNat = 192 := rfl
   have hf192 := Monpro.activeWords_fix s 192 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart4Program, pr13Newpart4Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha192, hf192]
-
-
+  simp [hz,hzn,pr13Newpart4Program,pr13Newpart4Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha192,hf192]
 def pr13Newpart5Program : List Instr :=
   [
   .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩)]
-
+   .op (.Dup dA4)]
 def pr13Newpart5Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 0
   let v1 : W := x8 * v0
   let v2 : W := v1 + x0
   let v3 : W := MachineState.readWord s.memory 224
-  {s with pc := N 9318, memory := s.memory, stack := x3 :: v3 :: v2 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest}
-
+  {s with pc := N 7415,memory := s.memory,stack := x3::v3::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest}
 theorem pr13Newpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart5Program {s with pc := N 9309, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: rest} =
+    runInstructions pr13Newpart5Program {s with pc := N 7406,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::rest} =
       some (pr13Newpart5Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
@@ -198,337 +172,302 @@ theorem pr13Newpart5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 
   have hf0 := Monpro.activeWords_fix s 0 32 (by decide) (by norm_num) hact
   have ha224 : (224 : W).toNat = 224 := rfl
   have hf224 := Monpro.activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart5Program, pr13Newpart5Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha0, hf0, ha224, hf224]
-
-
+  simp [hz,hzn,pr13Newpart5Program,pr13Newpart5Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha0,hf0,ha224,hf224]
 def pr13Newpart6Program : List Instr :=
   [
   .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA6),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩)]
-
+   .op (.Dup dA5),
+   .op (.Dup dA5)]
 def pr13Newpart6Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
   let v1 : W := v0 + x2
   let v2 : W := x9 * x8
   let v3 : W := v2 + v1
-  {s with pc := N 9326, memory := s.memory, stack := x6 :: x7 :: v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
+  {s with pc := N 7423,memory := s.memory,stack := x6::x7::v3::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr13Newpart6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart6Program {s with pc := N 9318, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions pr13Newpart6Program {s with pc := N 7415,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr13Newpart6Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, pr13Newpart6Program, pr13Newpart6Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,pr13Newpart6Program,pr13Newpart6Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity]
 def pr13Newpart7Program : List Instr :=
   [
   .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA15),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩)]
-
+   .op (.Dup dA15),
+   .op (.Dup dA14)]
 def pr13Newpart7Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
   let v1 : W := v0 + x2
   let v2 : W := x16 * x13
   let v3 : W := v2 + v1
-  {s with pc := N 9334, memory := s.memory, stack := x15 :: x17 :: v3 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
+  {s with pc := N 7431,memory := s.memory,stack := x15::x17::v3::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr13Newpart7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart7Program {s with pc := N 9326, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions pr13Newpart7Program {s with pc := N 7423,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr13Newpart7Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 18) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, pr13Newpart7Program, pr13Newpart7Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,pr13Newpart7Program,pr13Newpart7Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity]
 def pr13Newpart8Program : List Instr :=
   [
   .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA9),
    .push 1 192,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD]
-
 def pr13Newpart8Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := x0 * x1
   let v1 : W := v0 + x2
   let v2 : W := MachineState.readWord s.memory 192
   let v3 : W := UInt256.mulMod x12 v2 x11
-  {s with pc := N 9343, memory := s.memory, stack := v3 :: x3 :: v1 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest}
-
+  {s with pc := N 7440,memory := s.memory,stack := v3::x3::v1::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem pr13Newpart8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart8Program {s with pc := N 9334, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: rest} =
+    runInstructions pr13Newpart8Program {s with pc := N 7431,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (pr13Newpart8Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have ha192 : (192 : W).toNat = 192 := rfl
   have hf192 := Monpro.activeWords_fix s 192 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart8Program, pr13Newpart8Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha192, hf192]
-
-
+  simp [hz,hzn,pr13Newpart8Program,pr13Newpart8Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha192,hf192]
 def pr13Newpart9Program : List Instr :=
   [
   .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩)]
-
+   .op (.Dup dA9)]
 def pr13Newpart9Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
   let v1 : W := MachineState.readWord s.memory 0
   let v2 : W := UInt256.mulMod x9 v1 x10
   let v3 : W := v2 + v0
-  {s with pc := N 9351, memory := s.memory, stack := x10 :: v3 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
-
+  {s with pc := N 7448,memory := s.memory,stack := x10::v3::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem pr13Newpart9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart9Program {s with pc := N 9343, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions pr13Newpart9Program {s with pc := N 7440,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr13Newpart9Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have ha0 : (0 : W).toNat = 0 := rfl
   have hf0 := Monpro.activeWords_fix s 0 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart9Program, pr13Newpart9Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha0, hf0]
-
-
+  simp [hz,hzn,pr13Newpart9Program,pr13Newpart9Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha0,hf0]
 def pr13Newpart10Program : List Instr :=
   [
   .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩)]
-
+   .op (.Dup dA9),
+   .op (.Dup dA7),
+   .op (.Dup dA9)]
 def pr13Newpart10Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 224
   let v1 : W := UInt256.mulMod x4 v0 x0
   let v2 : W := v1 + x1
-  {s with pc := N 9360, memory := s.memory, stack := x8 :: x7 :: x10 :: v2 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
-
+  {s with pc := N 7457,memory := s.memory,stack := x8::x7::x10::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem pr13Newpart10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart10Program {s with pc := N 9351, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions pr13Newpart10Program {s with pc := N 7448,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr13Newpart10Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
   have ha224 : (224 : W).toNat = 224 := rfl
   have hf224 := Monpro.activeWords_fix s 224 32 (by decide) (by norm_num) hact
-  simp [hz, hzn, pr13Newpart10Program, pr13Newpart10Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity, ha224, hf224]
-
-
+  simp [hz,hzn,pr13Newpart10Program,pr13Newpart10Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha224,hf224]
 def pr13Newpart11Program : List Instr :=
   [
   .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA6),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩)]
-
+   .op (.Dup dA9)]
 def pr13Newpart11Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x0 x1 x2
   let v1 : W := v0 + x3
   let v2 : W := UInt256.mulMod x7 x8 x12
   let v3 : W := v2 + v1
-  {s with pc := N 9368, memory := s.memory, stack := x12 :: v3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
-
+  {s with pc := N 7465,memory := s.memory,stack := x12::v3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
 theorem pr13Newpart11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart11Program {s with pc := N 9360, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions pr13Newpart11Program {s with pc := N 7457,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
       some (pr13Newpart11Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, pr13Newpart11Program, pr13Newpart11Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,pr13Newpart11Program,pr13Newpart11Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity]
 def pr13Newpart12Program : List Instr :=
   [
-  .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
+  .op (.Dup dA15),
+   .op (.Dup dA13),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩)]
-
+   .op (.Dup dA15),
+   .op (.Dup dA10),
+   .op (.Swap sA0),
+   .op (.Dup dA15)]
 def pr13Newpart12Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x12 x15 x0
   let v1 : W := v0 + x1
-  {s with pc := N 9376, memory := s.memory, stack := x14 :: x16 :: x10 :: v1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest}
-
+  {s with pc := N 7473,memory := s.memory,stack := x14::x16::x10::v1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem pr13Newpart12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart12Program {s with pc := N 9368, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: rest} =
+    runInstructions pr13Newpart12Program {s with pc := N 7465,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (pr13Newpart12Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, pr13Newpart12Program, pr13Newpart12Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,pr13Newpart12Program,pr13Newpart12Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity]
 def pr13Newpart13Program : List Instr :=
   [
   .op .MULMOD,
    .op .ADD]
-
 def pr13Newpart13Model (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
   let v0 : W := UInt256.mulMod x0 x1 x2
   let v1 : W := v0 + x3
-  {s with pc := N 9378, memory := s.memory, stack := v1 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest}
-
+  {s with pc := N 7475,memory := s.memory,stack := v1::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
 theorem pr13Newpart13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13Newpart13Program {s with pc := N 9376, stack := x0 :: x1 :: x2 :: x3 :: x4 :: x5 :: x6 :: x7 :: x8 :: x9 :: x10 :: x11 :: x12 :: x13 :: x14 :: x15 :: x16 :: x17 :: x18 :: rest} =
+    runInstructions pr13Newpart13Program {s with pc := N 7473,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
       some (pr13Newpart13Model s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
   have hz : ({val := 0} : W) = N 0 := rfl
   have hzn : ({val := 0} : W).toNat = 0 := rfl
   have capacity (j : Nat) (hj : j ≤ 19) : rest.length + j < 1024 := by omega
-  simp [hz, hzn, pr13Newpart13Program, pr13Newpart13Model, runInstructions, runInstr, List.exchange, succ_ofNat_mod, ofNat_add_mod, Nat.add_assoc, State.activeWordsAfterUInt256, literal_eq_ofNat, capacity]
-
-
+  simp [hz,hzn,pr13Newpart13Program,pr13Newpart13Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity]
 def pr13NewProgram : List Instr :=
   [
   .push 2 1920,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Swap sA3),
+   .op (.Dup dA1),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .MULMOD,
    .op .ADD,
    .push 1 160,
    .op .MLOAD,
    .push 2 1888,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA1),
+   .op (.Dup dA3),
    .op .MULMOD,
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA1),
    .op .MUL,
    .push 2 1856,
    .op .MLOAD,
-   .op (.Swap ⟨3, by decide⟩),
+   .op (.Swap sA3),
    .op .ADD,
-   .op (.Swap ⟨1, by decide⟩),
+   .op (.Swap sA1),
    .op .ADD,
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA10),
+   .op (.Dup dA3),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap ⟨1, by decide⟩),
-   .op (.Dup ⟨3, by decide⟩),
+   .op (.Swap sA1),
+   .op (.Dup dA3),
    .op .MUL,
    .op .ADD,
    .push 1 192,
    .op .MLOAD,
-   .op (.Dup ⟨11, by decide⟩),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨4, by decide⟩),
+   .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨8, by decide⟩),
+   .op (.Dup dA6),
+   .op (.Dup dA8),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨5, by decide⟩),
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
+   .op (.Dup dA5),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨11, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA11),
+   .op (.Dup dA15),
    .op .MUL,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨14, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA14),
    .op .MUL,
    .op .ADD,
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Swap sA0),
+   .op (.Dup dA9),
    .push 1 192,
    .op .MLOAD,
-   .op (.Dup ⟨12, by decide⟩),
+   .op (.Dup dA12),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup ⟨10, by decide⟩),
+   .op (.Dup dA10),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
    .push 1 224,
    .op .MLOAD,
-   .op (.Dup ⟨5, by decide⟩),
+   .op (.Dup dA5),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨7, by decide⟩),
-   .op (.Dup ⟨9, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA7),
+   .op (.Dup dA9),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
-   .op (.Dup ⟨6, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA6),
+   .op (.Dup dA6),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨9, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨13, by decide⟩),
+   .op (.Dup dA9),
+   .op (.Dup dA15),
+   .op (.Dup dA13),
    .op .MULMOD,
    .op .ADD,
-   .op (.Dup ⟨15, by decide⟩),
-   .op (.Dup ⟨10, by decide⟩),
-   .op (.Swap ⟨0, by decide⟩),
-   .op (.Dup ⟨15, by decide⟩),
+   .op (.Dup dA15),
+   .op (.Dup dA10),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
    .op .MULMOD,
    .op .ADD]
-
 def pr13NewModel (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 1920
   let v1 : W := v0 * carry
@@ -580,11 +519,10 @@ def pr13NewModel (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w1
   let v47 : W := v46 + v45
   let v48 : W := UInt256.mulMod w14 w16 w10
   let v49 : W := v48 + v47
-  {s with pc := N 9378, memory := s.memory, stack := v49 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest}
-
+  {s with pc := N 7475,memory := s.memory,stack := v49::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest}
 theorem pr13New_run (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions pr13NewProgram {s with pc := N 9261, stack := carry :: w0 :: w1 :: w2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} =
+    runInstructions pr13NewProgram {s with pc := N 7358,stack := carry::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} =
       some (pr13NewModel s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   let v0 : W := MachineState.readWord s.memory 1920
   let v1 : W := v0 * carry
@@ -636,38 +574,36 @@ theorem pr13New_run (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12
   let v47 : W := v46 + v45
   let v48 : W := UInt256.mulMod w14 w16 w10
   let v49 : W := v48 + v47
-  have h0 : runInstructions pr13Newpart0Program {s with pc := N 9261, memory := s.memory, stack := carry :: w0 :: w1 :: w2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9271, memory := s.memory, stack := v0 :: carry :: w0 :: w1 :: v2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart0Model, v0, v1, v2] using pr13Newpart0_run (s) (carry) (w0) (w1) (w2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h1 : runInstructions pr13Newpart1Program {s with pc := N 9271, memory := s.memory, stack := v0 :: carry :: w0 :: w1 :: v2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9282, memory := s.memory, stack := v6 :: w10 :: v6 :: v5 :: v4 :: v2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart1Model, v3, v4, v5, v6] using pr13Newpart1_run (s) (v0) (carry) (w0) (w1) (v2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h2 : runInstructions pr13Newpart2Program {s with pc := N 9282, memory := s.memory, stack := v6 :: w10 :: v6 :: v5 :: v4 :: v2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9292, memory := s.memory, stack := v10 :: v7 :: v4 :: v9 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart2Model, v7, v8, v9, v10] using pr13Newpart2_run (s) (v6) (w10) (v6) (v5) (v4) (v2) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h3 : runInstructions pr13Newpart3Program {s with pc := N 9292, memory := s.memory, stack := v10 :: v7 :: v4 :: v9 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9300, memory := s.memory, stack := v9 :: v10 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart3Model, v11, v12, v13] using pr13Newpart3_run (s) (v10) (v7) (v4) (v9) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h4 : runInstructions pr13Newpart4Program {s with pc := N 9300, memory := s.memory, stack := v9 :: v10 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9309, memory := s.memory, stack := v18 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart4Model, v14, v15, v16, v17, v18] using pr13Newpart4_run (s) (v9) (v10) (v13) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h5 : runInstructions pr13Newpart5Program {s with pc := N 9309, memory := s.memory, stack := v18 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9318, memory := s.memory, stack := w4 :: v22 :: v21 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart5Model, v19, v20, v21, v22] using pr13Newpart5_run (s) (v18) (v13) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h6 : runInstructions pr13Newpart6Program {s with pc := N 9318, memory := s.memory, stack := w4 :: v22 :: v21 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9326, memory := s.memory, stack := w5 :: w6 :: v26 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart6Model, v23, v24, v25, v26] using pr13Newpart6_run (s) (w4) (v22) (v21) (v13) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h7 : runInstructions pr13Newpart7Program {s with pc := N 9326, memory := s.memory, stack := w5 :: w6 :: v26 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9334, memory := s.memory, stack := w14 :: w16 :: v30 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart7Model, v27, v28, v29, v30] using pr13Newpart7_run (s) (w5) (w6) (v26) (v13) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h8 : runInstructions pr13Newpart8Program {s with pc := N 9334, memory := s.memory, stack := w14 :: w16 :: v30 :: v13 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9343, memory := s.memory, stack := v34 :: v13 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart8Model, v31, v32, v33, v34] using pr13Newpart8_run (s) (w14) (w16) (v30) (v13) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h9 : runInstructions pr13Newpart9Program {s with pc := N 9343, memory := s.memory, stack := v34 :: v13 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9351, memory := s.memory, stack := w10 :: v38 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart9Model, v35, v36, v37, v38] using pr13Newpart9_run (s) (v34) (v13) (v32) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h10 : runInstructions pr13Newpart10Program {s with pc := N 9351, memory := s.memory, stack := w10 :: v38 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9360, memory := s.memory, stack := w8 :: w7 :: w10 :: v41 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart10Model, v39, v40, v41] using pr13Newpart10_run (s) (w10) (v38) (v32) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h11 : runInstructions pr13Newpart11Program {s with pc := N 9360, memory := s.memory, stack := w8 :: w7 :: w10 :: v41 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9368, memory := s.memory, stack := w10 :: v45 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart11Model, v42, v43, v44, v45] using pr13Newpart11_run (s) (w8) (w7) (w10) (v41) (v32) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h12 : runInstructions pr13Newpart12Program {s with pc := N 9368, memory := s.memory, stack := w10 :: v45 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9376, memory := s.memory, stack := w14 :: w16 :: w10 :: v47 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart12Model, v46, v47] using pr13Newpart12_run (s) (w10) (v45) (v32) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
-  have h13 : runInstructions pr13Newpart13Program {s with pc := N 9376, memory := s.memory, stack := w14 :: w16 :: w10 :: v47 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} = some {s with pc := N 9378, memory := s.memory, stack := v49 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} := by
-    simpa only [pr13Newpart13Model, v48, v49] using pr13Newpart13_run (s) (w14) (w16) (w10) (v47) (v32) (w3) (w4) (w5) (w6) (w7) (w8) (w9) (w10) (w11) (w12) (w13) (w14) (w15) (w16) rest hcap hact
+  have h0 : runInstructions pr13Newpart0Program {s with pc := N 7358,memory := s.memory,stack := carry::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7368,memory := s.memory,stack := v0::carry::w0::w1::v2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart0Model,v0,v1,v2] using pr13Newpart0_run (s) (carry) w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h1 : runInstructions pr13Newpart1Program {s with pc := N 7368,memory := s.memory,stack := v0::carry::w0::w1::v2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7379,memory := s.memory,stack := v6::w10::v6::v5::v4::v2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart1Model,v3,v4,v5,v6] using pr13Newpart1_run (s) v0 (carry) w0 w1 v2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h2 : runInstructions pr13Newpart2Program {s with pc := N 7379,memory := s.memory,stack := v6::w10::v6::v5::v4::v2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7389,memory := s.memory,stack := v10::v7::v4::v9::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart2Model,v7,v8,v9,v10] using pr13Newpart2_run (s) v6 w10 v6 v5 v4 v2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h3 : runInstructions pr13Newpart3Program {s with pc := N 7389,memory := s.memory,stack := v10::v7::v4::v9::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7397,memory := s.memory,stack := v9::v10::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart3Model,v11,v12,v13] using pr13Newpart3_run (s) v10 v7 v4 v9 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h4 : runInstructions pr13Newpart4Program {s with pc := N 7397,memory := s.memory,stack := v9::v10::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7406,memory := s.memory,stack := v18::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart4Model,v14,v15,v16,v17,v18] using pr13Newpart4_run (s) v9 v10 v13 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h5 : runInstructions pr13Newpart5Program {s with pc := N 7406,memory := s.memory,stack := v18::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7415,memory := s.memory,stack := w4::v22::v21::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart5Model,v19,v20,v21,v22] using pr13Newpart5_run (s) v18 v13 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h6 : runInstructions pr13Newpart6Program {s with pc := N 7415,memory := s.memory,stack := w4::v22::v21::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7423,memory := s.memory,stack := w5::w6::v26::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart6Model,v23,v24,v25,v26] using pr13Newpart6_run (s) w4 v22 v21 v13 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h7 : runInstructions pr13Newpart7Program {s with pc := N 7423,memory := s.memory,stack := w5::w6::v26::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7431,memory := s.memory,stack := w14::w16::v30::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart7Model,v27,v28,v29,v30] using pr13Newpart7_run (s) w5 w6 v26 v13 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h8 : runInstructions pr13Newpart8Program {s with pc := N 7431,memory := s.memory,stack := w14::w16::v30::v13::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7440,memory := s.memory,stack := v34::v13::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart8Model,v31,v32,v33,v34] using pr13Newpart8_run (s) w14 w16 v30 v13 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h9 : runInstructions pr13Newpart9Program {s with pc := N 7440,memory := s.memory,stack := v34::v13::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7448,memory := s.memory,stack := w10::v38::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart9Model,v35,v36,v37,v38] using pr13Newpart9_run (s) v34 v13 v32 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h10 : runInstructions pr13Newpart10Program {s with pc := N 7448,memory := s.memory,stack := w10::v38::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7457,memory := s.memory,stack := w8::w7::w10::v41::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart10Model,v39,v40,v41] using pr13Newpart10_run (s) w10 v38 v32 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h11 : runInstructions pr13Newpart11Program {s with pc := N 7457,memory := s.memory,stack := w8::w7::w10::v41::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7465,memory := s.memory,stack := w10::v45::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart11Model,v42,v43,v44,v45] using pr13Newpart11_run (s) w8 w7 w10 v41 v32 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h12 : runInstructions pr13Newpart12Program {s with pc := N 7465,memory := s.memory,stack := w10::v45::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7473,memory := s.memory,stack := w14::w16::w10::v47::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart12Model,v46,v47] using pr13Newpart12_run (s) w10 v45 v32 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
+  have h13 : runInstructions pr13Newpart13Program {s with pc := N 7473,memory := s.memory,stack := w14::w16::w10::v47::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} = some {s with pc := N 7475,memory := s.memory,stack := v49::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} := by
+    simpa only [pr13Newpart13Model,v48,v49] using pr13Newpart13_run (s) w14 w16 w10 v47 v32 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 h13)))))))))))))
-
 #print axioms pr13New_run
-
 def productColumn13Model (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 1920
   let v1 : W := v0 * carry
@@ -719,30 +655,23 @@ def productColumn13Model (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w1
   let v47 : W := v46 + v45
   let v48 : W := UInt256.mulMod w14 w16 w10
   let v49 : W := v48 + v47
-  {s with pc := N 9378, memory := s.memory, stack := v49 :: v32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest}
-
+  {s with pc := N 7475,memory := s.memory,stack := v49::v32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest}
 def productColumn13Program : List Instr := pr13NewProgram
-
 private theorem aux_shared0 (w10 : W) (z0 z1 : W) :
     (UInt256.mulMod z0 z1 w10) = (UInt256.mulMod z1 z0 w10) := by
-  simp (disch := decide) only [addC, addA, addL, mulC, mmC, amC, andC, orC, xorC, eqC, read_disjoint, Challenge.EvmProof.Memory.readWord_writeWord]
-
+  simp (disch := decide) only [addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_disjoint,Challenge.EvmProof.Memory.readWord_writeWord]
 private theorem aux_shared1 (z0 z1 : W) :
     (z0 * z1) = (z1 * z0) := by
-  simp (disch := decide) only [addC, addA, addL, mulC, mmC, amC, andC, orC, xorC, eqC, read_disjoint, Challenge.EvmProof.Memory.readWord_writeWord]
-
+  simp (disch := decide) only [addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_disjoint,Challenge.EvmProof.Memory.readWord_writeWord]
 private theorem aux_shared2 (z0 z1 : W) :
     (z0 + z1) = (z1 + z0) := by
-  simp (disch := decide) only [addC, addA, addL, mulC, mmC, amC, andC, orC, xorC, eqC, read_disjoint, Challenge.EvmProof.Memory.readWord_writeWord]
-
+  simp (disch := decide) only [addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_disjoint,Challenge.EvmProof.Memory.readWord_writeWord]
 private theorem aux_shared3 (w3 w10 : W) (z0 : W) :
     (UInt256.mulMod w3 z0 w10) = (UInt256.mulMod z0 w3 w10) := by
-  simp (disch := decide) only [addC, addA, addL, mulC, mmC, amC, andC, orC, xorC, eqC, read_disjoint, Challenge.EvmProof.Memory.readWord_writeWord]
-
+  simp (disch := decide) only [addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_disjoint,Challenge.EvmProof.Memory.readWord_writeWord]
 private theorem aux_shared4 (w3 : W) (z0 : W) :
     (w3 * z0) = (z0 * w3) := by
-  simp (disch := decide) only [addC, addA, addL, mulC, mmC, amC, andC, orC, xorC, eqC, read_disjoint, Challenge.EvmProof.Memory.readWord_writeWord]
-
+  simp (disch := decide) only [addC,addA,addL,mulC,mmC,amC,andC,orC,xorC,eqC,read_disjoint,Challenge.EvmProof.Memory.readWord_writeWord]
 private theorem prepared_model_eq (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W) :
     productColumn13Model s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest = pr13NewModel s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest := by
   let o0 : W := MachineState.readWord s.memory 1920
@@ -846,126 +775,125 @@ private theorem prepared_model_eq (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 
   let n48 : W := UInt256.mulMod w14 w16 w10
   let n49 : W := n48 + n47
   have eq_o33 : o33 = o16 := by
-    simp only [o33, o16]
+    simp only [o33,o16]
   have eq_o36 : o36 = o19 := by
-    simp only [o36, o19]
+    simp only [o36,o19]
   have eq_o39 : o39 = o22 := by
-    simp only [o39, o22]
+    simp only [o39,o22]
   have eq_n0 : n0 = o0 := by
-    simp only [n0, o0]
+    simp only [n0,o0]
   have eq_n1 : n1 = o1 := by
-    simp only [n1, o1, eq_n0]
+    simp only [n1,o1,eq_n0]
   have eq_n2 : n2 = o2 := by
-    simp only [n2, o2, eq_n1]
+    simp only [n2,o2,eq_n1]
   have eq_n3 : n3 = o3 := by
-    simp only [n3, o3, eq_n0]
+    simp only [n3,o3,eq_n0]
   have eq_n4 : n4 = o4 := by
-    simp only [n4, o4, eq_n3]
+    simp only [n4,o4,eq_n3]
   have eq_n5 : n5 = o5 := by
-    simp only [n5, o5]
+    simp only [n5,o5]
   have eq_n6 : n6 = o6 := by
-    simp only [n6, o6]
+    simp only [n6,o6]
   have eq_n7 : n7 = o9 := by
-    simpa only [n7, o9, eq_n5, eq_n6] using
+    simpa only [n7,o9,eq_n5,eq_n6] using
       (aux_shared0 w10 o5 o6)
   have eq_n8 : n8 = o7 := by
-    simpa only [n8, o7, eq_n5, eq_n6] using
+    simpa only [n8,o7,eq_n5,eq_n6] using
       (aux_shared1  o5 o6)
   have eq_n9 : n9 = o11 := by
-    simp only [n9, o11]
+    simp only [n9,o11]
   have eq_n10 : n10 = o8 := by
-    simpa only [n10, o8, eq_n2, eq_n8] using
+    simpa only [n10,o8,eq_n2,eq_n8] using
       (aux_shared2  o2 o7)
   have eq_n11 : n11 = o10 := by
-    simpa only [n11, o10, eq_n4, eq_n7] using
+    simpa only [n11,o10,eq_n4,eq_n7] using
       (aux_shared2  o4 o9)
   have eq_n12 : n12 = o14 := by
-    simpa only [n12, o14, eq_n9] using
+    simpa only [n12,o14,eq_n9] using
       (aux_shared3 w3 w10 o11)
   have eq_n13 : n13 = o15 := by
-    simp only [n13, o15, eq_n12, eq_n11]
+    simp only [n13,o15,eq_n12,eq_n11]
   have eq_n14 : n14 = o12 := by
-    simpa only [n14, o12, eq_n9] using
+    simpa only [n14,o12,eq_n9] using
       (aux_shared4 w3 o11)
   have eq_n15 : n15 = o13 := by
-    simp only [n15, o13, eq_n14, eq_n10]
+    simp only [n15,o13,eq_n14,eq_n10]
   have eq_n16 : n16 = o16 := by
-    simp only [n16, o16]
+    simp only [n16,o16]
   have eq_n17 : n17 = o17 := by
-    simp only [n17, o17, eq_n16]
+    simp only [n17,o17,eq_n16]
   have eq_n18 : n18 = o18 := by
-    simp only [n18, o18, eq_n17, eq_n15]
+    simp only [n18,o18,eq_n17,eq_n15]
   have eq_n19 : n19 = o19 := by
-    simp only [n19, o19]
+    simp only [n19,o19]
   have eq_n20 : n20 = o20 := by
-    simp only [n20, o20, eq_n19]
+    simp only [n20,o20,eq_n19]
   have eq_n21 : n21 = o21 := by
-    simp only [n21, o21, eq_n20, eq_n18]
+    simp only [n21,o21,eq_n20,eq_n18]
   have eq_n22 : n22 = o22 := by
-    simp only [n22, o22]
+    simp only [n22,o22]
   have eq_n23 : n23 = o23 := by
-    simp only [n23, o23, eq_n22]
+    simp only [n23,o23,eq_n22]
   have eq_n24 : n24 = o24 := by
-    simp only [n24, o24, eq_n23, eq_n21]
+    simp only [n24,o24,eq_n23,eq_n21]
   have eq_n25 : n25 = o25 := by
-    simp only [n25, o25]
+    simp only [n25,o25]
   have eq_n26 : n26 = o26 := by
-    simp only [n26, o26, eq_n25, eq_n24]
+    simp only [n26,o26,eq_n25,eq_n24]
   have eq_n27 : n27 = o27 := by
-    simp only [n27, o27]
+    simp only [n27,o27]
   have eq_n28 : n28 = o28 := by
-    simp only [n28, o28, eq_n27, eq_n26]
+    simp only [n28,o28,eq_n27,eq_n26]
   have eq_n29 : n29 = o29 := by
-    simp only [n29, o29]
+    simp only [n29,o29]
   have eq_n30 : n30 = o30 := by
-    simp only [n30, o30, eq_n29, eq_n28]
+    simp only [n30,o30,eq_n29,eq_n28]
   have eq_n31 : n31 = o31 := by
-    simp only [n31, o31]
+    simp only [n31,o31]
   have eq_n32 : n32 = o32 := by
-    simp only [n32, o32, eq_n31, eq_n30]
+    simp only [n32,o32,eq_n31,eq_n30]
   have eq_n33 : n33 = o16 := by
-    simp only [n33, o16]
+    simp only [n33,o16]
   have eq_n34 : n34 = o34 := by
-    simp only [n34, o34, eq_n33, eq_o33]
+    simp only [n34,o34,eq_n33,eq_o33]
   have eq_n35 : n35 = o35 := by
-    simp only [n35, o35, eq_n34, eq_n13]
+    simp only [n35,o35,eq_n34,eq_n13]
   have eq_n36 : n36 = o19 := by
-    simp only [n36, o19]
+    simp only [n36,o19]
   have eq_n37 : n37 = o37 := by
-    simp only [n37, o37, eq_n36, eq_o36]
+    simp only [n37,o37,eq_n36,eq_o36]
   have eq_n38 : n38 = o38 := by
-    simp only [n38, o38, eq_n37, eq_n35]
+    simp only [n38,o38,eq_n37,eq_n35]
   have eq_n39 : n39 = o22 := by
-    simp only [n39, o22]
+    simp only [n39,o22]
   have eq_n40 : n40 = o40 := by
-    simp only [n40, o40, eq_n39, eq_o39]
+    simp only [n40,o40,eq_n39,eq_o39]
   have eq_n41 : n41 = o41 := by
-    simp only [n41, o41, eq_n40, eq_n38]
+    simp only [n41,o41,eq_n40,eq_n38]
   have eq_n42 : n42 = o42 := by
-    simp only [n42, o42]
+    simp only [n42,o42]
   have eq_n43 : n43 = o43 := by
-    simp only [n43, o43, eq_n42, eq_n41]
+    simp only [n43,o43,eq_n42,eq_n41]
   have eq_n44 : n44 = o44 := by
-    simp only [n44, o44]
+    simp only [n44,o44]
   have eq_n45 : n45 = o45 := by
-    simp only [n45, o45, eq_n44, eq_n43]
+    simp only [n45,o45,eq_n44,eq_n43]
   have eq_n46 : n46 = o46 := by
-    simp only [n46, o46]
+    simp only [n46,o46]
   have eq_n47 : n47 = o47 := by
-    simp only [n47, o47, eq_n46, eq_n45]
+    simp only [n47,o47,eq_n46,eq_n45]
   have eq_n48 : n48 = o48 := by
-    simp only [n48, o48]
+    simp only [n48,o48]
   have eq_n49 : n49 = o49 := by
-    simp only [n49, o49, eq_n48, eq_n47]
-  change {s with pc := N 9378, memory := s.memory, stack := o49 :: o32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} =
-    {s with pc := N 9378, memory := s.memory, stack := n49 :: n32 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest}
-  simp only [eq_o33, eq_o36, eq_o39, eq_n0, eq_n1, eq_n2, eq_n3, eq_n4, eq_n5, eq_n6, eq_n7, eq_n8, eq_n9, eq_n10, eq_n11, eq_n12, eq_n13, eq_n14, eq_n15, eq_n16, eq_n17, eq_n18, eq_n19, eq_n20, eq_n21, eq_n22, eq_n23, eq_n24, eq_n25, eq_n26, eq_n27, eq_n28, eq_n29, eq_n30, eq_n31, eq_n32, eq_n33, eq_n34, eq_n35, eq_n36, eq_n37, eq_n38, eq_n39, eq_n40, eq_n41, eq_n42, eq_n43, eq_n44, eq_n45, eq_n46, eq_n47, eq_n48, eq_n49]
+    simp only [n49,o49,eq_n48,eq_n47]
+  change {s with pc := N 7475,memory := s.memory,stack := o49::o32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} =
+    {s with pc := N 7475,memory := s.memory,stack := n49::n32::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest}
+  simp only [eq_o33,eq_o36,eq_o39,eq_n0,eq_n1,eq_n2,eq_n3,eq_n4,eq_n5,eq_n6,eq_n7,eq_n8,eq_n9,eq_n10,eq_n11,eq_n12,eq_n13,eq_n14,eq_n15,eq_n16,eq_n17,eq_n18,eq_n19,eq_n20,eq_n21,eq_n22,eq_n23,eq_n24,eq_n25,eq_n26,eq_n27,eq_n28,eq_n29,eq_n30,eq_n31,eq_n32,eq_n33,eq_n34,eq_n35,eq_n36,eq_n37,eq_n38,eq_n39,eq_n40,eq_n41,eq_n42,eq_n43,eq_n44,eq_n45,eq_n46,eq_n47,eq_n48,eq_n49]
 theorem productColumn13_run (s : State) (carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions productColumn13Program {s with pc := N 9261, stack := carry :: w0 :: w1 :: w2 :: w3 :: w4 :: w5 :: w6 :: w7 :: w8 :: w9 :: w10 :: w11 :: w12 :: w13 :: w14 :: w15 :: w16 :: rest} =
+    runInstructions productColumn13Program {s with pc := N 7358,stack := carry::w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} =
       some (productColumn13Model s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
   exact (pr13New_run s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest hcap hact).trans
     (congrArg some (prepared_model_eq s carry w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest).symm)
-
 #print axioms productColumn13_run
 end CycleSubmission.Execution

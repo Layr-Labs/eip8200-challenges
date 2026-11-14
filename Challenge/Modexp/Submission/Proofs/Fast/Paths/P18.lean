@@ -15,14 +15,10 @@ zero byte has no set bit, so it takes the untouched loop head at pc 1916.
 * `blk2557` (idx 2692..2696, pc 4347..3840) — the `w = 0` test;
 * `blk2562` (idx 2697..2703, pc 3868..3840) — the copy and the resume;
 * `blk2569` (idx 2704..2706, pc 3840..3840) — the zero-byte arm. -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 /-! The relocated leading-bit shortcut this file certified is unreachable: its
 only route was the general-width fast path, which now bails to `modexpBig`. -/
-
 end Challenge.Modexp.Submission.Proofs.Fast

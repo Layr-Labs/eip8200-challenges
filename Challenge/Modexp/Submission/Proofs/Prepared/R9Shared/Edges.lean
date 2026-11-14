@@ -9,10 +9,10 @@ def cNew (a0 n0 p inv : W) : W :=
   UInt256.mulMod (N 2048) (UInt256.mulMod (qNew a0 n0 p inv) n0 p + UInt256.mulMod a0 a0 p) p
 theorem old_q_matches (inv : W) (a b n : Nat → W) :
     qNew (a 0) (n 0) CycleSubmission.WordArithmetic.P inv = CycleSubmission.WordHistory.squareQ0 inv a b n := by
-  simp only [qNew, CycleSubmission.WordHistory.squareQ0]
+  simp only [qNew,CycleSubmission.WordHistory.squareQ0]
 theorem old_c_matches (inv : W) (a b n : Nat → W) :
     cNew (a 0) (n 0) CycleSubmission.WordArithmetic.P inv = CycleSubmission.WordHistory.squareC1 inv a b n := by
-  simp only [cNew, qNew, CycleSubmission.WordHistory.squareC1, CycleSubmission.WordHistory.squareQ0, mmC]
+  simp only [cNew,qNew,CycleSubmission.WordHistory.squareC1,CycleSubmission.WordHistory.squareQ0,mmC]
 end R9SharedMath0
 namespace R9SharedMath16
 open EvmSemantics CycleSubmission.Prepared.Arithmetic
@@ -25,10 +25,10 @@ def cNew (c q8 a8 n8 p : W) : W := UInt256.mulMod (N 2048) (p+(hiNew c q8 a8 n8 
 theorem old_q_matches (inv : W) (a b n : Nat → W) :
     qNew (CycleSubmission.WordHistory.squareC16 inv a b n) (CycleSubmission.WordHistory.squareQ8 inv a b n)
       (a 8) (n 8) CycleSubmission.WordArithmetic.P = CycleSubmission.WordHistory.squareD7 inv a b n := by
-  simp only [qNew, loNew, CycleSubmission.WordHistory.squareD7, addA, addL, addC, mulC]
+  simp only [qNew,loNew,CycleSubmission.WordHistory.squareD7,addA,addL,addC,mulC]
 theorem old_c_matches (inv : W) (a b n : Nat → W) :
     cNew (CycleSubmission.WordHistory.squareC16 inv a b n) (CycleSubmission.WordHistory.squareQ8 inv a b n)
       (a 8) (n 8) CycleSubmission.WordArithmetic.P = CycleSubmission.WordHistory.squareC17 inv a b n := by
-  simp only [cNew, hiNew, qNew, loNew, CycleSubmission.WordHistory.squareC17,
-    CycleSubmission.DirectRecovery.carry, addA, addL, addC, mulC, mmC]
+  simp only [cNew,hiNew,qNew,loNew,CycleSubmission.WordHistory.squareC17,
+    CycleSubmission.DirectRecovery.carry,addA,addL,addC,mulC,mmC]
 end R9SharedMath16

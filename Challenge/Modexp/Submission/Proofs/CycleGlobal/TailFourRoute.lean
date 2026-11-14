@@ -11,7 +11,6 @@ open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission CycleSubmission.Global CycleSubmission.Global.TailFour
 theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
-    
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -24,7 +23,7 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
         (Precompile.natToBytes (R5Route.result N A B k) 128)) ∨
     ∃ (stk : List UInt256) (m' : ByteArray),
       Nonempty (GasSteps (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
-        {s with pc := UInt256.ofNat 207, stack := stk, memory := m'}) ∧ stk.length < 900 := by
+        {s with pc := UInt256.ofNat 207,stack := stk,memory := m'}) ∧ stk.length < 900 := by
   simpa only [DirectR5Reuse.result] using
     (R5Route.prologue_route s env hact mem (MachineState.readWord mem 1664)
  (CycleSubmission.Global.Fast.Shift.hdSlot mem)
@@ -38,9 +37,7 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
  ((SlimFrames.outer mem 4 bsize esize 128).drop 13)
       (by simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer])
       k N A B hk hk16 rfl hmod ha hb hinv hodd hA hB)
-
 theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
-    
     (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (hactLe : s.activeWords.toNat ≤ 289)
@@ -60,28 +57,27 @@ theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize 
     have h := Model.readWord_of_fastRepresents hmod (j := 3) (by decide)
     simpa using h
   have hmiw : (MachineState.readWord mem 2720).toNat = mi := by
-    rw [hf.minvW, Exp.toNat_ofNat_self hmi]
+    rw [hf.minvW,Exp.toNat_ofNat_self hmi]
   have hmachine : ((MachineState.readWord mem 96).toNat * mi + 1) % 2^256 = 0 := by
     rw [hlow]; exact hinv
   have head := head4 s mem bsize esize k mi hk hk16 env hact hcds hf hmi hmi1 hmachine
   rcases route4 s mem bsize esize k N A B hk hk16 env hact hmod ha hb
-      (by rw [hmiw]; exact hinv) hodd hA hB with hout' | ⟨stk, m', htr, hlen⟩
+      (by rw [hmiw]; exact hinv) hodd hA hB with hout' | ⟨stk,m',htr,hlen⟩
   · obtain ⟨out⟩ := hout'
     have out' : CycleSubmission.Finish.Outcome (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
         (Challenge.Modexp.spec input) := by
       rw [← hout]; exact out
-    obtain ⟨final, ⟨tail⟩, hd, hr⟩ := Terminal.handled out' (by
+    obtain ⟨final,⟨tail⟩,hd,hr⟩ := Terminal.handled out' (by
       change s.callStack = []; exact hcalls)
-    exact ⟨final, ⟨head.trans tail⟩, hd, hr⟩
+    exact ⟨final,⟨head.trans tail⟩,hd,hr⟩
   · obtain ⟨tr⟩ := htr
-    obtain ⟨done, ⟨tail⟩, hd, hr⟩ := Fallback.correct
-      {s with pc := UInt256.ofNat 207, stack := stk, memory := m'} (env.transfer rfl rfl) rfl hlen
+    obtain ⟨done,⟨tail⟩,hd,hr⟩ := Fallback.correct
+      {s with pc := UInt256.ofNat 207,stack := stk,memory := m'} (env.transfer rfl rfl) rfl hlen
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
       (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rwa [hdata])
-    refine ⟨done, ⟨(head.trans tr).trans tail⟩, hd, ?_⟩
+    refine ⟨done,⟨(head.trans tr).trans tail⟩,hd,?_⟩
     change done.toResult = .returned (Challenge.Modexp.spec s.executionEnv.calldata) at hr
     simpa only [hdata] using hr
-
 #print axioms route4
 #print axioms handled4
 end CycleSubmission.Global.TailFourRoute

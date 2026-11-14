@@ -9,11 +9,8 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open FixedExponentRoute
-
 theorem prepend {input : ByteArray} {start middle : State}
     (head : GasSteps start middle) (tail : Handled input middle) : Handled input start := by
-  obtain ⟨final, ⟨tr⟩, hd, hr⟩ := tail
-  exact ⟨final, ⟨head.trans tr⟩, hd, hr⟩
-
-
+  obtain ⟨final,⟨tr⟩,hd,hr⟩ := tail
+  exact ⟨final,⟨head.trans tr⟩,hd,hr⟩
 end CycleSubmission.Global.FixedRoute

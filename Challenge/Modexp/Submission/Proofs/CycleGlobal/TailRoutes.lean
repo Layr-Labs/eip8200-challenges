@@ -12,7 +12,6 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission CycleSubmission.Global
-
 noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B mi : Nat)
  (hk : 1 ≤ k) (hk16 : k ≤ 16) (env : Environment Artifact.artifact .Osaka s)
  (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)
@@ -26,7 +25,6 @@ noncomputable def terminal8 (s : State) (mem : ByteArray) (bsize esize k N A B m
  (Precompile.natToBytes (Terminal.result 8 N A B k) 256) :=
  DirectEightTerminal.run s mem bsize esize k N A B hk hk16 env hact hmod ha hb
   (SlimCallerFixed.inverse_from_frame mem bsize N mi hf hmi hinv) hN hodd hB hg
-
 noncomputable def bail8 (s : State) (mem : ByteArray) (bsize esize k mi : Nat)
  (hk : 1 ≤ k) (hk16 : k ≤ 16) (env : Environment Artifact.artifact .Osaka s)
  (hact : 88 ≤ s.activeWords.toNat) (hcds : s.executionEnv.calldata.size < 2^256)

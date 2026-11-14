@@ -16,13 +16,9 @@ open HistoricalSearch.WordCancellation HistoricalSearch.ProductAccumulate
 open HistoricalSearch.MixedMontgomery
 open CycleSubmission.WordArithmetic
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
-
 def square6Low (carry inv : UInt256) (a b n q : Nat → UInt256) : Expr := (Expr.add (Expr.product (q 5) (n 1)) (Expr.add (Expr.product (q 4) (n 2)) (Expr.add (Expr.product (q 3) (n 3)) (Expr.add (Expr.product (q 2) (n 4)) (Expr.add (Expr.product (q 1) (n 5)) (Expr.add (Expr.product (q 0) (n 6)) (Expr.add (Expr.product (a 3) (a 3)) (Expr.add (Expr.literal carry) (Expr.add (Expr.add (Expr.product (a 2) (a 4)) (Expr.add (Expr.product (a 1) (a 5)) (Expr.product (a 6) (a 0)))) (Expr.add (Expr.product (a 2) (a 4)) (Expr.add (Expr.product (a 1) (a 5)) (Expr.product (a 6) (a 0)))))))))))))
-
 def square6High (carry inv : UInt256) (a b n q : Nat → UInt256) : Expr := (Expr.add (Expr.product (q 6) (n 0)) (Expr.add (Expr.product (q 5) (n 1)) (Expr.add (Expr.product (q 4) (n 2)) (Expr.add (Expr.product (q 3) (n 3)) (Expr.add (Expr.product (q 2) (n 4)) (Expr.add (Expr.product (q 1) (n 5)) (Expr.add (Expr.product (q 0) (n 6)) (Expr.add (Expr.product (a 3) (a 3)) (Expr.add (Expr.literal carry) (Expr.add (Expr.add (Expr.product (a 2) (a 4)) (Expr.add (Expr.product (a 1) (a 5)) (Expr.product (a 6) (a 0)))) (Expr.add (Expr.product (a 2) (a 4)) (Expr.add (Expr.product (a 1) (a 5)) (Expr.product (a 6) (a 0))))))))))))))
-
 def square6Carry (carry inv : UInt256) (a b n q : Nat → UInt256) : UInt256 := (UInt256.mulMod (UInt256.ofNat 2048) ((UInt256.mulMod (q 6) (n 0) P) + ((UInt256.mulMod (q 5) (n 1) P) + ((UInt256.mulMod (q 4) (n 2) P) + ((UInt256.mulMod (q 3) (n 3) P) + ((UInt256.mulMod (q 2) (n 4) P) + ((UInt256.mulMod (q 1) (n 5) P) + ((UInt256.mulMod (q 0) (n 6) P) + ((UInt256.mulMod (a 3) (a 3) P) + (carry + (((UInt256.mulMod (a 2) (a 4) P) + ((UInt256.mulMod (a 1) (a 5) P) + (UInt256.mulMod (a 6) (a 0) P))) + ((UInt256.mulMod (a 2) (a 4) P) + ((UInt256.mulMod (a 1) (a 5) P) + (UInt256.mulMod (a 6) (a 0) P))))))))))))) P)
-
 def square6Q (carry inv : UInt256) (a b n q : Nat → UInt256) : UInt256 := (UInt256.land (UInt256.ofNat (2^240-1)) ((((q 5) * (n 1)) + (((q 4) * (n 2)) + (((q 3) * (n 3)) + (((q 2) * (n 4)) + (((q 1) * (n 5)) + (((q 0) * (n 6)) + (((a 3) * (a 3)) + (carry + ((((a 2) * (a 4)) + (((a 1) * (a 5)) + ((a 6) * (a 0)))) + (((a 2) * (a 4)) + (((a 1) * (a 5)) + ((a 6) * (a 0))))))))))))) * inv))
 theorem square6_quotient (carry inv : UInt256) (a b n q : Nat → UInt256) :
     square6Q carry inv a b n q = quotient (square6Low carry inv a b n q) inv := by
@@ -36,22 +32,21 @@ theorem square6_qbound (carry inv : UInt256) (a b n q : Nat → UInt256) : (squa
   exact quotientBound (square6Low carry inv a b n q) inv
 theorem square6_post (carry inv : UInt256) (a b n q : Nat → UInt256) :
     (square6High carry inv a b n q).value = (square6Low carry inv a b n q).value + (q 6).toNat*(n 0).toNat := by
-  simp only [square6Low, square6High, Expr.value] <;> ring
-
+  simp only [square6Low,square6High,Expr.value] <;> ring
 theorem square6_bound (carry inv : UInt256) (a b n q : Nat → UInt256)
-    (ha : ∀ i < 9, (a i).toNat < radix)
-    (hb : ∀ i < 9, (b i).toNat < radix)
-    (hn : ∀ i < 9, (n i).toNat < radix)
-    (hq : ∀ i < 9, (q i).toNat < radix)
+    (ha : ∀ i < 9,(a i).toNat < radix)
+    (hb : ∀ i < 9,(b i).toNat < radix)
+    (hn : ∀ i < 9,(n i).toNat < radix)
+    (hq : ∀ i < 9,(q i).toNat < radix)
     (hc : carry.toNat ≤ 18*(radix-1)) :
     (square6High carry inv a b n q).value ≤ 18*(radix-1)^2+carry.toNat := by
   have hp : (square6High carry inv a b n q).productsBounded ((radix-1)^2) := by
-    exact ⟨productBound (q 6) (n 0) radix (hq 6 (by decide)) (hn 0 (by decide)), ⟨productBound (q 5) (n 1) radix (hq 5 (by decide)) (hn 1 (by decide)), ⟨productBound (q 4) (n 2) radix (hq 4 (by decide)) (hn 2 (by decide)), ⟨productBound (q 3) (n 3) radix (hq 3 (by decide)) (hn 3 (by decide)), ⟨productBound (q 2) (n 4) radix (hq 2 (by decide)) (hn 4 (by decide)), ⟨productBound (q 1) (n 5) radix (hq 1 (by decide)) (hn 5 (by decide)), ⟨productBound (q 0) (n 6) radix (hq 0 (by decide)) (hn 6 (by decide)), ⟨productBound (a 3) (a 3) radix (ha 3 (by decide)) (ha 3 (by decide)), ⟨True.intro, ⟨⟨productBound (a 2) (a 4) radix (ha 2 (by decide)) (ha 4 (by decide)), ⟨productBound (a 1) (a 5) radix (ha 1 (by decide)) (ha 5 (by decide)), productBound (a 6) (a 0) radix (ha 6 (by decide)) (ha 0 (by decide))⟩⟩, ⟨productBound (a 2) (a 4) radix (ha 2 (by decide)) (ha 4 (by decide)), ⟨productBound (a 1) (a 5) radix (ha 1 (by decide)) (ha 5 (by decide)), productBound (a 6) (a 0) radix (ha 6 (by decide)) (ha 0 (by decide))⟩⟩⟩⟩⟩⟩⟩⟩⟩⟩⟩⟩
+    exact ⟨productBound (q 6) (n 0) radix (hq 6 (by decide)) (hn 0 (by decide)),⟨productBound (q 5) (n 1) radix (hq 5 (by decide)) (hn 1 (by decide)),⟨productBound (q 4) (n 2) radix (hq 4 (by decide)) (hn 2 (by decide)),⟨productBound (q 3) (n 3) radix (hq 3 (by decide)) (hn 3 (by decide)),⟨productBound (q 2) (n 4) radix (hq 2 (by decide)) (hn 4 (by decide)),⟨productBound (q 1) (n 5) radix (hq 1 (by decide)) (hn 5 (by decide)),⟨productBound (q 0) (n 6) radix (hq 0 (by decide)) (hn 6 (by decide)),⟨productBound (a 3) (a 3) radix (ha 3 (by decide)) (ha 3 (by decide)),⟨True.intro,⟨⟨productBound (a 2) (a 4) radix (ha 2 (by decide)) (ha 4 (by decide)),⟨productBound (a 1) (a 5) radix (ha 1 (by decide)) (ha 5 (by decide)),productBound (a 6) (a 0) radix (ha 6 (by decide)) (ha 0 (by decide))⟩⟩,⟨productBound (a 2) (a 4) radix (ha 2 (by decide)) (ha 4 (by decide)),⟨productBound (a 1) (a 5) radix (ha 1 (by decide)) (ha 5 (by decide)),productBound (a 6) (a 0) radix (ha 6 (by decide)) (ha 0 (by decide))⟩⟩⟩⟩⟩⟩⟩⟩⟩⟩⟩⟩
   have hl : (square6High carry inv a b n q).literalsBounded carry.toNat := by
-    simp [square6High, Expr.literalsBounded]
+    simp [square6High,Expr.literalsBounded]
   have hv := valueBound (square6High carry inv a b n q) ((radix-1)^2) carry.toNat hp hl
-  have hpc : (square6High carry inv a b n q).products ≤ 18 := by norm_num [square6High, Expr.products]
-  have hlc : (square6High carry inv a b n q).literals ≤ 1 := by norm_num [square6High, Expr.literals]
+  have hpc : (square6High carry inv a b n q).products ≤ 18 := by norm_num [square6High,Expr.products]
+  have hlc : (square6High carry inv a b n q).literals ≤ 1 := by norm_num [square6High,Expr.literals]
   calc
     _ ≤ (square6High carry inv a b n q).products*((radix-1)^2) + (square6High carry inv a b n q).literals*carry.toNat := hv
     _ ≤ 18*((radix-1)^2)+1*carry.toNat := Nat.add_le_add
@@ -63,14 +58,13 @@ theorem square6_residue (carry inv : UInt256) (a b n q : Nat → UInt256) (hc : 
     have h := HistoricalSearch.GenericColumn.carryReductionRedundant 240 carry.toNat (by decide) hc
     omega
   exact (highInvariant P pValue (square6High carry inv a b n q)
-    (by norm_num [square6High, Expr.count])
-    (by simp [square6High, Expr.literalsBounded, hcp])).2
-
+    (by norm_num [square6High,Expr.count])
+    (by simp [square6High,Expr.literalsBounded,hcp])).2
 theorem square6_contract (carry inv : UInt256) (a b n q : Nat → UInt256)
-    (ha : ∀ i < 9, (a i).toNat < radix)
-    (hb : ∀ i < 9, (b i).toNat < radix)
-    (hn : ∀ i < 9, (n i).toNat < radix)
-    (hq : ∀ i < 9, (q i).toNat < radix)
+    (ha : ∀ i < 9,(a i).toNat < radix)
+    (hb : ∀ i < 9,(b i).toNat < radix)
+    (hn : ∀ i < 9,(n i).toNat < radix)
+    (hq : ∀ i < 9,(q i).toNat < radix)
     (hc : carry.toNat ≤ 18*(radix-1))
     (N : Nat) (hn0 : (n 0).toNat = N % radix)
     (hi : (N*inv.toNat+1) % 2^256 = 0)
@@ -81,20 +75,19 @@ theorem square6_contract (carry inv : UInt256) (a b n q : Nat → UInt256)
     (square6Low carry inv a b n q).value N (n 0).toNat (by decide) (by decide)
     (lowValue (square6Low carry inv a b n q)) hn0 hi).2.1
   have hzero : (square6High carry inv a b n q).value % radix = 0 := by
-    rw [square6_post, hnew, square6_quotient]
+    rw [square6_post,hnew,square6_quotient]
     exact hz
-  refine ⟨?_, hzero⟩
+  refine ⟨?_,hzero⟩
   have hp : 0 < P.toNat := by rw [pValue]; norm_num [residueModulus]
   change (UInt256.mulMod (UInt256.ofNat 2048) ((square6High carry inv a b n q).high P) P).toNat = _
-  rw [mulMod_toNat _ _ _ hp, pValue]
+  rw [mulMod_toNat _ _ _ hp,pValue]
   change (2048 * ((square6High carry inv a b n q).high P).toNat) % residueModulus = _
   rw [Nat.mul_comm 2048]
   exact CycleSubmission.Bounds.cancelledRecovery _ carry.toNat _ hc
     (square6_bound carry inv a b n q ha hb hn hq hc) (square6_residue carry inv a b n q hc) hzero
-
 theorem square6_convolution (carry inv : UInt256) (a b n q : Nat → UInt256) :
     (square6High carry inv a b n q).value = carry.toNat +
       convolution 9 (fun i => (a i).toNat) (fun i => (a i).toNat) 6 +
       convolution 9 (fun i => (q i).toNat) (fun i => (n i).toNat) 6 := by
-  simp only [square6High, Expr.value, CycleSubmission.Convolution.column6] <;> ring
+  simp only [square6High,Expr.value,CycleSubmission.Convolution.column6] <;> ring
 end CycleSubmission.Columns

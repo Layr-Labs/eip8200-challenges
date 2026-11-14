@@ -7,15 +7,12 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 20000000
 namespace Challenge.Modexp.Submission.Proofs.PrimeCertificates
 open EvmSemantics EvmSemantics.EVM
-
 def bn254P : Nat := 0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47
-
 theorem zmod_pow_modPow {a e m : Nat} (hm : 0 < m) :
     (a : ZMod m) ^ e = (Precompile.modPow a e m : ZMod m) := by
-  rw [Algorithm.modPow_eq, if_neg (Nat.ne_of_gt hm)]
+  rw [Algorithm.modPow_eq,if_neg (Nat.ne_of_gt hm)]
   rw [ZMod.natCast_mod]
   exact (Nat.cast_pow a e).symm
-
 theorem zmod_pow_ne_of_modPow_ne {a e m : Nat} (hm : 1 < m)
     (h : Precompile.modPow a e m ≠ 1) :
     (a : ZMod m) ^ e ≠ 1 := by
@@ -24,38 +21,34 @@ theorem zmod_pow_ne_of_modPow_ne {a e m : Nat} (hm : 1 < m)
   have he' : (Precompile.modPow a e m : ZMod m) = (1 : Nat) := by simpa using he
   have heq := (ZMod.natCast_eq_natCast_iff' (Precompile.modPow a e m) 1 m).mp he'
   have hlt : Precompile.modPow a e m < m := Algorithm.modPow_lt (by omega)
-  rw [Nat.mod_eq_of_lt hlt, Nat.mod_eq_of_lt (by omega)] at heq
+  rw [Nat.mod_eq_of_lt hlt,Nat.mod_eq_of_lt (by omega)] at heq
   exact h heq
-
 theorem prime_dvd_prod_mem {q : Nat} (hq : q.Prime) :
-    ∀ (xs : List Nat), (∀ x ∈ xs, x.Prime) → q ∣ xs.prod → q ∈ xs
-  | [], hxs, hd => by simp at hd ⊢; exact (hq.ne_one hd).elim
-  | x :: xs, hxs, hd => by
+    ∀ (xs : List Nat),(∀ x ∈ xs,x.Prime) → q ∣ xs.prod → q ∈ xs
+  | [],hxs,hd => by simp at hd ⊢; exact (hq.ne_one hd).elim
+  | x::xs,hxs,hd => by
       rcases (hq.dvd_mul).mp hd with hx | ht
       · rcases (Nat.dvd_prime (hxs x (by simp))).mp hx with hq1 | hqx
         · exact (hq.ne_one hq1).elim
         · simp [hqx]
       · exact List.mem_cons_of_mem x
           (prime_dvd_prod_mem hq xs (fun y hy => hxs y (by simp [hy])) ht)
-
 theorem lucas_of_factors {p a : Nat} {xs : List Nat}
     (hfactor : p - 1 = xs.prod)
-    (hprime : ∀ x ∈ xs, x.Prime)
+    (hprime : ∀ x ∈ xs,x.Prime)
     (ha : (a : ZMod p) ^ (p - 1) = 1)
-    (hneq : ∀ x ∈ xs, (a : ZMod p) ^ ((p - 1) / x) ≠ 1) : p.Prime := by
+    (hneq : ∀ x ∈ xs,(a : ZMod p) ^ ((p - 1) / x) ≠ 1) : p.Prime := by
   apply lucas_primality p a ha
   intro q hq hqd
   apply hneq q (prime_dvd_prod_mem hq xs hprime (hfactor ▸ hqd))
-
 theorem primeCert2 : Nat.Prime 2 := by decide
 theorem primeCert3 : Nat.Prime 3 := by decide
-
 theorem primeCert5 : Nat.Prime 5 := by
-  apply lucas_of_factors (p := 5) (a := 2) (xs := [2, 2])
+  apply lucas_of_factors (p := 5) (a := 2) (xs := [2,2])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -72,17 +65,16 @@ theorem primeCert5 : Nat.Prime 5 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((5 - 1) / 2) 5 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq2
-
 theorem primeCert7 : Nat.Prime 7 := by
-  apply lucas_of_factors (p := 7) (a := 3) (xs := [2, 3])
+  apply lucas_of_factors (p := 7) (a := 3) (xs := [2,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -103,17 +95,16 @@ theorem primeCert7 : Nat.Prime 7 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((7 - 1) / 3) 7 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq3
-
 theorem primeCert11 : Nat.Prime 11 := by
-  apply lucas_of_factors (p := 11) (a := 2) (xs := [2, 5])
+  apply lucas_of_factors (p := 11) (a := 2) (xs := [2,5])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -134,17 +125,16 @@ theorem primeCert11 : Nat.Prime 11 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((11 - 1) / 5) 11 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq5
-
 theorem primeCert13 : Nat.Prime 13 := by
-  apply lucas_of_factors (p := 13) (a := 2) (xs := [2, 2, 3])
+  apply lucas_of_factors (p := 13) (a := 2) (xs := [2,2,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -166,18 +156,17 @@ theorem primeCert13 : Nat.Prime 13 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((13 - 1) / 3) 13 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq3
-
 theorem primeCert17 : Nat.Prime 17 := by
-  apply lucas_of_factors (p := 17) (a := 3) (xs := [2, 2, 2, 2])
+  apply lucas_of_factors (p := 17) (a := 3) (xs := [2,2,2,2])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -196,19 +185,18 @@ theorem primeCert17 : Nat.Prime 17 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((17 - 1) / 2) 17 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq2
     · exact hneq2
-
 theorem primeCert19 : Nat.Prime 19 := by
-  apply lucas_of_factors (p := 19) (a := 2) (xs := [2, 3, 3])
+  apply lucas_of_factors (p := 19) (a := 2) (xs := [2,3,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -230,18 +218,17 @@ theorem primeCert19 : Nat.Prime 19 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((19 - 1) / 3) 19 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq3
-
 theorem primeCert29 : Nat.Prime 29 := by
-  apply lucas_of_factors (p := 29) (a := 2) (xs := [2, 2, 7])
+  apply lucas_of_factors (p := 29) (a := 2) (xs := [2,2,7])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -263,18 +250,17 @@ theorem primeCert29 : Nat.Prime 29 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((29 - 1) / 7) 29 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq7
-
 theorem primeCert31 : Nat.Prime 31 := by
-  apply lucas_of_factors (p := 31) (a := 3) (xs := [2, 3, 5])
+  apply lucas_of_factors (p := 31) (a := 3) (xs := [2,3,5])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -300,18 +286,17 @@ theorem primeCert31 : Nat.Prime 31 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((31 - 1) / 5) 31 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq5
-
 theorem primeCert37 : Nat.Prime 37 := by
-  apply lucas_of_factors (p := 37) (a := 2) (xs := [2, 2, 3, 3])
+  apply lucas_of_factors (p := 37) (a := 2) (xs := [2,2,3,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -334,19 +319,18 @@ theorem primeCert37 : Nat.Prime 37 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((37 - 1) / 3) 37 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq3
     · exact hneq3
-
 theorem primeCert41 : Nat.Prime 41 := by
-  apply lucas_of_factors (p := 41) (a := 6) (xs := [2, 2, 2, 5])
+  apply lucas_of_factors (p := 41) (a := 6) (xs := [2,2,2,5])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -369,19 +353,18 @@ theorem primeCert41 : Nat.Prime 41 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((41 - 1) / 5) 41 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq2
     · exact hneq5
-
 theorem primeCert67 : Nat.Prime 67 := by
-  apply lucas_of_factors (p := 67) (a := 2) (xs := [2, 3, 11])
+  apply lucas_of_factors (p := 67) (a := 2) (xs := [2,3,11])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -407,18 +390,17 @@ theorem primeCert67 : Nat.Prime 67 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((67 - 1) / 11) 67 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq11
-
 theorem primeCert73 : Nat.Prime 73 := by
-  apply lucas_of_factors (p := 73) (a := 5) (xs := [2, 2, 2, 3, 3])
+  apply lucas_of_factors (p := 73) (a := 5) (xs := [2,2,2,3,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -442,20 +424,19 @@ theorem primeCert73 : Nat.Prime 73 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((73 - 1) / 3) 73 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq2
     · exact hneq3
     · exact hneq3
-
 theorem primeCert89 : Nat.Prime 89 := by
-  apply lucas_of_factors (p := 89) (a := 3) (xs := [2, 2, 2, 11])
+  apply lucas_of_factors (p := 89) (a := 3) (xs := [2,2,2,11])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -478,19 +459,18 @@ theorem primeCert89 : Nat.Prime 89 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((89 - 1) / 11) 89 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq2
     · exact hneq11
-
 theorem primeCert109 : Nat.Prime 109 := by
-  apply lucas_of_factors (p := 109) (a := 6) (xs := [2, 2, 3, 3, 3])
+  apply lucas_of_factors (p := 109) (a := 6) (xs := [2,2,3,3,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -514,20 +494,19 @@ theorem primeCert109 : Nat.Prime 109 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((109 - 1) / 3) 109 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq3
     · exact hneq3
     · exact hneq3
-
 theorem primeCert127 : Nat.Prime 127 := by
-  apply lucas_of_factors (p := 127) (a := 3) (xs := [2, 3, 3, 7])
+  apply lucas_of_factors (p := 127) (a := 3) (xs := [2,3,3,7])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -554,19 +533,18 @@ theorem primeCert127 : Nat.Prime 127 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((127 - 1) / 7) 127 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq3
     · exact hneq7
-
 theorem primeCert229 : Nat.Prime 229 := by
-  apply lucas_of_factors (p := 229) (a := 6) (xs := [2, 2, 3, 19])
+  apply lucas_of_factors (p := 229) (a := 6) (xs := [2,2,3,19])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -593,19 +571,18 @@ theorem primeCert229 : Nat.Prime 229 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((229 - 1) / 19) 229 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq3
     · exact hneq19
-
 theorem primeCert233 : Nat.Prime 233 := by
-  apply lucas_of_factors (p := 233) (a := 3) (xs := [2, 2, 2, 29])
+  apply lucas_of_factors (p := 233) (a := 3) (xs := [2,2,2,29])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -628,19 +605,18 @@ theorem primeCert233 : Nat.Prime 233 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((233 - 1) / 29) 233 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq2
     · exact hneq29
-
 theorem primeCert271 : Nat.Prime 271 := by
-  apply lucas_of_factors (p := 271) (a := 6) (xs := [2, 3, 3, 3, 5])
+  apply lucas_of_factors (p := 271) (a := 6) (xs := [2,3,3,3,5])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -668,20 +644,19 @@ theorem primeCert271 : Nat.Prime 271 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((271 - 1) / 5) 271 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq3
     · exact hneq3
     · exact hneq5
-
 theorem primeCert311 : Nat.Prime 311 := by
-  apply lucas_of_factors (p := 311) (a := 17) (xs := [2, 5, 31])
+  apply lucas_of_factors (p := 311) (a := 17) (xs := [2,5,31])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -707,18 +682,17 @@ theorem primeCert311 : Nat.Prime 311 := by
       rw [PrimeEval.modPow_eq_eval 256 17 ((311 - 1) / 31) 311 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq5
     · exact hneq31
-
 theorem primeCert491 : Nat.Prime 491 := by
-  apply lucas_of_factors (p := 491) (a := 2) (xs := [2, 5, 7, 7])
+  apply lucas_of_factors (p := 491) (a := 2) (xs := [2,5,7,7])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -745,19 +719,18 @@ theorem primeCert491 : Nat.Prime 491 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((491 - 1) / 7) 491 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq5
     · exact hneq7
     · exact hneq7
-
 theorem primeCert911 : Nat.Prime 911 := by
-  apply lucas_of_factors (p := 911) (a := 17) (xs := [2, 5, 7, 13])
+  apply lucas_of_factors (p := 911) (a := 17) (xs := [2,5,7,13])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -788,19 +761,18 @@ theorem primeCert911 : Nat.Prime 911 := by
       rw [PrimeEval.modPow_eq_eval 256 17 ((911 - 1) / 13) 911 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq5
     · exact hneq7
     · exact hneq13
-
 theorem primeCert983 : Nat.Prime 983 := by
-  apply lucas_of_factors (p := 983) (a := 5) (xs := [2, 491])
+  apply lucas_of_factors (p := 983) (a := 5) (xs := [2,491])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert491
@@ -821,17 +793,16 @@ theorem primeCert983 : Nat.Prime 983 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((983 - 1) / 491) 983 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq491
-
 theorem primeCert1231 : Nat.Prime 1231 := by
-  apply lucas_of_factors (p := 1231) (a := 3) (xs := [2, 3, 5, 41])
+  apply lucas_of_factors (p := 1231) (a := 3) (xs := [2,3,5,41])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -862,19 +833,18 @@ theorem primeCert1231 : Nat.Prime 1231 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((1231 - 1) / 41) 1231 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq5
     · exact hneq41
-
 theorem primeCert2221 : Nat.Prime 2221 := by
-  apply lucas_of_factors (p := 2221) (a := 2) (xs := [2, 2, 3, 5, 37])
+  apply lucas_of_factors (p := 2221) (a := 2) (xs := [2,2,3,5,37])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -906,20 +876,19 @@ theorem primeCert2221 : Nat.Prime 2221 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((2221 - 1) / 37) 2221 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq3
     · exact hneq5
     · exact hneq37
-
 theorem primeCert3557 : Nat.Prime 3557 := by
-  apply lucas_of_factors (p := 3557) (a := 2) (xs := [2, 2, 7, 127])
+  apply lucas_of_factors (p := 3557) (a := 2) (xs := [2,2,7,127])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -946,19 +915,18 @@ theorem primeCert3557 : Nat.Prime 3557 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((3557 - 1) / 127) 3557 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq7
     · exact hneq127
-
 theorem primeCert3691 : Nat.Prime 3691 := by
-  apply lucas_of_factors (p := 3691) (a := 2) (xs := [2, 3, 3, 5, 41])
+  apply lucas_of_factors (p := 3691) (a := 2) (xs := [2,3,3,5,41])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -990,20 +958,19 @@ theorem primeCert3691 : Nat.Prime 3691 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((3691 - 1) / 41) 3691 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq3
     · exact hneq5
     · exact hneq41
-
 theorem primeCert4999 : Nat.Prime 4999 := by
-  apply lucas_of_factors (p := 4999) (a := 3) (xs := [2, 3, 7, 7, 17])
+  apply lucas_of_factors (p := 4999) (a := 3) (xs := [2,3,7,7,17])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -1035,20 +1002,19 @@ theorem primeCert4999 : Nat.Prime 4999 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((4999 - 1) / 17) 4999 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq7
     · exact hneq7
     · exact hneq17
-
 theorem primeCert5501 : Nat.Prime 5501 := by
-  apply lucas_of_factors (p := 5501) (a := 2) (xs := [2, 2, 5, 5, 5, 11])
+  apply lucas_of_factors (p := 5501) (a := 2) (xs := [2,2,5,5,5,11])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1077,7 +1043,7 @@ theorem primeCert5501 : Nat.Prime 5501 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((5501 - 1) / 11) 5501 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -1085,13 +1051,12 @@ theorem primeCert5501 : Nat.Prime 5501 := by
     · exact hneq5
     · exact hneq5
     · exact hneq11
-
 theorem primeCert11003 : Nat.Prime 11003 := by
-  apply lucas_of_factors (p := 11003) (a := 2) (xs := [2, 5501])
+  apply lucas_of_factors (p := 11003) (a := 2) (xs := [2,5501])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert5501
@@ -1112,17 +1077,16 @@ theorem primeCert11003 : Nat.Prime 11003 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((11003 - 1) / 5501) 11003 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq5501
-
 theorem primeCert13327 : Nat.Prime 13327 := by
-  apply lucas_of_factors (p := 13327) (a := 3) (xs := [2, 3, 2221])
+  apply lucas_of_factors (p := 13327) (a := 3) (xs := [2,3,2221])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -1148,18 +1112,17 @@ theorem primeCert13327 : Nat.Prime 13327 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((13327 - 1) / 2221) 13327 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq2221
-
 theorem primeCert327599 : Nat.Prime 327599 := by
-  apply lucas_of_factors (p := 327599) (a := 19) (xs := [2, 19, 37, 233])
+  apply lucas_of_factors (p := 327599) (a := 19) (xs := [2,19,37,233])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert19
@@ -1190,19 +1153,18 @@ theorem primeCert327599 : Nat.Prime 327599 := by
       rw [PrimeEval.modPow_eq_eval 256 19 ((327599 - 1) / 233) 327599 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq19
     · exact hneq37
     · exact hneq233
-
 theorem primeCert1853641 : Nat.Prime 1853641 := by
-  apply lucas_of_factors (p := 1853641) (a := 17) (xs := [2, 2, 2, 3, 3, 5, 19, 271])
+  apply lucas_of_factors (p := 1853641) (a := 17) (xs := [2,2,2,3,3,5,19,271])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1241,7 +1203,7 @@ theorem primeCert1853641 : Nat.Prime 1853641 := by
       rw [PrimeEval.modPow_eq_eval 256 17 ((1853641 - 1) / 271) 1853641 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -1251,13 +1213,12 @@ theorem primeCert1853641 : Nat.Prime 1853641 := by
     · exact hneq5
     · exact hneq19
     · exact hneq271
-
 theorem primeCert4562087 : Nat.Prime 4562087 := by
-  apply lucas_of_factors (p := 4562087) (a := 5) (xs := [2, 17, 109, 1231])
+  apply lucas_of_factors (p := 4562087) (a := 5) (xs := [2,17,109,1231])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert17
@@ -1288,19 +1249,18 @@ theorem primeCert4562087 : Nat.Prime 4562087 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((4562087 - 1) / 1231) 4562087 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq17
     · exact hneq109
     · exact hneq1231
-
 theorem primeCert173171039 : Nat.Prime 173171039 := by
-  apply lucas_of_factors (p := 173171039) (a := 13) (xs := [2, 73, 89, 13327])
+  apply lucas_of_factors (p := 173171039) (a := 13) (xs := [2,73,89,13327])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert73
@@ -1331,19 +1291,18 @@ theorem primeCert173171039 : Nat.Prime 173171039 := by
       rw [PrimeEval.modPow_eq_eval 256 13 ((173171039 - 1) / 13327) 173171039 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq73
     · exact hneq89
     · exact hneq13327
-
 theorem primeCert405928799 : Nat.Prime 405928799 := by
-  apply lucas_of_factors (p := 405928799) (a := 22) (xs := [2, 11, 3691, 4999])
+  apply lucas_of_factors (p := 405928799) (a := 22) (xs := [2,11,3691,4999])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert11
@@ -1374,19 +1333,18 @@ theorem primeCert405928799 : Nat.Prime 405928799 := by
       rw [PrimeEval.modPow_eq_eval 256 22 ((405928799 - 1) / 4999) 405928799 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq11
     · exact hneq3691
     · exact hneq4999
-
 theorem primeCert1263766531 : Nat.Prime 1263766531 := by
-  apply lucas_of_factors (p := 1263766531) (a := 10) (xs := [2, 3, 5, 13, 911, 3557])
+  apply lucas_of_factors (p := 1263766531) (a := 10) (xs := [2,3,5,13,911,3557])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -1427,7 +1385,7 @@ theorem primeCert1263766531 : Nat.Prime 1263766531 := by
       rw [PrimeEval.modPow_eq_eval 256 10 ((1263766531 - 1) / 3557) 1263766531 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
@@ -1435,13 +1393,12 @@ theorem primeCert1263766531 : Nat.Prime 1263766531 := by
     · exact hneq13
     · exact hneq911
     · exact hneq3557
-
 theorem primeCert11465965001 : Nat.Prime 11465965001 := by
-  apply lucas_of_factors (p := 11465965001) (a := 3) (xs := [2, 2, 2, 5, 5, 5, 5, 7, 327599])
+  apply lucas_of_factors (p := 11465965001) (a := 3) (xs := [2,2,2,5,5,5,5,7,327599])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1477,7 +1434,7 @@ theorem primeCert11465965001 : Nat.Prime 11465965001 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((11465965001 - 1) / 327599) 11465965001 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -1488,13 +1445,12 @@ theorem primeCert11465965001 : Nat.Prime 11465965001 := by
     · exact hneq5
     · exact hneq7
     · exact hneq327599
-
 theorem primeCert35385462869 : Nat.Prime 35385462869 := by
-  apply lucas_of_factors (p := 35385462869) (a := 2) (xs := [2, 2, 7, 1263766531])
+  apply lucas_of_factors (p := 35385462869) (a := 2) (xs := [2,2,7,1263766531])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1521,19 +1477,18 @@ theorem primeCert35385462869 : Nat.Prime 35385462869 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((35385462869 - 1) / 1263766531) 35385462869 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq7
     · exact hneq1263766531
-
 theorem primeCert2480874801745591 : Nat.Prime 2480874801745591 := by
-  apply lucas_of_factors (p := 2480874801745591) (a := 6) (xs := [2, 3, 3, 5, 19, 41, 35385462869])
+  apply lucas_of_factors (p := 2480874801745591) (a := 6) (xs := [2,3,3,5,19,41,35385462869])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -1575,7 +1530,7 @@ theorem primeCert2480874801745591 : Nat.Prime 2480874801745591 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((2480874801745591 - 1) / 35385462869) 2480874801745591 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
@@ -1584,13 +1539,12 @@ theorem primeCert2480874801745591 : Nat.Prime 2480874801745591 := by
     · exact hneq19
     · exact hneq41
     · exact hneq35385462869
-
 theorem primeCert13427688667394608761327070753331941386769 : Nat.Prime 13427688667394608761327070753331941386769 := by
-  apply lucas_of_factors (p := 13427688667394608761327070753331941386769) (a := 17) (xs := [2, 2, 2, 2, 3, 7, 11, 1853641, 4562087, 173171039, 2480874801745591])
+  apply lucas_of_factors (p := 13427688667394608761327070753331941386769) (a := 17) (xs := [2,2,2,2,3,7,11,1853641,4562087,173171039,2480874801745591])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1644,7 +1598,7 @@ theorem primeCert13427688667394608761327070753331941386769 : Nat.Prime 134276886
       rw [PrimeEval.modPow_eq_eval 256 17 ((13427688667394608761327070753331941386769 - 1) / 2480874801745591) 13427688667394608761327070753331941386769 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -1657,26 +1611,23 @@ theorem primeCert13427688667394608761327070753331941386769 : Nat.Prime 134276886
     · exact hneq4562087
     · exact hneq173171039
     · exact hneq2480874801745591
-
-def bn254Factors : List Nat := [2, 3, 3, 13, 29, 67, 229, 311, 983, 11003, 405928799, 11465965001, 13427688667394608761327070753331941386769]
-
+def bn254Factors : List Nat := [2,3,3,13,29,67,229,311,983,11003,405928799,11465965001,13427688667394608761327070753331941386769]
 theorem bn254P_prime_of_certificate
     (hfermat : (3 : ZMod bn254P) ^ (bn254P - 1) = 1)
-    (hprime : ∀ x ∈ bn254Factors, x.Prime)
+    (hprime : ∀ x ∈ bn254Factors,x.Prime)
     (hneq : ∀ x ∈ bn254Factors,
       (3 : ZMod bn254P) ^ ((bn254P - 1) / x) ≠ 1) : bn254P.Prime := by
   apply lucas_of_factors (p := bn254P) (a := 3) (xs := bn254Factors)
-  · norm_num [bn254P, bn254Factors, List.prod]
+  · norm_num [bn254P,bn254Factors,List.prod]
   · exact hprime
   · exact hfermat
   · exact hneq
-
 theorem bn254P_prime : Nat.Prime bn254P := by
-  apply lucas_of_factors (p := bn254P) (a := 3) (xs := [2, 3, 3, 13, 29, 67, 229, 311, 983, 11003, 405928799, 11465965001, 13427688667394608761327070753331941386769])
-  · norm_num [bn254P, List.prod]
+  apply lucas_of_factors (p := bn254P) (a := 3) (xs := [2,3,3,13,29,67,229,311,983,11003,405928799,11465965001,13427688667394608761327070753331941386769])
+  · norm_num [bn254P,List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -1748,7 +1699,7 @@ theorem bn254P_prime : Nat.Prime bn254P := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((bn254P - 1) / 13427688667394608761327070753331941386769) bn254P (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
@@ -1763,16 +1714,13 @@ theorem bn254P_prime : Nat.Prime bn254P := by
     · exact hneq405928799
     · exact hneq11465965001
     · exact hneq13427688667394608761327070753331941386769
-
-
 def secpP : Nat := 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f
-
 theorem primeCert53 : Nat.Prime 53 := by
-  apply lucas_of_factors (p := 53) (a := 2) (xs := [2, 2, 13])
+  apply lucas_of_factors (p := 53) (a := 2) (xs := [2,2,13])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1794,18 +1742,17 @@ theorem primeCert53 : Nat.Prime 53 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((53 - 1) / 13) 53 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq13
-
 theorem primeCert83 : Nat.Prime 83 := by
-  apply lucas_of_factors (p := 83) (a := 2) (xs := [2, 41])
+  apply lucas_of_factors (p := 83) (a := 2) (xs := [2,41])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert41
@@ -1826,17 +1773,16 @@ theorem primeCert83 : Nat.Prime 83 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((83 - 1) / 41) 83 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq41
-
 theorem primeCert97 : Nat.Prime 97 := by
-  apply lucas_of_factors (p := 97) (a := 5) (xs := [2, 2, 2, 2, 2, 3])
+  apply lucas_of_factors (p := 97) (a := 5) (xs := [2,2,2,2,2,3])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1861,7 +1807,7 @@ theorem primeCert97 : Nat.Prime 97 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((97 - 1) / 3) 97 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -1869,13 +1815,12 @@ theorem primeCert97 : Nat.Prime 97 := by
     · exact hneq2
     · exact hneq2
     · exact hneq3
-
 theorem primeCert101 : Nat.Prime 101 := by
-  apply lucas_of_factors (p := 101) (a := 2) (xs := [2, 2, 5, 5])
+  apply lucas_of_factors (p := 101) (a := 2) (xs := [2,2,5,5])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -1898,19 +1843,18 @@ theorem primeCert101 : Nat.Prime 101 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((101 - 1) / 5) 101 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq5
     · exact hneq5
-
 theorem primeCert103 : Nat.Prime 103 := by
-  apply lucas_of_factors (p := 103) (a := 5) (xs := [2, 3, 17])
+  apply lucas_of_factors (p := 103) (a := 5) (xs := [2,3,17])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -1936,18 +1880,17 @@ theorem primeCert103 : Nat.Prime 103 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((103 - 1) / 17) 103 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq17
-
 theorem primeCert131 : Nat.Prime 131 := by
-  apply lucas_of_factors (p := 131) (a := 2) (xs := [2, 5, 13])
+  apply lucas_of_factors (p := 131) (a := 2) (xs := [2,5,13])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -1973,18 +1916,17 @@ theorem primeCert131 : Nat.Prime 131 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((131 - 1) / 13) 131 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq5
     · exact hneq13
-
 theorem primeCert239 : Nat.Prime 239 := by
-  apply lucas_of_factors (p := 239) (a := 7) (xs := [2, 7, 17])
+  apply lucas_of_factors (p := 239) (a := 7) (xs := [2,7,17])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert7
@@ -2010,18 +1952,17 @@ theorem primeCert239 : Nat.Prime 239 := by
       rw [PrimeEval.modPow_eq_eval 256 7 ((239 - 1) / 17) 239 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq7
     · exact hneq17
-
 theorem primeCert419 : Nat.Prime 419 := by
-  apply lucas_of_factors (p := 419) (a := 2) (xs := [2, 11, 19])
+  apply lucas_of_factors (p := 419) (a := 2) (xs := [2,11,19])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert11
@@ -2047,18 +1988,17 @@ theorem primeCert419 : Nat.Prime 419 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((419 - 1) / 19) 419 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq11
     · exact hneq19
-
 theorem primeCert443 : Nat.Prime 443 := by
-  apply lucas_of_factors (p := 443) (a := 2) (xs := [2, 13, 17])
+  apply lucas_of_factors (p := 443) (a := 2) (xs := [2,13,17])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert13
@@ -2084,18 +2024,17 @@ theorem primeCert443 : Nat.Prime 443 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((443 - 1) / 17) 443 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq13
     · exact hneq17
-
 theorem primeCert887 : Nat.Prime 887 := by
-  apply lucas_of_factors (p := 887) (a := 5) (xs := [2, 443])
+  apply lucas_of_factors (p := 887) (a := 5) (xs := [2,443])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact primeCert2
     · exact primeCert443
@@ -2116,17 +2055,16 @@ theorem primeCert887 : Nat.Prime 887 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((887 - 1) / 443) 887 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl)
     · exact hneq2
     · exact hneq443
-
 theorem primeCert971 : Nat.Prime 971 := by
-  apply lucas_of_factors (p := 971) (a := 6) (xs := [2, 5, 97])
+  apply lucas_of_factors (p := 971) (a := 6) (xs := [2,5,97])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -2152,18 +2090,17 @@ theorem primeCert971 : Nat.Prime 971 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((971 - 1) / 97) 971 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq5
     · exact hneq97
-
 theorem primeCert1373 : Nat.Prime 1373 := by
-  apply lucas_of_factors (p := 1373) (a := 2) (xs := [2, 2, 7, 7, 7])
+  apply lucas_of_factors (p := 1373) (a := 2) (xs := [2,2,7,7,7])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2187,20 +2124,19 @@ theorem primeCert1373 : Nat.Prime 1373 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((1373 - 1) / 7) 1373 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq7
     · exact hneq7
     · exact hneq7
-
 theorem primeCert1627 : Nat.Prime 1627 := by
-  apply lucas_of_factors (p := 1627) (a := 3) (xs := [2, 3, 271])
+  apply lucas_of_factors (p := 1627) (a := 3) (xs := [2,3,271])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -2226,18 +2162,17 @@ theorem primeCert1627 : Nat.Prime 1627 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((1627 - 1) / 271) 1627 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq271
-
 theorem primeCert2621 : Nat.Prime 2621 := by
-  apply lucas_of_factors (p := 2621) (a := 2) (xs := [2, 2, 5, 131])
+  apply lucas_of_factors (p := 2621) (a := 2) (xs := [2,2,5,131])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2264,19 +2199,18 @@ theorem primeCert2621 : Nat.Prime 2621 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((2621 - 1) / 131) 2621 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq5
     · exact hneq131
-
 theorem primeCert2657 : Nat.Prime 2657 := by
-  apply lucas_of_factors (p := 2657) (a := 3) (xs := [2, 2, 2, 2, 2, 83])
+  apply lucas_of_factors (p := 2657) (a := 3) (xs := [2,2,2,2,2,83])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2301,7 +2235,7 @@ theorem primeCert2657 : Nat.Prime 2657 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((2657 - 1) / 83) 2657 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2309,13 +2243,12 @@ theorem primeCert2657 : Nat.Prime 2657 := by
     · exact hneq2
     · exact hneq2
     · exact hneq83
-
 theorem primeCert4423 : Nat.Prime 4423 := by
-  apply lucas_of_factors (p := 4423) (a := 3) (xs := [2, 3, 11, 67])
+  apply lucas_of_factors (p := 4423) (a := 3) (xs := [2,3,11,67])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -2346,19 +2279,18 @@ theorem primeCert4423 : Nat.Prime 4423 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((4423 - 1) / 67) 4423 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq11
     · exact hneq67
-
 theorem primeCert5323 : Nat.Prime 5323 := by
-  apply lucas_of_factors (p := 5323) (a := 5) (xs := [2, 3, 887])
+  apply lucas_of_factors (p := 5323) (a := 5) (xs := [2,3,887])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -2384,18 +2316,17 @@ theorem primeCert5323 : Nat.Prime 5323 := by
       rw [PrimeEval.modPow_eq_eval 256 5 ((5323 - 1) / 887) 5323 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq887
-
 theorem primeCert7723 : Nat.Prime 7723 := by
-  apply lucas_of_factors (p := 7723) (a := 3) (xs := [2, 3, 3, 3, 11, 13])
+  apply lucas_of_factors (p := 7723) (a := 3) (xs := [2,3,3,3,11,13])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -2428,7 +2359,7 @@ theorem primeCert7723 : Nat.Prime 7723 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((7723 - 1) / 13) 7723 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
@@ -2436,13 +2367,12 @@ theorem primeCert7723 : Nat.Prime 7723 := by
     · exact hneq3
     · exact hneq11
     · exact hneq13
-
 theorem primeCert13441 : Nat.Prime 13441 := by
-  apply lucas_of_factors (p := 13441) (a := 11) (xs := [2, 2, 2, 2, 2, 2, 2, 3, 5, 7])
+  apply lucas_of_factors (p := 13441) (a := 11) (xs := [2,2,2,2,2,2,2,3,5,7])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2479,7 +2409,7 @@ theorem primeCert13441 : Nat.Prime 13441 := by
       rw [PrimeEval.modPow_eq_eval 256 11 ((13441 - 1) / 7) 13441 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2491,13 +2421,12 @@ theorem primeCert13441 : Nat.Prime 13441 := by
     · exact hneq3
     · exact hneq5
     · exact hneq7
-
 theorem primeCert20113 : Nat.Prime 20113 := by
-  apply lucas_of_factors (p := 20113) (a := 10) (xs := [2, 2, 2, 2, 3, 419])
+  apply lucas_of_factors (p := 20113) (a := 10) (xs := [2,2,2,2,3,419])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2526,7 +2455,7 @@ theorem primeCert20113 : Nat.Prime 20113 := by
       rw [PrimeEval.modPow_eq_eval 256 10 ((20113 - 1) / 419) 20113 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2534,13 +2463,12 @@ theorem primeCert20113 : Nat.Prime 20113 := by
     · exact hneq2
     · exact hneq3
     · exact hneq419
-
 theorem primeCert24809 : Nat.Prime 24809 := by
-  apply lucas_of_factors (p := 24809) (a := 6) (xs := [2, 2, 2, 7, 443])
+  apply lucas_of_factors (p := 24809) (a := 6) (xs := [2,2,2,7,443])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2568,20 +2496,19 @@ theorem primeCert24809 : Nat.Prime 24809 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((24809 - 1) / 443) 24809 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq2
     · exact hneq7
     · exact hneq443
-
 theorem primeCert41201 : Nat.Prime 41201 := by
-  apply lucas_of_factors (p := 41201) (a := 3) (xs := [2, 2, 2, 2, 5, 5, 103])
+  apply lucas_of_factors (p := 41201) (a := 3) (xs := [2,2,2,2,5,5,103])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2611,7 +2538,7 @@ theorem primeCert41201 : Nat.Prime 41201 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((41201 - 1) / 103) 41201 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2620,13 +2547,12 @@ theorem primeCert41201 : Nat.Prime 41201 := by
     · exact hneq5
     · exact hneq5
     · exact hneq103
-
 theorem primeCert96557 : Nat.Prime 96557 := by
-  apply lucas_of_factors (p := 96557) (a := 2) (xs := [2, 2, 101, 239])
+  apply lucas_of_factors (p := 96557) (a := 2) (xs := [2,2,101,239])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2653,19 +2579,18 @@ theorem primeCert96557 : Nat.Prime 96557 := by
       rw [PrimeEval.modPow_eq_eval 256 2 ((96557 - 1) / 239) 96557 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq101
     · exact hneq239
-
 theorem primeCert1206781 : Nat.Prime 1206781 := by
-  apply lucas_of_factors (p := 1206781) (a := 10) (xs := [2, 2, 3, 5, 20113])
+  apply lucas_of_factors (p := 1206781) (a := 10) (xs := [2,2,3,5,20113])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2697,20 +2622,19 @@ theorem primeCert1206781 : Nat.Prime 1206781 := by
       rw [PrimeEval.modPow_eq_eval 256 10 ((1206781 - 1) / 20113) 1206781 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
     · exact hneq3
     · exact hneq5
     · exact hneq20113
-
 theorem primeCert7240687 : Nat.Prime 7240687 := by
-  apply lucas_of_factors (p := 7240687) (a := 3) (xs := [2, 3, 1206781])
+  apply lucas_of_factors (p := 7240687) (a := 3) (xs := [2,3,1206781])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -2736,18 +2660,17 @@ theorem primeCert7240687 : Nat.Prime 7240687 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((7240687 - 1) / 1206781) 7240687 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq1206781
-
 theorem primeCert13331831 : Nat.Prime 13331831 := by
-  apply lucas_of_factors (p := 13331831) (a := 13) (xs := [2, 5, 971, 1373])
+  apply lucas_of_factors (p := 13331831) (a := 13) (xs := [2,5,971,1373])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert5
@@ -2778,19 +2701,18 @@ theorem primeCert13331831 : Nat.Prime 13331831 := by
       rw [PrimeEval.modPow_eq_eval 256 13 ((13331831 - 1) / 1373) 13331831 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq5
     · exact hneq971
     · exact hneq1373
-
 theorem primeCert107590001 : Nat.Prime 107590001 := by
-  apply lucas_of_factors (p := 107590001) (a := 3) (xs := [2, 2, 2, 2, 5, 5, 5, 5, 7, 29, 53])
+  apply lucas_of_factors (p := 107590001) (a := 3) (xs := [2,2,2,2,5,5,5,5,7,29,53])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2832,7 +2754,7 @@ theorem primeCert107590001 : Nat.Prime 107590001 := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((107590001 - 1) / 53) 107590001 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2845,13 +2767,12 @@ theorem primeCert107590001 : Nat.Prime 107590001 := by
     · exact hneq7
     · exact hneq29
     · exact hneq53
-
 theorem primeCert173378833005251801 : Nat.Prime 173378833005251801 := by
-  apply lucas_of_factors (p := 173378833005251801) (a := 6) (xs := [2, 2, 2, 5, 5, 2621, 24809, 13331831])
+  apply lucas_of_factors (p := 173378833005251801) (a := 6) (xs := [2,2,2,5,5,2621,24809,13331831])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2890,7 +2811,7 @@ theorem primeCert173378833005251801 : Nat.Prime 173378833005251801 := by
       rw [PrimeEval.modPow_eq_eval 256 6 ((173378833005251801 - 1) / 13331831) 173378833005251801 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2900,13 +2821,12 @@ theorem primeCert173378833005251801 : Nat.Prime 173378833005251801 := by
     · exact hneq2621
     · exact hneq24809
     · exact hneq13331831
-
 theorem primeCert22149492674086928081353 : Nat.Prime 22149492674086928081353 := by
-  apply lucas_of_factors (p := 22149492674086928081353) (a := 5) (xs := [2, 2, 2, 3, 5323, 173378833005251801])
+  apply lucas_of_factors (p := 22149492674086928081353) (a := 5) (xs := [2,2,2,3,5323,173378833005251801])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -2939,7 +2859,7 @@ theorem primeCert22149492674086928081353 : Nat.Prime 22149492674086928081353 := 
       rw [PrimeEval.modPow_eq_eval 256 5 ((22149492674086928081353 - 1) / 173378833005251801) 22149492674086928081353 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -2947,13 +2867,12 @@ theorem primeCert22149492674086928081353 : Nat.Prime 22149492674086928081353 := 
     · exact hneq3
     · exact hneq5323
     · exact hneq173378833005251801
-
 theorem primeCert132896956044521568488119 : Nat.Prime 132896956044521568488119 := by
-  apply lucas_of_factors (p := 132896956044521568488119) (a := 6) (xs := [2, 3, 22149492674086928081353])
+  apply lucas_of_factors (p := 132896956044521568488119) (a := 6) (xs := [2,3,22149492674086928081353])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -2979,18 +2898,17 @@ theorem primeCert132896956044521568488119 : Nat.Prime 132896956044521568488119 :
       rw [PrimeEval.modPow_eq_eval 256 6 ((132896956044521568488119 - 1) / 22149492674086928081353) 132896956044521568488119 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq22149492674086928081353
-
 theorem primeCert255515944373312847190720520512484175977 : Nat.Prime 255515944373312847190720520512484175977 := by
-  apply lucas_of_factors (p := 255515944373312847190720520512484175977) (a := 3) (xs := [2, 2, 2, 7, 7, 11, 1627, 2657, 4423, 41201, 96557, 7240687, 107590001])
+  apply lucas_of_factors (p := 255515944373312847190720520512484175977) (a := 3) (xs := [2,2,2,7,7,11,1627,2657,4423,41201,96557,7240687,107590001])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert2
@@ -3054,7 +2972,7 @@ theorem primeCert255515944373312847190720520512484175977 : Nat.Prime 25551594437
       rw [PrimeEval.modPow_eq_eval 256 3 ((255515944373312847190720520512484175977 - 1) / 107590001) 255515944373312847190720520512484175977 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq2
@@ -3069,13 +2987,12 @@ theorem primeCert255515944373312847190720520512484175977 : Nat.Prime 25551594437
     · exact hneq96557
     · exact hneq7240687
     · exact hneq107590001
-
 theorem primeCert205115282021455665897114700593932402728804164701536103180137503955397371 : Nat.Prime 205115282021455665897114700593932402728804164701536103180137503955397371 := by
-  apply lucas_of_factors (p := 205115282021455665897114700593932402728804164701536103180137503955397371) (a := 10) (xs := [2, 3, 5, 29, 29, 31, 7723, 132896956044521568488119, 255515944373312847190720520512484175977])
+  apply lucas_of_factors (p := 205115282021455665897114700593932402728804164701536103180137503955397371) (a := 10) (xs := [2,3,5,29,29,31,7723,132896956044521568488119,255515944373312847190720520512484175977])
   · norm_num [List.prod]
   ·
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -3127,7 +3044,7 @@ theorem primeCert205115282021455665897114700593932402728804164701536103180137503
       rw [PrimeEval.modPow_eq_eval 256 10 ((205115282021455665897114700593932402728804164701536103180137503955397371 - 1) / 255515944373312847190720520512484175977) 205115282021455665897114700593932402728804164701536103180137503955397371 (by decide) (by decide)]
       decide
     intro x hx
-    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
@@ -3138,20 +3055,17 @@ theorem primeCert205115282021455665897114700593932402728804164701536103180137503
     · exact hneq7723
     · exact hneq132896956044521568488119
     · exact hneq255515944373312847190720520512484175977
-
-def secpFactors : List Nat := [2, 3, 7, 13441, 205115282021455665897114700593932402728804164701536103180137503955397371]
-
+def secpFactors : List Nat := [2,3,7,13441,205115282021455665897114700593932402728804164701536103180137503955397371]
 theorem secpP_prime_of_certificate
     (hfermat : (3 : ZMod secpP) ^ (secpP - 1) = 1)
-    (hprime : ∀ x ∈ secpFactors, x.Prime)
+    (hprime : ∀ x ∈ secpFactors,x.Prime)
     (hneq : ∀ x ∈ secpFactors,
       (3 : ZMod secpP) ^ ((secpP - 1) / x) ≠ 1) : secpP.Prime := by
   apply lucas_of_factors (p := secpP) (a := 3) (xs := secpFactors)
-  · norm_num [secpP, secpFactors, List.prod]
+  · norm_num [secpP,secpFactors,List.prod]
   · exact hprime
   · exact hfermat
   · exact hneq
-
 theorem secpP_prime : secpP.Prime := by
   apply secpP_prime_of_certificate
   · calc
@@ -3163,7 +3077,7 @@ theorem secpP_prime : secpP.Prime := by
         decide
   ·
     intro x hx
-    simp only [secpFactors, List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [secpFactors,List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact primeCert2
     · exact primeCert3
@@ -3192,13 +3106,12 @@ theorem secpP_prime : secpP.Prime := by
       rw [PrimeEval.modPow_eq_eval 256 3 ((secpP - 1) / 205115282021455665897114700593932402728804164701536103180137503955397371) secpP (by decide) (by decide)]
       decide
     intro x hx
-    simp only [secpFactors, List.mem_cons, List.not_mem_nil, or_false] at hx
+    simp only [secpFactors,List.mem_cons,List.not_mem_nil,or_false] at hx
     rcases hx with (rfl | rfl | rfl | rfl | rfl)
     · exact hneq2
     · exact hneq3
     · exact hneq7
     · exact hneq13441
     · exact hneq205115282021455665897114700593932402728804164701536103180137503955397371
-
 theorem secpPrime : secpP.Prime := secpP_prime
 end Challenge.Modexp.Submission.Proofs.PrimeCertificates

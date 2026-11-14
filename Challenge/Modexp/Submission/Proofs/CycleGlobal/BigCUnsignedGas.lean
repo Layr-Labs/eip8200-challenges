@@ -1,21 +1,17 @@
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.BigCUnsignedRun
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
-
 set_option warningAsError true
 set_option maxRecDepth 40000
 set_option maxHeartbeats 4000000
 set_option linter.unusedSimpArgs false
-
 namespace CycleSubmission.Global.BigC.Unsigned
 open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 open Challenge.Modexp.Submission.Proofs.Bytecode.BigC
 open Challenge.Modexp.Submission.Proofs.Bytecode.BigC.Unsigned
-
 /-- Only the exact artifact/location binding remains an integration parameter. -/
 structure Blocks (artifact : ProgramArtifact) where
   entry : Block artifact .Osaka 451 entryProgram
@@ -28,7 +24,6 @@ structure Blocks (artifact : ProgramArtifact) where
   jumpInit : Decode.isValidJumpDest artifact.code 455 = true
   jumpLoop : Decode.isValidJumpDest artifact.code 461 = true
   jumpDone : Decode.isValidJumpDest artifact.code 514 = true
-
 theorem lift_run {artifact : ProgramArtifact} {s : State}
     (env : Environment artifact .Osaka s) {pc : Nat} {instructions : List Instr}
     (block : Block artifact .Osaka pc instructions) {stk : List UInt256}
@@ -36,24 +31,23 @@ theorem lift_run {artifact : ProgramArtifact} {s : State}
     (h : runInstructions instructions (st s pc stk mem AW) = some t) :
     Reach (st s pc stk mem AW) t :=
   ⟨block.steps (env.transfer rfl rfl) rfl h⟩
-
 theorem loop_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (s : State) (env : Environment artifact .Osaka s)
     (src z : Nat) (ret : UInt256) (rest : List UInt256)
     (hcap : rest.length < 1000) (hsrc : src ≤ 8192) (hz : z ≤ 8192) :
-    ∀ n, 1 ≤ n → n ≤ 1024 → ∀ mem c,
+    ∀ n,1 ≤ n → n ≤ 1024 → ∀ mem c,
       let result := pass src z n mem c
-      Reach (st s 461 (UInt256.ofNat n :: c :: UInt256.ofNat z :: ret :: UInt256.ofNat src :: rest) mem AW)
-        (st s 500 (UInt256.ofNat 0 :: result.2 :: UInt256.ofNat z :: ret :: UInt256.ofNat src :: rest) result.1 AW) := by
+      Reach (st s 461 (UInt256.ofNat n::c::UInt256.ofNat z::ret::UInt256.ofNat src::rest) mem AW)
+        (st s 500 (UInt256.ofNat 0::result.2::UInt256.ofNat z::ret::UInt256.ofNat src::rest) result.1 AW) := by
   intro n hn
-  induction n, hn using Nat.le_induction with
+  induction n,hn using Nat.le_induction with
   | base =>
     intro _ mem c
     have g1 := lift_run env blocks.cell (run_cell s 1 src z c ret rest mem hcap (by omega) (by omega) hsrc hz)
     have g2 := lift_run env blocks.guard (run_guard_exit s
       (nextCarry (sumWord mem src z 0 c)) (UInt256.ofNat z) ret (UInt256.ofNat src) rest
       (writeByte mem 0 (sumWord mem src z 0 c)) hcap)
-    simpa only [pass, Nat.sub_self] using g1.tr g2
+    simpa only [pass,Nat.sub_self] using g1.tr g2
   | succ n hn ih =>
     intro hn' mem c
     let w := sumWord mem src z n c
@@ -69,7 +63,6 @@ theorem loop_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
         hcap hn (by omega) hj)
     have g3 := ih (by omega) m1 (nextCarry w)
     simpa only [pass] using g1.tr (g2.tr g3)
-
 theorem retry_carry (ml src : Nat) (mem : ByteArray)
     (hml : ml ≤ 1024) (hs : src = 0 ∨ ml ≤ src)
     (hzero : num mem 8192 ml = 0)
@@ -87,9 +80,9 @@ theorem retry_carry (ml src : Nat) (mem : ByteArray)
     rw [← hzero]
     exact num_congr ml (fun i _ => h1.2.2 _ (by omega))
   have he1 := h1.2.1
-  rw [hc0, Nat.zero_mul, Nat.add_zero] at he1
+  rw [hc0,Nat.zero_mul,Nat.add_zero] at he1
   have he2 := h2.2.1
-  rw [hZ1, Nat.add_zero, hM1] at he2
+  rw [hZ1,Nat.add_zero,hM1] at he2
   change num second.1 0 ml + second.2.toNat * 256 ^ ml =
     num first.1 0 ml + num mem 1024 ml + 256 ^ ml at he2
   change num first.1 0 ml + num mem 1024 ml = _ at he1
@@ -101,12 +94,11 @@ theorem retry_carry (ml src : Nat) (mem : ByteArray)
     change second.2.toNat ≤ 2 at this
     omega
   rcases hc2 with hc | hc | hc
-  · rw [hc, Nat.zero_mul, Nat.add_zero] at he2
+  · rw [hc,Nat.zero_mul,Nat.add_zero] at he2
     omega
-  · rw [hc, Nat.one_mul] at he2
+  · rw [hc,Nat.one_mul] at he2
     omega
   · exact hc
-
 /-- Metered execution of the exact69-byte ADDM once the seven blocks are bound. -/
 theorem addm_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (s : State) (env : Environment artifact .Osaka s)
@@ -117,14 +109,14 @@ theorem addm_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml)
     (hzero : num mem 8192 ml = 0)
     (hlt : num mem 0 ml + num mem src ml < 2 * num mem 1024 ml) :
-    Reach (st s 451 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
+    Reach (st s 451 (UInt256.ofNat retPc::UInt256.ofNat src::rest) mem AW)
       (st s retPc rest (addResult ml src mem) AW) := by
   let first := pass src 1024 ml mem (UInt256.ofNat 1)
   let second := pass 1024 8192 ml first.1 (UInt256.ofNat 1)
   have hji : Decode.isValidJumpDest s.executionEnv.code 455 = true := by rw [env.code]; exact blocks.jumpInit
   have hjd : Decode.isValidJumpDest s.executionEnv.code 514 = true := by rw [env.code]; exact blocks.jumpDone
   have hjr : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat retPc).toNat = true := by
-    rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+    rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
     exact hjump
   have g0 := lift_run env blocks.entry (run_entry s (UInt256.ofNat retPc) (UInt256.ofNat src) rest mem hcap)
   have g1 := lift_run env blocks.init (run_init s ml (UInt256.ofNat 1024) (UInt256.ofNat retPc)
@@ -161,7 +153,6 @@ theorem addm_reach {artifact : ProgramArtifact} (blocks : Blocks artifact)
       exact if_neg hc0
     rw [hout]
     simpa only [st] using g0.tr (g1.tr (g2.tr (g3.tr g4)))
-
 theorem addm {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (s : State) (env : Environment artifact .Osaka s)
     (ml src retPc : Nat) (rest : List UInt256) (mem : ByteArray)
@@ -171,13 +162,11 @@ theorem addm {artifact : ProgramArtifact} (blocks : Blocks artifact)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml)
     (hzero : num mem 8192 ml = 0)
     (hlt : num mem 0 ml + num mem src ml < 2 * num mem 1024 ml) :
-    ∃ mem', Reach (st s 451 (UInt256.ofNat retPc :: UInt256.ofNat src :: rest) mem AW)
+    ∃ mem',Reach (st s 451 (UInt256.ofNat retPc::UInt256.ofNat src::rest) mem AW)
         (st s retPc rest mem' AW) ∧
       num mem' 0 ml = (num mem 0 ml + num mem src ml) % num mem 1024 ml ∧
-      (∀ k, ml ≤ k → bget mem' k = bget mem k) := by
+      (∀ k,ml ≤ k → bget mem' k = bget mem k) := by
   exact ⟨addResult ml src mem,
     addm_reach blocks s env ml src retPc rest mem hcap hml1 hml hs hsrc hret hjump hm hzero hlt,
     addResult_correct ml src mem hml hs hzero hlt⟩
-
-
 end CycleSubmission.Global.BigC.Unsigned

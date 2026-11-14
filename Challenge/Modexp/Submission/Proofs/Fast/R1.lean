@@ -27,26 +27,19 @@ top-bit guard: a modulus with its most significant bit set satisfies
 This module depends on `Fast.Csub` only through the value contract
 `Csub.csub_correct`; the trace itself is spliced in by the caller.
 -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.R1
-
 open EvmSemantics
 open EvmSemantics.EVM
 open YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open Challenge.Modexp.Submission.Proofs.Fast
-
 attribute [local simp] List.getElem?_cons_zero
-
 /-! ## The guard -/
-
 def TopBitSet (mem : ByteArray) : Prop :=
   2 ^ 255 ≤ (MachineState.readWord mem 0).toNat
-
 instance (mem : ByteArray) : Decidable (TopBitSet mem) := by
   unfold TopBitSet; infer_instance
-
 theorem radix_pow_lt_two_mul {mem : ByteArray} {n mm : Nat} (hn : 1 ≤ n)
     (hodd : mm % 2 = 1) (hmod : Model.FastRepresents mem 0 n mm)
     (htop : TopBitSet mem) :
@@ -62,7 +55,7 @@ theorem radix_pow_lt_two_mul {mem : ByteArray} {n mm : Nat} (hn : 1 ≤ n)
     le_trans (Nat.mul_le_mul_right _ hge) (Nat.div_mul_le_self _ _)
   have h2 : (2 : Nat) * 2 ^ 255 = Limbs.radix := by norm_num [Limbs.radix]
   have hhalf : 2 * (2 ^ 255 * Limbs.radix ^ (n - 1)) = Limbs.radix ^ n := by
-    rw [← mul_assoc, h2, ← pow_succ']
+    rw [← mul_assoc,h2,← pow_succ']
     congr 1
     omega
   -- `radix ^ n / 2` is even and `mm` is odd, so the bound cannot be tight
@@ -71,36 +64,28 @@ theorem radix_pow_lt_two_mul {mem : ByteArray} {n mm : Nat} (hn : 1 ≤ n)
     rw [← mul_assoc]
     congr 1
   omega
-
 def tnMem (mem : ByteArray) : ByteArray :=
   MachineState.writeBytes mem (Data.Bytes.natToBytesPadded 1 32) 2080
-
 /-! ## States at the block boundaries -/
-
 def entryState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 871
-           stack := [UInt256.ofNat px, ret] ++ rest
+           stack := [UInt256.ofNat px,ret]++rest
            memory := mem }
-
 def dblState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 727
-           stack := [UInt256.ofNat px, ret] ++ rest
+           stack := [UInt256.ofNat px,ret]++rest
            memory := mem }
-
 def fastState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 877
-           stack := [UInt256.ofNat px, ret] ++ rest
+           stack := [UInt256.ofNat px,ret]++rest
            memory := mem }
-
 def csubState (s : State) (mem : ByteArray) (px : Nat) (ret : UInt256)
     (rest : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3902
-           stack := [UInt256.ofNat px, ret] ++ rest
+           stack := [UInt256.ofNat px,ret]++rest
            memory := tnMem mem }
-
 /-! ## Traces -/
-
 end Challenge.Modexp.Submission.Proofs.Fast.R1

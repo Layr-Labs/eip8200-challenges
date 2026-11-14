@@ -8,15 +8,11 @@ set_option maxHeartbeats 4000000
 through `ADDMOD` and then squares it eight times through `MONPRO`, which
 carries `R mod m` to `radix * R mod m` in `8` Montgomery multiplications
 instead of `256` modular doublings. -/
-
 namespace Challenge.Modexp.Submission.Proofs.Fast
-
 open EvmSemantics
 open EvmSemantics.EVM
 open Challenge.Modexp.Submission.Proofs.Bytecode
-
 def blk1742 :
     List (Challenge.EvmProof.Stepper.Located Artifact.submissionArtifact .Osaka) :=
   []
-
 end Challenge.Modexp.Submission.Proofs.Fast

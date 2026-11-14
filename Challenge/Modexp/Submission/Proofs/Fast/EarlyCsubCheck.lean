@@ -1,69 +1,58 @@
 import Challenge.Modexp.Submission.Proofs.Fast.Model
 import Challenge.EvmProof.Word
-
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
-
 namespace Challenge.Modexp.Submission.Proofs.Fast.EarlyCsub
 open EvmSemantics
 open Challenge.Modexp.Submission.Proofs
 open Challenge.EvmProof.Word
-
 def guardWord (mem : ByteArray) : UInt256 :=
   UInt256.lor (MachineState.readWord mem 2080)
     (UInt256.isZero (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)))
-
 theorem guardWord_eq (mem : ByteArray) : guardWord mem =
     UInt256.lor (MachineState.readWord mem 2080)
       (UInt256.isZero (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0))) := rfl
-
 def Skip (mem : ByteArray) : Prop := (guardWord mem).toNat = 0
 instance (mem : ByteArray) : Decidable (Skip mem) := inferInstanceAs (Decidable (_ = 0))
-
 theorem skip_iff (mem : ByteArray) : Skip mem ↔
     (MachineState.readWord mem 2080).toNat = 0 ∧
     (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat := by
   unfold Skip guardWord
-  rw [word_toNat_lor, word_toNat_isZero, word_toNat_lt]
+  rw [word_toNat_lor,word_toNat_isZero,word_toNat_lt]
   by_cases h : (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat
   · simp [h]
   · simp [h]
     intro hz
     have hb := congrArg (fun k : Nat => k.testBit 0) hz
     simp at hb
-
 def jumpWord (mem : ByteArray) : UInt256 :=
   UInt256.land (UInt256.isZero (MachineState.readWord mem 2080))
     (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0))
-
 theorem jumpWord_eq (mem : ByteArray) : jumpWord mem =
     UInt256.land (UInt256.isZero (MachineState.readWord mem 2080))
       (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)) := rfl
-
 theorem jumpWord_lt (mem : ByteArray) : jumpWord mem =
     UInt256.lt (MachineState.readWord mem 2080)
       (UInt256.lt (MachineState.readWord mem 2112) (MachineState.readWord mem 0)) := by
   apply word_ext
-  simp only [jumpWord, word_toNat_lt, word_toNat_land, word_toNat_isZero]
+  simp only [jumpWord,word_toNat_lt,word_toNat_land,word_toNat_isZero]
   by_cases h : (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat <;>
     by_cases hz : (MachineState.readWord mem 2080).toNat = 0 <;>
-      simp [h, hz, Nat.lt_one_iff]
-
+      simp [h,hz,Nat.lt_one_iff]
 theorem jumpWord_toNat (mem : ByteArray) :
     (jumpWord mem).toNat = if Skip mem then 1 else 0 := by
   unfold jumpWord
-  rw [word_toNat_land, word_toNat_lt, word_toNat_isZero]
+  rw [word_toNat_land,word_toNat_lt,word_toNat_isZero]
   by_cases h : Skip mem
   · rw [if_pos h]
-    obtain ⟨h1, h2⟩ := (skip_iff mem).1 h
-    rw [if_pos h2, if_pos h1]; rfl
+    obtain ⟨h1,h2⟩ := (skip_iff mem).1 h
+    rw [if_pos h2,if_pos h1]; rfl
   · rw [if_neg h]
     rw [skip_iff] at h
     by_cases h2 : (MachineState.readWord mem 2112).toNat < (MachineState.readWord mem 0).toNat
-    · have h1 : ¬ (MachineState.readWord mem 2080).toNat = 0 := fun h1 => h ⟨h1, h2⟩
-      rw [if_pos h2, if_neg h1]; rfl
+    · have h1 : ¬ (MachineState.readWord mem 2080).toNat = 0 := fun h1 => h ⟨h1,h2⟩
+      rw [if_pos h2,if_neg h1]; rfl
     · rw [if_neg h2]; split <;> rfl
-
 theorem high_limb_lt {mem : ByteArray} {n t m : Nat}
     (hn : 1 ≤ n) (ht : Model.FastRepresents mem 2112 n t)
     (hm : Model.FastRepresents mem 0 n m)
@@ -71,19 +60,18 @@ theorem high_limb_lt {mem : ByteArray} {n t m : Nat}
     t < m := by
   have ht0 := Model.readWord_of_fastRepresents ht (j := 0) (by omega)
   have hm0 := Model.readWord_of_fastRepresents hm (j := 0) (by omega)
-  simp only [Nat.mul_zero, Nat.add_zero, Nat.sub_zero] at ht0 hm0
+  simp only [Nat.mul_zero,Nat.add_zero,Nat.sub_zero] at ht0 hm0
   have hp : Limbs.radix ^ n = Limbs.radix ^ (n-1) * Limbs.radix := by
     conv_lhs => rw [show n = (n-1)+1 by omega]
     rw [pow_succ]
   have htq : t / Limbs.radix ^ (n-1) < Limbs.radix := by
     apply (Nat.div_lt_iff_lt_mul (pow_pos Limbs.radix_pos _)).2
-    simpa only [hp, Nat.mul_comm] using ht.1
+    simpa only [hp,Nat.mul_comm] using ht.1
   have hmq : m / Limbs.radix ^ (n-1) < Limbs.radix := by
     apply (Nat.div_lt_iff_lt_mul (pow_pos Limbs.radix_pos _)).2
-    simpa only [hp, Nat.mul_comm] using hm.1
-  rw [ht0, hm0, Nat.mod_eq_of_lt htq, Nat.mod_eq_of_lt hmq] at h
+    simpa only [hp,Nat.mul_comm] using hm.1
+  rw [ht0,hm0,Nat.mod_eq_of_lt htq,Nat.mod_eq_of_lt hmq] at h
   by_contra! hnot
   have hdiv := Nat.div_le_div_right (c := Limbs.radix ^ (n-1)) hnot
   omega
-
 end Challenge.Modexp.Submission.Proofs.Fast.EarlyCsub

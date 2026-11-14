@@ -9,6 +9,5 @@ def environment (s : State)
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     Environment Artifact.submissionArtifact .Osaka s :=
   ⟨by change Challenge.Modexp.submissionBytecode.size < 2^256; rw [Challenge.Modexp.submissionBytecode_size]; decide,
-    hcode, hfork, hrun, hnp⟩
-
+    hcode,hfork,hrun,hnp⟩
 end Challenge.Modexp.Submission.Proofs.Fast.CarryRowBlocks

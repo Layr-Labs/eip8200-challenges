@@ -37,16 +37,16 @@ theorem word_toNat_mul (a b : UInt256) :
 theorem ofNat_mul_mod (a b : Nat) :
     UInt256.ofNat a * UInt256.ofNat b = UInt256.ofNat (a * b) := by
   apply Challenge.EvmProof.Word.word_ext
-  simp only [word_toNat_mul, Challenge.EvmProof.Word.word_toNat_ofNat, ← Nat.mul_mod]
+  simp only [word_toNat_mul,Challenge.EvmProof.Word.word_toNat_ofNat,← Nat.mul_mod]
 theorem toNat_ofNat_self {a : Nat} (ha : a < 2 ^ 256) :
     (UInt256.ofNat a).toNat = a := by
-  rw [Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt ha]
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt ha]
 theorem shr_ofNat (v k : Nat) (hv : v < 2 ^ 256) (hk : k < 256) :
     UInt256.shiftRight (UInt256.ofNat v) (UInt256.ofNat k) =
       UInt256.ofNat (v / 2 ^ k) := by
-  rw [Challenge.EvmProof.Word.shiftRight_ofNat hv hk, Nat.shiftRight_eq_div_pow]
+  rw [Challenge.EvmProof.Word.shiftRight_ofNat hv hk,Nat.shiftRight_eq_div_pow]
 theorem and_one (v : Nat) : 1 &&& v = v % 2 := by
-  rw [Nat.and_comm, Nat.and_one_is_mod]
+  rw [Nat.and_comm,Nat.and_one_is_mod]
 theorem land_one (v : Nat) :
     UInt256.land (UInt256.ofNat 1) (UInt256.ofNat v) = UInt256.ofNat (v % 2) := by
   apply Challenge.EvmProof.Word.word_ext
@@ -54,8 +54,8 @@ theorem land_one (v : Nat) :
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt (show (1 : Nat) < 2 ^ 256 by norm_num), and_one,
-    Nat.mod_mod_of_dvd v (show (2 : Nat) ∣ 2 ^ 256 by exact ⟨2 ^ 255, by norm_num⟩),
+    Nat.mod_eq_of_lt (show (1 : Nat) < 2 ^ 256 by norm_num),and_one,
+    Nat.mod_mod_of_dvd v (show (2 : Nat) ∣ 2 ^ 256 by exact ⟨2 ^ 255,by norm_num⟩),
     Nat.mod_eq_of_lt
       (Nat.lt_of_lt_of_le (Nat.mod_lt v (by norm_num)) (by norm_num))]
 theorem land_ofNat (a b : Nat) (ha : a < 2 ^ 256) (hb : b < 2 ^ 256) :
@@ -65,13 +65,13 @@ theorem land_ofNat (a b : Nat) (ha : a < 2 ^ 256) (hb : b < 2 ^ 256) :
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
     Challenge.EvmProof.Word.word_toNat_ofNat,
-    Nat.mod_eq_of_lt ha, Nat.mod_eq_of_lt hb,
+    Nat.mod_eq_of_lt ha,Nat.mod_eq_of_lt hb,
     Nat.mod_eq_of_lt (Nat.and_lt_two_pow a hb)]
 theorem isZero_ofNat_zero : UInt256.isZero (UInt256.ofNat 0) = UInt256.ofNat 1 := by
   decide
 theorem isZero_ofNat_of_ne {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
     UInt256.isZero (UInt256.ofNat a) = UInt256.ofNat 0 := by
-  rw [UInt256.isZero, toNat_ofNat_self ha, if_neg h]
+  rw [UInt256.isZero,toNat_ofNat_self ha,if_neg h]
 theorem isZero_ofNat_one : UInt256.isZero (UInt256.ofNat 1) = UInt256.ofNat 0 := by
   decide
 theorem isTrue_one : UInt256.isTrue (UInt256.ofNat 1) := by decide
@@ -82,29 +82,29 @@ theorem isTrue_ofNat {a : Nat} (ha : a < 2 ^ 256) (h : a ≠ 0) :
   rw [toNat_ofNat_self ha]
   exact h
 def outer (n bsize esize msize : Nat) : List UInt256 :=
-  [UInt256.ofNat (32 * n), UInt256.ofNat n, UInt256.ofNat bsize,
-   UInt256.ofNat esize, UInt256.ofNat msize]
+  [UInt256.ofNat (32 * n),UInt256.ofNat n,UInt256.ofNat bsize,
+   UInt256.ofNat esize,UInt256.ofNat msize]
 def mpCall (s : State) (mem : ByteArray) (pa pb pd : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 5496
-           stack := UInt256.ofNat pa :: UInt256.ofNat pb :: UInt256.ofNat pd ::
-             ret :: tail
+           stack := UInt256.ofNat pa::UInt256.ofNat pb::UInt256.ofNat pd ::
+             ret::tail
            memory := mem }
 def sqCall (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3181
-           stack := UInt256.ofNat 4245 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
-             UInt256.ofNat 512 :: ret :: tail
+           stack := UInt256.ofNat 4245::UInt256.ofNat 2112::UInt256.ofNat 512 ::
+             UInt256.ofNat 512::ret::tail
            memory := mem }
 def sqLoopCall (s : State) (mem : ByteArray) (k : Nat) (ret : UInt256)
     (tail : List UInt256) : State :=
   { s with pc := UInt256.ofNat 3181
-           stack := UInt256.ofNat 4245 :: UInt256.ofNat 2112 :: UInt256.ofNat 512 ::
-             UInt256.ofNat (k - 1) :: ret :: tail
+           stack := UInt256.ofNat 4245::UInt256.ofNat 2112::UInt256.ofNat 512 ::
+             UInt256.ofNat (k - 1)::ret::tail
            memory := mem }
 def retTo (s : State) (mem : ByteArray) (ret : UInt256)
     (tail : List UInt256) : State :=
-  { s with pc := ret, stack := tail, memory := mem }
+  { s with pc := ret,stack := tail,memory := mem }
 structure Frame (mem : ByteArray) (n bsize minv : Nat) : Prop where
   s32 : MachineState.readWord mem 2688 = UInt256.ofNat (32 * n)
   minvW : MachineState.readWord mem 2720 = UInt256.ofNat minv
@@ -123,7 +123,7 @@ theorem amMemOf_readWord_high (mem : ByteArray) (pa pb n pd addr : Nat)
 theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
     (hn : 1 ≤ n) (hn32 : n ≤ 8) (hpd : pd + 32 * n ≤ 2048)
     (hf : Frame mem n bsize minv) : Frame (amMemOf mem pa pb n pd) n bsize minv := by
-  have key : ∀ addr, 2656 ≤ addr →
+  have key : ∀ addr,2656 ≤ addr →
       MachineState.readWord (amMemOf mem pa pb n pd) addr =
         MachineState.readWord mem addr :=
     fun addr haddr => amMemOf_readWord_high mem pa pb n pd addr hn hn32 hpd haddr
@@ -135,9 +135,9 @@ theorem amMemOf_frame {mem : ByteArray} {n bsize minv : Nat} (pa pb pd : Nat)
 structure Subroutines (s : State) (n bsize mm minv : Nat) where
   mpMem : Nat → Nat → Nat → ByteArray → ByteArray
   amMem : Nat → Nat → Nat → ByteArray → ByteArray
-  mpFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
+  mpFrame : ∀ (pa pb pd : Nat) (mem : ByteArray),pd ≤ 1536 →
     Frame mem n bsize minv → Frame (mpMem pa pb pd mem) n bsize minv
-  amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
+  amFrame : ∀ (pa pb pd : Nat) (mem : ByteArray),pd ≤ 1536 →
     Frame mem n bsize minv → Frame (amMem pa pb pd mem) n bsize minv
   sqMem : ByteArray → ByteArray
   sqFrame : ∀ (mem : ByteArray),
@@ -160,7 +160,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Model.FastRepresents (sqMem mem) ptr n v
   sqLoopMem : Nat → ByteArray → ByteArray
   squareLoop : ∀ (k : Nat) (ret : UInt256) (tail : List UInt256)
-    (mem : ByteArray) (a : Nat), (n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
+    (mem : ByteArray) (a : Nat),(n = 4 ∨ n = 8) ∧ minv ≠ 1 → 1 ≤ k → k ≤ 16 →
     tail.length ≤ 982 →
     tail[1]? = some (UInt256.ofNat (32 * n)) →
     tail[2]? = some (UInt256.ofNat n) →
@@ -168,7 +168,7 @@ structure Subroutines (s : State) (n bsize mm minv : Nat) where
     Model.FastRepresents mem 2112 n a → a < mm →
     Challenge.EvmProof.GasSteps (sqLoopCall s mem k ret tail)
       (retTo s (sqLoopMem k mem) (UInt256.ofNat 690) tail)
-  sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat), n = 4 ∨ n = 8 → 1 ≤ k →
+  sqLoopValue : ∀ (k : Nat) (mem : ByteArray) (a b : Nat),n = 4 ∨ n = 8 → 1 ≤ k →
     Frame mem n bsize minv → Model.FastRepresents mem 0 n mm →
     Model.FastRepresents mem 2112 n a → Model.FastRepresents mem 256 n b → a < mm → b < mm →
     Model.FastRepresents (sqLoopMem k mem) 256 n
@@ -188,7 +188,7 @@ theorem bitAt_gt_topExp {w k : Nat} (hw : w < 256) (hk : Lz.topExp w < k) :
 def selOf (n k : Nat) : Nat := 1024 + 256 * bitAt n k
 def rrHead (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   { s with pc := UInt256.ofNat 727
-           stack := UInt256.ofNat k :: outer n bsize esize msize
+           stack := UInt256.ofNat k::outer n bsize esize msize
            memory := mem }
 def bDone (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 2284
@@ -208,11 +208,11 @@ def rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (n : Nat)
 theorem lt_ofNat_of_lt {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256)
     (h : a < b) :
     UInt256.lt (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat 1 := by
-  rw [UInt256.lt, toNat_ofNat_self ha, toNat_ofNat_self hb, if_pos h]
+  rw [UInt256.lt,toNat_ofNat_self ha,toNat_ofNat_self hb,if_pos h]
 theorem lt_ofNat_of_le {a b : Nat} (ha : a < 2 ^ 256) (hb : b < 2 ^ 256)
     (h : b ≤ a) :
     UInt256.lt (UInt256.ofNat a) (UInt256.ofNat b) = UInt256.ofNat 0 := by
-  rw [UInt256.lt, toNat_ofNat_self ha, toNat_ofNat_self hb,
+  rw [UInt256.lt,toNat_ofNat_self ha,toNat_ofNat_self hb,
     if_neg (Nat.not_lt.mpr h)]
 def pbOf (bsize : Nat) : Nat := (31 + bsize) / 32
 def topWidth (bsize : Nat) : Nat := bsize - 32 * (pbOf bsize - 1)
@@ -245,7 +245,7 @@ theorem activeWordsAfter_fix (curr off sz : Nat) (hsz : sz ≠ 0)
     (hoff : off + sz ≤ 2816) (hcurr : 88 ≤ curr) :
     MachineState.activeWordsAfter curr off sz = curr := by
   unfold MachineState.activeWordsAfter
-  simp only [hsz, if_false]
+  simp only [hsz,if_false]
   have hle : (off + sz - 1) / 32 + 1 ≤ curr := by omega
   exact Nat.max_eq_left hle
 theorem activeWords_fix (s : State) (off sz : Nat) (hsz : sz ≠ 0)
@@ -279,7 +279,7 @@ def expByte (input : ByteArray) (bsize i : Nat) : Nat :=
   (YulSemantics.EVM.byteFrom input.toList (96 + bsize + i)).toNat
 def ebHead (s : State) (mem : ByteArray) (n bsize esize msize i : Nat) : State :=
   { s with pc := UInt256.ofNat 809
-           stack := UInt256.ofNat i :: outer n bsize esize msize
+           stack := UInt256.ofNat i::outer n bsize esize msize
            memory := mem }
 def finHead (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat 692
@@ -308,10 +308,10 @@ theorem run_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hfix : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat
       256 msize) = s.activeWords :=
     activeWords_fix s 256 msize (by omega) (by omega) hact
-  simp (config := { maxSteps := 600000 }) [blk1333, opAt, pushAt, wfOp,
+  simp (config := { maxSteps := 600000 }) [blk1333,opAt,pushAt,wfOp,
     Challenge.EvmProof.Stepper.runLocatedBlock,
-    Challenge.EvmProof.Stepper.runLocated, Challenge.EvmProof.Stepper.runInstr,
-    finHead, returnedState, outer, hrun, hoff, hmodSz, hfix,
+    Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
+    finHead,returnedState,outer,hrun,hoff,hmodSz,hfix,
     State.activeWordsAfterUInt256,
     Challenge.EvmProof.Word.literal_eq_ofNat,
     Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -331,19 +331,19 @@ def gasSteps_return (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     Artifact.submissionArtifact .Osaka blk1333 hcode hfork
       (run_return s mem n bsize esize msize hn hn32 hm hm32 hfull hact hrun) hrun hnp
 theorem bitAt_eq_zero_iff (w r : Nat) : bitAt w r = 0 ↔ w.testBit r = false := by
-  rw [bitAt, Model.bit_eq_testBit]
+  rw [bitAt,Model.bit_eq_testBit]
   cases w.testBit r <;> simp
 theorem and_two_pow_eq_zero_iff (w r : Nat) :
     2 ^ r &&& w = 0 ↔ w.testBit r = false := by
   constructor
   · intro h
     have h2 : (2 ^ r &&& w).testBit r = false := by rw [h]; simp
-    rw [Nat.testBit_and, Nat.testBit_two_pow_self] at h2
+    rw [Nat.testBit_and,Nat.testBit_two_pow_self] at h2
     simpa using h2
   · intro h
     apply Nat.eq_of_testBit_eq
     intro k
-    rw [Nat.testBit_and, Nat.testBit_two_pow, Nat.zero_testBit]
+    rw [Nat.testBit_and,Nat.testBit_two_pow,Nat.zero_testBit]
     by_cases hk : r = k
     · subst hk
       simp [h]
@@ -357,7 +357,7 @@ theorem two_pow_le_128 {k : Nat} (hk : k ≤ 7) : 2 ^ k ≤ 128 := by
 theorem two_pow_shift {j : Nat} (hj : j < 7) :
     2 ^ (7 - j) / 2 = 2 ^ (7 - (j + 1)) := by
   have he : 7 - j = 7 - (j + 1) + 1 := by omega
-  rw [he, pow_succ, Nat.mul_div_assoc _ (dvd_refl 2), Nat.div_self (by norm_num),
+  rw [he,pow_succ,Nat.mul_div_assoc _ (dvd_refl 2),Nat.div_self (by norm_num),
     Nat.mul_one]
 def bitStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArray) (mem : ByteArray) :
     Nat → ByteArray
@@ -396,7 +396,7 @@ theorem readWord_bitStep (mpMem : Nat → Nat → Nat → ByteArray → ByteArra
   | succ k =>
       show MachineState.readWord (mpMem 256 512 256 (mpMem 256 256 256 mem))
         addr = _
-      rw [hkeep 256 512 _, hkeep 256 256 mem]
+      rw [hkeep 256 512 _,hkeep 256 256 mem]
 theorem readWord_bitMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (addr : Nat)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
@@ -410,7 +410,7 @@ theorem readWord_bitMemsFrom (mpMem : Nat → Nat → Nat → ByteArray → Byte
   | succ k ih =>
       show MachineState.readWord (bitStep mpMem (bitMemsFrom mpMem w mem j0 k)
         (bitAt w (7 - (j0 + k)))) addr = _
-      rw [readWord_bitStep mpMem addr hkeep _ _, ih]
+      rw [readWord_bitStep mpMem addr hkeep _ _,ih]
 theorem readWord_ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
     (addr : Nat)
     (hkeep : ∀ (pa pb : Nat) (mem' : ByteArray),
@@ -428,12 +428,12 @@ theorem readWord_ebMems (mpMem : Nat → Nat → Nat → ByteArray → ByteArray
       rw [byteMemAt]
       split
       · rw [readWord_bitMemsFrom mpMem addr hkeep,
-          readWord_mcopyMem_disjoint _ 256 512 (32 * n) addr (Or.inr (by omega)), ih]
-      · rw [readWord_bitMemsFrom mpMem addr hkeep, ih]
+          readWord_mcopyMem_disjoint _ 256 512 (32 * n) addr (Or.inr (by omega)),ih]
+      · rw [readWord_bitMemsFrom mpMem addr hkeep,ih]
 theorem byteFrom_eq_getD (bs : ByteArray) (i : Nat) :
     YulSemantics.EVM.byteFrom bs.toList i = bs[i]?.getD 0 := by
   unfold YulSemantics.EVM.byteFrom
-  rw [List.getD_eq_getElem?_getD, YulEvmCompiler.ByteArray.toList_eq_data,
+  rw [List.getD_eq_getElem?_getD,YulEvmCompiler.ByteArray.toList_eq_data,
     Array.getElem?_toList]
   rfl
 theorem memoryLimbs_succ (mem : ByteArray) (ptr count : Nat) :
@@ -448,15 +448,15 @@ theorem memoryLimbs_succ (mem : ByteArray) (ptr count : Nat) :
     | zero => simp [Limbs.memoryLimbs]
     | succ j =>
         have hj : j < count := by omega
-        simp only [Limbs.memoryLimbs, List.getElem_cons_succ, List.getElem_map,
+        simp only [Limbs.memoryLimbs,List.getElem_cons_succ,List.getElem_map,
           List.getElem_range]
         rw [show ptr + 32 * (j + 1) = ptr + 32 + 32 * j from by omega]
 theorem fastLimbs_succ (mem : ByteArray) (ptr count : Nat) :
     Model.fastLimbs mem ptr (count + 1) =
       Model.fastLimbs mem (ptr + 32) count ++
         [(MachineState.readWord mem ptr).toNat] := by
-  rw [Model.fastLimbs_eq_reverse_memoryLimbs, Model.fastLimbs_eq_reverse_memoryLimbs,
-    memoryLimbs_succ, List.reverse_cons]
+  rw [Model.fastLimbs_eq_reverse_memoryLimbs,Model.fastLimbs_eq_reverse_memoryLimbs,
+    memoryLimbs_succ,List.reverse_cons]
 theorem bytesToNatPadded_block (mem : ByteArray) : ∀ (count ptr : Nat),
     Precompile.bytesToNatPadded mem ptr (32 * count) =
       Nat.ofDigits Limbs.radix (Model.fastLimbs mem ptr count) := by
@@ -467,14 +467,14 @@ theorem bytesToNatPadded_block (mem : ByteArray) : ∀ (count ptr : Nat),
       intro ptr
       have hsplit := Challenge.EvmProof.Bytes.bytesToNatPadded_add mem ptr 32 (32 * c)
       rw [show 32 + 32 * c = 32 * (c + 1) by ring] at hsplit
-      rw [hsplit, fastLimbs_succ, Nat.ofDigits_append, Model.length_fastLimbs,
-        ih (ptr + 32), Nat.ofDigits_singleton,
-        ← Challenge.EvmProof.Bytes.readWord_toNat, ← Limbs.pow_radix]
+      rw [hsplit,fastLimbs_succ,Nat.ofDigits_append,Model.length_fastLimbs,
+        ih (ptr + 32),Nat.ofDigits_singleton,
+        ← Challenge.EvmProof.Bytes.readWord_toNat,← Limbs.pow_radix]
       ring
 theorem bytesToNatPadded_of_fastRepresents {mem : ByteArray} {ptr count value : Nat}
     (hrep : Model.FastRepresents mem ptr count value) :
     Precompile.bytesToNatPadded mem ptr (32 * count) = value := by
-  rw [bytesToNatPadded_block mem count ptr, Model.value_of_fastRepresents hrep]
+  rw [bytesToNatPadded_block mem count ptr,Model.value_of_fastRepresents hrep]
 theorem bytesToNatPadded_digit (bs : ByteArray) (off w k : Nat) (hk : k < w) :
     Precompile.bytesToNatPadded bs off w / 256 ^ (w - 1 - k) % 256 =
       (YulSemantics.EVM.byteFrom bs.toList (off + k)).toNat := by
@@ -489,12 +489,12 @@ theorem bytesToNatPadded_digit (bs : ByteArray) (off w k : Nat) (hk : k < w) :
     rw [hsplit]; ring
   have hdiv : Precompile.bytesToNatPadded bs off w / 256 ^ (w - 1 - k) =
       Precompile.bytesToNatPadded bs off (k + 1) := by
-    rw [show w - 1 - k = w - (k + 1) from by omega, hsplit',
-      Nat.mul_add_div (pow_pos (by norm_num) _), Nat.div_eq_of_lt htail,
+    rw [show w - 1 - k = w - (k + 1) from by omega,hsplit',
+      Nat.mul_add_div (pow_pos (by norm_num) _),Nat.div_eq_of_lt htail,
       Nat.add_zero]
   have hb : (YulSemantics.EVM.byteFrom bs.toList (off + k)).toNat < 256 :=
     (YulSemantics.EVM.byteFrom bs.toList (off + k)).toNat_lt
-  rw [hdiv, Challenge.EvmProof.Bytes.bytesToNatPadded_succ bs off k]
+  rw [hdiv,Challenge.EvmProof.Bytes.bytesToNatPadded_succ bs off k]
   omega
 theorem uint8_ofNat_toNat (b : UInt8) : UInt8.ofNat b.toNat = b := by
   simp
@@ -503,7 +503,7 @@ theorem readPadded_eq_natToBytes {mem : ByteArray} {ptr count value msize : Nat}
     MachineState.readPadded mem (ptr + 32 * count - msize) msize =
       Precompile.natToBytes value msize := by
   apply ByteArray.ext_getElem
-  · rw [Challenge.EvmProof.Memory.readPadded_size, Precompile.natToBytes,
+  · rw [Challenge.EvmProof.Memory.readPadded_size,Precompile.natToBytes,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_size]
   · intro k hleft hright
     have hk : k < msize := by
@@ -516,11 +516,11 @@ theorem readPadded_eq_natToBytes {mem : ByteArray} {ptr count value msize : Nat}
       at hdig
     rw [← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hleft,
       ← Challenge.EvmProof.Memory.getD0_eq_getElem _ _ hright,
-      Challenge.EvmProof.Memory.readPadded_getElem?_getD, if_pos hk,
+      Challenge.EvmProof.Memory.readPadded_getElem?_getD,if_pos hk,
       Precompile.natToBytes,
       YulEvmCompiler.BytesLemmas.natToBytesPadded_getElem?_getD _ msize k hk,
       show ptr + 32 * count - msize + k = ptr + (32 * count - msize + k) from by omega,
-      ← byteFrom_eq_getD, hdig, uint8_ofNat_toNat]
+      ← byteFrom_eq_getD,hdig,uint8_ofNat_toNat]
 theorem returned_eq_spec (s : State) (mem input : ByteArray)
     (n bsize esize msize result : Nat) (_hn : 2 ≤ n) (hm : msize ≤ 32 * n)
     (hmpos : 0 < msize)
@@ -539,10 +539,10 @@ theorem returned_eq_spec (s : State) (mem input : ByteArray)
         (Precompile.bytesToNatPadded input 96 bsize)
         (Precompile.bytesToNatPadded input (96 + bsize) esize)
         (Precompile.bytesToNatPadded input (96 + bsize + esize) msize)) msize := by
-    simp only [Challenge.Modexp.spec, ← hbsize, ← hesize, ← hmsz]
+    simp only [Challenge.Modexp.spec,← hbsize,← hesize,← hmsz]
     exact if_neg (by omega)
   show MachineState.readPadded mem (256 + 32 * n - msize) msize = _
-  rw [hslice, hspec, hres]
+  rw [hslice,hspec,hres]
 theorem expByte_eq_digit (input : ByteArray) (bsize esize i : Nat) (hi : i < esize) :
     expByte input bsize i =
       Precompile.bytesToNatPadded input (96 + bsize) esize /
@@ -554,14 +554,14 @@ theorem bitAt_expByte (input : ByteArray) (bsize esize i r : Nat)
       bitAt (Precompile.bytesToNatPadded input (96 + bsize) esize)
         (8 * (esize - 1 - i) + r) := by
   have h256 : (256 : Nat) ^ (esize - 1 - i) = 2 ^ (8 * (esize - 1 - i)) := by
-    rw [show (256 : Nat) = 2 ^ 8 by norm_num, ← Nat.pow_mul]
+    rw [show (256 : Nat) = 2 ^ 8 by norm_num,← Nat.pow_mul]
   have hsplit : (2 : Nat) ^ 8 = 2 ^ r * 2 ^ (8 - r) := by
     rw [← Nat.pow_add]
     congr 1
     omega
-  rw [expByte_eq_digit input bsize esize i hi, bitAt, bitAt, h256,
-    show (256 : Nat) = 2 ^ 8 by norm_num, hsplit, Nat.mod_mul_right_div_self,
-    Nat.mod_mod_of_dvd _ (dvd_pow_self 2 (by omega)), Nat.div_div_eq_div_mul,
+  rw [expByte_eq_digit input bsize esize i hi,bitAt,bitAt,h256,
+    show (256 : Nat) = 2 ^ 8 by norm_num,hsplit,Nat.mod_mul_right_div_self,
+    Nat.mod_mod_of_dvd _ (dvd_pow_self 2 (by omega)),Nat.div_div_eq_div_mul,
     ← pow_add]
 theorem expPrefix_step (e B t : Nat) (ht : t < B) :
     Model.expPrefix e (B - t - 1) =
@@ -584,7 +584,7 @@ theorem montMul_by_one {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
   Model.montMul_eq_of_modEq hm hcop
     (Nat.ModEq.mul_left x (Nat.mod_modEq R mm).symm) hx
 theorem rrValue_form {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    {n : Nat} (hn : n ≤ 8) : ∀ i, i ≤ 6 →
+    {n : Nat} (hn : n ≤ 8) : ∀ i,i ≤ 6 →
     rrValue mm R n i ≡ Limbs.radix ^ (n / 2 ^ (6 - i)) * R [MOD mm] := by
   intro i
   induction i with
@@ -594,7 +594,7 @@ theorem rrValue_form {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
         apply Nat.div_eq_of_lt
         have : (2 : Nat) ^ (6 - 0) = 64 := by norm_num
         omega
-      rw [h64, pow_zero, one_mul]
+      rw [h64,pow_zero,one_mul]
       exact Nat.mod_modEq R mm
   | succ i ih =>
       intro hi
@@ -602,7 +602,7 @@ theorem rrValue_form {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
       have hsq := Model.montMul_form hm hcop hv hv
       have hpow : Limbs.radix ^ (n / 2 ^ (6 - i)) * Limbs.radix ^ (n / 2 ^ (6 - i)) =
           Limbs.radix ^ (2 * (n / 2 ^ (6 - i))) := by
-        rw [two_mul, pow_add]
+        rw [two_mul,pow_add]
       have hx : Limbs.radix ^ (n / 2 ^ (6 - i)) * Limbs.radix ^ (n / 2 ^ (6 - i)) * R
           % mm ≡ Limbs.radix ^ (2 * (n / 2 ^ (6 - i))) * R [MOD mm] := by
         rw [hpow]
@@ -610,27 +610,27 @@ theorem rrValue_form {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
       have hsel : (if bitAt n (5 - i) = 0 then R % mm else Limbs.radix * R % mm) ≡
           Limbs.radix ^ bitAt n (5 - i) * R [MOD mm] := by
         by_cases h0 : bitAt n (5 - i) = 0
-        · rw [if_pos h0, h0, pow_zero, one_mul]
+        · rw [if_pos h0,h0,pow_zero,one_mul]
           exact Nat.mod_modEq R mm
         · have h1 : bitAt n (5 - i) = 1 := by
             have := bitAt_le_one n (5 - i)
             omega
-          rw [if_neg h0, h1, pow_one]
+          rw [if_neg h0,h1,pow_one]
           exact Nat.mod_modEq _ mm
       have hstep : n / 2 ^ (6 - (i + 1)) =
           2 * (n / 2 ^ (6 - i)) + bitAt n (5 - i) := by
         have h := Model.expPrefix_succ n (5 - i)
         rw [show 6 - (i + 1) = 5 - i from by omega]
-        rw [Model.expPrefix, Model.expPrefix,
+        rw [Model.expPrefix,Model.expPrefix,
           show 5 - i + 1 = 6 - i from by omega] at h
         exact h
-      rw [rrValue_succ, hsq, Model.montMul_form hm hcop hx hsel, hstep, pow_add]
+      rw [rrValue_succ,hsq,Model.montMul_form hm hcop hx hsel,hstep,pow_add]
       exact Nat.mod_modEq _ mm
 theorem rrValue_final {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     {n : Nat} (hn : n ≤ 8) :
     rrValue mm R n 6 ≡ Limbs.radix ^ n * R [MOD mm] := by
   have h := rrValue_form hm hcop hn 6 le_rfl
-  rwa [show (6 : Nat) - 6 = 0 from rfl, pow_zero, Nat.div_one] at h
+  rwa [show (6 : Nat) - 6 = 0 from rfl,pow_zero,Nat.div_one] at h
 def blValue (mm b pb : Nat) : Nat → Nat
   | 0 => b / Limbs.radix ^ (pb - 1) % mm
   | t + 1 =>
@@ -640,7 +640,7 @@ theorem blValue_succ (mm b pb t : Nat) :
     blValue mm b pb (t + 1) =
       (blValue mm b pb t * Limbs.radix % mm +
         b / Limbs.radix ^ (pb - 1 - (t + 1)) % Limbs.radix) % mm := rfl
-theorem blValue_eq (mm b pb : Nat) : ∀ t, t < pb →
+theorem blValue_eq (mm b pb : Nat) : ∀ t,t < pb →
     blValue mm b pb t = b / Limbs.radix ^ (pb - 1 - t) % mm := by
   intro t
   induction t with
@@ -648,12 +648,12 @@ theorem blValue_eq (mm b pb : Nat) : ∀ t, t < pb →
   | succ t ih =>
       intro ht
       have hk : pb - 1 - t = pb - 1 - (t + 1) + 1 := by omega
-      rw [blValue_succ, ih (by omega), hk]
+      rw [blValue_succ,ih (by omega),hk]
       exact Model.horner_div_step mm b (pb - 1 - (t + 1))
 theorem blValue_final (mm b pb : Nat) (hpb : 1 ≤ pb) :
     blValue mm b pb (pb - 1) = b % mm := by
   rw [blValue_eq mm b pb (pb - 1) (by omega),
-    show pb - 1 - (pb - 1) = 0 from by omega, pow_zero, Nat.div_one]
+    show pb - 1 - (pb - 1) = 0 from by omega,pow_zero,Nat.div_one]
 def expAcc (mm R bM : Nat) (bits : Nat → Nat) : Nat → Nat
   | 0 => R % mm
   | t + 1 =>
@@ -674,35 +674,35 @@ def expExp (bits : Nat → Nat) : Nat → Nat
   | 0 => 0
   | t + 1 => 2 * expExp bits t + bits t
 theorem expAcc_form {mm R b bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hbM : bM ≡ b * R [MOD mm]) (bits : Nat → Nat) (hbits : ∀ t, bits t ≤ 1) :
-    ∀ t, expAcc mm R bM bits t ≡ b ^ expExp bits t * R [MOD mm] := by
+    (hbM : bM ≡ b * R [MOD mm]) (bits : Nat → Nat) (hbits : ∀ t,bits t ≤ 1) :
+    ∀ t,expAcc mm R bM bits t ≡ b ^ expExp bits t * R [MOD mm] := by
   intro t
   induction t with
   | zero => exact Model.mont_pow_zero_form mm R b
   | succ t ih =>
-      rw [expAcc_succ, Model.mont_bit_step hm hcop ih hbM (hbits t)]
+      rw [expAcc_succ,Model.mont_bit_step hm hcop ih hbM (hbits t)]
       exact Nat.mod_modEq _ mm
 theorem expExp_eq_prefix {e B : Nat} (he : e < 2 ^ B) (bits : Nat → Nat)
-    (hbits : ∀ t, t < B → bits t = bitAt e (B - t - 1)) :
-    ∀ t, t ≤ B → expExp bits t = Model.expPrefix e (B - t) := by
+    (hbits : ∀ t,t < B → bits t = bitAt e (B - t - 1)) :
+    ∀ t,t ≤ B → expExp bits t = Model.expPrefix e (B - t) := by
   intro t
   induction t with
   | zero => intro _; exact (Model.expPrefix_top he).symm
   | succ t ih =>
       intro ht
       show 2 * expExp bits t + bits t = _
-      rw [ih (by omega), hbits t (by omega),
+      rw [ih (by omega),hbits t (by omega),
         show B - (t + 1) = B - t - 1 from by omega]
       exact (expPrefix_step e B t (by omega)).symm
 theorem expExp_eq {e B : Nat} (he : e < 2 ^ B) (bits : Nat → Nat)
-    (hbits : ∀ t, t < B → bits t = bitAt e (B - t - 1)) :
+    (hbits : ∀ t,t < B → bits t = bitAt e (B - t - 1)) :
     expExp bits B = e := by
   have h := expExp_eq_prefix he bits hbits B le_rfl
-  rwa [Nat.sub_self, Model.expPrefix_zero] at h
+  rwa [Nat.sub_self,Model.expPrefix_zero] at h
 theorem expAcc_out {mm R b bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (hbM : bM ≡ b * R [MOD mm]) (bits : Nat → Nat) (hbits : ∀ t, bits t ≤ 1)
+    (hbM : bM ≡ b * R [MOD mm]) (bits : Nat → Nat) (hbits : ∀ t,bits t ≤ 1)
     {e B : Nat} (he : e < 2 ^ B)
-    (hbit : ∀ t, t < B → bits t = bitAt e (B - t - 1)) :
+    (hbit : ∀ t,t < B → bits t = bitAt e (B - t - 1)) :
     Model.montMul mm R (expAcc mm R bM bits B) 1 =
       Precompile.modPow b e mm := by
   have hform := expAcc_form hm hcop hbM bits hbits B
@@ -721,7 +721,7 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     ptr + 32 * n ≤ 1792 → (pd + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ pd) →
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (mpMem pa pb pd mem) ptr n v
-  mpMinv : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
+  mpMinv : ∀ (pa pb pd : Nat) (mem : ByteArray),pd ≤ 1536 →
     MachineState.readWord (mpMem pa pb pd mem) 2720 = MachineState.readWord mem 2720
   amValue : ∀ (pa pb pd : Nat) (mem : ByteArray) (a b : Nat),
     pa + 32 * n ≤ 2048 → pb + 32 * n ≤ 2048 → pd + 32 * n ≤ 2048 →
@@ -733,7 +733,7 @@ structure SubSpec (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
     ptr + 32 * n ≤ 1792 → (pd + 32 * n ≤ ptr ∨ ptr + 32 * n ≤ pd) →
     Model.FastRepresents mem ptr n v →
     Model.FastRepresents (amMem pa pb pd mem) ptr n v
-  amMinv : ∀ (pa pb pd : Nat) (mem : ByteArray), pd ≤ 1536 →
+  amMinv : ∀ (pa pb pd : Nat) (mem : ByteArray),pd ≤ 1536 →
     MachineState.readWord (amMem pa pb pd mem) 2720 = MachineState.readWord mem 2720
 theorem SubSpec.mpValue {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv)
@@ -745,7 +745,7 @@ theorem SubSpec.mpValue {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
     (ham : a < mm) (_hbm : b < mm) :
     Model.FastRepresents (mpMem pa pb pd mem) pd n (Model.montMul mm R a b) :=
   spec.mpValueRaw pa pb pd mem a b hpa hpb hpd hm hminv ha hb ham
-theorem rrValue_lt {mm R n : Nat} (hm : 0 < mm) : ∀ i, rrValue mm R n i < mm := by
+theorem rrValue_lt {mm R n : Nat} (hm : 0 < mm) : ∀ i,rrValue mm R n i < mm := by
   intro i
   cases i with
   | zero => exact Nat.mod_lt _ hm
@@ -769,8 +769,8 @@ theorem readWord_rrMem (mpMem : Nat → Nat → Nat → ByteArray → ByteArray)
         2720 = _
       unfold rrStep
       split
-      · rw [hkeep 1536 1536 _, ih]
-      · rw [hkeep 1536 1280 _, hkeep 1536 1536 _, ih]
+      · rw [hkeep 1536 1536 _,ih]
+      · rw [hkeep 1536 1280 _,hkeep 1536 1536 _,ih]
 set_option maxHeartbeats 16000000 in
 theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
@@ -812,12 +812,12 @@ theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
           (selOf n (5 - i)) n
           (if bitAt n (5 - i) = 0 then R % mm else Limbs.radix * R % mm) := by
         by_cases h0 : bitAt n (5 - i) = 0
-        · rw [if_pos h0, selOf, h0]
+        · rw [if_pos h0,selOf,h0]
           simpa using hr11
         · have h1 : bitAt n (5 - i) = 1 := by
             have := bitAt_le_one n (5 - i)
             omega
-          rw [if_neg h0, selOf, h1]
+          rw [if_neg h0,selOf,h1]
           simpa using hcc1
       have hsellt : (if bitAt n (5 - i) = 0 then R % mm else Limbs.radix * R % mm)
           < mm := by
@@ -827,15 +827,15 @@ theorem rrMem_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray
       show RrInv (rrStep mpMem n (5 - i) (rrMem mpMem n mem i)) n mm R
         (rrValue mm R n (i + 1))
       by_cases h0 : bitAt n (5 - i) = 0
-      · rw [rrStep, if_pos h0, rrValue_succ, if_pos h0,
+      · rw [rrStep,if_pos h0,rrValue_succ,if_pos h0,
           montMul_by_one hm hcop (Model.montMul_lt hm _ _ _)]
-        exact ⟨hmod1, hr11, hcc1, hsq⟩
+        exact ⟨hmod1,hr11,hcc1,hsq⟩
       · have h1 : selOf n (5 - i) = 1280 := by
           have := bitAt_le_one n (5 - i); unfold selOf; omega
-        rw [h1, if_neg h0] at hsel
+        rw [h1,if_neg h0] at hsel
         rw [if_neg h0] at hsellt
-        rw [rrStep, if_neg h0, rrValue_succ, if_neg h0]
-        refine ⟨?_, ?_, ?_, ?_⟩
+        rw [rrStep,if_neg h0,rrValue_succ,if_neg h0]
+        refine ⟨?_,?_,?_,?_⟩
         · exact spec.mpFrame 1536 1280 1536 0 mm _ (by omega)
             (Or.inr (by omega)) hmod1
         · exact spec.mpFrame 1536 1280 1536 1024 _ _ (by omega)
@@ -852,7 +852,7 @@ theorem rrMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     (hinv : RrInv mem n mm R (R % mm)) :
     Model.FastRepresents (rrMem mpMem n mem 6) 1536 n (rrValue mm R n 6) ∧
       rrValue mm R n 6 ≡ Limbs.radix ^ n * R [MOD mm] :=
-  ⟨(rrMem_inv spec hm hcop hn32 mem hminv hinv 6).rr, rrValue_final hm hcop hn32⟩
+  ⟨(rrMem_inv spec hm hcop hn32 mem hminv hinv 6).rr,rrValue_final hm hcop hn32⟩
 theorem bytesToNatPadded_word (bs : ByteArray) (off w r : Nat) (hr : r + 32 ≤ w) :
     Precompile.bytesToNatPadded bs off w / 256 ^ r % 256 ^ 32 =
       Precompile.bytesToNatPadded bs (off + (w - r - 32)) 32 := by
@@ -864,7 +864,7 @@ theorem bytesToNatPadded_word (bs : ByteArray) (off w r : Nat) (hr : r + 32 ≤ 
         Precompile.bytesToNatPadded bs (off + (w - r)) r := by rw [h1]; ring
   have hdiv : Precompile.bytesToNatPadded bs off w / 256 ^ r =
       Precompile.bytesToNatPadded bs off (w - r) := by
-    rw [h1', Nat.mul_add_div (pow_pos (by norm_num) r), Nat.div_eq_of_lt t1,
+    rw [h1',Nat.mul_add_div (pow_pos (by norm_num) r),Nat.div_eq_of_lt t1,
       Nat.add_zero]
   have h2 := Challenge.EvmProof.Bytes.bytesToNatPadded_add bs off (w - r - 32) 32
   rw [show w - r - 32 + 32 = w - r from by omega] at h2
@@ -873,17 +873,17 @@ theorem bytesToNatPadded_word (bs : ByteArray) (off w r : Nat) (hr : r + 32 ≤ 
   have h2' : Precompile.bytesToNatPadded bs off (w - r) =
       Precompile.bytesToNatPadded bs (off + (w - r - 32)) 32 +
         Precompile.bytesToNatPadded bs off (w - r - 32) * 256 ^ 32 := by rw [h2]; ring
-  rw [hdiv, h2', Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt t2]
+  rw [hdiv,h2',Nat.add_mul_mod_self_right,Nat.mod_eq_of_lt t2]
 theorem baseLimbWord_value (input : ByteArray) (bsize pb j : Nat)
     (hjpb : j < pb) (hle : 32 * (pb - j) ≤ bsize) :
     (baseLimbWord input bsize pb j).toNat =
       Precompile.bytesToNatPadded input 96 bsize / Limbs.radix ^ (pb - 1 - j) %
         Limbs.radix := by
-  rw [baseLimbWord, Challenge.EvmProof.Bytes.readWord_toNat,
+  rw [baseLimbWord,Challenge.EvmProof.Bytes.readWord_toNat,
     show 96 + (bsize - 32 * (pb - j)) =
       96 + (bsize - 32 * (pb - j - 1) - 32) from by omega,
     ← bytesToNatPadded_word input 96 bsize (32 * (pb - j - 1)) (by omega),
-    Limbs.pow_radix (pb - 1 - j), Limbs.radix_eq,
+    Limbs.pow_radix (pb - 1 - j),Limbs.radix_eq,
     show 32 * (pb - 1 - j) = 32 * (pb - j - 1) from by omega]
 theorem write_low_limb {mem : ByteArray} {n one : Nat} (word : UInt256)
     (hn : 0 < n) (hrep : Model.FastRepresents mem 768 n one)
@@ -891,7 +891,7 @@ theorem write_low_limb {mem : ByteArray} {n one : Nat} (word : UInt256)
     Model.FastRepresents (storeWord mem (736 + 32 * n) word) 768 n word.toNat := by
   have h := Model.fastRepresents_write_limb (k := 0) (value' := word.toNat) word hrep hn
     (by
-      rw [pow_zero, Nat.div_one, Nat.mod_eq_of_lt hone, Nat.mul_one, Nat.mul_one]
+      rw [pow_zero,Nat.div_one,Nat.mod_eq_of_lt hone,Nat.mul_one,Nat.mul_one]
       omega)
   rw [show (768 : Nat) + 32 * (n - 1 - 0) = 736 + 32 * n from by omega] at h
   exact h
@@ -954,7 +954,7 @@ theorem topLimbOf_value (input : ByteArray) (bsize : Nat) (hb0 : 1 ≤ bsize) :
     unfold topWidth pbOf; omega
   have hpow : (256 : Nat) ^ (bsize - topWidth bsize) =
       Limbs.radix ^ (pbOf bsize - 1) := by
-    rw [hexp, Limbs.pow_radix]
+    rw [hexp,Limbs.pow_radix]
   have hsplit := Challenge.EvmProof.Bytes.bytesToNatPadded_add input 96 (topWidth bsize)
     (bsize - topWidth bsize)
   rw [hw] at hsplit
@@ -965,13 +965,13 @@ theorem topLimbOf_value (input : ByteArray) (bsize : Nat) (hb0 : 1 ≤ bsize) :
       Limbs.radix ^ (pbOf bsize - 1) * topLimbOf input bsize +
         Precompile.bytesToNatPadded input (96 + topWidth bsize)
           (bsize - topWidth bsize) := by
-    rw [hsplit, topLimbOf, hpow]; ring
-  rw [hsplit', Nat.mul_add_div (pow_pos Limbs.radix_pos _), Nat.div_eq_of_lt htail,
+    rw [hsplit,topLimbOf,hpow]; ring
+  rw [hsplit',Nat.mul_add_div (pow_pos Limbs.radix_pos _),Nat.div_eq_of_lt htail,
     Nat.add_zero]
 structure BlInv (mem : ByteArray) (n mm R rr acc : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   accBlock : Model.FastRepresents mem 256 n acc
-  oneBlock : ∃ one, one < Limbs.radix ∧ Model.FastRepresents mem 768 n one
+  oneBlock : ∃ one,one < Limbs.radix ∧ Model.FastRepresents mem 768 n one
   ccBlock : Model.FastRepresents mem 1280 n (Limbs.radix * R % mm)
   rrBlock : Model.FastRepresents mem 1536 n rr
 def blStepMem (mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray)
@@ -996,7 +996,7 @@ theorem blStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       ((acc * Limbs.radix % mm +
         Precompile.bytesToNatPadded input 96 bsize / Limbs.radix ^ (pb - 1 - j) %
           Limbs.radix) % mm) := by
-  obtain ⟨one, honelt, honerep⟩ := hinv.oneBlock
+  obtain ⟨one,honelt,honerep⟩ := hinv.oneBlock
   -- the Montgomery multiply by `CC`
   have hmul := spec.mpValue 256 1280 256 mem acc (Limbs.radix * R % mm)
     (by omega) (by omega) (by omega) hinv.modulus hminv hinv.accBlock hinv.ccBlock
@@ -1034,7 +1034,7 @@ theorem blStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     (baseLimbWord input bsize pb j).toNat (by omega) (by omega) (by omega)
     hmod2 hacc2 hstore hsum
   rw [hlimb] at hadd
-  refine ⟨?_, hadd, ⟨(baseLimbWord input bsize pb j).toNat, hlimblt, ?_⟩, ?_, ?_⟩
+  refine ⟨?_,hadd,⟨(baseLimbWord input bsize pb j).toNat,hlimblt,?_⟩,?_,?_⟩
   · exact spec.amFrame 256 768 256 0 mm _ (by omega) (Or.inr (by omega)) hmod2
   · exact spec.amFrame 256 768 256 768 _ _ (by omega) (Or.inl (by omega))
       (hlimb ▸ hstore)
@@ -1055,9 +1055,9 @@ theorem readWord_blMems (mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
   induction t with
   | zero => rfl
   | succ t ih =>
-      rw [blMems_succ, blStepMem, ham 256 768 _,
+      rw [blMems_succ,blStepMem,ham 256 768 _,
         storeWord_readWord_disjoint _ (736 + 32 * n) 2720 _ (Or.inr (by omega)),
-        hmp 256 1280 _, ih]
+        hmp 256 1280 _,ih]
 theorem blMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn : 2 ≤ n) (hn32 : n ≤ 8) (hcop : Nat.Coprime R mm)
@@ -1066,7 +1066,7 @@ theorem blMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
     (hinv : BlInv mem n mm R rr
       (blValue mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize) 0)) :
-    ∀ t, t < pbOf bsize →
+    ∀ t,t < pbOf bsize →
       BlInv (blMems mpMem amMem input n bsize (pbOf bsize) mem t) n mm R rr
         (blValue mm (Precompile.bytesToNatPadded input 96 bsize) (pbOf bsize) t) := by
   intro t
@@ -1084,7 +1084,7 @@ theorem blMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
           (fun pa pb m => spec.amMinv pa pb 256 m (by omega)) input n bsize
           (pbOf bsize) hn32 mem t).trans hminv)
         (ih (by omega))
-      rw [blMems_succ, blValue_succ]
+      rw [blMems_succ,blValue_succ]
       exact hstep
 theorem blMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R rr minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
@@ -1119,7 +1119,7 @@ def expBits (input : ByteArray) (bsize : Nat) (t : Nat) : Nat :=
 theorem expBits_eq (input : ByteArray) (bsize i j : Nat) (hj : j < 8) :
     expBits input bsize (8 * i + j) = bitAt (expByte input bsize i) (7 - j) := by
   unfold expBits
-  rw [show (8 * i + j) / 8 = i from by omega, show (8 * i + j) % 8 = j from by omega]
+  rw [show (8 * i + j) / 8 = i from by omega,show (8 * i + j) % 8 = j from by omega]
 theorem expAcc_lt {mm R bM : Nat} (hm : 0 < mm) (bits : Nat → Nat) (t : Nat) :
     expAcc mm R bM bits t < mm := by
   cases t with
@@ -1133,7 +1133,7 @@ structure EbInv (mem : ByteArray) (n mm bM acc : Nat) : Prop where
   modulus : Model.FastRepresents mem 0 n mm
   accBlock : Model.FastRepresents mem 256 n acc
   baseBlock : Model.FastRepresents mem 512 n bM
-  oneBlock : ∃ one, one < Limbs.radix ∧ Model.FastRepresents mem 768 n one
+  oneBlock : ∃ one,one < Limbs.radix ∧ Model.FastRepresents mem 768 n one
 theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (mem : ByteArray) (bM acc bit : Nat) (hbit : bit ≤ 1)
@@ -1143,7 +1143,7 @@ theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     EbInv (bitStep mpMem mem bit) n mm bM
       (if bit = 0 then Model.montMul mm R acc acc
         else Model.montMul mm R (Model.montMul mm R acc acc) bM) := by
-  obtain ⟨one, honelt, honerep⟩ := hinv.oneBlock
+  obtain ⟨one,honelt,honerep⟩ := hinv.oneBlock
   have hsq := spec.mpValue 256 256 256 mem acc acc (by omega) (by omega)
     (by omega) hinv.modulus hminv hinv.accBlock hinv.accBlock hacc hacc
   have hmod1 := spec.mpFrame 256 256 256 0 mm mem (by omega) (Or.inr (by omega))
@@ -1154,7 +1154,7 @@ theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     (Or.inl (by omega)) honerep
   rcases Nat.eq_zero_or_pos bit with h0 | hpos
   · subst h0
-    refine ⟨hmod1, ?_, hbase1, ⟨one, honelt, hone1⟩⟩
+    refine ⟨hmod1,?_,hbase1,⟨one,honelt,hone1⟩⟩
     show Model.FastRepresents (mpMem 256 256 256 mem) 256 n
       (Model.montMul mm R acc acc)
     exact hsq
@@ -1164,14 +1164,14 @@ theorem bitStep_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
       (Model.montMul mm R acc acc) bM (by omega) (by omega) (by omega) hmod1
       ((spec.mpMinv 256 256 256 mem (by omega)).trans hminv) hsq hbase1
       (Model.montMul_lt hm _ _ _) hbM
-    refine ⟨?_, ?_, ?_, ?_⟩
+    refine ⟨?_,?_,?_,?_⟩
     · exact spec.mpFrame 256 512 256 0 mm _ (by omega) (Or.inr (by omega)) hmod1
     · show Model.FastRepresents (mpMem 256 512 256 (mpMem 256 256 256 mem))
         256 n (Model.montMul mm R (Model.montMul mm R acc acc) bM)
       exact hmul
     · exact spec.mpFrame 256 512 256 512 bM _ (by omega) (Or.inl (by omega))
         hbase1
-    · exact ⟨one, honelt, spec.mpFrame 256 512 256 768 one _ (by omega)
+    · exact ⟨one,honelt,spec.mpFrame 256 512 256 768 one _ (by omega)
         (Or.inl (by omega)) hone1⟩
 theorem bitAt_zero_of_lt {w r j : Nat} (hw : w < 2 ^ (r + 1)) (hj : r < j) :
     bitAt w j = 0 := by
@@ -1183,12 +1183,12 @@ theorem montMul_mont_one {mm R : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm) :
   Model.montMul_eq_of_modEq hm hcop
     (Nat.ModEq.mul_left (R % mm) (Nat.mod_modEq R mm).symm) (Nat.mod_lt _ hm)
 theorem expAcc_of_zeros {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
-    (bits : Nat → Nat) (k : Nat) (hz : ∀ j, j < k → bits j = 0) :
+    (bits : Nat → Nat) (k : Nat) (hz : ∀ j,j < k → bits j = 0) :
     expAcc mm R bM bits k = R % mm := by
   induction k with
   | zero => rfl
   | succ k ih =>
-      rw [expAcc_succ, hz k (by omega), if_pos rfl,
+      rw [expAcc_succ,hz k (by omega),if_pos rfl,
         ih (fun j hj => hz j (by omega))]
       exact montMul_mont_one hm hcop
 theorem montMul_one_left {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
@@ -1201,20 +1201,20 @@ theorem montMul_one_left {mm R x : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
       exact h.symm) hx
 theorem expAcc_of_zeros_then_one {mm R bM : Nat} (hm : 0 < mm)
     (hcop : Nat.Coprime R mm) (hbM : bM < mm) (bits : Nat → Nat) (k : Nat)
-    (hz : ∀ j, j < k → bits j = 0) (hone : bits k ≠ 0) :
+    (hz : ∀ j,j < k → bits j = 0) (hone : bits k ≠ 0) :
     expAcc mm R bM bits (k + 1) = bM := by
-  rw [expAcc_succ, if_neg hone, expAcc_of_zeros hm hcop bits k hz,
-    montMul_mont_one hm hcop, montMul_one_left hm hcop hbM]
+  rw [expAcc_succ,if_neg hone,expAcc_of_zeros hm hcop bits k hz,
+    montMul_mont_one hm hcop,montMul_one_left hm hcop hbM]
 theorem bitAt_topExp {w : Nat} (hw : w < 256) (hne : w ≠ 0) :
     bitAt w (Lz.topExp w) = 1 := by
-  obtain ⟨_, _, hlt⟩ := Lz.topBit_spec w hw
+  obtain ⟨_,_,hlt⟩ := Lz.topBit_spec w hw
   have hle := Lz.topExp_le w hw hne
   have h1 : w / 2 ^ Lz.topExp w = 1 := by
     have hpos : 0 < (2 : Nat) ^ Lz.topExp w := by positivity
     have hge : 1 ≤ w / 2 ^ Lz.topExp w := (Nat.one_le_div_iff hpos).mpr hle
     have hlt2 : w / 2 ^ Lz.topExp w < 2 := by
       rw [Nat.div_lt_iff_lt_mul hpos]
-      simpa [Nat.pow_succ, Nat.mul_comm] using hlt
+      simpa [Nat.pow_succ,Nat.mul_comm] using hlt
     omega
   unfold bitAt
   rw [h1]
@@ -1222,11 +1222,11 @@ theorem bitMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
     (hn32 : n ≤ 8) (bM : Nat) (hbM : bM < mm) (w : Nat) (bits : Nat → Nat)
     (t0 j0 : Nat)
-    (hbits : ∀ k, k < 8 - j0 → bits (t0 + j0 + k) = bitAt w (7 - (j0 + k)))
+    (hbits : ∀ k,k < 8 - j0 → bits (t0 + j0 + k) = bitAt w (7 - (j0 + k)))
     (mem : ByteArray)
     (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM bits (t0 + j0))) :
-    ∀ k, k ≤ 8 - j0 →
+    ∀ k,k ≤ 8 - j0 →
       EbInv (bitMemsFrom mpMem w mem j0 k) n mm bM
         (expAcc mm R bM bits (t0 + j0 + k)) := by
   intro k
@@ -1240,7 +1240,7 @@ theorem bitMemsFrom_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → Byt
         ((readWord_bitMemsFrom mpMem 2720
           (fun pa pb m => spec.mpMinv pa pb 256 m (by omega)) w mem j0 k).trans hminv)
         (ih (by omega))
-      rw [show t0 + j0 + (k + 1) = t0 + j0 + k + 1 from rfl, expAcc_succ,
+      rw [show t0 + j0 + (k + 1) = t0 + j0 + k + 1 from rfl,expAcc_succ,
         hbits k (by omega)]
       exact hstep
 theorem ebInv_shift {n mm R bM : Nat} (hm : 0 < mm)
@@ -1251,9 +1251,9 @@ theorem ebInv_shift {n mm R bM : Nat} (hm : 0 < mm)
       (expAcc mm R bM (expBits input bsize) (8 * i + lzSkip input bsize i)) := by
   by_cases h0 : i = 0
   · subst h0
-    have hz : ∀ j, j < lzSkip input bsize 0 → expBits input bsize j = 0 := by
+    have hz : ∀ j,j < lzSkip input bsize 0 → expBits input bsize j = 0 := by
       intro j hj
-      obtain ⟨_, hle7, hwlt⟩ := Lz.topBit_spec (expByte input bsize 0)
+      obtain ⟨_,hle7,hwlt⟩ := Lz.topBit_spec (expByte input bsize 0)
         ((YulSemantics.EVM.byteFrom input.toList (96 + bsize + 0)).toNat_lt)
       have hjs : j < 7 - Lz.topExp (expByte input bsize 0) := by
         simpa [lzSkip] using hj
@@ -1270,13 +1270,13 @@ theorem ebInv_shift {n mm R bM : Nat} (hm : 0 < mm)
       rfl
     rw [he]
     exact hinv
-  · have hz0 : lzSkip input bsize i = 0 := by simp only [lzSkip, if_neg h0]
-    rw [hz0, Nat.add_zero]
+  · have hz0 : lzSkip input bsize i = 0 := by simp only [lzSkip,if_neg h0]
+    rw [hz0,Nat.add_zero]
     exact hinv
 theorem expAcc_skipOne {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (hbM : bM < mm) (input : ByteArray) (bsize : Nat) (bits : Nat → Nat)
     (hwne : expByte input bsize 0 ≠ 0)
-    (hbits : ∀ j, j < 8 → bits j = bitAt (expByte input bsize 0) (7 - j)) :
+    (hbits : ∀ j,j < 8 → bits j = bitAt (expByte input bsize 0) (7 - j)) :
     expAcc mm R bM bits (lzSkip input bsize 0 + 1) = bM := by
   have hwlt : expByte input bsize 0 < 256 :=
     (YulSemantics.EVM.byteFrom input.toList (96 + bsize + 0)).toNat_lt
@@ -1290,7 +1290,7 @@ theorem expAcc_skipOne {mm R bM : Nat} (hm : 0 < mm) (hcop : Nat.Coprime R mm)
     (by
       rw [hbits (lzSkip input bsize 0) (by omega),
         show 7 - lzSkip input bsize 0 = Lz.topExp (expByte input bsize 0)
-          from by omega, bitAt_topExp hwlt hwne]
+          from by omega,bitAt_topExp hwlt hwne]
       exact one_ne_zero)
 theorem ebInv_accCopy {mm bM n acc : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (mem : ByteArray) (hinv : EbInv mem n mm bM acc) :
@@ -1301,8 +1301,8 @@ theorem ebInv_accCopy {mm bM n acc : Nat} (hn : 2 ≤ n) (hn32 : n ≤ 8)
   baseBlock := fastRepresents_mcopyMem_disjoint mem 256 512 (32 * n) 512 n bM
     (Or.inl (by omega)) hinv.baseBlock
   oneBlock := by
-    obtain ⟨one, h1, h2⟩ := hinv.oneBlock
-    exact ⟨one, h1, fastRepresents_mcopyMem_disjoint mem 256 512 (32 * n) 768 n
+    obtain ⟨one,h1,h2⟩ := hinv.oneBlock
+    exact ⟨one,h1,fastRepresents_mcopyMem_disjoint mem 256 512 (32 * n) 768 n
       one (Or.inl (by omega)) h2⟩
 theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArray}
     {n mm R minv : Nat} (spec : SubSpec mpMem amMem n mm R minv) (hm : 0 < mm)
@@ -1311,7 +1311,7 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
     (mem : ByteArray)
     (hminv : MachineState.readWord mem 2720 = UInt256.ofNat minv)
     (hinv : EbInv mem n mm bM (expAcc mm R bM (expBits input bsize) 0)) :
-    ∀ i, EbInv (ebMems mpMem input bsize n mem i) n mm bM
+    ∀ i,EbInv (ebMems mpMem input bsize n mem i) n mm bM
       (expAcc mm R bM (expBits input bsize) (8 * i)) := by
   intro i
   induction i with
@@ -1330,14 +1330,14 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
       rw [byteMemAt]
       split
       · rename_i hc
-        obtain ⟨rfl, hwne⟩ := hc
+        obtain ⟨rfl,hwne⟩ := hc
         have hj7 : lzSkip input bsize 0 ≤ 7 := lzSkip_le input bsize 0
         have hacc : expAcc mm R bM (expBits input bsize) (lzSkip input bsize 0 + 1)
             = bM :=
           expAcc_skipOne hm hcop hbM input bsize (expBits input bsize) hwne
             (fun j hj => by
               have h := expBits_eq input bsize 0 j hj
-              rwa [Nat.mul_zero, Nat.zero_add] at h)
+              rwa [Nat.mul_zero,Nat.zero_add] at h)
         have hminvC : MachineState.readWord
             (mcopyMem (ebMems mpMem input bsize n mem 0) 256 512 (32 * n)) 2720
             = UInt256.ofNat minv :=
@@ -1347,14 +1347,14 @@ theorem ebMems_inv {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArra
             (mcopyMem (ebMems mpMem input bsize n mem 0) 256 512 (32 * n)) n mm bM
             (expAcc mm R bM (expBits input bsize)
               (0 + (lzSkip input bsize 0 + 1))) := by
-          rw [Nat.zero_add, hacc]
+          rw [Nat.zero_add,hacc]
           exact ebInv_accCopy hn hn32 _ ih
         have h := bitMemsFrom_inv spec hm hn32 bM hbM (expByte input bsize 0)
           (expBits input bsize) 0 (lzSkip input bsize 0 + 1)
           (fun k hk => by
             have hh := expBits_eq input bsize 0 (lzSkip input bsize 0 + 1 + k)
               (by omega)
-            rw [Nat.mul_zero, Nat.zero_add] at hh
+            rw [Nat.mul_zero,Nat.zero_add] at hh
             rw [show 0 + (lzSkip input bsize 0 + 1) + k
               = lzSkip input bsize 0 + 1 + k from by omega]
             exact hh)
@@ -1399,7 +1399,7 @@ theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
     exact (readWord_ebMems mpMem 2720
       (fun pa pb m => spec.mpMinv pa pb 256 m (by omega)) input bsize n mem esize
       (by omega) hn32).trans hminv
-  obtain ⟨one, honelt, honerep⟩ := hloop.oneBlock
+  obtain ⟨one,honelt,honerep⟩ := hloop.oneBlock
   have hone := write_low_limb (UInt256.ofNat 1) (by omega) honerep honelt
   rw [show (UInt256.ofNat 1).toNat = 1 from by decide] at hone
   have hmod := storeWord_frame (ebMems mpMem input bsize n mem esize) (736 + 32 * n)
@@ -1416,22 +1416,22 @@ theorem ebMem_final {mpMem amMem : Nat → Nat → Nat → ByteArray → ByteArr
       2 ^ (8 * esize) := by
     have h := Challenge.EvmProof.Bytes.bytesToNatPadded_lt_pow input (96 + bsize) esize
     rwa [show (256 : Nat) ^ esize = 2 ^ (8 * esize) from by
-      rw [show (256 : Nat) = 2 ^ 8 from by norm_num, ← Nat.pow_mul]] at h
-  have hbit : ∀ t, t < 8 * esize →
+      rw [show (256 : Nat) = 2 ^ 8 from by norm_num,← Nat.pow_mul]] at h
+  have hbit : ∀ t,t < 8 * esize →
       expBits input bsize t =
         bitAt (Precompile.bytesToNatPadded input (96 + bsize) esize)
           (8 * esize - t - 1) := by
     intro t ht
     have hi : t / 8 < esize := by omega
     have h := bitAt_expByte input bsize esize (t / 8) (7 - t % 8) hi (by omega)
-    rw [expBits, h, show 8 * (esize - 1 - t / 8) + (7 - t % 8) = 8 * esize - t - 1
+    rw [expBits,h,show 8 * (esize - 1 - t / 8) + (7 - t % 8) = 8 * esize - t - 1
       from by omega]
   rwa [expAcc_out hm hcop hbMform (expBits input bsize)
     (fun t => bitAt_le_one _ _) helt hbit] at hout
 theorem returnedState_isDone (s : State) (mem : ByteArray)
     (n bsize esize msize : Nat) (hstack : s.callStack = []) :
     (returnedState s mem n bsize esize msize).isDone = true := by
-  simp [State.isDone, State.isHalted, State.isRunning, returnedState, hstack]
+  simp [State.isDone,State.isHalted,State.isRunning,returnedState,hstack]
 theorem returnedState_toResult (s : State) (mem input : ByteArray)
     (n bsize esize msize result : Nat) (hn : 2 ≤ n) (hm : msize ≤ 32 * n)
     (hmpos : 0 < msize)
@@ -1466,7 +1466,7 @@ theorem handled_of_trace (input : ByteArray) (entry s : State) (mem : ByteArray)
       Nonempty (Challenge.EvmProof.GasSteps entry final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) :=
-  ⟨returnedState s mem n bsize esize msize, ⟨htrace⟩,
+  ⟨returnedState s mem n bsize esize msize,⟨htrace⟩,
     returnedState_isDone s mem n bsize esize msize hstack,
     returnedState_toResult s mem input n bsize esize msize result hn hmsz32 hmpos
       hbsize hesize hmsz hrep hres⟩
