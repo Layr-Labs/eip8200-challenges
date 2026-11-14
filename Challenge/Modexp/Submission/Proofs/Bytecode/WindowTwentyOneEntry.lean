@@ -39,8 +39,8 @@ def widthValueProgram : List Instr :=
 theorem run_width_value (template : State) (baseSize exponentSize modulusSize : UInt256)
     (tail : List UInt256) (htail : tail.length ≤ 997) :
     runInstructions widthValueProgram
-      (framed template (UInt256.ofNat 981) ([baseSize,exponentSize,modulusSize]++tail)) =
-    some (framed template (UInt256.ofNat 996)
+      (framed template (UInt256.ofNat 972) ([baseSize,exponentSize,modulusSize]++tail)) =
+    some (framed template (UInt256.ofNat 987)
       (widthDiff baseSize exponentSize modulusSize::[baseSize,exponentSize,modulusSize]++tail)) := by
   have hcap3 : tail.length + 3 < 1024 := by omega
   have hcap4 : tail.length + 4 < 1024 := by omega
@@ -85,17 +85,17 @@ theorem run_width (template : State) (baseSize exponentSize modulusSize : UInt25
     (tail : List UInt256) (htail : tail.length ≤ 997)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 131 = true) :
     runInstructions widthProgram
-      (framed template (UInt256.ofNat 981) ([baseSize,exponentSize,modulusSize]++tail)) =
+      (framed template (UInt256.ofNat 972) ([baseSize,exponentSize,modulusSize]++tail)) =
     some (framed template
       (if (widthDiff baseSize exponentSize modulusSize).toNat = 0
-        then UInt256.ofNat 999 else UInt256.ofNat 131)
+        then UInt256.ofNat 990 else UInt256.ofNat 131)
       ([baseSize,exponentSize,modulusSize]++tail)) := by
   have hv := run_width_value template baseSize exponentSize modulusSize tail htail
-  have ht := run_short_branch template (UInt256.ofNat 996) (UInt256.ofNat 131)
+  have ht := run_short_branch template (UInt256.ofNat 987) (UInt256.ofNat 131)
     (widthDiff baseSize exponentSize modulusSize) ([baseSize,exponentSize,modulusSize]++tail)
     (by simp only [List.length_append,List.length_cons,List.length_nil]; omega) htarget
   have both := runInstructions_append_some _ _ _ _ _ hv ht
-  have hpc : advancePC 3 (UInt256.ofNat 996) = UInt256.ofNat 999 := by decide
+  have hpc : advancePC 3 (UInt256.ofNat 987) = UInt256.ofNat 990 := by decide
   simpa only [widthProgram,framed,hpc] using both
 /-- Hit tail at 861: drop the two copies on top of the route frame and enter the
 general-width entry at 103 with the remaining ten words. -/
@@ -103,7 +103,7 @@ def hitTailProgram : List Instr := [.op .POP,.op .POP,.push 1 97,.op .JUMP]
 theorem run_hit_tail (template : State) (x y : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 97 = true) :
-    runInstructions hitTailProgram (framed template (UInt256.ofNat 999) (x::y::rest)) =
+    runInstructions hitTailProgram (framed template (UInt256.ofNat 990) (x::y::rest)) =
     some (framed template (UInt256.ofNat 97) rest) := by
   have hcap0 : rest.length < 1024 := by omega
   have hcap1 : rest.length + 1 < 1024 := by omega
@@ -117,8 +117,8 @@ def baseProgram : List Instr :=
   [.op .JUMPDEST]
 theorem run_base (template : State) (value : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000) :
-    runInstructions baseProgram (framed template (UInt256.ofNat 955) (value::rest)) =
-    some (framed template (UInt256.ofNat 956) (value::rest)) := by
+    runInstructions baseProgram (framed template (UInt256.ofNat 946) (value::rest)) =
+    some (framed template (UInt256.ofNat 947) (value::rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   simp [runInstructions,baseProgram,framed,Challenge.EvmProof.Stepper.runInstr,
     hcap1,Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -130,8 +130,8 @@ set_option linter.unusedSimpArgs false in
 theorem run_modulus (template : State)
     (value base : UInt256) (rest : List UInt256) (hrest : rest.length ≤ 999)
     (hbase : rest[1]? = some base) :
-    runInstructions modulusProgram (framed template (UInt256.ofNat 956) (value::rest)) =
-    some (framed template (UInt256.ofNat 958)
+    runInstructions modulusProgram (framed template (UInt256.ofNat 947) (value::rest)) =
+    some (framed template (UInt256.ofNat 949)
       (base::value::value::rest)) := by
   have hcap1 : rest.length + 1 < 1024 := by omega
   have hcap2 : rest.length + 2 < 1024 := by omega

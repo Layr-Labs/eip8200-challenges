@@ -35,12 +35,12 @@ def spare (_base modulus _exponent : UInt256) : UInt256 := modulus
 /-- The state at 979, after `WindowTwentyOneInit.program`. -/
 def entryState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneTable.framed template (UInt256.ofNat 1189) base modulus 16
+  WindowTwentyOneTable.framed template (UInt256.ofNat 1180) base modulus 16
     (WindowTwentyOneInit.setupStack modulus exponent rest)
 /-- The state at 984, after the two exponent-copy stores. -/
 def copiedState (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) : State :=
-  WindowTwentyOneLookup.framed template (UInt256.ofNat 1194) (loopMem base modulus exponent 1) 18
+  WindowTwentyOneLookup.framed template (UInt256.ofNat 1185) (loopMem base modulus exponent 1) 18
     ([WindowTwentyOneInit.doubled exponent,UInt256.ofNat 480,modulus,exponent]++rest)
 /-- Each full block consumes sixteen digits and restores the original frame. -/
 def headState (template : State) (pc : UInt256) (base modulus exponent : UInt256)
@@ -96,18 +96,18 @@ theorem run_trampoline (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 999) :
     runInstructionsX trampolineProgram (entryState template base modulus exponent rest) =
     some (copiedState template base modulus exponent rest) := by
-  have hs := run_copies template (UInt256.ofNat 1189) base modulus exponent rest hrest
-  have hpc : advancePC 5 (UInt256.ofNat 1189) = UInt256.ofNat 1194 := by decide
+  have hs := run_copies template (UInt256.ofNat 1180) base modulus exponent rest hrest
+  have hpc : advancePC 5 (UInt256.ofNat 1180) = UInt256.ofNat 1185 := by decide
   rw [hpc] at hs
   simpa only [entryState,copiedState,loopMem,eAt,WindowTwentyOneInit.doubled] using hs
 theorem run_entry (template : State) (base modulus exponent : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 999) :
     runInstructions entryProgram (copiedState template base modulus exponent rest) =
-    some (headState template (UInt256.ofNat 1202) base modulus exponent 0 rest) := by
-  have h := WindowTwentyOneInit.run_lookup template (UInt256.ofNat 1194)
+    some (headState template (UInt256.ofNat 1193) base modulus exponent 0 rest) := by
+  have h := WindowTwentyOneInit.run_lookup template (UInt256.ofNat 1185)
     (loopMem base modulus exponent 1) base modulus exponent
     (loopMem_table base modulus exponent 1) rest (by omega)
-  have hpc : advancePC 8 (UInt256.ofNat 1194) = UInt256.ofNat 1202 := by decide
+  have hpc : advancePC 8 (UInt256.ofNat 1185) = UInt256.ofNat 1193 := by decide
   rw [hpc] at h
   simpa only [entryProgram,copiedState,headState,spare,eAt,WindowTwentyOneInit.doubled,
     WindowTwentyOneMath.accumulator,WindowTwentyOneMath.advance,Nat.mul_zero] using h

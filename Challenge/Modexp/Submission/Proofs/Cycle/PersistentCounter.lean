@@ -25,21 +25,20 @@ theorem max_add (c : UInt256) :
 def program : List Instr :=
  [
   .op (.Dup ⟨15,by decide⟩),
-   .push 32 115792089237316195423570985008687907853269984665640564039457584007913129639935,
+   .push 1 1,
    .op .ADD,
    .op (.Swap ⟨15,by decide⟩),
-   .push 2 3492,
+   .push 2 3487,
    .op .JUMPI]
 theorem run (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 959)
- (hjump : Decode.isValidJumpDest s.executionEnv.code 3492 = true) :
- runInstructions program {s with pc := UInt256.ofNat 5570,stack := frame inv count a b n rest} =
- some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5610 else 3492),stack := frame inv (count-UInt256.ofNat 1) a b n rest} := by
+ (hjump : Decode.isValidJumpDest s.executionEnv.code 3487 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 5798,stack := frame inv count a b n rest} =
+ some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5807 else 3487),stack := frame inv (UInt256.ofNat 1+count) a b n rest} := by
  have ht : rest.tail.length ≤ rest.length := by cases rest <;> simp
  have capacity (j : Nat) (hj : j ≤ 20) : (rest.length-1)+j < 1024 := by omega
- have hmaxword : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 = UInt256.ofNat (2^256-1) := by decide
  by_cases hz : count.toNat = 0
- all_goals simp [program,frame,R9InvConsumeComplete.initialFrame,hmaxword,max_add,SquareMeaning.frame0,List.set,runInstructions,Stepper.runInstr,
+ all_goals simp [program,frame,R9InvConsumeComplete.initialFrame,SquareMeaning.frame0,List.set,runInstructions,Stepper.runInstr,
    List.exchange,Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,
    Word.ofNat_add_mod,UInt256.isTrue,hjump,hz,capacity,Nat.add_assoc]
 #print axioms run
@@ -52,9 +51,9 @@ theorem run_round (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 958) (hact : 88 ≤ s.activeWords.toNat)
  (hmem : LimbMemory.Holds s.memory inv a b n)
  (ha : ∀ i < 8,(a i).toNat < 2^240)
- (hjump : Decode.isValidJumpDest s.executionEnv.code 3492 = true) :
+ (hjump : Decode.isValidJumpDest s.executionEnv.code 3487 = true) :
  runInstructions roundProgram (CachedInverse.persistentInitial s inv count a b n rest) =
- some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5610 else 3492),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := frame inv (count-UInt256.ofNat 1) (WordHistory.squared inv a b n) b n (inv::rest)} := by
+ some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5807 else 3487),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := frame inv (UInt256.ofNat 1+count) (WordHistory.squared inv a b n) b n (inv::rest)} := by
  have hk := CachedInverse.run_persistent s inv count a b n rest hcap hact hmem ha
  have hc := run ({s with memory := R9InvConsumeComplete.historyMemory s.memory inv a b n})
    inv count (WordHistory.squared inv a b n) b n (inv::rest) (by simp; omega) hjump

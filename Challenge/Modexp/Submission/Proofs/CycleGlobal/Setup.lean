@@ -242,14 +242,14 @@ def entryState (s : State) : State :=
 def fallbackState (s : State) : State :=
   { s with pc := UInt256.ofNat 519,stack := [] }
 def memoEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 912,stack := [] }
+  { s with pc := UInt256.ofNat 903,stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 10076,stack := [] }
+  { s with pc := UInt256.ofNat 10250,stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 10118,stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 10292,stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 10125
+    pc := UInt256.ofNat 10299
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -290,14 +290,14 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 10114
+    pc := UInt256.ofNat 10288
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
 def zeroExpFinalState (s : State) (input : ByteArray) : State :=
   { zeroExpStoreState s input with
     stack := []
-    pc := UInt256.ofNat 10117
+    pc := UInt256.ofNat 10291
     halt := .Returned
     hReturn := MachineState.readPadded (zeroExpMemory s input)
       (32 - modulusSize input) (modulusSize input)
@@ -394,8 +394,8 @@ def zeroExpReturnProgram80 : List Instr :=
    .op .MSIZE,
    .op .SUB,
    .op .RETURN]
-def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10114 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 7913 4 10114 zeroExpReturnProgram80
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10288 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 7913 4 10288 zeroExpReturnProgram80
     (by change 7913+4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
@@ -1234,11 +1234,11 @@ theorem fallbackState_initial (input : ByteArray) :
       Main.trampolineState input 519 := rfl
 theorem memoEntryState_initial (input : ByteArray) :
     memoEntryState (initialState CycleSubmission.Artifact.bytecode input 0) =
-      Main.trampolineState input 912 := rfl
+      Main.trampolineState input 903 := rfl
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
-        (Main.trampolineState input 912))
+        (Main.trampolineState input 903))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
         (bigBailState (initialState CycleSubmission.Artifact.bytecode input 0) input))

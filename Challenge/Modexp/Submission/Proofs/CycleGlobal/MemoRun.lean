@@ -22,13 +22,13 @@ open EvmSemantics
 open EvmSemantics.EVM
 open CycleSubmission.Global.Dispatch
 /-- Where the width-miss trampoline lands: the recogniser entry. -/
-def entryState (input : ByteArray) : State := Main.trampolineState input 912
+def entryState (input : ByteArray) : State := Main.trampolineState input 903
 /-- After the width test passes: the tail test. -/
-def tailState (input : ByteArray) : State := Main.trampolineState input 926
+def tailState (input : ByteArray) : State := Main.trampolineState input 917
 /-- Where both miss exits land: the unchanged legacy entry. -/
 def legacyState (input : ByteArray) : State := Main.trampolineState input 519
 /-- After both tests pass: the first instruction of the answer block. -/
-def hitEntryState (input : ByteArray) : State := Main.trampolineState input 946
+def hitEntryState (input : ByteArray) : State := Main.trampolineState input 937
 /-- The word test in the shape the evaluator leaves it. -/
 private def widthNat (input : ByteArray) : Nat :=
   (115792089237316195423570985008687907853269984665640564039457584007913129639936 +
@@ -86,7 +86,7 @@ private theorem widthBody_iff (input : ByteArray) :
   widthNat_eq_zero_iff input
 /-- The state after the six instructions before the first `JUMPI`. -/
 private def widthMidState (input : ByteArray) : State :=
-  { Main.trampolineState input 925 with
+  { Main.trampolineState input 916 with
       stack := [UInt256.ofNat 519,MachineState.readWord input 68 - (137506062208 : UInt256)] }
 set_option linter.unusedSimpArgs false in
 private theorem run_width_prefix (input : ByteArray) :
@@ -112,7 +112,7 @@ private theorem run_width_prefix (input : ByteArray) :
     Challenge.EvmProof.Word.succ_ofNat_mod]
 set_option linter.unusedSimpArgs false in
 private theorem run_width_jump (input : ByteArray) :
-    Challenge.EvmProof.Stepper.runLocatedBlock [opAt 651 .JUMPI] (widthMidState input) =
+    Challenge.EvmProof.Stepper.runLocatedBlock [opAt 643 .JUMPI] (widthMidState input) =
       some (if MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
         then tailState input else legacyState input) := by
   obtain ⟨c0,c32,c68,c100,c1,c2,cK⟩ := lits
@@ -151,7 +151,7 @@ private theorem run_width_generic (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock widthPath (entryState input) =
       some (if MachineState.readWord input 68 = UInt256.ofNat MemoLogic.tailConst
         then tailState input else legacyState input) :=
-  Challenge.EvmProof.Stepper.runLocatedBlock_append (widthPath.take 5) [opAt 651 .JUMPI]
+  Challenge.EvmProof.Stepper.runLocatedBlock_append (widthPath.take 5) [opAt 643 .JUMPI]
     (entryState input) (widthMidState input) _ (run_width_prefix input) rfl
     (run_width_jump input)
 set_option linter.unusedSimpArgs false in

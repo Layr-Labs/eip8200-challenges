@@ -40,21 +40,27 @@ def cells (mem : ByteArray) (f : Caller) : List (Nat × UInt256) :=
    (96,scaled mem 2368 5),(128,scaled mem 2368 6),(160,scaled mem 2368 7)]
 def result (s : State) (f : Caller) : State :=
   {s with
-    pc := UInt256.ofNat 3484
+    pc := UInt256.ofNat 3476
     memory := storeCells s.memory (cells s.memory f)
-    stack := CycleSubmission.SquareMeaning.frame0 (MachineState.readWord s.memory 2720)
-      (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (f.counter::saved f)}
+    stack := (CycleSubmission.SquareMeaning.frame0 (MachineState.readWord s.memory 2720)
+      (scaled s.memory 2368) (fun _ => UInt256.ofNat 0) (ordinary s.memory 0) (f.counter::saved f)).set 10 (scaled s.memory 2368 7)}
 theorem model_eq (s : State) (f : Caller) :
     entryModel s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
       f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail = result s f := by
-  simp (disch := decide) only [entryModel,readStore]
-  rfl
+  have h240 : UInt256.shiftRight (UInt256.ofNat (2^256-1)) (UInt256.ofNat 16) = UInt256.ofNat (2^240-1) := by decide
+  have h251 : UInt256.shiftRight (UInt256.lnot (UInt256.ofNat 0)) (UInt256.ofNat 5) = UInt256.ofNat (2^251-1) := by decide
+  simp (disch := decide) only [entryModel,result,cells,storeCells,writeCell,
+    readStore,readWord_writeWord,CycleSubmission.Prepared.Arithmetic.read_disjoint,h240,h251,
+    Nat.reduceLT,Nat.reduceEqDiff,Nat.reduceMul,Nat.reduceSub,Nat.reduceAdd,↓reduceIte,
+    CycleSubmission.SquareMeaning.frame0,CycleSubmission.WordArithmetic.P,HistoricalSearch.CRTColumn.residueModulus,
+    saved,scaled,scaledLow,scaledTop,ordinary,low,top,List.set,List.cons_append,List.nil_append,
+    CycleSubmission.Prepared.Arithmetic.andC]
 theorem run (s : State) (f : Caller) (hcap : f.tail.length ≤ 959)
     (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions entryProgram {s with pc := UInt256.ofNat 3328,stack := saved f} =
+    runInstructions entryProgram {s with pc := UInt256.ofNat 3318,stack := saved f} =
       some (result s f) := by
   have h := entry_run s f.pbi f.hd f.w3 f.ent f.m32 (UInt256.ofNat (2^256-1))
-    f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail hcap hact
+    f.m128 f.m64 f.m0 f.tl f.m96 f.inv f.tn f.aprev f.counter f.ret f.tail (by omega) hact
   rw [model_eq] at h
   exact h
 theorem memory_output (s : State) (f : Caller) :

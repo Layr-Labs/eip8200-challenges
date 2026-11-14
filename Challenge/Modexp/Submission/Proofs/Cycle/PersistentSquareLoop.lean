@@ -15,7 +15,7 @@ open CycleSubmission.ControlArithmetic (value)
 open CycleSubmission.SquareStep (zeroWords)
 def counter (s : State) : UInt256 := s.stack.getD 15 (UInt256.ofNat 0)
 def frame (inv : UInt256) (a n : Nat → UInt256) (rest : List UInt256) : List UInt256 :=
- ((SquareMeaning.frame0 inv a zeroWords n ((a 8)::(rest.take 1++rest.drop 2))).set 10 (a 5)).set 13 (UInt256.ofNat (2^240-1))
+ ((SquareMeaning.frame0 inv a zeroWords n ((a 8)::(rest.take 1++rest.drop 2))).set 10 (a 5)).set 13 (a 7)
 theorem reset_self (s : State) (pc : UInt256) (stack : List UInt256)
  (hp : s.pc = pc) (hs : s.stack = stack) : {s with pc := pc,stack := stack} = s := by
  rw [← hp,← hs]
@@ -54,7 +54,7 @@ structure RoundOutcome (s : State) (inv : UInt256) (a n : Nat → UInt256)
   bounded : ∀ i < 9,(output i).toNat < radix
   small : value output + 2*N ≤ radix^9
   form : value output ≡ (x*x)*radix^9 [MOD N]
-  counter : 1 < k → counter state = UInt256.ofNat ((k-1)-1)
+  counter : 1 < k → counter state = UInt256.ofNat 0-UInt256.ofNat ((k-1)-1)
   keepsBase : ∀ start count,256 ≤ start → start+count ≤ 768 →
     MachineState.readPadded state.memory start count = MachineState.readPadded s.memory start count
   calls : state.callStack = s.callStack
@@ -62,7 +62,7 @@ abbrev StepCertificate := ∀ (s : State) (inv : UInt256) (a n : Nat → UInt256
     (k N x : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : LimbMemory.Holds s.memory inv a zeroWords n)
-    (hc : counter s = UInt256.ofNat (k-1))
+    (hc : counter s = UInt256.ofNat 0-UInt256.ofNat (k-1))
     (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hn : ∀ i < 9,(n i).toNat < radix)
     (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)
@@ -74,7 +74,7 @@ noncomputable def run (step : StepCertificate startPC exitPC) (s : State) (inv :
     (k N x : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
     (env : Environment Artifact.artifact .Osaka s)
     (hm : LimbMemory.Holds s.memory inv a zeroWords n)
-    (hc : counter s = UInt256.ofNat (k-1))
+    (hc : counter s = UInt256.ofNat 0-UInt256.ofNat (k-1))
     (hcache : rest[0]? = some inv) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hn : ∀ i < 9,(n i).toNat < radix)
     (hn0 : (n 0).toNat = N % radix) (hNvalue : value n = N)

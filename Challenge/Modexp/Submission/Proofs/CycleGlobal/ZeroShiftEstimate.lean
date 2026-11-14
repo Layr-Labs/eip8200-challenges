@@ -9,16 +9,16 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM
-@[local simp] private theorem zeroCompactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2272 = 2944 := by
+@[local simp] private theorem zeroCompactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2264 = 2934 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8262 = 10592 := by
+@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8244 = 10746 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 private theorem rho_clamp8_program :
     blkEstimateSuffix8.map Challenge.EvmProof.Stepper.Located.instruction = estimateRawPart5 := by rfl
 private theorem rho_clamp8_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 2942) blkEstimateSuffix8 := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 2932) blkEstimateSuffix8 := by
   dsimp only [blkEstimateSuffix8,opAt,pushAt,wfOp,
     WindowTwentyOneLocated.LinearPath,WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push,YulEvmCompiler.Instr.size_op,
@@ -38,7 +38,7 @@ private theorem rho_clamp8_layout :
   have hright : Challenge.EvmProof.Stepper.runLocatedBlock blkEstimateSuffix8
       (zeroJoinState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
-    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix8 (UInt256.ofNat 2942)
+    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix8 (UInt256.ofNat 2932)
       (zeroJoinState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
       ?_ rho_clamp8_layout ?_ hrun ?_
     · change CycleSubmission.Artifact.bytecode.size < 2^256
@@ -52,7 +52,7 @@ private theorem rho_clamp8_layout :
 private theorem rho_clamp4_program :
     blkEstimateSuffix4.map Challenge.EvmProof.Stepper.Located.instruction = estimateRawPart5 := by rfl
 private theorem rho_clamp4_layout :
-    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10590) blkEstimateSuffix4 := by
+    WindowTwentyOneLocated.LinearPath (UInt256.ofNat 10744) blkEstimateSuffix4 := by
   dsimp only [blkEstimateSuffix4,opAt,pushAt,wfOp,
     WindowTwentyOneLocated.LinearPath,WindowTwentyOneLocated.Linear]
   simp [YulEvmCompiler.Instr.size_push,YulEvmCompiler.Instr.size_op,
@@ -72,7 +72,7 @@ private theorem rho_clamp4_layout :
   have hright : Challenge.EvmProof.Stepper.runLocatedBlock blkEstimateSuffix4
       (zeroJoinState z s mem n bsize esize msize k) =
       some (macSetupState z s mem n bsize esize msize k) := by
-    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix4 (UInt256.ofNat 10590)
+    refine WindowTwentyOneLocated.run_linear blkEstimateSuffix4 (UInt256.ofNat 10744)
       (zeroJoinState z s mem n bsize esize msize k) (macSetupState z s mem n bsize esize msize k)
       ?_ rho_clamp4_layout ?_ hrun ?_
     · change CycleSubmission.Artifact.bytecode.size < 2^256
