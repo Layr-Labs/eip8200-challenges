@@ -1,3 +1,20 @@
+# RIPEMD-160: abc-guard miss jumps straight to the generic entry (615,328 gas)
+
+Parent: promoted commit `cfd609c6` (validated `ba93b2cc`, 615,340 gas).
+
+The abc word guard at PC 4840 ends `XOR; PUSH2 4658; JUMPI`. Its miss target
+4658 is a bare trampoline (`JUMPDEST; PUSH1 245; JUMP`) to the generic
+compressor `JUMPDEST` at 245, reached with an empty stack and unchanged
+memory. The push now carries 245 directly as `PUSH2 0x00f5`, keeping the
+window's width and every PC. A tiny non-abc input that passes the prefilter
+(generated #27, 3 bytes) skips JUMPDEST + PUSH1 + JUMP: -12 gas,
+615,340 -> **615,328**. The trampoline stays for the size classifier.
+
+Proof: `GuardInstructionWindow.tail`, `AbcArm.wordPath`/`entryDest`
+(instruction 133, `pc_generic`), `AbcArm.run_word_miss` now ends at PC 246, and
+`HoistedStoreCorrect` hands `gasSteps_miss` directly to the generic path; the
+4659 bridge in `Patterned128Entry` is retired.
+
 # RIPEMD-160: calldata-size shift operand for the 56-byte recognizer literal (615,340 gas)
 
 Parent: promoted commit `2783859a` (validated `e48295cc`, 615,341 gas).

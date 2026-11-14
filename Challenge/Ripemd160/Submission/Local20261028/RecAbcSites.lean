@@ -19,7 +19,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located Control.Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : Control.Artifact.submissionArtifact.instructionPC 3356 = 4658 := by
+@[simp] theorem pc_generic : Control.Artifact.submissionArtifact.instructionPC 133 = 245 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_4095 : Control.Artifact.submissionArtifact.instructionPC 3431 = 4840 := by
   exact Control.GuardInstructionWindow.pc 0
@@ -70,7 +70,7 @@ def wordMaskNat : Nat :=
 def wordMask : UInt256 := UInt256.ofNat wordMaskNat
 
 def entryDest : Located :=
-  ⟨3356, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
+  ⟨133, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
 
 def wordPath : List Located :=
     [⟨3431, .push ⟨3, by decide⟩ (UInt256.ofNat 6382179), by exact Control.GuardInstructionWindow.get 0, by decide⟩,
@@ -81,7 +81,7 @@ def wordPath : List Located :=
      ⟨3436, .op .CALLDATASIZE, by exact Control.GuardInstructionWindow.get 5, ⟨by decide, trivial, rfl⟩⟩,
      ⟨3437, .op .SAR, by exact Control.GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
      ⟨3438, .op .XOR, by exact Control.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩,
-     ⟨3439, .push ⟨2, by decide⟩ (UInt256.ofNat 4658), by exact Control.GuardInstructionWindow.get 8, by decide⟩,
+     ⟨3439, .push ⟨2, by decide⟩ (UInt256.ofNat 245), by exact Control.GuardInstructionWindow.get 8, by decide⟩,
      ⟨3440, .op .JUMPI, by exact Control.GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩]
 
 def wordMissPath : List Located := wordPath ++ [entryDest]

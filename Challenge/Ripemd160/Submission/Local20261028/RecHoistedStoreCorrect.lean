@@ -59,8 +59,7 @@ theorem correct : Correct Control.submissionBytecode := by
       exact Control.AbcArm.correct_abc input hfit
         (Control.AbcArm.wordCond_zero_size_pos input hfit (by omega) hs4 hw) harm
     · exact Control.StackCorrect.correct input hfit (by omega)
-        (harm.trans ((Control.AbcArm.gasSteps_miss input hw).trans
-          (Control.Patterned128Entry.gasSteps_after_arm_miss input hfit hallowed)))
+        (harm.trans (Control.AbcArm.gasSteps_miss input hw))
   by_cases h1000 : input.size = 1000
   swap
   · have gs := DataStepper.runLocatedBlock_sound Control.Artifact.submissionArtifact .Osaka

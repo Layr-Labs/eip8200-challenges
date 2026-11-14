@@ -29,7 +29,7 @@ def wordCond (input : ByteArray) : UInt256 :=
 
 def armEntry (input : ByteArray) : State := Control.Execution.atPC input 4840
 def emptyEntry (input : ByteArray) : State := Control.Execution.atPC input 4624
-def fallbackState (input : ByteArray) : State := Control.Execution.atPC input 4659
+def fallbackState (input : ByteArray) : State := Control.Execution.atPC input 246
 def answerWord (input : ByteArray) : UInt256 :=
   if input.size = 0 then UInt256.ofNat 890993315260586290631548281360202943075753233713
   else UInt256.ofNat 814647003348588794217809277549781461204094028796
@@ -76,9 +76,9 @@ private theorem true_of_ne_zero (w : UInt256) (h : w ≠ 0) : UInt256.isTrue w =
     exact hn
   simpa using ht
 
-private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 4658 = true := by
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 3356 (by rfl)
-  rw [pc_176] at h
+private theorem valid_generic : Decode.isValidJumpDest submissionBytecode 245 = true := by
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 133 (by rfl)
+  rw [pc_generic] at h
   exact h
 
 /-! ### The size-fed sign-extending guard accepts exactly `abc`. -/
@@ -132,7 +132,7 @@ def wordShifted (input : ByteArray) : State :=
 def wordTested (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
     pc := UInt256.ofNat 4855
-    stack := [UInt256.ofNat 4658, wordCond input] }
+    stack := [UInt256.ofNat 245, wordCond input] }
 
 private theorem run_word_head (input : ByteArray) :
     DataStepper.runLocatedBlock wordHead (armEntry input) = some (wordLoaded input) := by
@@ -184,16 +184,16 @@ theorem run_word_miss (input : ByteArray) (hm : wordCond input ≠ 0) :
     DataStepper.runLocatedBlock [wordBranch, entryDest] (wordTested input) =
       some (fallbackState input) := by
   have hbranch : DataStepper.runLocatedBlock [wordBranch] (wordTested input) =
-      some (PatternedScan.stS input 4658 []) :=
+      some (PatternedScan.stS input 245 []) :=
     PatternedScan.blockOfS wordBranch
-      (PatternedScan.pcFactS input 3440 4855 [UInt256.ofNat 4658, wordCond input] (by norm_num) pc_4104)
-      (PatternedScan.stepS_jumpi_taken input 4855 4658 (UInt256.ofNat 4658) (wordCond input) []
+      (PatternedScan.pcFactS input 3440 4855 [UInt256.ofNat 245, wordCond input] (by norm_num) pc_4104)
+      (PatternedScan.stepS_jumpi_taken input 4855 245 (UInt256.ofNat 245) (wordCond input) []
         (by simp) (by norm_num) rfl (by simpa using true_of_ne_zero (wordCond input) hm) valid_generic)
-  have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 4658 []) =
+  have hd : DataStepper.runLocatedBlock [entryDest] (PatternedScan.stS input 245 []) =
       some (fallbackState input) := by
     exact PatternedScan.blockOfS entryDest
-      (PatternedScan.pcFactS input 3356 4658 [] (by norm_num) pc_176)
-      (PatternedScan.stepS_jumpdest input 4658 [] (by simp) (by norm_num))
+      (PatternedScan.pcFactS input 133 245 [] (by norm_num) pc_generic)
+      (PatternedScan.stepS_jumpdest input 245 [] (by simp) (by norm_num))
   exact DataStepper.runLocatedBlock_append [wordBranch] [entryDest]
     _ _ _ hbranch rfl hd
 
@@ -201,8 +201,8 @@ theorem run_word_hit (input : ByteArray) (hm : wordCond input = 0) :
     DataStepper.runLocatedBlock [wordBranch] (wordTested input) = some (Control.Execution.atPC input 4856) := by
   have ht : ¬ UInt256.isTrue (wordCond input) := by rw [hm]; decide
   exact PatternedScan.blockOfS wordBranch
-    (PatternedScan.pcFactS input 3440 4855 [UInt256.ofNat 4658, wordCond input] (by norm_num) pc_4104)
-    (PatternedScan.stepS_jumpi_fall input 4855 (UInt256.ofNat 4658) (wordCond input) []
+    (PatternedScan.pcFactS input 3440 4855 [UInt256.ofNat 245, wordCond input] (by norm_num) pc_4104)
+    (PatternedScan.stepS_jumpi_fall input 4855 (UInt256.ofNat 245) (wordCond input) []
       (by simp) (by norm_num) ht)
 
 theorem run_store (input : ByteArray) (hne : input.size ≠ 0) :

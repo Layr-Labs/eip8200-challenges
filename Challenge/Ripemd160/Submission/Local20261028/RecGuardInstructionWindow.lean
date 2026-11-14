@@ -16,7 +16,7 @@ def tail : List Instr := [
   .op .CALLDATASIZE,
   .op .SAR,
   .op .XOR,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 4658),
+  .push ⟨2, by decide⟩ (UInt256.ofNat 245),
   .op .JUMPI,
   .push ⟨20, by decide⟩ (UInt256.ofNat 814647003348588794217809277549781461204094028796),
   .push ⟨0, by decide⟩ (UInt256.ofNat 0),
