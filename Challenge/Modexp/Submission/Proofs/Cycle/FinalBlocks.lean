@@ -278,10 +278,10 @@ theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 8527 = true :=
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   rw [hp] at h
   exact h
-theorem validJump11014 : Decode.isValidJumpDest Artifact.bytecode 10462 = true := by
+theorem validJump11014 : Decode.isValidJumpDest Artifact.bytecode 10450 = true := by
   have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 8002
     (show Artifact.instructions[8002]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 8002 = 10462 := by
+  have hp : Artifact.artifact.instructionPC 8002 = 10450 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   rw [hp] at h
   exact h

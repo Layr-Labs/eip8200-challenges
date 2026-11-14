@@ -32,12 +32,12 @@ theorem Outcome.eventually {start : State} {expected : ByteArray}
 structure Packed (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) where
   state : State
   trace : GasSteps {s with pc := UInt256.ofNat 8527,stack := NormalizeMeaning.frame a n slot0 slot1 rest} state
-  pc : state.pc = UInt256.ofNat 8586
+  pc : state.pc = UInt256.ofNat 8576
   frame : state.stack = NormalizeMeaning.frame a n slot0 slot1 rest
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
-  represented : MachineState.readPadded state.memory 2112 256 = Precompile.natToBytes (value a) 256
+  represented : MachineState.readPadded state.memory 16 256 = Precompile.natToBytes (value a) 256
   calls : state.callStack = s.callStack
 noncomputable def pack (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
@@ -62,7 +62,7 @@ noncomputable def serialize (s : State) (a n : Nat → UInt256) (slot0 slot1 : U
   have act : 88 ≤ packed.activeWords.toNat := by rw [active]; exact hact
   have hr := Return.gasSteps packed (NormalizeMeaning.frame a n slot0 slot1 rest)
     (env.transfer en halt) cap act
-  have he : {packed with pc := UInt256.ofNat 8586,stack := NormalizeMeaning.frame a n slot0 slot1 rest} = packed :=
+  have he : {packed with pc := UInt256.ofNat 8576,stack := NormalizeMeaning.frame a n slot0 slot1 rest} = packed :=
     PersistentSquareLoop.reset_self _ _ _ pc frame
   rw [he] at hr
   refine ⟨Return.result packed (NormalizeMeaning.frame a n slot0 slot1 rest),hp.trans hr,rfl,?_,calls⟩

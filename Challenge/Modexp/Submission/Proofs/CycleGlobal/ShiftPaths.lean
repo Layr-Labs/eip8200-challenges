@@ -221,7 +221,7 @@ def blkNbTailByte : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Os
    opAt 2155 .BYTE,
    pushAt 2156 1 3,
    opAt 2157 .EQ,
-   pushAt 2158 2 7805,
+   pushAt 2158 2 7793,
    opAt 2159 .MUL,
    opAt 2160 .ADD]
 def blkNbTailJoin : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
@@ -323,7 +323,7 @@ def blkZero4 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) 
    opAt 7903 .GT,
    opAt 7904 (.Swap ⟨0,by decide⟩),
    opAt 7905 .SUB,
-   pushAt 7906 2 10696,
+   pushAt 7906 2 10684,
    opAt 7907 .JUMP]
 def blkEstimateSuffix8 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
   [opAt 2262 .JUMPDEST,
@@ -622,9 +622,9 @@ theorem jumpDest4839 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 
   have hp : runtimeArtifact.instructionPC 2217 = 2874 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
-theorem jumpDestHead4 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10638 = true := by
+theorem jumpDestHead4 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10626 = true := by
   have h := CycleSubmission.Global.Binding.jumpDest 8117 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
-  have hp : runtimeArtifact.instructionPC 8117 = 10638 := by
+  have hp : runtimeArtifact.instructionPC 8117 = 10626 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
   simpa only [hp] using h
 theorem jumpDest5115 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3215 = true := by

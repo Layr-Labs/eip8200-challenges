@@ -34,8 +34,8 @@ variable (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka
   (hcache : MachineState.readWord s.memory 160 = cntp)
 /-- The product: loop exit (4716) to `r5_norm` (5058). -/
 noncomputable def product :
-    GasSteps {s with pc := UInt256.ofNat 9420,stack := x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest}
-      {s with pc := UInt256.ofNat 10090,stack := prV5_5 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV6_6 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV7_7 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV8_8 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV8_0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::n1::n2::n3::n4::P::inv::cntp::rest} :=
+    GasSteps {s with pc := UInt256.ofNat 9409,stack := x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest}
+      {s with pc := UInt256.ofNat 10079,stack := prV5_5 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV6_6 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV7_7 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV8_8 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV8_0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::n1::n2::n3::n4::P::inv::cntp::rest} :=
   let a := prSeg0_run s x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M rest hcap hact hcache
     h_b0 h_b1 h_b2 h_b3 h_b4 h_n0 h_inv h_M
   let b := prSeg1_run s x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M rest hcap hact
@@ -62,8 +62,8 @@ def normAt (pc : Nat) (a0 a1 a2 a3 a4 : UInt256) : State :=
   {s with pc := UInt256.ofNat pc,stack := a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
 /-- `a4 < n4`: straight to `r5_done`. -/
 noncomputable def roundLt (hlt : (UInt256.lt a4 n4).toNat ≠ 0) :
-    GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10090 a0 a1 a2 a3 a4)
-      (normAt s n1 n2 n3 n4 P inv cntp rest 10178 a0 a1 a2 a3 a4) :=
+    GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10079 a0 a1 a2 a3 a4)
+      (normAt s n1 n2 n3 n4 P inv cntp rest 10167 a0 a1 a2 a3 a4) :=
   ((runSteps normBlock s env ((norm_run s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact).trans
         (congrArg some (norm_eq s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest))) rfl rfl rfl).trans
     (ctl5188_steps s _ _ env (by simp only [List.length_cons]; omega))).cast rfl
@@ -71,8 +71,8 @@ noncomputable def roundLt (hlt : (UInt256.lt a4 n4).toNat ≠ 0) :
 /-- `a4 ≥ n4`: the trial subtraction, then either back to the digits (borrow out) or the
 difference and another round. -/
 noncomputable def roundSub (hlt : (UInt256.lt a4 n4).toNat = 0) :
-    GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10090 a0 a1 a2 a3 a4)
-      {s with pc := (if (blk5192_o0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M).toNat = 0 then UInt256.ofNat 10158 else UInt256.ofNat 10172),stack := blk5192_o1 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o2 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o3 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o4 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o5 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} :=
+    GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10079 a0 a1 a2 a3 a4)
+      {s with pc := (if (blk5192_o0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M).toNat = 0 then UInt256.ofNat 10147 else UInt256.ofNat 10161),stack := blk5192_o1 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o2 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o3 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o4 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::blk5192_o5 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp n0 M::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest} :=
   ((((runSteps normBlock s env ((norm_run s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact).trans
         (congrArg some (norm_eq s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest))) rfl rfl rfl).trans
     (ctl5188_steps s _ _ env (by simp only [List.length_cons]; omega))).cast rfl
@@ -82,20 +82,20 @@ noncomputable def roundSub (hlt : (UInt256.lt a4 n4).toNat = 0) :
     (ctl5261_steps s _ _ env (by simp only [List.length_cons]; omega))
 /-- Borrow out: drop the trial digits and go to `r5_done` with `a`. -/
 noncomputable def keep (d4 d3 d2 d1 d0 : UInt256) :
-    GasSteps {s with pc := UInt256.ofNat 10172,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
-      (normAt s n1 n2 n3 n4 P inv cntp rest 10178 a0 a1 a2 a3 a4) :=
+    GasSteps {s with pc := UInt256.ofNat 10161,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
+      (normAt s n1 n2 n3 n4 P inv cntp rest 10167 a0 a1 a2 a3 a4) :=
   runSteps negBlock s env ((neg_run s d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact).trans
       (congrArg some (neg_eq s d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest))) rfl rfl rfl
 /-- No borrow: the difference digits replace `a` and the round repeats. -/
 noncomputable def replace (d4 d3 d2 d1 d0 : UInt256) :
-    GasSteps {s with pc := UInt256.ofNat 10158,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
-      (normAt s n1 n2 n3 n4 P inv cntp rest 10090 d0 d1 d2 d3 d4) :=
+    GasSteps {s with pc := UInt256.ofNat 10147,stack := d4::d3::d2::d1::d0::a0::a1::a2::a3::a4::n1::n2::n3::n4::P::inv::cntp::rest}
+      (normAt s n1 n2 n3 n4 P inv cntp rest 10079 d0 d1 d2 d3 d4) :=
   (runSteps blk5265Block s env ((blk5265_run s d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact).trans
       (congrArg some (blk5265_eq s d4 d3 d2 d1 d0 a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest))) rfl rfl rfl).trans
   (ctl5275_steps s _ env (by simp only [List.length_cons]; omega))
 /-- `r5_done`: pack and return. -/
 noncomputable def finish :
-    GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10178 a0 a1 a2 a3 a4)
+    GasSteps (normAt s n1 n2 n3 n4 P inv cntp rest 10167 a0 a1 a2 a3 a4)
       (ctl5330_result {s with memory := done_mem s.memory a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp}
         (n1::n2::n3::n4::P::inv::cntp::rest)) :=
   (runSteps doneBlock s env ((done_run s a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp rest hcap hact).trans

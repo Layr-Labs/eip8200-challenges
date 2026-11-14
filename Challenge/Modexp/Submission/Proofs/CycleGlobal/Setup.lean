@@ -244,12 +244,12 @@ def fallbackState (s : State) : State :=
 def memoEntryState (s : State) : State :=
   { s with pc := UInt256.ofNat 903,stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 10202,stack := [] }
+  { s with pc := UInt256.ofNat 10190,stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 10244,stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 10232,stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 10251
+    pc := UInt256.ofNat 10239
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -290,14 +290,14 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 10240
+    pc := UInt256.ofNat 10228
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
 def zeroExpFinalState (s : State) (input : ByteArray) : State :=
   { zeroExpStoreState s input with
     stack := []
-    pc := UInt256.ofNat 10243
+    pc := UInt256.ofNat 10231
     halt := .Returned
     hReturn := MachineState.readPadded (zeroExpMemory s input)
       (32 - modulusSize input) (modulusSize input)
@@ -394,8 +394,8 @@ def zeroExpReturnProgram80 : List Instr :=
    .op .MSIZE,
    .op .SUB,
    .op .RETURN]
-def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10240 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 7833 4 10240 zeroExpReturnProgram80
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10228 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 7833 4 10228 zeroExpReturnProgram80
     (by change 7833+4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)

@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.LowOverlapPacking
 import Challenge.Modexp.Submission.Proofs.R5.TailRun
 import Challenge.Modexp.Submission.Proofs.R5.NormMath
 import Challenge.Modexp.Submission.Proofs.R5.PrologueMeaning
@@ -56,7 +57,7 @@ theorem returned (s : State) (stk : List UInt256) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P 
  have hd : ∀ i < 5,(dig a0 a1 a2 a3 a4 i).toNat < 256^30 := by
   intro i hi
   interval_cases i <;> simpa only [dig,show (256:Nat)^30 = 2^240 by decide] using (by assumption)
- have h := OverlapPackingMemory.returned5 s.memory (dig a0 a1 a2 a3 a4) hd
- simpa [CycleSubmission.R5.Blocks.ctl5330_result,OverlapFinalReturn.result5,done_mem,OverlapPackingMemory.memory5,Precompile.natToBytes,
+ have h := LowOverlapPackingMemory.returned5 s.memory (dig a0 a1 a2 a3 a4) hd
+ simpa [CycleSubmission.R5.Blocks.ctl5330_result,OverlapFinalReturn.result5,done_mem,LowOverlapPackingMemory.memory5,Precompile.natToBytes,
   HistoricalSearch.MixedMontgomery.weighted,Finset.sum_range_succ,dig,val5] using h
 end CycleSubmission.R5.TailMeaning
