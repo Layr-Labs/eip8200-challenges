@@ -1,3 +1,23 @@
+# RIPEMD-160: Fall-through 256-byte arm into the eight-word chain entry (615,288 gas)
+
+Parent: promoted commit `dc46627e` (validated `956f3fe4`, 615,299 gas).
+
+The patterned 256-byte arm (formerly JUMPDEST 5746, instruction 3634) ran
+`JUMPDEST; PUSH20 d; PUSH0; MSTORE; PUSH0; PUSH2 4931; JUMP` into the
+eight-word chain entry. Its five-instruction store/start prefix now sits
+directly before that chain entry (arm JUMPDEST 4934, chain 4959), after the
+output block's `RETURN` and a dead `PUSH2`, and falls through. The
+`PUSH2; JUMP` pair (11 gas) is gone from the `256-byte` vector:
+615,299 -> **615,288**.
+
+The old arm slot is reused: two of its instructions become the dead
+`PUSH2` before the arm and a dead `STOP` before the 64-byte arm, so the
+instruction count is unchanged and every PC from 5775 on is fixed.
+Indices 3482..3585 move by +6 and 3586..3633 by +7; PCs 4931..5523 move by
++28 and 5524..5745 by +29.
+
+---
+
 # RIPEMD-160: Calldata-size shift operand for the 55-byte recognizer literal (615,299 gas)
 
 Parent: promoted commit `bc4f945d` (validated `76c2f807`, 615,300 gas).
