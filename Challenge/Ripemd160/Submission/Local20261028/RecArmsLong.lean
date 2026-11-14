@@ -178,7 +178,7 @@ def head376 : List Instr :=
   [pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
 
 def head1000 : List Instr :=
-  [.op .POP, pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
+  [.op .JUMPDEST, pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
 
 def a376Template : List Instr :=
   DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 376) ++ head376 ++
@@ -201,7 +201,7 @@ theorem run_head376 (s : State) (pc : UInt256) (rho : List UInt256)
 
 theorem run_head1000 (s : State) (pc : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
-    runInstrSeq head1000 {s with pc := pc, stack := W s.executionEnv.calldata 0 :: rho} =
+    runInstrSeq head1000 {s with pc := pc, stack := rho} =
       some {s with pc := pcAfter pc head1000, stack := itemVal s.executionEnv.calldata (.eq 256 111) :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [head1000, pushNat, width, itemVal, W,
@@ -209,20 +209,6 @@ theorem run_head1000 (s : State) (pc : UInt256) (rho : List UInt256)
     UInt256.succ, Instr.size, Nat.add_assoc, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
     List.getElem?_cons_zero, List.exchange]
   repeat first | apply And.intro | rfl
-
-/-- Digest store from the zero-memory frame, keeping one stack word. -/
-theorem run_store1 (input : ByteArray) (pc : UInt256) (n : Nat) (w : UInt256) :
-    runInstrSeq (DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord n))
-      {base input with pc := pc, stack := [w]} =
-      some {prepared input n with pc := UInt256.add (UInt256.ofNat 24) pc, stack := [w]} := by
-  have hac : (base input).activeWordsAfterUInt256 0 32 = UInt256.ofNat 1 := by
-    simp [State.activeWordsAfterUInt256,base,initialState,Word.word_toNat_ofNat]
-    rfl
-  have hr := DirectDigestRaw.run_store (base input) pc
-    (RecognitionDigest.paddedDigestWord n) [w] (by simp) rfl
-  rw [hr]
-  simp only [DirectDigestRaw.stored, hac, DirectDigestRaw.store_pc, prepared, base, digestMemory]
-  rfl
 
 def a376Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka a376Template :=
   StackSiteBuilder.ofSlice a376Template 3641 (by rfl)
@@ -271,8 +257,8 @@ def gasSteps_a376_entry (input : ByteArray) :
     (by simpa [atState] using a376_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide)) h'
 
 def gasSteps_a1000_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5838 [W input 0]) (atState (prepared input 1000) 4959 [val1000 input]) := by
-  have h1 := run_store1 input (UInt256.ofNat 5838) 1000 (W input 0)
+    GasSteps (atState (base input) 5838 []) (atState (prepared input 1000) 4959 [val1000 input]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5838) 1000
   have h2 := run_head1000 (prepared input 1000) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838))
     [] (by simp) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
@@ -287,7 +273,7 @@ def gasSteps_a1000_entry (input : ByteArray) :
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4959).toNat = true
       exact Each.valid_chain8)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h123 rfl h4
-  have h' : runInstrSeq a1000Template (atState (base input) 5838 [W input 0]) =
+  have h' : runInstrSeq a1000Template (atState (base input) 5838 []) =
       some (atState (prepared input 1000) 4959 [val1000 input]) := by
     simpa only [a1000Template, atState, List.append_assoc, prepared_calldata, val1000] using hall
   exact RecognitionLift.gasSteps_of_raw a1000Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -387,7 +373,7 @@ theorem correct376 (input : ByteArray) (hfit : CalldataFits input) (hsize : inpu
     (g.trans ((gasSteps_a376_entry input).trans (Each.gasSteps_chain8 input 376 (val376 input))))
 
 theorem correct1000 (input : ByteArray) (hfit : CalldataFits input) (hsize : input.size = 1000)
-    (g : GasSteps (initialState Control.submissionBytecode input 0) (atState (base input) 5838 [W input 0])) :
+    (g : GasSteps (initialState Control.submissionBytecode input 0) (atState (base input) 5838 [])) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState Control.submissionBytecode input gas) (.returned (spec input)) :=
   long_correct input hfit 1000 (by unfold RecognitionAccumulator.Allowed; omega) hsize _

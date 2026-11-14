@@ -16,15 +16,16 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM YulEvm
 open StackRoundTrace StackRoundTemplate
 open HoistedStoreEntryRaw
 
-inductive Piece | filter | size | anchor
+inductive Piece | filter | size | anchor | reload
 
 def template : Piece → List Instr
   | .filter => filterTemplate
   | .size => sizeTemplate
   | .anchor => HoistedStoreAnchorRaw.anchorTemplate
+  | .reload => HoistedStoreAnchorRaw.reloadTemplate
 
-def index : Piece → Nat | .filter => 0 | .size => 6 | .anchor => 11
-def pc : Piece → Nat | .filter => 0 | .size => 12 | .anchor => 21
+def index : Piece → Nat | .filter => 0 | .size => 6 | .anchor => 11 | .reload => 19
+def pc : Piece → Nat | .filter => 0 | .size => 12 | .anchor => 21 | .reload => 46
 
 theorem actual_slice (p : Piece) :
     (HoistedStoreArtifact.instructions.drop (index p)).take (template p).length = template p := by
@@ -69,7 +70,9 @@ def to_seed (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env s)
   have hz := lift .size s _ e rho (run_size_fall s rho hs e.run hsize)
   have ha := lift .anchor s _ e rho
     (HoistedStoreAnchorRaw.run_anchor_low_fall s rho (by omega) e.run hanchor)
-  exact hf.trans (hz.trans ha)
+  have hr := lift .reload s _ e rho
+    (HoistedStoreAnchorRaw.run_reload s rho (by omega) e.run)
+  exact hf.trans (hz.trans (ha.trans hr))
 
 def success (s : State) (rho : List UInt256) (e : HoistedStoreSites.Env s)
     (hs : rho.length ≤ 976) (ha : s.activeWords = 0)

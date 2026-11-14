@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "27d78a01-bc9f-4ed4-94e7-07f903bc30c0",
+    "rationale": "Direct source and proof-tree parent: the validated 615,279-gas frontier (re-anchored 1000-byte window cover). Retained unchanged; this candidate makes the PC-21 low-64 screen consume the loaded W 0 (no DUP2), so the patterned 1000-byte arm enters with an empty frame and its POP becomes a JUMPDEST, while the a-path reloads W 0 with PUSH0; CALLDATALOAD at PC 46 so the PC-48 seed is unchanged. The dead pad 56..63 absorbs the extra instruction, so no PC or index outside 21..63 / 11..33 moves.",
+    "evidence": "Based on the Submission tree at edf8f2d88e299ab21dc38f8dbf8cd7e04c68ab5f; RecHoistedStoreAnchorRaw anchorPrefix / run_anchor_taken / run_anchor_low_fall / reloadTemplate / run_reload, RecHoistedStoreEntry reload piece, RecHoistedStoreSites seed index, RecHoistedStoreAnchor.taken, RecArmsLong head1000 / run_head1000 / gasSteps_a1000_entry / correct1000, RecDirectGuardBase / RecDirectGuardSize located indices and PC witnesses; CandidateArtifact parts 0/19, CandidateBytes chunks 0/91, bytecode.hex."
+  },
+  {
     "submissionId": "e9be2c95-c917-4621-8acc-36f302c1f7e6",
     "rationale": "Direct source and proof-tree parent: the validated 615,288-gas frontier (fall-through 256-byte arm). Retained unchanged; this candidate re-plans the 1000-byte arm's calldata window cover: the literal anchor moves from offset 369 to 384, which lets windows (416,15) and (448,47) replace (401,0), (433,32) and (465,64); the entry word W 0 is popped and the (256,111) difference starts the accumulator without an OR. The unreachable JUMP pad after the arm absorbs the 4-byte / 3-instruction shrink, so no PC or instruction index outside 5862..6143 / 3674..3847 moves.",
     "evidence": "Based on the Submission tree at f3649929002b9ec64b41bd2d68801a7eb53f3d86; RecArmsWindowCover plan1000 / anchors1000 (Cover by decide), RecArmsLong items1000 / head1000 / run_head1000 / val1000 / plan1000_mem / result1000; CandidateArtifact part 19, CandidateBytes chunks 91-95, bytecode.hex."

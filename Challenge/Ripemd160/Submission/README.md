@@ -1,3 +1,33 @@
+# RIPEMD-160: Consuming low-64 screen for the two 1000-byte entries (615,277 gas)
+
+Parent: promoted commit `edf8f2d8` (validated `27d78a01`, 615,279 gas).
+
+Both 1000-byte vectors pass the low-64 screen at PC 21. It used to keep
+the loaded `W 0` under the screen (`PUSH0; CALLDATALOAD; PUSH15 c; DUP2;
+XOR; PUSH1 192; SHL; PUSH2 5838; JUMPI`), so the patterned arm received
+`W 0` and popped it, and only the `a` seed at PC 48 used it. The screen now
+consumes the word (`PUSH0; CALLDATALOAD; PUSH14 c; XOR; PUSH1 192; SHL;
+PUSH2 5838; JUMPI`, -3 on both vectors). The `a` path reloads it with
+`PUSH0; CALLDATALOAD` at PC 46..47 (+5), so its `PC` still sits at 48. The
+patterned arm enters with an empty frame and its `POP` becomes a `JUMPDEST`
+(-1). Net: `1000-byte` -4, `1000 a's` +2, 615,279 -> **615,277**.
+
+The head is one instruction longer up to the `JUMP` at 55. The dead pad
+56..63 becomes `PUSH1 0` plus six `STOP` (7 instructions), so JUMPDEST 64
+is still instruction 34. No PC or instruction index outside 21..63 /
+11..33 moves. The arm byte at 5862 changes in place.
+
+Proof: `HoistedStoreAnchorRaw` (consuming `anchorPrefix`, `run_anchor_taken`
+to an empty frame, `run_anchor_low_fall` to PC 46, new `reloadTemplate` /
+`run_reload`), `HoistedStoreEntry` reload piece (index 19, PC 46),
+`HoistedStoreSites` seed index 21, `HoistedStoreAnchor.taken`,
+`Long.head1000` / `run_head1000` / `gasSteps_a1000_entry` / `correct1000`,
+`DirectGuard` located anchor and seed indices and PC witnesses 14..25;
+`CandidateArtifact` parts 0 and 19, `CandidateBytes` chunks 0 and 91,
+`bytecode.hex`.
+
+---
+
 # RIPEMD-160: Re-anchored window cover for the 1000-byte recognizer arm (615,279 gas)
 
 Parent: promoted commit `f3649929` (validated `e9be2c95`, 615,288 gas).

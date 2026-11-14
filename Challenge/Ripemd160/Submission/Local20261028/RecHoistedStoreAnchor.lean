@@ -17,7 +17,7 @@ theorem valid_data : Decode.isValidJumpDest HoistedStoreArtifact.code 5838 = tru
 def taken (s : State) (rho : List UInt256) (e : Env s) (hs : rho.length ≤ 976)
     (hne : Low64RepeatMath.condition s.executionEnv.calldata ≠ 0) :
     GasSteps {s with pc := UInt256.ofNat 21, stack := rho}
-      {s with pc := UInt256.ofNat 5838, stack := MachineState.readWord s.executionEnv.calldata 0 :: rho} :=
+      {s with pc := UInt256.ofNat 5838, stack := rho} :=
   HoistedStoreEntry.lift .anchor s _ e rho
     (HoistedStoreAnchorRaw.run_anchor_taken s rho (by omega) e.run hne
       (by rw [e.code]; exact valid_data))

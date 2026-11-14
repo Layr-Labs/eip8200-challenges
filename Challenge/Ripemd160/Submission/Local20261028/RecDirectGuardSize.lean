@@ -37,7 +37,7 @@ theorem size_eq_one (input : ByteArray) (k : Nat)
   simp
 
 def sizePath : List Located := sizePrefix ++ [opAt 10 .JUMPI]
-def anchorPath : List Located := anchorPrefix ++ [opAt 19 .JUMPI]
+def anchorPath : List Located := anchorPrefix ++ [opAt 18 .JUMPI]
 
 private theorem stepS_calldatasize (input : ByteArray) (pc : Nat) (stk : List UInt256)
     (hlen : stk.length < 1024) (hpc : pc + 1 < 2 ^ 256) :

@@ -27,7 +27,7 @@ def template : Piece → List Instr
   | .copy => RetainedFallback114.copyTemplate
 
 def index : Piece → Nat
-  | .seed => 20 | .scanner => 3848 | .branch => 4001
+  | .seed => 21 | .scanner => 3848 | .branch => 4001
   | .success => 4003 | .miss => 4006 | .cleanup => 3349 | .copy => 133
 
 def pc : Piece → Nat
