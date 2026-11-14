@@ -52,7 +52,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       (CycleSubmission.Global.GateRaw.entryState s (ordinaryFinal mem input n mm) n bsize esize msize))
     (e3Trace : Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm (n / 4)) 2298 n bsize esize msize)) :
+      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm (n / 4)) 2536 n bsize esize msize)) :
     FixedExponentRoute.Handled input (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize) := by
   have env : Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Environment CycleSubmission.Artifact.artifact .Osaka s :=
     ⟨by change CycleSubmission.Artifact.bytecode.size < 2^256; rw [CycleSubmission.Artifact.bytecodeSize]; decide, hcode,hfork,hrun,hnp⟩

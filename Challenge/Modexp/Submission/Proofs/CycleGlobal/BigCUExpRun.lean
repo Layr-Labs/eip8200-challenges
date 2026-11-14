@@ -19,7 +19,8 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.BigC.Unsigned
 
 /-- Exact U raw interval [310,321). -/
 def eGuardProgram : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .op (.Dup dA1),
    .push 1 3,
    .op .SHL,
@@ -30,7 +31,8 @@ def eGuardProgram : List Instr :=
 
 /-- Exact U raw interval [321,333). -/
 def eSquareProgram : List Instr :=
-  [.op (.Dup dA2),
+  [
+  .op (.Dup dA2),
    .push 2 3072,
    .op (.Dup dA0),
    .push 2 302,
@@ -39,7 +41,8 @@ def eSquareProgram : List Instr :=
 
 /-- Exact U raw interval [333,364). -/
 def e2Program : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .op (.Dup dA2),
    .push 0 0,
    .push 2 3072,
@@ -65,7 +68,8 @@ def e2Program : List Instr :=
 
 /-- Exact U raw interval [364,379). -/
 def eMulProgram : List Instr :=
-  [.push 0 0,
+  [
+  .push 0 0,
    .op .CALLDATALOAD,
    .push 2 5120,
    .push 2 3072,
@@ -75,7 +79,8 @@ def eMulProgram : List Instr :=
 
 /-- Exact U raw interval [379,386). -/
 def e4Program : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .op (.Dup dA2),
    .push 0 0,
    .push 2 3072,
@@ -83,7 +88,8 @@ def e4Program : List Instr :=
 
 /-- Exact U raw interval [386,394). -/
 def e3Program : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .push 1 1,
    .op .ADD,
    .push 2 279,
@@ -91,7 +97,8 @@ def e3Program : List Instr :=
 
 /-- Exact U raw interval [394,411). -/
 def e9Program : List Instr :=
-  [.op .JUMPDEST,
+  [
+  .op .JUMPDEST,
    .op (.Dup dA2),
    .push 2 3072,
    .push 0 0,

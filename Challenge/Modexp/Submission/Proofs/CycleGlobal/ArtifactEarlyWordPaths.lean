@@ -13,7 +13,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 private def earlyWord_size : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 0 EarlyWordProgram.sizeProgram :=
   WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 0 9 0 EarlyWordProgram.sizeProgram
-    (by change 0 + 9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by change 0+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

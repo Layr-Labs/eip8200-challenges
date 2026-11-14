@@ -13,27 +13,27 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 open CycleSubmission.Global.GateRaw
-def guardBlock : Block CycleSubmission.Artifact.artifact .Osaka 2306 guardProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1826 18 2306 guardProgram
-  (by change 1826+18 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+def guardBlock : Block CycleSubmission.Artifact.artifact .Osaka 2544 guardProgram :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1996 18 2544 guardProgram
+  (by change 1996+18 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-def bailBlock : Block CycleSubmission.Artifact.artifact .Osaka 2335 bailProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1844 2 2335 bailProgram
-  (by change 1844+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+def bailBlock : Block CycleSubmission.Artifact.artifact .Osaka 2573 bailProgram :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2014 2 2573 bailProgram
+  (by change 2014+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-def e3Block : Block CycleSubmission.Artifact.artifact .Osaka 2298 e3Program :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1821 5 2298 e3Program
-  (by change 1821+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+def e3Block : Block CycleSubmission.Artifact.artifact .Osaka 2536 e3Program :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1991 5 2536 e3Program
+  (by change 1991+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-theorem jumpDestGate : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2306 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 1826 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 1826 = 2306 := by
+theorem jumpDestGate : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2544 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 1996 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 1996 = 2544 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 207 = true := by
@@ -41,9 +41,9 @@ theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 
  have hp : CycleSubmission.Artifact.artifact.instructionPC 134 = 207 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
-theorem jumpDestSpecial : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3115 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2434 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2434 = 3115 := by
+theorem jumpDestSpecial : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 8441 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 6576 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 6576 = 8441 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem exponent_eq (s : State) (input : ByteArray) (bsize : Nat)
@@ -86,7 +86,7 @@ def gasSteps_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  GasSteps (entryState s mem n bsize esize msize) (SlimFrames.bailState s (GateScratch.memory mem esize) n bsize esize msize) := by
  have hg := guardBlock.steps (s := entryState s mem n bsize esize msize) (env.transfer rfl rfl) rfl
   (run_guard_miss s mem n bsize esize msize hb hact hc hsize hptr)
- have hb := bailBlock.steps (s := SlimFrames.guardFrame s (GateScratch.memory mem esize) 2335 n bsize esize msize)
+ have hb := bailBlock.steps (s := SlimFrames.guardFrame s (GateScratch.memory mem esize) 2573 n bsize esize msize)
   (env.transfer rfl rfl) rfl (run_bail s (GateScratch.memory mem esize) n bsize esize msize (by rw [env.code]; exact jumpDestBail))
  exact hg.trans hb
 

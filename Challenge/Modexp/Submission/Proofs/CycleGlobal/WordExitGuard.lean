@@ -14,8 +14,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open WindowNibbleKernel
 
 def program : List Instr :=
-  [.op .JUMPDEST, .op (.Dup ⟨5, by decide⟩), .op (.Dup ⟨1, by decide⟩),
-   .op .EQ, .push 2 3834, .op .JUMPI]
+  [
+  .op .JUMPDEST,
+   .op (.Dup ⟨5,by decide⟩),
+   .op (.Dup ⟨1,by decide⟩),
+   .op .EQ,
+   .push 2 9786,
+   .op .JUMPI]
 
 def frame (s : State) (pc : UInt256) (e acc base modulus bsize : UInt256)
     (rest : List UInt256) : State :=
@@ -26,11 +31,11 @@ set_option linter.unusedSimpArgs false in
 artifact's jump-destination certificate without unfolding that byte array. -/
 theorem run (s : State) (e acc base modulus bsize : UInt256)
     (rest : List UInt256) (hrest : rest.length ≤ 1000)
-    (hdest : Decode.isValidJumpDest s.executionEnv.code 3834 = true) :
+    (hdest : Decode.isValidJumpDest s.executionEnv.code 9786 = true) :
     runInstructions program (frame s (UInt256.ofNat 187) e acc base modulus bsize rest) =
-      some (frame s (UInt256.ofNat 3834) e acc base modulus bsize rest) := by
+      some (frame s (UInt256.ofNat 9786) e acc base modulus bsize rest) := by
   have capacity (j : Nat) (hj : j ≤ 8) : rest.length + j < 1024 := by omega
-  have hdestWord : (3834 : UInt256).toNat = 3834 := by decide
+  have hdestWord : (9786 : UInt256).toNat = 9786 := by decide
   simp [program, frame, runInstructions, Challenge.EvmProof.Stepper.runInstr,
     Nat.add_assoc, capacity, Nat.add_assoc, hdest, hdestWord, UInt256.eq, UInt256.isTrue,
     Challenge.EvmProof.Word.literal_eq_ofNat,

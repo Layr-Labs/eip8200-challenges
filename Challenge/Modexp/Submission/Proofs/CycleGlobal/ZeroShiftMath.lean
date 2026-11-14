@@ -7,14 +7,14 @@ open EvmSemantics
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 
-def normalHead (n : Nat) : Nat := if n = 4 then 10535 else 2667
-def zeroHead (n : Nat) : Nat := if n = 4 then 3760 else 3588
+def normalHead (n : Nat) : Nat := if n = 4 then 10508 else 2884
+def zeroHead (n : Nat) : Nat := if n = 4 then 9712 else 9540
 def head (n : Nat) (k : UInt256) : Nat := if k.toNat = 0 then zeroHead n else normalHead n
 
 def packed (n : Nat) (k : UInt256) : UInt256 :=
   UInt256.land
     (UInt256.shiftRight
-      (UInt256.ofNat ((3932*65536)+18403) - UInt256.ofNat ((43*65536)+1967)*UInt256.ofNat n)
+      (UInt256.ofNat ((9884*65536)+18132) - UInt256.ofNat ((43*65536)+1906)*UInt256.ofNat n)
       (UInt256.ofNat 16 * UInt256.isZero k))
     (UInt256.ofNat 65535)
 
