@@ -179,8 +179,8 @@ def blkZero12Zero :
    opAt 8311 .RETURN]
 theorem jumpDestZero12 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10961 = true :=
   CycleSubmission.Global.Binding.jumpDest 8292 (by rfl)
-@[simp] theorem packedZero12PCs (i : Nat) (hi : 8292 ≤ i) (hii : i ≤ 8312) :
+@[simp] theorem packedZero12PCs (i : Nat) (hi : 8292 ≤ i) (hii : i ≤ 8320) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10961,10962,10964,10965,10968,10969,10970,10971,10973,10974,10975,10977,10978,10979,10981,10982,10985,10986,10988,10989,10990] : List Nat)[i - 8292]! := by
+      ([10961,10962,10964,10965,10968,10969,10970,10971,10973,10974,10975,10977,10978,10979,10981,10982,10985,10986,10988,10989,10990,10991,10992,10993,10994,10995,10996,10997,10998] : List Nat)[i - 8292]! := by
  interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
 end CycleSubmission.Global.Fast

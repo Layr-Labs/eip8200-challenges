@@ -52,17 +52,17 @@ theorem loopPC_lt (mem : ByteArray) (n : Nat) : loopPC mem n < 2^256 := by
     CycleSubmission.Global.ZeroShiftMath.normalHead,headPC,hk]
 def pcMid : Nat := 3187   -- the fall-through after the eight straight blocks
 def midPC (n : Nat) : Nat := if n = 4 then 10923 else 3187
-def pcAddLoop : Nat := 3213
-def pcAddInner : Nat := 3219
-def pcAddTail : Nat := 3256
-def pcAddMid : Nat := 3243
-def pcAddPad : Nat := 3256
-def pcSubCheck : Nat := 3274
+def pcAddLoop : Nat := 3212
+def pcAddInner : Nat := 3218
+def pcAddTail : Nat := 3255
+def pcAddMid : Nat := 3242
+def pcAddPad : Nat := 3255
+def pcSubCheck : Nat := 3273
 def pcCsubCall : Nat := 3199
-def pcUnc : Nat := 3212
+def pcUnc : Nat := 3211
 def pcAfterCsub : Nat := 2840
-def pcCsubExit : Nat := 3204
-def pcShiftDone : Nat := 3204
+def pcCsubExit : Nat := 3203
+def pcShiftDone : Nat := 3203
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pc
            stack := outer n bsize esize msize
