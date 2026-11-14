@@ -104,8 +104,8 @@ def gasSteps_zero4_stale (s : State) (um0 : ByteArray) (q : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) :
     Challenge.EvmProof.GasSteps
-      (setupState s (UInt256.ofNat 10685) um0 q (maxWord::rest))
-      (chainState s (UInt256.ofNat 10703)
+      (setupState s (UInt256.ofNat 10709) um0 q (maxWord::rest))
+      (chainState s (UInt256.ofNat 10727)
         (SquareModel.l1StepOn ⟨Exp.storeWord um0 2208 (UInt256.ofNat 0),UInt256.ofNat 0⟩ q 1280 4 0)
         q rest) := by
   have hs := hslot 4 (by omega)
@@ -115,14 +115,14 @@ def gasSteps_zero4_stale (s : State) (um0 : ByteArray) (q : UInt256)
   rw [hxu] at hs
   have hx : rest[(6 : Fin 16).val - 2]? =
       some (MachineState.readWord (⟨um0,UInt256.ofNat 0⟩ : MacState).memory (1280 + 32 * (4 - 1 - 0))) := hs
-  have h := run_ride_top_np_stale s (UInt256.ofNat 10685) ⟨um0,UInt256.ofNat 0⟩ q 4 0 2208 6
+  have h := run_ride_top_np_stale s (UInt256.ofNat 10709) ⟨um0,UInt256.ofNat 0⟩ q 4 0 2208 6
       (by decide) (MachineState.readWord um0 (1280 + 32 * (4 - 1 - 0))) rfl
       rest hrest (by decide) (by omega) hx (by decide) hact (by decide) (by decide)
   simp only [Challenge.EvmProof.Word.ofNat_add_mod,Nat.reduceAdd] at h
   have he := l1StepOn_stale um0 q 4 0
   simp only [Nat.reduceSub,Nat.reduceMul,Nat.reduceAdd] at he
   rw [he]
-  exact zero4Block.steps (environment (setupState s (UInt256.ofNat 10685) um0 q (maxWord::rest))
+  exact zero4Block.steps (environment (setupState s (UInt256.ofNat 10709) um0 q (maxWord::rest))
     hcode hfork hrun hnp) rfl h
 /-- **The section on a stale top limb.**  Same conclusion as `gasSteps_macChain` on
 `um = storeWord um0 (2080 + 32 n) 0`, started from memory `um0`. -/
@@ -159,7 +159,7 @@ def gasSteps_macChain_stale (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um0 um
       (by decide) rfl
       (fun h => absurd h (by decide)) (fun h => absurd h (by decide)) (by decide) (by decide)
     rw [← l1Run_succ_left] at hr
-    have hE : sectionEndPC 4 = 10803 := rfl
+    have hE : sectionEndPC 4 = 10827 := rfl
     rw [hE]
     exact (hz.trans hr).cast rfl (by rw [SquareModel.l1Step_eq_l1Run])
   else by

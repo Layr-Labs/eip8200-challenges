@@ -20,7 +20,7 @@ structure Outcome (s : State) (inv : UInt256) (a n : Nat → UInt256) (rest : Li
  trace : GasSteps {s with pc := UInt256.ofNat 3476,stack := CachedInverse.entryFrame inv a zeroWords n (entryCounter s::rest)} state
  memory : SquareMeaning.Memory0 state.memory inv output zeroWords n
  frame : state.stack = SquareMeaning.frame0 inv output zeroWords n (counter state::rest)
- pc : state.pc = UInt256.ofNat 5815
+ pc : state.pc = UInt256.ofNat 5841
  env : state.executionEnv = s.executionEnv
  halt : state.halt = s.halt
  active : state.activeWords = s.activeWords
@@ -68,7 +68,7 @@ noncomputable opaque run (s : State) (inv : UInt256) (a n : Nat → UInt256) (re
  have hrestore : {st with pc := UInt256.ofNat 5795,stack := PersistentSquareLoop.frame inv out n (PersistentSquareLoop.counter st::rest)} = st :=
   PersistentSquareLoop.reset_self _ _ _ hpOut hsOut
  rw [hrestore] at hr
- let sf : State := {st with pc := UInt256.ofNat 5815,memory := LimbMemory.store (LimbMemory.store st.memory 96 (out 5)) 160 (out 7),stack := SquareMeaning.frame0 inv out zeroWords n (PersistentSquareLoop.counter st::rest)}
+ let sf : State := {st with pc := UInt256.ofNat 5841,memory := LimbMemory.store (LimbMemory.store st.memory 96 (out 5)) 160 (out 7),stack := SquareMeaning.frame0 inv out zeroWords n (PersistentSquareLoop.counter st::rest)}
  have hcounter : counter sf = PersistentSquareLoop.counter st := by rfl
  refine ⟨sf,out,(PersistentBinding.install_steps s inv a n rest env hm hcache hcap hact).trans (ht.trans hr),
   LimbMemory.flush st.memory inv out zeroWords n hmOut,?_,rfl,

@@ -27,8 +27,8 @@ def roundBlock : Block Artifact.artifact .Osaka 3476 PersistentCounter.roundProg
 theorem restore_pc : Artifact.artifact.instructionPC 4265 = 5795 := by
  rw [PCCertificate.selectedPC 4265 (by decide)]; rfl
 def restoreBlock : Block Artifact.artifact .Osaka 5795 CachedInverse.restoreMaskProgram :=
- WindowTwentyOneSlice.block Artifact.wellFormed 4265 14 5795 CachedInverse.restoreMaskProgram
-  (by change 4265+14 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block Artifact.wellFormed 4265 11 5795 CachedInverse.restoreMaskProgram
+  (by change 4265+11 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
   restore_pc (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl) (by decide)
 theorem valid_kernel : Decode.isValidJumpDest Artifact.bytecode 3476 = true := by
  have h := Global.Binding.jumpDest 2695 (by rfl)
@@ -62,7 +62,7 @@ noncomputable def restore_steps (s : State) (inv : UInt256) (a n : Nat → UInt2
  (env : Environment Artifact.artifact .Osaka s) (hcap : rest.length ≤ 959) (hact : 88 ≤ s.activeWords.toNat)
  (hcache : rest[0]? = some inv) (hinv : MachineState.readWord s.memory 2720 = inv) :
  GasSteps {s with pc := UInt256.ofNat 5795,stack := PersistentSquareLoop.frame inv a n (PersistentSquareLoop.counter s::rest)}
- {s with pc := UInt256.ofNat 5815,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (PersistentSquareLoop.counter s::rest)} := by
+ {s with pc := UInt256.ofNat 5841,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (PersistentSquareLoop.counter s::rest)} := by
  cases rest with
  | nil => simp at hcache
  | cons value rest =>

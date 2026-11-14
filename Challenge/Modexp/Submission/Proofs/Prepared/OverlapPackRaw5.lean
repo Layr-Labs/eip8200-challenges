@@ -16,9 +16,9 @@ namespace OverlapPackRaw5
 def part0Program : List Instr := [.op .JUMPDEST,.op (.Dup dA0),.push 1 128,.op .MSTORE]
 def part0Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f0.toNat 32) 128
-  {s with pc := N 10157,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
+  {s with pc := N 10183,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
 theorem part0_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions part0Program {s with pc := N 10152,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part0Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
+ runInstructions part0Program {s with pc := N 10178,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part0Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
  have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -28,9 +28,9 @@ theorem part0_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest 
 def part1Program : List Instr := [.op (.Dup dA1),.push 1 98,.op .MSTORE]
 def part1Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f1.toNat 32) 98
-  {s with pc := N 10161,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
+  {s with pc := N 10187,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
 theorem part1_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions part1Program {s with pc := N 10157,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part1Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
+ runInstructions part1Program {s with pc := N 10183,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part1Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
  have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -40,9 +40,9 @@ theorem part1_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest 
 def part2Program : List Instr := [.op (.Dup dA2),.push 1 68,.op .MSTORE]
 def part2Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f2.toNat 32) 68
-  {s with pc := N 10165,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
+  {s with pc := N 10191,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
 theorem part2_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions part2Program {s with pc := N 10161,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part2Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
+ runInstructions part2Program {s with pc := N 10187,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part2Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
  have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -52,9 +52,9 @@ theorem part2_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest 
 def part3Program : List Instr := [.op (.Dup dA3),.push 1 38,.op .MSTORE]
 def part3Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f3.toNat 32) 38
-  {s with pc := N 10169,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
+  {s with pc := N 10195,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
 theorem part3_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions part3Program {s with pc := N 10165,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part3Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
+ runInstructions part3Program {s with pc := N 10191,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part3Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
  have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -64,9 +64,9 @@ theorem part3_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest 
 def part4Program : List Instr := [.op (.Dup dA4),.push 1 8,.op .MSTORE]
 def part4Model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) : State :=
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f4.toNat 32) 8
-  {s with pc := N 10173,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
+  {s with pc := N 10199,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
 theorem part4_run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions part4Program {s with pc := N 10169,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part4Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
+ runInstructions part4Program {s with pc := N 10195,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (part4Model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
  have hz : ({val := 0} : W) = N 0 := rfl
  have hzn : ({val := 0} : W).toNat = 0 := rfl
  have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
@@ -80,23 +80,23 @@ def model (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W
   let v2 : ByteArray := MachineState.writeBytes v1 (Data.Bytes.natToBytesPadded f2.toNat 32) 68
   let v3 : ByteArray := MachineState.writeBytes v2 (Data.Bytes.natToBytesPadded f3.toNat 32) 38
   let v4 : ByteArray := MachineState.writeBytes v3 (Data.Bytes.natToBytesPadded f4.toNat 32) 8
-  {s with pc := N 10173,memory := v4,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
+  {s with pc := N 10199,memory := v4,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest}
 theorem run (s : State) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 : W) (rest : List W) (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions program {s with pc := N 10152,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
+ runInstructions program {s with pc := N 10178,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some (model s f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest) := by
   let v0 : ByteArray := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded f0.toNat 32) 128
   let v1 : ByteArray := MachineState.writeBytes v0 (Data.Bytes.natToBytesPadded f1.toNat 32) 98
   let v2 : ByteArray := MachineState.writeBytes v1 (Data.Bytes.natToBytesPadded f2.toNat 32) 68
   let v3 : ByteArray := MachineState.writeBytes v2 (Data.Bytes.natToBytesPadded f3.toNat 32) 38
   let v4 : ByteArray := MachineState.writeBytes v3 (Data.Bytes.natToBytesPadded f4.toNat 32) 8
-  have h0 : runInstructions part0Program {s with pc := N 10152,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10157,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
+  have h0 : runInstructions part0Program {s with pc := N 10178,memory := s.memory,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10183,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
     simpa only [part0Model,v0] using part0_run ({s with memory := s.memory}) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest hcap hact
-  have h1 : runInstructions part1Program {s with pc := N 10157,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10161,memory := v1,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
+  have h1 : runInstructions part1Program {s with pc := N 10183,memory := v0,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10187,memory := v1,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
     simpa only [part1Model,v1] using part1_run ({s with memory := v0}) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest hcap hact
-  have h2 : runInstructions part2Program {s with pc := N 10161,memory := v1,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10165,memory := v2,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
+  have h2 : runInstructions part2Program {s with pc := N 10187,memory := v1,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10191,memory := v2,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
     simpa only [part2Model,v2] using part2_run ({s with memory := v1}) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest hcap hact
-  have h3 : runInstructions part3Program {s with pc := N 10165,memory := v2,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10169,memory := v3,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
+  have h3 : runInstructions part3Program {s with pc := N 10191,memory := v2,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10195,memory := v3,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
     simpa only [part3Model,v3] using part3_run ({s with memory := v2}) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest hcap hact
-  have h4 : runInstructions part4Program {s with pc := N 10169,memory := v3,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10173,memory := v4,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
+  have h4 : runInstructions part4Program {s with pc := N 10195,memory := v3,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} = some {s with pc := N 10199,memory := v4,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::rest} := by
     simpa only [part4Model,v4] using part4_run ({s with memory := v3}) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 h4))))
 #print axioms run
