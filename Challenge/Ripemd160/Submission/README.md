@@ -1,3 +1,29 @@
+# RIPEMD-160: Memory-size shift operand for the 119-byte recognizer literal (615,300 gas)
+
+Parent: promoted commit `23abf6ae` (validated `83c2b330`, 615,301 gas).
+
+The patterned 119-byte arm (JUMPDEST 5589, instruction 3605) rebuilt its
+last-word literal as `PUSH23 X; PUSH1 72; SHL`. After the arm's digest
+store at offset 0 the frame has exactly one active memory word, so `MSIZE`
+pushes 32. The literal is re-based to `PUSH28 (X << 40); MSIZE; SHL`, which
+is the same word `ZeroTailModel.expectedLast 119`; `MSIZE` (2 gas) replaces
+`PUSH1 72` (3 gas). -1 gas on the `119-byte` vector: 615,301 -> **615,300**.
+
+The arm grows by 4 bytes with the same instruction count. The bytes come
+from two width-pad pushes in the 1000-byte arm (`PUSH2 0x008f`, `PUSH2
+0x00af` become `PUSH1`; the corresponding `items1000` entries are plain
+`.eq`) and from the unreachable pad before JUMPDEST 6144, which loses its
+`PUSH2 4931` and is now 26 `JUMP` bytes. Instruction indices are unchanged
+everywhere; JUMPDEST 6144 and all later PCs are fixed.
+
+Moved PCs: arm 120 5648 -> 5652, arm 128 5713 -> 5717, arm 256 5742 -> 5746,
+376-byte arm 5771 -> 5775, 1000-byte arm 5834 -> 5838, retargeted at the
+same-width pushes of instructions 18, 3362, 3380, 3423, 3428.
+`RecognizerLiteral.run` gains the `activeWords = 1` hypothesis already
+carried by `RecArmsScan.run_prefix`.
+
+---
+
 # RIPEMD-160: Dead-pad-funded full-word literal for the 120-byte recognizer arm (615,301 gas)
 
 Parent: promoted commit `77232a01` (validated `21326e0a`, 615,307 gas).

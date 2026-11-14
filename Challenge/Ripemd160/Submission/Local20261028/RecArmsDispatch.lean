@@ -89,12 +89,12 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
     exact Finish.arm_correct input hfit 128 (h ▸ hn) h 5243 g
       (Finish.finish_gasSteps input 128 5243 Finish.finishSite2 Finish.finishSite2_pc)
   · have g := hguard.trans ((GasSteps.cast (Control.Patterned128Entry.gasSteps_256 input hfit h
-        (valid_at 3634 5742 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl).trans (Each.gasSteps_arm256 input))
+        (valid_at 3634 5746 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl).trans (Each.gasSteps_arm256 input))
     exact Finish.arm_correct input hfit 256 (h ▸ hn) h 5243 g
       (Finish.finish_gasSteps input 256 5243 Finish.finishSite2 Finish.finishSite2_pc)
   · exact Long.correct376 input hfit h (hguard.trans (GasSteps.cast
       (Control.Patterned128Entry.gasSteps_376 input hfit h
-        (valid_at 3641 5771 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl))
+        (valid_at 3641 5775 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide))) rfl rfl))
   · exact absurd h h1000
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.Arms.Dispatch

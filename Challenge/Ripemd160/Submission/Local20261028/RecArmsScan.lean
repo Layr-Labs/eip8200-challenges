@@ -49,7 +49,7 @@ def armIndex : Fin 12 → Nat
 
 def armPC : Fin 12 → Nat
  | ⟨0, _⟩ => 4717 | ⟨1, _⟩ => 5246 | ⟨2, _⟩ => 5313 | ⟨3, _⟩ => 5342 | ⟨4, _⟩ => 5400 | ⟨5, _⟩ => 5459
- | ⟨6, _⟩ => 5523 | ⟨7, _⟩ => 5552 | ⟨8, _⟩ => 5589 | ⟨9, _⟩ => 5648 | ⟨10, _⟩ => 5713 | ⟨11, _⟩ => 5742
+ | ⟨6, _⟩ => 5523 | ⟨7, _⟩ => 5552 | ⟨8, _⟩ => 5589 | ⟨9, _⟩ => 5652 | ⟨10, _⟩ => 5717 | ⟨11, _⟩ => 5746
 
 /-- Number of chain words below the arm's own tail (zero for the two one-word arms). -/
 def chainWords : Fin 12 → Nat
@@ -222,7 +222,7 @@ theorem run_prefix (s : State) (pc : UInt256) (n : Nat) (hk : last n < 32) (rho 
     (hsz : n = 56 → s.executionEnv.calldata.size = 56) :
     runInstrSeq (prefixTemplate n) {s with pc:=pc,stack:=rho} =
       some {s with pc:=pcAfter pc (prefixTemplate n),stack:=ZeroTailModel.tailDiff s.executionEnv.calldata n::rho} := by
-  have h1 := RipemdSubmission20261101.RecognizerLiteral.run s pc n rho hs hrun hsz
+  have h1 := RipemdSubmission20261101.RecognizerLiteral.run s pc n rho hs hrun ha hsz
   have h2 := run_prefix_rest s (pcAfter pc (RipemdSubmission20261101.RecognizerLiteral.template n)) n hk rho hs hrun ha
   have h := DenseScheduleTrace.runInstrSeq_append_running h1 hrun h2
   simpa only [prefixTemplate, DenseScheduleTrace.pcAfter_append] using h

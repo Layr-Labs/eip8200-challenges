@@ -168,7 +168,7 @@ theorem itemsOk_of_check (xs : List Item) (h : xs.all (fun x => match x with
 def items376 : List Item := [.eq 288 143, .eq 320 175, .eq 344 199]
 
 def items1000 : List Item :=
-  [.eq 256 111, .eqP 288 143, .eqP 320 175, .eq 352 207, .eqM 433, .eq 465 64, .eq 502 212,
+  [.eq 256 111, .eq 288 143, .eq 320 175, .eq 352 207, .eqM 433, .eq 465 64, .eq 502 212,
    .eq 529 384, .eq 561 15, .eq 593 47, .eq 625 79, .eq 657 111, .eq 689 143, .eq 721 175,
    .eq 753 62, .eq 785 94, .eq 817 126, .eq 849 158, .eq 881 190, .eq 910 219, .eq 936 390,
    .eq 968 21, .eq 470 69,
@@ -229,7 +229,7 @@ def a376Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka a376T
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := a376Template) (by decide)) (by decide)
-theorem a376_pc : a376Site.startPC = UInt256.ofNat 5771 := by
+theorem a376_pc : a376Site.startPC = UInt256.ofNat 5775 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3641) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
@@ -239,7 +239,7 @@ def a1000Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka a100
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := a1000Template) (by decide)) (by decide)
-theorem a1000_pc : a1000Site.startPC = UInt256.ofNat 5834 := by
+theorem a1000_pc : a1000Site.startPC = UInt256.ofNat 5838 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3670) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
@@ -247,46 +247,46 @@ def val376 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 256
 def val1000 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 0 401)) items1000
 
 def gasSteps_a376_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5771 []) (atState (prepared input 376) 4931 [val376 input]) := by
-  have h1 := Scan.run_store input (UInt256.ofNat 5771) 376
-  have h2 := run_head376 (prepared input 376) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5771))
+    GasSteps (atState (base input) 5775 []) (atState (prepared input 376) 4931 [val376 input]) := by
+  have h1 := Scan.run_store input (UInt256.ofNat 5775) 376
+  have h2 := run_head376 (prepared input 376) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5775))
     [] (by simp) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_items (prepared input 376)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5771)) head376) items376
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5775)) head376) items376
     (itemsOk_of_check _ (by decide)) (itemVal input (.eq 256 111)) [] (by simp) rfl
     (prepared_activeWords input 376)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 376)
-    (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5771)) head376) (itemsTemplate items376))
+    (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5775)) head376) (itemsTemplate items376))
     4931 [val376 input] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4931).toNat = true
       exact Each.valid_chain8)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h123 rfl h4
-  have h' : runInstrSeq a376Template (atState (base input) 5771 []) =
+  have h' : runInstrSeq a376Template (atState (base input) 5775 []) =
       some (atState (prepared input 376) 4931 [val376 input]) := by
     simpa only [a376Template, atState, List.append_assoc, prepared_calldata, val376] using hall
   exact RecognitionLift.gasSteps_of_raw a376Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using a376_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide)) h'
 
 def gasSteps_a1000_entry (input : ByteArray) :
-    GasSteps (atState (base input) 5834 [W input 0]) (atState (prepared input 1000) 4931 [val1000 input]) := by
-  have h1 := run_store1 input (UInt256.ofNat 5834) 1000 (W input 0)
-  have h2 := run_head1000 (prepared input 1000) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5834))
+    GasSteps (atState (base input) 5838 [W input 0]) (atState (prepared input 1000) 4931 [val1000 input]) := by
+  have h1 := run_store1 input (UInt256.ofNat 5838) 1000 (W input 0)
+  have h2 := run_head1000 (prepared input 1000) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838))
     [] (by simp) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_items (prepared input 1000)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5834)) head1000) items1000
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838)) head1000) items1000
     (itemsOk_of_check _ (by decide)) (itemVal input (.eq 0 401)) [] (by simp) rfl
     (prepared_activeWords input 1000)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 1000)
-    (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5834)) head1000) (itemsTemplate items1000))
+    (pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838)) head1000) (itemsTemplate items1000))
     4931 [val1000 input] (by simp) rfl (by
       change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code (UInt256.ofNat 4931).toNat = true
       exact Each.valid_chain8)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h123 rfl h4
-  have h' : runInstrSeq a1000Template (atState (base input) 5834 [W input 0]) =
+  have h' : runInstrSeq a1000Template (atState (base input) 5838 [W input 0]) =
       some (atState (prepared input 1000) 4931 [val1000 input]) := by
     simpa only [a1000Template, atState, List.append_assoc, prepared_calldata, val1000] using hall
   exact RecognitionLift.gasSteps_of_raw a1000Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -378,7 +378,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     exact Control.GenericFramedCorrect.correct input hfit hpos [] (by simp) (hpre.trans gf)
 
 theorem correct376 (input : ByteArray) (hfit : CalldataFits input) (hsize : input.size = 376)
-    (g : GasSteps (initialState Control.submissionBytecode input 0) (atState (base input) 5771 [])) :
+    (g : GasSteps (initialState Control.submissionBytecode input 0) (atState (base input) 5775 [])) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState Control.submissionBytecode input gas) (.returned (spec input)) :=
   long_correct input hfit 376 (by unfold RecognitionAccumulator.Allowed; omega) hsize _
@@ -386,7 +386,7 @@ theorem correct376 (input : ByteArray) (hfit : CalldataFits input) (hsize : inpu
     (g.trans ((gasSteps_a376_entry input).trans (Each.gasSteps_chain8 input 376 (val376 input))))
 
 theorem correct1000 (input : ByteArray) (hfit : CalldataFits input) (hsize : input.size = 1000)
-    (g : GasSteps (initialState Control.submissionBytecode input 0) (atState (base input) 5834 [W input 0])) :
+    (g : GasSteps (initialState Control.submissionBytecode input 0) (atState (base input) 5838 [W input 0])) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState Control.submissionBytecode input gas) (.returned (spec input)) :=
   long_correct input hfit 1000 (by unfold RecognitionAccumulator.Allowed; omega) hsize _

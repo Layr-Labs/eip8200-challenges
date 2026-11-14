@@ -62,7 +62,7 @@ def anchorPrefix : List Located :=
    opAt 15 .XOR,
    pushAt 16 1 192,
    opAt 17 .SHL,
-   pushAt 18 2 5834]
+   pushAt 18 2 5838]
 
 def entryDest : Located := opAt 133 .JUMPDEST
 

@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "83c2b330-02d9-4d23-90f3-a614d46dd0ef",
+    "rationale": "Direct source and proof-tree parent: the validated 615,301-gas frontier (dead-pad-funded full-word literal for the 120-byte arm). Retained unchanged; this candidate re-bases the 119-byte arm's literal as PUSH28 (X << 40); MSIZE; SHL (MSIZE = 32 after the digest store), funded by narrowing two width-pad pushes in the 1000-byte arm and the last PUSH2 of the dead pad before JUMPDEST 6144, so instruction indices are unchanged and only PCs 5652..6115 move.",
+    "evidence": "Based on the Submission tree at 23abf6ae7c160daf685de249cb753c67d24ca290; PrepRecognizerLiterals template 119 / value119 / msize1 / run (new activeWords hypothesis), RecArmsScan run_prefix, RecArmsLong items1000, arm PCs in RecArmsScan/RecArmsEach/RecDispatch120/RecDispatch128/RecArmsDispatch/RecArmsLong/RecPatternedSites/RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/72/73/75/87-95."
+  },
+  {
     "submissionId": "21326e0a-289c-4299-ab5b-dc0417976a56",
     "rationale": "Direct source and proof-tree parent: the validated 615,307-gas frontier (BYTE-0 last-word check for the 65-byte chained recognizer arm). Retained unchanged; this candidate replaces the 120-byte patterned arm's shifted literal PUSH24 X; PUSH1 65; SHL with PUSH32 (X << 65) and absorbs the +5 bytes / -2 instructions in the unreachable pad before JUMPDEST 6144, retargeting the 128, 256, 376 and 1000-byte arms.",
     "evidence": "Based on the Submission tree at 808280c56da746e2c959a5e8fa3220fb7eda99d8 (crown 77232a01); RecognizerLiteral.template generic case for 120, RecArmsScan armIndex/armPC, RecArmsEach arm128/arm256, RecDispatch128, RecArmsDispatch, RecArmsLong a376/a1000, RecPatternedSites long256/long376, RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor 5834; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/73/75/88-95; bytes 5672..6143."
