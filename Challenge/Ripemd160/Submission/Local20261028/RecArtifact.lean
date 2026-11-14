@@ -4,6 +4,6 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.H
 abbrev instructions := CandidateArtifact.instructions
 abbrev code := CandidateArtifact.artifact.code
 abbrev artifact := CandidateArtifact.artifact
-theorem instruction_count : instructions.length = 7005 := CandidateArtifact.instruction_count
+theorem instruction_count : instructions.length = 7004 := CandidateArtifact.instruction_count
 theorem code_size : code.size = 10511 := CandidateArtifact.code_size
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.HoistedStoreArtifact

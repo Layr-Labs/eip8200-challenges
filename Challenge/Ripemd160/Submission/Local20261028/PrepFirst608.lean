@@ -17,7 +17,7 @@ theorem read (s : State) (x : Nat → UInt256) (rho : List UInt256)
     FirstMemory.memory24, FirstMemory.memory23, write_getD,
     if_neg (by omega : ¬ (864 ≤ 608+j ∧ 608+j < 864+32)),
     if_neg (by omega : ¬ (972 ≤ 608+j ∧ 608+j < 972+32)),
-    if_neg (by omega : ¬ (828 ≤ 608+j ∧ 608+j < 828+32)),
+    if_neg (by omega : ¬ (814 ≤ 608+j ∧ 608+j < 814+32)),
     if_neg (by omega : ¬ (720 ≤ 608+j ∧ 608+j < 720+32)),
     if_neg (by omega : ¬ (738 ≤ 608+j ∧ 608+j < 738+32))]
   rw [FirstMemory.memory22, MachineState.writeBytes_getElem?_getD,

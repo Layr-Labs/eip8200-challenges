@@ -288,20 +288,27 @@ theorem matches24 (s : State) (h : Matches s.memory initial (value s.memory))
   intro j hj
   rw [PoolByte.read _ _ _ hj]
   exact matches2 s h hc _
-theorem mask25_byte (j : Nat) (hj : j < 32) :
-    PoolByte.byte (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840) j = if 0 ≤ j ∧ j < 18 then 255 else 0 := by
-  have h : ∀ j : Fin 32, PoolByte.byte (UInt256.ofNat 115792089237316195423570985008687907853269979473343705504629955477416800419840) j.val = if 0 ≤ j.val ∧ j.val < 18 then 255 else 0 := by decide +kernel
-  exact h ⟨j,hj⟩
-def symbols25 : Nat → Nat := written symbols24 828 32 (fun j => if 0 ≤ j ∧ j < 18 then symbols2 (236+j) else 0)
+theorem shr112_byte (w : UInt256) (j : Nat) (hj : j < 32) :
+    PoolByte.byte (UInt256.shiftRight w (UInt256.ofNat 112)) j =
+      if 14 ≤ j then PoolByte.byte w (j-14) else 0 := by
+  apply UInt8.toNat_inj.mp
+  rw [PoolByte.byte_toNat, Challenge.EvmProof.Word.shiftRight_toNat _ (by norm_num),
+    Nat.shiftRight_eq_div_pow, Nat.div_div_eq_div_mul, ← Nat.pow_add]
+  split_ifs with h
+  · rw [PoolByte.byte_toNat, show 112 + 8*(31-j) = 8*(31-(j-14)) by omega]
+  · have hlt : w.toNat < 2^(112 + 8*(31-j)) :=
+      lt_of_lt_of_le w.val.isLt (Nat.pow_le_pow_right (by norm_num) (by omega))
+    rw [Nat.div_eq_of_lt hlt]
+    rfl
+def symbols25 : Nat → Nat := written symbols24 814 32 (fun j => if 14 ≤ j then symbols2 (236+(j-14)) else 0)
 theorem matches25 (s : State) (h : Matches s.memory initial (value s.memory))
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     Matches (FirstMemory.memory25 s) symbols25 (value s.memory) := by
   apply write_matches _ _ _ (matches24 s h hc)
   intro j hj
-  rw [PoolByte.land, mask25_byte j hj]
+  rw [shr112_byte _ j hj]
   split_ifs with hjr
-  · simp only [show (255 : UInt8) = -1 from rfl, UInt8.neg_one_and]
-    rw [PoolByte.read _ _ _ hj]
+  · rw [PoolByte.read _ _ _ (by omega)]
     exact matches2 s h hc _
   · simp [value]
 def symbols26 : Nat → Nat := written symbols25 972 32 (fun j => symbols2 (236+j))

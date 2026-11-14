@@ -1,3 +1,29 @@
+# RIPEMD-160: shifted 814 store replaces the NOT-masked 828 store in the first-block prologue (615,508 gas)
+
+Parent: promoted commit `7dd4ace6` (accepted `de1b04d7`, 615,541 gas).
+
+The first-block table prologue (`PrepFirst0..5`, PC 9944..10184, once per
+first compression, 11 times on the corpus) stored the high 18 bytes of the
+word read from 236 at 828 and cleared 846..859 with
+`DUP1 PUSH14 (2^112-1) NOT AND PUSH2 828 MSTORE` (18 gas).
+
+It is now `DUP1 PUSH15 112 SHR PUSH2 814 MSTORE` (15 gas). The shifted word
+writes the same 18 bytes to 828..845 and zeros to 814..827; 846..859 are left
+untouched. In the first-block layout model (`FirstLayout.initial`) both
+814..827 and 846..859 start at symbol 0 and no earlier or later first-block
+store touches either range, so `symbols27` is pointwise unchanged and the
+`low_sources`/`high_sources`/`barrier_sources` certificates re-decide as
+before. The new `FirstLayout.shr112_byte` gives the byte view of the shift.
+
+Width: `PUSH15 112` keeps the window at 45 bytes; every PC is unchanged.
+The instruction count drops 7,005 -> 7,004 (part 36: 93 -> 92), so
+`prefixSite` moves 6935 -> 6934 and `jumpSite` 7003 -> 7002. Byte-diversity
+budget stays 15,063 (limit 15,066).
+
+Gas: -3 per first-block prologue, 11 executions: 615,541 -> **615,508**.
+
+---
+
 # RIPEMD-160: PC-sourced 792 store via a two-slot load swap in the ordinary prologue (615,541 gas)
 
 Parent: promoted commit `b14a45e6` (accepted `baf91c0b`, 615,572 gas).
