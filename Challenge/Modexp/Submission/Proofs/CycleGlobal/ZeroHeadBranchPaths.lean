@@ -6,274 +6,274 @@ namespace CycleSubmission.Global.Fast.Shift
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM
 def blkCacheChoose : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2190 (.Dup ⟨11,by decide⟩),
-   pushAt 2191 2 2856,
-   opAt 2192 .JUMPI]
+  [opAt 2188 (.Dup ⟨11,by decide⟩),
+   pushAt 2189 2 2856,
+   opAt 2190 .JUMPI]
 def blkCacheNormal : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2205 .JUMPDEST,
-   opAt 2206 (.Dup ⟨0,by decide⟩),
-   pushAt 2207 2 1952,
-   opAt 2208 .MUL,
-   pushAt 2209 2 18490,
-   opAt 2210 .SUB,
-   opAt 2211 (.Swap ⟨0,by decide⟩),
-   opAt 2212 (.Dup ⟨14,by decide⟩),
-   pushAt 2213 1 1,
-   opAt 2214 .AND,
-   opAt 2215 .SHR,
-   opAt 2216 (.Dup ⟨1,by decide⟩),
-   opAt 2217 .JUMP]
+  [opAt 2203 .JUMPDEST,
+   opAt 2204 (.Dup ⟨0,by decide⟩),
+   pushAt 2205 2 1952,
+   opAt 2206 .MUL,
+   pushAt 2207 2 18490,
+   opAt 2208 .SUB,
+   opAt 2209 (.Swap ⟨0,by decide⟩),
+   opAt 2210 (.Dup ⟨14,by decide⟩),
+   pushAt 2211 1 1,
+   opAt 2212 .AND,
+   opAt 2213 .SHR,
+   opAt 2214 (.Dup ⟨1,by decide⟩),
+   opAt 2215 .JUMP]
 def blkCacheZero : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 2193 (.Dup ⟨0,by decide⟩),
-   pushAt 2194 1 11,
-   opAt 2195 .MUL,
-   pushAt 2196 2 10384,
-   opAt 2197 .SUB,
-   opAt 2198 (.Swap ⟨0,by decide⟩),
-   opAt 2199 (.Dup ⟨14,by decide⟩),
-   pushAt 2200 1 1,
-   opAt 2201 .AND,
-   opAt 2202 .SHR,
-   opAt 2203 (.Dup ⟨1,by decide⟩),
-   opAt 2204 .JUMP]
-@[simp] theorem rhoCachePC2065 : CycleSubmission.Artifact.artifact.instructionPC 2190 = 2835 := by
+  [opAt 2191 (.Dup ⟨0,by decide⟩),
+   pushAt 2192 1 11,
+   opAt 2193 .MUL,
+   pushAt 2194 2 10384,
+   opAt 2195 .SUB,
+   opAt 2196 (.Swap ⟨0,by decide⟩),
+   opAt 2197 (.Dup ⟨14,by decide⟩),
+   pushAt 2198 1 1,
+   opAt 2199 .AND,
+   opAt 2200 .SHR,
+   opAt 2201 (.Dup ⟨1,by decide⟩),
+   opAt 2202 .JUMP]
+@[simp] theorem rhoCachePC2065 : CycleSubmission.Artifact.artifact.instructionPC 2188 = 2835 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2066 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2836 := by
+@[simp] theorem rhoCachePC2066 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2836 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2067 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2836 := by
+@[simp] theorem rhoCachePC2067 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2836 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2068 : CycleSubmission.Artifact.artifact.instructionPC 2192 = 2839 := by
+@[simp] theorem rhoCachePC2068 : CycleSubmission.Artifact.artifact.instructionPC 2190 = 2839 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2069 : CycleSubmission.Artifact.artifact.instructionPC 2193 = 2840 := by
+@[simp] theorem rhoCachePC2069 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2840 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2070 : CycleSubmission.Artifact.artifact.instructionPC 2194 = 2841 := by
+@[simp] theorem rhoCachePC2070 : CycleSubmission.Artifact.artifact.instructionPC 2192 = 2841 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2071 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2843 := by
+@[simp] theorem rhoCachePC2071 : CycleSubmission.Artifact.artifact.instructionPC 2193 = 2843 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2072 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2844 := by
+@[simp] theorem rhoCachePC2072 : CycleSubmission.Artifact.artifact.instructionPC 2194 = 2844 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2073 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2847 := by
+@[simp] theorem rhoCachePC2073 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2847 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2074 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2848 := by
+@[simp] theorem rhoCachePC2074 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2848 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2075 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2849 := by
+@[simp] theorem rhoCachePC2075 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2849 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2076 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2850 := by
+@[simp] theorem rhoCachePC2076 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2850 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2077 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2852 := by
+@[simp] theorem rhoCachePC2077 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2852 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2078 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2853 := by
+@[simp] theorem rhoCachePC2078 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2853 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2079 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2854 := by
+@[simp] theorem rhoCachePC2079 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2854 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2080 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2855 := by
+@[simp] theorem rhoCachePC2080 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2855 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2081 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2856 := by
+@[simp] theorem rhoCachePC2081 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2856 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2082 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2857 := by
+@[simp] theorem rhoCachePC2082 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2083 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2857 := by
+@[simp] theorem rhoCachePC2083 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2084 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2857 := by
+@[simp] theorem rhoCachePC2084 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2085 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2857 := by
+@[simp] theorem rhoCachePC2085 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2086 : CycleSubmission.Artifact.artifact.instructionPC 2207 = 2858 := by
+@[simp] theorem rhoCachePC2086 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2858 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2087 : CycleSubmission.Artifact.artifact.instructionPC 2208 = 2861 := by
+@[simp] theorem rhoCachePC2087 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2861 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2088 : CycleSubmission.Artifact.artifact.instructionPC 2209 = 2862 := by
+@[simp] theorem rhoCachePC2088 : CycleSubmission.Artifact.artifact.instructionPC 2207 = 2862 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2089 : CycleSubmission.Artifact.artifact.instructionPC 2210 = 2865 := by
+@[simp] theorem rhoCachePC2089 : CycleSubmission.Artifact.artifact.instructionPC 2208 = 2865 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2090 : CycleSubmission.Artifact.artifact.instructionPC 2211 = 2866 := by
+@[simp] theorem rhoCachePC2090 : CycleSubmission.Artifact.artifact.instructionPC 2209 = 2866 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2091 : CycleSubmission.Artifact.artifact.instructionPC 2212 = 2867 := by
+@[simp] theorem rhoCachePC2091 : CycleSubmission.Artifact.artifact.instructionPC 2210 = 2867 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2092 : CycleSubmission.Artifact.artifact.instructionPC 2213 = 2868 := by
+@[simp] theorem rhoCachePC2092 : CycleSubmission.Artifact.artifact.instructionPC 2211 = 2868 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2093 : CycleSubmission.Artifact.artifact.instructionPC 2214 = 2870 := by
+@[simp] theorem rhoCachePC2093 : CycleSubmission.Artifact.artifact.instructionPC 2212 = 2870 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2094 : CycleSubmission.Artifact.artifact.instructionPC 2215 = 2871 := by
+@[simp] theorem rhoCachePC2094 : CycleSubmission.Artifact.artifact.instructionPC 2213 = 2871 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2095 : CycleSubmission.Artifact.artifact.instructionPC 2216 = 2872 := by
+@[simp] theorem rhoCachePC2095 : CycleSubmission.Artifact.artifact.instructionPC 2214 = 2872 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoCachePC2096 : CycleSubmission.Artifact.artifact.instructionPC 2217 = 2873 := by
+@[simp] theorem rhoCachePC2096 : CycleSubmission.Artifact.artifact.instructionPC 2215 = 2873 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 def cacheBlock (mem : ByteArray) : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   blkCacheChoose++if (MachineState.readWord mem 1536).toNat = 0 then blkCacheZero else blkCacheNormal
-@[simp] theorem readyPC2009 : CycleSubmission.Artifact.artifact.instructionPC 2136 = 2743 := by
+@[simp] theorem readyPC2009 : CycleSubmission.Artifact.artifact.instructionPC 2134 = 2743 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2010 : CycleSubmission.Artifact.artifact.instructionPC 2137 = 2744 := by
+@[simp] theorem readyPC2010 : CycleSubmission.Artifact.artifact.instructionPC 2135 = 2744 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2011 : CycleSubmission.Artifact.artifact.instructionPC 2138 = 2745 := by
+@[simp] theorem readyPC2011 : CycleSubmission.Artifact.artifact.instructionPC 2136 = 2745 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2012 : CycleSubmission.Artifact.artifact.instructionPC 2139 = 2746 := by
+@[simp] theorem readyPC2012 : CycleSubmission.Artifact.artifact.instructionPC 2137 = 2746 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2013 : CycleSubmission.Artifact.artifact.instructionPC 2140 = 2749 := by
+@[simp] theorem readyPC2013 : CycleSubmission.Artifact.artifact.instructionPC 2138 = 2749 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2014 : CycleSubmission.Artifact.artifact.instructionPC 2141 = 2750 := by
+@[simp] theorem readyPC2014 : CycleSubmission.Artifact.artifact.instructionPC 2139 = 2750 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2015 : CycleSubmission.Artifact.artifact.instructionPC 2142 = 2751 := by
+@[simp] theorem readyPC2015 : CycleSubmission.Artifact.artifact.instructionPC 2140 = 2751 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2016 : CycleSubmission.Artifact.artifact.instructionPC 2143 = 2752 := by
+@[simp] theorem readyPC2016 : CycleSubmission.Artifact.artifact.instructionPC 2141 = 2752 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2144 = 2753 := by
+@[simp] theorem readyPC2017 : CycleSubmission.Artifact.artifact.instructionPC 2142 = 2753 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2018 : CycleSubmission.Artifact.artifact.instructionPC 2145 = 2756 := by
+@[simp] theorem readyPC2018 : CycleSubmission.Artifact.artifact.instructionPC 2143 = 2756 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2019 : CycleSubmission.Artifact.artifact.instructionPC 2146 = 2757 := by
+@[simp] theorem readyPC2019 : CycleSubmission.Artifact.artifact.instructionPC 2144 = 2757 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2020 : CycleSubmission.Artifact.artifact.instructionPC 2147 = 2760 := by
+@[simp] theorem readyPC2020 : CycleSubmission.Artifact.artifact.instructionPC 2145 = 2760 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2021 : CycleSubmission.Artifact.artifact.instructionPC 2148 = 2761 := by
+@[simp] theorem readyPC2021 : CycleSubmission.Artifact.artifact.instructionPC 2146 = 2761 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2022 : CycleSubmission.Artifact.artifact.instructionPC 2149 = 2763 := by
+@[simp] theorem readyPC2022 : CycleSubmission.Artifact.artifact.instructionPC 2147 = 2763 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2023 : CycleSubmission.Artifact.artifact.instructionPC 2150 = 2764 := by
+@[simp] theorem readyPC2023 : CycleSubmission.Artifact.artifact.instructionPC 2148 = 2764 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2024 : CycleSubmission.Artifact.artifact.instructionPC 2150 = 2764 := by
+@[simp] theorem readyPC2024 : CycleSubmission.Artifact.artifact.instructionPC 2148 = 2764 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2025 : CycleSubmission.Artifact.artifact.instructionPC 2151 = 2767 := by
+@[simp] theorem readyPC2025 : CycleSubmission.Artifact.artifact.instructionPC 2149 = 2767 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2026 : CycleSubmission.Artifact.artifact.instructionPC 2152 = 2768 := by
+@[simp] theorem readyPC2026 : CycleSubmission.Artifact.artifact.instructionPC 2150 = 2768 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2027 : CycleSubmission.Artifact.artifact.instructionPC 2153 = 2771 := by
+@[simp] theorem readyPC2027 : CycleSubmission.Artifact.artifact.instructionPC 2151 = 2771 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2028 : CycleSubmission.Artifact.artifact.instructionPC 2154 = 2772 := by
+@[simp] theorem readyPC2028 : CycleSubmission.Artifact.artifact.instructionPC 2152 = 2772 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2029 : CycleSubmission.Artifact.artifact.instructionPC 2155 = 2773 := by
+@[simp] theorem readyPC2029 : CycleSubmission.Artifact.artifact.instructionPC 2153 = 2773 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2030 : CycleSubmission.Artifact.artifact.instructionPC 2156 = 2774 := by
+@[simp] theorem readyPC2030 : CycleSubmission.Artifact.artifact.instructionPC 2154 = 2774 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2031 : CycleSubmission.Artifact.artifact.instructionPC 2157 = 2775 := by
+@[simp] theorem readyPC2031 : CycleSubmission.Artifact.artifact.instructionPC 2155 = 2775 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2032 : CycleSubmission.Artifact.artifact.instructionPC 2158 = 2777 := by
+@[simp] theorem readyPC2032 : CycleSubmission.Artifact.artifact.instructionPC 2156 = 2777 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2033 : CycleSubmission.Artifact.artifact.instructionPC 2159 = 2778 := by
+@[simp] theorem readyPC2033 : CycleSubmission.Artifact.artifact.instructionPC 2157 = 2778 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2034 : CycleSubmission.Artifact.artifact.instructionPC 2160 = 2781 := by
+@[simp] theorem readyPC2034 : CycleSubmission.Artifact.artifact.instructionPC 2158 = 2781 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2035 : CycleSubmission.Artifact.artifact.instructionPC 2161 = 2782 := by
+@[simp] theorem readyPC2035 : CycleSubmission.Artifact.artifact.instructionPC 2159 = 2782 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2036 : CycleSubmission.Artifact.artifact.instructionPC 2162 = 2783 := by
+@[simp] theorem readyPC2036 : CycleSubmission.Artifact.artifact.instructionPC 2160 = 2783 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2037 : CycleSubmission.Artifact.artifact.instructionPC 2163 = 2784 := by
+@[simp] theorem readyPC2037 : CycleSubmission.Artifact.artifact.instructionPC 2161 = 2784 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2038 : CycleSubmission.Artifact.artifact.instructionPC 2163 = 2784 := by
+@[simp] theorem readyPC2038 : CycleSubmission.Artifact.artifact.instructionPC 2161 = 2784 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2039 : CycleSubmission.Artifact.artifact.instructionPC 2164 = 2786 := by
+@[simp] theorem readyPC2039 : CycleSubmission.Artifact.artifact.instructionPC 2162 = 2786 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2040 : CycleSubmission.Artifact.artifact.instructionPC 2165 = 2787 := by
+@[simp] theorem readyPC2040 : CycleSubmission.Artifact.artifact.instructionPC 2163 = 2787 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2041 : CycleSubmission.Artifact.artifact.instructionPC 2166 = 2789 := by
+@[simp] theorem readyPC2041 : CycleSubmission.Artifact.artifact.instructionPC 2164 = 2789 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2042 : CycleSubmission.Artifact.artifact.instructionPC 2167 = 2790 := by
+@[simp] theorem readyPC2042 : CycleSubmission.Artifact.artifact.instructionPC 2165 = 2790 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2043 : CycleSubmission.Artifact.artifact.instructionPC 2168 = 2793 := by
+@[simp] theorem readyPC2043 : CycleSubmission.Artifact.artifact.instructionPC 2166 = 2793 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2044 : CycleSubmission.Artifact.artifact.instructionPC 2169 = 2794 := by
+@[simp] theorem readyPC2044 : CycleSubmission.Artifact.artifact.instructionPC 2167 = 2794 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2045 : CycleSubmission.Artifact.artifact.instructionPC 2170 = 2797 := by
+@[simp] theorem readyPC2045 : CycleSubmission.Artifact.artifact.instructionPC 2168 = 2797 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2046 : CycleSubmission.Artifact.artifact.instructionPC 2171 = 2798 := by
+@[simp] theorem readyPC2046 : CycleSubmission.Artifact.artifact.instructionPC 2169 = 2798 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2047 : CycleSubmission.Artifact.artifact.instructionPC 2172 = 2801 := by
+@[simp] theorem readyPC2047 : CycleSubmission.Artifact.artifact.instructionPC 2170 = 2801 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2048 : CycleSubmission.Artifact.artifact.instructionPC 2173 = 2802 := by
+@[simp] theorem readyPC2048 : CycleSubmission.Artifact.artifact.instructionPC 2171 = 2802 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2049 : CycleSubmission.Artifact.artifact.instructionPC 2174 = 2805 := by
+@[simp] theorem readyPC2049 : CycleSubmission.Artifact.artifact.instructionPC 2172 = 2805 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2050 : CycleSubmission.Artifact.artifact.instructionPC 2175 = 2806 := by
+@[simp] theorem readyPC2050 : CycleSubmission.Artifact.artifact.instructionPC 2173 = 2806 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2051 : CycleSubmission.Artifact.artifact.instructionPC 2176 = 2809 := by
+@[simp] theorem readyPC2051 : CycleSubmission.Artifact.artifact.instructionPC 2174 = 2809 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2052 : CycleSubmission.Artifact.artifact.instructionPC 2177 = 2810 := by
+@[simp] theorem readyPC2052 : CycleSubmission.Artifact.artifact.instructionPC 2175 = 2810 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2053 : CycleSubmission.Artifact.artifact.instructionPC 2178 = 2813 := by
+@[simp] theorem readyPC2053 : CycleSubmission.Artifact.artifact.instructionPC 2176 = 2813 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2054 : CycleSubmission.Artifact.artifact.instructionPC 2179 = 2814 := by
+@[simp] theorem readyPC2054 : CycleSubmission.Artifact.artifact.instructionPC 2177 = 2814 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2055 : CycleSubmission.Artifact.artifact.instructionPC 2180 = 2817 := by
+@[simp] theorem readyPC2055 : CycleSubmission.Artifact.artifact.instructionPC 2178 = 2817 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2056 : CycleSubmission.Artifact.artifact.instructionPC 2181 = 2818 := by
+@[simp] theorem readyPC2056 : CycleSubmission.Artifact.artifact.instructionPC 2179 = 2818 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2057 : CycleSubmission.Artifact.artifact.instructionPC 2182 = 2821 := by
+@[simp] theorem readyPC2057 : CycleSubmission.Artifact.artifact.instructionPC 2180 = 2821 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2058 : CycleSubmission.Artifact.artifact.instructionPC 2183 = 2822 := by
+@[simp] theorem readyPC2058 : CycleSubmission.Artifact.artifact.instructionPC 2181 = 2822 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2059 : CycleSubmission.Artifact.artifact.instructionPC 2184 = 2825 := by
+@[simp] theorem readyPC2059 : CycleSubmission.Artifact.artifact.instructionPC 2182 = 2825 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2060 : CycleSubmission.Artifact.artifact.instructionPC 2185 = 2826 := by
+@[simp] theorem readyPC2060 : CycleSubmission.Artifact.artifact.instructionPC 2183 = 2826 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2061 : CycleSubmission.Artifact.artifact.instructionPC 2186 = 2829 := by
+@[simp] theorem readyPC2061 : CycleSubmission.Artifact.artifact.instructionPC 2184 = 2829 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2062 : CycleSubmission.Artifact.artifact.instructionPC 2187 = 2830 := by
+@[simp] theorem readyPC2062 : CycleSubmission.Artifact.artifact.instructionPC 2185 = 2830 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2063 : CycleSubmission.Artifact.artifact.instructionPC 2188 = 2833 := by
+@[simp] theorem readyPC2063 : CycleSubmission.Artifact.artifact.instructionPC 2186 = 2833 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2064 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2834 := by
+@[simp] theorem readyPC2064 : CycleSubmission.Artifact.artifact.instructionPC 2187 = 2834 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2065 : CycleSubmission.Artifact.artifact.instructionPC 2190 = 2835 := by
+@[simp] theorem readyPC2065 : CycleSubmission.Artifact.artifact.instructionPC 2188 = 2835 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2066 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2836 := by
+@[simp] theorem readyPC2066 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2836 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2067 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2836 := by
+@[simp] theorem readyPC2067 : CycleSubmission.Artifact.artifact.instructionPC 2189 = 2836 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2068 : CycleSubmission.Artifact.artifact.instructionPC 2192 = 2839 := by
+@[simp] theorem readyPC2068 : CycleSubmission.Artifact.artifact.instructionPC 2190 = 2839 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2069 : CycleSubmission.Artifact.artifact.instructionPC 2193 = 2840 := by
+@[simp] theorem readyPC2069 : CycleSubmission.Artifact.artifact.instructionPC 2191 = 2840 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2070 : CycleSubmission.Artifact.artifact.instructionPC 2194 = 2841 := by
+@[simp] theorem readyPC2070 : CycleSubmission.Artifact.artifact.instructionPC 2192 = 2841 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2071 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2843 := by
+@[simp] theorem readyPC2071 : CycleSubmission.Artifact.artifact.instructionPC 2193 = 2843 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2072 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2844 := by
+@[simp] theorem readyPC2072 : CycleSubmission.Artifact.artifact.instructionPC 2194 = 2844 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2073 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2847 := by
+@[simp] theorem readyPC2073 : CycleSubmission.Artifact.artifact.instructionPC 2195 = 2847 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2074 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2848 := by
+@[simp] theorem readyPC2074 : CycleSubmission.Artifact.artifact.instructionPC 2196 = 2848 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2075 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2849 := by
+@[simp] theorem readyPC2075 : CycleSubmission.Artifact.artifact.instructionPC 2197 = 2849 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2076 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2850 := by
+@[simp] theorem readyPC2076 : CycleSubmission.Artifact.artifact.instructionPC 2198 = 2850 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2077 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2852 := by
+@[simp] theorem readyPC2077 : CycleSubmission.Artifact.artifact.instructionPC 2199 = 2852 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2078 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2853 := by
+@[simp] theorem readyPC2078 : CycleSubmission.Artifact.artifact.instructionPC 2200 = 2853 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2079 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2854 := by
+@[simp] theorem readyPC2079 : CycleSubmission.Artifact.artifact.instructionPC 2201 = 2854 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2080 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2855 := by
+@[simp] theorem readyPC2080 : CycleSubmission.Artifact.artifact.instructionPC 2202 = 2855 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2081 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2856 := by
+@[simp] theorem readyPC2081 : CycleSubmission.Artifact.artifact.instructionPC 2203 = 2856 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2082 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2857 := by
+@[simp] theorem readyPC2082 : CycleSubmission.Artifact.artifact.instructionPC 2204 = 2857 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2083 : CycleSubmission.Artifact.artifact.instructionPC 2207 = 2858 := by
+@[simp] theorem readyPC2083 : CycleSubmission.Artifact.artifact.instructionPC 2205 = 2858 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2084 : CycleSubmission.Artifact.artifact.instructionPC 2208 = 2861 := by
+@[simp] theorem readyPC2084 : CycleSubmission.Artifact.artifact.instructionPC 2206 = 2861 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2085 : CycleSubmission.Artifact.artifact.instructionPC 2209 = 2862 := by
+@[simp] theorem readyPC2085 : CycleSubmission.Artifact.artifact.instructionPC 2207 = 2862 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2086 : CycleSubmission.Artifact.artifact.instructionPC 2210 = 2865 := by
+@[simp] theorem readyPC2086 : CycleSubmission.Artifact.artifact.instructionPC 2208 = 2865 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2087 : CycleSubmission.Artifact.artifact.instructionPC 2211 = 2866 := by
+@[simp] theorem readyPC2087 : CycleSubmission.Artifact.artifact.instructionPC 2209 = 2866 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2088 : CycleSubmission.Artifact.artifact.instructionPC 2212 = 2867 := by
+@[simp] theorem readyPC2088 : CycleSubmission.Artifact.artifact.instructionPC 2210 = 2867 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2089 : CycleSubmission.Artifact.artifact.instructionPC 2213 = 2868 := by
+@[simp] theorem readyPC2089 : CycleSubmission.Artifact.artifact.instructionPC 2211 = 2868 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2090 : CycleSubmission.Artifact.artifact.instructionPC 2214 = 2870 := by
+@[simp] theorem readyPC2090 : CycleSubmission.Artifact.artifact.instructionPC 2212 = 2870 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2091 : CycleSubmission.Artifact.artifact.instructionPC 2215 = 2871 := by
+@[simp] theorem readyPC2091 : CycleSubmission.Artifact.artifact.instructionPC 2213 = 2871 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2092 : CycleSubmission.Artifact.artifact.instructionPC 2216 = 2872 := by
+@[simp] theorem readyPC2092 : CycleSubmission.Artifact.artifact.instructionPC 2214 = 2872 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem readyPC2093 : CycleSubmission.Artifact.artifact.instructionPC 2217 = 2873 := by
+@[simp] theorem readyPC2093 : CycleSubmission.Artifact.artifact.instructionPC 2215 = 2873 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem jumpDestCacheNormal : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2856 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 2205 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+  have h := CycleSubmission.Global.Binding.jumpDest 2203 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 end CycleSubmission.Global.Fast.Shift

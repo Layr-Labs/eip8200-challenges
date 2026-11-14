@@ -10,14 +10,14 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
 def guardBlock : Block CycleSubmission.Artifact.artifact .Osaka 3288 DirectEightRaw.guardProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2562 9 3288 DirectEightRaw.guardProgram
-  (by change 2562+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2560 9 3288 DirectEightRaw.guardProgram
+  (by change 2560+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
 def finishBlock : Block CycleSubmission.Artifact.artifact .Osaka 3301 DirectEightRaw.finishProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2571 11 3301 DirectEightRaw.finishProgram
-  (by change 2571+11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2569 11 3301 DirectEightRaw.finishProgram
+  (by change 2569+11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
@@ -27,8 +27,8 @@ theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 theorem jumpDestEight : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3318 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2582 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2582 = 3318 := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2580 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2580 = 3318 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 def bailState (s : State) (mem : ByteArray) (bsize esize k : Nat) : State :=

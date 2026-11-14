@@ -14,9 +14,9 @@ open EvmSemantics.EVM
 open Word
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
-@[simp] private theorem exitPCs (i : Nat) (hi : 7920 ≤ i) (hii : i ≤ 7941) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 7918 ≤ i) (hii : i ≤ 7939) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10404,10405,10406,10407,10408,10410,10411,10413,10414,10415,10416,10417,10418,10420,10421,10423,10424,10425,10426,10427,10428,10429] : List Nat)[i - 7920]! := by
+      ([10404,10405,10406,10407,10408,10410,10411,10413,10414,10415,10416,10417,10418,10420,10421,10423,10424,10425,10426,10427,10428,10429] : List Nat)[i - 7918]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] private theorem jump589 :

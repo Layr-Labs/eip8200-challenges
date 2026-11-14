@@ -32,10 +32,10 @@ open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open CycleSubmission.Global.ShiftPCs
-@[local simp] private theorem compactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2265 = 2934 := by
+@[local simp] private theorem compactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2934 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[local simp] private theorem compactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8163 = 10742 := by
+@[local simp] private theorem compactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8161 = 10742 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
