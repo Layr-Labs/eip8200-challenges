@@ -1,3 +1,30 @@
+# RIPEMD-160: BYTE-0 tail check for the one-byte recognizer arm (615,308 gas)
+
+Parent: promoted commit `90c49473` (validated `37a224de`, 615,309 gas).
+
+The patterned one-byte arm (JUMPDEST 4717, instruction 3391) compared its
+single calldata word against `PUSH1 7; PUSH1 248; SHL` and then
+`PUSH0; CALLDATALOAD; XOR` (17 gas). The arm is reached only when
+`CALLDATASIZE = 1`, so the word is `b0 << 248` and the check now reads the
+byte directly: `PUSH0; CALLDATALOAD; PUSH0; BYTE; PUSH2 0x0007; XOR`
+(16 gas, bytes 4741..4748). The `PUSH0` byte index replaces the `PUSH1 248`
+shift operand; the widened `PUSH2` keeps the 8-byte width and the
+instruction count (6), so no PC or instruction index outside the window
+moves. The XOR is zero exactly when `b0 = 7`, i.e. exactly when the old
+256-bit difference was zero, and it is consumed only by the
+`PUSH2 4651; JUMPI` result branch. -1 gas on the `1-byte` vector:
+615,309 -> **615,308**.
+
+Proof: `RecArmsEach.byte1Template` / `run_byte1` give the new value;
+`readWord_one` (size-1 calldata word is `b0 * 2^248`) and the kernel-decided
+`byte1_key` over `b0 < 256` prove `byte1_zero_iff`, which rewrites the arm's
+branch condition back to `ZeroTailModel.result input 1`, so `gasSteps_arm1`
+(now taking `input.size = 1`, passed by `RecArmsDispatch`) keeps its
+statement. `RecognitionLift.Advances`/`advancesCheck` admit `BYTE`.
+`CandidateArtifact` part 17, `CandidateBytes` chunk 74, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: ordinary pack-window JUMPDEST pad retired by a widened message-load push (615,309 gas)
 
 Parent: promoted commit `cfd609c6` (validated `ba93b2cc`, 615,340 gas).

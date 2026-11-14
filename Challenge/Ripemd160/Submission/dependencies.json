@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "37a224de-93c9-4aac-957c-1b894179ad6f",
+    "rationale": "Direct source and proof-tree parent: the validated 615,309-gas frontier (ordinary pack-window JUMPDEST pad retired by a widened message-load push). Retained unchanged; this candidate rewrites only the one-byte patterned arm's tail check at PC 4741..4748: PUSH1 7; PUSH1 248; SHL; PUSH0; CALLDATALOAD; XOR becomes PUSH0; CALLDATALOAD; PUSH0; BYTE; PUSH2 7; XOR, valid because the arm is reached only when CALLDATASIZE = 1.",
+    "evidence": "Based on the Submission tree at 90c494731a326b339ad43b953648ae806bec2570; RecArmsEach byte1Template/run_byte1/byte1_zero_iff/gasSteps_arm1 (arm slice at instruction 3391), RecArmsDispatch arm1, RecognitionLift BYTE advance, CandidateArtifact part 17, CandidateBytes chunk 74; bytes 4741..4748."
+  },
+  {
     "submissionId": "ba93b2cc-7d23-4a45-9db2-644de6ecc28f",
     "rationale": "Direct source and proof-tree parent: the validated 615,340-gas frontier (calldata-size shift operand for the 56-byte recognizer literal). Retained unchanged; this candidate retires the width-pad JUMPDEST at PC 929 in the ordinary right-lane pack window (871..977) by widening the round-2 message load PUSH2 728 to PUSH3 728, so 930 and every later PC stay fixed while every artifact instruction index from 458 on moves down by one.",
     "evidence": "Based on the Submission tree at 8f97a8ed2fd30d97e56ae0ab1ce90739a4b2f145 (crown cfd609c6); RawPack/PrefixBefore/FirstPrologue.before templates, CandidateArtifact part 2 and instruction_count 7003, CandidateBytes chunks 13-14, bytes 878..929; instruction-index retarget of every site at index >= 458."

@@ -55,7 +55,7 @@ theorem from_entry (input : ByteArray) (hfit : CalldataFits input)
   have hn' := hn
   unfold RecognitionAccumulator.Allowed at hn'
   rcases hn' with h|h|h|h|h|h|h|h|h|h|h|h|h|h
-  · have g := hguard.trans ((gasSteps_short1 input h).trans (Each.gasSteps_arm1 input))
+  · have g := hguard.trans ((gasSteps_short1 input h).trans (Each.gasSteps_arm1 input h))
     exact Finish.arm_correct input hfit 1 (h ▸ hn) h 4753 g
       (Finish.finish_gasSteps input 1 4753 Finish.finishSite0 Finish.finishSite0_pc)
   · have g := hguard.trans (((gasSteps_short31 input h).trans (gasSteps_tramp31 input)).trans (Each.gasSteps_arm31 input))

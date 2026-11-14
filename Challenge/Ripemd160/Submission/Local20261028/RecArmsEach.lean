@@ -1,4 +1,6 @@
 import Challenge.Ripemd160.Submission.Local20261028.RecArmsScan
+import Challenge.Ripemd160.Submission.Proofs.Bytecode.AbcSizeGuard
+import Challenge.EvmProof.Bytes
 set_option warningAsError true
 set_option linter.unusedSimpArgs false
 set_option maxRecDepth 100000
@@ -170,7 +172,70 @@ def gasSteps_chain8 (input : ByteArray) (n : Nat) (a : UInt256) :
     (by simpa [atState] using chain8_pc.symm) chain8_form h'
 
 
-def arm1Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 1) ++ prefixTemplate 1 ++ Scan.resultTemplate
+def byte1Template : List Instr :=
+  [.push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .CALLDATALOAD,
+   .push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .BYTE,
+   .push ⟨2, by decide⟩ (UInt256.ofNat 7), .op .XOR]
+
+def byte1Value (input : ByteArray) : UInt256 :=
+  UInt256.xor (UInt256.ofNat 7) (UInt256.byteAt ⟨0⟩ (MachineState.readWord input 0))
+
+theorem run_byte1 (s : State) (pc : UInt256) (rho : List UInt256)
+    (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
+    runInstrSeq byte1Template {s with pc := pc, stack := rho} =
+      some {s with pc := pcAfter pc byte1Template, stack := byte1Value s.executionEnv.calldata :: rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
+  simp (discharger := omega) [byte1Template, byte1Value, runInstrSeq, DataStepper.runInstr,
+    pcAfter, hrun, show rho.length < 1024 by omega, hcap, hzero, UInt256.succ, Instr.size,
+    Nat.add_assoc, Word.literal_eq_ofNat, List.getElem?_cons_zero, List.exchange]
+  repeat first | apply And.intro | rfl
+
+private theorem tail_after_one (input : ByteArray) (hsize : input.size = 1) (w : Nat) :
+    EvmSemantics.EVM.Precompile.bytesToNatPadded input 1 w = 0 := by
+  induction w with
+  | zero => simp
+  | succ w ih =>
+    have hb := AbcSizeGuard.byte_getD input (1 + w)
+    unfold AbcSizeGuard.byte at hb
+    rw [Challenge.EvmProof.Bytes.bytesToNatPadded_succ, ih, hb,
+      Memory.getElem?_getD_eq_zero_of_size_le input (1 + w) (by omega)]
+    rfl
+
+private theorem readWord_one (input : ByteArray) (hsize : input.size = 1) :
+    MachineState.readWord input 0 =
+      UInt256.ofNat ((YulSemantics.EVM.byteFrom input.toList 0).toNat * 2 ^ 248) := by
+  apply Word.word_ext
+  have hsplit := Challenge.EvmProof.Bytes.bytesToNatPadded_add input 0 1 31
+  have hone := Challenge.EvmProof.Bytes.bytesToNatPadded_succ input 0 0
+  simp only [Challenge.EvmProof.Bytes.bytesToNatPadded_zero_width, Nat.zero_mul,
+    Nat.zero_add] at hone
+  rw [hone, Nat.zero_add, tail_after_one input hsize 31] at hsplit
+  have hb : (YulSemantics.EVM.byteFrom input.toList 0).toNat < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList 0).toNat_lt
+  have hlt : (YulSemantics.EVM.byteFrom input.toList 0).toNat * 2 ^ 248 < 2 ^ 256 :=
+    calc (YulSemantics.EVM.byteFrom input.toList 0).toNat * 2 ^ 248
+        < 256 * 2 ^ 248 := Nat.mul_lt_mul_of_pos_right hb (by positivity)
+      _ = 2 ^ 256 := by norm_num
+  rw [Challenge.EvmProof.Bytes.readWord_toNat, Word.word_toNat_ofNat,
+    show (32 : Nat) = 1 + 31 by rfl, hsplit, Nat.add_zero,
+    show (256 : Nat) ^ 31 = 2 ^ 248 by norm_num]
+  exact (Nat.mod_eq_of_lt hlt).symm
+
+private theorem byte1_key : ∀ b, b < 256 →
+    ((UInt256.xor (UInt256.ofNat 7) (UInt256.ofNat b)).toNat = 0 ↔
+      (UInt256.xor (ZeroTailModel.expectedLast 1) (UInt256.ofNat (b * 2 ^ 248))).toNat = 0) := by
+  decide +kernel
+
+theorem byte1_zero_iff (input : ByteArray) (hsize : input.size = 1) :
+    (byte1Value input).toNat = 0 ↔ (ZeroTailModel.tailDiff input 1).toNat = 0 := by
+  have hb : (YulSemantics.EVM.byteFrom input.toList 0).toNat < 256 :=
+    (YulSemantics.EVM.byteFrom input.toList 0).toNat_lt
+  rw [byte1Value, Challenge.EvmProof.Bytes.byteAt_zero_readWord, ZeroTailModel.tailDiff,
+    show 32 * DirectLiteralModel.last 1 = 0 by decide, readWord_one input hsize]
+  exact byte1_key _ hb
+
+def arm1Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 1) ++ byte1Template ++ Scan.resultTemplate
 theorem arm1_slice :
     (Control.Artifact.submissionArtifact.instructions.drop 3391).take arm1Template.length = arm1Template := by rfl
 def arm1Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm1Template :=
@@ -186,25 +251,30 @@ theorem arm1_form : ∀ i ∈ arm1Template.dropLast, RecognitionLift.Advances i 
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
-def gasSteps_arm1 (input : ByteArray) :
+def gasSteps_arm1 (input : ByteArray) (hsize : input.size = 1) :
     GasSteps (atState (base input) 4717 [])
       {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651, stack := []} := by
   have h1 := Scan.run_store input (UInt256.ofNat 4717) 1
-  have h2 := Scan.run_prefix (prepared input 1) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717))
-    1 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
+  have h2 := run_byte1 (prepared input 1) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717))
+    [] (by simp) rfl
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := Scan.run_result (prepared input 1)
-    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717)) (prefixTemplate 1))
-    (ZeroTailModel.tailDiff input 1) [] (by simp) rfl (by rw [prepared_code]; exact valid_fail)
+    (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717)) byte1Template)
+    (byte1Value input) [] (by simp) rfl (by rw [prepared_code]; exact valid_fail)
   have hall := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have hend : pcAfter (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717))
-      (prefixTemplate 1)) Scan.resultTemplate = UInt256.ofNat 4753 := by decide
+      byte1Template) Scan.resultTemplate = UInt256.ofNat 4753 := by decide
   rw [hend] at hall
   have hres : ZeroTailModel.result input 1 = ZeroTailModel.tailDiff input 1 := by
     simp [ZeroTailModel.result, last, rev]
+  have hif : (if (byte1Value input).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651) =
+      (if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753
+        else UInt256.ofNat 4651) := by
+    rw [hres]
+    exact if_congr (byte1_zero_iff input hsize) rfl rfl
   have h' : runInstrSeq arm1Template (atState (base input) 4717 []) =
       some {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651, stack := []} := by
-    rw [hres]
+    rw [← hif]
     simpa only [arm1Template, atState, List.append_assoc] using hall
   exact RecognitionLift.gasSteps_of_raw arm1Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using arm1_pc.symm) arm1_form h'
