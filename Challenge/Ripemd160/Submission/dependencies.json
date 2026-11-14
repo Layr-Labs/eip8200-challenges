@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "e9be2c95-c917-4621-8acc-36f302c1f7e6",
+    "rationale": "Direct source and proof-tree parent: the validated 615,288-gas frontier (fall-through 256-byte arm). Retained unchanged; this candidate re-plans the 1000-byte arm's calldata window cover: the literal anchor moves from offset 369 to 384, which lets windows (416,15) and (448,47) replace (401,0), (433,32) and (465,64); the entry word W 0 is popped and the (256,111) difference starts the accumulator without an OR. The unreachable JUMP pad after the arm absorbs the 4-byte / 3-instruction shrink, so no PC or instruction index outside 5862..6143 / 3674..3847 moves.",
+    "evidence": "Based on the Submission tree at f3649929002b9ec64b41bd2d68801a7eb53f3d86; RecArmsWindowCover plan1000 / anchors1000 (Cover by decide), RecArmsLong items1000 / head1000 / run_head1000 / val1000 / plan1000_mem / result1000; CandidateArtifact part 19, CandidateBytes chunks 91-95, bytecode.hex."
+  },
+  {
     "submissionId": "956f3fe4-5d51-47e5-bbdf-e69da319890f",
     "rationale": "Direct source and proof-tree parent: the validated 615,299-gas frontier (calldata-size shift operand for the 55-byte arm). Retained unchanged; this candidate moves the 256-byte arm's store/start prefix to sit directly before the eight-word chain entry so it falls through instead of executing PUSH2 chain; JUMP, with a dead PUSH2 before the arm and a dead STOP before the 64-byte arm, so the instruction count is unchanged and only PCs 4931..5774 / indices 3482..3640 move.",
     "evidence": "Based on the Submission tree at dc46627edb41c562d6b35632fe4475d9d40d5e7d; RecArmsEach arm256Template / gasSteps_arm256_entry (fall-through, no run_jump) and every chain/arm PC and slice index, RecArmsScan, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecDispatch31/32/55/56/63/64/65/119/120/128, RecPatternedSites; CandidateArtifact parts 17/18/19, CandidateBytes chunks 72/73/75/77-91/95."

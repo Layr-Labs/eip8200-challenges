@@ -1,3 +1,37 @@
+# RIPEMD-160: Re-anchored window cover for the 1000-byte recognizer arm (615,279 gas)
+
+Parent: promoted commit `f3649929` (validated `e9be2c95`, 615,288 gas).
+
+The patterned 1000-byte arm (JUMPDEST 5838, instruction 3670) proves the
+input equal to `patterned 1000` from the eight chain words (bytes 0..255),
+one literal window and 24 calldata window equalities. In the 251..501
+pattern segment a window at `o` repeats an earlier window only at
+`o - 145` (needs `o <= 364`) or `o - 401` (needs `o >= 401`), so bytes
+396..400 need the literal. With the literal at 369 the segment used
+nine windows (four, literal, `(401,0)`, `(433,32)`, `(465,64)`, `(470,69)`).
+The literal now sits at 384 (bytes 384..415), and `(416,15)`, `(448,47)`,
+`(470,69)` cover 416..501: eight windows.
+
+`(401,0)` was the arm's free head (it XORed the `W 0` left by the entry
+guard). The arm now pops that word and starts the accumulator with the
+`(256,111)` difference, without an `OR`. Gas on the `1000-byte` vector:
+`POP` (2) + first difference (15) + two windows (36) replaces head (9) +
+`(256,111)` (18) + `(433, MSIZE)` (17) + `(465,64)` (18): -9,
+615,288 -> **615,279**.
+
+The arm is 4 bytes and 3 instructions shorter. The unreachable `JUMP` pad
+after its final `JUMP` becomes `PUSH1 0x56` plus 28 `JUMP` (30 bytes,
+29 instructions), so JUMPDEST 6144 / instruction 3848 and every later PC and
+index are fixed. Part 20 (instructions 3839..) is unchanged.
+
+Proof: `WindowCover.plan1000` / `anchors1000 = [384]` (`cover1000` by
+`decide`), `Long.items1000`, `head1000` (now `POP` + the `(256,111)`
+difference), `run_head1000`, `val1000`, `plan1000_mem` and the `result1000`
+anchor case; `CandidateArtifact` part 19, `CandidateBytes` chunks 91..95,
+`bytecode.hex`.
+
+---
+
 # RIPEMD-160: Fall-through 256-byte arm into the eight-word chain entry (615,288 gas)
 
 Parent: promoted commit `dc46627e` (validated `956f3fe4`, 615,299 gas).

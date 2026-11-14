@@ -5,16 +5,6 @@ set_option linter.unusedSimpArgs false
 set_option maxRecDepth 200000
 set_option maxHeartbeats 40000000
 
-/-!
-# Calldata window equalities pin long patterned prefixes
-
-The 376- and 1000-byte arms do not compare every word with a literal.  The
-first 256 bytes are checked against the eight shared chain literals; every
-later window is checked equal to an *earlier* calldata window at a distance at
-which the pattern itself repeats (and the 1000-byte arm adds one literal
-window at offset 369).  By strong induction on the byte index this determines
-every byte.
--/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.Arms.WindowCover
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
@@ -111,11 +101,11 @@ theorem eq_reference (input : ByteArray) (n : Nat) (plan : List (Nat × Nat))
 def plan376 : List (Nat × Nat) := [(256, 111), (288, 143), (320, 175), (344, 199)]
 
 def plan1000 : List (Nat × Nat) :=
-  [(256, 111), (288, 143), (320, 175), (352, 207), (401, 0), (433, 32), (465, 64), (502, 212),
+  [(256, 111), (288, 143), (320, 175), (352, 207), (416, 15), (448, 47), (502, 212),
    (529, 384), (561, 15), (593, 47), (625, 79), (657, 111), (689, 143), (721, 175), (753, 62),
    (785, 94), (817, 126), (849, 158), (881, 190), (910, 219), (936, 390), (968, 21), (470, 69)]
 
-def anchors1000 : List Nat := [369]
+def anchors1000 : List Nat := [384]
 
 theorem cover376 : Cover 376 plan376 [] :=
   ⟨by decide, by decide, by decide, by decide, by decide, by decide⟩

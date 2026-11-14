@@ -168,16 +168,17 @@ theorem itemsOk_of_check (xs : List Item) (h : xs.all (fun x => match x with
 def items376 : List Item := [.eq 288 143, .eq 320 175, .eq 344 199]
 
 def items1000 : List Item :=
-  [.eq 256 111, .eq 288 143, .eq 320 175, .eq 352 207, .eqM 433, .eq 465 64, .eq 502 212,
+  [.eq 288 143, .eq 320 175, .eq 352 207, .eq 416 15, .eq 448 47, .eq 502 212,
    .eq 529 384, .eq 561 15, .eq 593 47, .eq 625 79, .eq 657 111, .eq 689 143, .eq 721 175,
    .eq 753 62, .eq 785 94, .eq 817 126, .eq 849 158, .eq 881 190, .eq 910 219, .eq 936 390,
    .eq 968 21, .eq 470 69,
-   .lit 369 46836809398124041301509275424151671459047373308733951134252891636751576645090]
+   .lit 384 66362527321200478836789075001862404301375810972189120864356400365700452182029]
 
 def head376 : List Instr :=
   [pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
 
-def head1000 : List Instr := [pushNat 401, .op .CALLDATALOAD, .op .XOR]
+def head1000 : List Instr :=
+  [.op .POP, pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
 
 def a376Template : List Instr :=
   DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 376) ++ head376 ++
@@ -201,7 +202,7 @@ theorem run_head376 (s : State) (pc : UInt256) (rho : List UInt256)
 theorem run_head1000 (s : State) (pc : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running) :
     runInstrSeq head1000 {s with pc := pc, stack := W s.executionEnv.calldata 0 :: rho} =
-      some {s with pc := pcAfter pc head1000, stack := itemVal s.executionEnv.calldata (.eq 0 401) :: rho} := by
+      some {s with pc := pcAfter pc head1000, stack := itemVal s.executionEnv.calldata (.eq 256 111) :: rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   simp (discharger := omega) [head1000, pushNat, width, itemVal, W,
     runInstrSeq, DataStepper.runInstr, pcAfter, hrun, show rho.length < 1024 by omega, hcap,
@@ -244,7 +245,7 @@ theorem a1000_pc : a1000Site.startPC = UInt256.ofNat 5838 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def val376 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 256 111)) items376
-def val1000 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 0 401)) items1000
+def val1000 (input : ByteArray) : UInt256 := accVal input (itemVal input (.eq 256 111)) items1000
 
 def gasSteps_a376_entry (input : ByteArray) :
     GasSteps (atState (base input) 5775 []) (atState (prepared input 376) 4959 [val376 input]) := by
@@ -277,7 +278,7 @@ def gasSteps_a1000_entry (input : ByteArray) :
   have h12 := DenseScheduleTrace.runInstrSeq_append_running h1 rfl h2
   have h3 := run_items (prepared input 1000)
     (pcAfter (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5838)) head1000) items1000
-    (itemsOk_of_check _ (by decide)) (itemVal input (.eq 0 401)) [] (by simp) rfl
+    (itemsOk_of_check _ (by decide)) (itemVal input (.eq 256 111)) [] (by simp) rfl
     (prepared_activeWords input 1000)
   have h123 := DenseScheduleTrace.runInstrSeq_append_running h12 rfl h3
   have h4 := run_jump (prepared input 1000)
@@ -322,7 +323,7 @@ theorem result376 (input : ByteArray) (hsize : input.size = 376)
   · simp
 
 theorem plan1000_mem : ∀ p ∈ WindowCover.plan1000,
-    p = (401, 0) ∨ Item.eq p.1 p.2 ∈ items1000 ∨ Item.eqP p.1 p.2 ∈ items1000 ∨
+    p = (256, 111) ∨ Item.eq p.1 p.2 ∈ items1000 ∨ Item.eqP p.1 p.2 ∈ items1000 ∨
       (p.2 = 32 ∧ Item.eqM p.1 ∈ items1000) := by
   decide
 
@@ -334,7 +335,7 @@ theorem result1000 (input : ByteArray) (hsize : input.size = 1000)
     WindowCover.cover1000 hsize h0
   · intro p hp
     rcases plan1000_mem p hp with rfl | hm | hm | ⟨h32, hm⟩
-    · exact (item_eq input _ _ hh).symm
+    · exact item_eq input _ _ hh
     · exact item_eq input _ _ (hi _ hm)
     · exact item_eq input p.1 p.2 (hi (.eqP p.1 p.2) hm)
     · have hz : itemVal input (.eqM p.1) = 0 := hi (.eqM p.1) hm
@@ -343,13 +344,13 @@ theorem result1000 (input : ByteArray) (hsize : input.size = 1000)
   · intro a ha'
     simp only [WindowCover.anchors1000, List.mem_cons, List.not_mem_nil, or_false] at ha'
     subst ha'
-    have hl := hi (.lit 369 46836809398124041301509275424151671459047373308733951134252891636751576645090) (by decide)
+    have hl := hi (.lit 384 66362527321200478836789075001862404301375810972189120864356400365700452182029) (by decide)
     simp only [itemVal, W, KnownInputLogic.wordXor_eq_zero_iff] at hl
     rw [hl]
     apply Word.word_ext
     rw [Bytes.readWord_toNat, Word.word_toNat_ofNat,
-      ← RecognitionAccumulator.bytesToNatPadded_reference 1000 369 32 (by norm_num) (by norm_num),
-      ZeroTailModel.bytesToNatPadded_reference_formula 1000 369 32 (by norm_num)]
+      ← RecognitionAccumulator.bytesToNatPadded_reference 1000 384 32 (by norm_num) (by norm_num),
+      ZeroTailModel.bytesToNatPadded_reference_formula 1000 384 32 (by norm_num)]
     decide
 
 /-! ## Outcomes -/
