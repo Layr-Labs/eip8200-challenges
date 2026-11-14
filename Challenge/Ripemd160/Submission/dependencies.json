@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "784a8fe6-2e65-47d8-a561-be10a9b2e2ff",
+    "rationale": "Direct source and proof-tree parent: the promoted 615,508-gas frontier (shifted 814 store replaces the NOT-masked 828 store in the first-block prologue). Retained unchanged; this candidate moves the first-block 0x80 padding byte at 787 into a PC-sourced MSTORE8 hosted by the bytes freed when the 468 masked store becomes a 112-bit left shift stored at 482.",
+    "evidence": "Based on the Submission tree at 62e7205698a1e134a231e98fdef30c59515a88a2; PrepFirst1, PrepFirst3, PrepFirstMemory memory6/memory17, PrepFirstCertificate symbols6/symbols17/shl112_byte, CandidateArtifact part 35, CandidateBytes chunks 156-158; bytes 9987..10118."
+  },
+  {
     "submissionId": "de1b04d7-b024-4f30-8d42-6acb805cce79",
     "rationale": "Direct source and proof-tree parent: the promoted 615,541-gas frontier (PC-sourced 792 store via a two-slot load swap in the ordinary message prologue). Retained unchanged; this candidate replaces the NOT-masked 828 store of the first-block prologue with a 112-bit right shift stored at 814.",
     "evidence": "Based on the Submission tree at 7dd4ace6974cbfc34d02ea4b08cae071d41f2bd9; PrepFirst4, PrepFirstMemory memory25, PrepFirstCertificate symbols25/matches25, PrepFirst608, FirstCore site indices, CandidateArtifact part 36, CandidateBytes chunk 158; bytes 10155..10175."

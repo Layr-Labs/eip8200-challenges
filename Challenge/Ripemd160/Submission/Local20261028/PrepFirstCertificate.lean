@@ -104,15 +104,11 @@ theorem matches5 (s : State) (h : Matches s.memory initial (value s.memory))
   apply write_matches _ _ _ (matches4 s h hc)
   exact literal5_bytes s.memory
 def literal6 : Array Nat := #[34]
-def symbols6 : Nat → Nat := written symbols5 787 1 (fun j => literal6[j]!)
+def symbols6 : Nat → Nat := symbols5
 theorem matches6 (s : State) (h : Matches s.memory initial (value s.memory))
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
-    Matches (FirstMemory.memory6 s) symbols6 (value s.memory) := by
-  apply write_bytes_matches _ _ _ _ (matches5 s h hc) 787 1 (fun j => literal6[j]!) rfl
-  intro j hj
-  have : j=0 := by omega
-  subst j
-  rfl
+    Matches (FirstMemory.memory6 s) symbols6 (value s.memory) :=
+  matches5 s h hc
 def literal7 : Array Nat := #[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 425, 339, 509, 462, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34]
 theorem literal7_bytes (m : ByteArray) (j : Nat) (hj : j < 32) :
     PoolByte.byte (UInt256.ofNat 63353160442001178124083124585511767107666197511929984) j = value m literal7[j]! := by
@@ -201,22 +197,53 @@ theorem matches16 (s : State) (h : Matches s.memory initial (value s.memory))
   intro j hj
   rw [PoolByte.read _ _ _ hj]
   exact matches2 s h hc _
-theorem mask17_byte (j : Nat) (hj : j < 32) :
-    PoolByte.byte (UInt256.ofNat 22300745198530623141535718272648361505980415) j = if 14 ≤ j ∧ j < 32 then 255 else 0 := by
-  have h : ∀ j : Fin 32, PoolByte.byte (UInt256.ofNat 22300745198530623141535718272648361505980415) j.val = if 14 ≤ j.val ∧ j.val < 32 then 255 else 0 := by decide +kernel
-  exact h ⟨j,hj⟩
-def symbols17 : Nat → Nat := written symbols16 468 32 (fun j => if 14 ≤ j ∧ j < 32 then symbols2 (262+j) else 0)
+theorem shl112_byte (w : UInt256) (j : Nat) (hj : j < 32) :
+    PoolByte.byte (UInt256.shiftLeft w (UInt256.ofNat 112)) j =
+      if j < 18 then PoolByte.byte w (j+14) else 0 := by
+  have hshl : (UInt256.shiftLeft w (UInt256.ofNat 112)).toNat = w.toNat * 2^112 % 2^256 := by
+    unfold UInt256.shiftLeft
+    have hshift : (UInt256.ofNat 112).toNat = 112 := by
+      rw [Challenge.EvmProof.Word.word_toNat_ofNat]; rfl
+    rw [if_neg (by omega), hshift, Challenge.EvmProof.Word.word_toNat_ofNat,
+      show UInt256.size = 2 ^ 256 by rfl, Nat.mod_mod, Nat.shiftLeft_eq]
+  apply UInt8.toNat_inj.mp
+  rw [PoolByte.byte_toNat, hshl]
+  split_ifs with h
+  · have e1 : (2:Nat)^256 = 2^(8*(31-j)) * 2^(8*j+8) := by
+      rw [← Nat.pow_add]; exact congrArg (2 ^ ·) (by omega)
+    have e2 : (2:Nat)^(8*(31-j)) = 2^(8*(31-(j+14))) * 2^112 := by
+      rw [← Nat.pow_add]; exact congrArg (2 ^ ·) (by omega)
+    have e3 : 256 ∣ (2:Nat)^(8*j+8) :=
+      ⟨2^(8*j), by rw [show 8*j+8 = 8 + 8*j by omega, Nat.pow_add]⟩
+    rw [PoolByte.byte_toNat, e1, Nat.mod_mul_right_div_self, Nat.mod_mod_of_dvd _ e3, e2,
+      Nat.mul_div_mul_right _ _ (by positivity)]
+  · have hd : 2^(8*(31-j)) * 2^8 ∣ w.toNat * 2^112 % 2^256 := by
+      rw [← Nat.pow_add]
+      apply (Nat.dvd_mod_iff (Nat.pow_dvd_pow 2 (by omega))).mpr
+      exact Dvd.dvd.mul_left (Nat.pow_dvd_pow 2 (by omega)) _
+    obtain ⟨c, hc⟩ := hd
+    rw [hc, Nat.mul_assoc, Nat.mul_div_cancel_left _ (by positivity)]
+    simp
+def symbols17 : Nat → Nat :=
+  written (written symbols16 482 32 (fun j => if j < 18 then symbols2 (262+(j+14)) else 0))
+    787 1 (fun j => literal6[j]!)
 theorem matches17 (s : State) (h : Matches s.memory initial (value s.memory))
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     Matches (FirstMemory.memory17 s) symbols17 (value s.memory) := by
-  apply write_matches _ _ _ (matches16 s h hc)
-  intro j hj
-  rw [PoolByte.land, mask17_byte j hj]
-  split_ifs with hjr
-  · simp only [show (255 : UInt8) = -1 from rfl, UInt8.neg_one_and]
-    rw [PoolByte.read _ _ _ hj]
-    exact matches2 s h hc _
-  · simp [value]
+  refine write_bytes_matches _ _ _ _ ?hm 787 1 (fun j => literal6[j]!) rfl ?hw
+  case hw =>
+    intro j hj
+    have : j=0 := by omega
+    subst j
+    rfl
+  case hm =>
+    apply write_matches _ _ _ (matches16 s h hc)
+    intro j hj
+    rw [shl112_byte _ j hj]
+    split_ifs with hjr
+    · rw [PoolByte.read _ _ _ (by omega)]
+      exact matches2 s h hc _
+    · simp [value]
 def symbols18 : Nat → Nat := written symbols17 522 32 (fun j => symbols2 (228+j))
 theorem matches18 (s : State) (h : Matches s.memory initial (value s.memory))
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
