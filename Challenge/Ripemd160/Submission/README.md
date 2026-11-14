@@ -1,3 +1,35 @@
+# RIPEMD-160: Continuation-first last-block test jumps straight to the block join (613,226 gas)
+
+Parent: promoted commit `66eec9be` (validated `340e677c`, 615,277 gas).
+
+Every generic block exits through `SWAP13; JUMP` into continuation 222, the
+last-block test. It used to run `PUSH1 0x80; DUP13; ADD; MSIZE; LT;
+PUSH2 4882; JUMPI`, and when another block followed it re-pushed the
+continuation and hopped to the shared join with `PUSH1 0xde; PUSH1 0xd2;
+JUMP`. The test now pushes the continuation first and branches on the
+opposite condition straight into the join: `PUSH1 0xde; PUSH1 0x7f; DUP14;
+ADD; MSIZE; GT; PUSH1 0xd2; JUMPI`. `MSIZE > off + 127` is
+`MSIZE >= off + 128` while `off + 128` does not wrap. The last block falls
+through to `POP; PUSH2 4882; JUMP`.
+
+A continuing block costs 31 gas from 222 to 210 instead of 42 (-11). The
+final block costs 44 instead of 28 to reach 4882 (+16). The 32 generated
+vectors compress 265 blocks (233 continuations, 32 exits): -2,563 + 512 =
+-2,051, 615,277 -> **613,226**.
+
+Bytes 222..244 keep 23 bytes and 18 instructions (six `STOP` pad), so
+JUMPDEST 245 and every later PC and index are fixed.
+
+Proof: `StaggerPersistentLoopSites` replaces the head / `MSIZE` / test /
+push / hop pieces with `glSite` (index 115) and `glOutSite` (index 124).
+`gasSteps_glStay` / `gasSteps_glExit` keep their endpoints and take
+`off.toNat + 128 < 2^256`. `Loop.run_blocks` takes
+`1056 + 64 * count + 128 < 2^256`, discharged from `Padding.paddedLength_lt`.
+`DirectGuard` PC witnesses for indices 118..125 are retargeted.
+`CandidateArtifact` part 0, `CandidateBytes` chunk 3, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: Consuming low-64 screen for the two 1000-byte entries (615,277 gas)
 
 Parent: promoted commit `edf8f2d8` (validated `27d78a01`, 615,279 gas).

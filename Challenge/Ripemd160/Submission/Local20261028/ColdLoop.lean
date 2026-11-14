@@ -20,6 +20,7 @@ def result (states : Nat → State) (hashes : Nat → Compression.HashState) (co
 
 def run_blocks (states : Nat → State) (hashes : Nat → Compression.HashState)
     (count : Nat) (hc : 0 < count) (rho : List UInt256) (hs : rho.length ≤ 880)
+    (hbound : 1056 + 64 * count + 128 < 2 ^ 256)
     (env : ∀ i, i ≤ count → FirstEntry.Env (states i))
     (last : ∀ i, i < count →
       ((UInt256.ofNat (32*(states (i+1)).activeWords.toNat)).toNat <
@@ -31,6 +32,9 @@ def run_blocks (states : Nat → State) (hashes : Nat → Compression.HashState)
     intro i hi
     have e := env (i+1) (by omega)
     have gb := block i hi
+    have hoffb : (UInt256.ofNat (1056+64*i)).toNat + 128 < 2 ^ 256 := by
+      rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
+      omega
     have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
       (UInt256.ofNat 222) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running
       (valid_gl _ e.code) e.code e.fork e.noPrecompile
@@ -42,7 +46,7 @@ def run_blocks (states : Nat → State) (hashes : Nat → Compression.HashState)
           (UInt256.ofNat (1056+64*i)+UInt256.ofNat 128).toNat := by
         intro h; have := (last i hi).mp h; omega
       have gt := gasSteps_glStay (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
-        (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running hge e.code e.fork e.noPrecompile
+        (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running hoffb hge e.code e.fork e.noPrecompile
       have hoff : LoopRaw.nextOffset (UInt256.ofNat (1056+64*i)) = UInt256.ofNat (1056+64*(i+1)) := by
         unfold LoopRaw.nextOffset
         rw [Word.ofNat_add_mod]
@@ -51,7 +55,7 @@ def run_blocks (states : Nat → State) (hashes : Nat → Compression.HashState)
       exact (gbd.trans gt).cast rfl (by simp only [I,if_pos hn,entry])
     · have he : i+1=count := by omega
       have gt := gasSteps_glExit (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
-        (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running ((last i hi).mpr he)
+        (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running hoffb ((last i hi).mpr he)
         e.code e.fork e.noPrecompile
       exact (gbd.trans gt).cast rfl (by simp only [I,if_neg hn,result,Nat.add_sub_cancel,LoopRaw.outPC])
   have g := GasSteps.iterateBounded (I := I) count step
@@ -70,6 +74,11 @@ noncomputable def gasSteps (input : ByteArray) (hfit : CalldataFits input)
     · rw [NormalIteration.halt]; exact PadSkipEntry.entryState_halt input
     · rw [NormalIteration.executionEnv]; exact PadSkipEntry.entryState_noPrecompile input
   apply run_blocks _ _ _ (DriverTrace.blockCount_pos input) _ (by simp [NormalPrepare.masks]; omega)
+    (by
+      have := Padding.paddedLength_lt input.size
+      have := DriverTrace.paddedLength_eq_blockCount input
+      unfold CalldataFits at hfit
+      omega)
     (fun i _ => e i) (fun i hi => Iteration.last input hfit hcold i hi)
   intro i hi
   have hb : 1056+64*i+64 < 2^256 := by

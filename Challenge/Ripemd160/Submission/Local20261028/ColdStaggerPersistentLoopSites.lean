@@ -67,38 +67,42 @@ theorem chain_pc : chainSite.startPC = UInt256.ofNat 132 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 73) = UInt256.ofNat 132
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-def glHeadCode : List Instr := Control.LoopRaw.glHeadTemplate
+def glCode : List Instr :=
+  [.op .JUMPDEST, .push ⟨1, by decide⟩ (UInt256.ofNat 222), .push ⟨1, by decide⟩ (UInt256.ofNat 127),
+   .op (.Dup ⟨13, by decide⟩), .op .ADD, .op .MSIZE, .op .GT,
+   .push ⟨1, by decide⟩ (UInt256.ofNat 210), .op .JUMPI]
 
-theorem glHead_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 115).take glHeadCode.length = glHeadCode := by rfl
+theorem gl_slice :
+    (Control.Artifact.submissionArtifact.instructions.drop 115).take glCode.length = glCode := by rfl
 
-def glHeadSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka glHeadCode :=
-  StackSiteBuilder.ofSlice glHeadCode 115 glHead_slice
-    (by change 115 + glHeadCode.length ≤ Control.Artifact.submissionInstructions.length
+def glSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka glCode :=
+  StackSiteBuilder.ofSlice glCode 115 gl_slice
+    (by change 115 + glCode.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
-    (CoreGas.wellFormed_of_check glHeadCode (by decide))
+    (CoreGas.wellFormed_of_check glCode (by decide))
     (by decide)
 
-theorem glHead_pc : glHeadSite.startPC = UInt256.ofNat 222 := by
+theorem gl_pc : glSite.startPC = UInt256.ofNat 222 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 115) = UInt256.ofNat 222
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-def glTestCode : List Instr := Control.LoopRaw.glTestTemplate Control.LoopRaw.outPC
+def glOutCode : List Instr :=
+  [.op .POP, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op .JUMP]
 
-theorem glTest_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 120).take glTestCode.length = glTestCode := by rfl
+theorem glOut_slice :
+    (Control.Artifact.submissionArtifact.instructions.drop 124).take glOutCode.length = glOutCode := by rfl
 
-def glTestSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka glTestCode :=
-  StackSiteBuilder.ofSlice glTestCode 120 glTest_slice
-    (by change 120 + glTestCode.length ≤ Control.Artifact.submissionInstructions.length
+def glOutSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka glOutCode :=
+  StackSiteBuilder.ofSlice glOutCode 124 glOut_slice
+    (by change 124 + glOutCode.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
-    (CoreGas.wellFormed_of_check glTestCode (by decide))
+    (CoreGas.wellFormed_of_check glOutCode (by decide))
     (by decide)
 
-theorem glTest_pc : glTestSite.startPC = UInt256.ofNat 228 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 120) = UInt256.ofNat 228
+theorem glOut_pc : glOutSite.startPC = UInt256.ofNat 234 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 124) = UInt256.ofNat 234
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]
@@ -176,14 +180,6 @@ def stub192Push : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (C
     (Control.StackRoundData.templateWellFormed_mem (instructions := (Control.LoopRaw.pushContTemplate 128)) (by decide))
     (by decide)
 
-def glPush : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.pushContTemplate 222) :=
-  StackSiteBuilder.ofSlice (Control.LoopRaw.pushContTemplate 222) 123 (by rfl)
-    (by change 123 + (Control.LoopRaw.pushContTemplate 222).length ≤ Control.Artifact.submissionInstructions.length
-        rw [CandidateArtifact.instruction_count]; decide)
-    (by rw [CandidateArtifact.code_size]; decide)
-    (Control.StackRoundData.templateWellFormed_mem (instructions := (Control.LoopRaw.pushContTemplate 222)) (by decide))
-    (by decide)
-
 def joinSwapSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka Control.LoopRaw.joinSwapTemplate :=
   StackSiteBuilder.ofSlice Control.LoopRaw.joinSwapTemplate 106 (by rfl)
     (by change 106 + Control.LoopRaw.joinSwapTemplate.length ≤ Control.Artifact.submissionInstructions.length
@@ -207,10 +203,6 @@ def stub128Set : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Co
 
 theorem stub192Push_pc : stub192Push.startPC = UInt256.ofNat 193 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 94) = UInt256.ofNat 193
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-
-theorem glPush_pc : glPush.startPC = UInt256.ofNat 233 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 123) = UInt256.ofNat 233
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem joinSwapSite_pc : joinSwapSite.startPC = UInt256.ofNat 210 := by
@@ -252,20 +244,8 @@ def advJumpSite (idx : Nat)
     (Control.StackRoundData.templateWellFormed_mem (instructions := PadJump.template1 210) (by decide)) (by decide)
 
 def stub192Jump := advJumpSite 95 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
-/-- `PUSH1 0x83 JUMP` at 61: the last-block stay hops to the shared join at 210. -/
-def glHopJump : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (PadJump.template1 210) :=
-  StackSiteBuilder.ofSlice (PadJump.template1 210) 124 (by rfl)
-    (by change 124 + (PadJump.template1 210).length ≤ Control.Artifact.submissionInstructions.length
-        rw [CandidateArtifact.instruction_count]; decide)
-    (by rw [CandidateArtifact.code_size]; decide)
-    (Control.StackRoundData.templateWellFormed_mem (instructions := PadJump.template1 210) (by decide)) (by decide)
-
 theorem stub192Jump_pc : stub192Jump.startPC = UInt256.ofNat 195 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 95) = UInt256.ofNat 195
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-
-theorem glHopJump_pc : glHopJump.startPC = UInt256.ofNat 235 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 124) = UInt256.ofNat 235
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 private def jumpdest_gasSteps (site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka [.op .JUMPDEST])
@@ -323,17 +303,6 @@ theorem valid_join (s : State) (hcode : s.executionEnv.code = Control.Artifact.s
   change Decode.isValidJumpDest s.executionEnv.code 210 = true
   rw [hcode]
   exact h
-
-private def hopJump_gasSteps
-    (s : State) (rho : List UInt256) (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 235, stack := rho}
-      {s with pc := UInt256.ofNat 210, stack := rho} := by
-  apply PadLift.gasSteps_of_raw glHopJump {s with pc := UInt256.ofNat 235, stack := rho} _ hcode hfork hrun hnp glHopJump_pc.symm
-  · apply PadLift.advancesAll_sound; decide
-  · exact PadJump.run_template1 s (UInt256.ofNat 235) rho 210 (by omega) hrun (valid_join s hcode)
 
 private def pushCont_gasSteps (v pc : Nat)
     (site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.pushContTemplate v))
@@ -454,130 +423,108 @@ def gasSteps_stub128 (s : State) (h : Compression.HashState) (off cont : UInt256
   rw [he] at g2
   exact g1.trans g2
 
-/-- The `MSIZE` at 53 (instruction 32) of the generic last-block test. -/
-theorem glMsize_decoded (s : State) (stack : List UInt256)
-    (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka) :
-    ({s with pc := UInt256.ofNat 227, stack := stack} : State).decodedOp = some .MSIZE := by
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 119 .MSIZE
-    (by rfl) (by decide) trivial
-  apply Control.Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 227, stack := stack} : State) 119
-    hcode ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [hfork]; rfl)
-  change (UInt256.ofNat 227).toNat = Control.Artifact.submissionArtifact.instructionPC 119
-  rw [ArtifactByteLength.instructionPC_eq_byteLength]
-  decide
+private theorem add_eq_hAdd' (x y : UInt256) : UInt256.add x y = x + y := rfl
 
-private theorem lt_pc {s t : State}
-    (hresult : DataStepper.runInstr (.op .LT) s = some t) :
-    t.pc = s.pc + UInt256.ofNat 1 := by
-  by_cases hcap : s.stack.length < 1024
-  · simp only [DataStepper.runInstr, if_pos hcap] at hresult
-    cases hs : s.stack with
-    | nil => simp [hs] at hresult
-    | cons a tail =>
-      cases ht : tail with
-      | nil => simp [hs, ht] at hresult
-      | cons b rest =>
-        simp [hs, ht] at hresult
-        subst t
-        rfl
-  · simp [DataStepper.runInstr, hcap] at hresult
-
-/-- The generic test site ends in `JUMPI`; its two straight-line instructions are `LT` and a push. -/
-private def glTest_gasSteps_of_raw (s t : State)
-    (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hrun : s.halt = .Running)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hpc : s.pc = glTestSite.startPC)
-    (hresult : runInstrSeq glTestCode s = some t) : GasSteps s t := by
-  apply DataStepper.runLocatedBlock_sound Control.Artifact.submissionArtifact .Osaka glTestSite.path hcode hfork
-  · have hl := PairedHelperBooleanTrace.runLocatedBlock_eq_raw_terminal_sites glTestSite.sites glTestCode
-      glTestSite.instruction_eq glTestSite.contiguous s
-      (by rw [glTestSite.head_eq]; exact congrArg some hpc.symm) (by
-        intro located hmem u v hr
-        have hm : located.located.instruction ∈
-            glTestSite.sites.dropLast.map (fun item => item.located.instruction) := List.mem_map_of_mem hmem
-        rw [List.map_dropLast, glTestSite.instruction_eq] at hm
-        simp only [glTestCode, Control.LoopRaw.glTestTemplate, List.dropLast_cons_cons,
-          List.dropLast_singleton, List.mem_cons, List.mem_singleton, List.not_mem_nil, or_false] at hm
-        rcases hm with h | h
-        · rw [h] at hr ⊢; exact lt_pc hr
-        · rw [h] at hr ⊢; exact PadLift.runInstr_pc_extra (PadLift.advancesCheck_sound _ (by decide)) hr)
-    change DataStepper.runLocatedBlock (LocatedSite.path glTestSite.sites) s = some t
-    rw [hl]
-    exact hresult
-  · exact hrun
-  · exact hnp
-
-/-- Generic last-block test up to its branch: `off + 128` and the active size on top. -/
-def gasSteps_glHead (s : State) (h : Compression.HashState) (off cont : UInt256)
+private theorem run_gl_taken (s : State) (h : Compression.HashState) (off cont : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
-    (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
-      s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat 228, stack := UInt256.ofNat (32 * s.activeWords.toNat) ::
-        (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho} := by
-  have g1 : GasSteps {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat 227, stack := (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho} := by
-    apply PadLift.gasSteps_of_raw glHeadSite {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp glHead_pc.symm
-    · exact PadLift.advancesAll_sound _ (by decide)
-    · have hr := Control.LoopRaw.run_glHead s (UInt256.ofNat 222) h off cont rho (by omega) hrun
-      have he : pcAfter (UInt256.ofNat 222) Control.LoopRaw.glHeadTemplate = UInt256.ofNat 227 := by decide
-      rw [he] at hr
-      exact hr
-  have hcap : ({s with pc := UInt256.ofNat 227, stack := (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho} : State).stack.length < 1024 := by
-    change ((off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho).length < 1024
-    simp [StaggerPersistentFrame.frame]; omega
-  have g2 := Msize.step (glMsize_decoded s ((off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho) hcode hfork) hcap hrun hnp
-  exact g1.trans (g2.cast rfl (by simp only [Word.succ_ofNat_mod]))
+    (hgt : (off + UInt256.ofNat 127).toNat < (UInt256.ofNat (32 * s.activeWords.toNat)).toNat)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 210 = true) :
+    runInstrSeq glCode {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho} =
+      some {s with pc := UInt256.ofNat 210, stack := UInt256.ofNat 222 :: StaggerPersistentFrame.frame h off cont rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  have hc : UInt256.gt (UInt256.ofNat (32 * s.activeWords.toNat)) (off + UInt256.ofNat 127) =
+      UInt256.ofNat 1 := by
+    unfold UInt256.gt
+    rw [if_pos hgt]
+  simp (discharger := omega) [glCode, StaggerPersistentFrame.frame, runInstrSeq,
+    DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, List.getElem?_cons_zero,
+    List.getElem?_cons_succ, Nat.add_assoc, hrun, hcap, add_eq_hAdd', MachineState.msize, hc,
+    hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue, UInt256.isZero]
 
-/-- The active size is below `off + 128`: the generic route leaves for the output. -/
+private theorem run_gl_fall (s : State) (h : Compression.HashState) (off cont : UInt256)
+    (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hle : ¬ (off + UInt256.ofNat 127).toNat < (UInt256.ofNat (32 * s.activeWords.toNat)).toNat) :
+    runInstrSeq glCode {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho} =
+      some {s with pc := pcAfter (UInt256.ofNat 222) glCode, stack := UInt256.ofNat 222 :: StaggerPersistentFrame.frame h off cont rho} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
+  have hc : UInt256.gt (UInt256.ofNat (32 * s.activeWords.toNat)) (off + UInt256.ofNat 127) =
+      UInt256.ofNat 0 := by
+    unfold UInt256.gt
+    rw [if_neg hle]
+  simp (discharger := omega) [glCode, StaggerPersistentFrame.frame, runInstrSeq,
+    DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size, List.getElem?_cons_zero,
+    List.getElem?_cons_succ, Nat.add_assoc, hrun, hcap, add_eq_hAdd', MachineState.msize, hc,
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat, UInt256.isTrue, UInt256.isZero]
+
+private theorem run_glOut (s : State) (x : UInt256) (stack : List UInt256)
+    (hstack : stack.length ≤ 1000) (hrun : s.halt = .Running)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 4882 = true) :
+    runInstrSeq glOutCode {s with pc := UInt256.ofNat 234, stack := x :: stack} =
+      some {s with pc := UInt256.ofNat 4882, stack := stack} := by
+  have hcap (n : Nat) (hn : n ≤ 20) : stack.length + n < 1024 := by omega
+  have hs0 : stack.length < 1024 := by omega
+  simp (discharger := omega) [glOutCode, runInstrSeq, DataStepper.runInstr, pcAfter,
+    UInt256.succ, Instr.size, List.getElem?_cons_zero, Nat.add_assoc, hrun, hcap, hs0, hvalid,
+    Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+
+private theorem toNat_add_small (off : UInt256) (k : Nat) (hk : off.toNat + k < 2 ^ 256) :
+    (off + UInt256.ofNat k).toNat = off.toNat + k := by
+  rw [Word.word_toNat_add, Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega : k < 2 ^ 256),
+    Nat.mod_eq_of_lt hk]
+
 def gasSteps_glExit (s : State) (h : Compression.HashState) (off cont : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hoff : off.toNat + 128 < 2 ^ 256)
     (hlt : (UInt256.ofNat (32 * s.activeWords.toNat)).toNat < (off + UInt256.ofNat 128).toNat)
     (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho}
       {s with pc := UInt256.ofNat Control.LoopRaw.outPC, stack := StaggerPersistentFrame.frame h off cont rho} := by
-  have g1 := gasSteps_glHead s h off cont rho hstack hrun hcode hfork hnp
-  have g2 : GasSteps {s with pc := UInt256.ofNat 228, stack := UInt256.ofNat (32 * s.activeWords.toNat) ::
-        (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat Control.LoopRaw.outPC, stack := StaggerPersistentFrame.frame h off cont rho} := by
-    apply glTest_gasSteps_of_raw {s with pc := UInt256.ofNat 228, stack := UInt256.ofNat (32 * s.activeWords.toNat) ::
-        (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp glTest_pc.symm
-    · exact Control.LoopRaw.run_glExit s (UInt256.ofNat 228) _ _ _ _
-        (by simp [StaggerPersistentFrame.frame]; omega) hrun hlt (valid_out s hcode)
+  have hle : ¬ (off + UInt256.ofNat 127).toNat < (UInt256.ofNat (32 * s.activeWords.toNat)).toNat := by
+    rw [toNat_add_small off 127 (by omega)]
+    rw [toNat_add_small off 128 hoff] at hlt
+    omega
+  have hpc : pcAfter (UInt256.ofNat 222) glCode = UInt256.ofNat 234 := by decide
+  have r1 := run_gl_fall s h off cont rho hstack hrun hle
+  rw [hpc] at r1
+  have g1 : GasSteps {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho}
+      {s with pc := UInt256.ofNat 234, stack := UInt256.ofNat 222 :: StaggerPersistentFrame.frame h off cont rho} :=
+    RecognitionLift.gasSteps_of_raw glSite _ _ hcode hfork hrun hnp gl_pc.symm
+      (RecognitionLift.advancesAll_sound _ (by decide)) r1
+  have hv : Decode.isValidJumpDest s.executionEnv.code 4882 = true := by
+    have := valid_out s hcode
+    simpa [Control.LoopRaw.outPC, Word.word_toNat_ofNat] using this
+  have g2 : GasSteps {s with pc := UInt256.ofNat 234, stack := UInt256.ofNat 222 :: StaggerPersistentFrame.frame h off cont rho}
+      {s with pc := UInt256.ofNat Control.LoopRaw.outPC, stack := StaggerPersistentFrame.frame h off cont rho} :=
+    RecognitionLift.gasSteps_of_raw glOutSite _ _ hcode hfork hrun hnp glOut_pc.symm
+      (RecognitionLift.advancesAll_sound _ (by decide))
+      (run_glOut s _ _ (by simp [StaggerPersistentFrame.frame]; omega) hrun hv)
   exact g1.trans g2
 
-/-- The active size reaches `off + 128`: the generic route jumps to the block advance at 133. -/
 def gasSteps_glStay (s : State) (h : Compression.HashState) (off cont : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
+    (hoff : off.toNat + 128 < 2 ^ 256)
     (hge : ¬ (UInt256.ofNat (32 * s.activeWords.toNat)).toNat < (off + UInt256.ofNat 128).toNat)
     (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho}
       {s with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame h (nextOffset off) (UInt256.ofNat 222) rho} := by
-  have g1 := gasSteps_glHead s h off cont rho hstack hrun hcode hfork hnp
-  have g2 : GasSteps {s with pc := UInt256.ofNat 228, stack := UInt256.ofNat (32 * s.activeWords.toNat) ::
-        (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat 233, stack := StaggerPersistentFrame.frame h off cont rho} := by
-    apply glTest_gasSteps_of_raw {s with pc := UInt256.ofNat 228, stack := UInt256.ofNat (32 * s.activeWords.toNat) ::
-        (off + UInt256.ofNat 128) :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp glTest_pc.symm
-    · have hr := Control.LoopRaw.run_glStay s (UInt256.ofNat 228) (StaggerPersistentFrame.frame h off cont rho) _ _ Control.LoopRaw.outPC
-        (by simp [StaggerPersistentFrame.frame]; omega) hrun hge
-      have he : pcAfter (UInt256.ofNat 228) (Control.LoopRaw.glTestTemplate Control.LoopRaw.outPC) = UInt256.ofNat 233 := by decide
-      rw [he] at hr
-      exact hr
-  have g3 := pushCont_gasSteps 222 233 glPush glPush_pc s h off cont rho hstack hrun hcode hfork hnp
-  have he : pcAfter (UInt256.ofNat 233) (Control.LoopRaw.pushContTemplate 222) = UInt256.ofNat 235 := by decide
-  rw [he] at g3
-  have g4 := hopJump_gasSteps s (UInt256.ofNat 222 :: StaggerPersistentFrame.frame h off cont rho)
-    (by simp [StaggerPersistentFrame.frame]; omega) hrun hcode hfork hnp
-  have g5 := splitJoin_gasSteps s h off cont (UInt256.ofNat 222) rho hstack hrun hcode hfork hnp
-  exact (g1.trans g2).trans ((g3.trans g4).trans g5)
+  have hgt : (off + UInt256.ofNat 127).toNat < (UInt256.ofNat (32 * s.activeWords.toNat)).toNat := by
+    rw [toNat_add_small off 127 (by omega)]
+    rw [toNat_add_small off 128 hoff] at hge
+    omega
+  have hv : Decode.isValidJumpDest s.executionEnv.code 210 = true := by
+    have := valid_join s hcode
+    simpa [Word.word_toNat_ofNat] using this
+  have g1 : GasSteps {s with pc := UInt256.ofNat 222, stack := StaggerPersistentFrame.frame h off cont rho}
+      {s with pc := UInt256.ofNat 210, stack := UInt256.ofNat 222 :: StaggerPersistentFrame.frame h off cont rho} :=
+    RecognitionLift.gasSteps_of_raw glSite _ _ hcode hfork hrun hnp gl_pc.symm
+      (RecognitionLift.advancesAll_sound _ (by decide))
+      (run_gl_taken s h off cont rho hstack hrun hgt hv)
+  have g2 := splitJoin_gasSteps s h off cont (UInt256.ofNat 222) rho hstack hrun hcode hfork hnp
+  exact g1.trans g2
 
 #print axioms gasSteps_dispatch
 #print axioms gasSteps_advance
