@@ -47,7 +47,7 @@ theorem modulus_at (template : State) (input : ByteArray) (hmatch : WindowTwenty
   simp only [context,modulusOffset,hmatch.2.1,Challenge.EvmProof.Word.word_toNat_ofNat,
     Nat.mod_eq_of_lt hsmall,WindowTwentyOneInput.modulusWord]
 def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 958)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 949)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.modulusWord input::coreStack input tail)
 def returned (template : State) (input : ByteArray) (tail : List UInt256) : State :=

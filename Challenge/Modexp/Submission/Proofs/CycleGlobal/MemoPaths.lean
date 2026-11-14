@@ -26,38 +26,38 @@ open CycleSubmission.Global.Dispatch
 branch. -/
 def widthPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 646 5 137506062208,
-   pushAt 647 1 68,
-   opAt 648 .CALLDATALOAD,
-   opAt 649 .SUB,
-   pushAt 650 2 519,
-   opAt 651 .JUMPI]
+  [pushAt 638 5 137506062208,
+   pushAt 639 1 68,
+   opAt 640 .CALLDATALOAD,
+   opAt 641 .SUB,
+   pushAt 642 2 519,
+   opAt 643 .JUMPI]
 /-- The size test (`1 - bsize`, `2 - esize`, `word100`): fourteen instructions
 ending in the second miss branch. -/
 def tailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 652 0 0,
-   opAt 653 .CALLDATALOAD,
-   pushAt 654 1 1,
-   opAt 655 .SUB,
-   pushAt 656 1 32,
-   opAt 657 .CALLDATALOAD,
-   pushAt 658 1 2,
-   opAt 659 .SUB,
-   opAt 660 .OR,
-   pushAt 661 1 100,
-   opAt 662 .CALLDATALOAD,
-   opAt 663 .OR,
-   pushAt 664 2 519,
-   opAt 665 .JUMPI]
-@[simp] theorem widthPCs (i : Nat) (hi : 646 ≤ i) (hii : i ≤ 651) :
+  [pushAt 644 0 0,
+   opAt 645 .CALLDATALOAD,
+   pushAt 646 1 1,
+   opAt 647 .SUB,
+   pushAt 648 1 32,
+   opAt 649 .CALLDATALOAD,
+   pushAt 650 1 2,
+   opAt 651 .SUB,
+   opAt 652 .OR,
+   pushAt 653 1 100,
+   opAt 654 .CALLDATALOAD,
+   opAt 655 .OR,
+   pushAt 656 2 519,
+   opAt 657 .JUMPI]
+@[simp] theorem widthPCs (i : Nat) (hi : 638 ≤ i) (hii : i ≤ 643) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([912,918,920,921,922,925] : List Nat)[i - 646]! := by
+      ([903,909,911,912,913,916] : List Nat)[i - 638]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem tailPCs (i : Nat) (hi : 652 ≤ i) (hii : i ≤ 665) :
+@[simp] theorem tailPCs (i : Nat) (hi : 644 ≤ i) (hii : i ≤ 657) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([926,927,928,930,931,933,934,936,937,938,940,941,942,945] : List Nat)[i - 652]! := by
+      ([917,918,919,921,922,924,925,927,928,929,931,932,933,936] : List Nat)[i - 644]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 theorem jumpDestLegacy :

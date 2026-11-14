@@ -14,8 +14,8 @@ The historical producer's own fixed-address theorem remains available. -/
 theorem run_copy (s : State) (mem : ByteArray) (n : Nat) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hn : 1 ≤ n) (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions copyProgram (frame s mem 2576 n rest) =
-      some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2585 n rest) := by
+    runInstructions copyProgram (frame s mem 2566 n rest) =
+      some (frame s (Exp.mcopyMem mem 256 2112 (32*n)) 2575 n rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega

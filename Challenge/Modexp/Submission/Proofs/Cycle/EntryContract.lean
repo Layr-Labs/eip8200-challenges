@@ -19,9 +19,9 @@ theorem keeps_base (s : State) (f : Caller) (start count : Nat)
   apply readPadded_storeCells
   intro c hc
   simp only [cells,List.mem_cons,List.mem_nil_iff,or_false] at hc
-  rcases hc with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> dsimp <;> omega
+  rcases hc with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl <;> dsimp <;> omega
 theorem counter (s : State) (f : Caller) :
-    PersistentLoop.counter (EntryBinding.entered s f) = f.counter := by
+    PersistentLoop.entryCounter (EntryBinding.entered s f) = UInt256.ofNat 0-f.counter := by
   rfl
 structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   state : State
@@ -29,14 +29,14 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   inv_eq : inv = MachineState.readWord s.memory 2720
   a : Nat → UInt256
   n : Nat → UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 3328,stack := saved f} state
-  frame : state.stack = SquareMeaning.frame0 inv a SquareStep.zeroWords n (f.counter::saved f)
-  pc : state.pc = UInt256.ofNat 3484
-  memory : SquareMeaning.Memory0 state.memory inv a SquareStep.zeroWords n
+  trace : GasSteps {s with pc := UInt256.ofNat 3318,stack := saved f} state
+  frame : state.stack = CachedInverse.entryFrame inv a SquareStep.zeroWords n ((UInt256.ofNat 0-f.counter)::saved f)
+  pc : state.pc = UInt256.ofNat 3476
+  memory : LimbMemory.Holds state.memory inv a SquareStep.zeroWords n
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
-  counter : PersistentLoop.counter state = UInt256.ofNat (k-1)
+  counter : PersistentLoop.entryCounter state = UInt256.ofNat 0-UInt256.ofNat (k-1)
   aBound : ∀ i < 9,(a i).toNat < radix
   nBound : ∀ i < 9,(n i).toNat < radix
   n0 : (n 0).toNat = N % radix

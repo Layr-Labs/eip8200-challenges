@@ -47,35 +47,16 @@ theorem word3 (a0 a1 a2 a3 a4 : UInt256) :
     UInt256.lor (UInt256.shiftRight a3 (UInt256.ofNat 48)) (UInt256.shiftLeft a4 (UInt256.ofNat 192)) =
       CycleSubmission.Packing.outputWord (dig a0 a1 a2 a3 a4) 3 := by
   rw [lor_comm]; rfl
-theorem done_represents (mem : ByteArray) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : UInt256)
-    (h0 : a0.toNat < 2^240) (h1 : a1.toNat < 2^240) (h2 : a2.toNat < 2^240) (h3 : a3.toNat < 2^240)
-    (h4 : a4.toNat < 2^240) (hv : val5 a0 a1 a2 a3 a4 < 2^1024) :
-    Fast.Model.FastRepresents (done_mem mem a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp) 0 4
-      (val5 a0 a1 a2 a3 a4) := by
-  have hd : ∀ i < 9,(dig a0 a1 a2 a3 a4 i).toNat < 2^240 := by
-    intro i hi
-    interval_cases i <;> simp [dig] <;> assumption
-  apply Fast.Model.fastRepresents_of_limbs (by simpa [Limbs.radix,← Nat.pow_mul] using hv)
-  intro k hk
-  have hw := fun j hj => CycleSubmission.Packing.outputWord_toNat (dig a0 a1 a2 a3 a4) j hj hd
-  rw [value_dig] at hw
-  unfold done_mem
-  rw [word0 a0 a1 a2 a3 a4,word1 a0 a1 a2 a3 a4,word2 a0 a1 a2 a3 a4,word3 a0 a1 a2 a3 a4]
-  interval_cases k
-  · simp (config := { decide := true }) only [read_past,read_same,Nat.zero_add]
-    simpa [Limbs.radix] using hw 0 (by decide)
-  · simp (config := { decide := true }) only [read_past,read_same,Nat.zero_add]
-    simpa [Limbs.radix,← Nat.pow_mul] using hw 1 (by decide)
-  · simp (config := { decide := true }) only [read_past,read_same,Nat.zero_add]
-    simpa [Limbs.radix,← Nat.pow_mul] using hw 2 (by decide)
-  · simp (config := { decide := true }) only [read_past,read_same,Nat.zero_add]
-    simpa [Limbs.radix,← Nat.pow_mul] using hw 3 (by decide)
 theorem returned (s : State) (stk : List UInt256) (a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp : UInt256)
-    (h0 : a0.toNat < 2^240) (h1 : a1.toNat < 2^240) (h2 : a2.toNat < 2^240) (h3 : a3.toNat < 2^240)
-    (h4 : a4.toNat < 2^240) (hv : val5 a0 a1 a2 a3 a4 < 2^1024) :
-    (CycleSubmission.R5.Blocks.ctl5330_result
-      {s with memory := done_mem s.memory a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp} stk).hReturn =
-      Precompile.natToBytes (val5 a0 a1 a2 a3 a4) 128 :=
-  Fast.Exp.readPadded_eq_natToBytes (ptr := 0) (count := 4) (msize := 128)
-    (done_represents s.memory a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp h0 h1 h2 h3 h4 hv) (by decide)
+ (h0 : a0.toNat < 2^240) (h1 : a1.toNat < 2^240) (h2 : a2.toNat < 2^240)
+ (h3 : a3.toNat < 2^240) (h4 : a4.toNat < 2^240) (_hv : val5 a0 a1 a2 a3 a4 < 2^1024) :
+ (CycleSubmission.R5.Blocks.ctl5330_result
+  {s with memory := done_mem s.memory a0 a1 a2 a3 a4 n1 n2 n3 n4 P inv cntp} stk).hReturn =
+ Precompile.natToBytes (val5 a0 a1 a2 a3 a4) 128 := by
+ have hd : ∀ i < 5,(dig a0 a1 a2 a3 a4 i).toNat < 256^30 := by
+  intro i hi
+  interval_cases i <;> simpa only [dig,show (256:Nat)^30 = 2^240 by decide] using (by assumption)
+ have h := OverlapPackingMemory.returned5 s.memory (dig a0 a1 a2 a3 a4) hd
+ simpa [CycleSubmission.R5.Blocks.ctl5330_result,OverlapFinalReturn.result5,done_mem,OverlapPackingMemory.memory5,Precompile.natToBytes,
+  HistoricalSearch.MixedMontgomery.weighted,Finset.sum_range_succ,dig,val5] using h
 end CycleSubmission.R5.TailMeaning

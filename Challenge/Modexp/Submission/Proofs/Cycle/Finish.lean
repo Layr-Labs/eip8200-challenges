@@ -31,13 +31,13 @@ theorem Outcome.eventually {start : State} {expected : ByteArray}
     rw [State.toResult_returned out.state out.halt,out.bytes]
 structure Packed (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) where
   state : State
-  trace : GasSteps {s with pc := UInt256.ofNat 8309,stack := NormalizeMeaning.frame a n slot0 slot1 rest} state
-  pc : state.pc = UInt256.ofNat 8434
+  trace : GasSteps {s with pc := UInt256.ofNat 8501,stack := NormalizeMeaning.frame a n slot0 slot1 rest} state
+  pc : state.pc = UInt256.ofNat 8560
   frame : state.stack = NormalizeMeaning.frame a n slot0 slot1 rest
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
-  represented : Challenge.Modexp.Submission.Proofs.Fast.Model.FastRepresents state.memory 2112 8 (value a)
+  represented : MachineState.readPadded state.memory 2112 256 = Precompile.natToBytes (value a) 256
   calls : state.callStack = s.callStack
 noncomputable def pack (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
@@ -47,13 +47,13 @@ noncomputable def pack (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt25
     Packed s a n slot0 slot1 rest :=
   ⟨PackExecution.result s a n slot0 slot1 rest,
     PackExecution.gasSteps s a n slot0 slot1 rest env hm hcap hact,
-    rfl,rfl,rfl,rfl,rfl,PackExecution.represents s a n slot0 slot1 rest ha hv,rfl⟩
+    rfl,rfl,rfl,rfl,rfl,PackExecution.bytes s a n slot0 slot1 rest ha hv,rfl⟩
 noncomputable def serialize (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256)
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : NormalizeMeaning.MemoryInput s.memory a n)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 9,(a i).toNat < radix) (hv : value a < 2^2048) :
-    Outcome {s with pc := UInt256.ofNat 8309,stack := NormalizeMeaning.frame a n slot0 slot1 rest}
+    Outcome {s with pc := UInt256.ofNat 8501,stack := NormalizeMeaning.frame a n slot0 slot1 rest}
       (Precompile.natToBytes (value a) 256) := by
   obtain ⟨packed,hp,pc,frame,en,halt,active,rep,calls⟩ := pack s a n slot0 slot1 rest env hm hcap hact ha hv
   have cap : (NormalizeMeaning.frame a n slot0 slot1 rest).length ≤ 1021 := by
@@ -62,21 +62,21 @@ noncomputable def serialize (s : State) (a n : Nat → UInt256) (slot0 slot1 : U
   have act : 88 ≤ packed.activeWords.toNat := by rw [active]; exact hact
   have hr := Return.gasSteps packed (NormalizeMeaning.frame a n slot0 slot1 rest)
     (env.transfer en halt) cap act
-  have he : {packed with pc := UInt256.ofNat 8434,stack := NormalizeMeaning.frame a n slot0 slot1 rest} = packed :=
+  have he : {packed with pc := UInt256.ofNat 8560,stack := NormalizeMeaning.frame a n slot0 slot1 rest} = packed :=
     PersistentSquareLoop.reset_self _ _ _ pc frame
   rw [he] at hr
   refine ⟨Return.result packed (NormalizeMeaning.frame a n slot0 slot1 rest),hp.trans hr,rfl,?_,calls⟩
-  exact Return.returned_bytes packed (NormalizeMeaning.frame a n slot0 slot1 rest) (value a) rep
+  exact rep
 structure Computed (s : State) (inv : UInt256) (a b n : Nat → UInt256)
     (rest : List UInt256) (N x : Nat) where
   state : State
   out : Nat → UInt256
   slot0 : UInt256
   slot1 : UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 5714,stack := ProductMeaning.frame0 inv a b n rest} state
+  trace : GasSteps {s with pc := UInt256.ofNat 5906,stack := ProductMeaning.frame0 inv a b n rest} state
   memory : NormalizeMeaning.MemoryInput state.memory out n
   frame : state.stack = NormalizeMeaning.frame out n slot0 slot1 rest
-  pc : state.pc = UInt256.ofNat 8309
+  pc : state.pc = UInt256.ofNat 8501
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
   active : state.activeWords = s.activeWords
@@ -112,7 +112,7 @@ noncomputable def product (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     (hinv : (N*inv.toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hNsize : N < 2^2048) (hodd : Odd N)
     (hB : value b < N) (hform : value a ≡ x*radix^9 [MOD N]) :
-    Outcome {s with pc := UInt256.ofNat 5714,stack := ProductMeaning.frame0 inv a b n rest}
+    Outcome {s with pc := UInt256.ofNat 5906,stack := ProductMeaning.frame0 inv a b n rest}
       (Precompile.natToBytes (value b*x % N) 256) := by
   obtain ⟨st,out,slot0,slot1,ht,mem,frame,pc,en,halt,active,calls,bound,valueEq⟩ :=
     compute s inv a b n rest env hm hcap hact ha hb hn N x hn0 hNvalue hinv hN hNsize hodd hB hform
@@ -121,7 +121,7 @@ noncomputable def product (s : State) (inv : UInt256) (a b n : Nat → UInt256) 
     rw [valueEq]; exact Nat.lt_trans (Nat.mod_lt _ hN) hNsize
   obtain ⟨done,tr,returned,bytes,callsDone⟩ := serialize st out n slot0 slot1 rest
     (env.transfer en halt) mem hcap act bound hv
-  have he : {st with pc := UInt256.ofNat 8309,stack := NormalizeMeaning.frame out n slot0 slot1 rest} = st :=
+  have he : {st with pc := UInt256.ofNat 8501,stack := NormalizeMeaning.frame out n slot0 slot1 rest} = st :=
     PersistentSquareLoop.reset_self _ _ _ pc frame
   rw [he] at tr
   refine ⟨done,ht.trans tr,returned,?_,callsDone.trans calls⟩

@@ -27,18 +27,18 @@ def pcHit : Nat := 667
 -- artifact, unlike every `instructionPC`/`opAt`/`pushAt` fact around it.
 def pcMiss : Nat := 207
 def pcBigC : Nat := 207
-def pcCsubReturn : Nat := 2576
-def pcAfterCsub0 : Nat := 2585
-def pcNeg8 : Nat := 2593
-def pcNeg4 : Nat := 2522
-def pcNegT : Nat := 2634
-def pcNegDone : Nat := 2659
-def pcPreNewton : Nat := 2696
-def pcShiftLoop : Nat := 2884
-def pcShiftBody : Nat := 2885
-def pcEstimate : Nat := 2893
-def pcMacSetup : Nat := 2951   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
-def headPC (n : Nat) : Nat := if n = 4 then 10532 else 2884
+def pcCsubReturn : Nat := 2566
+def pcAfterCsub0 : Nat := 2575
+def pcNeg8 : Nat := 2583
+def pcNeg4 : Nat := 2513
+def pcNegT : Nat := 2624
+def pcNegDone : Nat := 2649
+def pcPreNewton : Nat := 2686
+def pcShiftLoop : Nat := 2874
+def pcShiftBody : Nat := 2875
+def pcEstimate : Nat := 2883
+def pcMacSetup : Nat := 2941   -- block 0's first product: E6 and block 0's `JUMPDEST POP` are gone
+def headPC (n : Nat) : Nat := if n = 4 then 10618 else 2874
 def loopPC (mem : ByteArray) (n : Nat) : Nat :=
   CycleSubmission.Global.ZeroShiftMath.head n (MachineState.readWord mem 1536)
 def headWord (mem : ByteArray) (n : Nat) : UInt256 := UInt256.ofNat (loopPC mem n)
@@ -50,19 +50,19 @@ theorem loopPC_lt (mem : ByteArray) (n : Nat) : loopPC mem n < 2^256 := by
     (hk : (MachineState.readWord mem 1536).toNat ≠ 0) : loopPC mem n = headPC n := by
   simp [loopPC,CycleSubmission.Global.ZeroShiftMath.head,
     CycleSubmission.Global.ZeroShiftMath.normalHead,headPC,hk]
-def pcMid : Nat := 3197   -- the fall-through after the eight straight blocks
-def midPC (n : Nat) : Nat := if n = 4 then 10717 else 3197
-def pcAddLoop : Nat := 3225
-def pcAddInner : Nat := 3231
-def pcAddTail : Nat := 3268
-def pcAddMid : Nat := 3255
-def pcAddPad : Nat := 3268
-def pcSubCheck : Nat := 3286
-def pcCsubCall : Nat := 3210
-def pcUnc : Nat := 3224
-def pcAfterCsub : Nat := 2850
-def pcCsubExit : Nat := 3216
-def pcShiftDone : Nat := 3216
+def pcMid : Nat := 3187   -- the fall-through after the eight straight blocks
+def midPC (n : Nat) : Nat := if n = 4 then 10803 else 3187
+def pcAddLoop : Nat := 3215
+def pcAddInner : Nat := 3221
+def pcAddTail : Nat := 3258
+def pcAddMid : Nat := 3245
+def pcAddPad : Nat := 3258
+def pcSubCheck : Nat := 3276
+def pcCsubCall : Nat := 3200
+def pcUnc : Nat := 3214
+def pcAfterCsub : Nat := 2840
+def pcCsubExit : Nat := 3206
+def pcShiftDone : Nat := 3206
 def frameState (s : State) (mem : ByteArray) (pc : Nat) (n bsize esize msize : Nat) : State :=
   { s with pc := UInt256.ofNat pc
            stack := outer n bsize esize msize
@@ -123,12 +123,12 @@ def negDoneState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : Sta
   { negState s mem pcNegDone n bsize esize msize n with
     stack := MachineState.readWord (negStep mem n n).memory 0::outer n bsize esize msize }
 def preClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2664
+  { s with pc := UInt256.ofNat 2654
            stack := preL (MachineState.readWord mem 0) ::
              MachineState.readWord mem 0::outer n bsize esize msize
            memory := mem }
 def postClzState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2665
+  { s with pc := UInt256.ofNat 2655
            stack := UInt256.clz (preL (MachineState.readWord mem 0)) ::
              MachineState.readWord mem 0::outer n bsize esize msize
            memory := mem }
@@ -146,12 +146,12 @@ def nbHeadState (s : State) (M : ByteArray) (d : UInt256) (n bsize esize msize :
            stack := preDodd d::outer n bsize esize msize
            memory := M }
 def nbSubState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2704
+  { s with pc := UInt256.ofNat 2694
            stack := preDodd d * n0::n0::preDodd d ::
              outer n bsize esize msize
            memory := M }
 def nbTailState (s : State) (M : ByteArray) (d n0 : UInt256) (n bsize esize msize : Nat) : State :=
-  { s with pc := UInt256.ofNat 2753
+  { s with pc := UInt256.ofNat 2743
            stack := newton8W (preDodd d * n0)::n0::preDodd d ::
              outer n bsize esize msize
            memory := M }
@@ -164,9 +164,9 @@ def initialPhase (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
       (MachineState.readWord s.executionEnv.calldata (MachineState.readWord mem 2656).toNat)))
     (UInt256.eq (UInt256.ofNat 1) (UInt256.ofNat esize))
 def initialContinuation (s : State) (mem : ByteArray) (esize : Nat) : UInt256 :=
-  UInt256.ofNat 2544 + initialPhase s mem esize * UInt256.ofNat 7669
+  UInt256.ofNat 2534 + initialPhase s mem esize * UInt256.ofNat 7783
 def cacheSetupState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
-  slotState (initialContinuation s mem esize) s mem 2845 n bsize esize msize
+  slotState (initialContinuation s mem esize) s mem 2835 n bsize esize msize
     (UInt256.ofNat n)
 def shiftLoopState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
   slotKState z s mem (loopPC mem n) k n bsize esize msize
@@ -220,7 +220,7 @@ def csubCallState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
            memory := mem }
 def csubCall4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) :
     State :=
-  { s with pc := UInt256.ofNat 10730
+  { s with pc := UInt256.ofNat 10816
            stack := UInt256.ofNat 0::UInt256.ofNat k ::
              entrySlots z mem n bsize esize++outer n bsize esize msize
            memory := mem }
@@ -238,7 +238,7 @@ def csubExitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msi
   slotKState z s mem pcCsubExit 0 n bsize esize msize
 def csubExit4State (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
-  slotKState z s mem 10735 0 n bsize esize msize
+  slotKState z s mem 10821 0 n bsize esize msize
 def shiftDoneState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) :
     State :=
   slotKState z s mem pcShiftDone 0 n bsize esize msize

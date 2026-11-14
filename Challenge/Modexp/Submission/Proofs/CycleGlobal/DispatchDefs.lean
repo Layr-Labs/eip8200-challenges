@@ -40,7 +40,7 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
   ⟨index,.push width value,hget,hwf⟩
 def zeroSizePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 364 (.Dup dA0),
+  [opAt 364 (.Dup ⟨0,by decide⟩),
    pushAt 365 2 536,
    opAt 366 .JUMPI,
    pushAt 367 0 0,
@@ -48,28 +48,28 @@ def zeroSizePath :
    opAt 369 .RETURN]
 def wordEntryPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 364 (.Dup dA0),
+  [opAt 364 (.Dup ⟨0,by decide⟩),
    pushAt 365 2 536,
    opAt 366 .JUMPI,
    opAt 370 .JUMPDEST,
-   opAt 371 (.Dup dA2),
+   opAt 371 (.Dup ⟨2,by decide⟩),
    pushAt 372 1 96,
    opAt 373 .ADD,
-   opAt 374 (.Dup dA2),
-   opAt 375 (.Dup dA1),
+   opAt 374 (.Dup ⟨2,by decide⟩),
+   opAt 375 (.Dup ⟨1,by decide⟩),
    opAt 376 .ADD,
    pushAt 377 1 32,
-   opAt 378 (.Dup dA3),
+   opAt 378 (.Dup ⟨3,by decide⟩),
    opAt 379 .GT,
    pushAt 380 1 207,
    opAt 381 .JUMPI,
    pushAt 382 2 1186,
-   opAt 383 (.Dup dA1),
-   opAt 384 (.Dup dA3),
+   opAt 383 (.Dup ⟨1,by decide⟩),
+   opAt 384 (.Dup ⟨3,by decide⟩),
    pushAt 385 1 96,
-   opAt 386 (.Dup dA6),
-   opAt 387 (.Dup dA8),
-   opAt 388 (.Dup dA10),
+   opAt 386 (.Dup ⟨6,by decide⟩),
+   opAt 387 (.Dup ⟨8,by decide⟩),
+   opAt 388 (.Dup ⟨10,by decide⟩),
    pushAt 389 1 131,
    opAt 390 .JUMP]
 def zeroSetupPath := zeroSizePath.take 5

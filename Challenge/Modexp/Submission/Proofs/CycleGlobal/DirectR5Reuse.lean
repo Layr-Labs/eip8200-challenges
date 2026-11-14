@@ -27,8 +27,8 @@ def result (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : 
  ((SlimFrames.outer mem 4 bsize esize msize).drop 13)
 theorem run (s : State) (mem : ByteArray) (count : UInt256) (bsize esize msize : Nat)
  (hact : 88 ≤ s.activeWords.toNat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 8457 = true) :
- runInstructions program {s with pc := UInt256.ofNat 8451,memory := mem,stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize} =
+ (hd : Decode.isValidJumpDest s.executionEnv.code 8585 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 8579,memory := mem,stack := [count,UInt256.ofNat 128]++SlimFrames.outer mem 4 bsize esize msize} =
  some (result s mem count bsize esize msize) := by
  have hf := Monpro.activeWords_fix s 2720 32 (by decide) (by norm_num) hact
  simp [program,result,R5Route.entry,SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,

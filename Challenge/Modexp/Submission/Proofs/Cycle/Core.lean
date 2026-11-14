@@ -22,7 +22,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     (hinv : (N*(MachineState.readWord s.memory 2720).toNat+1) % 2^256 = 0)
     (hN : 0 < N) (hodd : Odd N) (hB : B < N)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938) :
-    Finish.Outcome {s with pc := UInt256.ofNat 3328,stack := saved f}
+    Finish.Outcome {s with pc := UInt256.ofNat 3318,stack := saved f}
       (Precompile.natToBytes (B*x^(2^k)%N) 256) := by
   have cap : (saved f).length ≤ 959 := by
     simp only [saved,List.length_cons,List.length_append,List.length_nil]
@@ -63,8 +63,8 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     lastActive,lastBound,lastSmall,lastForm,keepsBase,callsLast⟩ :=
     PersistentLoop.run start inv a n (saved f) k N x hk hk16 envStart memory counter (by simpa [saved] using congrArg some (hcache.trans invEq.symm)) cap actStart
       aBound nBound n0 nValue inverse hN hNR hodd hN4 small form
-  have counterStart : PersistentLoop.counter start = f.counter := counter.trans hcounter.symm
-  have startReset : {start with pc := UInt256.ofNat 3484,stack := SquareMeaning.frame0 inv a SquareStep.zeroWords n (PersistentLoop.counter start::saved f)} = start :=
+  have counterStart : PersistentLoop.entryCounter start = UInt256.ofNat 0-f.counter := counter.trans (congrArg (fun word => UInt256.ofNat 0-word) hcounter.symm)
+  have startReset : {start with pc := UInt256.ofNat 3476,stack := CachedInverse.entryFrame inv a SquareStep.zeroWords n (PersistentLoop.entryCounter start::saved f)} = start :=
     PersistentSquareLoop.reset_self _ _ _ pc (by rw [counterStart]; exact frame)
   rw [startReset] at rounds
   have baseLast : FastRepresents last.memory 256 8 B := by
@@ -79,9 +79,9 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
   have capFinal : (PersistentLoop.counter last::saved f).length ≤ 960 := by
     simp only [List.length_cons]; omega
   have unpack := Unpack.gasSteps last inv out n (PersistentLoop.counter last::saved f) envLast capFinal actLast
-  have lastReset : {last with pc := UInt256.ofNat 5623,stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last::saved f)} = last :=
+  have lastReset : {last with pc := UInt256.ofNat 5815,stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last::saved f)} = last :=
     PersistentSquareLoop.reset_self _ _ _ lastPc lastFrame
-  change GasSteps {last with pc := UInt256.ofNat 5623,stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last::saved f)} (Unpack.result last inv out n (PersistentLoop.counter last::saved f)) at unpack
+  change GasSteps {last with pc := UInt256.ofNat 5815,stack := SquareMeaning.frame0 inv out SquareStep.zeroWords n (PersistentLoop.counter last::saved f)} (Unpack.result last inv out n (PersistentLoop.counter last::saved f)) at unpack
   rw [lastReset] at unpack
   obtain ⟨done,finish,returned,bytes,callsDone⟩ := Finish.product (Unpack.result last inv out n (PersistentLoop.counter last::saved f))
     inv out (ordinary last.memory 256) n (PersistentLoop.counter last::saved f) (envLast.transfer rfl rfl)
@@ -89,7 +89,7 @@ noncomputable def run (s : State) (f : Caller) (k N A B x : Nat)
     lastBound factor.1 nBound N (x^(2^k)) n0 nValue inverse hN hNsize hodd
     (by rw [hfactor]; exact hB) lastForm
   have unpackReset : {Unpack.result last inv out n (PersistentLoop.counter last::saved f) with
-      pc := UInt256.ofNat 5714
+      pc := UInt256.ofNat 5906
       stack := ProductMeaning.frame0 inv out (ordinary last.memory 256) n (PersistentLoop.counter last::saved f)} =
       Unpack.result last inv out n (PersistentLoop.counter last::saved f) := PersistentSquareLoop.reset_self _ _ _ rfl rfl
   rw [unpackReset] at finish
@@ -109,7 +109,7 @@ theorem correct_from_entry (s : State) (f : Caller) (k N A B x : Nat)
     (hform : A ≡ x*2^2048 [MOD N]) (hAtop : A < 2^2048 - 2^1938)
     (hstack : s.callStack = []) :
     ∃ gas0,∀ gas,gas0 ≤ gas →
-      Eval (withGas {s with pc := UInt256.ofNat 3328,stack := saved f} gas)
+      Eval (withGas {s with pc := UInt256.ofNat 3318,stack := saved f} gas)
         (.returned (Precompile.natToBytes (B*x^(2^k)%N) 256)) :=
   (run s f k N A B x hk hk16 env hcap hact hcache hcounter hn ha hb hinv hN hodd hB hform hAtop).eventually hstack
 end CycleSubmission.Core

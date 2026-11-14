@@ -43,37 +43,37 @@ def gasStep_clz {s : State} {a : UInt256} {rest : List UInt256}
   simpa [withGas,cost] using
     StepRunning.clz (withGas s gas) a rest hop hgas hstack hcap
 /-- The estimator's `CLZ` is instruction 1940. -/
-theorem clz_index : CycleSubmission.Artifact.instructions[2074]? = some (.op .CLZ) := by
+theorem clz_index : CycleSubmission.Artifact.instructions[2066]? = some (.op .CLZ) := by
   rfl
 /-- ... at program counter 2502 (0x09c6). -/
-@[simp] theorem clz_pc : CycleSubmission.Artifact.artifact.instructionPC 2074 = 2664 := by
+@[simp] theorem clz_pc : CycleSubmission.Artifact.artifact.instructionPC 2066 = 2654 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 theorem decodedOp_clz (s : State)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
-    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 2664) :
+    (hfork : s.fork = .Osaka) (hpc : s.pc = UInt256.ofNat 2654) :
     s.decodedOp = some .CLZ := by
-  have hpcNat : s.pc.toNat = CycleSubmission.Artifact.artifact.instructionPC 2074 := by
+  have hpcNat : s.pc.toNat = CycleSubmission.Artifact.artifact.instructionPC 2066 := by
     rw [hpc,clz_pc]; decide
   have hwf : Stepper.WellFormed s.fork (.op .CLZ) := by
     rw [hfork]
     exact ⟨by decide,trivial,by decide⟩
-  exact Stepper.decodes_of_artifact CycleSubmission.Artifact.artifact s 2074 (.op .CLZ)
+  exact Stepper.decodes_of_artifact CycleSubmission.Artifact.artifact s 2066 (.op .CLZ)
     hcode hpcNat clz_index hwf
-theorem succ_2672 : (UInt256.ofNat 2664).succ = UInt256.ofNat 2665 := by
+theorem succ_2672 : (UInt256.ofNat 2654).succ = UInt256.ofNat 2655 := by
   decide
 /-- The `CLZ` of the estimator prologue (pc 2502 → 2503): pops `a`, pushes `UInt256.clz a`.
 There `a = L`, the lowest set bit of the modulus top limb; see `Shift.clz_two_pow`. -/
 def gasSteps_clz (s : State) (a : UInt256) (rest : List UInt256)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hfork : s.fork = .Osaka)
-    (hpc : s.pc = UInt256.ofNat 2664)
+    (hpc : s.pc = UInt256.ofNat 2654)
     (hstack : s.stack = a::rest)
     (hcap : rest.length ≤ 1023)
     (hrun : s.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork
       s.executionEnv.codeAddr = false) :
-    GasSteps s { s with stack := UInt256.clz a::rest,pc := UInt256.ofNat 2665 } := by
+    GasSteps s { s with stack := UInt256.clz a::rest,pc := UInt256.ofNat 2655 } := by
   have hcap' : s.stack.length + Operation.pushArity .CLZ ≤
       1024 + Operation.popArity .CLZ := by
     rw [hstack]
@@ -84,7 +84,7 @@ def gasSteps_clz (s : State) (a : UInt256) (rest : List UInt256)
   rw [hpc,succ_2672] at h
   exact h
 /-- Same rule for a state written as a record update of a carrier
-(`{ t with pc := 2672, stack := a :: rest, memory := m }`), the form of the shift-reduce
+(`{ t with pc := 2662, stack := a :: rest, memory := m }`), the form of the shift-reduce
 states. -/
 def gasSteps_clz_framed (t : State) (m : ByteArray) (a : UInt256) (rest : List UInt256)
     (hcode : t.executionEnv.code = CycleSubmission.Artifact.bytecode)
@@ -93,8 +93,8 @@ def gasSteps_clz_framed (t : State) (m : ByteArray) (a : UInt256) (rest : List U
     (hrun : t.halt = .Running)
     (hnp : Precompile.isPrecompileWithConfig t.executionEnv.precompileConfig t.executionEnv.fork
       t.executionEnv.codeAddr = false) :
-    GasSteps { t with pc := UInt256.ofNat 2664,stack := a::rest,memory := m }
-      { t with pc := UInt256.ofNat 2665,stack := UInt256.clz a::rest,memory := m } :=
-  gasSteps_clz { t with pc := UInt256.ofNat 2664,stack := a::rest,memory := m }
+    GasSteps { t with pc := UInt256.ofNat 2654,stack := a::rest,memory := m }
+      { t with pc := UInt256.ofNat 2655,stack := UInt256.clz a::rest,memory := m } :=
+  gasSteps_clz { t with pc := UInt256.ofNat 2654,stack := a::rest,memory := m }
     a rest hcode hfork rfl rfl hcap hrun hnp
 end CycleSubmission.Global.Fast.ClzStep
