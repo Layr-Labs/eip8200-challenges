@@ -51,13 +51,13 @@ theorem special_pc : specialSite.startPC = UInt256.ofNat 143 := by
   decide +kernel
 def dispatchTemplate : List Instr := [.op (.Swap ⟨12, by decide⟩), .op .JUMP]
 def dispatchSite : GenericRoundSite CandidateArtifact.artifact .Osaka dispatchTemplate :=
-  StackSiteBuilder.ofSlice dispatchTemplate 3341 (by rfl)
-    (by change 3341 + dispatchTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice dispatchTemplate 3340 (by rfl)
+    (by change 3340 + dispatchTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4622 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 3341) = UInt256.ofNat 4622
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 3340) = UInt256.ofNat 4622
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid143 : Decode.isValidJumpDest CandidateArtifact.artifact.code 143 = true := by
@@ -68,16 +68,16 @@ theorem valid143 : Decode.isValidJumpDest CandidateArtifact.artifact.code 143 = 
   exact h
 #print axioms valid143
 theorem valid9949 : Decode.isValidJumpDest CandidateArtifact.artifact.code 4882 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 3447 = 4882 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 3446 = 4882 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 3447 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 3446 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid9949
 theorem valid10108 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9911 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 6814 = 9911 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 6813 = 9911 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 6814 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 6813 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid10108

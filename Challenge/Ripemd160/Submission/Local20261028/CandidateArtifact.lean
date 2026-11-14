@@ -432,7 +432,7 @@ def part2 : List Instr := [
 .op (.Dup ⟨3, by decide⟩),
 .op .XOR,
 .op .ADD,
-.push ⟨2, by decide⟩ (UInt256.ofNat 728),
+.push ⟨3, by decide⟩ (UInt256.ofNat 728),
 .op .MLOAD,
 .op .ADD,
 .op .ADD,
@@ -474,7 +474,6 @@ def part2 : List Instr := [
 .op .SHL,
 .op (.Dup ⟨11, by decide⟩),
 .op .OR,
-.op .JUMPDEST,
 .op .JUMPDEST,
 .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
 .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015),
@@ -593,8 +592,8 @@ def part2 : List Instr := [
 .op .AND,
 .op (.Swap ⟨7, by decide⟩),
 .op (.Dup ⟨9, by decide⟩)]
-theorem count2 : part2.length = 192 := by rfl
-private def bytes2 : List UInt8 := [132, 134, 143, 134, 25, 23, 132, 24, 97, 2, 96, 81, 142, 1, 1, 99, 80, 162, 139, 230, 1, 22, 2, 96, 24, 28, 140, 1, 22, 99, 80, 162, 139, 230, 140, 131, 133, 25, 23, 131, 24, 1, 97, 2, 216, 81, 1, 1, 134, 22, 133, 2, 96, 24, 28, 132, 1, 134, 22, 96, 144, 27, 142, 23, 144, 96, 144, 27, 141, 23, 147, 96, 144, 27, 143, 23, 145, 133, 2, 96, 23, 28, 96, 144, 27, 140, 23, 146, 96, 144, 27, 139, 23, 91, 91, 117, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 117, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 97, 1, 68, 81, 97, 2, 92, 81, 140, 138, 117, 80, 162, 139, 230, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 134, 140, 136, 22, 140, 23, 141, 24, 24, 137, 24, 1, 97, 1, 60, 81, 1, 137, 1, 133, 22, 140, 2, 96, 22, 28, 135, 1, 133, 22, 154, 140, 2, 96, 23, 28, 133, 22, 150, 135, 137, 136, 22, 23, 135, 24, 140, 138, 24, 24, 1, 97, 3, 70, 81, 1, 137, 1, 133, 22, 9, 96, 19, 28, 136, 1, 131, 22, 149, 138, 2, 96, 23, 28, 131, 22, 140, 143, 130, 154, 137, 141, 133, 138, 130, 22, 23, 138, 24, 24, 24, 1, 133, 1, 138, 1, 134, 22, 141, 2, 96, 18, 28, 136, 1, 134, 22, 155, 141, 2, 96, 23, 28, 134, 22, 151, 137]
+theorem count2 : part2.length = 191 := by rfl
+private def bytes2 : List UInt8 := [132, 134, 143, 134, 25, 23, 132, 24, 97, 2, 96, 81, 142, 1, 1, 99, 80, 162, 139, 230, 1, 22, 2, 96, 24, 28, 140, 1, 22, 99, 80, 162, 139, 230, 140, 131, 133, 25, 23, 131, 24, 1, 98, 0, 2, 216, 81, 1, 1, 134, 22, 133, 2, 96, 24, 28, 132, 1, 134, 22, 96, 144, 27, 142, 23, 144, 96, 144, 27, 141, 23, 147, 96, 144, 27, 143, 23, 145, 133, 2, 96, 23, 28, 96, 144, 27, 140, 23, 146, 96, 144, 27, 139, 23, 91, 117, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 117, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 97, 1, 68, 81, 97, 2, 92, 81, 140, 138, 117, 80, 162, 139, 230, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 152, 134, 140, 136, 22, 140, 23, 141, 24, 24, 137, 24, 1, 97, 1, 60, 81, 1, 137, 1, 133, 22, 140, 2, 96, 22, 28, 135, 1, 133, 22, 154, 140, 2, 96, 23, 28, 133, 22, 150, 135, 137, 136, 22, 23, 135, 24, 140, 138, 24, 24, 1, 97, 3, 70, 81, 1, 137, 1, 133, 22, 9, 96, 19, 28, 136, 1, 131, 22, 149, 138, 2, 96, 23, 28, 131, 22, 140, 143, 130, 154, 137, 141, 133, 138, 130, 22, 23, 138, 24, 24, 24, 1, 133, 1, 138, 1, 134, 22, 141, 2, 96, 18, 28, 136, 1, 134, 22, 155, 141, 2, 96, 23, 28, 134, 22, 151, 137]
 theorem assembly2 : PcEncoding.assembleBytes part2 = bytes2 := by decide +kernel
 theorem size2 : bytes2.length = 292 := by rfl
 def part3 : List Instr := [
@@ -7209,7 +7208,7 @@ def artifact : DataProgramArtifact where
     apply ByteArray.ext
     change (PcEncoding.assembleBytes instructions ++ data).toArray = Challenge.Ripemd160.Benchmark.bytecode.data
     rw [assembly, bytes_exact, ← RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-theorem instruction_count : instructions.length = 7004 := by
+theorem instruction_count : instructions.length = 7003 := by
   simp only [instructions, List.length_append, count0, count1, count2, count3, count4, count5, count6, count7, count8, count9, count10, count11, count12, count13, count14, count15, count16, count17, count18, count19, count20, count21, count22, count23, count24, count25, count26, count27, count28, count29, count30, count31, count32, count33, count34, count35, count36]
 theorem code_size : artifact.code.size = 10511 := by
   change Challenge.Ripemd160.Benchmark.bytecode.data.size = 10511

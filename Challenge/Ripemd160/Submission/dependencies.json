@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "ba93b2cc-7d23-4a45-9db2-644de6ecc28f",
+    "rationale": "Direct source and proof-tree parent: the validated 615,340-gas frontier (calldata-size shift operand for the 56-byte recognizer literal). Retained unchanged; this candidate retires the width-pad JUMPDEST at PC 929 in the ordinary right-lane pack window (871..977) by widening the round-2 message load PUSH2 728 to PUSH3 728, so 930 and every later PC stay fixed while every artifact instruction index from 458 on moves down by one.",
+    "evidence": "Based on the Submission tree at 8f97a8ed2fd30d97e56ae0ab1ce90739a4b2f145 (crown cfd609c6); RawPack/PrefixBefore/FirstPrologue.before templates, CandidateArtifact part 2 and instruction_count 7003, CandidateBytes chunks 13-14, bytes 878..929; instruction-index retarget of every site at index >= 458."
+  },
+  {
     "submissionId": "e48295cc-2ee3-4d76-9663-e588fff87c02",
     "rationale": "Direct source and proof-tree parent: the validated 615,341-gas frontier (early right-lane C-rotation in the padding-block prologue). Retained unchanged; this candidate rewrites only the 56-byte patterned recognizer literal at PC 5424..5450: PUSH24 X; PUSH1 65; SHL becomes PUSH25 (X << 9); CALLDATASIZE; SHL, valid because the arm is reached only when CALLDATASIZE = 56.",
     "evidence": "Based on the Submission tree at 2783859ae4656567b97410a91dd730dbf7dc549f; RecognizerLiteral template 56/value56/run hsz, RecArmsScan run_prefix/run_start hsz, RecArmsEach arm entries, RecArmsDispatch arm56, CandidateArtifact part 18, CandidateBytes chunks 84-85; bytes 5424..5450."

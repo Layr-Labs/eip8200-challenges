@@ -1,3 +1,25 @@
+# RIPEMD-160: ordinary pack-window JUMPDEST pad retired by a widened message-load push (615,309 gas)
+
+Parent: promoted commit `cfd609c6` (validated `ba93b2cc`, 615,340 gas).
+
+The ordinary right-lane pack window (`RawPack`, PC 871..977) ended its
+straight-line body with a width-pad `JUMPDEST` at 929 in front of the
+first-block join `JUMPDEST` at 930. The ordinary prologue falls through both
+(31 executions on the corpus). The round-2 message load `PUSH2 728` at 878 is
+now `PUSH3 0x0002d8` (same value, same 3 gas), which absorbs the pad byte: the
+window keeps 106 bytes, 930 stays the join and no PC moves. -1 gas per
+ordinary prologue: 615,340 -> **615,309**.
+
+Instruction count drops 7004 -> 7003, so every artifact instruction index
+from 458 (the 930 join) on moves down by one: slice starts, `instructionPC`
+facts, jump-destination indices, located instructions, the recognizer
+arm/chain/return index tables and the hoisted-store piece indices. PCs and
+stacks are unchanged. `RawPack`, `PrefixBefore` and `FirstPrologue.before`
+carry the new tail; `CandidateArtifact` part 2, `CandidateBytes` chunks
+13-14 and `bytecode.hex` carry the bytes.
+
+---
+
 # RIPEMD-160: calldata-size shift operand for the 56-byte recognizer literal (615,340 gas)
 
 Parent: promoted commit `2783859a` (validated `e48295cc`, 615,341 gas).

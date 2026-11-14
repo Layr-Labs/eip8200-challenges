@@ -43,7 +43,7 @@ def template : List Instr :=
     .op (.Dup ⟨3, by decide⟩),
     .op .XOR,
     .op .ADD,
-    .push ⟨2, by decide⟩ (UInt256.ofNat 728),
+    .push ⟨3, by decide⟩ (UInt256.ofNat 728),
     .op .MLOAD,
     .op .ADD,
     .op .ADD,
@@ -85,7 +85,6 @@ def template : List Instr :=
     .op .SHL,
     .op (.Dup ⟨11, by decide⟩),
     .op .OR,
-    .op .JUMPDEST,
     .op .JUMPDEST,
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522833630494720),
     .push ⟨22, by decide⟩ (UInt256.ofNat 95780971281817308448866066055358605703522837925462015) ]

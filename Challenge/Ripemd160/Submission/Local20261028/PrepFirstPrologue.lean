@@ -102,7 +102,7 @@ def before : List Instr := [
   .op (.Dup ⟨3, by decide⟩),
   .op .XOR,
   .op .ADD,
-  .push ⟨2, by decide⟩ (UInt256.ofNat 728),
+  .push ⟨3, by decide⟩ (UInt256.ofNat 728),
   .op .MLOAD,
   .op .ADD,
   .op .ADD,
@@ -143,8 +143,7 @@ def before : List Instr := [
   .push ⟨1, by decide⟩ (UInt256.ofNat 144),
   .op .SHL,
   .op (.Dup ⟨11, by decide⟩),
-  .op .OR,
-  .op .JUMPDEST]
+  .op .OR]
 def after : List Instr := [
   .push ⟨4, by decide⟩ (UInt256.ofNat 937819299),
   .push ⟨2, by decide⟩ (UInt256.ofNat 94),

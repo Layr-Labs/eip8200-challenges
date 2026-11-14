@@ -20,22 +20,22 @@ open StackRoundTrace StackRoundTemplate J2Moves ReverseLiteralRaw
 open Arms.Scan
 
 def tramp120Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (trampTemplate 5648) :=
-  StackSiteBuilder.ofSlice (trampTemplate 5648) 3362 (by rfl)
-    (by change 3362 + (trampTemplate 5648).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (trampTemplate 5648) 3361 (by rfl)
+    (by change 3361 + (trampTemplate 5648).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := trampTemplate 5648) (by decide)) (by decide)
 theorem tramp120_pc : tramp120Site.startPC = UInt256.ofNat 4667 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3362) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3361) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem valid_tramp120 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4667 = true :=
-  valid_at 3362 4667 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3361 4667 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 def gasSteps_tramp120 (input : ByteArray) :
     GasSteps (atState (base input) 4667 []) (atState (base input) 5648 []) :=
   RecognitionLift.gasSteps_of_raw tramp120Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using tramp120_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide))
     (run_tramp input 4667 5648 (by decide)
-      (valid_at 3618 5648 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
+      (valid_at 3617 5648 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
 def gasSteps_short120 (input : ByteArray) (h : input.size = 120) :
     GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 4667 []) := by
   have hs := Control.Patterned128Entry.shortSource_eq input 120 4667 h (by decide)
