@@ -17,14 +17,14 @@ def preProgram : List Instr := [
 def postProgram : List Instr := [
   .push 0 0,
    .op .RETURN]
-def pre : Block Artifact.artifact .Osaka 946 preProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 666 3 946 preProgram
+def pre : Block Artifact.artifact .Osaka 937 preProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 658 3 937 preProgram
     (by decide) (by rfl) (by rfl) (by decide)
-def post : Block Artifact.artifact .Osaka 953 postProgram :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 671 2 953 postProgram
+def post : Block Artifact.artifact .Osaka 944 postProgram :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 663 2 944 postProgram
     (by decide) (by rfl) (by rfl) (by decide)
 def answerBytes : ByteArray := Data.Bytes.natToBytesPadded MemoCert.answer 32
-private def memoPrefix : ByteArray := ByteArray.mk #[96,34,53,96,64,53,1,98,32,0,32,24,97,2,52,87,96,96,53,96,128,53,96,160,53,129,129,3,97,31,255,96,1,53,3,28,97,3,187,87,95,53,96,32,24,96,96,87,91,129,129,20,97,3,187,87,97,40,227,86,127,59,1,176,26,196,31,45,110,145,124,109,106,34,28,231,147,128,36,105,2,109,154,183,87,143,162,231,158,77,166,170,171,95,91,91,91,96,32,95,53,129,129,17,96,207,87,144,3,96,96,53,129,96,3,27,28,129,96,128,3,53,130,96,160,3,53,97]
+private def memoPrefix : ByteArray := ByteArray.mk #[96,34,53,96,64,53,1,98,32,0,32,24,97,2,52,87,96,96,53,96,128,53,96,160,53,129,129,3,97,31,255,96,1,53,3,28,97,3,178,87,95,53,96,32,24,96,96,87,91,129,129,20,97,3,178,87,97,41,128,86,127,59,1,176,26,196,31,45,110,145,124,109,106,34,28,231,147,128,36,105,2,109,154,183,87,143,162,231,158,77,166,170,171,95,91,91,91,96,32,95,53,129,129,17,96,207,87,144,3,96,96,53,129,96,3,27,28,129,96,128,3,53,130,96,160,3,53,97]
 private theorem prefixSplit : ∃ tail : ByteArray,Artifact.bytecode = memoPrefix++tail := by
   unfold Artifact.bytecode
   simp only [ByteArray.append_assoc]
@@ -45,19 +45,19 @@ theorem answerSlice : MachineState.readPadded Artifact.bytecode 61 32 = answerBy
   rw [Memory.natToBytesPadded_eq_natToBE]
   rfl
 def entry (input : ByteArray) : State :=
-  {initialState Artifact.bytecode input 0 with pc := UInt256.ofNat 946}
+  {initialState Artifact.bytecode input 0 with pc := UInt256.ofNat 937}
 def copyArgs (input : ByteArray) : State :=
-  {entry input with pc := UInt256.ofNat 951,stack := [0,61,32]}
+  {entry input with pc := UInt256.ofNat 942,stack := [0,61,32]}
 def copied (input : ByteArray) : State :=
   {entry input with
-    pc := UInt256.ofNat 952
+    pc := UInt256.ofNat 943
     memory := MachineState.writeBytes ByteArray.empty answerBytes 0
     activeWords := 1}
 def sized (input : ByteArray) : State :=
-  {copied input with pc := UInt256.ofNat 953,stack := [32]}
+  {copied input with pc := UInt256.ofNat 944,stack := [32]}
 def finalState (input : ByteArray) : State :=
   {sized input with
-    pc := UInt256.ofNat 954
+    pc := UInt256.ofNat 945
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded (copied input).memory 0 32}
@@ -72,7 +72,7 @@ theorem run_pre (input : ByteArray) :
 def steps_pre (input : ByteArray) : GasSteps (entry input) (copyArgs input) :=
   pre.steps (envEntry input) rfl (run_pre input)
 theorem copy_decodes (input : ByteArray) : (copyArgs input).decodedOp = some .CODECOPY := by
-  have h := Stepper.decodes_of_artifact Artifact.artifact (copyArgs input) 669 (.op .CODECOPY)
+  have h := Stepper.decodes_of_artifact Artifact.artifact (copyArgs input) 661 (.op .CODECOPY)
     rfl (by rfl) (by rfl) (by exact ⟨by decide,by trivial,by rfl⟩)
   exact h
 def steps_copy (input : ByteArray) : GasSteps (copyArgs input) (copied input) := by
@@ -83,7 +83,7 @@ def steps_copy (input : ByteArray) : GasSteps (copyArgs input) (copied input) :=
   rw [hr] at h
   exact h
 theorem size_decodes (input : ByteArray) : (copied input).decodedOp = some .MSIZE := by
-  have h := Stepper.decodes_of_artifact Artifact.artifact (copied input) 670 (.op .MSIZE)
+  have h := Stepper.decodes_of_artifact Artifact.artifact (copied input) 662 (.op .MSIZE)
     rfl (by rfl) (by rfl) (by exact ⟨by decide,by trivial,by rfl⟩)
   exact h
 def steps_size (input : ByteArray) : GasSteps (copied input) (sized input) := by

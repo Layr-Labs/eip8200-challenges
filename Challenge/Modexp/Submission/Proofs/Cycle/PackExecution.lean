@@ -17,7 +17,7 @@ def cells (a : Nat → UInt256) : List (Nat × UInt256) :=
    (2144,outputWord a 6),(2112,outputWord a 7)]
 def result (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8434
+    pc := UInt256.ofNat 8626
     memory := storeCells s.memory (cells a)
     stack := frame a n slot0 slot1 rest}
 theorem model_eq (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : List UInt256)
@@ -31,7 +31,7 @@ theorem run (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt256) (rest : 
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions packFinalProgram
-      {s with pc := UInt256.ofNat 8309,stack := frame a n slot0 slot1 rest} =
+      {s with pc := UInt256.ofNat 8501,stack := frame a n slot0 slot1 rest} =
       some (result s a n slot0 slot1 rest) := by
   have h := packFinal_run s (n 2) (n 6) (n 4) (a 1) (a 2) (n 5) (n 7) modulusP
     (n 8) slot1 mask slot0 (n 3) (a 8) rest hcap hact
@@ -41,7 +41,7 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (slot0 slot1 : UI
     (rest : List UInt256) (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8309,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8501,stack := frame a n slot0 slot1 rest}
       (result s a n slot0 slot1 rest) :=
   FinalBlocks.packFinalBlock.steps (env.transfer rfl rfl) rfl
     (run s a n slot0 slot1 rest hm hcap hact)

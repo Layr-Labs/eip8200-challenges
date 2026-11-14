@@ -59,8 +59,8 @@ def copiedState (s : State) (mem : ByteArray) (n : Nat) (dst ret : UInt256)
 theorem run_check (s : State) (mem : ByteArray) (dst ret : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode) :
-    runInstructions checkProgram (atState s mem 9472 dst ret rest) =
-      some (atState s mem (if Skip mem then 879 else 9488) dst ret rest) := by
+    runInstructions checkProgram (atState s mem 9640 dst ret rest) =
+      some (atState s mem (if Skip mem then 879 else 9656) dst ret rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega

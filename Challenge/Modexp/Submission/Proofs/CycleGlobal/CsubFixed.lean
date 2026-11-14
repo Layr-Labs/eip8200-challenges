@@ -29,16 +29,16 @@ def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Os
    opAt 486 .MLOAD,
    pushAt 487 1 128,
    opAt 488 .EQ,
-   pushAt 489 2 10305,
+   pushAt 489 2 10471,
    opAt 490 .JUMPI]
 def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
   [pushAt 485 2 2688,
    opAt 486 .MLOAD,
    pushAt 487 1 128,
    opAt 488 .EQ,
-   pushAt 489 2 10305,
+   pushAt 489 2 10471,
    opAt 490 .JUMPI,
-   opAt 8058 .JUMPDEST]
+   opAt 8054 .JUMPDEST]
 /-- rarej: the eight-limb subtraction starts at the `s8` `JUMPDEST` (pc 4374), the target of the
 square exit's carry continuation; the entry block falls into it. -/
 def csFixedStep8_0 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
@@ -46,130 +46,130 @@ def csFixedStep8_0 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .O
    opAt 492 .MLOAD,
    pushAt 493 1 224,
    opAt 494 .MLOAD,
-   opAt 495 (.Dup dA0),
-   opAt 496 (.Dup dA2),
+   opAt 495 (.Dup ⟨0,by decide⟩),
+   opAt 496 (.Dup ⟨2,by decide⟩),
    opAt 497 .SUB,
    pushAt 498 2 2016,
    opAt 499 .MSTORE,
    opAt 500 .GT]
 def csFixedStep8_1 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 501 (.Dup dA0),
+  [opAt 501 (.Dup ⟨0,by decide⟩),
    pushAt 502 1 192,
    opAt 503 .MLOAD,
    opAt 504 .ADD,
-   opAt 505 (.Dup dA0),
+   opAt 505 (.Dup ⟨0,by decide⟩),
    pushAt 506 2 2304,
    opAt 507 .MLOAD,
-   opAt 508 (.Dup dA1),
-   opAt 509 (.Dup dA1),
+   opAt 508 (.Dup ⟨1,by decide⟩),
+   opAt 509 (.Dup ⟨1,by decide⟩),
    opAt 510 .SUB,
    pushAt 511 2 1984,
    opAt 512 .MSTORE,
    opAt 513 .LT,
-   opAt 514 (.Swap sA1),
+   opAt 514 (.Swap ⟨1,by decide⟩),
    opAt 515 .GT,
    opAt 516 .OR]
 def csFixedStep8_2 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 517 (.Dup dA0),
+  [opAt 517 (.Dup ⟨0,by decide⟩),
    pushAt 518 1 160,
    opAt 519 .MLOAD,
    opAt 520 .ADD,
-   opAt 521 (.Dup dA0),
+   opAt 521 (.Dup ⟨0,by decide⟩),
    pushAt 522 2 2272,
    opAt 523 .MLOAD,
-   opAt 524 (.Dup dA1),
-   opAt 525 (.Dup dA1),
+   opAt 524 (.Dup ⟨1,by decide⟩),
+   opAt 525 (.Dup ⟨1,by decide⟩),
    opAt 526 .SUB,
    pushAt 527 2 1952,
    opAt 528 .MSTORE,
    opAt 529 .LT,
-   opAt 530 (.Swap sA1),
+   opAt 530 (.Swap ⟨1,by decide⟩),
    opAt 531 .GT,
    opAt 532 .OR]
 def csFixedStep8_3 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 533 (.Dup dA0),
+  [opAt 533 (.Dup ⟨0,by decide⟩),
    pushAt 534 1 128,
    opAt 535 .MLOAD,
    opAt 536 .ADD,
-   opAt 537 (.Dup dA0),
+   opAt 537 (.Dup ⟨0,by decide⟩),
    pushAt 538 2 2240,
    opAt 539 .MLOAD,
-   opAt 540 (.Dup dA1),
-   opAt 541 (.Dup dA1),
+   opAt 540 (.Dup ⟨1,by decide⟩),
+   opAt 541 (.Dup ⟨1,by decide⟩),
    opAt 542 .SUB,
    pushAt 543 2 1920,
    opAt 544 .MSTORE,
    opAt 545 .LT,
-   opAt 546 (.Swap sA1),
+   opAt 546 (.Swap ⟨1,by decide⟩),
    opAt 547 .GT,
    opAt 548 .OR]
 def csFixedStep8_4 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 549 (.Dup dA0),
+  [opAt 549 (.Dup ⟨0,by decide⟩),
    pushAt 550 1 96,
    opAt 551 .MLOAD,
    opAt 552 .ADD,
-   opAt 553 (.Dup dA0),
+   opAt 553 (.Dup ⟨0,by decide⟩),
    pushAt 554 2 2208,
    opAt 555 .MLOAD,
-   opAt 556 (.Dup dA1),
-   opAt 557 (.Dup dA1),
+   opAt 556 (.Dup ⟨1,by decide⟩),
+   opAt 557 (.Dup ⟨1,by decide⟩),
    opAt 558 .SUB,
    pushAt 559 2 1888,
    opAt 560 .MSTORE,
    opAt 561 .LT,
-   opAt 562 (.Swap sA1),
+   opAt 562 (.Swap ⟨1,by decide⟩),
    opAt 563 .GT,
    opAt 564 .OR]
 def csFixedStep8_5 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
   [opAt 565 .JUMPDEST,
-   opAt 566 (.Dup dA0),
+   opAt 566 (.Dup ⟨0,by decide⟩),
    pushAt 567 1 64,
    opAt 568 .MLOAD,
    opAt 569 .ADD,
-   opAt 570 (.Dup dA0),
+   opAt 570 (.Dup ⟨0,by decide⟩),
    pushAt 571 2 2176,
    opAt 572 .MLOAD,
-   opAt 573 (.Dup dA1),
-   opAt 574 (.Dup dA1),
+   opAt 573 (.Dup ⟨1,by decide⟩),
+   opAt 574 (.Dup ⟨1,by decide⟩),
    opAt 575 .SUB,
    pushAt 576 2 1856,
    opAt 577 .MSTORE,
    opAt 578 .LT,
-   opAt 579 (.Swap sA1),
+   opAt 579 (.Swap ⟨1,by decide⟩),
    opAt 580 .GT,
    opAt 581 .OR]
 def csFixedStep8_6 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 582 (.Dup dA0),
+  [opAt 582 (.Dup ⟨0,by decide⟩),
    pushAt 583 1 32,
    opAt 584 .MLOAD,
    opAt 585 .ADD,
-   opAt 586 (.Dup dA0),
+   opAt 586 (.Dup ⟨0,by decide⟩),
    pushAt 587 2 2144,
    opAt 588 .MLOAD,
-   opAt 589 (.Dup dA1),
-   opAt 590 (.Dup dA1),
+   opAt 589 (.Dup ⟨1,by decide⟩),
+   opAt 590 (.Dup ⟨1,by decide⟩),
    opAt 591 .SUB,
    pushAt 592 2 1824,
    opAt 593 .MSTORE,
    opAt 594 .LT,
-   opAt 595 (.Swap sA1),
+   opAt 595 (.Swap ⟨1,by decide⟩),
    opAt 596 .GT,
    opAt 597 .OR]
 def csFixedStep8_7 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 598 (.Dup dA0),
+  [opAt 598 (.Dup ⟨0,by decide⟩),
    pushAt 599 0 0,
    opAt 600 .MLOAD,
    opAt 601 .ADD,
-   opAt 602 (.Dup dA0),
+   opAt 602 (.Dup ⟨0,by decide⟩),
    pushAt 603 2 2112,
    opAt 604 .MLOAD,
-   opAt 605 (.Dup dA1),
-   opAt 606 (.Dup dA1),
+   opAt 605 (.Dup ⟨1,by decide⟩),
+   opAt 606 (.Dup ⟨1,by decide⟩),
    opAt 607 .SUB,
    pushAt 608 2 1792,
    opAt 609 .MSTORE,
    opAt 610 .LT,
-   opAt 611 (.Swap sA1),
+   opAt 611 (.Swap ⟨1,by decide⟩),
    opAt 612 .GT,
    opAt 613 .OR]
 /-- Selection tail when `use ≠ 0` (`t ≥ m`): `JUMPI` to pc 4538, which copies the
@@ -185,7 +185,7 @@ def csFixedTailSub : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .O
    pushAt 630 2 1792,
    pushAt 631 2 2688,
    opAt 632 .MLOAD,
-   opAt 633 (.Swap sA1),
+   opAt 633 (.Swap ⟨1,by decide⟩),
    opAt 634 .MCOPY,
    opAt 635 .JUMP]
 /-- Selection tail when `use = 0` (`t < m`): fall through the `JUMPI` and jump to the
@@ -203,75 +203,75 @@ def csFixedTailKeep : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .
    pushAt 623 2 2112,
    pushAt 624 2 2688,
    opAt 625 .MLOAD,
-   opAt 626 (.Swap sA1),
+   opAt 626 (.Swap ⟨1,by decide⟩),
    opAt 627 .MCOPY,
    opAt 628 .JUMP]
 def csFixedStep4_0 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [pushAt 8059 2 2208,
-   opAt 8060 .MLOAD,
-   pushAt 8061 1 96,
-   opAt 8062 .MLOAD,
-   opAt 8063 (.Dup dA0),
-   opAt 8064 (.Dup dA2),
-   opAt 8065 .SUB,
-   pushAt 8066 2 1888,
-   opAt 8067 .MSTORE,
-   opAt 8068 .GT,
-   pushAt 8069 2 802,
-   opAt 8070 .JUMP]
+  [pushAt 8055 2 2208,
+   opAt 8056 .MLOAD,
+   pushAt 8057 1 96,
+   opAt 8058 .MLOAD,
+   opAt 8059 (.Dup ⟨0,by decide⟩),
+   opAt 8060 (.Dup ⟨2,by decide⟩),
+   opAt 8061 .SUB,
+   pushAt 8062 2 1888,
+   opAt 8063 .MSTORE,
+   opAt 8064 .GT,
+   pushAt 8065 2 802,
+   opAt 8066 .JUMP]
 def csFixedStep4_1 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
   [opAt 565 .JUMPDEST,
-   opAt 566 (.Dup dA0),
+   opAt 566 (.Dup ⟨0,by decide⟩),
    pushAt 567 1 64,
    opAt 568 .MLOAD,
    opAt 569 .ADD,
-   opAt 570 (.Dup dA0),
+   opAt 570 (.Dup ⟨0,by decide⟩),
    pushAt 571 2 2176,
    opAt 572 .MLOAD,
-   opAt 573 (.Dup dA1),
-   opAt 574 (.Dup dA1),
+   opAt 573 (.Dup ⟨1,by decide⟩),
+   opAt 574 (.Dup ⟨1,by decide⟩),
    opAt 575 .SUB,
    pushAt 576 2 1856,
    opAt 577 .MSTORE,
    opAt 578 .LT,
-   opAt 579 (.Swap sA1),
+   opAt 579 (.Swap ⟨1,by decide⟩),
    opAt 580 .GT,
    opAt 581 .OR]
 def csFixedStep4_2 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 582 (.Dup dA0),
+  [opAt 582 (.Dup ⟨0,by decide⟩),
    pushAt 583 1 32,
    opAt 584 .MLOAD,
    opAt 585 .ADD,
-   opAt 586 (.Dup dA0),
+   opAt 586 (.Dup ⟨0,by decide⟩),
    pushAt 587 2 2144,
    opAt 588 .MLOAD,
-   opAt 589 (.Dup dA1),
-   opAt 590 (.Dup dA1),
+   opAt 589 (.Dup ⟨1,by decide⟩),
+   opAt 590 (.Dup ⟨1,by decide⟩),
    opAt 591 .SUB,
    pushAt 592 2 1824,
    opAt 593 .MSTORE,
    opAt 594 .LT,
-   opAt 595 (.Swap sA1),
+   opAt 595 (.Swap ⟨1,by decide⟩),
    opAt 596 .GT,
    opAt 597 .OR]
 def csFixedStep4_3 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [opAt 598 (.Dup dA0),
+  [opAt 598 (.Dup ⟨0,by decide⟩),
    pushAt 599 0 0,
    opAt 600 .MLOAD,
    opAt 601 .ADD,
-   opAt 602 (.Dup dA0),
+   opAt 602 (.Dup ⟨0,by decide⟩),
    pushAt 603 2 2112,
    opAt 604 .MLOAD,
-   opAt 605 (.Dup dA1),
-   opAt 606 (.Dup dA1),
+   opAt 605 (.Dup ⟨1,by decide⟩),
+   opAt 606 (.Dup ⟨1,by decide⟩),
    opAt 607 .SUB,
    pushAt 608 2 1792,
    opAt 609 .MSTORE,
    opAt 610 .LT,
-   opAt 611 (.Swap sA1),
+   opAt 611 (.Swap ⟨1,by decide⟩),
    opAt 612 .GT,
    opAt 613 .OR]
-@[simp] theorem cycleAnchor : runtimeArtifact.instructionPC 7892 = 10086 := by
+@[simp] theorem cycleAnchor : runtimeArtifact.instructionPC 7888 = 10252 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem fixedPC3777 : runtimeArtifact.instructionPC 480 = 681 := by
@@ -356,14 +356,14 @@ no pc certificates, so the block could not step. -/
 /-- The four-limb landing of the rewritten conditional-subtraction dispatch. The old claim here named
 pc 4371 through index 3273, which is now an `MCOPY` at 4392, so it was false and cost a `whnf` runaway
 rather than an honest error. -/
-@[simp] theorem fixedPC3009 : runtimeArtifact.instructionPC 7898 = 10095 := by
+@[simp] theorem fixedPC3009 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedJump3984 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10305 = true := by
-  have h : runtimeArtifact.instructionPC 8058 = 10305 := by
+@[simp] theorem fixedJump3984 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10471 = true := by
+  have h : runtimeArtifact.instructionPC 8054 = 10471 := by
     rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
     rfl
-  simpa only [h] using CycleSubmission.Global.Binding.jumpDest 8058 (by rfl)
+  simpa only [h] using CycleSubmission.Global.Binding.jumpDest 8054 (by rfl)
 @[simp] theorem fixedPC3805 : runtimeArtifact.instructionPC 487 = 696 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
@@ -827,129 +827,129 @@ rather than an honest error. -/
 @[simp] theorem fixedPC3957 : runtimeArtifact.instructionPC 633 = 898 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedJump5280 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10305 = true := by
-  have h : runtimeArtifact.instructionPC 8058 = 10305 := by
+@[simp] theorem fixedJump5280 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10471 = true := by
+  have h : runtimeArtifact.instructionPC 8054 = 10471 := by
     rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
     rfl
-  simpa only [h] using CycleSubmission.Global.Binding.jumpDest 8058 (by rfl)
-@[simp] theorem fixedPC4000 : runtimeArtifact.instructionPC 7898 = 10095 := by
+  simpa only [h] using CycleSubmission.Global.Binding.jumpDest 8054 (by rfl)
+@[simp] theorem fixedPC4000 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4001 : runtimeArtifact.instructionPC 7898 = 10095 := by
+@[simp] theorem fixedPC4001 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4002 : runtimeArtifact.instructionPC 7917 = 10118 := by
+@[simp] theorem fixedPC4002 : runtimeArtifact.instructionPC 7913 = 10284 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4003 : runtimeArtifact.instructionPC 8058 = 10305 := by
+@[simp] theorem fixedPC4003 : runtimeArtifact.instructionPC 8054 = 10471 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4004 : runtimeArtifact.instructionPC 8059 = 10306 := by
+@[simp] theorem fixedPC4004 : runtimeArtifact.instructionPC 8055 = 10472 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4005 : runtimeArtifact.instructionPC 8060 = 10309 := by
+@[simp] theorem fixedPC4005 : runtimeArtifact.instructionPC 8056 = 10475 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4006 : runtimeArtifact.instructionPC 8061 = 10310 := by
+@[simp] theorem fixedPC4006 : runtimeArtifact.instructionPC 8057 = 10476 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4007 : runtimeArtifact.instructionPC 8062 = 10312 := by
+@[simp] theorem fixedPC4007 : runtimeArtifact.instructionPC 8058 = 10478 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4008 : runtimeArtifact.instructionPC 8063 = 10313 := by
+@[simp] theorem fixedPC4008 : runtimeArtifact.instructionPC 8059 = 10479 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4009 : runtimeArtifact.instructionPC 8064 = 10314 := by
+@[simp] theorem fixedPC4009 : runtimeArtifact.instructionPC 8060 = 10480 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4010 : runtimeArtifact.instructionPC 8065 = 10315 := by
+@[simp] theorem fixedPC4010 : runtimeArtifact.instructionPC 8061 = 10481 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4011 : runtimeArtifact.instructionPC 8066 = 10316 := by
+@[simp] theorem fixedPC4011 : runtimeArtifact.instructionPC 8062 = 10482 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC4012 : runtimeArtifact.instructionPC 8067 = 10319 := by
+@[simp] theorem fixedPC4012 : runtimeArtifact.instructionPC 8063 = 10485 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2883 : runtimeArtifact.instructionPC 7382 = 9504 := by
+@[simp] theorem earlyExtraPC2883 : runtimeArtifact.instructionPC 7380 = 9672 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2884 : runtimeArtifact.instructionPC 7383 = 9505 := by
+@[simp] theorem earlyExtraPC2884 : runtimeArtifact.instructionPC 7381 = 9673 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2885 : runtimeArtifact.instructionPC 7384 = 9506 := by
+@[simp] theorem earlyExtraPC2885 : runtimeArtifact.instructionPC 7382 = 9674 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2886 : runtimeArtifact.instructionPC 7385 = 9507 := by
+@[simp] theorem earlyExtraPC2886 : runtimeArtifact.instructionPC 7383 = 9675 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2888 : runtimeArtifact.instructionPC 7386 = 9508 := by
+@[simp] theorem earlyExtraPC2888 : runtimeArtifact.instructionPC 7384 = 9676 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2889 : runtimeArtifact.instructionPC 7387 = 9509 := by
+@[simp] theorem earlyExtraPC2889 : runtimeArtifact.instructionPC 7385 = 9677 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2890 : runtimeArtifact.instructionPC 7388 = 9510 := by
+@[simp] theorem earlyExtraPC2890 : runtimeArtifact.instructionPC 7386 = 9678 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2891 : runtimeArtifact.instructionPC 7389 = 9513 := by
+@[simp] theorem earlyExtraPC2891 : runtimeArtifact.instructionPC 7387 = 9681 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2892 : runtimeArtifact.instructionPC 7390 = 9514 := by
+@[simp] theorem earlyExtraPC2892 : runtimeArtifact.instructionPC 7388 = 9682 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2893 : runtimeArtifact.instructionPC 7390 = 9514 := by
+@[simp] theorem earlyExtraPC2893 : runtimeArtifact.instructionPC 7388 = 9682 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2894 : runtimeArtifact.instructionPC 7390 = 9514 := by
+@[simp] theorem earlyExtraPC2894 : runtimeArtifact.instructionPC 7388 = 9682 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2895 : runtimeArtifact.instructionPC 7886 = 10076 := by
+@[simp] theorem earlyExtraPC2895 : runtimeArtifact.instructionPC 7882 = 10242 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2896 : runtimeArtifact.instructionPC 7898 = 10095 := by
+@[simp] theorem earlyExtraPC2896 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2930 : runtimeArtifact.instructionPC 7898 = 10095 := by
+@[simp] theorem earlyExtraPC2930 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2931 : runtimeArtifact.instructionPC 7898 = 10095 := by
+@[simp] theorem earlyExtraPC2931 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2932 : runtimeArtifact.instructionPC 7898 = 10095 := by
+@[simp] theorem earlyExtraPC2932 : runtimeArtifact.instructionPC 7894 = 10261 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2933 : runtimeArtifact.instructionPC 7917 = 10118 := by
+@[simp] theorem earlyExtraPC2933 : runtimeArtifact.instructionPC 7913 = 10284 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2934 : runtimeArtifact.instructionPC 8058 = 10305 := by
+@[simp] theorem earlyExtraPC2934 : runtimeArtifact.instructionPC 8054 = 10471 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2935 : runtimeArtifact.instructionPC 8059 = 10306 := by
+@[simp] theorem earlyExtraPC2935 : runtimeArtifact.instructionPC 8055 = 10472 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2936 : runtimeArtifact.instructionPC 8060 = 10309 := by
+@[simp] theorem earlyExtraPC2936 : runtimeArtifact.instructionPC 8056 = 10475 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2937 : runtimeArtifact.instructionPC 8061 = 10310 := by
+@[simp] theorem earlyExtraPC2937 : runtimeArtifact.instructionPC 8057 = 10476 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2938 : runtimeArtifact.instructionPC 8062 = 10312 := by
+@[simp] theorem earlyExtraPC2938 : runtimeArtifact.instructionPC 8058 = 10478 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2939 : runtimeArtifact.instructionPC 8063 = 10313 := by
+@[simp] theorem earlyExtraPC2939 : runtimeArtifact.instructionPC 8059 = 10479 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2940 : runtimeArtifact.instructionPC 8064 = 10314 := by
+@[simp] theorem earlyExtraPC2940 : runtimeArtifact.instructionPC 8060 = 10480 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2941 : runtimeArtifact.instructionPC 8065 = 10315 := by
+@[simp] theorem earlyExtraPC2941 : runtimeArtifact.instructionPC 8061 = 10481 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2942 : runtimeArtifact.instructionPC 8066 = 10316 := by
+@[simp] theorem earlyExtraPC2942 : runtimeArtifact.instructionPC 8062 = 10482 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem earlyExtraPC2943 : runtimeArtifact.instructionPC 8067 = 10319 := by
+@[simp] theorem earlyExtraPC2943 : runtimeArtifact.instructionPC 8063 = 10485 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem earlyExtraPC3921 : runtimeArtifact.instructionPC 622 = 879 := by

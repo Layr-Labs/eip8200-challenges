@@ -41,20 +41,20 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def startPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 70 .JUMPDEST,
-   opAt 71 (.Dup dA5),
+   opAt 71 (.Dup ⟨5,by decide⟩),
    opAt 72 .CALLDATALOAD,
-   opAt 73 (.Dup dA3),
+   opAt 73 (.Dup ⟨3,by decide⟩),
    pushAt 74 1 32,
    opAt 75 .SUB,
    pushAt 76 1 3,
    opAt 77 .SHL,
    opAt 78 .SHR,
-   opAt 79 (.Dup dA0),
+   opAt 79 (.Dup ⟨0,by decide⟩),
    pushAt 80 1 149,
    opAt 81 .JUMPI]
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 82 (.Dup dA3),
+  [opAt 82 (.Dup ⟨3,by decide⟩),
    pushAt 83 0 0,
    opAt 84 .RETURN]
 def zeroModulusPath :
@@ -70,29 +70,29 @@ def baseSetupPath :
 def baseGuardPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 88 .JUMPDEST,
-   opAt 89 (.Dup dA3),
-   opAt 90 (.Dup dA1),
+   opAt 89 (.Dup ⟨3,by decide⟩),
+   opAt 90 (.Dup ⟨1,by decide⟩),
    opAt 91 .EQ,
    pushAt 92 1 180,
    opAt 93 .JUMPI]
 def baseCallPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 94 (.Dup dA2),
-   opAt 95 (.Dup dA1),
-   opAt 96 (.Dup dA8),
+  [opAt 94 (.Dup ⟨2,by decide⟩),
+   opAt 95 (.Dup ⟨1,by decide⟩),
+   opAt 96 (.Dup ⟨8,by decide⟩),
    opAt 97 .ADD,
    opAt 98 .CALLDATALOAD,
    pushAt 99 0 0,
    opAt 100 .BYTE]
 def baseTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 101 (.Dup dA4),
+  [opAt 101 (.Dup ⟨4,by decide⟩),
    pushAt 102 2 256,
    pushAt 103 1 1,
-   opAt 104 (.Swap sA5),
+   opAt 104 (.Swap ⟨5,by decide⟩),
    opAt 105 .MULMOD,
    opAt 106 .ADDMOD,
-   opAt 107 (.Swap sA1),
+   opAt 107 (.Swap ⟨1,by decide⟩),
    opAt 108 .ADD,
    pushAt 109 1 152,
    opAt 110 .JUMP]
@@ -100,7 +100,7 @@ def baseFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 111 .JUMPDEST,
    opAt 112 .POP,
-   opAt 113 (.Dup dA1),
+   opAt 113 (.Dup ⟨1,by decide⟩),
    pushAt 114 0 0,
    opAt 115 .ISZERO,
    opAt 116 .LT,
@@ -108,17 +108,17 @@ def baseFinishTailPath :
 def expGuardPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   [opAt 118 .JUMPDEST,
-   opAt 119 (.Dup dA5),
-   opAt 120 (.Dup dA1),
+   opAt 119 (.Dup ⟨5,by decide⟩),
+   opAt 120 (.Dup ⟨1,by decide⟩),
    opAt 121 .EQ,
-   pushAt 122 2 10244,
+   pushAt 122 2 10410,
    opAt 123 .JUMPI]
 def expLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 124 (.Dup dA0),
-   opAt 125 (.Dup dA9),
+  [opAt 124 (.Dup ⟨0,by decide⟩),
+   opAt 125 (.Dup ⟨9,by decide⟩),
    opAt 126 .ADD,
-   opAt 127 (.Dup dA0),
+   opAt 127 (.Dup ⟨0,by decide⟩),
    opAt 128 .CALLDATALOAD,
    pushAt 129 0 0,
    opAt 130 .BYTE,
@@ -128,19 +128,19 @@ def bitJumpPath :
   [opAt 133 .JUMP]
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8023 .JUMPDEST,
-   pushAt 8024 1 1,
-   opAt 8025 (.Dup dA6),
-   opAt 8026 .SUB]
+  [opAt 8019 .JUMPDEST,
+   pushAt 8020 1 1,
+   opAt 8021 (.Dup ⟨6,by decide⟩),
+   opAt 8022 .SUB]
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 8055 .POP,
-   pushAt 8056 2 10234,
-   opAt 8057 .JUMP]
+  [opAt 8051 .POP,
+   pushAt 8052 2 10400,
+   opAt 8053 .JUMP]
 def bitPC (j : Nat) : Nat :=
   match j with
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 10265
-  | _ => 10300
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 10431
+  | _ => 10466
 def bitCounter (j : Nat) : Nat := if j < 8 then j else 8
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -265,14 +265,14 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 206,stack := UInt256.ofNat 10260::s.stack }
+  { s with pc := UInt256.ofNat 206,stack := UInt256.ofNat 10426::s.stack }
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 10260
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 10426
     ([UInt256.ofNat 0,byte,offset,UInt256.ofNat outer,acc,base,
       UInt256.ofNat (modulusValue input)]++bitTail input)
-theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10260 = true :=
-  CycleSubmission.Global.Binding.jumpDest 8023 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10426 = true :=
+  CycleSubmission.Global.Binding.jumpDest 8019 (by rfl)
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps (bitLoopState input outer 0 byte offset acc base)
@@ -394,17 +394,17 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
       ([187,188,189,190,191,194,195,196,197,198,199,200,201,202,203,206] : List Nat)[i - 118]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem expTailPCs (i : Nat) (hi : 8001 ≤ i) (hii : i ≤ 8008) :
+@[simp] theorem expTailPCs (i : Nat) (hi : 7997 ≤ i) (hii : i ≤ 8004) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10234,10235,10236,10237,10238,10240,10241,10243] : List Nat)[i - 8001]! := by
+      ([10400,10401,10402,10403,10404,10406,10407,10409] : List Nat)[i - 7997]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem jump669 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10244 = true :=
-  CycleSubmission.Global.Binding.jumpDest 8009 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10410 = true :=
+  CycleSubmission.Global.Binding.jumpDest 8005 (by rfl)
 @[simp] theorem jump655 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10234 = true :=
-  CycleSubmission.Global.Binding.jumpDest 8001 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10400 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7997 (by rfl)
 @[simp] theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 187 = true :=
   CycleSubmission.Global.Binding.jumpDest 118 (by rfl)

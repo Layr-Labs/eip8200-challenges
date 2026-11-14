@@ -242,14 +242,14 @@ def entryState (s : State) : State :=
 def fallbackState (s : State) : State :=
   { s with pc := UInt256.ofNat 519,stack := [] }
 def memoEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 912,stack := [] }
+  { s with pc := UInt256.ofNat 903,stack := [] }
 def zeroExpEntryState (s : State) : State :=
-  { s with pc := UInt256.ofNat 10076,stack := [] }
+  { s with pc := UInt256.ofNat 10242,stack := [] }
 def bail1State (s : State) (input : ByteArray) : State :=
-  { s with pc := UInt256.ofNat 10118,stack := [UInt256.ofNat (modulusSize input)] }
+  { s with pc := UInt256.ofNat 10284,stack := [UInt256.ofNat (modulusSize input)] }
 def emptyModulusState (s : State) : State :=
   { s with
-    pc := UInt256.ofNat 10125
+    pc := UInt256.ofNat 10291
     stack := []
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 0 0
@@ -290,14 +290,14 @@ def zeroExpMemory (s : State) (input : ByteArray) : ByteArray :=
     (Data.Bytes.natToBytesPadded (zeroExpWord input).toNat 32) 0
 def zeroExpStoreState (s : State) (input : ByteArray) : State :=
   { s with
-    pc := UInt256.ofNat 10114
+    pc := UInt256.ofNat 10280
     stack := [UInt256.ofNat (modulusSize input)]
     memory := zeroExpMemory s input
     activeWords := s.activeWordsAfterUInt256 0 32 }
 def zeroExpFinalState (s : State) (input : ByteArray) : State :=
   { zeroExpStoreState s input with
     stack := []
-    pc := UInt256.ofNat 10117
+    pc := UInt256.ofNat 10283
     halt := .Returned
     hReturn := MachineState.readPadded (zeroExpMemory s input)
       (32 - modulusSize input) (modulusSize input)
@@ -394,9 +394,9 @@ def zeroExpReturnProgram80 : List Instr :=
    .op .MSIZE,
    .op .SUB,
    .op .RETURN]
-def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10114 zeroExpReturnProgram80 :=
-  WindowTwentyOneSlice.block Artifact.wellFormed 7913 4 10114 zeroExpReturnProgram80
-    (by change 7913+4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
+def zeroExpReturnBlock80 : WindowTwentyOneBinding.Block Artifact.artifact .Osaka 10280 zeroExpReturnProgram80 :=
+  WindowTwentyOneSlice.block Artifact.wellFormed 7909 4 10280 zeroExpReturnProgram80
+    (by change 7909+4 ≤ Artifact.instructions.length; rw [Artifact.instructionCount]; decide)
     (by rw [PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -1234,11 +1234,11 @@ theorem fallbackState_initial (input : ByteArray) :
       Main.trampolineState input 519 := rfl
 theorem memoEntryState_initial (input : ByteArray) :
     memoEntryState (initialState CycleSubmission.Artifact.bytecode input 0) =
-      Main.trampolineState input 912 := rfl
+      Main.trampolineState input 903 := rfl
 inductive Fallback (input : ByteArray) : Type
   | header (hsize : modulusSize input ≤ 32 ∨ 256 < modulusSize input)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
-        (Main.trampolineState input 912))
+        (Main.trampolineState input 903))
   | big (h32 : 32 < modulusSize input) (hupper : modulusSize input ≤ 256)
       (steps : Challenge.EvmProof.GasSteps (Main.trampolineState input 564)
         (bigBailState (initialState CycleSubmission.Artifact.bytecode input 0) input))
@@ -1378,26 +1378,26 @@ def setupWords (w : UInt256) (input : ByteArray) : UInt256 :=
     2784 32) 0 (s32 input)) (s32 input - modulusSize input) (modulusSize input))
 def setupPathA :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 443 (.Dup dA3),
+  [opAt 443 (.Dup ⟨3,by decide⟩),
    pushAt 444 1 96,
    opAt 445 .ADD,
    pushAt 446 2 2656,
    opAt 447 .MSTORE,
-   opAt 448 (.Dup dA1),
+   opAt 448 (.Dup ⟨1,by decide⟩),
    opAt 449 .MSIZE,
    opAt 450 .MSTORE,
    pushAt 451 1 32,
-   opAt 452 (.Dup dA2),
+   opAt 452 (.Dup ⟨2,by decide⟩),
    opAt 453 .SUB,
    pushAt 454 2 2752,
    opAt 455 .MSTORE,
-   opAt 456 (.Dup dA1),
+   opAt 456 (.Dup ⟨1,by decide⟩),
    pushAt 457 2 2080,
    opAt 458 .ADD,
    opAt 459 .MSIZE,
    opAt 460 .MSTORE,
-   opAt 461 (.Dup dA5),
-   opAt 462 (.Swap sA0),
+   opAt 461 (.Dup ⟨5,by decide⟩),
+   opAt 462 (.Swap ⟨0,by decide⟩),
    pushAt 463 0 0,
    opAt 464 .CALLDATACOPY]
 def setupExitState (s : State) (input : ByteArray) (m0 : Nat) : State :=
