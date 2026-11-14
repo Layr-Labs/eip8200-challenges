@@ -39,10 +39,7 @@ theorem run_persistent (s : State) (inv count : UInt256) (a b n : Nat → UInt25
  exact runInstructions_append_some _ _ _ _ _ hp hh
 def restoreMaskProgram : List Instr :=
  [
-  .push 0 0,
-   .op .NOT,
-   .push 1 16,
-   .op .SHR,
+  .push 30 1766847064778384329583297500742918515827483896875618958121606201292619775,
    .op (.Swap ⟨10,by decide⟩),
    .push 2 96,
    .op .MSTORE,
@@ -58,7 +55,7 @@ theorem run_restoreMask (s : State) (inv count : UInt256) (a b n : Nat → UInt2
  (hinv : MachineState.readWord s.memory 2720 = inv) :
  runInstructions restoreMaskProgram
  {s with pc := UInt256.ofNat 5795,stack := R9InvConsumeComplete.initialFrame inv a b n (count::rest)} =
- some {s with pc := UInt256.ofNat 5815,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a b n (count::inv::rest)} := by
+ some {s with pc := UInt256.ofNat 5841,memory := LimbMemory.store (LimbMemory.store s.memory 96 (a 5)) 160 (a 7),stack := SquareMeaning.frame0 inv a b n (count::inv::rest)} := by
  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
  have hmask : UInt256.shiftRight (UInt256.lnot (UInt256.ofNat 0)) (UInt256.ofNat 16) = UInt256.ofNat (2^240-1) := by decide
  have hf := Monpro.activeWords_fix s 96 32 (by decide) (by norm_num) hact

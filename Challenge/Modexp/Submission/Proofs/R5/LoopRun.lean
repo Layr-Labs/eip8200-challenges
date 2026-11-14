@@ -62,9 +62,9 @@ theorem next_lowBound (n1 n2 n3 n4 P inv n0 : UInt256) (x : D5) (c : UInt256) :
   · dsimp only [next,SquareRun.sqV8_8,ExecSquare.sqCol8_o8]
     exact hm _
 def head (s : State) (x : D5) (n1 n2 n3 n4 P inv c : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 8771,stack := x.d0::x.d1::x.d2::x.d3::x.d4::n1::n2::n3::n4::P::inv::MachineState.readWord s.memory 160::c::rest}
+  {s with pc := UInt256.ofNat 8797,stack := x.d0::x.d1::x.d2::x.d3::x.d4::n1::n2::n3::n4::P::inv::MachineState.readWord s.memory 160::c::rest}
 def leave (s : State) (x : D5) (n1 n2 n3 n4 P inv c : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 9394,stack := x.d0::x.d1::x.d2::x.d3::x.d4::n1::n2::n3::n4::P::inv::MachineState.readWord s.memory 160::c::rest}
+  {s with pc := UInt256.ofNat 9420,stack := x.d0::x.d1::x.d2::x.d3::x.d4::n1::n2::n3::n4::P::inv::MachineState.readWord s.memory 160::c::rest}
 section
 variable (s : State) (n1 n2 n3 n4 P inv n0 : UInt256) (rest : List UInt256)
   (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
@@ -74,7 +74,7 @@ variable (s : State) (n1 n2 n3 n4 P inv n0 : UInt256) (rest : List UInt256)
 /-- One round: square, then the loop test on the old counter `c`. -/
 noncomputable def round (x : D5) (c : UInt256) (hx : LowBound x) :
     GasSteps (head s x n1 n2 n3 n4 P inv c rest)
-      {s with pc := (if c.toNat = 0 then UInt256.ofNat 9394 else UInt256.ofNat 8771),stack := (next n1 n2 n3 n4 P inv n0 x c).d0::(next n1 n2 n3 n4 P inv n0 x c).d1::(next n1 n2 n3 n4 P inv n0 x c).d2::(next n1 n2 n3 n4 P inv n0 x c).d3::(next n1 n2 n3 n4 P inv n0 x c).d4::n1::n2::n3::n4::P::inv::MachineState.readWord s.memory 160::dec n1 n2 n3 n4 P inv n0 x c::rest} :=
+      {s with pc := (if c.toNat = 0 then UInt256.ofNat 9420 else UInt256.ofNat 8797),stack := (next n1 n2 n3 n4 P inv n0 x c).d0::(next n1 n2 n3 n4 P inv n0 x c).d1::(next n1 n2 n3 n4 P inv n0 x c).d2::(next n1 n2 n3 n4 P inv n0 x c).d3::(next n1 n2 n3 n4 P inv n0 x c).d4::n1::n2::n3::n4::P::inv::MachineState.readWord s.memory 160::dec n1 n2 n3 n4 P inv n0 x c::rest} :=
   (squareBlock.steps (s := head s x n1 n2 n3 n4 P inv c rest) (env.transfer rfl rfl) rfl
     (sq_run s x.d0 x.d1 x.d2 x.d3 x.d4 n1 n2 n3 n4 P inv c n0 rest hcap hact h_n0 h_inv hP hx.1 hx.2.1 hx.2.2.1 hx.2.2.2)).trans
   (ctl4712_steps s c _ env (by simp only [List.length_cons]; omega))

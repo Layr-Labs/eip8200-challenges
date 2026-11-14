@@ -17,8 +17,8 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open WindowNibbleKernel
 def frame (s : State) (mem : ByteArray) (pc : Nat) (stack : List UInt256) : State :=
   { s with memory := mem,pc := UInt256.ofNat pc,stack := stack }
-def exitPC (b : Bool) : Nat := if b then 10821 else 3206
-def transferPC (b : Bool) : Nat := if b then 10822 else 3207
+def exitPC (b : Bool) : Nat := if b then 10841 else 3206
+def transferPC (b : Bool) : Nat := if b then 10842 else 3207
 def headProgram (b : Bool) : List Instr :=
   [.op .POP]
 def transferProgram : List Instr := [.op (.Swap ⟨12,by decide⟩),.op .JUMP]
@@ -56,15 +56,15 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
     (hn : n = 4 ∨ n = 8) (hbs : bsize = 32 * n) (hact : 88 ≤ s.activeWords.toNat)
     (hdest : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.loopPC mem n) = true) :
     runInstructions phaseSwitchProgram
-      (frame s mem 10318 (transferSlots (UInt256.ofNat 10317) mem n bsize esize msize)) =
+      (frame s mem 10340 (transferSlots (UInt256.ofNat 10339) mem n bsize esize msize)) =
       some (frame s (phaseSwitchMemory mem n) (CycleSubmission.Global.Fast.Shift.loopPC mem n)
         (UInt256.ofNat (n / 4)::CycleSubmission.Global.Fast.Shift.entrySlots (UInt256.ofNat 2527) mem n bsize esize++Exp.outer n bsize esize msize)) := by
   have hn1 : 1 ≤ n := by omega
   have hn8 : n ≤ 8 := by omega
-  have hcap2 : (transferSlots (UInt256.ofNat 10317) mem n bsize esize msize).length + 2 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
-  have hcap3 : (transferSlots (UInt256.ofNat 10317) mem n bsize esize msize).length + 3 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
-  have hcap4 : (transferSlots (UInt256.ofNat 10317) mem n bsize esize msize).length + 4 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
-  have hcap5 : (transferSlots (UInt256.ofNat 10317) mem n bsize esize msize).length + 5 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
+  have hcap2 : (transferSlots (UInt256.ofNat 10339) mem n bsize esize msize).length + 2 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
+  have hcap3 : (transferSlots (UInt256.ofNat 10339) mem n bsize esize msize).length + 3 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
+  have hcap4 : (transferSlots (UInt256.ofNat 10339) mem n bsize esize msize).length + 4 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
+  have hcap5 : (transferSlots (UInt256.ofNat 10339) mem n bsize esize msize).length + 5 < 1024 := by simp [transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
   have hs32 : (UInt256.ofNat (32 * n)).toNat = 32 * n := by
     rw [Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
   have hquarter : UInt256.shiftRight (UInt256.ofNat (32*n)) (UInt256.ofNat 7) =
@@ -90,8 +90,8 @@ theorem run_phaseSwitch (s : State) (mem : ByteArray) (n bsize esize msize : Nat
 def commonHeadProgram : List Instr := [.op .JUMPDEST]
 theorem run_commonHead (s : State) (mem : ByteArray) (rest : List UInt256)
     (hrest : rest.length ≤ 1000) :
-    runInstructions commonHeadProgram (frame s mem 10317 rest) =
-      some (frame s mem 10318 rest) := by
+    runInstructions commonHeadProgram (frame s mem 10339 rest) =
+      some (frame s mem 10340 rest) := by
   have hcap : rest.length < 1024 := by omega
   simp [runInstructions,commonHeadProgram,frame,Challenge.EvmProof.Stepper.runInstr,
     hcap,Challenge.EvmProof.Word.succ_ofNat_mod]
@@ -99,6 +99,6 @@ open Challenge.EvmProof WindowTwentyOneBinding
 structure PhaseBlocks (artifact : ProgramArtifact) (fork : Fork) where
   exitHead : (b : Bool) → Block artifact fork (exitPC b) (headProgram b)
   transfer : (b : Bool) → Block artifact fork (transferPC b) transferProgram
-  commonHead : Block artifact fork 10317 commonHeadProgram
-  switch : Block artifact fork 10318 phaseSwitchProgram
+  commonHead : Block artifact fork 10339 commonHeadProgram
+  switch : Block artifact fork 10340 phaseSwitchProgram
 end CycleSubmission.Global.StackPhaseRun

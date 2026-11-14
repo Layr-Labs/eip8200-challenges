@@ -6,13 +6,13 @@ namespace CycleSubmission.Global.ZeroShiftMath
 open EvmSemantics
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Fast
-def normalHead (n : Nat) : Nat := if n = 4 then 10618 else 2874
-def zeroHead (n : Nat) : Nat := if n = 4 then 10274 else 10230
+def normalHead (n : Nat) : Nat := if n = 4 then 10638 else 2874
+def zeroHead (n : Nat) : Nat := if n = 4 then 10296 else 10252
 def head (n : Nat) (k : UInt256) : Nat := if k.toNat = 0 then zeroHead n else normalHead n
 def packed (n : Nat) (k : UInt256) : UInt256 :=
   UInt256.land
     (UInt256.shiftRight
-      (UInt256.ofNat ((10318*65536)+18362) - UInt256.ofNat ((11*65536)+1936)*UInt256.ofNat n)
+      (UInt256.ofNat ((10340*65536)+18402) - UInt256.ofNat ((11*65536)+1941)*UInt256.ofNat n)
       (UInt256.ofNat 16 * UInt256.isZero k))
     (UInt256.ofNat 65535)
 theorem packed_eq (n : Nat) (k : UInt256) (hn : n = 4 ∨ n = 8) :

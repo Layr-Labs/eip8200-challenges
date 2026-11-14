@@ -9,9 +9,9 @@ set_option maxHeartbeats 4000000
 namespace OverlapFinalReturn
 def program9 : List Instr := [.push 2 256,.push 2 2112,.op .RETURN]
 def result9 (s : State) (stack : List UInt256) : State :=
- {s with pc := UInt256.ofNat 8566,stack := stack,halt := .Returned,hReturn := MachineState.readPadded s.memory 2112 256}
+ {s with pc := UInt256.ofNat 8592,stack := stack,halt := .Returned,hReturn := MachineState.readPadded s.memory 2112 256}
 theorem run9 (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions program9 {s with pc := UInt256.ofNat 8560,stack := stack} = some (result9 s stack) := by
+ runInstructions program9 {s with pc := UInt256.ofNat 8586,stack := stack} = some (result9 s stack) := by
  have h0 : stack.length < 1024 := by omega
  have h1 : stack.length+1 < 1024 := by omega
  have h2 : stack.length+1+1 < 1024 := by omega
@@ -21,9 +21,9 @@ theorem run9 (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021) (
 #print axioms run9
 def program5 : List Instr := [.push 1 128,.push 1 32,.op .RETURN]
 def result5 (s : State) (stack : List UInt256) : State :=
- {s with pc := UInt256.ofNat 10177,stack := stack,halt := .Returned,hReturn := MachineState.readPadded s.memory 32 128}
+ {s with pc := UInt256.ofNat 10198,stack := stack,halt := .Returned,hReturn := MachineState.readPadded s.memory 32 128}
 theorem run5 (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021) (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions program5 {s with pc := UInt256.ofNat 10173,stack := stack} = some (result5 s stack) := by
+ runInstructions program5 {s with pc := UInt256.ofNat 10194,stack := stack} = some (result5 s stack) := by
  have h0 : stack.length < 1024 := by omega
  have h1 : stack.length+1 < 1024 := by omega
  have h2 : stack.length+1+1 < 1024 := by omega

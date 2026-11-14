@@ -15,7 +15,7 @@ def program : List Instr := [
    .op .RETURN]
 def result (s : State) (stack : List UInt256) : State :=
   {s with
-    pc := UInt256.ofNat 8566
+    pc := UInt256.ofNat 8592
     stack := stack
     halt := .Returned
     hReturn := MachineState.readPadded s.memory 2112 256}
@@ -28,29 +28,29 @@ theorem cons_run (instruction : Instr) (program : List Instr) (s t u : State)
   exact ht
 theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
     (hact : 88 ≤ s.activeWords.toNat) (_hrun : s.halt = .Running) :
-    runInstructions program {s with pc := UInt256.ofNat 8560,stack := stack} =
+    runInstructions program {s with pc := UInt256.ofNat 8586,stack := stack} =
       some (result s stack) := by
   have h0 : stack.length < 1024 := by omega
   have h1 : stack.length+1 < 1024 := by omega
   have h2 : stack.length+2 < 1024 := by omega
   have hf := Monpro.activeWords_fix s 2112 256 (by decide) (by norm_num) hact
   have hP1 : Challenge.EvmProof.Stepper.runInstr (.push 2 256)
-      {s with pc := UInt256.ofNat 8560,stack := stack} =
-      some {s with pc := UInt256.ofNat 8563,stack := UInt256.ofNat 256::stack} := by
+      {s with pc := UInt256.ofNat 8586,stack := stack} =
+      some {s with pc := UInt256.ofNat 8589,stack := UInt256.ofNat 256::stack} := by
     simp only [Challenge.EvmProof.Stepper.runInstr,h0,ite_true]
     rfl
   have hP2 : Challenge.EvmProof.Stepper.runInstr (.push 2 2112)
-      {s with pc := UInt256.ofNat 8563,stack := UInt256.ofNat 256::stack} =
-      some {s with pc := UInt256.ofNat 8566,stack := UInt256.ofNat 2112::UInt256.ofNat 256::stack} := by
+      {s with pc := UInt256.ofNat 8589,stack := UInt256.ofNat 256::stack} =
+      some {s with pc := UInt256.ofNat 8592,stack := UInt256.ofNat 2112::UInt256.ofNat 256::stack} := by
     simp only [Challenge.EvmProof.Stepper.runInstr,List.length_cons,h1,ite_true]
     rfl
   have hRet : Challenge.EvmProof.Stepper.runInstr (.op .RETURN)
-      {s with pc := UInt256.ofNat 8566,stack := UInt256.ofNat 2112::UInt256.ofNat 256::stack} =
+      {s with pc := UInt256.ofNat 8592,stack := UInt256.ofNat 2112::UInt256.ofNat 256::stack} =
       some (result s stack) := by
     simp only [Challenge.EvmProof.Stepper.runInstr,List.length_cons,
       show stack.length+1+1 = stack.length+2 by omega,h2,ite_true]
     change some {s with
-      pc := UInt256.ofNat 8566
+      pc := UInt256.ofNat 8592
       stack := stack
       halt := .Returned
       hReturn := MachineState.readPadded s.memory 2112 256
@@ -59,16 +59,16 @@ theorem run (s : State) (stack : List UInt256) (hcap : stack.length ≤ 1021)
     rfl
   exact cons_run _ _ _ _ _ hP1
     (cons_run _ _ _ _ _ hP2 (cons_run _ _ _ _ _ hRet rfl))
-def block : Block Artifact.artifact .Osaka 8560 program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6518 3 8560 program
-    (by change 6518+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block : Block Artifact.artifact .Osaka 8586 program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6515 3 8586 program
+    (by change 6515+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 noncomputable def gasSteps (s : State) (stack : List UInt256)
     (env : Environment Artifact.artifact .Osaka s)
     (hcap : stack.length ≤ 1021) (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8560,stack := stack} (result s stack) :=
+    GasSteps {s with pc := UInt256.ofNat 8586,stack := stack} (result s stack) :=
   block.steps (env.transfer rfl rfl) rfl (run s stack hcap hact env.running)
 theorem returned_bytes (s : State) (stack : List UInt256) (A : Nat)
     (h : Model.FastRepresents s.memory 2112 8 A) :
