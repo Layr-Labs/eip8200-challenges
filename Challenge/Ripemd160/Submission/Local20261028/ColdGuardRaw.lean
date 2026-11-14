@@ -54,18 +54,17 @@ theorem wMemory_getD (m : ByteArray) (b c : UInt8) (a : Nat) (h165 : a ≠ 165) 
 
 theorem run_special (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 860) (hr : s.halt = .Running)
-    (ha : 34 ≤ s.activeWords.toNat) (he : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0) :
+    (ha : 34 ≤ s.activeWords.toNat) (ht : UInt256.isTrue (UInt256.ofNat 32 - limit))
+    (hv : Decode.isValidJumpDest s.executionEnv.code 6382 = true) :
     runInstrSeq ControlSites.specialTemplate
       {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho} =
-      some {FirstEntry.high s with pc := UInt256.ofNat 188, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by
+      some {FirstEntry.high s with pc := UInt256.ofNat 6382, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by
   have hcap (n : Nat) (hn : n ≤ 28) : rho.length+n < 1024 := by omega
   have hat : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 162 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords 162 ha (by decide)
-  have hz : (UInt256.ofNat 0).isTrue = false := by decide
   simp (discharger := omega) [ControlSites.specialTemplate,runInstrSeq,DataStepper.runInstr,
     StaggerPersistentFrame.frame,FirstEntry.high,PairedScheduleMemory.writeWord,FirstInitial.highWord,
-    List.exchange,List.getElem?_cons_zero,hr,hcap,Nat.add_assoc,State.activeWordsAfterUInt256,hat,he,hz]
-  rfl
+    List.exchange,List.getElem?_cons_zero,hr,hcap,Nat.add_assoc,State.activeWordsAfterUInt256,hat,ht,hv]
 
 #print axioms run_special
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.ColdGuardFixup

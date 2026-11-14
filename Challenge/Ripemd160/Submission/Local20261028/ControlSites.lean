@@ -38,7 +38,7 @@ theorem align_pc : alignSite.startPC = UInt256.ofNat 447 := by
   change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 153) = UInt256.ofNat 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
-def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 9911), .op .JUMPI]
+def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .SUB, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 6382), .op .JUMPI]
 def specialSite : GenericRoundSite CandidateArtifact.artifact .Osaka specialTemplate :=
   StackSiteBuilder.ofSlice specialTemplate 81 (by rfl)
     (by change 81 + specialTemplate.length ≤ CandidateArtifact.instructions.length
@@ -47,6 +47,17 @@ def specialSite : GenericRoundSite CandidateArtifact.artifact .Osaka specialTemp
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem special_pc : specialSite.startPC = UInt256.ofNat 143 := by
   change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 81) = UInt256.ofNat 143
+  rw [ArtifactByteLength.instructionPC_eq_byteLength]
+  decide +kernel
+def tailTemplate : List Instr := [.push ⟨2, by decide⟩ (UInt256.ofNat 9911), .op .JUMP]
+def tailSite : GenericRoundSite CandidateArtifact.artifact .Osaka tailTemplate :=
+  StackSiteBuilder.ofSlice tailTemplate 91 (by rfl)
+    (by change 91 + tailTemplate.length ≤ CandidateArtifact.instructions.length
+        rw [CandidateArtifact.instruction_count]; decide +kernel)
+    (by rw [CandidateArtifact.code_size]; decide)
+    (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
+theorem tail_pc : tailSite.startPC = UInt256.ofNat 188 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 91) = UInt256.ofNat 188
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def dispatchTemplate : List Instr := [.op (.Swap ⟨12, by decide⟩), .op .JUMP]

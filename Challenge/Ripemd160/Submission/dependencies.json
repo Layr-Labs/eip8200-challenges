@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "340e677c-31a4-4b16-ad4e-a71895b1cf76",
+    "rationale": "Direct source and proof-tree parent: the validated 615,277-gas frontier (consuming low-64 screen for the 1000-byte entries). Retained unchanged; this candidate inverts the 32-byte special guard at 143: the size test becomes PUSH1 32; SUB, the JUMPI goes straight to the padding entry 6382 for every size other than 32, and the 32-byte input falls through to PUSH2 9911; JUMP. Bytes 143..191 keep their width and instruction count.",
+    "evidence": "Based on the Submission tree at 66eec9be6c7a144c8fe501cc91169f67cacd0b1e; ControlSites specialTemplate/tailSite/tail_pc, ColdGuardRaw run_special, ColdGuardSteps gasSteps_special, ColdGuardFixup gasSteps_high, ColdGuardSites (jumpSite removed), FirstEntry run_special/tail/special; CandidateArtifact part 0, CandidateBytes chunk 2, bytecode.hex."
+  },
+  {
     "submissionId": "27d78a01-bc9f-4ed4-94e7-07f903bc30c0",
     "rationale": "Direct source and proof-tree parent: the validated 615,279-gas frontier (re-anchored 1000-byte window cover). Retained unchanged; this candidate makes the PC-21 low-64 screen consume the loaded W 0 (no DUP2), so the patterned 1000-byte arm enters with an empty frame and its POP becomes a JUMPDEST, while the a-path reloads W 0 with PUSH0; CALLDATALOAD at PC 46 so the PC-48 seed is unchanged. The dead pad 56..63 absorbs the extra instruction, so no PC or index outside 21..63 / 11..33 moves.",
     "evidence": "Based on the Submission tree at edf8f2d88e299ab21dc38f8dbf8cd7e04c68ab5f; RecHoistedStoreAnchorRaw anchorPrefix / run_anchor_taken / run_anchor_low_fall / reloadTemplate / run_reload, RecHoistedStoreEntry reload piece, RecHoistedStoreSites seed index, RecHoistedStoreAnchor.taken, RecArmsLong head1000 / run_head1000 / gasSteps_a1000_entry / correct1000, RecDirectGuardBase / RecDirectGuardSize located indices and PC witnesses; CandidateArtifact parts 0/19, CandidateBytes chunks 0/91, bytecode.hex."

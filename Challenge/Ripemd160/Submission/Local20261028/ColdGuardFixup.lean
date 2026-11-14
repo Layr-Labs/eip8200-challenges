@@ -16,24 +16,24 @@ def gasSteps_high (s : State) (h : Compression.HashState) (off limit : UInt256)
     (hlim : limit = UInt256.ofNat s.executionEnv.calldata.size) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho}
       {FirstEntry.high s with pc := UInt256.ofNat 6383, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by
-  have heq : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0 := by
+  have ht : UInt256.isTrue (UInt256.ofNat 32 - limit) := by
     rw [hlim]
     have hw : (UInt256.ofNat s.executionEnv.calldata.size).toNat = s.executionEnv.calldata.size := by
       rw [Word.word_toNat_ofNat, Nat.mod_eq_of_lt hsize]
-    unfold UInt256.eq
-    rw [hw, if_neg (by simpa using Ne.symm hne)]
+    have h32 : (UInt256.ofNat 32).toNat = 32 := by
+      rw [Word.word_toNat_ofNat]; norm_num
+    unfold UInt256.isTrue
+    rw [Word.word_toNat_sub_cond, hw, h32]
+    split_ifs <;> omega
   let high := FirstEntry.high s
   let frame := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho
-  have cap : frame.length+1 < 1024 := by simp [frame,StaggerPersistentFrame.frame]; omega
-  have base : frame.length < 1024 := by omega
+  have base : frame.length < 1024 := by simp [frame,StaggerPersistentFrame.frame]; omega
   have e : FirstEntry.Env s := ⟨hcode,hfork,hrun,hnp⟩
   have eh : FirstEntry.Env high := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
-  have g1 := gasSteps_special s e h off limit rho hstack hactive heq
-  have g2 := gasSteps_jump high eh frame cap
+  have g1 := gasSteps_special s e h off limit rho hstack hactive ht
   have g3 := gasSteps_join high eh frame base
-  exact g1.trans (g2.trans g3)
+  exact g1.trans g3
 #print axioms gasSteps_special
-#print axioms gasSteps_jump
 #print axioms gasSteps_join
 #print axioms run_special
 #print axioms gasSteps_high

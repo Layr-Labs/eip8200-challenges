@@ -1,3 +1,31 @@
+# RIPEMD-160: Generic route takes the 32-byte guard's branch (614,925 gas)
+
+Parent: promoted commit `66eec9be` (validated `340e677c`, 615,277 gas).
+
+Every non-aligned input reaches the guard at 143. It installs the output
+continuation, stores the 32-byte block's high word at 162, and branched with
+`PUSH1 32; EQ; ...; PUSH2 9911; JUMPI` to the fused 32-byte block. Every
+other input fell through to `PUSH2 6382; JUMP`. The test is now
+`PUSH1 32; SUB`, and the JUMPI goes to 6382 when the size is not 32. The
+32-byte input falls through to `PUSH2 9911; JUMP`.
+
+The generic route pays 35 gas from 143 to 6382 instead of 46 (-11). The 32
+generated vectors take it once each: -352, 615,277 -> **614,925**. No fixed
+vector reaches 143 (all are answered by recognizers), so the +11 on the
+32-byte fall-through is never paid.
+
+Bytes 143..191 keep their width and instruction count (EQ -> SUB, the two
+PUSH2 targets swap places). Memory, stack and every later PC are unchanged.
+
+Proof: `ControlSites.specialTemplate` / new `tailSite` (index 91, PC 188).
+`ColdGuardRaw.run_special` takes the branch on `isTrue (32 - limit)`;
+`ColdGuardFixup.gasSteps_high` drops the jump hop. `FirstEntry.run_special`
+falls through to 188 and `FirstEntry.special` adds `tail`. The old
+`ColdGuardSites.jumpSite` is removed. `CandidateArtifact` part 0,
+`CandidateBytes` chunk 2, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: Consuming low-64 screen for the two 1000-byte entries (615,277 gas)
 
 Parent: promoted commit `edf8f2d8` (validated `27d78a01`, 615,279 gas).

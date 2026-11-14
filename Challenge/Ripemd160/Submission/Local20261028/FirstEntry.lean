@@ -19,29 +19,46 @@ def high (s : State) : State :=
   {s with memory := PairedScheduleMemory.writeWord s.memory 162 FirstInitial.highWord}
 
 theorem run_special (s : State) (rho : List UInt256) (hs : rho.length ≤ 880)
-    (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 9911 = true) :
+    (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
     runInstrSeq specialTemplate {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho} =
-      some {high s with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
+      some {high s with pc := UInt256.ofNat 188, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
   have hcap (n : Nat) (hn : n ≤ 24) : rho.length+n < 1024 := by omega
   have hactive : s.activeWordsAfterUInt256 162 32 = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords 162 ha (by decide)
   have hat : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 162 32) = s.activeWords := hactive
-  have heq : ((UInt256.ofNat 32).eq (UInt256.ofNat 32)).isTrue = true := by decide
+  have hz : ¬ UInt256.isTrue (UInt256.ofNat 32 - UInt256.ofNat 32) := by decide
   simp (discharger := omega) [specialTemplate, runInstrSeq, DataStepper.runInstr,
     FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks,
     high, PairedScheduleMemory.writeWord, FirstInitial.highWord,
-    List.exchange, List.getElem?_cons_zero, hr, hcap, Nat.add_assoc, hactive, hv, heq, State.activeWordsAfterUInt256, hat]
+    List.exchange, List.getElem?_cons_zero, hr, hcap, Nat.add_assoc, hactive, hz, State.activeWordsAfterUInt256, hat]
+  rfl
+
+def tail (s : State) (e : Env s) (frame : List UInt256) (hc : frame.length + 1 < 1024) :
+    GasSteps {s with pc := UInt256.ofNat 188, stack := frame}
+      {s with pc := UInt256.ofNat 9911, stack := frame} := by
+  apply PadLift.gasSteps_of_raw tailSite {s with pc := UInt256.ofNat 188, stack := frame}
+    {s with pc := UInt256.ofNat 9911, stack := frame}
+    e.code e.fork e.running e.noPrecompile tail_pc.symm
+  · apply PadLift.advancesAll_sound; decide +kernel
+  · have hv : Decode.isValidJumpDest s.executionEnv.code 9911 = true := by rw [e.code]; exact valid10108
+    have hb : frame.length < 1024 := by omega
+    simp [tailTemplate,runInstrSeq,DataStepper.runInstr,e.running,hv,hc,hb]
 
 def special (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 880)
     (ha : 34 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
       {high s with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
-  apply PadLift.gasSteps_of_raw specialSite {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
-    {high s with pc := UInt256.ofNat 9911, stack := FirstCore.frame (UInt256.ofNat 4882) rho}
-    e.code e.fork e.running e.noPrecompile special_pc.symm
-  · apply PadLift.advancesAll_sound; decide +kernel
-  · exact run_special s rho hs e.running ha (by rw [e.code]; exact valid10108)
+  have g1 : GasSteps {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
+      {high s with pc := UInt256.ofNat 188, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
+    apply PadLift.gasSteps_of_raw specialSite {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
+      {high s with pc := UInt256.ofNat 188, stack := FirstCore.frame (UInt256.ofNat 4882) rho}
+      e.code e.fork e.running e.noPrecompile special_pc.symm
+    · apply PadLift.advancesAll_sound; decide +kernel
+    · exact run_special s rho hs e.running ha
+  have eh : Env (high s) := ⟨e.code, e.fork, e.running, e.noPrecompile⟩
+  have hc : (FirstCore.frame (UInt256.ofNat 4882) rho).length + 1 < 1024 := by
+    simp [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks]; omega
+  exact g1.trans (tail (high s) eh _ hc)
 
 def align (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 900)
     (h32 : s.executionEnv.calldata.size = 32) :
