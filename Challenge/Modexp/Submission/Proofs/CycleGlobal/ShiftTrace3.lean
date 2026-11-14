@@ -58,9 +58,9 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2489 = 3194 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8273 = 10930 := by
+@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8271 = 10930 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8273 = 10930 := by
+@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8271 = 10930 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hw : n ≠ 4)
@@ -231,7 +231,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
   all_goals rfl
-@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2500 = 3207 := by
+@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2498 = 3205 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 /-- The repair entry discards its carried word; its value is irrelevant to ADD_LOOP. -/
@@ -475,6 +475,12 @@ theorem run_addTail_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `blk3204` with `TN = 0`: jump to the `CSUB` call with `[TN,k]`. -/
+@[simp] private theorem zeroTailRepairPC2554 : CycleSubmission.Artifact.artifact.instructionPC 2554 = 3280 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] private theorem zeroTailRepairPC2555 : CycleSubmission.Artifact.artifact.instructionPC 2555 = 3281 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] private theorem zeroTailRepairPC2556 : CycleSubmission.Artifact.artifact.instructionPC 2556 = 3282 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
     (htn : (MachineState.readWord mem 2080).toNat = 0)
@@ -483,12 +489,13 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
     Challenge.EvmProof.Stepper.runLocatedBlock blk3204
       (subCheckState z s mem n bsize esize msize k) =
       some (csubCallState z s mem n bsize esize msize k) := by
+  have hnotzero : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 := by decide
   have hTN : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
   have htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0 :=
     Challenge.EvmProof.Word.word_ext (by rw [htn] <;> decide)
   simp (config := { maxSteps := 200000 })
-    [blk3204,Monpro.maxWord,Exp.push0_word,opAt,pushAt,wfOp,htn0,
+    [blk3204,hnotzero,Monpro.maxWord,Exp.push0_word,opAt,pushAt,wfOp,htn0,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -499,7 +506,7 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Word.literal_eq_ofNat,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.succ_ofNat_mod,
-      Challenge.EvmProof.Word.ofNat_add_mod]
+      Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
 /-- `blk3253`: `k := k - 1` (`NOT ADD` on the zero above `k`),then back to the loop head while
 `k - 1 ≠ 0`.  The `CSUB` call this block used to make is the identity on every reachable state
 (`repair_lt_mm`),so the artifact no longer makes it. -/
@@ -510,6 +517,8 @@ theorem run_csubCall (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253
       (csubCallState z s mem n bsize esize msize k) =
       some (afterCsubState z s mem n bsize esize msize k) := by
+  have hdecMax : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 + UInt256.ofNat k = UInt256.ofNat (k-1) := by
+    interval_cases k <;> decide
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat k =
       UInt256.ofNat (k - 1) := by
     interval_cases k <;> decide
@@ -522,7 +531,7 @@ theorem run_csubCall (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = loopPC mem n :=
     Nat.mod_eq_of_lt (loopPC_lt mem n)
   simp (config := { maxSteps := 200000 })
-    [blk3253,opAt,pushAt,wfOp,
+    [blk3253,Monpro.maxWord,hdecMax,opAt,pushAt,wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -539,6 +548,8 @@ theorem run_csubCall_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esi
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253h
       (csubCall4State z s mem n bsize esize msize k) =
       some (afterCsubState z s mem n bsize esize msize k) := by
+  have hdecMax : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 + UInt256.ofNat k = UInt256.ofNat (k-1) := by
+    interval_cases k <;> decide
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat k =
       UInt256.ofNat (k - 1) := by
     interval_cases k <;> decide
@@ -551,7 +562,7 @@ theorem run_csubCall_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsize esi
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = loopPC mem n :=
     Nat.mod_eq_of_lt (loopPC_lt mem n)
   simp (config := { maxSteps := 200000 })
-    [blk3253h,opAt,pushAt,wfOp,
+    [blk3253h,Monpro.maxWord,hdecMax,opAt,pushAt,wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -567,14 +578,15 @@ theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253
       (csubCallState z s mem n bsize esize msize 1) =
       some (csubExitState z s mem n bsize esize msize) := by
-  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2495 = 3202 := by
+  have hdecMax : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
+  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2494 = 3201 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
     rfl
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hdec' : UInt256.lnot (0 : UInt256) + UInt256.ofNat 1 = UInt256.ofNat 0 := hdec
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 200000 })
-    [blk3253,hpadding,opAt,pushAt,wfOp,
+    [blk3253,Monpro.maxWord,hdecMax,hpadding,opAt,pushAt,wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -590,11 +602,12 @@ theorem run_csubCall_last_h4 (z : UInt256) (s : State) (mem : ByteArray) (n bsiz
     Challenge.EvmProof.Stepper.runLocatedBlock blk3253h
       (csubCall4State z s mem n bsize esize msize 1) =
       some (csubExit4State z s mem n bsize esize msize) := by
+  have hdecMax : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
   have hdec' : UInt256.lnot (0 : UInt256) + UInt256.ofNat 1 = UInt256.ofNat 0 := hdec
   have hfalse : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   simp (config := { maxSteps := 200000 })
-    [blk3253h,opAt,pushAt,wfOp,
+    [blk3253h,Monpro.maxWord,hdecMax,opAt,pushAt,wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
@@ -625,67 +638,67 @@ theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 @[simp] private theorem pcFact4392 :
-    CycleSubmission.Artifact.artifact.instructionPC 7897 = 10431 := by
+    CycleSubmission.Artifact.artifact.instructionPC 7895 = 10431 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2561 = 3289 := by
+@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2563 = 3291 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 7903 = 10439 := by
+@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 7901 = 10439 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 7904 = 10440 := by
+@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 7902 = 10440 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10452 := by
+@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 7908 = 10452 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10452 := by
+@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 7908 = 10452 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 7907 = 10448 := by
+@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 7905 = 10448 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10452 := by
+@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 7908 = 10452 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 7912 = 10456 := by
+@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10456 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 7912 = 10456 := by
+@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10456 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 7912 = 10456 := by
+@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10456 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 7912 = 10456 := by
+@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10456 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 7912 = 10456 := by
+@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 7910 = 10456 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 7914 = 10458 := by
+@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 7912 = 10458 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 7915 = 10459 := by
+@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 7913 = 10459 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 /- The old sixteen-POP cleanup theorem is not part of the selected route.

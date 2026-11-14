@@ -12,7 +12,7 @@ open EvmSemantics EvmSemantics.EVM
 @[local simp] private theorem zeroCompactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2934 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8159 = 10798 := by
+@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8157 = 10798 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 private theorem rho_clamp8_program :

@@ -35,7 +35,7 @@ open CycleSubmission.Global.ShiftPCs
 @[local simp] private theorem compactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2934 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[local simp] private theorem compactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8159 = 10798 := by
+@[local simp] private theorem compactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8157 = 10798 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 theorem run_shiftHead_go (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)

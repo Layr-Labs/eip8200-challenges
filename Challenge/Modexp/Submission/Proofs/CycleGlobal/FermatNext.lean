@@ -106,7 +106,7 @@ def genLoadProgram : List Instr :=
    .push 1 160,
    .op .SUB,
    .op .CALLDATALOAD,
-   .push 2 10944,
+   .push 2 10942,
    .op .JUMP]
 /-- `modulus + ~exponent`, zero exactly when `exponent = modulus - 1` (mod 2^256). -/
 def fermatDiff (modulus exponent : UInt256) : UInt256 :=
@@ -296,9 +296,9 @@ theorem run_join (template : State) (modulus exponent : UInt256) (rest : List UI
     (hrest : rest.length ≤ 1000)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 946 = true) :
     runInstructions joinProgram
-      (framed template (UInt256.ofNat 10944) (modulus::exponent::rest)) =
+      (framed template (UInt256.ofNat 10942) (modulus::exponent::rest)) =
     some (framed template
-      (if (fermatDiff modulus exponent).toNat = 0 then UInt256.ofNat 10953 else UInt256.ofNat 946)
+      (if (fermatDiff modulus exponent).toNat = 0 then UInt256.ofNat 10951 else UInt256.ofNat 946)
       (modulus::exponent::rest)) := by
   have hk0 : rest.length < 1024 := by omega
   have hk1 : rest.length + 1 < 1024 := by omega
@@ -350,7 +350,7 @@ theorem run_fastJoin (template : State) (modulus exponent : UInt256) (rest : Lis
       Challenge.EvmProof.Word.succ_ofNat_mod,Challenge.EvmProof.Word.ofNat_add_mod]
 theorem run_toPrime (template : State) (rest : List UInt256) (hrest : rest.length < 1023)
     (htarget : Decode.isValidJumpDest template.executionEnv.code 10684 = true) :
-    runInstructions toPrimeProgram (framed template (UInt256.ofNat 10953) rest) =
+    runInstructions toPrimeProgram (framed template (UInt256.ofNat 10951) rest) =
     some (framed template (UInt256.ofNat 10684) rest) := by
   have hc : rest.length < 1024 := by omega
   have hc1 : rest.length+1 < 1024 := by omega
@@ -393,10 +393,10 @@ theorem run_gen_check (template : State) (rest : List UInt256) (hrest : rest.len
 set_option linter.unusedSimpArgs false in
 theorem run_gen_load (template : State) (b : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 1000)
-    (htarget : Decode.isValidJumpDest template.executionEnv.code 10944 = true) :
+    (htarget : Decode.isValidJumpDest template.executionEnv.code 10942 = true) :
     runInstructions genLoadProgram
       (framed template (UInt256.ofNat 107) (b::UInt256.ofNat 32::rest)) =
-    some (framed template (UInt256.ofNat 10944)
+    some (framed template (UInt256.ofNat 10942)
       (MachineState.readWord template.executionEnv.calldata
           (UInt256.ofNat 160 - (UInt256.ofNat 32 - b)).toNat ::
         MachineState.readWord template.executionEnv.calldata
@@ -485,8 +485,8 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   recheck : WindowTwentyOneBinding.Block artifact fork 40 recheckProgram
   fastJoin : WindowTwentyOneBinding.Block artifact fork 48 fastJoinProgram
   fastToPrime : WindowTwentyOneBinding.Block artifact fork 56 toPrimeProgram
-  join : WindowTwentyOneBinding.Block artifact fork 10944 joinProgram
-  toPrime : WindowTwentyOneBinding.Block artifact fork 10953 toPrimeProgram
+  join : WindowTwentyOneBinding.Block artifact fork 10942 joinProgram
+  toPrime : WindowTwentyOneBinding.Block artifact fork 10951 toPrimeProgram
   prime : WindowTwentyOneBinding.Block artifact fork 10684 primeProgram
   jumpTail : WindowTwentyOneBinding.Block artifact fork 10734 jumpTailProgram
   tail : WindowTwentyOneBinding.Block artifact fork 10551 tailProgram
@@ -494,7 +494,7 @@ structure Paths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) wh
   genCheck : WindowTwentyOneBinding.Block artifact fork 96 genCheckProgram
   genLoad : WindowTwentyOneBinding.Block artifact fork 107 genLoadProgram
   routeJump : Decode.isValidJumpDest artifact.code 946 = true
-  joinJump : Decode.isValidJumpDest artifact.code 10944 = true
+  joinJump : Decode.isValidJumpDest artifact.code 10942 = true
   bigJump : Decode.isValidJumpDest artifact.code 207 = true
   tailJump : Decode.isValidJumpDest artifact.code 10551 = true
   primeJump : Decode.isValidJumpDest artifact.code 10684 = true

@@ -35,7 +35,7 @@ variable (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka
   (hmask : MachineState.readWord s.memory 224 = UInt256.ofNat (2^240-1))
 /-- The product: loop exit (4716) to `r5_norm` (5058). -/
 noncomputable def product :
-    GasSteps {s with pc := UInt256.ofNat 9409,stack := x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest}
+    GasSteps {s with pc := UInt256.ofNat 9437,stack := x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest}
       {s with pc := UInt256.ofNat 10191,stack := prV5_5 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV6_6 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV7_7 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV8_8 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::prV8_0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M::n1::n2::n3::n4::P::inv::cntp::rest} :=
   let a := prSeg0_run s x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 M rest hcap hact hcache
     h_b0 h_b1 h_b2 h_b3 h_b4 h_n0 h_inv h_M

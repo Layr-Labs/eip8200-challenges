@@ -62,5 +62,5 @@ def productColumn5Model (s : State) (carry word0 word1 word2 word3 word4 word5 w
   let v49 : UInt256 := v48 + v31
   let v50 : UInt256 := UInt256.mulMod word11 word10 word12
   let v51 : UInt256 := v50 + v49
-  {s with pc := UInt256.ofNat 6689,memory := s.memory,stack := word7::word12::v51::v47::word5::word6::word7::word8::word9::word10::word11::word12::word13::word14::word15::word16::word17::word18::rest}
+  {s with pc := UInt256.ofNat 6691,memory := s.memory,stack := word7::word12::v51::v47::word5::word6::word7::word8::word9::word10::word11::word12::word13::word14::word15::word16::word17::word18::rest}
 end CycleSubmission.Execution
