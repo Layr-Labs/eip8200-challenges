@@ -1,3 +1,33 @@
+# RIPEMD-160: early right-lane C-rotation on the padding-block prologue, SWAP4 retired (615,341 gas)
+
+Parent: promoted commit `3c52899a` (accepted `92a9a66d`, 615,404 gas).
+
+The padding-only block routine (entry 64) runs its right-lane prologue
+across the 89..127 front and the 6504..6641 middle (`PadRawRight0`,
+`PadRawRight1`, `PadRawPack`); it executes once for each of the 21 corpus
+inputs whose length is a multiple of 64. Round 0 now computes the rotated
+`C` for round 2 (`DUP2 DUP12 MUL PUSH1 23 SHR`) where it used to copy `e`
+(`DUP9`); round 1 reads `e` from the suffix head (`DUP13`, alias `rho[0]`)
+and ends `PUSH5 K DUP13`; the pack window loses its leading `SWAP4`.
++14 -14 -3 = -3 gas per padding block, 615,404 -> **615,341**.
+
+Layout: the front keeps 64 bytes by moving its last five one-byte
+instructions (`DUP5 AND DUP5 DUP5 DUP7`) behind the 6504 `JUMPDEST`; the
+128 stub's continuation push narrows to `PUSH1 0x40` and a dead `STOP`
+after its `JUMP` keeps 143 / instruction 81 fixed (stub sites move one
+instruction / one byte down: 70, 71, 73, 74, 77, 78 at 128, 129, 132, 133,
+137, 138). The middle keeps its byte and instruction count with the
+round-1 key widened to `PUSH5`; 6542 and every later PC is unchanged.
+The 556..759 ordinary-prologue window of `92a9a66d` is disjoint and kept.
+
+Proof: `PadRawRight0` now carries the 6504 jump (ends at 6507),
+`PadRawRight1` runs 6507..6542 with the new `rho[0]` alias, `PadRawPack`
+input order `a,k,b,c,d,e`; `PadCore*`, `PadPrologue`, `PadSites`,
+`LoopRaw.setContTemplate`, the stub-128 loop/entry sites, `CandidateArtifact`
+parts 0/21, `CandidateBytes` chunks 1, 2, 101, 102 and `bytecode.hex`.
+
+---
+
 # RIPEMD-160: PC-sourced 594 store via a hoisted message-word load in the ordinary prologue (615,404 gas)
 
 Parent: promoted commit `0c4cd6f4` (accepted `6928cadd`, 615,435 gas).

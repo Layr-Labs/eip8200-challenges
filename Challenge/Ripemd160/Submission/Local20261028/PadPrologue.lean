@@ -23,9 +23,9 @@ theorem run (s : State) (len : UInt256) (h : WordLane) (off limit : UInt256) (rh
     simp only [PadCorePack.suffix, List.length_append, List.length_cons, List.length_nil]
     omega
   have h0 := PadCoreRight0.run s len h.e h h (PadCorePack.suffix h off limit rho) hlen
-    rfl rfl rfl rfl rfl hr ha hcal hmem
+    rfl rfl rfl rfl rfl hr ha hcal hmem hvalid
   have h1 := PadCoreRight1.run s len h.e (PadModel.right0 len h) h
-    (PadCorePack.suffix h off limit rho) hlen rfl rfl hr ha hcal hmem hvalid
+    (PadCorePack.suffix h off limit rho) hlen rfl rfl rfl hr ha hcal hmem
   have h01 := DenseScheduleTrace.runInstrSeq_append_running h0 hr h1
   have h2 := PadCorePack.run s len h (PadModel.right1 len (PadModel.right0 len h))
     off limit rho (by omega) hr ha hcal hmem

@@ -24,7 +24,7 @@ def input (n : UInt256) (h q : WordLane) (off limit : UInt256) : PadRawPack.Inpu
 theorem input_eq (n : UInt256) (h q : WordLane) (off limit : UInt256)
     (rho : List UInt256) :
     PadRawPack.inputStack (input n h q off limit) rho =
-      stack n h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140,
+      stack n h.e [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140,
         .cache 350, .cache 310, .cache 190, .cache 500]
         q h (UInt256.ofNat 1352829926) (suffix h off limit rho) := by
   simp [PadRawPack.inputStack, input, stack, PadCommon.word, PadValues.load, suffix]
@@ -59,10 +59,10 @@ theorem run (s : State) (n : UInt256) (h q : WordLane) (off limit : UInt256) (rh
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
     StackRoundTrace.runInstrSeq PadRawPack.template
-      {s with pc := UInt256.ofNat 6541, stack := stack n h.e [.d, .k, .b, .c, .a, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)} =
+      {s with pc := UInt256.ofNat 6542, stack := stack n h.e [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)} =
       some {s with pc := UInt256.ofNat 6641, stack := stack n h.e [.pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] (PadModel.pair h (PadModel.right2 n q)) h (StaggerAlgorithm.physicalKey 0) (suffix h off limit rho)} := by
-  have raw := PadRawPack.run_actual s (UInt256.ofNat 6541) n (input n h q off limit) rho hs hr ha hcal hmem (by rfl)
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 6541) PadRawPack.template = UInt256.ofNat 6641 := by decide +kernel
+  have raw := PadRawPack.run_actual s (UInt256.ofNat 6542) n (input n h q off limit) rho hs hr ha hcal hmem (by rfl)
+  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 6542) PadRawPack.template = UInt256.ofNat 6641 := by decide +kernel
   rw [hend, input_eq, output_eq] at raw
   exact raw
 #print axioms run

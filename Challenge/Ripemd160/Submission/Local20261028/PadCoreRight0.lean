@@ -16,7 +16,9 @@ def input (n : UInt256) (h4 : UInt256) (q right : WordLane) (k : UInt256) : Stag
   ⟨word n h4 (.k) q right k, word n h4 (.a) q right k, word n h4 (.b) q right k, word n h4 (.c) q right k, word n h4 (.d) q right k, word n h4 (.e) q right k, word n h4 (.factor) q right k, word n h4 (.lower) q right k, word n h4 (.cache 140) q right k, word n h4 (.cache 350) q right k, word n h4 (.cache 310) q right k, word n h4 (.cache 190) q right k, word n h4 (.cache 500) q right k, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0, UInt256.ofNat 0⟩
 theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) :
     PadRawRight0.outputStack n (input n h4 q right (UInt256.ofNat 1352829926)) rho =
-      stack n h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.right0 n q) (right) (UInt256.ofNat 1352829926) rho := by
+      stack n h4 [ .b ] (PadModel.right0 n q) (right) (UInt256.ofNat 1352829926)
+        (UInt256.shiftRight (UInt256.mul factorPlusWord (PadModel.right0 n q).c) (UInt256.ofNat 23) ::
+          stack n h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.right0 n q) (right) (UInt256.ofNat 1352829926) rho) := by
   simp only [PadRawRight0.outputStack, input, stack, List.map_cons, List.map_nil,
     List.cons_append, List.nil_append, PadCommon.word, PadValues.load,
     PadModel.initial, PadModel.pair, PadModel.pairWord, PadModel.left,
@@ -36,12 +38,11 @@ theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt25
     (haliasD : rho[0]? = some q.d) (haliasA : rho[3]? = some q.a) (hh4 : h4 = q.e)
     (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
-    (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
+    (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     StackRoundTrace.runInstrSeq PadRawRight0.template {s with pc := UInt256.ofNat 89, stack := stack n h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q right (UInt256.ofNat 1352829926) rho} =
-      some {s with pc := UInt256.ofNat 121, stack := stack n h4 [ .b, .e, .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.right0 n q) (right) (UInt256.ofNat 1352829926) rho} := by
-  have h := PadRawRight0.run_actual s (UInt256.ofNat 89) n (input n h4 q right (UInt256.ofNat 1352829926)) rho hs halias haliasC haliasD haliasA (by rfl) hh4 hr ha hcal hmem
-  have hend : StackRoundTrace.pcAfter (UInt256.ofNat 89) PadRawRight0.template = UInt256.ofNat 121 := by decide +kernel
-  rw [hend] at h
+      some {s with pc := UInt256.ofNat 6507, stack := stack n h4 [ .b ] (PadModel.right0 n q) (right) (UInt256.ofNat 1352829926) (UInt256.shiftRight (UInt256.mul factorPlusWord (PadModel.right0 n q).c) (UInt256.ofNat 23) :: stack n h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.right0 n q) (right) (UInt256.ofNat 1352829926) rho)} := by
+  have h := PadRawRight0.run_actual s (UInt256.ofNat 89) n (input n h4 q right (UInt256.ofNat 1352829926)) rho hs halias haliasC haliasD haliasA (by rfl) hh4 hr ha hcal hmem hvalid
   rw [output_eq] at h
   exact h
 #print axioms run

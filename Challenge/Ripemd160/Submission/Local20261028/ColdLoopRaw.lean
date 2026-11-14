@@ -67,9 +67,8 @@ theorem run_dispatch (s : State) (pc : UInt256) (h : Compression.HashState)
 def glHeadTemplate : List Instr :=
   [.op .JUMPDEST, .push ⟨1, by decide⟩ (UInt256.ofNat 128), .op (.Dup ⟨12, by decide⟩), .op .ADD]
 
-/-- The 128 stub falls through the shared join: `PUSH1 v JUMPDEST SWAP13`. -/
 def setContTemplate (v : Nat) : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat v), .op (.Swap ⟨12, by decide⟩)]
+  [.push ⟨1, by decide⟩ (UInt256.ofNat v), .op (.Swap ⟨12, by decide⟩)]
 
 theorem run_setCont (s : State) (pc : UInt256) (h : Compression.HashState)
     (off cont : UInt256) (rho : List UInt256) (v : Nat)

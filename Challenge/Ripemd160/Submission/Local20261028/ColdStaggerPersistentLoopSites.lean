@@ -36,36 +36,35 @@ theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4622 := by
 def incTemplate : List Instr := Control.LoopRaw.incTemplate
 
 theorem inc_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 75).take incTemplate.length = incTemplate := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 74).take incTemplate.length = incTemplate := by rfl
 
 def incSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka incTemplate :=
-  StackSiteBuilder.ofSlice incTemplate 75 inc_slice
-    (by change 75 + incTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice incTemplate 74 inc_slice
+    (by change 74 + incTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check incTemplate (by decide))
     (by decide)
 
-theorem inc_pc : incSite.startPC = UInt256.ofNat 134 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 75) = UInt256.ofNat 134
+theorem inc_pc : incSite.startPC = UInt256.ofNat 133 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 74) = UInt256.ofNat 133
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
-/-- Drop the previous continuation at 133, after the shared join has installed the next one. -/
 def chainTemplate : List Instr := [.op .POP]
 
 theorem chain_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 74).take chainTemplate.length = chainTemplate := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 73).take chainTemplate.length = chainTemplate := by rfl
 
 def chainSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chainTemplate :=
-  StackSiteBuilder.ofSlice chainTemplate 74 chain_slice
-    (by change 74 + chainTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chainTemplate 73 chain_slice
+    (by change 73 + chainTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check chainTemplate (by decide))
     (by decide)
 
-theorem chain_pc : chainSite.startPC = UInt256.ofNat 133 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 74) = UInt256.ofNat 133
+theorem chain_pc : chainSite.startPC = UInt256.ofNat 132 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 73) = UInt256.ofNat 132
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def glHeadCode : List Instr := Control.LoopRaw.glHeadTemplate
@@ -194,13 +193,13 @@ def joinSwapSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka C
     (by decide)
 
 theorem stub128Set_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 72).take
+    (Control.Artifact.submissionArtifact.instructions.drop 71).take
       (Control.LoopRaw.setContTemplate 64).length =
         Control.LoopRaw.setContTemplate 64 := by rfl
 
 def stub128Set : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.setContTemplate 64) :=
-  StackSiteBuilder.ofSlice (Control.LoopRaw.setContTemplate 64) 72 stub128Set_slice
-    (by change 72 + (Control.LoopRaw.setContTemplate 64).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (Control.LoopRaw.setContTemplate 64) 71 stub128Set_slice
+    (by change 71 + (Control.LoopRaw.setContTemplate 64).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := Control.LoopRaw.setContTemplate 64) (by decide))
@@ -219,7 +218,7 @@ theorem joinSwapSite_pc : joinSwapSite.startPC = UInt256.ofNat 210 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem stub128Set_pc : stub128Set.startPC = UInt256.ofNat 129 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 72) = UInt256.ofNat 129
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 71) = UInt256.ofNat 129
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- A single `JUMPDEST` site (the stub entries 192 and 128). -/
@@ -232,14 +231,14 @@ def jumpdestSite (idx : Nat)
     (Control.StackRoundData.templateWellFormed_mem (instructions := [.op .JUMPDEST]) (by decide)) (by decide)
 
 def stub192Dest := jumpdestSite 93 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
-def stub128Dest := jumpdestSite 71 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
+def stub128Dest := jumpdestSite 70 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
 
 theorem stub192Dest_pc : stub192Dest.startPC = UInt256.ofNat 192 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 93) = UInt256.ofNat 192
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem stub128Dest_pc : stub128Dest.startPC = UInt256.ofNat 128 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 71) = UInt256.ofNat 128
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 70) = UInt256.ofNat 128
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- `PUSH1 0x83 JUMP`: hop to the shared continuation join at 210. -/
@@ -367,30 +366,28 @@ private def joinSwap_gasSteps
     rw [he] at hr
     exact hr
 
-/-- The block advance at 133: `POP`, the offset advance, the swap back and the jump to
-the loop-head marker, which block preparation executes. -/
 def gasSteps_advance (s : State) (h : Compression.HashState) (off cont dead : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 133, stack := dead :: StaggerPersistentFrame.frame h off cont rho}
+    GasSteps {s with pc := UInt256.ofNat 132, stack := dead :: StaggerPersistentFrame.frame h off cont rho}
       {s with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame h (nextOffset off) cont rho} := by
   have hlen : (dead :: StaggerPersistentFrame.frame h off cont rho).length < 1024 := by
     simp [StaggerPersistentFrame.frame]; omega
-  have g1 : GasSteps {s with pc := UInt256.ofNat 133, stack := dead :: StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat 134, stack := StaggerPersistentFrame.frame h off cont rho} := by
-    apply PadLift.gasSteps_of_raw chainSite {s with pc := UInt256.ofNat 133, stack := dead :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp chain_pc.symm
+  have g1 : GasSteps {s with pc := UInt256.ofNat 132, stack := dead :: StaggerPersistentFrame.frame h off cont rho}
+      {s with pc := UInt256.ofNat 133, stack := StaggerPersistentFrame.frame h off cont rho} := by
+    apply PadLift.gasSteps_of_raw chainSite {s with pc := UInt256.ofNat 132, stack := dead :: StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp chain_pc.symm
     · exact PadLift.advancesAll_sound _ (by decide)
     · have hlen1 : (StaggerPersistentFrame.frame h off cont rho).length + 1 < 1024 := by simpa only [List.length_cons] using hlen
       simp (discharger := omega) [hlen1, chainTemplate, runInstrSeq, DataStepper.runInstr, hrun, hlen, List.length_cons, UInt256.succ]
       rfl
-  have g2 : GasSteps {s with pc := UInt256.ofNat 134, stack := StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat 138, stack := StaggerPersistentFrame.exitFrame h (nextOffset off) cont rho} := by
-    apply PadLift.gasSteps_of_raw incSite {s with pc := UInt256.ofNat 134, stack := StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp inc_pc.symm
+  have g2 : GasSteps {s with pc := UInt256.ofNat 133, stack := StaggerPersistentFrame.frame h off cont rho}
+      {s with pc := UInt256.ofNat 137, stack := StaggerPersistentFrame.exitFrame h (nextOffset off) cont rho} := by
+    apply PadLift.gasSteps_of_raw incSite {s with pc := UInt256.ofNat 133, stack := StaggerPersistentFrame.frame h off cont rho} _ hcode hfork hrun hnp inc_pc.symm
     · exact PadLift.advancesAll_sound _ (by decide)
-    · have hr := run_inc s (UInt256.ofNat 134) h off cont rho (by omega) hrun
-      have he : pcAfter (UInt256.ofNat 134) Control.LoopRaw.incTemplate = UInt256.ofNat 138 := by decide
+    · have hr := run_inc s (UInt256.ofNat 133) h off cont rho (by omega) hrun
+      have he : pcAfter (UInt256.ofNat 133) Control.LoopRaw.incTemplate = UInt256.ofNat 137 := by decide
       rw [he] at hr
       exact hr
   have g3 := Control.StaggerPersistentEntrySites.gasSteps_swapBack s (nextOffset off) cont h rho hstack hrun
@@ -448,12 +445,12 @@ def gasSteps_stub128 (s : State) (h : Compression.HashState) (off cont : UInt256
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {s with pc := UInt256.ofNat 128, stack := StaggerPersistentFrame.frame h off cont rho}
-      {s with pc := UInt256.ofNat 133, stack := cont :: StaggerPersistentFrame.frame h off (UInt256.ofNat 64) rho} := by
+      {s with pc := UInt256.ofNat 132, stack := cont :: StaggerPersistentFrame.frame h off (UInt256.ofNat 64) rho} := by
   have hlen : (StaggerPersistentFrame.frame h off cont rho).length < 1024 := by
     simp [StaggerPersistentFrame.frame]; omega
   have g1 := jumpdest_gasSteps stub128Dest 128 stub128Dest_pc (by norm_num) s _ hlen hrun hcode hfork hnp
   have g2 := setCont_gasSteps 64 129 stub128Set stub128Set_pc (by decide) s h off cont rho hstack hrun hcode hfork hnp
-  have he : pcAfter (UInt256.ofNat 129) (Control.LoopRaw.setContTemplate 64) = UInt256.ofNat 133 := by decide
+  have he : pcAfter (UInt256.ofNat 129) (Control.LoopRaw.setContTemplate 64) = UInt256.ofNat 132 := by decide
   rw [he] at g2
   exact g1.trans g2
 

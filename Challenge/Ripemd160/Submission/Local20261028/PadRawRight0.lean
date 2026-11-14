@@ -25,7 +25,11 @@ def template : List Instr :=
     .op .MUL,
     .push ⟨1, by decide⟩ (UInt256.ofNat 23),
     .op .SHR,
-    .op (.Dup ⟨8, by decide⟩),
+    .op (.Dup ⟨1, by decide⟩),
+    .op (.Dup ⟨11, by decide⟩),
+    .op .MUL,
+    .push ⟨1, by decide⟩ (UInt256.ofNat 23),
+    .op .SHR,
     .op (.Dup ⟨8, by decide⟩),
     .op (.Dup ⟨13, by decide⟩),
     .push ⟨4, by decide⟩ (UInt256.ofNat 1352829926),
@@ -44,13 +48,16 @@ def template : List Instr :=
     .push ⟨1, by decide⟩ (UInt256.ofNat 25),
     .op .SHR,
     .op .ADD,
+    .push ⟨2, by decide⟩ (UInt256.ofNat 6504),
+    .op .JUMP,
+    .op .JUMPDEST,
     .op (.Dup ⟨4, by decide⟩),
     .op .AND ]
 def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [ x.v6, x.v7, x.v8, x.v9, x.v10, x.v11, x.v5 ] ++ rho
 def outputStack (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :=
   [     (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.land x.v7 (UInt256.add x.v0 (UInt256.add (UInt256.add (UInt256.xor x.v2 (UInt256.lor x.v3 (UInt256.lnot x.v4))) (PadValues.load n 486)) x.v1)))) (UInt256.ofNat 25)))),
-    x.v4,
+    (UInt256.shiftRight (UInt256.mul x.v6 x.v2) (UInt256.ofNat 23)),
     (UInt256.shiftRight (UInt256.mul x.v6 x.v3) (UInt256.ofNat 23)),
     x.v6,
     x.v7,
@@ -61,7 +68,7 @@ def outputStack (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :=
     x.v12 ] ++ rho
 def actualOutput (n : UInt256) (x : Input) (rho : List UInt256) : List UInt256 :=
   [     (UInt256.land x.v7 (UInt256.add x.v5 (UInt256.shiftRight (UInt256.mul x.v6 (UInt256.land x.v7 (UInt256.add x.v0 (UInt256.add (UInt256.add (UInt256.xor x.v2 (UInt256.lor x.v3 (UInt256.lnot x.v4))) (PadValues.load n 486)) x.v1)))) (UInt256.ofNat 25)))),
-    x.v4,
+    (UInt256.shiftRight (UInt256.mul x.v6 x.v2) (UInt256.ofNat 23)),
     (UInt256.shiftRight (UInt256.mul x.v6 x.v3) (UInt256.ofNat 23)),
     x.v6,
     x.v7,
@@ -76,16 +83,17 @@ private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : Li
     (hstack : rho.length ≤ 900) (halias : rho[2]? = some x.v2) (haliasC : rho[1]? = some x.v3) (haliasD : rho[0]? = some x.v4) (haliasA : rho[3]? = some x.v1) (hkey : x.v0 = UInt256.ofNat 1352829926) (haliasE : x.v12 = x.v5) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
-    (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
+    (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
-      some {s with pc := pcAfter pc template, stack := actualOutput n x rho} := by
+      some {s with pc := UInt256.ofNat 6507, stack := actualOutput n x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
   have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
-  simp (discharger := omega) [template, inputStack, actualOutput, hcal, hmem, PadValues.load,
+  simp (discharger := omega) [template, inputStack, actualOutput, hcal, hmem, hvalid, PadValues.load,
     runInstrSeq, DataStepper.runInstr, pcAfter, UInt256.succ, Instr.size,
     List.exchange, List.getElem?_cons_zero, Nat.add_assoc, hrun, hbase, hzero, hcap, halias, haliasC, haliasD, haliasA, hkey, haliasE,
     State.activeWordsAfterUInt256, hactiveAt, Word.word_toNat_ofNat, Word.literal_eq_ofNat,
@@ -97,9 +105,10 @@ theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (halias : rho[2]? = some x.v2) (haliasC : rho[1]? = some x.v3) (haliasD : rho[0]? = some x.v4) (haliasA : rho[3]? = some x.v1) (hkey : x.v0 = UInt256.ofNat 1352829926) (haliasE : x.v12 = x.v5) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
-    (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
+    (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
+    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
-      some {s with pc := pcAfter pc template, stack := outputStack n x rho} := by
-  simpa only [actualOutput_eq] using run_generated s pc n x rho hstack halias haliasC haliasD haliasA hkey haliasE hrun hactive hcal hmem
+      some {s with pc := UInt256.ofNat 6507, stack := outputStack n x rho} := by
+  simpa only [actualOutput_eq] using run_generated s pc n x rho hstack halias haliasC haliasD haliasA hkey haliasE hrun hactive hcal hmem hvalid
 #print axioms run_actual
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.PadRawRight0
