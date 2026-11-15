@@ -1,3 +1,24 @@
+# RIPEMD-160: fall-through JUMPDEST retired from the 1000-byte recognizer arm, byte returned to the dead JUMP run (614,902 gas)
+
+Parent: promoted commit `83fdda0f` (validated `c46d9598`, 614,903 gas).
+
+The patterned 1000-byte recognizer arm (`RecArmsLong.a1000Template`, entry
+PC 5838, instruction 3670) opened its scan head (`head1000`) with a
+`JUMPDEST` at PC 5862 directly after the digest store. Nothing jumps to 5862
+(no push of that value exists; the arm is entered only at 5838), so the
+opcode was a 1-gas fall-through pad. It is removed; the arm body 5863..6134
+moves down one byte, and the freed byte is appended to the unreachable
+`0x56` run that follows the arm's `PUSH2 4959; JUMP`, so `part19` keeps 192
+instructions and 332 bytes and every PC from 6135 on is unchanged. Only the
+`Vectors.patterned(1000)` case enters the arm; no generated corpus input has
+length 1000. 614,903 - 1 = **614,902**.
+
+Changed: `RecArmsLong.head1000` (now identical in shape to `head376`),
+`CandidateArtifact.part19` / `bytes19`, `CandidateBytes.chunk91..chunk95`,
+`bytecode.hex`. No instruction index or site witness moves.
+
+---
+
 # RIPEMD-160: ordinary-writer JUMPDEST pad at PC 582 retired, instruction count restored in the dead head pad (614,903 gas)
 
 Parent: promoted commit `0c57f37a` (validated `55693485`, 614,934 gas).

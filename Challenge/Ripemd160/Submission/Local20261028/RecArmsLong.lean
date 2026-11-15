@@ -178,7 +178,7 @@ def head376 : List Instr :=
   [pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
 
 def head1000 : List Instr :=
-  [.op .JUMPDEST, pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
+  [pushNat 256, .op .CALLDATALOAD, pushNat 111, .op .CALLDATALOAD, .op .XOR]
 
 def a376Template : List Instr :=
   DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 376) ++ head376 ++
