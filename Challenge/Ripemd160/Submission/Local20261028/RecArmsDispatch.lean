@@ -30,7 +30,7 @@ open StackRoundTrace StackRoundTemplate J2Moves ReverseLiteralRaw
 open Arms.Scan
 
 theorem valid_arm1 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4717 = true :=
-  valid_at 3391 4717 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3390 4717 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 def gasSteps_short1 (input : ByteArray) (h : input.size = 1) :
     GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 4717 []) := by

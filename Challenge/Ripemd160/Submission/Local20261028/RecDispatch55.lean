@@ -20,16 +20,16 @@ open StackRoundTrace StackRoundTemplate J2Moves ReverseLiteralRaw
 open Arms.Scan
 
 def tramp55Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (trampTemplate 5369) :=
-  StackSiteBuilder.ofSlice (trampTemplate 5369) 3373 (by rfl)
-    (by change 3373 + (trampTemplate 5369).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (trampTemplate 5369) 3372 (by rfl)
+    (by change 3372 + (trampTemplate 5369).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := trampTemplate 5369) (by decide)) (by decide)
 theorem tramp55_pc : tramp55Site.startPC = UInt256.ofNat 4687 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3373) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3372) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem valid_tramp55 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4687 = true :=
-  valid_at 3373 4687 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3372 4687 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 def gasSteps_tramp55 (input : ByteArray) :
     GasSteps (atState (base input) 4687 []) (atState (base input) 5369 []) :=
   RecognitionLift.gasSteps_of_raw tramp55Site _ _ rfl rfl rfl deployAddress_not_precompile

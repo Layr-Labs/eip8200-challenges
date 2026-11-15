@@ -103,10 +103,10 @@ def padExitPath : List
 set_option maxRecDepth 100000 in
 @[simp] theorem validJumpDest_4601 :
     Decode.isValidJumpDest submissionBytecode 4756 = true := by
-  have hp : submissionArtifact.instructionPC 3406 = 4756 := by
+  have hp : submissionArtifact.instructionPC 3405 = 4756 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]
     decide
-  have h := submissionArtifact.isValidJumpDest_index 3406 (by rfl)
+  have h := submissionArtifact.isValidJumpDest_index 3405 (by rfl)
   rw [hp] at h
   exact h
 

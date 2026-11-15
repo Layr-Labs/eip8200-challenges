@@ -237,15 +237,15 @@ theorem byte1_zero_iff (input : ByteArray) (hsize : input.size = 1) :
 
 def arm1Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 1) ++ byte1Template ++ Scan.resultTemplate
 theorem arm1_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3391).take arm1Template.length = arm1Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3390).take arm1Template.length = arm1Template := by rfl
 def arm1Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm1Template :=
-  StackSiteBuilder.ofSlice arm1Template 3391 arm1_slice
-    (by change 3391 + arm1Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm1Template 3390 arm1_slice
+    (by change 3390 + arm1Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm1Template) (by decide)) (by decide)
 theorem arm1_pc : arm1Site.startPC = UInt256.ofNat 4717 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3391) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3390) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm1_form : ∀ i ∈ arm1Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)

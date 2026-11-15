@@ -1,3 +1,32 @@
+# RIPEMD-160: second ordinary-writer JUMPDEST pad retired, instruction count restored in the dead post-RETURN push (614,903 gas)
+
+Parent: promoted commit `0c57f37a` (validated `55693485`, 614,934 gas).
+
+`Ordinary2` (PC 623..647, 31 runs on the corpus) carried a `JUMPDEST` after
+`DUP3` at PC 633, a count-keeper left by the 615,011 step. No jump targets
+633. It is gone; `PUSH1 172` widens to `PUSH2 172`, so `Ordinary2` keeps 25
+bytes and every PC outside 633..637 is unchanged (the `PUSH2 142; MLOAD`
+between them slides one byte down; neither is a jump target or a `PC`
+source). Stack, memory writes and the `OrdinaryCertificate` plan are the
+parent's.
+
+The instruction total is kept at 7000 by decoding the dead `PUSH2 257`
+after the `RETURN` at PC 4930 (before `JUMPDEST` 4934) as `STOP; PUSH1 1`.
+Artifact instruction indices 260..3482 move down by one; 0..258 and 3483
+on are unchanged.
+
+Gas: one `JUMPDEST` per ordinary prologue, 31 runs:
+614,934 -> **614,903**.
+
+Proof: `Ordinary2.template`; `CandidateArtifact` parts 1 and 18 (191 / 193
+instructions, same bytes lengths); `CandidateBytes` chunks 9 and 77;
+`bytecode.hex`; slice starts, `instructionPC` facts, located instructions,
+`decodeAt_op_index`, `valid_at` and jump-destination indices in the
+recognizer, stagger, control and core-gas sites, and the hoisted-store
+`.cleanup` piece.
+
+---
+
 # RIPEMD-160: JUMPDEST pad retired from the 32-byte first-block writer head, window kept by a widened 232 push (614,934 gas)
 
 Parent: promoted commit `6d2369d9` (validated `83e98140`, 614,945 gas).

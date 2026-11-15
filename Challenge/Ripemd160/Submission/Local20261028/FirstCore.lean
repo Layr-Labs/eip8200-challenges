@@ -121,9 +121,9 @@ theorem jumpSite_pc : jumpSite.startPC = UInt256.ofNat 10422 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid_join : Decode.isValidJumpDest CandidateArtifact.artifact.code 930 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 457 = 930 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 456 = 930 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 457 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 456 (by rfl)
   rw [hpc] at h
   exact h
 
@@ -139,13 +139,13 @@ def jump_gas (s : State) (rho : List UInt256) (hs : rho.length ≤ 990)
     simp [jumpTemplate, runInstrSeq, DataStepper.runInstr, hr, hv,
       show rho.length < 1024 by omega, show rho.length+1 < 1024 by omega]
 def restSite : GenericRoundSite CandidateArtifact.artifact .Osaka rest :=
-  StackSiteBuilder.ofSlice rest 457 (by rfl)
-    (by change 457 + (rest).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice rest 456 (by rfl)
+    (by change 456 + (rest).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem restSite_pc : restSite.startPC = UInt256.ofNat 930 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 457) = UInt256.ofNat 930
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 456) = UInt256.ofNat 930
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def rest_gas (s : State) (cont : UInt256) (rho : List UInt256)

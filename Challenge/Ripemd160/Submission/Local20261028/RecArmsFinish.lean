@@ -50,7 +50,7 @@ def finishSite2 := finishSiteAt 3535 (by rfl)
   (by rw [CandidateArtifact.instruction_count]; decide)
 
 theorem finishSite0_pc : finishSite0.startPC = UInt256.ofNat 4753 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3403) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3402) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem finishSite1_pc : finishSite1.startPC = UInt256.ofNat 5337 := by
   change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3548) = _
