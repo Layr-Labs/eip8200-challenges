@@ -111,7 +111,7 @@ def expGuardPath :
    opAt 119 (.Dup ⟨5,by decide⟩),
    opAt 120 (.Dup ⟨1,by decide⟩),
    opAt 121 .EQ,
-   pushAt 122 2 10470,
+   pushAt 122 2 10442,
    opAt 123 .JUMPI]
 def expLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
@@ -128,19 +128,19 @@ def bitJumpPath :
   [opAt 133 .JUMP]
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 7934 .JUMPDEST,
-   pushAt 7935 1 1,
-   opAt 7936 (.Dup ⟨6,by decide⟩),
-   opAt 7937 .SUB]
+  [opAt 7932 .JUMPDEST,
+   pushAt 7933 1 1,
+   opAt 7934 (.Dup ⟨6,by decide⟩),
+   opAt 7935 .SUB]
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 7966 .POP,
-   pushAt 7967 2 10460,
-   opAt 7968 .JUMP]
+  [opAt 7964 .POP,
+   pushAt 7965 2 10432,
+   opAt 7966 .JUMP]
 def bitPC (j : Nat) : Nat :=
   match j with
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 10491
-  | _ => 10526
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 10463
+  | _ => 10498
 def bitCounter (j : Nat) : Nat := if j < 8 then j else 8
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -265,14 +265,14 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 206,stack := UInt256.ofNat 10486::s.stack }
+  { s with pc := UInt256.ofNat 206,stack := UInt256.ofNat 10458::s.stack }
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 10486
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 10458
     ([UInt256.ofNat 0,byte,offset,UInt256.ofNat outer,acc,base,
       UInt256.ofNat (modulusValue input)]++bitTail input)
-theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10486 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7934 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10458 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7932 (by rfl)
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps (bitLoopState input outer 0 byte offset acc base)
@@ -394,17 +394,17 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
       ([187,188,189,190,191,194,195,196,197,198,199,200,201,202,203,206] : List Nat)[i - 118]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem expTailPCs (i : Nat) (hi : 7912 ≤ i) (hii : i ≤ 7919) :
+@[simp] theorem expTailPCs (i : Nat) (hi : 7910 ≤ i) (hii : i ≤ 7917) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10460,10461,10462,10463,10464,10466,10467,10469] : List Nat)[i - 7912]! := by
+      ([10432,10433,10434,10435,10436,10438,10439,10441] : List Nat)[i - 7910]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem jump669 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10470 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7920 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10442 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7918 (by rfl)
 @[simp] theorem jump655 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10460 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7912 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10432 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7910 (by rfl)
 @[simp] theorem jump589 :
     Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 187 = true :=
   CycleSubmission.Global.Binding.jumpDest 118 (by rfl)

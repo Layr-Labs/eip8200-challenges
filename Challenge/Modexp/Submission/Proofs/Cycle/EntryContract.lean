@@ -29,9 +29,9 @@ structure Outcome (s : State) (f : Caller) (k N B x : Nat) where
   inv_eq : inv = MachineState.readWord s.memory 2720
   a : Nat → UInt256
   n : Nat → UInt256
-  trace : GasSteps {s with pc := UInt256.ofNat 3320,stack := saved f} state
+  trace : GasSteps {s with pc := UInt256.ofNat 3347,stack := saved f} state
   frame : state.stack = CachedInverse.entryFrame inv a SquareStep.zeroWords n ((UInt256.ofNat 0-f.counter)::saved f)
-  pc : state.pc = UInt256.ofNat 3505
+  pc : state.pc = UInt256.ofNat 3532
   memory : LimbMemory.Holds state.memory inv a SquareStep.zeroWords n
   env : state.executionEnv = s.executionEnv
   halt : state.halt = s.halt
