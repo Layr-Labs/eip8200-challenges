@@ -23,15 +23,15 @@ def headerBlock : Block CycleSubmission.Artifact.artifact .Osaka 8622 DirectR5Re
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3290 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 2562 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 2562 = 3290 := by
+theorem jumpDestCommon : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 3288 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 2560 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 2560 = 3288 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 def classify8 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256)
  (hcap : rest.length ≤ 1000) (env : Environment CycleSubmission.Artifact.artifact .Osaka s) :
  GasSteps {s with pc := UInt256.ofNat 8613,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest}
- {s with pc := UInt256.ofNat 3290,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} :=
+ {s with pc := UInt256.ofNat 3288,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} :=
  classifyBlock.steps (s := {s with pc := UInt256.ofNat 8613,memory := mem,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest})
   (env.transfer rfl rfl) rfl (DirectR5Classifier.run8 {s with memory := mem} count hpos hle rest hcap (by rw [env.code]; exact jumpDestCommon))
 def enter4 (s : State) (mem : ByteArray) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (bsize esize msize : Nat)
