@@ -1,3 +1,35 @@
+# RIPEMD-160: ordinary-writer JUMPDEST pad retired, instruction count restored in the dead head pad (614,903 gas)
+
+Parent: promoted commit `0c57f37a` (validated `55693485`, 614,934 gas).
+
+The ordinary table prologue (`Ordinary0..7`, PC 530..793, 31 runs on the
+corpus) still carried the `JUMPDEST` at PC 582 that the 615,011 step left
+behind when `PUSH1 228; MLOAD` became `DUP2` (`DUP2; PUSH2 224; MLOAD;
+JUMPDEST`). It is gone; `PUSH1 180` widens to `PUSH2 180`, so `Ordinary1`
+keeps 67 bytes (556..622) and no PC moves anywhere. Stack, memory writes and
+the `OrdinaryCertificate` plan are the parent's.
+
+The instruction total is kept at 7000 by decoding the dead pad 56..63
+(after the `JUMP` at 55, before `JUMPDEST` 64) as eight `STOP`s instead of
+`PUSH1 0` plus six `STOP`s. Artifact instruction indices 28..237 move up by
+one (`JUMPDEST` 64 is instruction 35, 461 is 159); indices 0..26 and 239 on
+are unchanged. No index witness names 160..237.
+
+Gas: one `JUMPDEST` per ordinary prologue, 31 runs:
+614,934 -> **614,903**.
+
+Proof: `Ordinary1.template`; `CandidateArtifact` parts 0 and 1 (193 / 191
+instructions, same 506 / 330 bytes); `CandidateBytes` chunks 0 and 9;
+`bytecode.hex`; slice starts, `instructionPC` facts, located instructions
+and jump-destination indices in `ColdArtifact`, `ColdGuardSites`,
+`ColdMain`, `ColdPaddingCore0/1/3`, `ColdStaggerPersistentEntrySites`,
+`ColdStaggerPersistentLoopSites`, `ColdStaggerPersistentStart`,
+`ControlSites`, `NormalGas`, `PadSites`, `RecDirectGuardBase`,
+`RecDirectGuardSize`, `RecEarlySerializeFallback`, `RecEntryPrefilter`,
+`RecHoistedStoreSites`, `RecPatterned128Entry`.
+
+---
+
 # RIPEMD-160: JUMPDEST pad retired from the 32-byte first-block writer head, window kept by a widened 232 push (614,934 gas)
 
 Parent: promoted commit `6d2369d9` (validated `83e98140`, 614,945 gas).

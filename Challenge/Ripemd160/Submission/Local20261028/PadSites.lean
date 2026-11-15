@@ -45,13 +45,13 @@ def front : List Instr :=
     .push ⟨2, by decide⟩ (UInt256.ofNat 6504),
     .op .JUMP ]
 def frontSite : GenericRoundSite CandidateArtifact.artifact .Osaka front :=
-  StackSiteBuilder.ofSlice front 34 (by rfl)
-    (by change 34 + front.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice front 35 (by rfl)
+    (by change 35 + front.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem front_pc : frontSite.startPC = UInt256.ofNat 64 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 34) = UInt256.ofNat 64
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 35) = UInt256.ofNat 64
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem front_advances : front.dropLast.all PadTrace.advancesCheck = true := by decide +kernel

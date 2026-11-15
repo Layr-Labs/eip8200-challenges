@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "55693485-b4a2-4a01-b0cc-941f195f8df8",
+    "rationale": "Direct source and proof-tree parent: the validated 614,934-gas frontier (First0.templateA pad at PC 6472 retired). Retained unchanged except the count-keeping JUMPDEST at PC 582 in the ordinary schedule writer (Ordinary1); this candidate removes it and widens PUSH1 180 to PUSH2 180, keeping the 556..622 window at 67 bytes and every PC fixed, and restores the instruction total by decoding the dead PUSH1 0 at PC 56 as two STOPs, so only artifact indices 28..237 move up by one.",
+    "evidence": "Based on the Submission tree at 0c57f37ab978c4b6dd2abf961bbf1cf72a502f64; PrepOrdinary1 template, CandidateArtifact parts 0/1 and counts, CandidateBytes chunks 0 and 9, bytecode.hex, and the index witnesses in ColdArtifact, ColdGuardSites, ColdMain, ColdPaddingCore0/1/3, ColdStaggerPersistentEntrySites/LoopSites/Start, ControlSites, NormalGas, PadSites, RecDirectGuardBase/Size, RecEarlySerializeFallback, RecEntryPrefilter, RecHoistedStoreSites, RecPatterned128Entry."
+  },
+  {
     "submissionId": "83e98140-5811-4d63-b6be-e84e5347c4ad",
     "rationale": "Direct source and proof-tree parent: the validated 614,945-gas frontier (First4 pad pair retired, 720 store widened in place). Retained unchanged; this candidate retires the remaining JUMPDEST pad at PC 6472 in the 32-byte path's first-block writer head (PrepFirst0.templateA) and keeps the 40-byte window by widening PUSH1 232 to PUSH2 232, so no PC moves and the instruction total drops 7001 -> 7000.",
     "evidence": "Based on the Submission tree at 6d2369d9d39900731622c5d86aaa446a345d82cc; PrepFirst0 templateA, CandidateArtifact part21 / count21 / instruction_count, CandidateBytes chunk101, ColdArtifact count / padExitPath, RecArtifact count, ColdPaddingCore0/1/3, PadSites middleSite / valid4601, FirstCore tableSite / valid9983 / prefixSite / jumpSite, bytecode.hex."

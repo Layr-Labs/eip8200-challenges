@@ -8,12 +8,12 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate Local20261028
 def jumpCode : List Instr := [.push ⟨2,by decide⟩ (UInt256.ofNat 6382), .op .JUMP]
 def jumpSite : GenericRoundSite CandidateArtifact.artifact .Osaka jumpCode :=
-  StackSiteBuilder.ofSlice jumpCode 91 (by rfl)
-    (by change 91 + jumpCode.length ≤ CandidateArtifact.instructions.length; rw [CandidateArtifact.instruction_count]; decide)
+  StackSiteBuilder.ofSlice jumpCode 92 (by rfl)
+    (by change 92 + jumpCode.length ≤ CandidateArtifact.instructions.length; rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide)) (by decide)
 theorem jump_pc : jumpSite.startPC = UInt256.ofNat 188 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 91) = _
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 92) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
 
 def joinCode : List Instr := [.op .JUMPDEST]
