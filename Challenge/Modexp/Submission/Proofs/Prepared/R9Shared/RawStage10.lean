@@ -294,7 +294,25 @@ theorem stage10Part17_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12
   have ha2048 : (2048 : W).toNat = 2048 := rfl
   have hf2048 := Monpro.activeWords_fix s 2048 32 (by decide) (by norm_num) hact
   simp [hz,hzn,stage10Part17Program,stage10Part17Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha2048,hf2048]
-def stage10Program : List Instr := (stage10Part0Program++(stage10Part1Program++(stage10Part2Program++(stage10Part3Program++(stage10Part4Program++(stage10Part5Program++(stage10Part6Program++(stage10Part7Program++(stage10Part8Program++(stage10Part9Program++(stage10Part10Program++(stage10Part11Program++(stage10Part12Program++(stage10Part13Program++(stage10Part14Program++(stage10Part15Program++(stage10Part16Program++stage10Part17Program)))))))))))))))))
+def stage10Part10_11Program : List Instr :=
+ [.op (.Swap sA0),.op (.Dup dA9),.op (.Dup dA13),.op (.Dup dA0),.op (.Dup dA0),
+  .op .ADD,.op (.Swap sA14),.op .JUMPDEST,.op .JUMPDEST,
+  .op .MULMOD,.op .ADD,.op (.Dup dA9),.push 1 192,.op .MLOAD,.op (.Dup dA12)]
+def stage10Part10_11Model (s : State) (w0 : W) (w1 : W) (w2 : W) (w3 : W) (w4 : W) (w5 : W) (w6 : W) (w7 : W) (w8 : W) (w9 : W) (w10 : W) (w11 : W) (w12 : W) (w13 : W) (w14 : W) (w15 : W) (w16 : W) (rest : List W) : State :=
+ stage10Part11Model s (w12+w12) w12 w12 w9 w1 w0 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest
+theorem stage10Part10_11_run (s : State) (w0 : W) (w1 : W) (w2 : W) (w3 : W) (w4 : W) (w5 : W) (w6 : W) (w7 : W) (w8 : W) (w9 : W) (w10 : W) (w11 : W) (w12 : W) (w13 : W) (w14 : W) (w15 : W) (w16 : W) (rest : List W)
+ (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+ runInstructions stage10Part10_11Program {s with pc := N 5086,memory := s.memory,stack := w0::w1::w2::w3::w4::w5::w6::w7::w8::w9::w10::w11::w12::w13::w14::w15::w16::rest} =
+ some (stage10Part10_11Model s w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 w16 rest) := by
+ have hz : ({val := 0} : W) = N 0 := rfl
+ have hzn : ({val := 0} : W).toNat = 0 := rfl
+ have capacity (j : Nat) (hj : j ≤ 63) : rest.length+j < 1024 := by omega
+ have ha192 : (192 : W).toNat = 192 := rfl
+ have hf192 := Monpro.activeWords_fix s 192 32 (by decide) (by norm_num) hact
+ simp [hz,hzn,stage10Part10_11Program,stage10Part10_11Model,stage10Part11Model,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,capacity,ha192,hf192]
+#print axioms stage10Part10_11_run
+
+def stage10Program : List Instr := (stage10Part0Program++(stage10Part1Program++(stage10Part2Program++(stage10Part3Program++(stage10Part4Program++(stage10Part5Program++(stage10Part6Program++(stage10Part7Program++(stage10Part8Program++(stage10Part9Program++(stage10Part10_11Program++(stage10Part12Program++(stage10Part13Program++(stage10Part14Program++(stage10Part15Program++(stage10Part16Program++stage10Part17Program))))))))))))))))
 def stage10Model (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w14 w15 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord (s.memory) 1216
   let v1 : W := MachineState.readWord (s.memory) 1280
@@ -452,10 +470,8 @@ theorem stage10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
     simpa only [stage10Part8Model,v33,v34,v35,v36] using stage10Part8_run ({s with memory := s.memory}) v32 v20 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 w11 w12 w13 w14 w15 rest hcap hact
   have h9 : runInstructions stage10Part9Program {s with pc := N 5078,memory := s.memory,stack := v36::v20::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::w11::w12::w13::w14::w15::rest} = some {s with pc := N 5086,memory := s.memory,stack := v40::v20::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::w11::w12::w13::w14::w15::rest} := by
     simpa only [stage10Part9Model,v37,v38,v39,v40] using stage10Part9_run ({s with memory := s.memory}) v36 v20 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 w11 w12 w13 w14 w15 rest hcap hact
-  have h10 : runInstructions stage10Part10Program {s with pc := N 5086,memory := s.memory,stack := v40::v20::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::w11::w12::w13::w14::w15::rest} = some {s with pc := N 5093,memory := s.memory,stack := v41::w11::w11::w8::v20::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::w11::w12::w13::w14::w15::rest} := by
-    simpa only [stage10Part10Model,v41] using stage10Part10_run ({s with memory := s.memory}) v40 v20 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 w11 w12 w13 w14 w15 rest hcap hact
-  have h11 : runInstructions stage10Part11Program {s with pc := N 5093,memory := s.memory,stack := v41::w11::w11::w8::v20::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::w11::w12::w13::w14::w15::rest} = some {s with pc := N 5102,memory := s.memory,stack := w9::v44::w8::v43::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} := by
-    simpa only [stage10Part11Model,v42,v43,v44] using stage10Part11_run ({s with memory := s.memory}) v41 w11 w11 w8 v20 v40 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 w11 w12 w13 w14 w15 rest hcap hact
+  have h10_11 : runInstructions stage10Part10_11Program {s with pc := N 5086,memory := s.memory,stack := v40::v20::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::w11::w12::w13::w14::w15::rest} = some {s with pc := N 5102,memory := s.memory,stack := w9::v44::w8::v43::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} := by
+    simpa only [stage10Part10_11Model,stage10Part11Model,v41,v42,v43,v44] using stage10Part10_11_run ({s with memory := s.memory}) v40 v20 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 w11 w12 w13 w14 w15 rest hcap hact
   have h12 : runInstructions stage10Part12Program {s with pc := N 5102,memory := s.memory,stack := w9::v44::w8::v43::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} = some {s with pc := N 5110,memory := s.memory,stack := v49::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} := by
     simpa only [stage10Part12Model,v45,v46,v47,v48,v49] using stage10Part12_run ({s with memory := s.memory}) w9 v44 w8 v43 v40 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 v41 w12 w13 w14 w15 rest hcap hact
   have h13 : runInstructions stage10Part13Program {s with pc := N 5110,memory := s.memory,stack := v49::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} = some {s with pc := N 5119,memory := s.memory,stack := w6::w8::v52::v40::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} := by
@@ -468,6 +484,6 @@ theorem stage10_run (s : State) (w0 w1 w2 w3 w4 w5 w6 w7 w8 w9 w10 w11 w12 w13 w
     simpa only [stage10Part16Model,v59,v60,v61,v62] using stage10Part16_run ({s with memory := s.memory}) w12 w1 w8 v58 v40 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 v41 w12 w13 w14 w15 rest hcap hact
   have h17 : runInstructions stage10Part17Program {s with pc := N 5175,memory := v62,stack := v61::v60::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} = some {s with pc := N 5184,memory := v62,stack := v65::w1::w2::w3::w4::v0::w6::w7::w8::w9::v1::v41::w12::w13::w14::w15::rest} := by
     simpa only [stage10Part17Model,v63,v64,v65] using stage10Part17_run ({s with memory := v62}) v61 v60 w1 w2 w3 w4 v0 w6 w7 w8 w9 v1 v41 w12 w13 w14 w15 rest hcap hact
-  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 h17)))))))))))))))))
+  exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10_11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 (runInstructions_append_some _ _ _ _ _ h14 (runInstructions_append_some _ _ _ _ _ h15 (runInstructions_append_some _ _ _ _ _ h16 h17))))))))))))))))
 #print axioms stage10_run
 end R9InvConsumeExec

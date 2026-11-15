@@ -391,7 +391,7 @@ private theorem instructionsPart28_wf :
   all_goals decide
 
 private def instructionsPart29 : List Instr :=
-  [i3,i15,i3,i13,i0,i6,i3,i42,i2,i8,i6,i3,i23,i2,i4,i6,i3,i7,i41,i2,i6,i3,i27,i27,i6,i3,i19,i24,i6,i3,i8,i9,i6,i3,i14,i10,i6,i3,i16,i4,i22,i0,i0,i0,i3,.op (.Swap swap15),i40,i1,i3,i4,i42,i2,i13,i1,i3,i4,i23,i2,i12,i1,i3,i4,i19,i41,i2,i1,i3,i4,i25,i25,i1,i3,i4,i11,i27,i1,i3,i4,i9,i22,i1,i3,i4,i7,i9,i1,i3,i16,i21,i26,i0,.push 2 800,i18,i4,i15,i29,i5,i3,i32,i1,i9,i16,i36,i2,i22,i38,i2,i39,i2,i35,i2,i10,i27,i14,i1,i9,i7,i11,i1,i3,i9,i11,i27,i1,i3,i24,i3,i57]
+  [i3,i15,i3,i13,i0,i6,i3,i42,i2,i8,i6,i3,i23,i2,i4,i6,i3,i7,i41,i2,i6,i3,i27,i27,i6,i3,i19,i24,i6,i3,i8,i9,i6,i3,i14,i10,i6,i3,i16,i4,i22,i0,i0,i3,.op (.Swap swap14),i20,i20,i1,i3,i4,i42,i2,i13,i1,i3,i4,i23,i2,i12,i1,i3,i4,i19,i41,i2,i1,i3,i4,i25,i25,i1,i3,i4,i11,i27,i1,i3,i4,i9,i22,i1,i3,i4,i7,i9,i1,i3,i16,i21,i26,i0,.push 2 800,i18,i4,i15,i29,i5,i3,i32,i1,i9,i16,i36,i2,i22,i38,i2,i39,i2,i35,i2,i10,i27,i14,i1,i9,i7,i11,i1,i3,i9,i11,i27,i1,i3,i24,i3,i57]
 
 private theorem instructionsPart29_wf :
     instructionsPart29.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by
