@@ -6,7 +6,7 @@ namespace RipemdSubmission20261101.OrdinaryCertificate
 open EvmSemantics RipemdTableOrder20261027
 open Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.GeneralMessageLayout
 abbrev Symbol := Sum Nat Nat
-def plan : List (Nat × Nat) := [(594, 146), (684, 266), (108, 258), (252, 142), (324, 232), (18, 266), (666, 180), (216, 172), (756, 134), (198, 142), (360, 258), (90, 224), (900, 138), (648, 142), (738, 262), (630, 176), (828, 236), (612, 180), (720, 262), (558, 134), (936, 134), (846, 146), (72, 258), (864, 236), (54, 168), (1008, 180), (414, 258), (540, 228), (522, 224), (504, 228), (396, 266), (486, 168), (972, 236), (468, 262), (450, 168), (792, 138)]
+def plan : List (Nat × Nat) := [(594, 146), (684, 266), (108, 258), (252, 142), (324, 232), (18, 266), (666, 180), (216, 172), (756, 134), (198, 142), (360, 258), (90, 224), (900, 138), (648, 142), (738, 262), (634, 180), (828, 236), (612, 180), (720, 262), (558, 134), (936, 134), (846, 146), (72, 258), (864, 236), (54, 168), (1008, 180), (414, 258), (540, 228), (522, 224), (504, 228), (396, 266), (486, 168), (972, 236), (468, 262), (450, 168), (792, 138)]
 def source (a j : Nat) : Symbol :=
   if a=134 ∧ 9 ≤ j ∧ j<14 then .inr j else .inl (fan (a+j))
 def paint (m : Nat → Symbol) (w : Nat × Nat) (a : Nat) : Symbol :=
@@ -26,7 +26,7 @@ theorem barrier_sources : ∀ i : Fin 77,
   decide +kernel
 theorem clear_sources : ∀ a ∈ clearAddresses, layout a = .inl 0 := by decide +kernel
 theorem biased_sources : ∀ j : Fin 5, layout (945+j.val) = .inr (9+j.val) := by decide +kernel
-theorem unchanged_sources : ∀ a : Fin 1120, a.val < 945 ∨ 950 ≤ a.val →
+theorem unchanged_sources : ∀ a : Fin 1120, a.val < 662 ∨ 950 ≤ a.val ∨ (666 ≤ a.val ∧ a.val < 945) →
     layout a.val = .inl (result selected a.val) := by decide +kernel
 #print axioms low_sources
 #print axioms high_sources

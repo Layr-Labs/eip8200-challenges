@@ -1,3 +1,36 @@
+# RIPEMD-160: 176-word load retired from the ordinary schedule writer, its store re-sourced from the resident 180 word (615,095 gas)
+
+Parent: promoted commit `dbd767d0` (validated `fab6424c`, 615,157 gas).
+
+The ordinary table prologue (`Ordinary0..7`, PC 556..793) loads fifteen
+source words and paints 36 stores (`OrdinaryCertificate.plan`). The word at
+176 was loaded once (`PUSH1 176; MLOAD` at PC 632) and consumed by a single
+store at 630. That store now writes the already-resident 180 word at 634:
+the 32-byte window keeps the same source-minus-destination offset (-454), so
+bytes 634..661 are painted from the same fan bytes as before; 630..633 are no
+longer painted by this store and 662..665 now receive fan bytes 208..211, and
+the certificate shows neither range carries a byte the rounds read.
+`low_sources`, `high_sources`, `barrier_sources`, `clear_sources` and
+`biased_sources` decide unchanged against the new plan.
+
+In `Ordinary2` the load becomes `DUP3; JUMPDEST` (the stack slot keeps its
+position, now holding the 180 word), and `PUSH1 142` widens to `PUSH2 142`,
+so the window stays 25 bytes / 17 instructions and no PC or instruction
+index moves anywhere in the program; the PC-sourced stores at 666, 720 and
+792 are unaffected. `Ordinary4` stores at 634 instead of 630.
+
+Gas: `DUP3` (3) + `JUMPDEST` (1) replace `PUSH1` (3) + `MLOAD` (3): -2 per
+ordinary prologue, 31 executions: 615,157 -> **615,095**.
+
+Proof: `OrdinaryCertificate.plan` entry 15 is `(634, 180)`;
+`unchanged_sources` excludes 662..665 (its only consumer, `Ordinary75`,
+reads 918..944); `OrdinaryMemory.memory16`, `state2`, `state3`;
+`Ordinary2.template` / `outputs`, `Ordinary4.template` / `memory`;
+`CandidateArtifact` part 1, `CandidateBytes` chunks 9 and 11,
+`bytecode.hex`.
+
+---
+
 # RIPEMD-160: Fall-through padded-block output tail, 32-byte read hoisted into the vacated slot (615,157 gas)
 
 Parent: promoted commit `66eec9be` (validated `340e677c`, 615,277 gas).
