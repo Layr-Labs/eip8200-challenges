@@ -19,22 +19,22 @@ open Arms.Scan
 
 def chain1Template : List Instr := chainTemplate 1
 theorem chain1_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3527).take chain1Template.length = chain1Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3526).take chain1Template.length = chain1Template := by rfl
 def chain1Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chain1Template :=
-  StackSiteBuilder.ofSlice chain1Template 3527 chain1_slice
-    (by change 3527 + chain1Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chain1Template 3526 chain1_slice
+    (by change 3526 + chain1Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := chain1Template) (by decide)) (by decide)
 theorem chain1_pc : chain1Site.startPC = UInt256.ofNat 5228 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3527) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3526) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem chain1_form : ∀ i ∈ chain1Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 theorem valid_chain1 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 5228 = true :=
-  valid_at 3527 5228 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3526 5228 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 def gasSteps_chain1 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5228 [a])
@@ -50,22 +50,22 @@ def gasSteps_chain1 (input : ByteArray) (n : Nat) (a : UInt256) :
 
 def chain2Template : List Instr := chainTemplate 2
 theorem chain2_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3521).take chain2Template.length = chain2Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3520).take chain2Template.length = chain2Template := by rfl
 def chain2Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chain2Template :=
-  StackSiteBuilder.ofSlice chain2Template 3521 chain2_slice
-    (by change 3521 + chain2Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chain2Template 3520 chain2_slice
+    (by change 3520 + chain2Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := chain2Template) (by decide)) (by decide)
 theorem chain2_pc : chain2Site.startPC = UInt256.ofNat 5190 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3521) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3520) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem chain2_form : ∀ i ∈ chain2Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 theorem valid_chain2 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 5190 = true :=
-  valid_at 3521 5190 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3520 5190 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 def gasSteps_chain2 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5190 [a])
@@ -81,22 +81,22 @@ def gasSteps_chain2 (input : ByteArray) (n : Nat) (a : UInt256) :
 
 def chain3Template : List Instr := chainTemplate 3
 theorem chain3_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3515).take chain3Template.length = chain3Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3514).take chain3Template.length = chain3Template := by rfl
 def chain3Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chain3Template :=
-  StackSiteBuilder.ofSlice chain3Template 3515 chain3_slice
-    (by change 3515 + chain3Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chain3Template 3514 chain3_slice
+    (by change 3514 + chain3Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := chain3Template) (by decide)) (by decide)
 theorem chain3_pc : chain3Site.startPC = UInt256.ofNat 5151 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3515) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3514) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem chain3_form : ∀ i ∈ chain3Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 theorem valid_chain3 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 5151 = true :=
-  valid_at 3515 5151 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3514 5151 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 def gasSteps_chain3 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5151 [a])
@@ -112,22 +112,22 @@ def gasSteps_chain3 (input : ByteArray) (n : Nat) (a : UInt256) :
 
 def chain4Template : List Instr := chainTemplate 4
 theorem chain4_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3509).take chain4Template.length = chain4Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3508).take chain4Template.length = chain4Template := by rfl
 def chain4Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chain4Template :=
-  StackSiteBuilder.ofSlice chain4Template 3509 chain4_slice
-    (by change 3509 + chain4Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chain4Template 3508 chain4_slice
+    (by change 3508 + chain4Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := chain4Template) (by decide)) (by decide)
 theorem chain4_pc : chain4Site.startPC = UInt256.ofNat 5112 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3509) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3508) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem chain4_form : ∀ i ∈ chain4Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 theorem valid_chain4 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 5112 = true :=
-  valid_at 3509 5112 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3508 5112 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 def gasSteps_chain4 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5112 [a])
@@ -143,22 +143,22 @@ def gasSteps_chain4 (input : ByteArray) (n : Nat) (a : UInt256) :
 
 def chain8Template : List Instr := chainTemplate 8
 theorem chain8_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3488).take chain8Template.length = chain8Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3487).take chain8Template.length = chain8Template := by rfl
 def chain8Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chain8Template :=
-  StackSiteBuilder.ofSlice chain8Template 3488 chain8_slice
-    (by change 3488 + chain8Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chain8Template 3487 chain8_slice
+    (by change 3487 + chain8Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := chain8Template) (by decide)) (by decide)
 theorem chain8_pc : chain8Site.startPC = UInt256.ofNat 4959 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3488) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3487) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem chain8_form : ∀ i ∈ chain8Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
 
 
 theorem valid_chain8 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4959 = true :=
-  valid_at 3488 4959 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+  valid_at 3487 4959 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 def gasSteps_chain8 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 4959 [a])
@@ -237,15 +237,15 @@ theorem byte1_zero_iff (input : ByteArray) (hsize : input.size = 1) :
 
 def arm1Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 1) ++ byte1Template ++ Scan.resultTemplate
 theorem arm1_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3391).take arm1Template.length = arm1Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3390).take arm1Template.length = arm1Template := by rfl
 def arm1Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm1Template :=
-  StackSiteBuilder.ofSlice arm1Template 3391 arm1_slice
-    (by change 3391 + arm1Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm1Template 3390 arm1_slice
+    (by change 3390 + arm1Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm1Template) (by decide)) (by decide)
 theorem arm1_pc : arm1Site.startPC = UInt256.ofNat 4717 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3391) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3390) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm1_form : ∀ i ∈ arm1Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -282,15 +282,15 @@ def gasSteps_arm1 (input : ByteArray) (hsize : input.size = 1) :
 
 def arm31Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 31) ++ prefixTemplate 31 ++ Scan.resultTemplate
 theorem arm31_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3538).take arm31Template.length = arm31Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3537).take arm31Template.length = arm31Template := by rfl
 def arm31Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm31Template :=
-  StackSiteBuilder.ofSlice arm31Template 3538 arm31_slice
-    (by change 3538 + arm31Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm31Template 3537 arm31_slice
+    (by change 3537 + arm31Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm31Template) (by decide)) (by decide)
 theorem arm31_pc : arm31Site.startPC = UInt256.ofNat 5273 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3538) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3537) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm31_form : ∀ i ∈ arm31Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -322,15 +322,15 @@ def gasSteps_arm31 (input : ByteArray) :
 
 def arm32Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 32) ++ startTemplate 32 ++ jumpTemplate 5228
 theorem arm32_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3551).take arm32Template.length = arm32Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3550).take arm32Template.length = arm32Template := by rfl
 def arm32Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm32Template :=
-  StackSiteBuilder.ofSlice arm32Template 3551 arm32_slice
-    (by change 3551 + arm32Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm32Template 3550 arm32_slice
+    (by change 3550 + arm32Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm32Template) (by decide)) (by decide)
 theorem arm32_pc : arm32Site.startPC = UInt256.ofNat 5340 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3551) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3550) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm32_form : ∀ i ∈ arm32Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -368,15 +368,15 @@ def gasSteps_arm32 (input : ByteArray) :
 
 def arm55Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 55) ++ startTemplate 55 ++ jumpTemplate 5228
 theorem arm55_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3558).take arm55Template.length = arm55Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3557).take arm55Template.length = arm55Template := by rfl
 def arm55Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm55Template :=
-  StackSiteBuilder.ofSlice arm55Template 3558 arm55_slice
-    (by change 3558 + arm55Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm55Template 3557 arm55_slice
+    (by change 3557 + arm55Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm55Template) (by decide)) (by decide)
 theorem arm55_pc : arm55Site.startPC = UInt256.ofNat 5369 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3558) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3557) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm55_form : ∀ i ∈ arm55Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -414,15 +414,15 @@ def gasSteps_arm55 (input : ByteArray) (hsize : input.size = 55) :
 
 def arm56Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 56) ++ startTemplate 56 ++ jumpTemplate 5228
 theorem arm56_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3570).take arm56Template.length = arm56Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3569).take arm56Template.length = arm56Template := by rfl
 def arm56Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm56Template :=
-  StackSiteBuilder.ofSlice arm56Template 3570 arm56_slice
-    (by change 3570 + arm56Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm56Template 3569 arm56_slice
+    (by change 3569 + arm56Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm56Template) (by decide)) (by decide)
 theorem arm56_pc : arm56Site.startPC = UInt256.ofNat 5429 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3570) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3569) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm56_form : ∀ i ∈ arm56Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -460,15 +460,15 @@ def gasSteps_arm56 (input : ByteArray) (hsize : input.size = 56) :
 
 def arm63Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 63) ++ startTemplate 63 ++ jumpTemplate 5228
 theorem arm63_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3582).take arm63Template.length = arm63Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3581).take arm63Template.length = arm63Template := by rfl
 def arm63Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm63Template :=
-  StackSiteBuilder.ofSlice arm63Template 3582 arm63_slice
-    (by change 3582 + arm63Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm63Template 3581 arm63_slice
+    (by change 3581 + arm63Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm63Template) (by decide)) (by decide)
 theorem arm63_pc : arm63Site.startPC = UInt256.ofNat 5488 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3582) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3581) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm63_form : ∀ i ∈ arm63Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -506,15 +506,15 @@ def gasSteps_arm63 (input : ByteArray) :
 
 def arm64Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 64) ++ startTemplate 64 ++ jumpTemplate 5190
 theorem arm64_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3593).take arm64Template.length = arm64Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3592).take arm64Template.length = arm64Template := by rfl
 def arm64Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm64Template :=
-  StackSiteBuilder.ofSlice arm64Template 3593 arm64_slice
-    (by change 3593 + arm64Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm64Template 3592 arm64_slice
+    (by change 3592 + arm64Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm64Template) (by decide)) (by decide)
 theorem arm64_pc : arm64Site.startPC = UInt256.ofNat 5553 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3593) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3592) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm64_form : ∀ i ∈ arm64Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -626,15 +626,15 @@ private theorem word_toNat_eq_zero_iff (x : UInt256) : x.toNat = 0 ↔ x = 0 := 
 
 def arm65Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 65) ++ byte65Template ++ jumpTemplate 5190
 theorem arm65_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3600).take arm65Template.length = arm65Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3599).take arm65Template.length = arm65Template := by rfl
 def arm65Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm65Template :=
-  StackSiteBuilder.ofSlice arm65Template 3600 arm65_slice
-    (by change 3600 + arm65Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm65Template 3599 arm65_slice
+    (by change 3599 + arm65Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm65Template) (by decide)) (by decide)
 theorem arm65_pc : arm65Site.startPC = UInt256.ofNat 5582 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3600) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3599) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm65_form : ∀ i ∈ arm65Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -685,15 +685,15 @@ def gasSteps_arm65 (input : ByteArray) (hsize : input.size = 65) :
 
 def arm119Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 119) ++ startTemplate 119 ++ jumpTemplate 5151
 theorem arm119_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3612).take arm119Template.length = arm119Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3611).take arm119Template.length = arm119Template := by rfl
 def arm119Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm119Template :=
-  StackSiteBuilder.ofSlice arm119Template 3612 arm119_slice
-    (by change 3612 + arm119Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm119Template 3611 arm119_slice
+    (by change 3611 + arm119Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm119Template) (by decide)) (by decide)
 theorem arm119_pc : arm119Site.startPC = UInt256.ofNat 5618 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3612) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3611) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm119_form : ∀ i ∈ arm119Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -731,15 +731,15 @@ def gasSteps_arm119 (input : ByteArray) :
 
 def arm120Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 120) ++ startTemplate 120 ++ jumpTemplate 5151
 theorem arm120_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3624).take arm120Template.length = arm120Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3623).take arm120Template.length = arm120Template := by rfl
 def arm120Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm120Template :=
-  StackSiteBuilder.ofSlice arm120Template 3624 arm120_slice
-    (by change 3624 + arm120Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm120Template 3623 arm120_slice
+    (by change 3623 + arm120Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm120Template) (by decide)) (by decide)
 theorem arm120_pc : arm120Site.startPC = UInt256.ofNat 5681 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3624) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3623) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm120_form : ∀ i ∈ arm120Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -777,15 +777,15 @@ def gasSteps_arm120 (input : ByteArray) :
 
 def arm128Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 128) ++ startTemplate 128 ++ jumpTemplate 5112
 theorem arm128_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3634).take arm128Template.length = arm128Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3633).take arm128Template.length = arm128Template := by rfl
 def arm128Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm128Template :=
-  StackSiteBuilder.ofSlice arm128Template 3634 arm128_slice
-    (by change 3634 + arm128Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm128Template 3633 arm128_slice
+    (by change 3633 + arm128Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm128Template) (by decide)) (by decide)
 theorem arm128_pc : arm128Site.startPC = UInt256.ofNat 5746 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3634) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3633) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm128_form : ∀ i ∈ arm128Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)
@@ -823,15 +823,15 @@ def gasSteps_arm128 (input : ByteArray) :
 
 def arm256Template : List Instr := DirectDigestRaw.storeTemplate (RecognitionDigest.paddedDigestWord 256) ++ startTemplate 256
 theorem arm256_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 3483).take arm256Template.length = arm256Template := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 3482).take arm256Template.length = arm256Template := by rfl
 def arm256Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka arm256Template :=
-  StackSiteBuilder.ofSlice arm256Template 3483 arm256_slice
-    (by change 3483 + arm256Template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice arm256Template 3482 arm256_slice
+    (by change 3482 + arm256Template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := arm256Template) (by decide)) (by decide)
 theorem arm256_pc : arm256Site.startPC = UInt256.ofNat 4934 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3483) = _
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3482) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 theorem arm256_form : ∀ i ∈ arm256Template.dropLast, RecognitionLift.Advances i :=
   RecognitionLift.advancesAll_sound _ (by decide)

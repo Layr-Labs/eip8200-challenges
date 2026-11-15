@@ -10,18 +10,18 @@ open StackRoundTrace StackRoundTemplate
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (Control.Artifact.submissionArtifact.instructions.drop 3356).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (Control.Artifact.submissionArtifact.instructions.drop 3355).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (Control.Artifact.submissionArtifact.instructions.drop 134).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3356 fallback_slice
-  (by change 3356 + fallbackTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 3355 fallback_slice
+  (by change 3355 + fallbackTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka genericTemplate :=
  StackSiteBuilder.ofSlice genericTemplate 134 generic_slice
   (by change 134 + genericTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
 private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4659 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3356) = _
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3355) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 134) = _

@@ -11,13 +11,13 @@ open StackRoundTrace StackRoundTemplate RipemdMemoryBridge20261028
 def template : List Instr :=
   (FirstRead.template ++ RipemdSubmission20261101.First0.templateA) ++ ReverseLiteralRaw.jumpTemplate 9983
 def site : GenericRoundSite CandidateArtifact.artifact .Osaka template :=
-  StackSiteBuilder.ofSlice template 4029 (by rfl)
-    (by change 4029 + template.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice template 4028 (by rfl)
+    (by change 4028 + template.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem site_pc : site.startPC = UInt256.ofNat 6409 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 4029) = UInt256.ofNat 6409
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 4028) = UInt256.ofNat 6409
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem run (s : State) (cont : UInt256) (rho : List UInt256)

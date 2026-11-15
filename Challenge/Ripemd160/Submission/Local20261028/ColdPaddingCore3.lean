@@ -71,19 +71,19 @@ the cursor, shift the residual, and `DUP4 JUMPI` back to the head 4547 that stay
 loop registers while the residual is nonzero. -/
 def lengthIterationPath : List
     (Challenge.EvmProof.DataStepper.Located Control.Artifact.submissionArtifact .Osaka) :=
-  [⟨4078, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨4077, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4078, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨4079, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4080, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4081, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4082, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
-   ⟨4083, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4084, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4085, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
-   ⟨4086, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4087, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4088, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4089, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4090, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨4080, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4081, .push ⟨1, by decide⟩ (UInt256.ofNat 1), by rfl, by decide⟩,
+   ⟨4082, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4083, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4084, .push ⟨1, by decide⟩ (UInt256.ofNat 8), by rfl, by decide⟩,
+   ⟨4085, .op .SHR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4086, .op (.Swap ⟨0, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4087, .op (.Dup ⟨1, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4088, .op (.Dup ⟨3, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4089, .op .JUMPI, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def lengthBodyPath := lengthIterationPath.take 10
 def lengthBranchPath := lengthIterationPath.drop 10
@@ -140,9 +140,9 @@ theorem lengthBackReturned_eq (input : ByteArray) (i : Nat) :
 
 @[simp] theorem validLengthLoopHead :
     Decode.isValidJumpDest submissionBytecode 6486 = true := by
-  have hpc : Artifact.submissionArtifact.instructionPC 4078 = 6486 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
+  have hpc : Artifact.submissionArtifact.instructionPC 4077 = 6486 := by rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
   rw [← hpc]
-  exact Control.Artifact.submissionArtifact.isValidJumpDest_index 4078 (by rfl)
+  exact Control.Artifact.submissionArtifact.isValidJumpDest_index 4077 (by rfl)
 
 theorem validJump4949 :
     Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 6486).toNat = true :=
