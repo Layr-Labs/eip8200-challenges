@@ -17,27 +17,16 @@ noncomputable def lift (s t : State)
   let u := Classical.choose split1
   have h1 := (Classical.choose_spec split1).1
   have hu := (Classical.choose_spec split1).2.1
-  have h23 := (Classical.choose_spec split1).2.2
-  have split2 := PadTrace.split (by decide) hu h23
-  let v := Classical.choose split2
-  have h2 := (Classical.choose_spec split2).1
-  have hv := (Classical.choose_spec split2).2.1
-  have h3 := (Classical.choose_spec split2).2.2
+  have h2 := (Classical.choose_spec split1).2.2
   have eu := PadTrace.executionEnv h1
-  have ev := (PadTrace.executionEnv h2).trans eu
   have pu : u.pc = UInt256.ofNat 6504 := by
     exact PadTrace.ends_jump_pc hr ((congrArg (fun code => runInstrSeq code s) PadSites.front_last).symm.trans h1)
-  have pv : v.pc = UInt256.ofNat 6409 := by
-    exact PadTrace.ends_jump_pc hu ((congrArg (fun code => runInstrSeq code u) PadSites.middle_last).symm.trans h2)
   have g1 := PadTrace.gasSteps_of_raw PadSites.frontSite s u hc hf hr hnp
     (hpc.trans PadSites.front_pc.symm) PadSites.front_advances h1
-  have g2 := PadTrace.gasSteps_of_raw PadSites.middleSite u v
+  have g2 := PadTrace.gasSteps_of_raw PadSites.middleSite u t
     (by rw [eu]; exact hc) (by change u.executionEnv.fork = .Osaka; rw [eu]; exact hf)
     hu (by rw [eu]; exact hnp) (pu.trans PadSites.middle_pc.symm) PadSites.middle_advances h2
-  have g3 := PadTrace.gasSteps_of_raw PadSites.outputSite v t
-    (by rw [ev]; exact hc) (by change v.executionEnv.fork = .Osaka; rw [ev]; exact hf)
-    hv (by rw [ev]; exact hnp) (pv.trans PadSites.output_pc.symm) PadSites.output_advances h3
-  exact g1.trans (g2.trans g3)
+  exact g1.trans g2
 
 def result (s : State) (len : UInt256) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256) : State :=
@@ -57,7 +46,6 @@ noncomputable def gasSteps (s : State) (len : UInt256) (h : Compression.HashStat
     (by simp [StaggerPersistentFrame.frame]; omega) hr ha hcal
   have hb := PadBody.run (PadSetup.prepared s len) len h off limit rho hs hr ha hcal
     (PadSetup.read s len) (by change Decode.isValidJumpDest s.executionEnv.code 6504 = true; rw [hc]; exact PadSites.valid4601)
-    (by change Decode.isValidJumpDest s.executionEnv.code 6409 = true; rw [hc]; exact PadSites.valid10024)
   exact lift _ _ hr hc hf hnp rfl (DenseScheduleTrace.runInstrSeq_append_running hp hr hb)
 
 theorem hReturn_eq (s : State) (len : UInt256) (h : Compression.HashState)

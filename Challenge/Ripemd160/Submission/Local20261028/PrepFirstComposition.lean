@@ -19,9 +19,8 @@ def result0 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
 theorem step0 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq First0.template {s with pc := (UInt256.ofNat 9944), stack := First0.inputs x rho} = some (result0 s x rho) := by
-  have h := First0.run s x rho hstack hrun hactive
-  exact h
+    runInstrSeq First0.entryTemplate {s with pc := (UInt256.ofNat 9983), stack := First0.midStack x rho s, memory := First0.midMemory s} = some (result0 s x rho) :=
+  First0.runB s x rho hstack hrun hactive
 def args1 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
   ((result0 s x rho).stack[j]?).getD 0
 def result1 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
@@ -92,18 +91,18 @@ theorem step5 (s : State) (x : Nat → UInt256) (rho : List UInt256)
   have h := First5.run (result4 s x rho) (args5 s x rho) rho hstack hrun hactive
   rw [entry5] at h
   exact h
-def template : List Instr := (((((First0.template ++ First1.template) ++ First2.template) ++ First3.template) ++ First4.template) ++ First5.template)
+def template : List Instr := (((((First0.entryTemplate ++ First1.template) ++ First2.template) ++ First3.template) ++ First4.template) ++ First5.template)
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9944).take 241 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 9983).take 202 =
       PcEncoding.assembleBytes template := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (9920+24)).take 241 = _
+  change (CandidateBytes.bytes.drop (9920+63)).take 202 = _
   rw [← List.drop_drop, CandidateBytes.drop155]
   decide +kernel
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq template {s with pc := (UInt256.ofNat 9944), stack := First0.inputs x rho} =
+    runInstrSeq template {s with pc := (UInt256.ofNat 9983), stack := First0.midStack x rho s, memory := First0.midMemory s} =
       some {s with pc := (UInt256.ofNat 10185), stack := First0.inputs x rho, memory := (result5 s x rho).memory} := by
   have g0 := step0 s x rho hstack hrun hactive
   have g1 := DenseScheduleTrace.runInstrSeq_append_running g0

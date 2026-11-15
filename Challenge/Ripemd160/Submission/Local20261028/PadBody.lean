@@ -37,8 +37,7 @@ theorem run (s : State) (len : UInt256) (h : Compression.HashState)
     (hs : rho.length ≤ 892) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = len)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load len 162)
-    (hv1 : Decode.isValidJumpDest s.executionEnv.code 6504 = true)
-    (hv2 : Decode.isValidJumpDest s.executionEnv.code 6409 = true) :
+    (hv1 : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
     runInstrSeq template
       {s with pc := UInt256.ofNat 89, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8::DenseScheduleTemplate.mask16::rho)} =
       some (finalState s len h off limit rho) := by
@@ -59,7 +58,7 @@ theorem run (s : State) (len : UInt256) (h : Compression.HashState)
   rw [tail_eq] at hpme
   have ht := PadOutput.run s h
     (PadTail.tailInput len h (PadCoreLeft79.epilogueRaw len (PadModel.paired len (initial h)))
-      (PadModel.paired len (initial h)) off limit) rho (by omega) hr hv2
+      (PadModel.paired len (initial h)) off limit) rho (by omega) hr
   exact DenseScheduleTrace.runInstrSeq_append_running hpme hr ht
 
 theorem hReturn_eq (s : State) (len : UInt256) (h : Compression.HashState)

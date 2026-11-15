@@ -88,8 +88,8 @@ def padFooterSetupPath : List
 
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨4103, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
-   ⟨4104, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨4092, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
+   ⟨4093, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨97, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨98, .push ⟨1, by decide⟩ (UInt256.ofNat 222), by rfl, by decide⟩,
    ⟨99, .op (.Swap ⟨15, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,

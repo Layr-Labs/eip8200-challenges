@@ -38,7 +38,7 @@ theorem align_pc : alignSite.startPC = UInt256.ofNat 447 := by
   change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 153) = UInt256.ofNat 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
-def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 9911), .op .JUMPI]
+def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 6409), .op .JUMPI]
 def specialSite : GenericRoundSite CandidateArtifact.artifact .Osaka specialTemplate :=
   StackSiteBuilder.ofSlice specialTemplate 81 (by rfl)
     (by change 81 + specialTemplate.length ≤ CandidateArtifact.instructions.length
@@ -74,10 +74,10 @@ theorem valid9949 : Decode.isValidJumpDest CandidateArtifact.artifact.code 4882 
   rw [hpc] at h
   exact h
 #print axioms valid9949
-theorem valid10108 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9911 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 6813 = 9911 := by
+theorem valid10108 : Decode.isValidJumpDest CandidateArtifact.artifact.code 6409 = true := by
+  have hpc : CandidateArtifact.artifact.instructionPC 4029 = 6409 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 6813 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 4029 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid10108

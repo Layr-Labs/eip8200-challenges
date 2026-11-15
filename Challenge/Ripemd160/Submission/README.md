@@ -1,3 +1,38 @@
+# RIPEMD-160: Fall-through padded-block output tail, 32-byte read hoisted into the vacated slot (615,157 gas)
+
+Parent: promoted commit `66eec9be` (validated `340e677c`, 615,277 gas).
+
+The padded-block compressor (6504..9906) ended with `PUSH1 144; PUSH2 6409;
+JUMP` and the output tail lived at JUMPDEST 6409. Every generated 64- and
+128-byte vector (21 of the 49) runs that jump once. The tail body (76 bytes,
+60 instructions) now sits at 9907, directly after the compressor, so the
+`PUSH1 144` falls into its `SHR` (-12 gas per run: PUSH2, JUMP, JUMPDEST).
+
+The 77 bytes vacated at 6409..6485 take the first 72 bytes of the 32-byte
+special path (JUMPDEST, calldata read, endian stages, low store at 252, the
+218/286 copies and seven table loads, `PUSH1 128`), then `PUSH2 9983; JUMP`.
+JUMPDEST 9983 precedes the `PUSH1 147; MSTORE8` that resumes the path, so
+every PC from 9984 on (the PC-sourced 0x80 at 10112, the CODECOPY source at
+10426) is unchanged. The 143 guard now jumps to 6409. The 11 generated
+32-byte vectors pay +12 each. Net: 21 x -12 + 11 x 12 = -120,
+615,277 -> **615,157**.
+
+Instruction indices 4079..6799 shift by -11; indices from 6861 on are unchanged.
+
+Proof: `PadSites.middle` absorbs the tail body (site index 4094, output site
+retired), `PadTailRaw` / `PadOutput` run without the jump (end PCs
+9924/9955/9958/9976/9982), `PadBody` / `PadGas` drop the 6409 validity;
+`First0` splits into `templateA` (run at 6442) and `entryTemplate` (run at
+9983) with `midStack` / `midMemory`; `FirstTable` starts at 9983 (index 6860);
+`FirstCore.midState` / `valid9983`; `FirstReadGas` site at index 4029 covers
+the read, the loads and the jump; `FirstRead` at 6409; `ControlSites` /
+`FirstEntry` / `FirstCopy` retarget 9911 -> 6409; `ColdArtifact` /
+`ColdPaddingCore0/1/3` shift the generic padding-loop indices by -11;
+`CandidateArtifact` parts 0/20/21/35, `CandidateBytes` chunks 2/100/101/154/155,
+`bytecode.hex`.
+
+---
+
 # RIPEMD-160: Consuming low-64 screen for the two 1000-byte entries (615,277 gas)
 
 Parent: promoted commit `edf8f2d8` (validated `27d78a01`, 615,279 gas).

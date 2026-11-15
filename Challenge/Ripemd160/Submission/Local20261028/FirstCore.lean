@@ -24,33 +24,42 @@ theorem frame_eq (cont : UInt256) (rho : List UInt256) :
   simp [First0.inputs, prefixArgs, FirstPrologue.args, FirstPrologue.frame, frame, initialHash,
     StaggerPersistentFrame.frame, NormalPrepare.masks]
   decide +kernel
+def midState (s : State) (cont : UInt256) (rho : List UInt256) : State :=
+  {s with pc := UInt256.ofNat 9983, stack := First0.midStack (prefixArgs cont) rho s, memory := First0.midMemory s}
 theorem table_run (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq FirstTable.template {s with pc := UInt256.ofNat 9944, stack := frame cont rho} =
+    runInstrSeq FirstTable.template (midState s cont rho) =
       some {prepared s with pc := UInt256.ofNat 10185, stack := frame cont rho} := by
   have h := FirstTable.run s (prefixArgs cont) rho (by omega) hr ha
   rw [frame_eq, RipemdSubmission20261101.FirstMemory.eq5] at h
-  simpa only [RipemdSubmission20261101.FirstMemory.state5, prepared, ← frame_eq, First0.inputs] using h
+  simpa only [midState, RipemdSubmission20261101.FirstMemory.state5, prepared, ← frame_eq, First0.inputs] using h
 def tableSite : GenericRoundSite CandidateArtifact.artifact .Osaka FirstTable.template :=
-  StackSiteBuilder.ofSlice FirstTable.template 6838 (by rfl)
-    (by change 6838 + (FirstTable.template).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice FirstTable.template 6860 (by rfl)
+    (by change 6860 + (FirstTable.template).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
-theorem tableSite_pc : tableSite.startPC = UInt256.ofNat 9944 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6838) = UInt256.ofNat 9944
+theorem tableSite_pc : tableSite.startPC = UInt256.ofNat 9983 := by
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6860) = UInt256.ofNat 9983
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def table_gas (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 9944, stack := frame cont rho}
+    GasSteps (midState s cont rho)
       {prepared s with pc := UInt256.ofNat 10185, stack := frame cont rho} := by
-  apply RecognitionLift.gasSteps_of_raw tableSite {s with pc := UInt256.ofNat 9944, stack := frame cont rho}
+  apply RecognitionLift.gasSteps_of_raw tableSite (midState s cont rho)
     {prepared s with pc := UInt256.ofNat 10185, stack := frame cont rho} hc hf hr hnp tableSite_pc.symm
   · apply RecognitionLift.advancesAll_sound; decide +kernel
   · exact table_run s cont rho hs hr ha
+
+theorem valid9983 : Decode.isValidJumpDest CandidateArtifact.artifact.code 9983 = true := by
+  have hpc : CandidateArtifact.artifact.instructionPC 6860 = 9983 := by
+    rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 6860 (by rfl)
+  rw [hpc] at h
+  exact h
 
 def prefixState (s : State) (cont : UInt256) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat 10422, stack := PrefixBefore.outputs (prefixArgs cont) rho s}
@@ -155,7 +164,7 @@ def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 9944, stack := frame cont rho}
+    GasSteps (midState s cont rho)
       {prepared s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (prepared s).memory initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} := by
   have hm608 := First608.read s (prefixArgs cont) rho hc
   rw [RipemdSubmission20261101.FirstMemory.actual_memory] at hm608

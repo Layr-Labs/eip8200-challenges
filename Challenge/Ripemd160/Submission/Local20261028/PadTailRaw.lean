@@ -44,9 +44,6 @@ def template : List Instr :=
     .op .POP,
     .op (.Swap ⟨6, by decide⟩),
     .push ⟨1, by decide⟩ (UInt256.ofNat 144),
-    .push ⟨2, by decide⟩ (UInt256.ofNat 6409),
-    .op .JUMP,
-    .op .JUMPDEST,
     .op .SHR,
     .op .ADD,
     .op (.Swap ⟨4, by decide⟩),
@@ -61,17 +58,16 @@ def template : List Instr :=
     .op .SHR,
     .op (.Swap ⟨5, by decide⟩),
     .op .SHR ]
-theorem run (s : State) (pc : UInt256) (q : ScheduledTailRaw.Input) (m8 m16 : UInt256)
+theorem run (s : State) (q : ScheduledTailRaw.Input) (m8 m16 : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 970) (hr : s.halt = .Running)
-    (hlower : q.lower = UInt256.ofNat 4294967295)
-    (hvalid : Decode.isValidJumpDest s.executionEnv.code 6409 = true) :
-    runInstrSeq template {s with pc := pc, stack := ScheduledTailRaw.stack0 q (m8::m16::rho)} =
-      some {s with pc := UInt256.ofNat 6427, stack := RipemdTerminalMaskWindows20261027.frame (fields q m8 m16) rho} := by
+    (hlower : q.lower = UInt256.ofNat 4294967295) :
+    runInstrSeq template {s with pc := UInt256.ofNat 9893, stack := ScheduledTailRaw.stack0 q (m8::m16::rho)} =
+      some {s with pc := UInt256.ofNat 9924, stack := RipemdTerminalMaskWindows20261027.frame (fields q m8 m16) rho} := by
   have hcap (n : Nat) (hn : n ≤ 50) : rho.length+n < 1024 := by omega
   simp (discharger := omega) [template, fields, ScheduledTailRaw.stack0,
     RipemdTerminalMaskWindows20261027.frame, runInstrSeq, DataStepper.runInstr,
     pcAfter, UInt256.succ, Instr.size, List.exchange, List.getElem?_cons_zero,
-    Nat.add_assoc, hr, hcap, hlower, hvalid, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
+    Nat.add_assoc, hr, hcap, hlower, Word.word_toNat_ofNat, Word.literal_eq_ofNat]
   all_goals repeat first | apply And.intro | rfl
 #print axioms run
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.PadTailRaw
