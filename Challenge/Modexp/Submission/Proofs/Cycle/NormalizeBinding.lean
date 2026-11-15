@@ -11,15 +11,15 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
-def normalizerBlock : Block Artifact.artifact .Osaka 10562 normalizeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7993 101 10562 normalizeProgram
-    (by change 7993+101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def normalizerBlock : Block Artifact.artifact .Osaka 10534 normalizeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7994 101 10534 normalizeProgram
+    (by change 7994+101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def returnBlock : Block Artifact.artifact .Osaka 10683 jumpProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8094 1 10683 jumpProgram
-    (by change 8094+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def returnBlock : Block Artifact.artifact .Osaka 10655 jumpProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8095 1 10655 jumpProgram
+    (by change 8095+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -37,10 +37,10 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (ret slot1 : UInt
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
     (hret : Decode.isValidJumpDest Artifact.bytecode ret.toNat = true) :
-    GasSteps {s with pc := UInt256.ofNat 10562,stack := frame a n ret slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 10534,stack := frame a n ret slot1 rest}
       (returned s a n ret slot1 rest) := by
   have body := normalizerBlock.steps
-    (s := {s with pc := UInt256.ofNat 10562,stack := frame a n ret slot1 rest})
+    (s := {s with pc := UInt256.ofNat 10534,stack := frame a n ret slot1 rest})
     (env.transfer rfl rfl) rfl (run s a n ret slot1 rest h hcap hact)
   have e : Environment Artifact.artifact .Osaka (result s a n ret slot1 rest) := env.transfer rfl rfl
   have valid : Decode.isValidJumpDest (result s a n ret slot1 rest).executionEnv.code ret.toNat = true := by
@@ -60,7 +60,7 @@ noncomputable def correct (s : State) (a n : Nat → UInt256) (ret slot1 : UInt2
     (hn : ∀ i < 9,(n i).toNat < 2^240)
     (horder : HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (n i).toNat) ≤
       HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (a i).toNat)) :
-    PSigma (fun _ : GasSteps {s with pc := UInt256.ofNat 10562,stack := frame a n ret slot1 rest}
+    PSigma (fun _ : GasSteps {s with pc := UInt256.ofNat 10534,stack := frame a n ret slot1 rest}
       (returned s a n ret slot1 rest) =>
     (HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (output a n i).toNat) +
        HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (n i).toNat) =
