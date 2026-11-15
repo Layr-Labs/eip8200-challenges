@@ -44,7 +44,7 @@ def guardProgram : List Instr :=
    .push 1 146,
    .op .SHR,
    .op .ISZERO,
-   .push 1 207,
+   .push 1 203,
    .op .JUMPI]
 def finishProgram : List Instr :=
  [
@@ -60,11 +60,11 @@ def finishProgram : List Instr :=
    .push 2 2720,
    .op .MLOAD]
 def entered (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat) : State :=
- {s with pc := UInt256.ofNat 3347,memory := memory mem,stack := saved (frame mem count width bsize esize)}
+ {s with pc := UInt256.ofNat 3335,memory := memory mem,stack := saved (frame mem count width bsize esize)}
 theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat ≠ 0) :
- runInstructions guardProgram (state s mem 3317 count width bsize esize) =
- some (state s mem 3330 count width bsize esize) := by
+ runInstructions guardProgram (state s mem 3305 count width bsize esize) =
+ some (state s mem 3318 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
  have hb : ¬ (2^256-2^146-1 < (MachineState.readWord mem 2112).toNat) := by
   intro h
@@ -76,9 +76,9 @@ theorem run_hit (s : State) (mem : ByteArray) (count width : UInt256) (bsize esi
  all_goals omega
 theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) (hg : (guardWord mem).toNat = 0)
- (hd : Decode.isValidJumpDest s.executionEnv.code 207 = true) :
- runInstructions guardProgram (state s mem 3317 count width bsize esize) =
- some (state s mem 207 count width bsize esize) := by
+ (hd : Decode.isValidJumpDest s.executionEnv.code 203 = true) :
+ runInstructions guardProgram (state s mem 3305 count width bsize esize) =
+ some (state s mem 203 count width bsize esize) := by
  have hf := Monpro.activeWords_fix s 2112 32 (by decide) (by norm_num) hact
  have hb : 2^256-2^146-1 < (MachineState.readWord mem 2112).toNat :=
   (CycleSubmission.Global.DirectBoundMath.zero_iff _).mp hg
@@ -90,7 +90,7 @@ theorem run_miss (s : State) (mem : ByteArray) (count width : UInt256) (bsize es
 theorem run_finish (s : State) (mem : ByteArray) (count : UInt256) (bsize esize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) :
  runInstructions finishProgram
-   (state s mem 3330 count (UInt256.ofNat 256) bsize esize) =
+   (state s mem 3318 count (UInt256.ofNat 256) bsize esize) =
  some (entered s mem count (UInt256.ofNat 256) bsize esize) := by
  have hmax : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat (2^256-1) := by decide
  have hf := Exp.activeWords_fix2 s 2368 256 2112 256 (by decide) (by decide)

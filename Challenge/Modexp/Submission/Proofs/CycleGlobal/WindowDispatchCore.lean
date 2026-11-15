@@ -1,13 +1,25 @@
-import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneGasCore
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.RelocatedWindowCore
 import Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOnePositive
 set_option warningAsError true
 namespace CycleSubmission.Global.WindowDispatchCore
 open Challenge.Modexp Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
-structure Paths (artifact : ProgramArtifact) (fork : Fork) extends WindowTwentyOneGasCore.Paths artifact fork where
-  base : Block artifact fork 946 WindowTwentyOneEntry.baseProgram
-  modulus : Block artifact fork 947 WindowTwentyOneEntry.modulusProgram
+def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 937)
+    (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
+    (WindowTwentyOneInput.modulusWord input::coreStack input tail)
+def returned (template : State) (input : ByteArray) (tail : List UInt256) : State :=
+  RelocatedWindowCore.Route.returnedState (context template input) (WindowTwentyOneInput.baseWord input)
+    (WindowTwentyOneInput.modulusWord input) (WindowTwentyOneInput.exponentWord input)
+    ((WindowTwentyOneInput.modulusWord input::coreStack input tail).drop 2)
+theorem returned_spec (template : State) (input : ByteArray) (tail : List UInt256)
+    (hmatch : WindowTwentyOneInput.Matches input) :
+    (returned template input tail).toResult = .returned (spec input) := by
+  exact WindowTwentyOnePositive.returned_spec template input tail hmatch
+structure Paths (artifact : ProgramArtifact) (fork : Fork) extends RelocatedWindowCore.Paths artifact fork where
+  base : Block artifact fork 934 WindowTwentyOneEntry.baseProgram
+  modulus : Block artifact fork 935 WindowTwentyOneEntry.modulusProgram
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
     (env : Environment artifact fork template) (input : ByteArray) :
     Environment artifact fork (context template input) where
@@ -21,7 +33,7 @@ private def lift {artifact : ProgramArtifact} {fork : Fork} {pc : Nat} {instruct
     (hrun : runInstructions instructions s = some t) (env : Environment artifact fork s)
     (hpc : s.pc = UInt256.ofNat pc) : GasSteps s t := block.steps env hpc hrun
 def entryState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 946)
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 934)
     (WindowTwentyOneInput.modulusWord input::coreStack input tail)
 def core_steps {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
@@ -29,19 +41,19 @@ def core_steps {artifact : ProgramArtifact} {fork : Fork}
     GasSteps (entryState template input tail) (returned template input tail) := by
   let ctx := context template input
   have ec := context_env template env input
-  have hb := WindowTwentyOneEntry.run_base ctx (WindowTwentyOneInput.modulusWord input)
+  have hb := RelocatedWindowCore.Entry.run_base ctx (WindowTwentyOneInput.modulusWord input)
     (coreStack input tail) (by simp [coreStack]; omega)
-  have hm := WindowTwentyOneEntry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
+  have hm := RelocatedWindowCore.Entry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
     (shiftWord input) (coreStack input tail) (by simp [coreStack]; omega) rfl
   have hm' : runInstructions WindowTwentyOneEntry.modulusProgram
-      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 947)
+      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 935)
         (WindowTwentyOneInput.modulusWord input::coreStack input tail)) =
       some (normalized template input tail) := by
     simpa only [normalized,WindowTwentyOneTablePrelude.initial,WindowTwentyOneEntry.framed,
       shiftWord,ctx,context,List.cons_append,List.nil_append] using hm
   let gb := lift paths.base hb (ec.transfer rfl rfl) rfl
   let gm := lift paths.modulus hm' (ec.transfer rfl rfl) rfl
-  have gc := WindowTwentyOneGasCore.steps_core paths.toPaths ctx ec
+  have gc := RelocatedWindowCore.steps_core paths.toPaths ctx ec
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.exponentWord input)
     (WindowTwentyOneInput.modulusWord input::coreStack input tail)

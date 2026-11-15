@@ -14,7 +14,7 @@ five-word outer frame (`Exp.outer`).  The riding hypotheses discharge definition
 `entrySlots`' words 1..7 are the `readWord um (1280 + 32 i)` limbs and its word 0 is the
 `shiftEntry`/`entryPC` scratch.  `-N` base `Shift.NEG` (= 1280).  This is the statement that
 replaces `Shift.gasSteps_macLoop` together with the old `run_macSetup`/`ShiftDispatchTrace.run_dispatch`
-prefix: from `macSetupState` pc 2895 with `[q, 2^256-1, k] ++ slots ++ outer` over `um` to pc 3171 with
+prefix: from `macSetupState` pc 2883 with `[q, 2^256-1, k] ++ slots ++ outer` over `um` to pc 3159 with
 `[carry, q, 2^256-1, k] ++ slots ++ outer` over `Monpro.l1Step um q NEG n n`.  The three
 `JUMPDEST`s at pc 3168..3170 leave the chain frame in place; the fixup's `SWAP3 POP`
 (pc 3184..3185) spends the mask again before `SUB`.
@@ -49,7 +49,7 @@ theorem rest_length (z : UInt256) (um : ByteArray) (n bsize esize msize k : Nat)
   simp [Shift.entrySlots,Shift.aprevSlot,Shift.hdSlot,Exp.outer]
 /-- The section on the conversion frame: from `macSetupState` (the end of the loop head of the
 width, `(headPC n + 98)`) with the quotient guess above the counter, slots and outer frame over `um`,
-to the middle block at pc 3034 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
+to the middle block at pc 3022 with `[carry, q̂, 2^256-1]` above the unchanged riding frame. -/
 def gasSteps_macSection (z : UInt256) (n : Nat) (hn : n = 4 ∨ n = 8) (s : State) (um : ByteArray) (q : UInt256)
     (bsize esize msize k : Nat)
     (htop : n = 8 → MachineState.readWord um 2336 = UInt256.ofNat 0)

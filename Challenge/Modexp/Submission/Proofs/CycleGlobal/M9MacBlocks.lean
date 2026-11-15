@@ -15,84 +15,84 @@ open CycleSubmission.Global.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.M9Mac
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding
-def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2972 (rideTopProgramNP 10 2336) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2269 16 2972 (rideTopProgramNP 10 2336)
-    (by change 2269+16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block0 : Block CycleSubmission.Artifact.artifact .Osaka 2960 (rideTopProgramNP 10 2336) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2257 16 2960 (rideTopProgramNP 10 2336)
+    (by change 2257+16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block1 : Block CycleSubmission.Artifact.artifact .Osaka 2990 (rideProgram 10 2304) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2285 28 2990 (rideProgram 10 2304)
-    (by change 2285+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block1 : Block CycleSubmission.Artifact.artifact .Osaka 2978 (rideProgram 10 2304) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2273 28 2978 (rideProgram 10 2304)
+    (by change 2273+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block2 : Block CycleSubmission.Artifact.artifact .Osaka 3022 (rideProgram 9 2272) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2313 28 3022 (rideProgram 9 2272)
-    (by change 2313+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block2 : Block CycleSubmission.Artifact.artifact .Osaka 3010 (rideProgram 9 2272) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2301 28 3010 (rideProgram 9 2272)
+    (by change 2301+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block3 : Block CycleSubmission.Artifact.artifact .Osaka 3054 (rideProgram 8 2240) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2341 28 3054 (rideProgram 8 2240)
-    (by change 2341+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block3 : Block CycleSubmission.Artifact.artifact .Osaka 3042 (rideProgram 8 2240) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2329 28 3042 (rideProgram 8 2240)
+    (by change 2329+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block4 : Block CycleSubmission.Artifact.artifact .Osaka 3086 (rideProgram 7 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2369 28 3086 (rideProgram 7 2208)
-    (by change 2369+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block4 : Block CycleSubmission.Artifact.artifact .Osaka 3074 (rideProgram 7 2208) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2357 28 3074 (rideProgram 7 2208)
+    (by change 2357+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block5 : Block CycleSubmission.Artifact.artifact .Osaka 3118 (rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2397 28 3118 (rideProgram 6 2176)
-    (by change 2397+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block5 : Block CycleSubmission.Artifact.artifact .Osaka 3106 (rideProgram 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2385 28 3106 (rideProgram 6 2176)
+    (by change 2385+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block6 : Block CycleSubmission.Artifact.artifact .Osaka 3150 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2425 28 3150 (rideProgram 5 2144)
-    (by change 2425+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block6 : Block CycleSubmission.Artifact.artifact .Osaka 3138 (rideProgram 5 2144) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2413 28 3138 (rideProgram 5 2144)
+    (by change 2413+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def block7 : Block CycleSubmission.Artifact.artifact .Osaka 3182 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2453 30 3182 (blockProgram 1280 2112)
-    (by change 2453+30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block7 : Block CycleSubmission.Artifact.artifact .Osaka 3170 (blockProgram 1280 2112) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2441 30 3170 (blockProgram 1280 2112)
+    (by change 2441+30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3218 exitProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2483 0 3218 exitProgram
-    (by change 2483+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def exitBlock : Block CycleSubmission.Artifact.artifact .Osaka 3206 exitProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2471 0 3206 exitProgram
+    (by change 2471+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10808 (rideTopProgramNP 6 2208) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8159 16 10808 (rideTopProgramNP 6 2208)
-    (by change 8159+16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
-    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
-    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
-    (by decide)
-set_option maxHeartbeats 4000000 in
-def block5c : Block CycleSubmission.Artifact.artifact .Osaka 10826 (rideProgram 6 2176) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8175 28 10826 (rideProgram 6 2176)
-    (by change 8175+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def zero4Block : Block CycleSubmission.Artifact.artifact .Osaka 10812 (rideTopProgramNP 6 2208) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8136 16 10812 (rideTopProgramNP 6 2208)
+    (by change 8136+16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 set_option maxHeartbeats 4000000 in
-def block6c : Block CycleSubmission.Artifact.artifact .Osaka 10858 (rideProgram 5 2144) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8203 28 10858 (rideProgram 5 2144)
-    (by change 8203+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block5c : Block CycleSubmission.Artifact.artifact .Osaka 10830 (rideProgram 6 2176) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8152 28 10830 (rideProgram 6 2176)
+    (by change 8152+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 set_option maxHeartbeats 4000000 in
-def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10890 (blockProgram 1280 2112) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8231 30 10890 (blockProgram 1280 2112)
-    (by change 8231+30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def block6c : Block CycleSubmission.Artifact.artifact .Osaka 10862 (rideProgram 5 2144) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8180 28 10862 (rideProgram 5 2144)
+    (by change 8180+28 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
+    (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
+    (by decide)
+set_option maxHeartbeats 4000000 in
+def block7c : Block CycleSubmission.Artifact.artifact .Osaka 10894 (blockProgram 1280 2112) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8208 30 10894 (blockProgram 1280 2112)
+    (by change 8208+30 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

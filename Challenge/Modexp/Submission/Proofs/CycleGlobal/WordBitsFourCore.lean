@@ -88,17 +88,17 @@ theorem run_body (hcap : rest.length ≤ 1000) :
   simpa only [show (selectProgram shift++factorProgram)++productProgram = bodyProgram shift from rfl,
     hpc,stepValue] using hall
 /-- The one-bit loop control at pc 2400: `DUP2 PUSH1 7 GT SWAP2 PUSH1 1 ADD SWAP2
-PUSH2 2377 JUMPI`. It re-enters the single body while the counter is below seven,
+PUSH2 2365 JUMPI`. It re-enters the single body while the counter is below seven,
 after incrementing the counter; on the eighth bit it falls through to the exit at
-pc 2413 with the counter at eight. -/
+pc 2401 with the counter at eight. -/
 def controlProgram : List Instr :=
   [.push 1 1,.op (.Dup dA2),.op .ADD,.op (.Swap sA1),
    .push 1 7,.op .GT,
-   .push 2 10463,.op .JUMPI]
+   .push 2 10468,.op .JUMPI]
 theorem run_start (hcap : rest.length ≤ 1000) :
     runInstructions [.op .JUMPDEST]
-      (framed s 10463 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest)) =
-      some (framed s 10464 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest)) := by
+      (framed s 10468 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest)) =
+      some (framed s 10469 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   simp [runInstructions,Challenge.EvmProof.Stepper.runInstr,framed,h8]
   decide
@@ -112,17 +112,17 @@ theorem gt_seven_seven :
     UInt256.gt (UInt256.ofNat 7) (UInt256.ofNat 7) = UInt256.ofNat 0 := by
   decide
 /-- One pass of the loop control with the counter at `c`: bits zero to six jump
-back to the body head at 2377, the seventh bit falls through to the exit at 2413. -/
+back to the body head at 2365, the seventh bit falls through to the exit at 2413. -/
 theorem run_control (c : Nat) (hc : c < 8) (hcap : rest.length ≤ 1000)
-    (hjd : Decode.isValidJumpDest s.executionEnv.code 10463 = true) :
+    (hjd : Decode.isValidJumpDest s.executionEnv.code 10468 = true) :
     runInstructions controlProgram
-      (framed s 10486 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m]++rest)) =
-      some (framed s (if c < 7 then 10463 else 10498)
+      (framed s 10491 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m]++rest)) =
+      some (framed s (if c < 7 then 10468 else 10503)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m]++rest)) := by
   have h8 : rest.length + 8 < 1024 := by omega
   have h9 : rest.length + 9 < 1024 := by omega
   have h10 : rest.length + 10 < 1024 := by omega
-  have htarget : (10463 : UInt256).toNat = 10463 := by decide
+  have htarget : (10468 : UInt256).toNat = 10468 := by decide
   have ht1 : UInt256.isTrue (UInt256.ofNat 1) := by decide
   have ht0 : ¬ UInt256.isTrue (UInt256.ofNat 0) := by decide
   by_cases h7 : c < 7

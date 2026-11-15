@@ -10,13 +10,13 @@ set_option maxRecDepth 40000
 set_option maxHeartbeats 16000000
 set_option exponentiation.threshold 4096
 /-!
-# The r5 route from the prologue at 5334
+# The r5 route from the prologue at 5320
 
 From the width-4 entry state the route either returns the 128-byte Montgomery result or, when
 the prologue test fires (the top 40 bits of the staged operand are all ones), jumps to the
 general MODEXP route at 219 with a short stack.
 
-The width test jumps to the prologue (5334), which unpacks N, B and `A * 2^176` into 240-bit
+The width test jumps to the prologue (5320), which unpacks N, B and `A * 2^176` into 240-bit
 digits (`PrologueMeaning`, `Digits`) and stores the scratch words; `Route.from_head` runs the
 `k` squares, the product with B, the normalization and the pack.
 -/
@@ -43,9 +43,9 @@ theorem represents_congr {m1 m2 : ByteArray} {ptr X : Nat}
 theorem eq_toNat (a b : UInt256) : (UInt256.eq a b).toNat = if a.toNat = b.toNat then 1 else 0 := by
   simp only [UInt256.eq]
   split <;> norm_num [UInt256.ofNat,UInt256.toNat,UInt256.size]
-/-- The state at the r5 prologue 5334 with a sixteen-word frame `f0 .. f15` above `rest`. -/
+/-- The state at the r5 prologue 5320 with a sixteen-word frame `f0 .. f15` above `rest`. -/
 def entry (s : State) (em : ByteArray) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 8628,memory := em,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest}
+  {s with pc := UInt256.ofNat 8639,memory := em,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest}
 theorem prologue_route (s : State) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
     (hact : 88 ≤ s.activeWords.toNat) (em : ByteArray) (f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 : UInt256) (rest : List UInt256)
     (hcap : rest.length ≤ 100) (k N A B : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
@@ -58,15 +58,15 @@ theorem prologue_route (s : State) (env : Environment CycleSubmission.Artifact.a
         (Precompile.natToBytes (result N A B k) 128)) ∨
     ∃ (stk : List UInt256) (m' : ByteArray),
       Nonempty (GasSteps (entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest)
-        {s with pc := UInt256.ofNat 207,stack := stk,memory := m'}) ∧ stk.length < 900 := by
+        {s with pc := UInt256.ofNat 203,stack := stk,memory := m'}) ∧ stk.length < 900 := by
   have N_lt : N < 2^1024 := by simpa [Limbs.radix,← pow_mul] using hmod.1
   have A_lt : A < 2^1024 := by omega
   have hNpos : 0 < N := by omega
-  -- the execution up to the test at 5464
-  have g1 : GasSteps (entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with pc := UInt256.ofNat 8628} :=
+  -- the execution up to the test at 5450
+  have g1 : GasSteps (entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with pc := UInt256.ofNat 8639} :=
     GasSteps.refl _
   have g2 := CycleSubmission.R5.Blocks.proSegBlock.steps
-    (s := {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with pc := UInt256.ofNat 8628,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest}) (env.transfer rfl rfl) rfl
+    (s := {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with pc := UInt256.ofNat 8639,stack := f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest}) (env.transfer rfl rfl) rfl
     ((R5CachePrefixBridge.run (entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest (by omega) hact).trans (congrArg some (R5CachePrefixBridge.result_eq (entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest) f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest (by omega) hact)))
   have g3 := CycleSubmission.R5.Blocks.ctl5464_steps {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with memory := proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15}
     (proSegV8_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) ((proSegV8_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_2 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_3 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_4 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV0_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(MachineState.readWord (proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) 160)::f14::f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest) (env.transfer rfl rfl) (by simp only [List.length_cons]; omega)
@@ -160,7 +160,7 @@ theorem prologue_route (s : State) (env : Environment CycleSubmission.Artifact.a
   -- the rest of the prologue and the route from the loop head
   have g3' := g3.cast rfl (by rw [if_pos hcond])
   have g4 := CycleSubmission.R5.Blocks.blk5467Block.steps
-    (s := {{entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with memory := proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15} with pc := UInt256.ofNat 8811,stack := (proSegV8_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_2 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_3 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_4 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV0_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(MachineState.readWord (proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) 160)::f14::f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest})
+    (s := {{entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with memory := proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15} with pc := UInt256.ofNat 8822,stack := (proSegV8_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_2 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_3 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV2_4 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(proSegV0_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15)::(MachineState.readWord (proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) 160)::f14::f0::f1::f2::f3::f4::f5::f6::f7::f8::f9::f10::f11::f12::f13::f14::f15::rest})
     (env.transfer rfl rfl) rfl
     (R5CachedSuffix.result_run {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with memory := proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15} (proSegV8_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) (proSegV2_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) (proSegV2_1 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) (proSegV2_2 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) (proSegV2_3 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) (proSegV2_4 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) (proSegV0_0 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) f14 f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 (MachineState.readWord (proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15) 160) rest (by omega) hact)
   have g5 := CycleSubmission.R5.Blocks.ctl5502_steps {entry s em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15 rest with memory := proSegM7 em f0 f1 f2 f3 f4 f5 f6 f7 f8 f9 f10 f11 f12 f13 f14 f15}

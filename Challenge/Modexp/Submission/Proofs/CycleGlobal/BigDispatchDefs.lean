@@ -40,42 +40,42 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
 def bigJumpPath := Dispatch.wordJumpPath
 def bigCheckExpPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 370 .JUMPDEST,
-   opAt 371 (.Dup ⟨2,by decide⟩),
-   pushAt 372 1 96,
-   opAt 373 .ADD]
+  [opAt 365 .JUMPDEST,
+   opAt 366 (.Dup ⟨2,by decide⟩),
+   pushAt 367 1 96,
+   opAt 368 .ADD]
 def bigCheckModPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 374 (.Dup ⟨2,by decide⟩),
-   opAt 375 (.Dup ⟨1,by decide⟩),
-   opAt 376 .ADD]
+  [opAt 369 (.Dup ⟨2,by decide⟩),
+   opAt 370 (.Dup ⟨1,by decide⟩),
+   opAt 371 .ADD]
 def bigCheckComparePath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 377 1 32,
-   opAt 378 (.Dup ⟨3,by decide⟩),
-   opAt 379 .GT]
+  [pushAt 372 1 32,
+   opAt 373 (.Dup ⟨3,by decide⟩),
+   opAt 374 .GT]
 /-- `PUSH1 236; JUMPI` (pc 580..582): the taken branch is the fallback entry itself. -/
 def bigCheckJumpPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 380 1 207,
-   opAt 381 .JUMPI]
+  [pushAt 375 1 203,
+   opAt 376 .JUMPI]
 def bigCheckPath := bigCheckExpPath++bigCheckModPath ++
   bigCheckComparePath++bigCheckJumpPath
 def bigExpOffsetState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 541
+    pc := UInt256.ofNat 536
     stack := [UInt256.ofNat (96 + baseSize input),
       UInt256.ofNat (modulusSize input),UInt256.ofNat (exponentSize input),
       UInt256.ofNat (baseSize input)] }
 def bigOffsetsState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 544
+    pc := UInt256.ofNat 539
     stack := [UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input),UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 def bigComparedState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 548
+    pc := UInt256.ofNat 543
     stack := [1,UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input),UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
@@ -84,12 +84,12 @@ header dispatcher's taken `JUMPI` lands here with the five header words
 `[modOff, expOff, msize, esize, bsize]` still live. -/
 def bigEntryState (input : ByteArray) : State :=
   { Main.headerState input with
-    pc := UInt256.ofNat 207
+    pc := UInt256.ofNat 203
     stack := [UInt256.ofNat (96 + (baseSize input + exponentSize input)),
       UInt256.ofNat (96 + baseSize input),UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 /-- The dispatcher's exit state is the fallback's entry state. -/
 abbrev bigCheckedState (input : ByteArray) : State := bigEntryState input
-theorem jump704 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 207 = true :=
-  CycleSubmission.Global.Binding.jumpDest 134 (by rfl)
+theorem jump704 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 203 = true :=
+  CycleSubmission.Global.Binding.jumpDest 130 (by rfl)
 end CycleSubmission.Global.BigDispatch

@@ -5,7 +5,7 @@ namespace CycleSubmission.Global.Fallback
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
 theorem correct (s : State) (env : Environment Artifact.artifact .Osaka s)
-    (hpc : s.pc = UInt256.ofNat 207) (hstk : s.stack.length < 900)
+    (hpc : s.pc = UInt256.ofNat 203) (hstk : s.stack.length < 900)
     (haw : s.activeWords.toNat ≤ 289) (hcs : s.callStack = [])
     (hvalid : Challenge.Modexp.ValidInput s.executionEnv.calldata)
     (hpos : 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata) :

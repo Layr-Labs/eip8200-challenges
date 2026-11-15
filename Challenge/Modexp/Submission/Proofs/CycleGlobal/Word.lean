@@ -40,107 +40,107 @@ def pushAt (index : Nat) (width : Fin 33) (value : UInt256)
   ⟨index,.push width value,hget,hwf⟩
 def startPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 70 .JUMPDEST,
-   opAt 71 (.Dup ⟨5,by decide⟩),
-   opAt 72 .CALLDATALOAD,
-   opAt 73 (.Dup ⟨3,by decide⟩),
-   pushAt 74 1 32,
-   opAt 75 .SUB,
-   pushAt 76 1 3,
-   opAt 77 .SHL,
-   opAt 78 .SHR,
-   opAt 79 (.Dup ⟨0,by decide⟩),
-   pushAt 80 1 149,
-   opAt 81 .JUMPI]
+  [opAt 66 .JUMPDEST,
+   opAt 67 (.Dup ⟨5,by decide⟩),
+   opAt 68 .CALLDATALOAD,
+   opAt 69 (.Dup ⟨3,by decide⟩),
+   pushAt 70 1 32,
+   opAt 71 .SUB,
+   pushAt 72 1 3,
+   opAt 73 .SHL,
+   opAt 74 .SHR,
+   opAt 75 (.Dup ⟨0,by decide⟩),
+   pushAt 76 1 145,
+   opAt 77 .JUMPI]
 def zeroTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 82 (.Dup ⟨3,by decide⟩),
-   pushAt 83 0 0,
-   opAt 84 .RETURN]
+  [opAt 78 (.Dup ⟨3,by decide⟩),
+   pushAt 79 0 0,
+   opAt 80 .RETURN]
 def zeroModulusPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   startPath++zeroTailPath
 def startLoadPath := startPath.take 11
-def startJumpPath := [opAt 81 .JUMPI]
+def startJumpPath := [opAt 77 .JUMPI]
 def baseSetupPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 85 .JUMPDEST,
-   pushAt 86 0 0,
-   pushAt 87 0 0]
+  [opAt 81 .JUMPDEST,
+   pushAt 82 0 0,
+   pushAt 83 0 0]
 def baseGuardPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 88 .JUMPDEST,
-   opAt 89 (.Dup ⟨3,by decide⟩),
-   opAt 90 (.Dup ⟨1,by decide⟩),
-   opAt 91 .EQ,
-   pushAt 92 1 180,
-   opAt 93 .JUMPI]
+  [opAt 84 .JUMPDEST,
+   opAt 85 (.Dup ⟨3,by decide⟩),
+   opAt 86 (.Dup ⟨1,by decide⟩),
+   opAt 87 .EQ,
+   pushAt 88 1 176,
+   opAt 89 .JUMPI]
 def baseCallPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 94 (.Dup ⟨2,by decide⟩),
-   opAt 95 (.Dup ⟨1,by decide⟩),
-   opAt 96 (.Dup ⟨8,by decide⟩),
-   opAt 97 .ADD,
-   opAt 98 .CALLDATALOAD,
-   pushAt 99 0 0,
-   opAt 100 .BYTE]
+  [opAt 90 (.Dup ⟨2,by decide⟩),
+   opAt 91 (.Dup ⟨1,by decide⟩),
+   opAt 92 (.Dup ⟨8,by decide⟩),
+   opAt 93 .ADD,
+   opAt 94 .CALLDATALOAD,
+   pushAt 95 0 0,
+   opAt 96 .BYTE]
 def baseTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 101 (.Dup ⟨4,by decide⟩),
-   pushAt 102 2 256,
-   pushAt 103 1 1,
-   opAt 104 (.Swap ⟨5,by decide⟩),
-   opAt 105 .MULMOD,
-   opAt 106 .ADDMOD,
-   opAt 107 (.Swap ⟨1,by decide⟩),
-   opAt 108 .ADD,
-   pushAt 109 1 152,
-   opAt 110 .JUMP]
+  [opAt 97 (.Dup ⟨4,by decide⟩),
+   pushAt 98 2 256,
+   pushAt 99 1 1,
+   opAt 100 (.Swap ⟨5,by decide⟩),
+   opAt 101 .MULMOD,
+   opAt 102 .ADDMOD,
+   opAt 103 (.Swap ⟨1,by decide⟩),
+   opAt 104 .ADD,
+   pushAt 105 1 148,
+   opAt 106 .JUMP]
 def baseFinishTailPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 111 .JUMPDEST,
-   opAt 112 .POP,
-   opAt 113 (.Dup ⟨1,by decide⟩),
-   pushAt 114 0 0,
-   opAt 115 .ISZERO,
-   opAt 116 .LT,
-   pushAt 117 0 0]
+  [opAt 107 .JUMPDEST,
+   opAt 108 .POP,
+   opAt 109 (.Dup ⟨1,by decide⟩),
+   pushAt 110 0 0,
+   opAt 111 .ISZERO,
+   opAt 112 .LT,
+   pushAt 113 0 0]
 def expGuardPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 118 .JUMPDEST,
-   opAt 119 (.Dup ⟨5,by decide⟩),
-   opAt 120 (.Dup ⟨1,by decide⟩),
-   opAt 121 .EQ,
-   pushAt 122 2 10442,
-   opAt 123 .JUMPI]
+  [opAt 114 .JUMPDEST,
+   opAt 115 (.Dup ⟨5,by decide⟩),
+   opAt 116 (.Dup ⟨1,by decide⟩),
+   opAt 117 .EQ,
+   pushAt 118 2 10447,
+   opAt 119 .JUMPI]
 def expLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 124 (.Dup ⟨0,by decide⟩),
-   opAt 125 (.Dup ⟨9,by decide⟩),
-   opAt 126 .ADD,
-   opAt 127 (.Dup ⟨0,by decide⟩),
-   opAt 128 .CALLDATALOAD,
-   pushAt 129 0 0,
-   opAt 130 .BYTE,
-   pushAt 131 0 0]
+  [opAt 120 (.Dup ⟨0,by decide⟩),
+   opAt 121 (.Dup ⟨9,by decide⟩),
+   opAt 122 .ADD,
+   opAt 123 (.Dup ⟨0,by decide⟩),
+   opAt 124 .CALLDATALOAD,
+   pushAt 125 0 0,
+   opAt 126 .BYTE,
+   pushAt 127 0 0]
 def bitJumpPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 133 .JUMP]
+  [opAt 129 .JUMP]
 def bitHeadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 7932 .JUMPDEST,
-   pushAt 7933 1 1,
-   opAt 7934 (.Dup ⟨6,by decide⟩),
-   opAt 7935 .SUB]
+  [opAt 7910 .JUMPDEST,
+   pushAt 7911 1 1,
+   opAt 7912 (.Dup ⟨6,by decide⟩),
+   opAt 7913 .SUB]
 def bitExitPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 7964 .POP,
-   pushAt 7965 2 10432,
-   opAt 7966 .JUMP]
+  [opAt 7942 .POP,
+   pushAt 7943 2 10437,
+   opAt 7944 .JUMP]
 def bitPC (j : Nat) : Nat :=
   match j with
-  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 10463
-  | _ => 10498
+  | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 => 10468
+  | _ => 10503
 def bitCounter (j : Nat) : Nat := if j < 8 then j else 8
 def expOffset (input : ByteArray) : Nat := 96 + baseSize input
 def modulusOffset (input : ByteArray) : Nat := expOffset input + exponentSize input
@@ -152,7 +152,7 @@ def callerRest (input : ByteArray) : List UInt256 :=
     UInt256.ofNat (baseSize input)]
 def nonzeroState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 149
+    pc := UInt256.ofNat 145
     stack := [UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input),UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input),UInt256.ofNat 96,
@@ -160,14 +160,14 @@ def nonzeroState (input : ByteArray) : State :=
       UInt256.ofNat 1186]++callerRest input }
 def loadedState (input : ByteArray) : State :=
   { nonzeroState input with
-    pc := UInt256.ofNat 145
-    stack := (149 : UInt256)::UInt256.ofNat (modulusValue input) ::
+    pc := UInt256.ofNat 141
+    stack := (145 : UInt256)::UInt256.ofNat (modulusValue input) ::
       (nonzeroState input).stack }
 def zeroDispatchState (input : ByteArray) : State :=
-  { nonzeroState input with pc := UInt256.ofNat 146 }
+  { nonzeroState input with pc := UInt256.ofNat 142 }
 def zeroModulusFinalState (input : ByteArray) : State :=
   { Dispatch.wordEntryState input with
-    pc := UInt256.ofNat 148
+    pc := UInt256.ofNat 144
     stack := [UInt256.ofNat 0,UInt256.ofNat (baseSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (modulusSize input),
       UInt256.ofNat 96,UInt256.ofNat (expOffset input),
@@ -187,14 +187,14 @@ def baseAfter (input : ByteArray) : Nat → UInt256
   | i + 1 => baseStep input i (baseAfter input i)
 def baseLoopState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { nonzeroState input with
-    pc := UInt256.ofNat 152
+    pc := UInt256.ofNat 148
     stack := [UInt256.ofNat i,base,UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input),UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input),UInt256.ofNat 96,
       UInt256.ofNat (expOffset input),UInt256.ofNat (modulusOffset input),
       UInt256.ofNat 1186]++callerRest input }
 def baseGuardState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
-  { baseLoopState input i base with pc := UInt256.ofNat 159 }
+  { baseLoopState input i base with pc := UInt256.ofNat 155 }
 def baseRest (input : ByteArray) (i : Nat) (base : UInt256) : List UInt256 :=
   [UInt256.ofNat (modulusValue input),UInt256.ofNat i,base,
     UInt256.ofNat (modulusValue input),UInt256.ofNat (baseSize input),
@@ -203,10 +203,10 @@ def baseRest (input : ByteArray) (i : Nat) (base : UInt256) : List UInt256 :=
     UInt256.ofNat (modulusOffset input),UInt256.ofNat 1186]++callerRest input
 def baseReturnedState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   Accessors.calldataByteReturned (baseLoopState input i base)
-    (UInt256.ofNat (96 + i)) 166 (baseRest input i base)
+    (UInt256.ofNat (96 + i)) 162 (baseRest input i base)
 def baseTailMidState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { baseLoopState input i base with
-    pc := UInt256.ofNat 172
+    pc := UInt256.ofNat 168
     stack := baseStep input i base::UInt256.ofNat i::base ::
       UInt256.ofNat (modulusValue input) ::
       UInt256.ofNat (baseSize input)::UInt256.ofNat (exponentSize input) ::
@@ -215,7 +215,7 @@ def baseTailMidState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
       UInt256.ofNat 1186::callerRest input }
 def baseTailSwappedState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { baseLoopState input i base with
-    pc := UInt256.ofNat 173
+    pc := UInt256.ofNat 169
     stack := base::UInt256.ofNat i::baseStep input i base ::
       UInt256.ofNat (modulusValue input) ::
       UInt256.ofNat (baseSize input)::UInt256.ofNat (exponentSize input) ::
@@ -224,7 +224,7 @@ def baseTailSwappedState (input : ByteArray) (i : Nat) (base : UInt256) : State 
       UInt256.ofNat 1186::callerRest input }
 def baseTailPoppedState (input : ByteArray) (i : Nat) (base : UInt256) : State :=
   { baseLoopState input i base with
-    pc := UInt256.ofNat 174
+    pc := UInt256.ofNat 170
     stack := UInt256.ofNat i::baseStep input i base ::
       UInt256.ofNat (modulusValue input) ::
       UInt256.ofNat (baseSize input)::UInt256.ofNat (exponentSize input) ::
@@ -232,17 +232,17 @@ def baseTailPoppedState (input : ByteArray) (i : Nat) (base : UInt256) : State :
       UInt256.ofNat (expOffset input)::UInt256.ofNat (modulusOffset input) ::
       UInt256.ofNat 1186::callerRest input }
 def baseFinishDispatchState (input : ByteArray) (base : UInt256) : State :=
-  { baseLoopState input (baseSize input) base with pc := UInt256.ofNat 180 }
+  { baseLoopState input (baseSize input) base with pc := UInt256.ofNat 176 }
 def expLoopState (input : ByteArray) (i : Nat) (acc base : UInt256) : State :=
   { nonzeroState input with
-    pc := UInt256.ofNat 187
+    pc := UInt256.ofNat 183
     stack := [UInt256.ofNat i,acc,base,UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input),UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input),UInt256.ofNat 96,
       UInt256.ofNat (expOffset input),UInt256.ofNat (modulusOffset input),
       UInt256.ofNat 1186]++callerRest input }
 def expGuardState (input : ByteArray) (i : Nat) (acc base : UInt256) : State :=
-  { expLoopState input i acc base with pc := UInt256.ofNat 195 }
+  { expLoopState input i acc base with pc := UInt256.ofNat 191 }
 def bitTail (input : ByteArray) : List UInt256 :=
   [UInt256.ofNat (baseSize input),UInt256.ofNat (exponentSize input),
     UInt256.ofNat (modulusSize input),UInt256.ofNat 96,
@@ -251,7 +251,7 @@ def bitTail (input : ByteArray) : List UInt256 :=
 def bitLoopState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   { nonzeroState input with
-    pc := UInt256.ofNat 203
+    pc := UInt256.ofNat 199
     stack := [UInt256.ofNat j,byte,offset,UInt256.ofNat outer,acc,base,
       UInt256.ofNat (modulusValue input)]++bitTail input }
 theorem bitFrame (input : ByteArray) (outer : Nat) (byte offset acc base : UInt256) :
@@ -265,14 +265,14 @@ def bitUnrollState (input : ByteArray) (outer j : Nat) (byte offset : UInt256)
 def bitPushState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
   let s := bitLoopState input outer 0 byte offset acc base
-  { s with pc := UInt256.ofNat 206,stack := UInt256.ofNat 10458::s.stack }
+  { s with pc := UInt256.ofNat 202,stack := UInt256.ofNat 10463::s.stack }
 def bitHeadState (input : ByteArray) (outer : Nat) (byte offset : UInt256)
     (acc base : UInt256) : State :=
-  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 10458
+  WordStep.stW (bitLoopState input outer 0 byte offset acc base) 10463
     ([UInt256.ofNat 0,byte,offset,UInt256.ofNat outer,acc,base,
       UInt256.ofNat (modulusValue input)]++bitTail input)
-theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10458 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7932 (by rfl)
+theorem jump3695 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10463 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7910 (by rfl)
 def gasSteps_bitEntry (input : ByteArray) (outer : Nat)
     (byte offset acc base : UInt256) :
     Challenge.EvmProof.GasSteps (bitLoopState input outer 0 byte offset acc base)
@@ -365,49 +365,49 @@ theorem baseAfter_correct (input : ByteArray) (count : Nat)
       rw [baseAfter,ih (by omega)]
       exact baseStep_spec input count (modulusValue input)
         rfl hmodpos hmodlt (by omega)
-@[simp] theorem startPCs (i : Nat) (hi : 70 ≤ i) (hii : i ≤ 84) :
+@[simp] theorem startPCs (i : Nat) (hi : 66 ≤ i) (hii : i ≤ 80) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([131,132,133,134,135,137,138,140,141,142,143,145,146,147,148] : List Nat)[i - 70]! := by
+      ([127,128,129,130,131,133,134,136,137,138,139,141,142,143,144] : List Nat)[i - 66]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] private theorem jump538 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 149 = true :=
-  CycleSubmission.Global.Binding.jumpDest 85 (by rfl)
-@[simp] theorem wordPCs (i : Nat) (hi : 85 ≤ i) (hii : i ≤ 110) :
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 145 = true :=
+  CycleSubmission.Global.Binding.jumpDest 81 (by rfl)
+@[simp] theorem wordPCs (i : Nat) (hi : 81 ≤ i) (hii : i ≤ 106) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([149,150,151,152,153,154,155,156,158,159,160,161,162,163,164,165,166,167,170,172,173,174,175,176,177,179] : List Nat)[i - 85]! := by
+      ([145,146,147,148,149,150,151,152,154,155,156,157,158,159,160,161,162,163,166,168,169,170,171,172,173,175] : List Nat)[i - 81]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem jump582 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 180 = true :=
-  CycleSubmission.Global.Binding.jumpDest 111 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 176 = true :=
+  CycleSubmission.Global.Binding.jumpDest 107 (by rfl)
 @[simp] theorem jump541 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 152 = true :=
-  CycleSubmission.Global.Binding.jumpDest 88 (by rfl)
-@[simp] theorem baseFinishPCs (i : Nat) (hi : 111 ≤ i) (hii : i ≤ 117) :
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 148 = true :=
+  CycleSubmission.Global.Binding.jumpDest 84 (by rfl)
+@[simp] theorem baseFinishPCs (i : Nat) (hi : 107 ≤ i) (hii : i ≤ 113) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([180,181,182,183,184,185,186] : List Nat)[i - 111]! := by
+      ([176,177,178,179,180,181,182] : List Nat)[i - 107]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem expPCs (i : Nat) (hi : 118 ≤ i) (hii : i ≤ 133) :
+@[simp] theorem expPCs (i : Nat) (hi : 114 ≤ i) (hii : i ≤ 129) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([187,188,189,190,191,194,195,196,197,198,199,200,201,202,203,206] : List Nat)[i - 118]! := by
+      ([183,184,185,186,187,190,191,192,193,194,195,196,197,198,199,202] : List Nat)[i - 114]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem expTailPCs (i : Nat) (hi : 7910 ≤ i) (hii : i ≤ 7917) :
+@[simp] theorem expTailPCs (i : Nat) (hi : 7888 ≤ i) (hii : i ≤ 7895) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10432,10433,10434,10435,10436,10438,10439,10441] : List Nat)[i - 7910]! := by
+      ([10437,10438,10439,10440,10441,10443,10444,10446] : List Nat)[i - 7888]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem jump669 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10442 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7918 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10447 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7896 (by rfl)
 @[simp] theorem jump655 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10432 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7910 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10437 = true :=
+  CycleSubmission.Global.Binding.jumpDest 7888 (by rfl)
 @[simp] theorem jump589 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 187 = true :=
-  CycleSubmission.Global.Binding.jumpDest 118 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 183 = true :=
+  CycleSubmission.Global.Binding.jumpDest 114 (by rfl)
 set_option linter.unusedSimpArgs false in
 theorem run_startLoad (input : ByteArray) (hvalid : ValidInput input)
     (hmsize : 0 < modulusSize input) (hword : modulusSize input ≤ 32) :
@@ -465,8 +465,8 @@ theorem run_startJump_nonzero (input : ByteArray)
   have hcondition : modulusValue input % 2 ^ 256 ≠ 0 := by
     rw [hmodNat]
     omega
-  have h538 : (149 : UInt256).toNat = 149 := by decide
-  have h538Word : (149 : UInt256) = UInt256.ofNat 149 := by decide
+  have h538 : (145 : UInt256).toNat = 145 := by decide
+  have h538Word : (145 : UInt256) = UInt256.ofNat 145 := by decide
   simp [startJumpPath,opAt,Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
     loadedState,nonzeroState,callerRest,Dispatch.wordEntryState,
@@ -574,7 +574,7 @@ theorem run_baseCall (input : ByteArray) (i : Nat) (base : UInt256)
     (a := i) (b := 96) (by omega : i + 96 < 2 ^ 256)
   have hzeroWord : ({ val := 0 } : UInt256) = 0 := by decide
   have hzeroNat : UInt256.ofNat 0 = (0 : UInt256) := by decide
-  have h169 : (166 : UInt256) = UInt256.ofNat 166 := by decide
+  have h169 : (162 : UInt256) = UInt256.ofNat 162 := by decide
   simp (config := { maxSteps := 150000 })
     [baseCallPath,opAt,pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
@@ -595,8 +595,8 @@ theorem run_baseFinishGuard (input : ByteArray) (base : UInt256)
   have hb256 : baseSize input < 2 ^ 256 := by omega
   have hbmod : baseSize input % 2 ^ 256 = baseSize input :=
     Nat.mod_eq_of_lt hb256
-  have h582 : (180 : UInt256).toNat = 180 := by decide
-  have h582Word : (180 : UInt256) = UInt256.ofNat 180 := by decide
+  have h582 : (176 : UInt256).toNat = 176 := by decide
+  have h582Word : (176 : UInt256) = UInt256.ofNat 176 := by decide
   have hzeroFalse : ¬(UInt256.ofNat 0).isZero.toNat = 0 := by decide
   simp (config := { maxSteps := 150000 })
     [baseGuardPath,opAt,pushAt,

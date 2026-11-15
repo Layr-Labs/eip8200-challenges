@@ -20,11 +20,11 @@ theorem run_baseTail (input : ByteArray) (i : Nat) (base : UInt256)
         some (baseLoopState input (i + 1) (baseStep input i base)) := by
   rcases hvalid with ⟨_,hb,he,hm⟩
   have hi256 : i < 2 ^ 256 := by omega
-  have h172 : (166 : UInt256).toNat = 166 := by decide
-  have h172Word : (166 : UInt256) = UInt256.ofNat 166 := by decide
+  have h172 : (162 : UInt256).toNat = 162 := by decide
+  have h172Word : (162 : UInt256) = UInt256.ofNat 162 := by decide
   have h256Word : (256 : UInt256) = UInt256.ofNat 256 := by decide
-  have h157 : (152 : UInt256).toNat = 152 := by decide
-  have h157Word : (152 : UInt256) = UInt256.ofNat 152 := by decide
+  have h157 : (148 : UInt256).toNat = 148 := by decide
+  have h157Word : (148 : UInt256) = UInt256.ofNat 148 := by decide
   have hisucc := Challenge.EvmProof.Word.ofNat_add_ofNat
     (a := i) (b := 1) (by omega : i + 1 < 2 ^ 256)
   have hincLeft : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by

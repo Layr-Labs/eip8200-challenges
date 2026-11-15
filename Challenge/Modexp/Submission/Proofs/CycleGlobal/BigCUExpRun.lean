@@ -22,7 +22,7 @@ def eGuardProgram : List Instr :=
    .op .SHL,
    .op (.Dup dA1),
    .op .EQ,
-   .push 2 363,
+   .push 2 359,
    .op .JUMPI]
 /-- Exact U raw interval [321,333). -/
 def eSquareProgram : List Instr :=
@@ -30,8 +30,8 @@ def eSquareProgram : List Instr :=
   .op (.Dup dA2),
    .push 2 3072,
    .op (.Dup dA0),
-   .push 2 302,
-   .push 2 380,
+   .push 2 298,
+   .push 2 376,
    .op .JUMP]
 /-- Exact U raw interval [333,364). -/
 def e2Program : List Instr :=
@@ -57,7 +57,7 @@ def e2Program : List Instr :=
    .push 1 255,
    .op .SHR,
    .op .ISZERO,
-   .push 2 355,
+   .push 2 351,
    .op .JUMPI]
 /-- Exact U raw interval [364,379). -/
 def eMulProgram : List Instr :=
@@ -66,8 +66,8 @@ def eMulProgram : List Instr :=
    .op .CALLDATALOAD,
    .push 2 5120,
    .push 2 3072,
-   .push 2 348,
-   .push 2 380,
+   .push 2 344,
+   .push 2 376,
    .op .JUMP]
 /-- Exact U raw interval [379,386). -/
 def e4Program : List Instr :=
@@ -83,7 +83,7 @@ def e3Program : List Instr :=
   .op .JUMPDEST,
    .push 1 1,
    .op .ADD,
-   .push 2 279,
+   .push 2 275,
    .op .JUMP]
 /-- Exact U raw interval [394,411). -/
 def e9Program : List Instr :=
@@ -94,34 +94,34 @@ def e9Program : List Instr :=
    .push 0 0,
    .op .MCOPY,
    .push 2 8192,
-   .push 2 264,
-   .push 2 451,
+   .push 2 260,
+   .push 2 447,
    .op .JUMP]
 structure ExpJumps (code : ByteArray) : Prop where
-  j295 : Decode.isValidJumpDest code 264 = true
-  j310 : Decode.isValidJumpDest code 279 = true
-  j333 : Decode.isValidJumpDest code 302 = true
-  j379 : Decode.isValidJumpDest code 348 = true
-  j386 : Decode.isValidJumpDest code 355 = true
-  j394 : Decode.isValidJumpDest code 363 = true
-  j411 : Decode.isValidJumpDest code 380 = true
-  j482 : Decode.isValidJumpDest code 451 = true
+  j295 : Decode.isValidJumpDest code 260 = true
+  j310 : Decode.isValidJumpDest code 275 = true
+  j333 : Decode.isValidJumpDest code 298 = true
+  j379 : Decode.isValidJumpDest code 344 = true
+  j386 : Decode.isValidJumpDest code 351 = true
+  j394 : Decode.isValidJumpDest code 359 = true
+  j411 : Decode.isValidJumpDest code 376 = true
+  j482 : Decode.isValidJumpDest code 447 = true
 structure ExpBlocks (artifact : ProgramArtifact) where
-  eGuard : Block artifact .Osaka 279 eGuardProgram
-  eSquare : Block artifact .Osaka 290 eSquareProgram
-  e2 : Block artifact .Osaka 302 e2Program
-  eMul : Block artifact .Osaka 333 eMulProgram
-  e4 : Block artifact .Osaka 348 e4Program
-  e3 : Block artifact .Osaka 355 e3Program
-  e9 : Block artifact .Osaka 363 e9Program
+  eGuard : Block artifact .Osaka 275 eGuardProgram
+  eSquare : Block artifact .Osaka 286 eSquareProgram
+  e2 : Block artifact .Osaka 298 e2Program
+  eMul : Block artifact .Osaka 329 eMulProgram
+  e4 : Block artifact .Osaka 344 e4Program
+  e3 : Block artifact .Osaka 351 e3Program
+  e9 : Block artifact .Osaka 359 e9Program
   jumps : ExpJumps artifact.code
 theorem run_eGuard_done (s : State) (i el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hel : el ≤ 1024)
     (hi : i = el * 8)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions eGuardProgram
-      (st s 279 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 363 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 275 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 359 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshl := shl3_ofNat el (by omega)
@@ -134,8 +134,8 @@ theorem run_eGuard_go (s : State) (i el ml : Nat) (rest : List UInt256)
     (hi : i ≠ el * 8) (hi' : i < 2 ^ 256)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions eGuardProgram
-      (st s 279 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 290 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 275 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 286 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           mem AW) := by
   have hc := caps _ hcap
   have hshl := shl3_ofNat el (by omega)
@@ -147,8 +147,8 @@ theorem run_eSquare (s : State) (i el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions eSquareProgram
-      (st s 290 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 380 (UInt256.ofNat 302::UInt256.ofNat 3072::UInt256.ofNat 3072 ::
+      (st s 286 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 376 (UInt256.ofNat 298::UInt256.ofNat 3072::UInt256.ofNat 3072 ::
           UInt256.ofNat ml::UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           mem AW) := by
   have hc := caps _ hcap
@@ -160,8 +160,8 @@ def eBranchProgram := e2Program.drop 20
 theorem run_eCopy (s : State) (i el ml : Nat) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) (hml : ml ≤ 1024) :
     runInstructions eCopyProgram
-      (st s 302 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-    some (st s 309 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 298 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+    some (st s 305 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
       (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   have hc := caps _ hcap
   have h1 : ml < LIM := by simp only [LIM]; omega
@@ -171,8 +171,8 @@ theorem run_eCopy (s : State) (i el ml : Nat) (rest : List UInt256) (mem : ByteA
 theorem run_eRead (s : State) (i bl : Nat) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) (hi : i < 8192) (hbl : bl ≤ 1024)
     (hb : MachineState.readWord s.executionEnv.calldata 0 = UInt256.ofNat bl) :
-    runInstructions eReadProgram (st s 309 (UInt256.ofNat i::rest) mem AW) =
-      some (st s 320 (MachineState.readWord s.executionEnv.calldata (96 + (bl + i / 8)) ::
+    runInstructions eReadProgram (st s 305 (UInt256.ofNat i::rest) mem AW) =
+      some (st s 316 (MachineState.readWord s.executionEnv.calldata (96 + (bl + i / 8)) ::
         UInt256.ofNat i::rest) mem AW) := by
   have hc := caps _ hcap
   have hs := shr3_ofNat i (by omega)
@@ -185,21 +185,21 @@ theorem run_eRead (s : State) (i bl : Nat) (rest : List UInt256) (mem : ByteArra
 theorem run_eBit (s : State) (i a : Nat) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) (hi : i < 8192) :
     runInstructions eBitProgram
-      (st s 320 (MachineState.readWord s.executionEnv.calldata a::UInt256.ofNat i::rest) mem AW) =
-      some (st s 328 (bitWord s.executionEnv.calldata a (i % 8)::UInt256.ofNat i::rest) mem AW) := by
+      (st s 316 (MachineState.readWord s.executionEnv.calldata a::UInt256.ofNat i::rest) mem AW) =
+      some (st s 324 (bitWord s.executionEnv.calldata a (i % 8)::UInt256.ofNat i::rest) mem AW) := by
   have hc := caps _ hcap
   have ha := and7_ofNat i (by omega)
   u_run [eBitProgram,e2Program,hc,ha]
 theorem run_eBranch_zero (s : State) (bit : UInt256) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) (hbit : bit.toNat = 0) (hJ : ExpJumps s.executionEnv.code) :
-    runInstructions eBranchProgram (st s 328 (bit::rest) mem AW) =
-      some (st s 355 rest mem AW) := by
+    runInstructions eBranchProgram (st s 324 (bit::rest) mem AW) =
+      some (st s 351 rest mem AW) := by
   have hc := caps _ hcap
   u_run [eBranchProgram,e2Program,hc,hbit,hJ.j386]
 theorem run_eBranch_nz (s : State) (bit : UInt256) (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) (hbit : bit.toNat ≠ 0) :
-    runInstructions eBranchProgram (st s 328 (bit::rest) mem AW) =
-      some (st s 333 rest mem AW) := by
+    runInstructions eBranchProgram (st s 324 (bit::rest) mem AW) =
+      some (st s 329 rest mem AW) := by
   have hc := caps _ hcap
   u_run [eBranchProgram,e2Program,hc,hbit]
 theorem run_e2_skip (s : State) (i bl el ml : Nat) (rest : List UInt256)
@@ -210,8 +210,8 @@ theorem run_e2_skip (s : State) (i bl el ml : Nat) (rest : List UInt256)
       (96 + (bl + i / 8)) (i % 8)).toNat = 0)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions e2Program
-      (st s 302 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 355 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 298 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 351 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   let m1 := MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072
   have g1 := run_eCopy s i el ml rest mem (by omega) hml
@@ -234,8 +234,8 @@ theorem run_e2_mul (s : State) (i bl el ml : Nat) (rest : List UInt256)
       (96 + (bl + i / 8)) (i % 8)).toNat ≠ 0)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions e2Program
-      (st s 302 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 333 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 298 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 329 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   let m1 := MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072
   have g1 := run_eCopy s i el ml rest mem (by omega) hml
@@ -255,8 +255,8 @@ theorem run_eMul (s : State) (i bl el ml : Nat) (rest : List UInt256)
     (hb : MachineState.readWord s.executionEnv.calldata 0 = UInt256.ofNat bl)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions eMulProgram
-      (st s 333 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 380 (UInt256.ofNat 348::UInt256.ofNat 3072::UInt256.ofNat 5120 ::
+      (st s 329 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 376 (UInt256.ofNat 344::UInt256.ofNat 3072::UInt256.ofNat 5120 ::
           UInt256.ofNat bl::UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           mem AW) := by
   have hc := caps _ hcap
@@ -265,8 +265,8 @@ theorem run_e4 (s : State) (i el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hml : ml ≤ 1024)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions e4Program
-      (st s 348 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 355 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 344 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 351 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 0 ml) 3072) AW) := by
   have hc := caps _ hcap
   have h2 : ml < LIM := by simp only [LIM]; omega
@@ -277,8 +277,8 @@ theorem run_e3 (s : State) (i el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 8192)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions e3Program
-      (st s 355 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 279 (UInt256.ofNat (i + 1)::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 351 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 275 (UInt256.ofNat (i + 1)::UInt256.ofNat el::UInt256.ofNat ml::rest)
           mem AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat 1 + UInt256.ofNat i = UInt256.ofNat (i + 1) := by
@@ -288,8 +288,8 @@ theorem run_e9 (s : State) (i el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hml : ml ≤ 1024)
     (hJ : ExpJumps s.executionEnv.code) :
     runInstructions e9Program
-      (st s 363 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 451 (UInt256.ofNat 264::UInt256.ofNat 8192 ::
+      (st s 359 (UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 447 (UInt256.ofNat 260::UInt256.ofNat 8192 ::
           UInt256.ofNat i::UInt256.ofNat el::UInt256.ofNat ml::rest)
           (MachineState.writeBytes mem (MachineState.readPadded mem 3072 ml) 0) AW) := by
   have hc := caps _ hcap

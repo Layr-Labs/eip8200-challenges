@@ -23,7 +23,7 @@ theorem route4 (s : State) (mem : ByteArray) (bsize esize k N A B : Nat)
         (Precompile.natToBytes (R5Route.result N A B k) 128)) ∨
     ∃ (stk : List UInt256) (m' : ByteArray),
       Nonempty (GasSteps (DirectR5Reuse.result s mem (UInt256.ofNat (k-1)) bsize esize 128)
-        {s with pc := UInt256.ofNat 207,stack := stk,memory := m'}) ∧ stk.length < 900 := by
+        {s with pc := UInt256.ofNat 203,stack := stk,memory := m'}) ∧ stk.length < 900 := by
   simpa only [DirectR5Reuse.result] using
     (R5Route.prologue_route s env hact mem (MachineState.readWord mem 1664)
  (CycleSubmission.Global.Fast.Shift.hdSlot mem)
@@ -72,7 +72,7 @@ theorem handled4 (input : ByteArray) (s : State) (mem : ByteArray) (bsize esize 
     exact ⟨final,⟨head.trans tail⟩,hd,hr⟩
   · obtain ⟨tr⟩ := htr
     obtain ⟨done,⟨tail⟩,hd,hr⟩ := Fallback.correct
-      {s with pc := UInt256.ofNat 207,stack := stk,memory := m'} (env.transfer rfl rfl) rfl hlen
+      {s with pc := UInt256.ofNat 203,stack := stk,memory := m'} (env.transfer rfl rfl) rfl hlen
       hactLe hcalls (by change Challenge.Modexp.ValidInput s.executionEnv.calldata; rwa [hdata])
       (by change 0 < Challenge.Modexp.modulusSize s.executionEnv.calldata; rwa [hdata])
     refine ⟨done,⟨(head.trans tr).trans tail⟩,hd,?_⟩

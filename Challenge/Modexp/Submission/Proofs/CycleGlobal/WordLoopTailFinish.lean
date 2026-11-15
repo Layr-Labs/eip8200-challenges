@@ -14,14 +14,14 @@ open EvmSemantics.EVM
 open Word
 attribute [local simp] Challenge.EvmProof.Word.ofNat_add_mod
   Challenge.EvmProof.Word.succ_ofNat_mod
-@[simp] private theorem exitPCs (i : Nat) (hi : 7910 ≤ i) (hii : i ≤ 7931) :
+@[simp] private theorem exitPCs (i : Nat) (hi : 7888 ≤ i) (hii : i ≤ 7909) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([10432,10433,10434,10435,10436,10438,10439,10441,10442,10443,10444,10445,10446,10448,10449,10451,10452,10453,10454,10455,10456,10457] : List Nat)[i - 7910]! := by
+      ([10437,10438,10439,10440,10441,10443,10444,10446,10447,10448,10449,10450,10451,10453,10454,10456,10457,10458,10459,10460,10461,10462] : List Nat)[i - 7888]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] private theorem jump589 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 187 = true :=
-  CycleSubmission.Global.Binding.jumpDest 118 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 183 = true :=
+  CycleSubmission.Global.Binding.jumpDest 114 (by rfl)
 set_option linter.unusedSimpArgs false in
 theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     (acc base : UInt256) (hvalid : ValidInput input)
@@ -37,8 +37,8 @@ theorem run_bitFinishTailFinish (input : ByteArray) (outer : Nat)
     rw [Challenge.EvmProof.Word.word_add_comm]
     exact hsucc
   have honeWord : (1 : UInt256) = UInt256.ofNat 1 := by decide
-  have h589 : (187 : UInt256).toNat = 187 := by decide
-  have h589Word : (187 : UInt256) = UInt256.ofNat 187 := by decide
+  have h589 : (183 : UInt256).toNat = 183 := by decide
+  have h589Word : (183 : UInt256) = UInt256.ofNat 183 := by decide
   simp (config := { maxSteps := 125000 })
     [bitFinishTailFinishPath,Word.opAt,Word.pushAt,Word.wfOp,
       Challenge.EvmProof.Stepper.runLocatedBlock,
