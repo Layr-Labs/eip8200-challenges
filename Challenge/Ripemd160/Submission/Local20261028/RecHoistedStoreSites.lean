@@ -28,7 +28,7 @@ def template : Piece → List Instr
 
 def index : Piece → Nat
   | .seed => 21 | .scanner => 3848 | .branch => 4001
-  | .success => 4003 | .miss => 4006 | .cleanup => 3349 | .copy => 133
+  | .success => 4003 | .miss => 4006 | .cleanup => 3349 | .copy => 134
 
 def pc : Piece → Nat
   | .seed => 48 | .scanner => 6144 | .branch => 6369
@@ -106,9 +106,9 @@ theorem valid_cleanup : Decode.isValidJumpDest HoistedStoreArtifact.code 4651 = 
 
 #eval IO.println "elaborating valid_generic"
 theorem valid_generic : Decode.isValidJumpDest HoistedStoreArtifact.code 245 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 133 = 245 := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 134 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 133 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 134 (by rfl)
   rw [hp] at h; exact h
 
 

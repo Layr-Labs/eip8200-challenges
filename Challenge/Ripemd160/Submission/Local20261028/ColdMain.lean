@@ -6,7 +6,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.M
 open EvmSemantics EvmSemantics.EVM
 abbrev initializedState (input : ByteArray) : State := Control.Execution.mainStart input
 @[simp] theorem initializedState_pc (input : ByteArray) :
-    (initializedState input).pc = UInt256.ofNat (Control.Artifact.instructionPC 134) := by rfl
+    (initializedState input).pc = UInt256.ofNat (Control.Artifact.instructionPC 135) := by rfl
 @[simp] theorem initializedState_stack (input : ByteArray) :
     (initializedState input).stack = [] := by rfl
 @[simp] theorem initializedState_halt (input : ByteArray) :

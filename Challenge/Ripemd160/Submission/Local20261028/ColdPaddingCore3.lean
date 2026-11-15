@@ -150,9 +150,9 @@ theorem validJump4949 :
 
 theorem validJump198 :
     Decode.isValidJumpDest submissionBytecode 198 = true := by
-  have hpc : Control.Artifact.submissionArtifact.instructionPC 97 = 198 := padPc116
+  have hpc : Control.Artifact.submissionArtifact.instructionPC 98 = 198 := padPc116
   rw [← hpc]
-  exact Control.Artifact.submissionArtifact.isValidJumpDest_index 97 (by rfl)
+  exact Control.Artifact.submissionArtifact.isValidJumpDest_index 98 (by rfl)
 
 theorem validJump461 :
     Decode.isValidJumpDest submissionBytecode (UInt256.ofNat 461).toNat = true :=

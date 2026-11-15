@@ -36,86 +36,86 @@ theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4622 := by
 def incTemplate : List Instr := Control.LoopRaw.incTemplate
 
 theorem inc_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 74).take incTemplate.length = incTemplate := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 75).take incTemplate.length = incTemplate := by rfl
 
 def incSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka incTemplate :=
-  StackSiteBuilder.ofSlice incTemplate 74 inc_slice
-    (by change 74 + incTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice incTemplate 75 inc_slice
+    (by change 75 + incTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check incTemplate (by decide))
     (by decide)
 
 theorem inc_pc : incSite.startPC = UInt256.ofNat 133 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 74) = UInt256.ofNat 133
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 75) = UInt256.ofNat 133
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def chainTemplate : List Instr := [.op .POP]
 
 theorem chain_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 73).take chainTemplate.length = chainTemplate := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 74).take chainTemplate.length = chainTemplate := by rfl
 
 def chainSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka chainTemplate :=
-  StackSiteBuilder.ofSlice chainTemplate 73 chain_slice
-    (by change 73 + chainTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice chainTemplate 74 chain_slice
+    (by change 74 + chainTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check chainTemplate (by decide))
     (by decide)
 
 theorem chain_pc : chainSite.startPC = UInt256.ofNat 132 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 73) = UInt256.ofNat 132
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 74) = UInt256.ofNat 132
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def glHeadCode : List Instr := Control.LoopRaw.glHeadTemplate
 
 theorem glHead_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 115).take glHeadCode.length = glHeadCode := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 116).take glHeadCode.length = glHeadCode := by rfl
 
 def glHeadSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka glHeadCode :=
-  StackSiteBuilder.ofSlice glHeadCode 115 glHead_slice
-    (by change 115 + glHeadCode.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice glHeadCode 116 glHead_slice
+    (by change 116 + glHeadCode.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check glHeadCode (by decide))
     (by decide)
 
 theorem glHead_pc : glHeadSite.startPC = UInt256.ofNat 222 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 115) = UInt256.ofNat 222
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 116) = UInt256.ofNat 222
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def glTestCode : List Instr := Control.LoopRaw.glTestTemplate Control.LoopRaw.outPC
 
 theorem glTest_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 120).take glTestCode.length = glTestCode := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 121).take glTestCode.length = glTestCode := by rfl
 
 def glTestSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka glTestCode :=
-  StackSiteBuilder.ofSlice glTestCode 120 glTest_slice
-    (by change 120 + glTestCode.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice glTestCode 121 glTest_slice
+    (by change 121 + glTestCode.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check glTestCode (by decide))
     (by decide)
 
 theorem glTest_pc : glTestSite.startPC = UInt256.ofNat 228 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 120) = UInt256.ofNat 228
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 121) = UInt256.ofNat 228
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 def joinTemplate : List Instr := [.op .JUMPDEST]
 
 theorem join_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 158).take joinTemplate.length = joinTemplate := by rfl
+    (Control.Artifact.submissionArtifact.instructions.drop 159).take joinTemplate.length = joinTemplate := by rfl
 
 def joinSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka joinTemplate :=
-  StackSiteBuilder.ofSlice joinTemplate 158 join_slice
-    (by change 158 + joinTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice joinTemplate 159 join_slice
+    (by change 159 + joinTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check joinTemplate (by decide))
     (by decide)
 
 theorem join_pc : joinSite.startPC = UInt256.ofNat 461 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 158) = UInt256.ofNat 461
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 159) = UInt256.ofNat 461
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem valid_loop (s : State) (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) :
@@ -124,9 +124,9 @@ theorem valid_loop (s : State) (hcode : s.executionEnv.code = Control.Artifact.s
 
 theorem valid_chain (s : State) (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 210).toNat = true := by
-  have hpc : Control.Artifact.submissionArtifact.instructionPC 106 = 210 := by
+  have hpc : Control.Artifact.submissionArtifact.instructionPC 107 = 210 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 106 (by rfl)
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 107 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 210 = true
   rw [hcode]
@@ -169,56 +169,56 @@ def gasSteps_dispatch (s : State) (h : Compression.HashState) (off cont junk : U
 
 /-- The 192 stub pushes its next continuation before jumping to the shared join. -/
 def stub192Push : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.pushContTemplate 128) :=
-  StackSiteBuilder.ofSlice (Control.LoopRaw.pushContTemplate 128) 94 (by rfl)
-    (by change 94 + (Control.LoopRaw.pushContTemplate 128).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (Control.LoopRaw.pushContTemplate 128) 95 (by rfl)
+    (by change 95 + (Control.LoopRaw.pushContTemplate 128).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := (Control.LoopRaw.pushContTemplate 128)) (by decide))
     (by decide)
 
 def glPush : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.pushContTemplate 222) :=
-  StackSiteBuilder.ofSlice (Control.LoopRaw.pushContTemplate 222) 123 (by rfl)
-    (by change 123 + (Control.LoopRaw.pushContTemplate 222).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (Control.LoopRaw.pushContTemplate 222) 124 (by rfl)
+    (by change 124 + (Control.LoopRaw.pushContTemplate 222).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := (Control.LoopRaw.pushContTemplate 222)) (by decide))
     (by decide)
 
 def joinSwapSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka Control.LoopRaw.joinSwapTemplate :=
-  StackSiteBuilder.ofSlice Control.LoopRaw.joinSwapTemplate 106 (by rfl)
-    (by change 106 + Control.LoopRaw.joinSwapTemplate.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice Control.LoopRaw.joinSwapTemplate 107 (by rfl)
+    (by change 107 + Control.LoopRaw.joinSwapTemplate.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check Control.LoopRaw.joinSwapTemplate (by decide))
     (by decide)
 
 theorem stub128Set_slice :
-    (Control.Artifact.submissionArtifact.instructions.drop 71).take
+    (Control.Artifact.submissionArtifact.instructions.drop 72).take
       (Control.LoopRaw.setContTemplate 64).length =
         Control.LoopRaw.setContTemplate 64 := by rfl
 
 def stub128Set : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (Control.LoopRaw.setContTemplate 64) :=
-  StackSiteBuilder.ofSlice (Control.LoopRaw.setContTemplate 64) 71 stub128Set_slice
-    (by change 71 + (Control.LoopRaw.setContTemplate 64).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (Control.LoopRaw.setContTemplate 64) 72 stub128Set_slice
+    (by change 72 + (Control.LoopRaw.setContTemplate 64).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := Control.LoopRaw.setContTemplate 64) (by decide))
     (by decide)
 
 theorem stub192Push_pc : stub192Push.startPC = UInt256.ofNat 193 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 94) = UInt256.ofNat 193
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 95) = UInt256.ofNat 193
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem glPush_pc : glPush.startPC = UInt256.ofNat 233 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 123) = UInt256.ofNat 233
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 124) = UInt256.ofNat 233
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem joinSwapSite_pc : joinSwapSite.startPC = UInt256.ofNat 210 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 106) = UInt256.ofNat 210
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 107) = UInt256.ofNat 210
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem stub128Set_pc : stub128Set.startPC = UInt256.ofNat 129 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 71) = UInt256.ofNat 129
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 72) = UInt256.ofNat 129
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- A single `JUMPDEST` site (the stub entries 192 and 128). -/
@@ -230,15 +230,15 @@ def jumpdestSite (idx : Nat)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := [.op .JUMPDEST]) (by decide)) (by decide)
 
-def stub192Dest := jumpdestSite 93 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
-def stub128Dest := jumpdestSite 70 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
+def stub192Dest := jumpdestSite 94 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
+def stub128Dest := jumpdestSite 71 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
 
 theorem stub192Dest_pc : stub192Dest.startPC = UInt256.ofNat 192 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 93) = UInt256.ofNat 192
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 94) = UInt256.ofNat 192
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem stub128Dest_pc : stub128Dest.startPC = UInt256.ofNat 128 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 70) = UInt256.ofNat 128
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 71) = UInt256.ofNat 128
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 /-- `PUSH1 0x83 JUMP`: hop to the shared continuation join at 210. -/
@@ -251,21 +251,21 @@ def advJumpSite (idx : Nat)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := PadJump.template1 210) (by decide)) (by decide)
 
-def stub192Jump := advJumpSite 95 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
+def stub192Jump := advJumpSite 96 (by rfl) (by rw [CandidateArtifact.instruction_count]; decide)
 /-- `PUSH1 0x83 JUMP` at 61: the last-block stay hops to the shared join at 210. -/
 def glHopJump : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (PadJump.template1 210) :=
-  StackSiteBuilder.ofSlice (PadJump.template1 210) 124 (by rfl)
-    (by change 124 + (PadJump.template1 210).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (PadJump.template1 210) 125 (by rfl)
+    (by change 125 + (PadJump.template1 210).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := PadJump.template1 210) (by decide)) (by decide)
 
 theorem stub192Jump_pc : stub192Jump.startPC = UInt256.ofNat 195 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 95) = UInt256.ofNat 195
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 96) = UInt256.ofNat 195
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 theorem glHopJump_pc : glHopJump.startPC = UInt256.ofNat 235 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 124) = UInt256.ofNat 235
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 125) = UInt256.ofNat 235
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 
 private def jumpdest_gasSteps (site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka [.op .JUMPDEST])
@@ -316,9 +316,9 @@ private def advJump_gasSteps
 
 theorem valid_join (s : State) (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) :
     Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 210).toNat = true := by
-  have hpc : Control.Artifact.submissionArtifact.instructionPC 106 = 210 := by
+  have hpc : Control.Artifact.submissionArtifact.instructionPC 107 = 210 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 106 (by rfl)
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 107 (by rfl)
   rw [hpc] at h
   change Decode.isValidJumpDest s.executionEnv.code 210 = true
   rw [hcode]
@@ -399,13 +399,13 @@ def gasSteps_advance (s : State) (h : Compression.HashState) (off cont dead : UI
 
 /-- The cold join clones the original swap/drop/advance path, preserving generic semantics. -/
 def splitJoinSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka SplitJoinRaw.template :=
-  StackSiteBuilder.ofSlice SplitJoinRaw.template 106 (by rfl)
-    (by change 106 + SplitJoinRaw.template.length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice SplitJoinRaw.template 107 (by rfl)
+    (by change 107 + SplitJoinRaw.template.length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check SplitJoinRaw.template (by decide)) (by decide)
 theorem splitJoin_pc : splitJoinSite.startPC = UInt256.ofNat 210 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 106) = UInt256.ofNat 210
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 107) = UInt256.ofNat 210
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private def splitJoin_gasSteps (s : State) (h : Compression.HashState) (off cont x : UInt256)
     (rho : List UInt256) (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -458,11 +458,11 @@ def gasSteps_stub128 (s : State) (h : Compression.HashState) (off cont : UInt256
 theorem glMsize_decoded (s : State) (stack : List UInt256)
     (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka) :
     ({s with pc := UInt256.ofNat 227, stack := stack} : State).decodedOp = some .MSIZE := by
-  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 119 .MSIZE
+  have hd := Control.Artifact.submissionArtifact.decodeAt_op_index 120 .MSIZE
     (by rfl) (by decide) trivial
-  apply Control.Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 227, stack := stack} : State) 119
+  apply Control.Artifact.submissionArtifact.state_decodedOp_of ({s with pc := UInt256.ofNat 227, stack := stack} : State) 120
     hcode ?_ .MSIZE none hd (by change Operation.MSIZE.availableInFork s.fork = true; rw [hfork]; rfl)
-  change (UInt256.ofNat 227).toNat = Control.Artifact.submissionArtifact.instructionPC 119
+  change (UInt256.ofNat 227).toNat = Control.Artifact.submissionArtifact.instructionPC 120
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide
 

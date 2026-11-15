@@ -8,15 +8,15 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.NormalGas
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate NormalPrepare
 theorem actual_slice :
-    (CandidateArtifact.artifact.instructions.drop 159).take NormalPrepare.template.length = NormalPrepare.template := by rfl
+    (CandidateArtifact.artifact.instructions.drop 160).take NormalPrepare.template.length = NormalPrepare.template := by rfl
 def site : GenericRoundSite CandidateArtifact.artifact .Osaka NormalPrepare.template :=
-  StackSiteBuilder.ofSlice NormalPrepare.template 159 actual_slice
-    (by change 159 + NormalPrepare.template.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice NormalPrepare.template 160 actual_slice
+    (by change 160 + NormalPrepare.template.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem site_pc : site.startPC = UInt256.ofNat 462 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 159) = UInt256.ofNat 462
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 160) = UInt256.ofNat 462
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def prepare (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) (rho : List UInt256)

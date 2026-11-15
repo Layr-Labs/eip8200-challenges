@@ -27,46 +27,46 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.P
 open EvmSemantics EvmSemantics.EVM
 @[simp] theorem inherited_valid_pad :
     EvmSemantics.EVM.Decode.isValidJumpDest submissionBytecode 143 = true := by
-  have hp : Control.Artifact.submissionArtifact.instructionPC 81 = 143 := by
+  have hp : Control.Artifact.submissionArtifact.instructionPC 82 = 143 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 81 (by rfl)
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 82 (by rfl)
   rw [hp] at h
   exact h
 
-@[simp] theorem inherited_pc_97 : Control.Artifact.submissionArtifact.instructionPC 105 = 209 := by
+@[simp] theorem inherited_pc_97 : Control.Artifact.submissionArtifact.instructionPC 106 = 209 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_128 : Control.Artifact.submissionArtifact.instructionPC 136 = 309 := by
+@[simp] theorem inherited_pc_128 : Control.Artifact.submissionArtifact.instructionPC 137 = 309 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_129 : Control.Artifact.submissionArtifact.instructionPC 137 = 310 := by
+@[simp] theorem inherited_pc_129 : Control.Artifact.submissionArtifact.instructionPC 138 = 310 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_130 : Control.Artifact.submissionArtifact.instructionPC 138 = 311 := by
+@[simp] theorem inherited_pc_130 : Control.Artifact.submissionArtifact.instructionPC 139 = 311 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_131 : Control.Artifact.submissionArtifact.instructionPC 139 = 314 := by
+@[simp] theorem inherited_pc_131 : Control.Artifact.submissionArtifact.instructionPC 140 = 314 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_132 : Control.Artifact.submissionArtifact.instructionPC 140 = 315 := by
+@[simp] theorem inherited_pc_132 : Control.Artifact.submissionArtifact.instructionPC 141 = 315 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_133 : Control.Artifact.submissionArtifact.instructionPC 141 = 316 := by
+@[simp] theorem inherited_pc_133 : Control.Artifact.submissionArtifact.instructionPC 142 = 316 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_145 : Control.Artifact.submissionArtifact.instructionPC 153 = 447 := by
+@[simp] theorem inherited_pc_145 : Control.Artifact.submissionArtifact.instructionPC 154 = 447 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_146 : Control.Artifact.submissionArtifact.instructionPC 154 = 456 := by
+@[simp] theorem inherited_pc_146 : Control.Artifact.submissionArtifact.instructionPC 155 = 456 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_147 : Control.Artifact.submissionArtifact.instructionPC 155 = 457 := by
+@[simp] theorem inherited_pc_147 : Control.Artifact.submissionArtifact.instructionPC 156 = 457 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_148 : Control.Artifact.submissionArtifact.instructionPC 156 = 458 := by
+@[simp] theorem inherited_pc_148 : Control.Artifact.submissionArtifact.instructionPC 157 = 458 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_149 : Control.Artifact.submissionArtifact.instructionPC 157 = 460 := by
+@[simp] theorem inherited_pc_149 : Control.Artifact.submissionArtifact.instructionPC 158 = 460 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem inherited_pc_3368 : Control.Artifact.submissionArtifact.instructionPC 4078 = 6486 := by

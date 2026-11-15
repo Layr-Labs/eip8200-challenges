@@ -66,9 +66,9 @@ private theorem isValidJumpDest_of_pc (idx pc : Nat)
   exact Control.Artifact.submissionArtifact.isValidJumpDest_index idx hget
 
 theorem generic_dest : Decode.isValidJumpDest submissionBytecode 245 = true := by
-  have hpc : Control.Artifact.submissionArtifact.instructionPC 133 = 245 := by
+  have hpc : Control.Artifact.submissionArtifact.instructionPC 134 = 245 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  exact isValidJumpDest_of_pc 133 245 hpc (by rfl)
+  exact isValidJumpDest_of_pc 134 245 hpc (by rfl)
 
 /-- The size word `1000 - size`. -/
 def sizeWord (input : ByteArray) : UInt256 :=

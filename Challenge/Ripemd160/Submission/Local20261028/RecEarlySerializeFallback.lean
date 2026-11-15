@@ -115,7 +115,7 @@ private def cleanupPath : List (DataStepper.Located Control.Artifact.submissionA
    ⟨3352, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨3353, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
    ⟨3354, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨133, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
+   ⟨134, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def cleared (input : ByteArray) : State :=
   { initialState submissionBytecode input 0 with
@@ -135,24 +135,24 @@ private theorem cleanup_pcs :
     Control.Artifact.submissionArtifact.instructionPC 3352 = 4654 ∧
     Control.Artifact.submissionArtifact.instructionPC 3353 = 4655 ∧
     Control.Artifact.submissionArtifact.instructionPC 3354 = 4657 ∧
-    Control.Artifact.submissionArtifact.instructionPC 133 = 245 := by
+    Control.Artifact.submissionArtifact.instructionPC 134 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 private theorem prefix_pcs :
-    Control.Artifact.submissionArtifact.instructionPC 134 = 246 ∧
-    Control.Artifact.submissionArtifact.instructionPC 135 = 277 ∧
-    Control.Artifact.submissionArtifact.instructionPC 136 = 309 ∧
-    Control.Artifact.submissionArtifact.instructionPC 137 = 310 ∧
-    Control.Artifact.submissionArtifact.instructionPC 138 = 311 ∧
-    Control.Artifact.submissionArtifact.instructionPC 139 = 314 ∧
-    Control.Artifact.submissionArtifact.instructionPC 140 = 315 ∧
-    Control.Artifact.submissionArtifact.instructionPC 141 = 316 := by
+    Control.Artifact.submissionArtifact.instructionPC 135 = 246 ∧
+    Control.Artifact.submissionArtifact.instructionPC 136 = 277 ∧
+    Control.Artifact.submissionArtifact.instructionPC 137 = 309 ∧
+    Control.Artifact.submissionArtifact.instructionPC 138 = 310 ∧
+    Control.Artifact.submissionArtifact.instructionPC 139 = 311 ∧
+    Control.Artifact.submissionArtifact.instructionPC 140 = 314 ∧
+    Control.Artifact.submissionArtifact.instructionPC 141 = 315 ∧
+    Control.Artifact.submissionArtifact.instructionPC 142 = 316 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 private theorem jump245 : Decode.isValidJumpDest submissionBytecode 245 = true := by
-  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 133 (by rfl)
+  have h := Control.Artifact.submissionArtifact.isValidJumpDest_index 134 (by rfl)
   have hp := cleanup_pcs.2.2.2.2.2.2
   change Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 245 = true
   simpa only [hp] using h

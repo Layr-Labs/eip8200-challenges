@@ -1,3 +1,26 @@
+# RIPEMD-160: ordinary-writer JUMPDEST pad at PC 582 retired, instruction count restored in the dead head pad (614,903 gas)
+
+Parent: promoted commit `0c57f37a` (validated `55693485`, 614,934 gas).
+
+The ordinary table prologue (`Ordinary0..7`, PC 530..793, 31 runs on the
+corpus) still carried the `JUMPDEST` at PC 582 that the 615,011 step left
+behind when `PUSH1 228; MLOAD` became `DUP2` (`DUP2; PUSH2 224; MLOAD;
+JUMPDEST`). It is gone; `PUSH1 180` widens to `PUSH2 180`, so `Ordinary1`
+keeps 67 bytes (556..622) and no PC outside 582..588 moves. Stack, memory
+writes and the `OrdinaryCertificate` plan are the parent's.
+
+The instruction total is kept at 7000 by decoding the dead pad 56..63
+(after the `JUMP` at 55, before `JUMPDEST` 64) as eight `STOP`s instead of
+`PUSH1 0` plus six `STOP`s. Artifact instruction indices 28..237 move up by
+one; indices 0..26 and 239 on are unchanged. Every index-valued witness in
+that range moves, including the hoisted-store piece table
+(`RecHoistedStoreSites.index .copy`, 133 -> 134).
+
+Gas: one `JUMPDEST` per ordinary prologue, 31 runs:
+614,934 -> **614,903**.
+
+---
+
 # RIPEMD-160: JUMPDEST pad retired from the 32-byte first-block writer head, window kept by a widened 232 push (614,934 gas)
 
 Parent: promoted commit `6d2369d9` (validated `83e98140`, 614,945 gas).

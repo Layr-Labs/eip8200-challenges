@@ -7,46 +7,46 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.ControlSi
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof StackRoundTemplate
 def copyTemplate : List Instr := [.op .JUMPDEST, .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255), .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), .op .CALLDATASIZE, .push ⟨0, by decide⟩ (UInt256.ofNat 0), .push ⟨2, by decide⟩ (UInt256.ofNat 1056), .op .CALLDATACOPY]
 def copySite : GenericRoundSite CandidateArtifact.artifact .Osaka copyTemplate :=
-  StackSiteBuilder.ofSlice copyTemplate 133 (by rfl)
-    (by change 133 + copyTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice copyTemplate 134 (by rfl)
+    (by change 134 + copyTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem copy_pc : copySite.startPC = UInt256.ofNat 245 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 133) = UInt256.ofNat 245
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 134) = UInt256.ofNat 245
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def frameTemplate : List Instr := [.op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), .push ⟨4, by decide⟩ (UInt256.ofNat 1732584193), .push ⟨4, by decide⟩ (UInt256.ofNat 4023233417), .push ⟨4, by decide⟩ (UInt256.ofNat 2562383102), .push ⟨4, by decide⟩ (UInt256.ofNat 271733878), .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520), .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009), .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625), .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498)]
 def frameSite : GenericRoundSite CandidateArtifact.artifact .Osaka frameTemplate :=
-  StackSiteBuilder.ofSlice frameTemplate 140 (by rfl)
-    (by change 140 + frameTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice frameTemplate 141 (by rfl)
+    (by change 141 + frameTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem frame_pc : frameSite.startPC = UInt256.ofNat 315 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 140) = UInt256.ofNat 315
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 141) = UInt256.ofNat 315
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def alignTemplate : List Instr := [.push ⟨8, by decide⟩ (UInt256.ofNat 18446744073709551423), .op .CALLDATASIZE, .op .AND, .push ⟨1, by decide⟩ (UInt256.ofNat 143), .op .JUMPI]
 def alignSite : GenericRoundSite CandidateArtifact.artifact .Osaka alignTemplate :=
-  StackSiteBuilder.ofSlice alignTemplate 153 (by rfl)
-    (by change 153 + alignTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice alignTemplate 154 (by rfl)
+    (by change 154 + alignTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem align_pc : alignSite.startPC = UInt256.ofNat 447 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 153) = UInt256.ofNat 447
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 154) = UInt256.ofNat 447
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def specialTemplate : List Instr := [.op .JUMPDEST, .push ⟨2, by decide⟩ (UInt256.ofNat 4882), .op (.Swap ⟨12, by decide⟩), .push ⟨1, by decide⟩ (UInt256.ofNat 32), .op .EQ, .push ⟨29, by decide⟩ (UInt256.ofNat 3450873173395281893717377931138512726225554486085193277582361623527424), .push ⟨1, by decide⟩ (UInt256.ofNat 162), .op .MSTORE, .push ⟨2, by decide⟩ (UInt256.ofNat 6409), .op .JUMPI]
 def specialSite : GenericRoundSite CandidateArtifact.artifact .Osaka specialTemplate :=
-  StackSiteBuilder.ofSlice specialTemplate 81 (by rfl)
-    (by change 81 + specialTemplate.length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice specialTemplate 82 (by rfl)
+    (by change 82 + specialTemplate.length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem special_pc : specialSite.startPC = UInt256.ofNat 143 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 81) = UInt256.ofNat 143
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 82) = UInt256.ofNat 143
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def dispatchTemplate : List Instr := [.op (.Swap ⟨12, by decide⟩), .op .JUMP]
@@ -61,9 +61,9 @@ theorem dispatch_pc : dispatchSite.startPC = UInt256.ofNat 4622 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid143 : Decode.isValidJumpDest CandidateArtifact.artifact.code 143 = true := by
-  have hpc : CandidateArtifact.artifact.instructionPC 81 = 143 := by
+  have hpc : CandidateArtifact.artifact.instructionPC 82 = 143 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide +kernel
-  have h := CandidateArtifact.artifact.isValidJumpDest_index 81 (by rfl)
+  have h := CandidateArtifact.artifact.isValidJumpDest_index 82 (by rfl)
   rw [hpc] at h
   exact h
 #print axioms valid143
