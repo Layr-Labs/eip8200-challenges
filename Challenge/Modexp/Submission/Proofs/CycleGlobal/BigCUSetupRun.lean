@@ -56,13 +56,13 @@ def zLoopProgram : List Instr :=
    .op (.Swap sA2),
    .op .OR,
    .op (.Swap sA1),
-   .push 1 209,
+   .push 1 207,
    .op .JUMPI]
 /-- Exact U raw interval [290,295). -/
 def zExitProgram : List Instr :=
   [
   .op .POP,
-   .push 2 235,
+   .push 2 233,
    .op .JUMPI]
 /-- Exact U raw interval [295,299). -/
 def zeroRetProgram : List Instr :=
@@ -83,24 +83,24 @@ def nzProgram : List Instr :=
    .op .POP,
    .push 0 0]
 structure SetupJumps (code : ByteArray) : Prop where
-  j236 : Decode.isValidJumpDest code 174 = true
-  j271 : Decode.isValidJumpDest code 209 = true
-  j295 : Decode.isValidJumpDest code 231 = true
-  j299 : Decode.isValidJumpDest code 235 = true
+  j236 : Decode.isValidJumpDest code 172 = true
+  j271 : Decode.isValidJumpDest code 207 = true
+  j295 : Decode.isValidJumpDest code 229 = true
+  j299 : Decode.isValidJumpDest code 233 = true
 structure SetupBlocks (artifact : ProgramArtifact) where
-  setup : Block artifact .Osaka 174 setupProgram
-  zLoop : Block artifact .Osaka 209 zLoopProgram
-  zExit : Block artifact .Osaka 226 zExitProgram
-  zeroRet : Block artifact .Osaka 231 zeroRetProgram
-  nz : Block artifact .Osaka 235 nzProgram
+  setup : Block artifact .Osaka 172 setupProgram
+  zLoop : Block artifact .Osaka 207 zLoopProgram
+  zExit : Block artifact .Osaka 224 zExitProgram
+  zeroRet : Block artifact .Osaka 229 zeroRetProgram
+  nz : Block artifact .Osaka 233 nzProgram
   jumps : SetupJumps artifact.code
 theorem run_zLoop_back (s : State) (i : Nat) (acc : UInt256)
     (rest : List UInt256) (mem : ByteArray)
     (hcap : rest.length < 1000) (hi : 2 ≤ i) (hi' : i ≤ 1024)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zLoopProgram
-      (st s 209 (UInt256.ofNat i::acc::rest) mem AW) =
-        some (st s 209 (UInt256.ofNat (i - 1) ::
+      (st s 207 (UInt256.ofNat i::acc::rest) mem AW) =
+        some (st s 207 (UInt256.ofNat (i - 1) ::
           UInt256.lor acc (MachineState.readWord mem (1024 + (i - 1)))::rest) mem AW) := by
   have hc := caps _ hcap
   have hdec := dec_ofNat i (by omega) (by omega)
@@ -118,8 +118,8 @@ theorem run_zLoop_exit (s : State) (acc : UInt256)
     (hcap : rest.length < 1000)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zLoopProgram
-      (st s 209 (UInt256.ofNat 1::acc::rest) mem AW) =
-        some (st s 226 (UInt256.ofNat 0 ::
+      (st s 207 (UInt256.ofNat 1::acc::rest) mem AW) =
+        some (st s 224 (UInt256.ofNat 0 ::
           UInt256.lor acc (MachineState.readWord mem 1024)::rest) mem AW) := by
   have hc := caps _ hcap
   have hdec := dec_ofNat 1 (by omega) (by norm_num)
@@ -130,24 +130,24 @@ theorem run_zExit_nz (s : State) (acc : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hacc : acc.toNat ≠ 0)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zExitProgram
-      (st s 226 (UInt256.ofNat 0::acc::rest) mem AW) =
-        some (st s 235 rest mem AW) := by
+      (st s 224 (UInt256.ofNat 0::acc::rest) mem AW) =
+        some (st s 233 rest mem AW) := by
   have hc := caps _ hcap
   u_run [zExitProgram,hc,hJ.j236,hJ.j271,hJ.j295,hJ.j299,hacc]
 theorem run_zExit_zero (s : State) (acc : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hacc : acc.toNat = 0)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zExitProgram
-      (st s 226 (UInt256.ofNat 0::acc::rest) mem AW) =
-        some (st s 231 rest mem AW) := by
+      (st s 224 (UInt256.ofNat 0::acc::rest) mem AW) =
+        some (st s 229 rest mem AW) := by
   have hc := caps _ hcap
   u_run [zExitProgram,hc,hJ.j236,hJ.j271,hJ.j295,hJ.j299,hacc]
 theorem run_zeroRet (s : State) (bl el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hml : ml ≤ 1024)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions zeroRetProgram
-      (st s 231 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (rt s 234 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 229 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (rt s 232 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::rest)
           mem AW (MachineState.readPadded mem 0 ml)) := by
   have hc := caps _ hcap
   have h1 : ml < LIM := by simp only [LIM]; omega
@@ -158,8 +158,8 @@ theorem run_nz (s : State) (bl el ml : Nat) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hml : ml ≤ 1024)
     (hJ : SetupJumps s.executionEnv.code) :
     runInstructions nzProgram
-      (st s 235 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
-        some (st s 246 (UInt256.ofNat 0::UInt256.ofNat el::UInt256.ofNat ml::rest)
+      (st s 233 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::rest) mem AW) =
+        some (st s 244 (UInt256.ofNat 0::UInt256.ofNat el::UInt256.ofNat ml::rest)
           (MachineState.writeBytes mem (ByteArray.mk #[UInt8.ofNat 1]) (3071 + ml)) AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat 3071 + UInt256.ofNat ml = UInt256.ofNat (3071 + ml) :=
@@ -187,8 +187,8 @@ theorem aw_first (aw : UInt256) (haw : aw.toNat ≤ 289) :
 theorem run_setupZero (s : State) (stk : List UInt256) (mem : ByteArray) (aw : UInt256)
     (hcap : stk.length < 1000) (haw : aw.toNat ≤ 289)
     (hcds : s.executionEnv.calldata.size < 2 ^ 64) :
-    runInstructions setupZeroProgram (st s 174 stk mem aw) =
-      some (st s 181 stk (MachineState.writeBytes mem
+    runInstructions setupZeroProgram (st s 172 stk mem aw) =
+      some (st s 179 stk (MachineState.writeBytes mem
         (MachineState.readPadded s.executionEnv.calldata s.executionEnv.calldata.size 9248) 0) AW) := by
   have hc := caps _ hcap
   have hc0 : stk.length < 1024 := by omega
@@ -200,16 +200,16 @@ theorem run_setupHeads (s : State) (bl el ml : Nat) (stk : List UInt256) (mem : 
     (hb : MachineState.readWord s.executionEnv.calldata 0 = UInt256.ofNat bl)
     (he : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat el)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml) :
-    runInstructions setupHeadsProgram (st s 181 stk mem AW) =
-      some (st s 189 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk) mem AW) := by
+    runInstructions setupHeadsProgram (st s 179 stk mem AW) =
+      some (st s 187 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk) mem AW) := by
   have hc := caps _ hcap
   have hc0 : stk.length < 1024 := by omega
   u_run [setupHeadsProgram,setupProgram,hc,hc0,zero_lit,hb,he,hm]
 theorem run_setupM (s : State) (bl el ml : Nat) (stk : List UInt256) (mem : ByteArray)
     (hcap : stk.length < 1000) (hbl : bl ≤ 1024) (hel : el ≤ 1024) (hml : ml ≤ 1024) :
     runInstructions setupMProgram
-      (st s 189 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk) mem AW) =
-      some (st s 200 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk)
+      (st s 187 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk) mem AW) =
+      some (st s 198 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk)
         (MachineState.writeBytes mem (MachineState.readPadded s.executionEnv.calldata
           (96 + (el + bl)) ml) 1024) AW) := by
   have hc := caps _ hcap
@@ -224,8 +224,8 @@ theorem run_setupM (s : State) (bl el ml : Nat) (stk : List UInt256) (mem : Byte
 theorem run_setupB (s : State) (bl el ml : Nat) (stk : List UInt256) (mem : ByteArray)
     (hcap : stk.length < 1000) (hbl : bl ≤ 1024) :
     runInstructions setupBProgram
-      (st s 200 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk) mem AW) =
-      some (st s 209 (UInt256.ofNat ml::UInt256.ofNat 0::UInt256.ofNat bl ::
+      (st s 198 (UInt256.ofNat bl::UInt256.ofNat el::UInt256.ofNat ml::stk) mem AW) =
+      some (st s 207 (UInt256.ofNat ml::UInt256.ofNat 0::UInt256.ofNat bl ::
         UInt256.ofNat el::UInt256.ofNat ml::stk)
         (MachineState.writeBytes mem (MachineState.readPadded s.executionEnv.calldata 96 bl) 5120) AW) := by
   have hc := caps _ hcap
@@ -239,8 +239,8 @@ theorem run_setup (s : State) (bl el ml : Nat) (stk : List UInt256) (mem : ByteA
     (hb : MachineState.readWord s.executionEnv.calldata 0 = UInt256.ofNat bl)
     (he : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat el)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml) :
-    runInstructions setupProgram (st s 174 stk mem aw) =
-      some (st s 209 (UInt256.ofNat ml::UInt256.ofNat 0::UInt256.ofNat bl ::
+    runInstructions setupProgram (st s 172 stk mem aw) =
+      some (st s 207 (UInt256.ofNat ml::UInt256.ofNat 0::UInt256.ofNat bl ::
         UInt256.ofNat el::UInt256.ofNat ml::stk)
         (setupMem mem s.executionEnv.calldata bl el ml) AW) := by
   let m1 := MachineState.writeBytes mem

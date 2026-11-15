@@ -11,9 +11,9 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 local notation "N" => UInt256.ofNat
 namespace ColdCounterRun
 def state (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat) : State :=
- {s with pc := N 10995,memory := mem,stack := Monpro.maxWord::N k::entrySlots z mem n bsize esize++outer n bsize esize msize}
+ {s with pc := N 10991,memory := mem,stack := Monpro.maxWord::N k::entrySlots z mem n bsize esize++outer n bsize esize msize}
 def exitState (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
- {s with pc := N 11000,memory := mem,stack := N 0::entrySlots z mem n bsize esize++outer n bsize esize msize}
+ {s with pc := N 10996,memory := mem,stack := N 0::entrySlots z mem n bsize esize++outer n bsize esize msize}
 def rest (z : UInt256) (mem : ByteArray) (n bsize esize msize : Nat) : List UInt256 :=
  (entrySlots z mem n bsize esize).tail++outer n bsize esize msize
 private theorem rest_cap (z : UInt256) (mem : ByteArray) (n bsize esize msize : Nat) :

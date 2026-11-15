@@ -11,22 +11,22 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open HistoricalSearch.GeneratedColumns HistoricalSearch.CRTControl
 open CycleSubmission.NormalizeMeaning
-def normalizerBlock : Block Artifact.artifact .Osaka 10538 normalizeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7970 101 10538 normalizeProgram
-    (by change 7970+101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def normalizerBlock : Block Artifact.artifact .Osaka 10780 normalizeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8143 101 10780 normalizeProgram
+    (by change 8143+101 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def returnBlock : Block Artifact.artifact .Osaka 10659 jumpProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8071 1 10659 jumpProgram
-    (by change 8071+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def returnBlock : Block Artifact.artifact .Osaka 10901 jumpProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8244 1 10901 jumpProgram
+    (by change 8244+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 8568 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6461
-    (show Artifact.instructions[6461]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 6461 = 8568 := by
+theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 8809 = true := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6634
+    (show Artifact.instructions[6634]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 6634 = 8809 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h
@@ -37,10 +37,10 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (ret slot1 : UInt
     (h : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat)
     (hret : Decode.isValidJumpDest Artifact.bytecode ret.toNat = true) :
-    GasSteps {s with pc := UInt256.ofNat 10538,stack := frame a n ret slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 10780,stack := frame a n ret slot1 rest}
       (returned s a n ret slot1 rest) := by
   have body := normalizerBlock.steps
-    (s := {s with pc := UInt256.ofNat 10538,stack := frame a n ret slot1 rest})
+    (s := {s with pc := UInt256.ofNat 10780,stack := frame a n ret slot1 rest})
     (env.transfer rfl rfl) rfl (run s a n ret slot1 rest h hcap hact)
   have e : Environment Artifact.artifact .Osaka (result s a n ret slot1 rest) := env.transfer rfl rfl
   have valid : Decode.isValidJumpDest (result s a n ret slot1 rest).executionEnv.code ret.toNat = true := by
@@ -60,7 +60,7 @@ noncomputable def correct (s : State) (a n : Nat → UInt256) (ret slot1 : UInt2
     (hn : ∀ i < 9,(n i).toNat < 2^240)
     (horder : HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (n i).toNat) ≤
       HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (a i).toNat)) :
-    PSigma (fun _ : GasSteps {s with pc := UInt256.ofNat 10538,stack := frame a n ret slot1 rest}
+    PSigma (fun _ : GasSteps {s with pc := UInt256.ofNat 10780,stack := frame a n ret slot1 rest}
       (returned s a n ret slot1 rest) =>
     (HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (output a n i).toNat) +
        HistoricalSearch.MixedMontgomery.weighted (2^240) 9 (fun i => (n i).toNat) =

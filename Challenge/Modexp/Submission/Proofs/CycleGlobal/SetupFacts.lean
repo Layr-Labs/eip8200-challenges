@@ -87,12 +87,12 @@ theorem fastSetup_notPrecompile (input : ByteArray) :
       (Setup.fastSetupState input).executionEnv.fork
       (Setup.fastSetupState input).executionEnv.codeAddr = false :=
   Challenge.Modexp.deployAddress_not_precompile
-/-- The setup block ends at the dispatcher (pc 3369) with the plain outer frame,
+/-- The setup block ends at the dispatcher (pc 3249) with the plain outer frame,
 instead of at the Montgomery-form conversion call.  `Shift.dispState` is definitionally this
 state; it cannot be named here because `ShiftStates` sits above this module. -/
 theorem fastSetup_entry_eq (input : ByteArray) :
     Setup.fastSetupState input =
-      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 626)
+      retTo (Setup.fastSetupState input) (Setup.fastSetupMemory input) (UInt256.ofNat 870)
         (outer (Setup.limbs input) (Challenge.Modexp.baseSize input)
           (Challenge.Modexp.exponentSize input) (Challenge.Modexp.modulusSize input)) := rfl
 end CycleSubmission.Global.Fast.SetupFacts

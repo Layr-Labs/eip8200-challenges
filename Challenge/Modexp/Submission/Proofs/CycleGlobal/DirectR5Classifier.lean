@@ -11,11 +11,11 @@ def program : List Instr :=
    .op (.Dup ⟨1,by decide⟩),
    .push 1 128,
    .op .XOR,
-   .push 2 3305,
+   .push 2 3185,
    .op .JUMPI]
 theorem run4 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256) (hcap : rest.length ≤ 1000) :
- runInstructions program {s with pc := UInt256.ofNat 8624,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} =
- some {s with pc := UInt256.ofNat 8633,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} := by
+ runInstructions program {s with pc := UInt256.ofNat 8865,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} =
+ some {s with pc := UInt256.ofNat 8874,stack := [UInt256.ofNat (count-1),UInt256.ofNat 128]++rest} := by
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega
@@ -23,9 +23,9 @@ theorem run4 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16)
  simp [program,runInstructions,Stepper.runInstr,hc2,hc3,hc4,Nat.add_assoc,Challenge.Modexp.Submission.Proofs.Fast.Exp.push0_word,hx,UInt256.isTrue,
   Word.literal_eq_ofNat,Word.word_toNat_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod]
 theorem run8 (s : State) (count : Nat) (hpos : 1 ≤ count) (hle : count ≤ 16) (rest : List UInt256) (hcap : rest.length ≤ 1000)
- (hd : Decode.isValidJumpDest s.executionEnv.code 3305 = true) :
- runInstructions program {s with pc := UInt256.ofNat 8624,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} =
- some {s with pc := UInt256.ofNat 3305,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} := by
+ (hd : Decode.isValidJumpDest s.executionEnv.code 3185 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 8865,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} =
+ some {s with pc := UInt256.ofNat 3185,stack := [UInt256.ofNat (count-1),UInt256.ofNat 256]++rest} := by
  have hc2 : rest.length+2 < 1024 := by omega
  have hc3 : rest.length+3 < 1024 := by omega
  have hc4 : rest.length+4 < 1024 := by omega
