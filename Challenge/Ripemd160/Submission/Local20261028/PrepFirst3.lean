@@ -28,7 +28,10 @@ def template : List Instr := [
 .op (.Dup ⟨3, by decide⟩),
 .push ⟨1, by decide⟩ (UInt256.ofNat 112),
 .op .SHL,
-.push ⟨12, by decide⟩ (UInt256.ofNat 482),
+.push ⟨7, by decide⟩ (UInt256.ofNat 482),
+.op .MSTORE,
+.op (.Dup ⟨0, by decide⟩),
+.push ⟨2, by decide⟩ (UInt256.ofNat 816),
 .op .MSTORE,
 .op .PC,
 .push ⟨4, by decide⟩ (UInt256.ofNat 787),
@@ -46,7 +49,7 @@ def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
   [x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14, x 15, x 16, x 17, x 18, x 19] ++ rho
-def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 396)) (Data.Bytes.natToBytesPadded ((UInt256.shiftLeft (x 3) (UInt256.ofNat 112))).toNat 32) 482)) (ByteArray.mk #[UInt8.ofNat (((UInt256.ofNat 10112)).toNat % 256)]) 787)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 518)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 540)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 554)) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 684)
+def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 396)) (Data.Bytes.natToBytesPadded ((UInt256.shiftLeft (x 3) (UInt256.ofNat 112))).toNat 32) 482)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 816)) (ByteArray.mk #[UInt8.ofNat (((UInt256.ofNat 10112)).toNat % 256)]) 787)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 518)) (Data.Bytes.natToBytesPadded (x 0).toNat 32) 540)) (Data.Bytes.natToBytesPadded (x 1).toNat 32) 554)) (Data.Bytes.natToBytesPadded (x 2).toNat 32) 684)
 theorem exact_bytes :
     (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 10089).take 47 =
       PcEncoding.assembleBytes template := by

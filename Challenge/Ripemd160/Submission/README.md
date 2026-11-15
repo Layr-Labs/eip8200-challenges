@@ -1,3 +1,37 @@
+# RIPEMD-160: first-block 814 shifted store replaced by a plain 224-word store at 816 (614,967 gas)
+
+Parent: promoted commit `a008d942` (validated `4bef73b4`, 615,011 gas).
+
+The first-block writer (`First1..5` at 9983..10184, 11 runs on the corpus)
+stored the 236 word at 814 after shifting it right 14 bytes
+(`DUP1 PUSH15 112 SHR PUSH2 814 MSTORE`). After the writer finishes, the only
+bytes of 814..847 that any round reads (`FirstLayout.low_sources`,
+`high_sources`, `barrier_sources`) also match an unshifted copy of the 224
+word stored two bytes higher, at 816. The 224 word is still on the stack in
+`First3`, so the new store goes there: `DUP1 PUSH2 816 MSTORE` directly after
+the 482 store. To pay for those bytes, `PUSH12 482` narrows to `PUSH7 482`,
+which keeps the self-referential `PC` (value 10112, whose low byte 0x80 is
+stored at 787) at 10112. `First4` drops the shifted store, gets two `JUMPDEST`
+pads, and `PUSH2 720` widens to `PUSH22 720`. Both windows keep their byte
+lengths (47 and 45), so no PC moves. The instruction total stays at 7003:
+part 35 has 206 instructions and part 36 has 89.
+
+After the writer, the symbolic layout differs from the parent only at bytes
+826, 827, 846 and 847. The 816 write overlaps no other write in the writer,
+so it can sit anywhere in the write order.
+
+Gas per first-block run: the new store costs +9 (`DUP1`, `PUSH2`, `MSTORE`).
+Removing the shifted store saves 15 and the two `JUMPDEST`s cost 2. Net -4,
+times 11 executions: 615,011 -> **614,967**.
+
+Proofs changed: `FirstLayout.symbols17` (three nested writes) and
+`symbols25 := symbols24`; `FirstMemory.memory17` and `memory25 := memory24`;
+`First3.template` / `memory`; `First4.template` / `memory`; `First608.read`
+(the 814 case is dropped). Artifact files changed: `CandidateArtifact`
+parts 35 and 36, `CandidateBytes` chunks 157 and 158, and `bytecode.hex`.
+
+---
+
 # RIPEMD-160: ordinary-writer 228 load replaced by a DUP of the resident 236 word, both 228 stores re-sourced eight bytes up (615,011 gas)
 
 Parent: promoted commit `3988226b` (validated `79130afb`, 615,073 gas).
