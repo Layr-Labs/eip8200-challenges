@@ -22,8 +22,8 @@ theorem run_wordJump (input : ByteArray) (hvalid : ValidInput input)
     rw [Nat.mod_eq_of_lt hm']
     omega
   norm_num at hmodNat
-  have h1237 : (502 : UInt256).toNat = 502 := by decide
-  have h1237Word : (502 : UInt256) = UInt256.ofNat 502 := by decide
+  have h1237 : (791 : UInt256).toNat = 791 := by decide
+  have h1237Word : (791 : UInt256) = UInt256.ofNat 791 := by decide
   have htrue : UInt256.isTrue (UInt256.ofNat (modulusSize input)) := by
     exact hmodNat
   simp only [wordDispatchState,Main.headerState]

@@ -19,19 +19,20 @@ private theorem run_wordTail_generic (template : State)
     (hcode : template.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : template.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock wordTailPath
-      (framed template 517 [modOff,expOff,m,e,b]) =
-    some (framed template 98
+      (framed template 806 [modOff,expOff,m,e,b]) =
+    some (framed template 96
       [b,e,m,UInt256.ofNat 96,expOff,modOff,UInt256.ofNat 1186,
         modOff,expOff,m,e,b]) := by
-  have h3000 : (98 : UInt256).toNat = 98 := by decide
-  have h3000Word : (98 : UInt256) = UInt256.ofNat 98 := by decide
+  have h94Nat : (94 : UInt256).toNat = 94 := by decide
+  have h3000 : (96 : UInt256).toNat = 96 := by decide
+  have h3000Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
   have h96Word : (96 : UInt256) = UInt256.ofNat 96 := by decide
   have h1267Word : (1186 : UInt256) = UInt256.ofNat 1186 := by decide
   simp (config := { maxSteps := 200000 })
     [framed,wordTailPath,wordRestPath,wordEntryPath,opAt,pushAt,
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
-      hcode,hrun,h3000,h3000Word,h96Word,h1267Word,
+      hcode,hrun,h94Nat,h3000,h3000Word,h96Word,h1267Word,
       Challenge.EvmProof.Word.word_toNat_ofNat,
       Challenge.EvmProof.Word.ofNat_add_mod,
       Challenge.EvmProof.Word.succ_ofNat_mod,Nat.add_assoc]

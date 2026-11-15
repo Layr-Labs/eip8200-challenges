@@ -42,14 +42,14 @@ def expFinishTailProgram : List Instr :=
    .op (.Dup ⟨5,by decide⟩),
    .push 0 0,
    .op .RETURN]
-def expFinishTailBlock : Block CycleSubmission.Artifact.artifact .Osaka 10447 expFinishTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7898 14 10447 expFinishTailProgram
-    (by change 7898+14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def expFinishTailBlock : Block CycleSubmission.Artifact.artifact .Osaka 10885 expFinishTailProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8203 14 10885 expFinishTailProgram
+    (by change 8203+14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def expFinishDispatchState (input : ByteArray) (acc base : UInt256) : State :=
-  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 10447 }
+  { expLoopState input (exponentSize input) acc base with pc := UInt256.ofNat 10885 }
 def outputShift (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft
     ((32 : UInt256) - UInt256.ofNat (modulusSize input)) (UInt256.ofNat 3)
@@ -62,7 +62,7 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
   let start := expLoopState input (exponentSize input) acc base
   let storedWords := start.activeWordsAfterUInt256 0 32
   { start with
-    pc := UInt256.ofNat 10462
+    pc := UInt256.ofNat 10900
     stack := [acc,base,UInt256.ofNat (modulusValue input),
       UInt256.ofNat (baseSize input),UInt256.ofNat (exponentSize input),
       UInt256.ofNat (modulusSize input),UInt256.ofNat 96,
@@ -75,10 +75,10 @@ def wordFinalState (input : ByteArray) (acc base : UInt256) : State :=
     hReturn := MachineState.readPadded (outputMemory input acc) 0
       (modulusSize input) }
 @[simp] private theorem jump669 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10447 = true := Word.jump669
-def expFinishGuardBlock : Block CycleSubmission.Artifact.artifact .Osaka 154 WordExitGuard.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 117 6 154 WordExitGuard.program
-    (by change 117+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10885 = true := Word.jump669
+def expFinishGuardBlock : Block CycleSubmission.Artifact.artifact .Osaka 152 WordExitGuard.program :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 115 6 152 WordExitGuard.program
+    (by change 115+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)

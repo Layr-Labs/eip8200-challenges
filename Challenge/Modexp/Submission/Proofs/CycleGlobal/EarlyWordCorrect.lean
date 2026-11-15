@@ -14,7 +14,7 @@ set_option warningAsError true
 
 The initial header reader starts directly at byte zero. Matching headers fall
 through to the Fermat/window proof at pc 25. Every other header restores the
-legacy entry at pc 1239 with an empty stack and unchanged memory and environment.
+legacy entry at pc 7004 with an empty stack and unchanged memory and environment.
 -/
 namespace CycleSubmission.Global.EarlyWordCorrect
 open Challenge.Modexp
@@ -43,12 +43,12 @@ legacy entry exactly. -/
 def legacy (input : ByteArray) (hvalid : ValidInput input)
     (hmiss : ¬ (exponentSize input = 32 ∧ modulusSize input = 32)) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
-      (Main.trampolineState input 530) := by
+      (Main.trampolineState input 819) := by
   have tail := CycleSubmission.Global.Paths.steps_size_miss CycleSubmission.Global.Paths.earlyWordPaths
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input rfl
     hvalid.2.2.1 hvalid.2.2.2 hmiss
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0)
-    (Main.trampolineState input 530) at tail
+    (Main.trampolineState input 819) at tail
   exact (Main.gasSteps_entryHop input).trans tail
 /-- The three words the loads at 16 read for any header; garbage unless the base size is 32. -/
 def loaded (input : ByteArray) : List UInt256 :=
@@ -86,7 +86,7 @@ def hit (input : ByteArray) (hmatch : WindowTwentyOneInput.Matches input) :
 entry: the wide fallback at 219 with the base size, 32 and the three loaded words on the stack. -/
 def genBigState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 174
+    pc := UInt256.ofNat 172
     stack := [UInt256.ofNat (baseSize input),UInt256.ofNat 32]++loaded input }
 def genBig (input : ByteArray) (hvalid : ValidInput input)
     (hsize : exponentSize input = 32 ∧ modulusSize input = 32)
@@ -98,7 +98,7 @@ def genBig (input : ByteArray) (hvalid : ValidInput input)
     (initialState CycleSubmission.Artifact.bytecode input 0) (environment input) input (by omega)
     hvalid.2.1 (by rw [hsize.1]; omega)
   have hjump : Decode.isValidJumpDest
-      (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.code 174 = true :=
+      (initialState CycleSubmission.Artifact.bytecode input 0).executionEnv.code 172 = true :=
     CycleSubmission.Global.Paths.fermatPaths.bigJump
   have hc := FermatNext.run_gen_check (initialState CycleSubmission.Artifact.bytecode input 0)
     (loaded input) (by simp [loaded]) hjump
@@ -114,7 +114,7 @@ def genBig (input : ByteArray) (hvalid : ValidInput input)
   rw [hword,if_neg hgt] at hc
   have s3 := CycleSubmission.Global.Paths.fermatPaths.genCheck.steps
     ((environment input).transfer (t := WindowTwentyOneEntry.framed
-      (initialState CycleSubmission.Artifact.bytecode input 0) (UInt256.ofNat 63) (loaded input)) rfl rfl) rfl hc
+      (initialState CycleSubmission.Artifact.bytecode input 0) (UInt256.ofNat 61) (loaded input)) rfl rfl) rfl hc
   change Challenge.EvmProof.GasSteps (Main.trampolineState input 0) _ at s1
   exact (Main.gasSteps_entryHop input).trans ((s1.trans s2).trans s3)
 /-- A base size above 32 with exponent and modulus sizes 32 is handled by the

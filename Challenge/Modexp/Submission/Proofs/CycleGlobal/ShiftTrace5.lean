@@ -38,7 +38,7 @@ theorem repairFacts_of (mem : ByteArray) (n mm r : Nat)
       (negOf (macOf (uMem mem n) n (qhatOf (uMem mem n))).memory
         (macOf (uMem mem n) n (qhatOf (uMem mem n))).carry (qhatOf (uMem mem n))) :=
   (step_spec mem n mm r hn (by omega) hmpos hmm htop hmod hneg hbase hr hpre).1
-/-- The estimator words survive the cache store, which writes at 1686 -- two bytes above
+/-- The estimator words survive the cache store, which writes at 7451 -- two bytes above
 `PRE_DINV`'s word, which ends at 1696. -/
 theorem PreOK_cacheMem (mem : ByteArray) (n : Nat) (h : PreOK mem) :
     PreOK (ShiftCacheModel.cacheMem mem n) := h
@@ -209,7 +209,7 @@ theorem m2_stepInv (mem input : ByteArray) (n bsize mm minv : Nat)
 /-- From the dispatcher entry on a miss to the Montgomery-form conversion call.
 
 The miss arm seeds `R1 = 0x0400` with 1 and calls the conversion with the old `r0`
-block (pc 1418) as its return address, so the conversion runs only on this route.  The
+block (pc 7183) as its return address, so the conversion runs only on this route.  The
 recogniser-hit route instead gets its `R1` from the `MCOPY` at the end of the shift-reduce
 loop (`ShiftTrace3.run_shiftDone`). -/
 def gasSteps_missPath (s : State) (mem : ByteArray) (n bsize esize msize : Nat)

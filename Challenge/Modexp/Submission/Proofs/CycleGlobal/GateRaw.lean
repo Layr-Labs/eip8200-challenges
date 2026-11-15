@@ -33,7 +33,7 @@ def testProgram : List Instr :=
   .push 1 232,.op .SHR,.push 3 65537,.op .EQ,
   .push 1 32,.op .CALLDATALOAD,.push 1 3,.op .EQ,.op .AND,
   .push 1 15,.op (.Dup ⟨15,by decide⟩),.op (.Swap ⟨1,by decide⟩),
-  .push 2 8624,.op .JUMPI]
+  .push 2 8809,.op .JUMPI]
 def guardProgram : List Instr := prefixProgram++testProgram
 def frame (s : State) (mem : ByteArray) (pc n bsize esize msize : Nat) : State :=
  {s with memory := mem,pc := UInt256.ofNat pc,stack := CycleSubmission.Global.SlimFrames.outer mem n bsize esize msize}
@@ -43,17 +43,17 @@ def guardValue (s : State) (bsize esize : Nat) : UInt256 :=
  UInt256.lor (UInt256.xor (UInt256.ofNat 3) (UInt256.ofNat esize))
    (UInt256.xor (UInt256.ofNat 65537) (exponentWord s bsize))
 def entryState (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
- frame s mem 2522 n bsize esize msize
+ frame s mem 8388 n bsize esize msize
 def e3go (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
- frame s mem 2515 n bsize esize msize
+ frame s mem 10459 n bsize esize msize
 def e3Program : List Instr := [
   .op .JUMPDEST,
    .op (.Dup ⟨13,by decide⟩),
    .push 0 0,
-   .push 2 8624,
+   .push 2 8809,
    .op .JUMP]
 theorem run_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 8624 = true) :
+ (hd : Decode.isValidJumpDest s.executionEnv.code 8809 = true) :
  runInstructions e3Program (e3go s mem n bsize esize msize) =
    some (CycleSubmission.Global.SlimFrames.special s mem n bsize esize msize 1) := by
  simp [Exp.push0_word,e3Program,e3go,frame,runInstructions,Stepper.runInstr,
@@ -64,12 +64,12 @@ theorem pointer (bsize : Nat) (hb : bsize ≤ 1024) :
  rw [Word.ofNat_add_mod,Word.word_toNat_ofNat,Nat.mod_eq_of_lt (by omega)]
 def storedFrame (s : State) (mem : ByteArray) (n bsize esize msize : Nat) : State :=
  {s with
-   pc := UInt256.ofNat 2523
+   pc := UInt256.ofNat 8389
    memory := GateScratch.memory mem esize
    stack := SlimFrames.outer mem n bsize esize msize}
 theorem run_prefix (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (hact : 88 ≤ s.activeWords.toNat) :
- runInstructions prefixProgram (frame s mem 2522 n bsize esize msize) =
+ runInstructions prefixProgram (frame s mem 8388 n bsize esize msize) =
  some (storedFrame s mem n bsize esize msize) := by
  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) = s.activeWords :=
   Monpro.activeWords_fix s 2656 32 (by decide) (by norm_num) hact
@@ -81,7 +81,7 @@ theorem run_prefix (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 theorem run_test_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
- (hd : Decode.isValidJumpDest s.executionEnv.code 8624 = true)
+ (hd : Decode.isValidJumpDest s.executionEnv.code 8809 = true)
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3)
  (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
  runInstructions testProgram (storedFrame s mem n bsize 3 msize) =
@@ -105,7 +105,7 @@ theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
  (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
  runInstructions testProgram (storedFrame s mem n bsize esize msize) =
-   some (CycleSubmission.Global.SlimFrames.guardFrame s (GateScratch.memory mem esize) 2551 n bsize esize msize) := by
+   some (CycleSubmission.Global.SlimFrames.guardFrame s (GateScratch.memory mem esize) 8417 n bsize esize msize) := by
  simp only [CycleSubmission.Global.SlimFrames.special,CycleSubmission.Global.SlimFrames.guardFrame,GateScratch.memory]
  have haw : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) = s.activeWords :=
   Monpro.activeWords_fix s 2656 32 (by decide) (by norm_num) hact
@@ -119,10 +119,10 @@ theorem run_test_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
 theorem run_guard_hit (s : State) (mem : ByteArray) (n bsize msize : Nat)
  (hb : bsize ≤ 1024) (hact : 88 ≤ s.activeWords.toNat)
  (he : exponentWord s bsize = UInt256.ofNat 65537)
- (hd : Decode.isValidJumpDest s.executionEnv.code 8624 = true)
+ (hd : Decode.isValidJumpDest s.executionEnv.code 8809 = true)
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat 3)
  (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
- runInstructions guardProgram (frame s mem 2522 n bsize 3 msize) =
+ runInstructions guardProgram (frame s mem 8388 n bsize 3 msize) =
  some (SlimFrames.special s (GateScratch.memory mem 3) n bsize 3 msize 16) := by
  exact runInstructions_append_some _ _ _ _ _ (run_prefix s mem n bsize 3 msize hact)
   (run_test_hit s mem n bsize msize hb hact he hd hsize hptr)
@@ -131,8 +131,8 @@ theorem run_guard_miss (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
  (hc : UInt256.isTrue (guardValue s bsize esize))
  (hsize : MachineState.readWord s.executionEnv.calldata 32 = UInt256.ofNat esize)
  (hptr : MachineState.readWord mem 2656 = UInt256.ofNat (96+bsize)) :
- runInstructions guardProgram (frame s mem 2522 n bsize esize msize) =
- some (SlimFrames.guardFrame s (GateScratch.memory mem esize) 2551 n bsize esize msize) := by
+ runInstructions guardProgram (frame s mem 8388 n bsize esize msize) =
+ some (SlimFrames.guardFrame s (GateScratch.memory mem esize) 8417 n bsize esize msize) := by
  exact runInstructions_append_some _ _ _ _ _ (run_prefix s mem n bsize esize msize hact)
   (run_test_miss s mem n bsize esize msize hb hact hc hsize hptr)
 theorem miss_size (s : State) (bsize esize : Nat)
@@ -152,11 +152,11 @@ theorem miss_exponent (s : State) (bsize esize : Nat)
  have heq := (WindowGuardLogic.wordXor_eq_zero_iff _ _).1 hx.2
  exact he heq.symm
 def bailProgram : List Instr := [
-  .push 1 174,
+  .push 1 172,
    .op .JUMP]
 theorem run_bail (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
- (hd : Decode.isValidJumpDest s.executionEnv.code 174 = true) :
- runInstructions bailProgram (CycleSubmission.Global.SlimFrames.guardFrame s mem 2551 n bsize esize msize) =
+ (hd : Decode.isValidJumpDest s.executionEnv.code 172 = true) :
+ runInstructions bailProgram (CycleSubmission.Global.SlimFrames.guardFrame s mem 8417 n bsize esize msize) =
  some (CycleSubmission.Global.SlimFrames.bailState s mem n bsize esize msize) := by
  simp [bailProgram,CycleSubmission.Global.SlimFrames.guardFrame,CycleSubmission.Global.SlimFrames.bailState,SlimFrames.guardFrame,
   CycleSubmission.Global.SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer,

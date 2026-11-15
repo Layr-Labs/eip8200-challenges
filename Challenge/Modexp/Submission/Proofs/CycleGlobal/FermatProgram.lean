@@ -45,7 +45,7 @@ private theorem zero_lt_eq_double_isZero (x : UInt256) :
   · simp [h,hzero]
   · have hp : 0 < x.toNat := Nat.pos_of_ne_zero h
     simp [h,hzero,Nat.not_le_of_gt hp]
-/-- Fermat exit at 4831: copy the (width-normalized) base word kept at depth three under the
+/-- Fermat exit at 2831: copy the (width-normalized) base word kept at depth three under the
 modulus word, reduce it modulo the prime and compute `0 < base mod p`. -/
 def valueProgram : List Instr :=
   [.op (.Dup ⟨2,by decide⟩),.op .MOD,.push 0 0,.op .LT]
@@ -55,8 +55,8 @@ def exitProgram : List Instr :=
 def returnProgram : List Instr := valueProgram++exitProgram
 private theorem run_value (template : State) (modulus base : UInt256) (rest : List UInt256)
     (hrest : rest.length ≤ 999) (hbase : rest[1]? = some base) :
-    runInstructions valueProgram (framed template (UInt256.ofNat 10529) (modulus::rest)) =
-    some (framed template (UInt256.ofNat 10533)
+    runInstructions valueProgram (framed template (UInt256.ofNat 10947) (modulus::rest)) =
+    some (framed template (UInt256.ofNat 10951)
       (UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))::rest)) := by
   have hc1 : rest.length + 1 < 1024 := by omega
   have hc2 : rest.length + 2 < 1024 := by omega
@@ -90,18 +90,18 @@ theorem run_return (template : State) (modulus base : UInt256) (rest : List UInt
     (hrest : rest.length ≤ 999) (hbase : rest[1]? = some base)
     (hactive : template.activeWords = UInt256.ofNat 0) :
     WindowTwentyOneMsize.runInstructionsX returnProgram
-      (framed template (UInt256.ofNat 10529) (modulus::rest)) =
-    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 10537)
+      (framed template (UInt256.ofNat 10947) (modulus::rest)) =
+    some (WindowTwentyOneReturn.returned template (UInt256.ofNat 10955)
       (UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))) 0 rest) := by
   let word := UInt256.isZero (UInt256.isZero (UInt256.mod base modulus))
   have hv := run_value template modulus base rest hrest hbase
   have hvx : WindowTwentyOneMsize.runInstructionsX valueProgram
-      (framed template (UInt256.ofNat 10529) (modulus::rest)) =
-      some (framed template (UInt256.ofNat 10533) (word::rest)) := by
+      (framed template (UInt256.ofNat 10947) (modulus::rest)) =
+      some (framed template (UInt256.ofNat 10951) (word::rest)) := by
     rw [WindowTwentyOneMsize.runInstructionsX_eq valueProgram (by decide)]
     exact hv
-  have hr := run_exit template (UInt256.ofNat 10533) word hactive rest (by omega)
+  have hr := run_exit template (UInt256.ofNat 10951) word hactive rest (by omega)
   have both := WindowTwentyOneMsize.runInstructionsX_append_some _ _ _ _ _ hvx hr
-  have hpc : advancePC 4 (UInt256.ofNat 10533) = UInt256.ofNat 10537 := by decide
+  have hpc : advancePC 4 (UInt256.ofNat 10951) = UInt256.ofNat 10955 := by decide
   simpa only [returnProgram,hpc,word] using both
 end CycleSubmission.Global.FermatProgram

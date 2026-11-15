@@ -13,9 +13,9 @@ open EvmSemantics.EVM
 set_option linter.unusedSimpArgs false in
 theorem run_tramp7Dest (input : ByteArray) :
     Challenge.EvmProof.Stepper.runLocatedBlock tramp7DestPath
-      (trampolineState input 485) = some (headerEntryState input) := by
+      (trampolineState input 774) = some (headerEntryState input) := by
   have hsucc := Challenge.EvmProof.Word.succ_ofNat
-    (n := 485) (by norm_num : 485 + 1 < 2 ^ 256)
+    (n := 774) (by norm_num : 774 + 1 < 2 ^ 256)
   simp [tramp7DestPath,opAt,Challenge.EvmProof.Stepper.runLocatedBlock,
     Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
     trampolineState,headerEntryState,initialState,hsucc,
