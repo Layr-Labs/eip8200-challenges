@@ -12,7 +12,7 @@ set_option maxHeartbeats 2000000
 
 This is the first execution certificate for the frozen artifact. It follows
 the optimized entry jump, reads the three EIP-198 header words, skips the
-redundant EIP-7823 checks on the challenge's already-valid domain, and stops at
+redundant EIP-7821 checks on the challenge's already-valid domain, and stops at
 the operand dispatcher. The same `GasSteps` witness is used by the functional
 proof and by the exact gas schedule.
 -/
@@ -58,7 +58,7 @@ def headerLoadPath :
    opAt 361 .CALLDATALOAD,
    pushAt 362 1 64,
    opAt 363 .CALLDATALOAD]
-/-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
+/-- Direct hop over the EIP-7821 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
 so the block falls through to 1198 with an identical stack for 2 gas (was `PUSH2 1198 ; POP`,
 5 gas). The `JUMPDEST` at 1198 stays in the code. The hop preserves the three loaded length words. -/

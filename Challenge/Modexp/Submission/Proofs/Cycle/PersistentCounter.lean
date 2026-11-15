@@ -33,8 +33,8 @@ def program : List Instr :=
 theorem run (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 959)
  (hjump : Decode.isValidJumpDest s.executionEnv.code 3532 = true) :
- runInstructions program {s with pc := UInt256.ofNat 5842,stack := frame inv count a b n rest} =
- some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5851 else 3532),stack := frame inv (UInt256.ofNat 1+count) a b n rest} := by
+ runInstructions program {s with pc := UInt256.ofNat 5840,stack := frame inv count a b n rest} =
+ some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5849 else 3532),stack := frame inv (UInt256.ofNat 1+count) a b n rest} := by
  have ht : rest.tail.length ≤ rest.length := by cases rest <;> simp
  have capacity (j : Nat) (hj : j ≤ 20) : (rest.length-1)+j < 1024 := by omega
  by_cases hz : count.toNat = 0
@@ -53,7 +53,7 @@ theorem run_round (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (ha : ∀ i < 8,(a i).toNat < 2^240)
  (hjump : Decode.isValidJumpDest s.executionEnv.code 3532 = true) :
  runInstructions roundProgram (CachedInverse.persistentInitial s inv count a b n rest) =
- some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5851 else 3532),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := frame inv (UInt256.ofNat 1+count) (WordHistory.squared inv a b n) b n (inv::rest)} := by
+ some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5849 else 3532),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := frame inv (UInt256.ofNat 1+count) (WordHistory.squared inv a b n) b n (inv::rest)} := by
  have hk := CachedInverse.run_persistent s inv count a b n rest hcap hact hmem ha
  have hc := run ({s with memory := R9InvConsumeComplete.historyMemory s.memory inv a b n})
    inv count (WordHistory.squared inv a b n) b n (inv::rest) (by simp; omega) hjump

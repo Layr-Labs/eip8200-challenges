@@ -310,7 +310,7 @@ theorem stage10_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h1088 : MachineState.readWord s.memory 1088 = q1)
     (h1280 : MachineState.readWord s.memory 1280 = q7)
     (hq : R9SharedMath10.qNew c q2 q3 q4 q5 q6 q7 q8 a2 a3 a4 a5 a6 a7 a8 n2 n3 n4 n5 n6 n7 n8 p = z1) (hc : R9SharedMath10.cNew c q2 q3 q4 q5 q6 q7 q8 a2 a3 a4 a5 a6 a7 a8 n2 n3 n4 n5 n6 n7 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage10Program {s with pc := N 4993,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(a2+a2)::(n5)::(n7)::(p)::(n8)::(n1)::a5::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5184,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z1).toNat 32) 800,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage10Program {s with pc := N 4993,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(a2+a2)::(n5)::(n7)::(p)::(n8)::(n1)::a5::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5182,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z1).toNat 32) 800,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((q8)*(n2))+(((n3)*(q7))+(((q6)*(n4))+(((q5)*(n5))+(((q4)*(n6))+(((n7)*(q3))+(((n8)*(q2))+((a5*a5)+((c)+(((a4+a4)*a6)+(((a3+a3)*a7)+(a8*(a2+a2))))))))))))) = z1 := by
     simpa only [R9SharedMath10.qNew,R9SharedMath10.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+(((UInt256.mulMod (q8) (n2) (p))+((UInt256.mulMod (q7) (n3) (p))+((UInt256.mulMod (q6) (n4) (p))+((UInt256.mulMod (q5) (n5) (p))+((UInt256.mulMod (q4) (n6) (p))+((UInt256.mulMod (n7) (q3) (p))+((UInt256.mulMod (n8) (q2) (p))+((UInt256.mulMod a5 a5 (p))+((c)+((UInt256.mulMod (a4+a4) a6 (p))+((UInt256.mulMod (a3+a3) a7 (p))+(UInt256.mulMod a8 (a2+a2) (p)))))))))))))-(z1))) (p) = cn := by
@@ -319,7 +319,7 @@ theorem stage10_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath10.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage10Model s (c) (n2) (n6) (n4) (q6) (a2+a2) (n5) (n7) (p) (n8) (n1) a5 (q8) (n3) a7 a8 rest = {s with pc := N 5184,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z1).toNat 32) 800,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+  have he : R9InvConsumeExec.stage10Model s (c) (n2) (n6) (n4) (q6) (a2+a2) (n5) (n7) (p) (n8) (n1) a5 (q8) (n3) a7 a8 rest = {s with pc := N 5182,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z1).toNat 32) 800,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage10Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage10_run s (c) (n2) (n6) (n4) (q6) (a2+a2) (n5) (n7) (p) (n8) (n1) a5 (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)
@@ -344,7 +344,7 @@ theorem stage11_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h1280 : MachineState.readWord s.memory 1280 = q7)
     (h800 : MachineState.readWord s.memory 800 = z1)
     (hq : R9SharedMath11.qNew c q3 q4 q5 q6 q7 q8 a3 a4 a5 a6 a7 a8 n3 n4 n5 n6 n7 n8 p = z2) (hc : R9SharedMath11.cNew c q3 q4 q5 q6 q7 q8 a3 a4 a5 a6 a7 a8 n3 n4 n5 n6 n7 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage11Program {s with pc := N 5184,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5332,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z2).toNat 32) 832,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage11Program {s with pc := N 5182,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5330,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z2).toNat 32) 832,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((q8)*(n3))+(((n4)*(q7))+(((q6)*(n5))+(((q5)*(n6))+(((n7)*(q4))+(((n8)*(q3))+(((a6*(a5+a5))+((a7*(a4+a4))+(a8*(a3+a3))))+(c)))))))) = z2 := by
     simpa only [R9SharedMath11.qNew,R9SharedMath11.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+(((UInt256.mulMod (q8) (n3) (p))+((UInt256.mulMod (q7) (n4) (p))+((UInt256.mulMod (q6) (n5) (p))+((UInt256.mulMod (q5) (n6) (p))+((UInt256.mulMod (n7) (q4) (p))+((UInt256.mulMod (n8) (q3) (p))+((c)+((UInt256.mulMod a6 (a5+a5) (p))+((UInt256.mulMod a7 (a4+a4) (p))+(UInt256.mulMod (a3+a3) a8 (p)))))))))))-(z2))) (p) = cn := by
@@ -353,7 +353,7 @@ theorem stage11_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath11.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage11Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5332,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z2).toNat 32) 832,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+  have he : R9InvConsumeExec.stage11Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5330,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z2).toNat 32) 832,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage11Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,h800,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage11_run s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)
@@ -379,7 +379,7 @@ theorem stage12_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h800 : MachineState.readWord s.memory 800 = z1)
     (h832 : MachineState.readWord s.memory 832 = z2)
     (hq : R9SharedMath12.qNew c q4 q5 q6 q7 q8 a4 a5 a6 a7 a8 n4 n5 n6 n7 n8 p = z3) (hc : R9SharedMath12.cNew c q4 q5 q6 q7 q8 a4 a5 a6 a7 a8 n4 n5 n6 n7 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage12Program {s with pc := N 5332,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5465,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z3).toNat 32) 32,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage12Program {s with pc := N 5330,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5463,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z3).toNat 32) 32,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((q8)*(n4))+(((n5)*(q7))+(((q6)*(n6))+(((n7)*(q5))+(((n8)*(q4))+((a6*a6)+(((a7*(a5+a5))+(a8*(a4+a4)))+(c)))))))) = z3 := by
     simpa only [R9SharedMath12.qNew,R9SharedMath12.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+(((UInt256.mulMod (q8) (n4) (p))+((UInt256.mulMod (n5) (q7) (p))+((UInt256.mulMod (q6) (n6) (p))+((UInt256.mulMod (n7) (q5) (p))+((UInt256.mulMod (n8) (q4) (p))+((UInt256.mulMod a6 a6 (p))+((c)+((UInt256.mulMod a7 (a5+a5) (p))+(UInt256.mulMod (a4+a4) a8 (p))))))))))-(z3))) (p) = cn := by
@@ -388,7 +388,7 @@ theorem stage12_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath12.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage12Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5465,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z3).toNat 32) 32,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+  have he : R9InvConsumeExec.stage12Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5463,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z3).toNat 32) 32,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage12Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,h800,h832,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage12_run s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)
@@ -414,7 +414,7 @@ theorem stage13_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h800 : MachineState.readWord s.memory 800 = z1)
     (h832 : MachineState.readWord s.memory 832 = z2)
     (hq : R9SharedMath13.qNew c q5 q6 q7 q8 a5 a6 a7 a8 n5 n6 n7 n8 p = z4) (hc : R9SharedMath13.cNew c q5 q6 q7 q8 a5 a6 a7 a8 n5 n6 n7 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage13Program {s with pc := N 5465,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5574,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z4).toNat 32) 64,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage13Program {s with pc := N 5463,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5572,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z4).toNat 32) 64,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((q8)*(n5))+(((n6)*(q7))+(((n7)*(q6))+(((n8)*(q5))+(((a7*(a6+a6))+(a8*(a5+a5)))+(c)))))) = z4 := by
     simpa only [R9SharedMath13.qNew,R9SharedMath13.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+(((UInt256.mulMod (q8) (n5) (p))+((UInt256.mulMod (q7) (n6) (p))+((UInt256.mulMod (n7) (q6) (p))+((UInt256.mulMod (n8) (q5) (p))+((c)+((UInt256.mulMod a7 (a6+a6) (p))+(UInt256.mulMod (a5+a5) a8 (p))))))))-(z4))) (p) = cn := by
@@ -423,7 +423,7 @@ theorem stage13_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath13.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage13Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5574,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z4).toNat 32) 64,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
+  have he : R9InvConsumeExec.stage13Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5572,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z4).toNat 32) 64,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage13Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,h800,h832,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage13_run s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)
@@ -449,7 +449,7 @@ theorem stage14_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h800 : MachineState.readWord s.memory 800 = z1)
     (h832 : MachineState.readWord s.memory 832 = z2)
     (hq : R9SharedMath14.qNew c q6 q7 q8 a6 a7 a8 n6 n7 n8 p = z5) (hc : R9SharedMath14.cNew c q6 q7 q8 a6 a7 a8 n6 n7 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage14Program {s with pc := N 5574,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5680,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage14Program {s with pc := N 5572,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(q5)::(n5)::(n7)::(p)::(n8)::(q7)::(a5+a5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5678,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((q8)*(n6))+(((n7)*(q7))+(((n8)*(q6))+((a7*a7)+((c)+(a8*(a6+a6))))))) = z5 := by
     simpa only [R9SharedMath14.qNew,R9SharedMath14.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+(((UInt256.mulMod (n6) (q8) (p))+((UInt256.mulMod (n7) (q7) (p))+((UInt256.mulMod (n8) (q6) (p))+((UInt256.mulMod a7 a7 (p))+((c)+(UInt256.mulMod a8 (a6+a6) (p)))))))-(z5))) (p) = cn := by
@@ -458,7 +458,7 @@ theorem stage14_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath14.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage14Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5680,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
+  have he : R9InvConsumeExec.stage14Model s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest = {s with pc := N 5678,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(q6)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage14Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,h800,h832,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage14_run s (c) (n2) (n6) (n4) (q6) (q5) (n5) (n7) (p) (n8) (q7) (a5+a5) (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)
@@ -484,7 +484,7 @@ theorem stage15_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h800 : MachineState.readWord s.memory 800 = z1)
     (h832 : MachineState.readWord s.memory 832 = z2)
     (hq : R9SharedMath15.qNew c q7 q8 a7 a8 n7 n8 p = z6) (hc : R9SharedMath15.cNew c q7 q8 a7 a8 n7 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage15Program {s with pc := N 5680,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5764,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z6).toNat 32) 128,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage15Program {s with pc := N 5678,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(q6)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5762,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z6).toNat 32) 128,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((q8)*(n7))+(((q7)*(n8))+((c)+(a8*(a7+a7))))) = z6 := by
     simpa only [R9SharedMath15.qNew,R9SharedMath15.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+(((UInt256.mulMod (n7) (q8) (p))+((UInt256.mulMod (q7) (n8) (p))+((c)+(UInt256.mulMod a8 (a7+a7) (p)))))-(z6))) (p) = cn := by
@@ -493,7 +493,7 @@ theorem stage15_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath15.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage15Model s (c) (n2) (n6) (n4) (q6) (z2) (n5) (n7) (p) (n8) (q7) (z5) (q8) (n3) a7 a8 rest = {s with pc := N 5764,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z6).toNat 32) 128,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
+  have he : R9InvConsumeExec.stage15Model s (c) (n2) (n6) (n4) (q6) (z2) (n5) (n7) (p) (n8) (q7) (z5) (q8) (n3) a7 a8 rest = {s with pc := N 5762,memory := MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded (z6).toNat 32) 128,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage15Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,h800,h832,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage15_run s (c) (n2) (n6) (n4) (q6) (z2) (n5) (n7) (p) (n8) (q7) (z5) (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)
@@ -519,7 +519,7 @@ theorem stage16_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     (h800 : MachineState.readWord s.memory 800 = z1)
     (h832 : MachineState.readWord s.memory 832 = z2)
     (hq : R9SharedMath16.qNew c q8 a8 n8 p = z7) (hc : R9SharedMath16.cNew c q8 a8 n8 p = cn) :
-    runInstructions R9InvConsumeExec.stage16Program {s with pc := N 5764,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5834,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(n1)::(z5)::(q8)::(n3)::z7::a8::rest} := by
+    runInstructions R9InvConsumeExec.stage16Program {s with pc := N 5762,memory := s.memory,stack := (c)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(q7)::(z5)::(q8)::(n3)::a7::a8::rest} = some {s with pc := N 5832,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(n1)::(z5)::(q8)::(n3)::z7::a8::rest} := by
   have hqr : UInt256.land (N 1766847064778384329583297500742918515827483896875618958121606201292619775) (((c)+(a8*a8))+((q8)*(n8))) = z7 := by
     simpa only [R9SharedMath16.qNew,R9SharedMath16.loNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hq
   have hcr : UInt256.mulMod (N 2048) ((p)+((((c)+(UInt256.mulMod a8 a8 (p)))+(UInt256.mulMod (q8) (n8) (p)))-(z7))) (p) = cn := by
@@ -528,7 +528,7 @@ theorem stage16_history (s : State) (c cn q0 q1 q2 q3 q4 q5 q6 q7 q8 z0 z1 z2 z3
     rw [hq] at hh
     simpa only [R9SharedMath16.hiNew,mask240_literal,List.foldr_cons,List.foldr_nil,word_add0,addA,addL,addC,mulC,mmC,andC] using hh
   simp only [addA,addL,addC,mulC,mmC,andC] at hqr hcr
-  have he : R9InvConsumeExec.stage16Model s (c) (n2) (n6) (n4) (z1) (z2) (n5) (n7) (p) (n8) (q7) (z5) (q8) (n3) a7 a8 rest = {s with pc := N 5834,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(n1)::(z5)::(q8)::(n3)::z7::a8::rest} := by
+  have he : R9InvConsumeExec.stage16Model s (c) (n2) (n6) (n4) (z1) (z2) (n5) (n7) (p) (n8) (q7) (z5) (q8) (n3) a7 a8 rest = {s with pc := N 5832,memory := s.memory,stack := (cn)::(n2)::(n6)::(n4)::(z1)::(z2)::(n5)::(n7)::(p)::(n8)::(n1)::(z5)::(q8)::(n3)::z7::a8::rest} := by
     simp (disch := decide) only [R9InvConsumeExec.stage16Model,readWord_writeWord,read_disjoint,h768,h32,h64,h128,h160,h2720,h1344,h1376,h1568,h1600,h192,h0,h224,h1216,h1248,h1088,h1280,h800,h832,addA,addL,addC,mulC,mmC,andC,mask240_literal,hqr,hcr]
   have hh := R9InvConsumeExec.stage16_run s (c) (n2) (n6) (n4) (z1) (z2) (n5) (n7) (p) (n8) (q7) (z5) (q8) (n3) a7 a8 rest hcap hact
   exact hh.trans (congrArg some he)

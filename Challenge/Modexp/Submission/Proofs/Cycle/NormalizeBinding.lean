@@ -23,10 +23,10 @@ def returnBlock : Block Artifact.artifact .Osaka 10655 jumpProgram :=
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 8557 = true := by
-  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6476
-    (show Artifact.instructions[6476]? = some (.op .JUMPDEST) by rfl)
-  have hp : Artifact.artifact.instructionPC 6476 = 8557 := by
+theorem validJump10867 : Decode.isValidJumpDest Artifact.bytecode 8555 = true := by
+  have h := ProgramArtifact.isValidJumpDest_index Artifact.artifact 6474
+    (show Artifact.instructions[6474]? = some (.op .JUMPDEST) by rfl)
+  have hp : Artifact.artifact.instructionPC 6474 = 8555 := by
     rw [PCFast.instructionPC_eq_byteLength]; rfl
   rw [hp] at h
   exact h

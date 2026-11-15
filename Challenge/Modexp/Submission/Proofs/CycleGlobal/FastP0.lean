@@ -28,7 +28,7 @@ def blk977 :
    opAt 398 .LT,
    pushAt 399 2 10316,
    opAt 400 .JUMPI]
-/-- Instructions 986..989, pc 1133..1137.  The EIP-7823 oversize test that used to
+/-- Instructions 986..989, pc 1133..1137.  The EIP-7821 oversize test that used to
 follow the two header loads (13 instructions, `DUP3 PUSH2 1024 LT DUP3 PUSH2 1024 LT OR
 DUP2 PUSH2 1024 LT OR PUSH2 <BAIL3> JUMPI`) is gone from the bytecode: `ValidInput`
 bounds every declared size by 1024, so its `JUMPI` was never taken.  The block now falls

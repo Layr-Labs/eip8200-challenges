@@ -31,7 +31,7 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
     Decode.isValidJumpDest template.executionEnv.code pc = true := by
   rw [env.code]
   exact hjump
-/-- An exponent or modulus size other than 32 (both within the EIP-7823 bound) reaches the fixed-vector recogniser's
+/-- An exponent or modulus size other than 32 (both within the EIP-7821 bound) reaches the fixed-vector recogniser's
 entry at 599 with an empty stack. -/
 def steps_size_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : EarlySizePaths artifact fork) (template : State) (env : Environment artifact fork template)

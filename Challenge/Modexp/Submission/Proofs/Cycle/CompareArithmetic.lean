@@ -44,11 +44,11 @@ theorem less_iff (a n : Nat → UInt256) (k : Nat) (hk : k ≤ 9)
       (fun i hi => ha i (by omega)) (fun i hi => hn i (by omega))]
     simp only [less,ih (by omega)]
 def destination (a n : Nat → UInt256) : Nat → Nat
-  | 0 => 8547
-  | k+1 => if (a k).toNat < (n k).toNat then 8557
-    else if (n k).toNat < (a k).toNat then 8547 else destination a n k
+  | 0 => 8545
+  | k+1 => if (a k).toNat < (n k).toNat then 8555
+    else if (n k).toNat < (a k).toNat then 8545 else destination a n k
 theorem destination_eq (a n : Nat → UInt256) (k : Nat) :
-    destination a n k = if less a n k then 8557 else 8547 := by
+    destination a n k = if less a n k then 8555 else 8545 := by
   induction k with
   | zero => simp [destination,less]
   | succ k ih =>
@@ -62,7 +62,7 @@ theorem destination_eq (a n : Nat → UInt256) (k : Nat) :
 theorem final_destination (a n : Nat → UInt256)
     (ha : ∀ i < 8,(a i).toNat < 2^240)
     (hn : ∀ i < 8,(n i).toNat < 2^240) :
-    destination a n 9 = if value a < value n then 8557 else 8547 := by
+    destination a n 9 = if value a < value n then 8555 else 8545 := by
   rw [destination_eq,less_iff a n 9 (by decide) ha hn]
   by_cases h : value a < value n
   · have hw : weighted (2^240) 9 (fun i => (a i).toNat) < weighted (2^240) 9 (fun i => (n i).toNat) := h

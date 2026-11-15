@@ -456,7 +456,7 @@ local macro "pc_by_old " seg:ident i:num old:ident : tactic =>
   interval_cases i <;> rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] <;> rfl
 /-! ## Directly stated pcs: E5 and the eight-limb loop head (2056 .. 2146), the bottom test,
 the exit / E3 phase blocks and the repair loop (2381 .. 2465), and the appended four-limb
-loop head (8548 .. 8610). -/
+loop head (8546 .. 8608). -/
 @[simp] theorem pcDual2056 : IPC 2184 = 2829 := by pc_by_len
 @[simp] theorem pcDual2057 : IPC 2159 = 2782 := by pc_by_len
 @[simp] theorem pcDual2065 : IPC 2159 = 2782 := by pc_by_len
