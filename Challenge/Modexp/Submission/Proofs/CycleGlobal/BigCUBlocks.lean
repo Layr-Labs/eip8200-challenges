@@ -16,160 +16,160 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowNibbleKernel WindowTwentyOneBinding
 def unsignedBlocks : BigC.Unsigned.Blocks CycleSubmission.Artifact.artifact where
-  entry := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 301 2 418 BigC.Unsigned.entryProgram
-    (by change 301+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  entry := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 299 2 416 BigC.Unsigned.entryProgram
+    (by change 299+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  init := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 303 4 422 BigC.Unsigned.initProgram
-    (by change 303+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  init := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 301 4 420 BigC.Unsigned.initProgram
+    (by change 301+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  cell := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 307 32 428 BigC.Unsigned.cellProgram
-    (by change 307+32 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  cell := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 305 32 426 BigC.Unsigned.cellProgram
+    (by change 305+32 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 339 3 461 BigC.Unsigned.guardProgram
-    (by change 339+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  guard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 337 3 459 BigC.Unsigned.guardProgram
+    (by change 337+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  decide := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 342 3 466 BigC.Unsigned.decideProgram
-    (by change 342+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  decide := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 340 3 464 BigC.Unsigned.decideProgram
+    (by change 340+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  retry := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 345 5 471 BigC.Unsigned.retryProgram
-    (by change 345+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  retry := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 343 5 469 BigC.Unsigned.retryProgram
+    (by change 343+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  finish := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 350 5 480 BigC.Unsigned.finishProgram
-    (by change 350+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  finish := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 348 5 478 BigC.Unsigned.finishProgram
+    (by change 348+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  jumpInit := CycleSubmission.Global.Binding.jumpDest 303 (by rfl)
-  jumpLoop := CycleSubmission.Global.Binding.jumpDest 307 (by rfl)
-  jumpDone := CycleSubmission.Global.Binding.jumpDest 350 (by rfl)
+  jumpInit := CycleSubmission.Global.Binding.jumpDest 301 (by rfl)
+  jumpLoop := CycleSubmission.Global.Binding.jumpDest 305 (by rfl)
+  jumpDone := CycleSubmission.Global.Binding.jumpDest 348 (by rfl)
 def mulBlocks : BigC.U.MulBlocks CycleSubmission.Artifact.artifact where
-  mEntry := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 250 7 347 BigC.U.mEntryProgram
-    (by change 250+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  mEntry := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 248 7 345 BigC.U.mEntryProgram
+    (by change 248+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  mGuard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 257 8 355 BigC.U.mGuardProgram
-    (by change 257+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  mGuard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 255 8 353 BigC.U.mGuardProgram
+    (by change 255+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  mDouble := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 265 4 366 BigC.U.mDoubleProgram
-    (by change 265+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  mDouble := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 263 4 364 BigC.U.mDoubleProgram
+    (by change 263+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  m2 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 269 16 374 BigC.U.m2Program
-    (by change 269+16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  m2 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 267 16 372 BigC.U.m2Program
+    (by change 267+16 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  mAdd := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 285 4 395 BigC.U.mAddProgram
-    (by change 285+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  mAdd := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 283 4 393 BigC.U.mAddProgram
+    (by change 283+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  m3 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 289 5 403 BigC.U.m3Program
-    (by change 289+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  m3 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 287 5 401 BigC.U.m3Program
+    (by change 287+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  m9 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 294 7 411 BigC.U.m9Program
-    (by change 294+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  m9 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 292 7 409 BigC.U.m9Program
+    (by change 292+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
   jumps :=
-    { j419 := CycleSubmission.Global.Binding.jumpDest 257 (by rfl)
-      j438 := CycleSubmission.Global.Binding.jumpDest 269 (by rfl)
-      j467 := CycleSubmission.Global.Binding.jumpDest 289 (by rfl)
-      j475 := CycleSubmission.Global.Binding.jumpDest 294 (by rfl)
-      j482 := CycleSubmission.Global.Binding.jumpDest 301 (by rfl) }
+    { j419 := CycleSubmission.Global.Binding.jumpDest 255 (by rfl)
+      j438 := CycleSubmission.Global.Binding.jumpDest 267 (by rfl)
+      j467 := CycleSubmission.Global.Binding.jumpDest 287 (by rfl)
+      j475 := CycleSubmission.Global.Binding.jumpDest 292 (by rfl)
+      j482 := CycleSubmission.Global.Binding.jumpDest 299 (by rfl) }
 def expBlocks : BigC.U.ExpBlocks CycleSubmission.Artifact.artifact where
-  eGuard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 187 8 246 BigC.U.eGuardProgram
-    (by change 187+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  eGuard := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 185 8 244 BigC.U.eGuardProgram
+    (by change 185+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  eSquare := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 195 6 257 BigC.U.eSquareProgram
-    (by change 195+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  eSquare := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 193 6 255 BigC.U.eSquareProgram
+    (by change 193+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  e2 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 201 23 269 BigC.U.e2Program
-    (by change 201+23 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  e2 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 199 23 267 BigC.U.e2Program
+    (by change 199+23 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  eMul := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 224 7 300 BigC.U.eMulProgram
-    (by change 224+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  eMul := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 222 7 298 BigC.U.eMulProgram
+    (by change 222+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  e4 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 231 5 315 BigC.U.e4Program
-    (by change 231+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  e4 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 229 5 313 BigC.U.e4Program
+    (by change 229+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  e3 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 236 5 322 BigC.U.e3Program
-    (by change 236+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  e3 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 234 5 320 BigC.U.e3Program
+    (by change 234+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  e9 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 241 9 330 BigC.U.e9Program
-    (by change 241+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  e9 := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 239 9 328 BigC.U.e9Program
+    (by change 239+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
   jumps :=
-    { j295 := CycleSubmission.Global.Binding.jumpDest 175 (by rfl)
-      j310 := CycleSubmission.Global.Binding.jumpDest 187 (by rfl)
-      j333 := CycleSubmission.Global.Binding.jumpDest 201 (by rfl)
-      j379 := CycleSubmission.Global.Binding.jumpDest 231 (by rfl)
-      j386 := CycleSubmission.Global.Binding.jumpDest 236 (by rfl)
-      j394 := CycleSubmission.Global.Binding.jumpDest 241 (by rfl)
-      j411 := CycleSubmission.Global.Binding.jumpDest 250 (by rfl)
-      j482 := CycleSubmission.Global.Binding.jumpDest 301 (by rfl) }
+    { j295 := CycleSubmission.Global.Binding.jumpDest 173 (by rfl)
+      j310 := CycleSubmission.Global.Binding.jumpDest 185 (by rfl)
+      j333 := CycleSubmission.Global.Binding.jumpDest 199 (by rfl)
+      j379 := CycleSubmission.Global.Binding.jumpDest 229 (by rfl)
+      j386 := CycleSubmission.Global.Binding.jumpDest 234 (by rfl)
+      j394 := CycleSubmission.Global.Binding.jumpDest 239 (by rfl)
+      j411 := CycleSubmission.Global.Binding.jumpDest 248 (by rfl)
+      j482 := CycleSubmission.Global.Binding.jumpDest 299 (by rfl) }
 def setupBlocks : BigC.U.SetupBlocks CycleSubmission.Artifact.artifact where
-  setup := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 133 25 174 BigC.U.setupProgram
-    (by change 133+25 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  setup := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 131 25 172 BigC.U.setupProgram
+    (by change 131+25 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  zLoop := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 158 14 209 BigC.U.zLoopProgram
-    (by change 158+14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  zLoop := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 156 14 207 BigC.U.zLoopProgram
+    (by change 156+14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  zExit := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 172 3 226 BigC.U.zExitProgram
-    (by change 172+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  zExit := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 170 3 224 BigC.U.zExitProgram
+    (by change 170+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  zeroRet := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 175 4 231 BigC.U.zeroRetProgram
-    (by change 175+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  zeroRet := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 173 4 229 BigC.U.zeroRetProgram
+    (by change 173+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-  nz := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 179 8 235 BigC.U.nzProgram
-    (by change 179+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  nz := WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 177 8 233 BigC.U.nzProgram
+    (by change 177+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
   jumps :=
-    { j236 := CycleSubmission.Global.Binding.jumpDest 133 (by rfl)
-      j271 := CycleSubmission.Global.Binding.jumpDest 158 (by rfl)
-      j295 := CycleSubmission.Global.Binding.jumpDest 175 (by rfl)
-      j299 := CycleSubmission.Global.Binding.jumpDest 179 (by rfl) }
+    { j236 := CycleSubmission.Global.Binding.jumpDest 131 (by rfl)
+      j271 := CycleSubmission.Global.Binding.jumpDest 156 (by rfl)
+      j295 := CycleSubmission.Global.Binding.jumpDest 173 (by rfl)
+      j299 := CycleSubmission.Global.Binding.jumpDest 177 (by rfl) }
 end CycleSubmission.Global.BigC.UBlocks

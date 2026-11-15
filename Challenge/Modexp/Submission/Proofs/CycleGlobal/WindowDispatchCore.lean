@@ -6,7 +6,7 @@ open Challenge.Modexp Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
 open Challenge.EvmProof WindowNibbleKernel WindowTwentyOneBinding WindowTwentyOnePositive
 def normalized (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 937)
+  WindowTwentyOneTablePrelude.initial (context template input) (UInt256.ofNat 935)
     (WindowTwentyOneInput.baseWord input) (WindowTwentyOneInput.modulusWord input)
     (WindowTwentyOneInput.modulusWord input::coreStack input tail)
 def returned (template : State) (input : ByteArray) (tail : List UInt256) : State :=
@@ -18,8 +18,8 @@ theorem returned_spec (template : State) (input : ByteArray) (tail : List UInt25
     (returned template input tail).toResult = .returned (spec input) := by
   exact WindowTwentyOnePositive.returned_spec template input tail hmatch
 structure Paths (artifact : ProgramArtifact) (fork : Fork) extends RelocatedWindowCore.Paths artifact fork where
-  base : Block artifact fork 934 WindowTwentyOneEntry.baseProgram
-  modulus : Block artifact fork 935 WindowTwentyOneEntry.modulusProgram
+  base : Block artifact fork 932 WindowTwentyOneEntry.baseProgram
+  modulus : Block artifact fork 933 WindowTwentyOneEntry.modulusProgram
 def context_env {artifact : ProgramArtifact} {fork : Fork} (template : State)
     (env : Environment artifact fork template) (input : ByteArray) :
     Environment artifact fork (context template input) where
@@ -33,7 +33,7 @@ private def lift {artifact : ProgramArtifact} {fork : Fork} {pc : Nat} {instruct
     (hrun : runInstructions instructions s = some t) (env : Environment artifact fork s)
     (hpc : s.pc = UInt256.ofNat pc) : GasSteps s t := block.steps env hpc hrun
 def entryState (template : State) (input : ByteArray) (tail : List UInt256) : State :=
-  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 934)
+  WindowTwentyOneEntry.framed (context template input) (UInt256.ofNat 932)
     (WindowTwentyOneInput.modulusWord input::coreStack input tail)
 def core_steps {artifact : ProgramArtifact} {fork : Fork}
     (paths : Paths artifact fork) (template : State) (env : Environment artifact fork template)
@@ -46,7 +46,7 @@ def core_steps {artifact : ProgramArtifact} {fork : Fork}
   have hm := RelocatedWindowCore.Entry.run_modulus ctx (WindowTwentyOneInput.modulusWord input)
     (shiftWord input) (coreStack input tail) (by simp [coreStack]; omega) rfl
   have hm' : runInstructions WindowTwentyOneEntry.modulusProgram
-      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 935)
+      (WindowTwentyOneEntry.framed ctx (UInt256.ofNat 933)
         (WindowTwentyOneInput.modulusWord input::coreStack input tail)) =
       some (normalized template input tail) := by
     simpa only [normalized,WindowTwentyOneTablePrelude.initial,WindowTwentyOneEntry.framed,

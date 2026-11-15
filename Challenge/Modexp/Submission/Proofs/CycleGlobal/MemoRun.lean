@@ -4,9 +4,9 @@ set_option warningAsError true
 namespace CycleSubmission.Global.Memo
 open Challenge.Modexp EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs.Bytecode
-abbrev entryState (input : ByteArray) : State := CycleSubmission.CombinedMemoGuard.state CycleSubmission.Artifact.artifact input 866
-abbrev legacyState (input : ByteArray) : State := CycleSubmission.CombinedMemoGuard.state CycleSubmission.Artifact.artifact input 485
-abbrev hitEntryState (input : ByteArray) : State := CycleSubmission.CombinedMemoGuard.state CycleSubmission.Artifact.artifact input 896
+abbrev entryState (input : ByteArray) : State := CycleSubmission.CombinedMemoGuard.state CycleSubmission.Artifact.artifact input 864
+abbrev legacyState (input : ByteArray) : State := CycleSubmission.CombinedMemoGuard.state CycleSubmission.Artifact.artifact input 483
+abbrev hitEntryState (input : ByteArray) : State := CycleSubmission.CombinedMemoGuard.state CycleSubmission.Artifact.artifact input 894
 noncomputable def gasSteps_hit (input : ByteArray) (hvalid : ValidInput input) (hmatch : MemoLogic.Matches input) :
  GasSteps (entryState input) (hitEntryState input) :=
  CycleSubmission.CombinedMemoGuard.hit CycleSubmission.Artifact.artifact combinedBlock codeBound jumpDestLegacy input hvalid hmatch

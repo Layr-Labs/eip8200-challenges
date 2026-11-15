@@ -21,7 +21,7 @@ private def gasSteps_tramp0 (input : ByteArray) :
       rfl deployAddress_not_precompile
 /-- The body's own `JUMPDEST`, reached when the legacy fast path declines. -/
 private def gasSteps_tramp7Dest (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 485)
+    Challenge.EvmProof.GasSteps (trampolineState input 483)
       (headerEntryState input) :=
   Challenge.EvmProof.Stepper.runLocatedBlock_sound
     CycleSubmission.Artifact.artifact .Osaka tramp7DestPath rfl rfl
@@ -46,11 +46,11 @@ private def gasSteps_headerCheck (input : ByteArray) :
 -- `JUMPDEST ; JUMPDEST` costs 1 + 1 (was `PUSH2 ; POP` = 3 + 2).
 @[simp] private theorem gasSteps_headerCheck_cost (input : ByteArray) :
     (gasSteps_headerCheck input).cost = 0 := by rfl
-/-- The header block starting from the body `JUMPDEST` at pc 1314 rather than
+/-- The header block starting from the body `JUMPDEST` at pc 1312 rather than
 from the entry.  The appended fast path reaches that pc itself, so the entry hop
 is factored out. -/
 def gasSteps_headerFromBody (input : ByteArray) :
-    Challenge.EvmProof.GasSteps (trampolineState input 485)
+    Challenge.EvmProof.GasSteps (trampolineState input 483)
       (headerState input) := by
   exact (gasSteps_tramp7Dest input).trans <|
     (gasSteps_headerLoad input).trans (gasSteps_headerCheck input)
@@ -63,7 +63,7 @@ def gasSteps_entryHop (input : ByteArray) :
 inputs it declines. -/
 def gasSteps_header (input : ByteArray) (_hvalid : ValidInput input)
     (entry : Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
-      (trampolineState input 485)) :
+      (trampolineState input 483)) :
     Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
       (headerState input) :=
   entry.trans (gasSteps_headerFromBody input)

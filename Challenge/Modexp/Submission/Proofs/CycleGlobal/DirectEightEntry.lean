@@ -9,25 +9,25 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode WindowTwentyOneBinding WindowNibbleKernel
 open Challenge.Modexp.Submission.Proofs.Fast
-def guardBlock : Block CycleSubmission.Artifact.artifact .Osaka 3305 DirectEightRaw.guardProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2547 9 3305 DirectEightRaw.guardProgram
-  (by change 2547+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def guardBlock : Block CycleSubmission.Artifact.artifact .Osaka 3551 DirectEightRaw.guardProgram :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2722 9 3551 DirectEightRaw.guardProgram
+  (by change 2722+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-def finishBlock : Block CycleSubmission.Artifact.artifact .Osaka 3318 DirectEightRaw.finishProgram :=
- WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2556 11 3318 DirectEightRaw.finishProgram
-  (by change 2556+11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def finishBlock : Block CycleSubmission.Artifact.artifact .Osaka 3564 DirectEightRaw.finishProgram :=
+ WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2731 11 3564 DirectEightRaw.finishProgram
+  (by change 2731+11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
   (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
   (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
   (by decide)
-theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 174 = true := by
- have h := CycleSubmission.Global.Binding.jumpDest 133 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
- have hp : CycleSubmission.Artifact.artifact.instructionPC 133 = 174 := by
+theorem jumpDestBail : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 172 = true := by
+ have h := CycleSubmission.Global.Binding.jumpDest 131 (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
+ have hp : CycleSubmission.Artifact.artifact.instructionPC 131 = 172 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; decide
  simpa only [hp] using h
 def bailState (s : State) (mem : ByteArray) (bsize esize k : Nat) : State :=
- DirectEightRaw.state s mem 174 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize
+ DirectEightRaw.state s mem 172 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize
 def hit (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
  (hact : 88 ≤ s.activeWords.toNat) (env : Environment CycleSubmission.Artifact.artifact .Osaka s)
  (hg : (DirectEightRaw.guardWord mem).toNat ≠ 0) :
@@ -37,10 +37,10 @@ def hit (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk16
   (SlimFrames.outer mem 8 bsize esize 256)
   (by simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]) env
  have gg := guardBlock.steps
-  (s := DirectEightRaw.state s mem 3305 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize)
+  (s := DirectEightRaw.state s mem 3551 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize)
   (env.transfer rfl rfl) rfl (DirectEightRaw.run_hit s mem _ _ bsize esize hact hg)
  have gf := finishBlock.steps
-  (s := DirectEightRaw.state s mem 3318 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize)
+  (s := DirectEightRaw.state s mem 3564 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize)
   (env.transfer rfl rfl) rfl (DirectEightRaw.run_finish s mem _ bsize esize hact)
  exact (gc.trans gg).trans gf
 def miss (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk16 : k ≤ 16)
@@ -51,7 +51,7 @@ def miss (s : State) (mem : ByteArray) (bsize esize k : Nat) (hk : 1 ≤ k) (hk1
   (SlimFrames.outer mem 8 bsize esize 256)
   (by simp [SlimFrames.outer,CycleSubmission.Global.Fast.Shift.entrySlots,CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]) env
  have gg := guardBlock.steps
-  (s := DirectEightRaw.state s mem 3305 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize)
+  (s := DirectEightRaw.state s mem 3551 (UInt256.ofNat (k-1)) (UInt256.ofNat 256) bsize esize)
   (env.transfer rfl rfl) rfl (DirectEightRaw.run_miss s mem _ _ bsize esize hact hg (by rw [env.code]; exact jumpDestBail))
  exact gc.trans gg
 #print axioms hit
