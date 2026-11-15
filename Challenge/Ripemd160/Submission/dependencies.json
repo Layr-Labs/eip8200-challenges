@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "d18dbe78-37ec-4e97-8de4-5c101e2abfba",
+    "rationale": "Direct source and proof-tree parent: the validated 614,967-gas frontier (first-block 816 store). Retained unchanged except the two JUMPDEST pads it placed in First4 after the consuming 720 store; this candidate removes them and widens PUSH22 720 to PUSH24 720, keeping the window at 45 bytes and every later PC fixed, while the instruction total drops 7003 -> 7001.",
+    "evidence": "Based on the Submission tree at 57041db9f0fec57efda1712baa4721c32391ed76; PrepFirst4 template, FirstCore prefixSite/jumpSite indices 6931/6999, CandidateArtifact part 36 and instruction_count, ColdArtifact and RecArtifact counts, CandidateBytes chunk 158, bytecode.hex."
+  },
+  {
     "submissionId": "340e677c-31a4-4b16-ad4e-a71895b1cf76",
     "rationale": "Direct source and proof-tree parent: the validated 615,277-gas frontier (consuming low-64 screen for the 1000-byte entries). Retained unchanged; this candidate moves the padded-block output tail to 9907 so the padded compressor falls through into it (no PUSH2/JUMP/JUMPDEST on the 21 generated 64/128-byte vectors), and hoists the first 72 bytes of the 32-byte special path into the vacated 6409..6485 slot with a jump to a new JUMPDEST at 9983, keeping every PC from 9984 on fixed.",
     "evidence": "Based on the Submission tree at 66eec9be6c7a144c8fe501cc91169f67cacd0b1e; PadSites middle / template_eq, PadTailRaw, PadOutput, PadBody, PadGas, PrepFirst0 templateA / entryTemplate / runA / runB, PrepFirstComposition FirstTable, FirstCore midState / tableSite / valid9983, FirstRead, FirstReadGas, ControlSites, FirstEntry, FirstCopy, ColdArtifact, ColdPaddingCore0/1/3; CandidateArtifact parts 0/20/21/35, CandidateBytes chunks 2/100/101/154/155, bytecode.hex."

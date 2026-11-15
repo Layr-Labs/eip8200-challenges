@@ -29,10 +29,8 @@ def template : List Instr := [
 .op (.Dup ⟨0, by decide⟩),
 .push ⟨2, by decide⟩ (UInt256.ofNat 738),
 .op .MSTORE,
-.push ⟨22, by decide⟩ (UInt256.ofNat 720),
+.push ⟨24, by decide⟩ (UInt256.ofNat 720),
 .op .MSTORE,
-.op .JUMPDEST,
-.op .JUMPDEST,
 .op (.Dup ⟨0, by decide⟩),
 .push ⟨2, by decide⟩ (UInt256.ofNat 972),
 .op .MSTORE]

@@ -86,13 +86,13 @@ theorem rest_run (s : State) (cont : UInt256) (rho : List UInt256)
   cases hu
   exact ht
 def prefixSite : GenericRoundSite CandidateArtifact.artifact .Osaka PrefixAfter.template :=
-  StackSiteBuilder.ofSlice PrefixAfter.template 6933 (by rfl)
-    (by change 6933 + (PrefixAfter.template).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice PrefixAfter.template 6931 (by rfl)
+    (by change 6931 + (PrefixAfter.template).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem prefixSite_pc : prefixSite.startPC = UInt256.ofNat 10185 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6933) = UInt256.ofNat 10185
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6931) = UInt256.ofNat 10185
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def prefix_gas (s : State) (cont : UInt256) (rho : List UInt256)
@@ -111,13 +111,13 @@ def prefix_gas (s : State) (cont : UInt256) (rho : List UInt256)
 
 def jumpTemplate : List Instr := [.push ⟨2,by decide⟩ (UInt256.ofNat 930), .op .JUMP]
 def jumpSite : GenericRoundSite CandidateArtifact.artifact .Osaka jumpTemplate :=
-  StackSiteBuilder.ofSlice jumpTemplate 7001 (by rfl)
-    (by change 7001 + (jumpTemplate).length ≤ CandidateArtifact.instructions.length
+  StackSiteBuilder.ofSlice jumpTemplate 6999 (by rfl)
+    (by change 6999 + (jumpTemplate).length ≤ CandidateArtifact.instructions.length
         rw [CandidateArtifact.instruction_count]; decide +kernel)
     (by rw [CandidateArtifact.code_size]; decide)
     (CoreGas.wellFormed_of_check _ (by decide +kernel)) (by decide +kernel)
 theorem jumpSite_pc : jumpSite.startPC = UInt256.ofNat 10422 := by
-  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 7001) = UInt256.ofNat 10422
+  change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 6999) = UInt256.ofNat 10422
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem valid_join : Decode.isValidJumpDest CandidateArtifact.artifact.code 930 = true := by

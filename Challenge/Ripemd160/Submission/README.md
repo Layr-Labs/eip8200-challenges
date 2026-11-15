@@ -1,3 +1,29 @@
+# RIPEMD-160: first-block writer pad pair retired, the 720 store widened in place (614,945 gas)
+
+Parent: promoted commit `57041db9` (validated `d18dbe78`, 614,967 gas).
+
+`First4` (PC 10136..10180, 11 runs on the corpus) carried two `JUMPDEST`
+pads after the consuming 720 store. They were inserted when the shifted 814
+store left the window, to keep the instruction total at 7003. They are now
+gone: `PUSH22 720` widens to `PUSH24 720`, so the window keeps 45 bytes and
+every PC from 10176 on is unchanged. Memory writes, stack shape and the
+symbolic first-block layout are identical to the parent's.
+
+The instruction total drops from 7003 to 7001. The only instruction-index
+witnesses after the window are the `PrefixAfter` site (6933 -> 6931, PC
+10185) and the closing `PUSH2 930; JUMP` site (7001 -> 6999, PC 10422) in
+`FirstCore`. Every other site sits before index 6926.
+
+Gas: two `JUMPDEST`s (1 each) per first-block run, 11 runs:
+614,967 -> **614,945**.
+
+Proof: `First4.template`; `FirstCore.prefixSite` / `prefixSite_pc` /
+`jumpSite` / `jumpSite_pc`; `CandidateArtifact` part 36 (87 instructions,
+same 295 bytes) and `instruction_count`; `ColdArtifact` /
+`RecArtifact` counts; `CandidateBytes` chunk 158; `bytecode.hex`.
+
+---
+
 # RIPEMD-160: first-block 814 shifted store replaced by a plain 224-word store at 816 (614,967 gas)
 
 Parent: promoted commit `a008d942` (validated `4bef73b4`, 615,011 gas).
