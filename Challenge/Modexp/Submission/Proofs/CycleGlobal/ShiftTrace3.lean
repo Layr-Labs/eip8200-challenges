@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.CycleGlobal.ColdCounterRun
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftCache
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftTailPCs
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.ZeroShiftPrefix
@@ -54,19 +55,21 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   · exact isTrue_lor_left a b h
   · exact isTrue_lor_right a b h
 /-- Store TN and enter UNC with a disposable MAX word. The mathematical negative flag remains in the hypothesis,but the repair entry immediately pops its runtime word. -/
-@[simp] theorem rhoRestoredPC2369 : CycleSubmission.Artifact.artifact.instructionPC 2489 = 3194 := by
+@[simp] theorem rhoRestoredPC2369 : CycleSubmission.Artifact.artifact.instructionPC 2488 = 3193 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2489 = 3194 := by
+@[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2488 = 3193 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8269 = 10930 := by
+@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8268 = 10929 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8269 = 10930 := by
+@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8268 = 10929 := by
+  rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
+@[simp] theorem rhoConsumedMaxDupPC : CycleSubmission.Artifact.artifact.instructionPC 2498 = 3205 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n bsize esize msize k : Nat)
     (hw : n ≠ 4)
     (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hor : (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0 ∨ (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0)
+    (htnmax : tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q = Monpro.maxWord)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3125Unc
@@ -83,9 +86,9 @@ theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n 
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
       Monpro.readWord_l1Step um q NEG n a n hn32 (Or.inl ha)]
   have htnTrue : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) := by
-    exact CycleSubmission.DifferenceBranch.difference_nonzero_of_flags
-      (wN (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) q (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) hor
-  unfold tnOf wN at htnTrue
+    rw [htnmax]; decide
+  have hmaxTrue : UInt256.isTrue Monpro.maxWord := by decide
+  unfold tnOf wN at htnTrue htnmax
   have hA : MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 +
       (Monpro.l1Step um q NEG n n).carry =
       (Monpro.l1Step um q NEG n n).carry + MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 :=
@@ -96,7 +99,7 @@ theorem run_mid_unc (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) (n 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState,midPC,hw,uncState,pcMid,pcUnc,midMem,negOf,bwOf,cwOf,tnOf,wN,Exp.storeWord,
-      outer,Exp.outer,hcode,hrun,hTN,htnTrue,jumpDestUnc,
+      outer,Exp.outer,hcode,hrun,hTN,htnTrue,htnmax,hmaxTrue,jumpDestUnc,
       hslot,entrySlots,aprevSlot,hdSlot,headWord,loopPC,rideSlots,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -108,7 +111,7 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
     (hw : n = 4)
     (hn32 : n ≤ 8)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hor : (negOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0 ∨ (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q).toNat ≠ 0)
+    (htnmax : tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q = Monpro.maxWord)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3125hUnc
@@ -125,9 +128,9 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega),
       Monpro.readWord_l1Step um q NEG n a n hn32 (Or.inl ha)]
   have htnTrue : UInt256.isTrue (tnOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry q) := by
-    exact CycleSubmission.DifferenceBranch.difference_nonzero_of_flags
-      (wN (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) q (cwOf (Monpro.l1Step um q NEG n n).memory (Monpro.l1Step um q NEG n n).carry) hor
-  unfold tnOf wN at htnTrue
+    rw [htnmax]; decide
+  have hmaxTrue : UInt256.isTrue Monpro.maxWord := by decide
+  unfold tnOf wN at htnTrue htnmax
   have hpc : midPC n = 10923 := by simp [midPC,hw]
   have hA : MachineState.readWord (Monpro.l1Step um q NEG n n).memory 2080 +
       (Monpro.l1Step um q NEG n n).carry =
@@ -139,7 +142,7 @@ theorem run_mid_unc_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256) 
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
       midState,hpc,uncState,pcMid,pcUnc,midMem,negOf,bwOf,cwOf,tnOf,wN,Exp.storeWord,
-      outer,Exp.outer,hcode,hrun,hTN,htnTrue,jumpDestUnc,
+      outer,Exp.outer,hcode,hrun,hTN,htnTrue,htnmax,hmaxTrue,jumpDestUnc,
       hslot,entrySlots,aprevSlot,hdSlot,headWord,loopPC,rideSlots,
       State.activeWordsAfterUInt256,
       Challenge.EvmProof.Word.literal_eq_ofNat,
@@ -231,7 +234,7 @@ theorem run_mid_zero_h4 (z : UInt256) (s : State) (um : ByteArray) (q : UInt256)
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod,List.exchange]
   all_goals rfl
-@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2498 = 3205 := by
+@[simp] theorem pcUncPop : CycleSubmission.Artifact.artifact.instructionPC 2495 = 3202 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 /-- The repair entry discards its carried word; its value is irrelevant to ADD_LOOP. -/
@@ -475,11 +478,11 @@ theorem run_addTail_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize es
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 /-- `blk3204` with `TN = 0`: jump to the `CSUB` call with `[TN,k]`. -/
-@[simp] private theorem zeroTailRepairPC2554 : CycleSubmission.Artifact.artifact.instructionPC 2554 = 3280 := by
+@[simp] private theorem zeroTailRepairPC2554 : CycleSubmission.Artifact.artifact.instructionPC 2550 = 3276 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] private theorem zeroTailRepairPC2555 : CycleSubmission.Artifact.artifact.instructionPC 2555 = 3281 := by
+@[simp] private theorem zeroTailRepairPC2555 : CycleSubmission.Artifact.artifact.instructionPC 2551 = 3277 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] private theorem zeroTailRepairPC2556 : CycleSubmission.Artifact.artifact.instructionPC 2556 = 3282 := by
+@[simp] private theorem zeroTailRepairPC2556 : CycleSubmission.Artifact.artifact.instructionPC 2552 = 3278 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hact : 88 ≤ s.activeWords.toNat)
@@ -488,7 +491,7 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock blk3204
       (subCheckState z s mem n bsize esize msize k) =
-      some (csubCallState z s mem n bsize esize msize k) := by
+      some (ColdCounterRun.state z s mem n bsize esize msize k) := by
   have hnotzero : UInt256.lnot (UInt256.ofNat 0) = UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 := by decide
   have hTN : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2080 32) =
       s.activeWords := Monpro.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -499,7 +502,7 @@ theorem run_subCheck_done (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,
       Challenge.EvmProof.Stepper.runInstr,
-      subCheckState,csubCallState,slotKState,rideSlots,entrySlots,aprevSlot,hdSlot,headWord,loopPC,shiftEntry,
+      subCheckState,ColdCounterRun.state,csubCallState,slotKState,rideSlots,entrySlots,aprevSlot,hdSlot,headWord,loopPC,shiftEntry,
       pcSubCheck,pcCsubCall,
       outer,Exp.outer,hcode,hrun,hTN,htn,jumpDest5311,UInt256.isZero,UInt256.isTrue,
       State.activeWordsAfterUInt256,
@@ -579,7 +582,7 @@ theorem run_csubCall_last (z : UInt256) (s : State) (mem : ByteArray) (n bsize e
       (csubCallState z s mem n bsize esize msize 1) =
       some (csubExitState z s mem n bsize esize msize) := by
   have hdecMax : UInt256.ofNat 115792089237316195423570985008687907853269984665640564039457584007913129639935 + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
-  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2494 = 3201 := by
+  have hpadding : CycleSubmission.Artifact.artifact.instructionPC 2491 = 3198 := by
     rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
     rfl
   have hdec : UInt256.lnot (UInt256.ofNat 0) + UInt256.ofNat 1 = UInt256.ofNat 0 := by decide
@@ -641,7 +644,7 @@ theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
     CycleSubmission.Artifact.artifact.instructionPC 7893 = 10431 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2563 = 3291 := by
+@[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2559 = 3287 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 7899 = 10439 := by

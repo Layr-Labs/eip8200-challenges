@@ -1,3 +1,4 @@
+import Challenge.Modexp.Submission.Proofs.Prepared.DirectCounterExit
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.SlimFrames
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.GatePrefix
 import Challenge.Modexp.Submission.Proofs.CycleGlobal.StackPhaseRun
@@ -83,26 +84,26 @@ def phaseBlocks : StackPhaseRun.PhaseBlocks CycleSubmission.Artifact.artifact .O
   exitHead := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2497 1 3204 (StackPhaseRun.headProgram false)
-        (by change 2497+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2494 1 3201 (StackPhaseRun.headProgram false)
+        (by change 2494+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8276 1 10939 (StackPhaseRun.headProgram true)
-        (by change 8276+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8274 1 10937 (StackPhaseRun.headProgram true)
+        (by change 8274+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
   transfer := by
     intro b
     cases b
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2498 2 3205 (StackPhaseRun.transferProgram)
-        (by change 2498+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2495 2 3202 (StackPhaseRun.transferProgram)
+        (by change 2495+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
-    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8277 2 10940 (StackPhaseRun.transferProgram)
-        (by change 8277+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+    · exact WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8275 2 10938 (StackPhaseRun.transferProgram)
+        (by change 8275+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
         (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
         (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
         (by decide)
@@ -190,6 +191,37 @@ def tailVariant (b : Bool) (s : State) (mem : ByteArray) (n bsize esize msize d 
       n bsize esize msize (by rw [htarget]) hlt ht)
   exact (hExit.cast (done_eq b (UInt256.ofNat d) s mem n bsize esize msize).symm rfl).trans
     (hTransfer.cast rfl rfl)
+noncomputable def switchReturnedVariant (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
+ (e : CycleSubmission.Global.Fast.Shift.Env s) (hn : n=4∨n=8) (hbs : bsize=32*n) :
+ GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 10439) s mem n bsize esize msize)
+  (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2527) s
+   (CycleSubmission.Global.DirectCopy.memory mem n) n bsize esize msize (n/4)) := by
+ have hh : Decode.isValidJumpDest s.executionEnv.code (CycleSubmission.Global.Fast.Shift.loopPC mem n)=true := by
+  rw [e.code]; exact CycleSubmission.Global.Fast.Shift.jumpDestLoop mem n
+ let slots := StackPhaseRun.transferSlots (UInt256.ofNat 10439) mem n bsize esize msize
+ have hs : slots.length≤1000 := by
+  simp [slots,StackPhaseRun.transferSlots,CycleSubmission.Global.Fast.Shift.entrySlots,
+   CycleSubmission.Global.Fast.Shift.aprevSlot,CycleSubmission.Global.Fast.Shift.hdSlot,Exp.outer]
+ have hHead := phaseBlocks.commonHead.steps (CycleSubmission.Global.Fast.Shift.bindingEnv e) rfl
+  (StackPhaseRun.run_commonHead s mem slots hs)
+ have hSwitch := phaseBlocks.switch.steps (CycleSubmission.Global.Fast.Shift.bindingEnv e) rfl
+  (StackPhaseRun.run_phaseSwitch s mem n bsize esize msize hn hbs e.act hh)
+ have hp : (UInt256.ofNat 10439).toNat=10439 := by decide
+ have input_eq : CycleSubmission.DirectCounterExit.output (UInt256.ofNat 10439) s mem n bsize esize msize =
+   StackPhaseRun.frame s mem 10439 slots := by
+  simp [CycleSubmission.DirectCounterExit.output,SlimFrames.frameState,SlimFrames.outer,
+   StackPhaseRun.frame,slots,StackPhaseRun.transferSlots,hp,
+   CycleSubmission.Global.Fast.Shift.entrySlots]
+ exact (hHead.trans hSwitch).cast input_eq.symm (switchEnd_eq s mem n bsize esize msize (by omega))
+noncomputable def tailReturnedVariant (s : State) (mem : ByteArray) (n bsize esize msize d target : Nat)
+ (ht : d=target) (hlt : target<2^256) :
+ GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat d) s mem n bsize esize msize)
+  (SlimFrames.frameState s mem target n bsize esize msize) := by
+ have hp : (UInt256.ofNat d).toNat=target := by
+  rw [Challenge.EvmProof.Word.word_toNat_ofNat,ht]
+  exact Nat.mod_eq_of_lt hlt
+ simp only [CycleSubmission.DirectCounterExit.output,hp]
+ exact .refl _
 /-- All concrete v4 caller certificates, with no whole-loop or whole-route premise. -/
 def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hb : bsize ≤ 1024) (he : esize ≤ 1024)
@@ -235,7 +267,7 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
   have first := CycleSubmission.Global.Fast.Shift.soundEnv blk2862 e hdispatch
   have second := CycleSubmission.Global.Fast.Shift.gasSteps_hitCsub s mem input n bsize esize msize hn hn8 e hdata
     hframe.ml hframe.tl hframe.s32 htn0 hfast
-  refine ⟨?_,?_,?_,?_,?_⟩
+  refine ⟨?_,?_,?_,?_,?_,?_,?_,?_⟩
   · intro hmiss
     by_cases hes1 : UInt256.ofNat esize = UInt256.ofNat 1
     · have hes : esize = 1 := nat_eq_of_word (by omega) (by decide) hes1
@@ -271,16 +303,17 @@ def build (s : State) (mem input : ByteArray) (n bsize esize msize minv : Nat)
     exact (first.trans (second.trans third)).cast rfl
       (congrArg (fun m => CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 10439) s m n bsize esize msize (n / 2))
         (prologue_e3_end_eq mem input n).symm)
-  · intro hsize isInline phaseMem
-    cases isInline
-    · exact switchVariant false s phaseMem n bsize esize msize e hsize hmatch.1
-    · exact switchVariant true s phaseMem n bsize esize msize e hsize hmatch.1
-  · intro isInline phaseMem _hs32
-    cases isInline
-    · exact (tailVariant false s phaseMem n bsize esize msize 2534 2534 e hmatch.1 hfull hE rfl (by norm_num) CycleSubmission.Global.GatePrefix.jumpDestGate).cast rfl (frameState_bdone_eq s phaseMem n bsize esize msize)
-    · exact (tailVariant true s phaseMem n bsize esize msize 2534 2534 e hmatch.1 hfull hE rfl (by norm_num) CycleSubmission.Global.GatePrefix.jumpDestGate).cast rfl (frameState_bdone_eq s phaseMem n bsize esize msize)
-  · intro isInline phaseMem
-    cases isInline
-    · exact tailVariant false s phaseMem n bsize esize msize 2527 2527 e hmatch.1 hfull hE rfl (by norm_num) CycleSubmission.Global.Fast.jumpDest2471
-    · exact tailVariant true s phaseMem n bsize esize msize 2527 2527 e hmatch.1 hfull hE rfl (by norm_num) CycleSubmission.Global.Fast.jumpDest2471
+  · intro hsize phaseMem
+    exact switchReturnedVariant s phaseMem n bsize esize msize e hsize hmatch.1
+  · intro phaseMem _hs32
+    exact (tailReturnedVariant s phaseMem n bsize esize msize 2534 2534 rfl (by norm_num)).cast rfl
+      (frameState_bdone_eq s phaseMem n bsize esize msize)
+  · intro phaseMem
+    exact tailReturnedVariant s phaseMem n bsize esize msize 2527 2527 rfl (by norm_num)
+  · change Decode.isValidJumpDest s.executionEnv.code 10439 = true
+    rw [e.code]; exact jumpDestCommonSwitch
+  · change Decode.isValidJumpDest s.executionEnv.code 2534 = true
+    rw [e.code]; exact CycleSubmission.Global.GatePrefix.jumpDestGate
+  · change Decode.isValidJumpDest s.executionEnv.code 2527 = true
+    rw [e.code]; exact CycleSubmission.Global.Fast.jumpDest2471
 end CycleSubmission.Global.RootE3Bindings

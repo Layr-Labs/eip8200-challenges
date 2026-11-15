@@ -28,13 +28,13 @@ def program : List Instr :=
    .push 1 1,
    .op .ADD,
    .op (.Swap ⟨15,by decide⟩),
-   .push 2 3505,
+   .push 2 3501,
    .op .JUMPI]
 theorem run (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 959)
- (hjump : Decode.isValidJumpDest s.executionEnv.code 3505 = true) :
- runInstructions program {s with pc := UInt256.ofNat 5815,stack := frame inv count a b n rest} =
- some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5824 else 3505),stack := frame inv (UInt256.ofNat 1+count) a b n rest} := by
+ (hjump : Decode.isValidJumpDest s.executionEnv.code 3501 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 5811,stack := frame inv count a b n rest} =
+ some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5820 else 3501),stack := frame inv (UInt256.ofNat 1+count) a b n rest} := by
  have ht : rest.tail.length ≤ rest.length := by cases rest <;> simp
  have capacity (j : Nat) (hj : j ≤ 20) : (rest.length-1)+j < 1024 := by omega
  by_cases hz : count.toNat = 0
@@ -51,9 +51,9 @@ theorem run_round (s : State) (inv count : UInt256) (a b n : Nat → UInt256)
  (rest : List UInt256) (hcap : rest.length ≤ 958) (hact : 88 ≤ s.activeWords.toNat)
  (hmem : LimbMemory.Holds s.memory inv a b n)
  (ha : ∀ i < 8,(a i).toNat < 2^240)
- (hjump : Decode.isValidJumpDest s.executionEnv.code 3505 = true) :
+ (hjump : Decode.isValidJumpDest s.executionEnv.code 3501 = true) :
  runInstructions roundProgram (CachedInverse.persistentInitial s inv count a b n rest) =
- some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5824 else 3505),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := frame inv (UInt256.ofNat 1+count) (WordHistory.squared inv a b n) b n (inv::rest)} := by
+ some {s with pc := UInt256.ofNat (if count.toNat = 0 then 5820 else 3501),memory := R9InvConsumeComplete.historyMemory s.memory inv a b n,stack := frame inv (UInt256.ofNat 1+count) (WordHistory.squared inv a b n) b n (inv::rest)} := by
  have hk := CachedInverse.run_persistent s inv count a b n rest hcap hact hmem ha
  have hc := run ({s with memory := R9InvConsumeComplete.historyMemory s.memory inv a b n})
    inv count (WordHistory.squared inv a b n) b n (inv::rest) (by simp; omega) hjump
