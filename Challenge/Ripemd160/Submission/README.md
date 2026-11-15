@@ -1,3 +1,33 @@
+# RIPEMD-160: 228-word load retired from the first-block schedule writer, both of its stores re-sourced from a duplicated 224 word (615,073 gas)
+
+Parent: promoted commit `f049c250` (validated `d91466eb`, 615,095 gas).
+
+The 32-byte path builds its single message table in the first-block writer
+(`First0` head at 6442..6481, `First1..5` at 9983..10184; 11 runs on the
+corpus). It loaded seven source words (236, 262, 266, 228, 224, 258, 232).
+The 228 word fed two stores, `DUP2 PUSH2 522 MSTORE` and the consuming
+`PUSH2 558 MSTORE`, and nothing else. Both are moved four bytes down and
+re-sourced from the 224 word at the same source-minus-destination offsets
+(-294 and -330): `(518, 224)` and `(554, 224)`. After the whole writer the
+symbolic layout differs from the parent's only at bytes 554..557, which no
+round reads (`FirstLayout.low_sources`, `high_sources`, `barrier_sources`
+re-decided).
+
+In the head, `PUSH1 228; MLOAD; PUSH1 224; MLOAD` becomes
+`PUSH2 224; MLOAD; DUP1; JUMPDEST`: the old 228 slot now holds the 224 word
+and the old 224 slot holds its copy, so the stack depth and every later DUP
+index are unchanged, and the window keeps 40 bytes / its instruction count.
+No PC or instruction index moves.
+
+Gas: 12 -> 10 per first-block prologue, 11 executions: 615,095 -> **615,073**.
+
+Proof: `FirstLayout.symbols18` / `symbols20`; `FirstMemory.memory18`,
+`memory20`, `state0..2`; `First0.template` / `templateA` / `outputs`;
+`First3.template` / `memory`; `CandidateArtifact` parts 21 and 35,
+`CandidateBytes` chunks 101 and 158, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: 176-word load retired from the ordinary schedule writer, its store re-sourced from the resident 180 word (615,095 gas)
 
 Parent: promoted commit `dbd767d0` (validated `fab6424c`, 615,157 gas).

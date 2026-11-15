@@ -244,7 +244,7 @@ theorem matches17 (s : State) (h : Matches s.memory initial (value s.memory))
     · rw [PoolByte.read _ _ _ (by omega)]
       exact matches2 s h hc _
     · simp [value]
-def symbols18 : Nat → Nat := written symbols17 522 32 (fun j => symbols2 (228+j))
+def symbols18 : Nat → Nat := written symbols17 518 32 (fun j => symbols2 (224+j))
 theorem matches18 (s : State) (h : Matches s.memory initial (value s.memory))
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     Matches (FirstMemory.memory18 s) symbols18 (value s.memory) := by
@@ -260,7 +260,7 @@ theorem matches19 (s : State) (h : Matches s.memory initial (value s.memory))
   intro j hj
   rw [PoolByte.read _ _ _ hj]
   exact matches2 s h hc _
-def symbols20 : Nat → Nat := written symbols19 558 32 (fun j => symbols2 (228+j))
+def symbols20 : Nat → Nat := written symbols19 554 32 (fun j => symbols2 (224+j))
 theorem matches20 (s : State) (h : Matches s.memory initial (value s.memory))
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     Matches (FirstMemory.memory20 s) symbols20 (value s.memory) := by

@@ -26,9 +26,9 @@ def memory14 (s : State) : ByteArray := writeWord (memory13 s) 360 (MachineState
 def memory15 (s : State) : ByteArray := writeWord (memory14 s) 414 (MachineState.readWord (memory2 s) 258)
 def memory16 (s : State) : ByteArray := writeWord (memory15 s) 396 (MachineState.readWord (memory2 s) 266)
 def memory17 (s : State) : ByteArray := MachineState.writeBytes (writeWord (memory16 s) 482 (UInt256.shiftLeft (MachineState.readWord (memory2 s) 262) (UInt256.ofNat 112))) (ByteArray.mk #[UInt8.ofNat ((UInt256.ofNat 10112).toNat % 256)]) 787
-def memory18 (s : State) : ByteArray := writeWord (memory17 s) 522 (MachineState.readWord (memory2 s) 228)
+def memory18 (s : State) : ByteArray := writeWord (memory17 s) 518 (MachineState.readWord (memory2 s) 224)
 def memory19 (s : State) : ByteArray := writeWord (memory18 s) 540 (MachineState.readWord (memory2 s) 224)
-def memory20 (s : State) : ByteArray := writeWord (memory19 s) 558 (MachineState.readWord (memory2 s) 228)
+def memory20 (s : State) : ByteArray := writeWord (memory19 s) 554 (MachineState.readWord (memory2 s) 224)
 def memory21 (s : State) : ByteArray := writeWord (memory20 s) 684 (MachineState.readWord (memory2 s) 266)
 def memory22 (s : State) : ByteArray := MachineState.writeBytes (memory21 s) (MachineState.readPadded s.executionEnv.code 10426 122) 576
 def memory23 (s : State) : ByteArray := writeWord (memory22 s) 738 (MachineState.readWord (memory2 s) 262)
@@ -37,12 +37,12 @@ def memory25 (s : State) : ByteArray := writeWord (memory24 s) 814 (UInt256.shif
 def memory26 (s : State) : ByteArray := writeWord (memory25 s) 972 (MachineState.readWord (memory2 s) 236)
 def memory27 (s : State) : ByteArray := writeWord (memory26 s) 864 (MachineState.readWord (memory2 s) 236)
 def state0 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 9987, stack := [(MachineState.readWord (memory2 s) 232), (MachineState.readWord (memory2 s) 258), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 228), (MachineState.readWord (memory2 s) 266), (MachineState.readWord (memory2 s) 262), (MachineState.readWord (memory2 s) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory3 s}
+  {s with pc := UInt256.ofNat 9987, stack := [(MachineState.readWord (memory2 s) 232), (MachineState.readWord (memory2 s) 258), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 266), (MachineState.readWord (memory2 s) 262), (MachineState.readWord (memory2 s) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory3 s}
 theorem eq0 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     FirstTable.result0 s x rho = state0 s x rho := by
   rfl
 def state1 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10052, stack := [(MachineState.readWord (memory2 s) 232), (MachineState.readWord (memory2 s) 258), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 228), (MachineState.readWord (memory2 s) 266), (MachineState.readWord (memory2 s) 262), (MachineState.readWord (memory2 s) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory9 s}
+  {s with pc := UInt256.ofNat 10052, stack := [(MachineState.readWord (memory2 s) 232), (MachineState.readWord (memory2 s) 258), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 266), (MachineState.readWord (memory2 s) 262), (MachineState.readWord (memory2 s) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory9 s}
 theorem eq1 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     FirstTable.result1 s x rho = state1 s x rho := by
   simp only [FirstTable.result1, FirstTable.args1, eq0, state0, state1,
@@ -51,7 +51,7 @@ theorem eq1 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     Nat.reduceLT, Option.getD_some]
   rfl
 def state2 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
-  {s with pc := UInt256.ofNat 10089, stack := [(MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 228), (MachineState.readWord (memory2 s) 266), (MachineState.readWord (memory2 s) 262), (MachineState.readWord (memory2 s) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory15 s}
+  {s with pc := UInt256.ofNat 10089, stack := [(MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 224), (MachineState.readWord (memory2 s) 266), (MachineState.readWord (memory2 s) 262), (MachineState.readWord (memory2 s) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho, memory := memory15 s}
 theorem eq2 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
     FirstTable.result2 s x rho = state2 s x rho := by
   simp only [FirstTable.result2, FirstTable.args2, eq1, state1, state2,

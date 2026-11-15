@@ -36,10 +36,10 @@ def template : List Instr := [
 .op .MLOAD,
 .push ⟨2, by decide⟩ (UInt256.ofNat 266),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 228),
+.push ⟨2, by decide⟩ (UInt256.ofNat 224),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 224),
-.op .MLOAD,
+.op (.Dup ⟨0, by decide⟩),
+.op .JUMPDEST,
 .push ⟨2, by decide⟩ (UInt256.ofNat 258),
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 232),
@@ -50,7 +50,7 @@ def template : List Instr := [
 def inputs (x : Nat → UInt256) (rho : List UInt256) : List UInt256 :=
   [x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt256 :=
-  [(MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 232), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 258), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 224), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 228), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 266), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 262), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
+  [(MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 232), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 258), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 224), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 224), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 266), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 262), (MachineState.readWord ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) 236), x 0, x 1, x 2, x 3, x 4, x 5, x 6, x 7, x 8, x 9, x 10, x 11, x 12, x 13, x 14] ++ rho
 def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) (ByteArray.mk #[UInt8.ofNat (((UInt256.ofNat 128)).toNat % 256)]) 147)
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
@@ -90,10 +90,10 @@ def templateA : List Instr := [
 .op .MLOAD,
 .push ⟨2, by decide⟩ (UInt256.ofNat 266),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 228),
+.push ⟨2, by decide⟩ (UInt256.ofNat 224),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 224),
-.op .MLOAD,
+.op (.Dup ⟨0, by decide⟩),
+.op .JUMPDEST,
 .push ⟨2, by decide⟩ (UInt256.ofNat 258),
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 232),
