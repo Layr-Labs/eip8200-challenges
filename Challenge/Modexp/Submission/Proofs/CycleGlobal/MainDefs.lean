@@ -12,7 +12,7 @@ set_option maxHeartbeats 2000000
 
 This is the first execution certificate for the frozen artifact. It follows
 the optimized entry jump, reads the three EIP-198 header words, skips the
-redundant EIP-7823 checks on the challenge's already-valid domain, and stops at
+redundant EIP-7834 checks on the challenge's already-valid domain, and stops at
 the operand dispatcher. The same `GasSteps` witness is used by the functional
 proof and by the exact gas schedule.
 -/
@@ -48,20 +48,20 @@ def trampoline1Path :
 /-- Second half of the compiler trampoline chain. -/
 def trampoline2Path :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [opAt 357 .JUMPDEST]
+  [opAt 355 .JUMPDEST]
 /-- Three EIP-198 header loads. -/
 def headerLoadPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
-  [pushAt 358 0 0,
+  [pushAt 356 0 0,
+   opAt 357 .CALLDATALOAD,
+   pushAt 358 1 32,
    opAt 359 .CALLDATALOAD,
-   pushAt 360 1 32,
-   opAt 361 .CALLDATALOAD,
-   pushAt 362 1 64,
-   opAt 363 .CALLDATALOAD]
-/-- Direct hop over the EIP-7823 checks, justified by `Correct`'s valid-input
+   pushAt 360 1 64,
+   opAt 361 .CALLDATALOAD]
+/-- Direct hop over the EIP-7834 checks, justified by `Correct`'s valid-input
 precondition. The last header load uses `PUSH3 64`, which frees two bytes for two `JUMPDEST`s,
-so the block falls through to 1198 with an identical stack for 2 gas (was `PUSH2 1198 ; POP`,
-5 gas). The `JUMPDEST` at 1198 stays in the code. The hop preserves the three loaded length words. -/
+so the block falls through to 1186 with an identical stack for 2 gas (was `PUSH2 1186 ; POP`,
+5 gas). The `JUMPDEST` at 1186 stays in the code. The hop preserves the three loaded length words. -/
 def headerCheckPath :
     List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) :=
   []
@@ -70,37 +70,37 @@ retained as a single audit-friendly path. -/
 def headerPath := trampoline1Path++trampoline2Path ++
   headerLoadPath++headerCheckPath
 def tramp0Path : List (Challenge.EvmProof.Stepper.Located CycleSubmission.Artifact.artifact .Osaka) := []
-def tramp7DestPath := [opAt 357 .JUMPDEST]
+def tramp7DestPath := [opAt 355 .JUMPDEST]
 def trampolineState (input : ByteArray) (pc : Nat) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat pc }
 /-- Gas-erased state at the public entry point. -/
 def headerEntryState (input : ByteArray) : State :=
-  { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat 520 }
+  { initialState CycleSubmission.Artifact.bytecode input 0 with pc := UInt256.ofNat 486 }
 /-- Gas-erased state after loading the three header words. -/
 def headerLoadedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 528
+    pc := UInt256.ofNat 494
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 def headerModulusCheckedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 528
+    pc := UInt256.ofNat 494
     stack := [0,UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 def headerExponentCheckedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 528
+    pc := UInt256.ofNat 494
     stack := [0,0,UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 def headerBaseCheckedState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 528
+    pc := UInt256.ofNat 494
     stack := [0,0,0,UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 /-- Gas-erased state immediately after the successful size-check jump. -/
 def headerState (input : ByteArray) : State :=
   { initialState CycleSubmission.Artifact.bytecode input 0 with
-    pc := UInt256.ofNat 528
+    pc := UInt256.ofNat 494
     stack := [UInt256.ofNat (modulusSize input),
       UInt256.ofNat (exponentSize input),UInt256.ofNat (baseSize input)] }
 theorem headerWord (input : ByteArray) (offset : Nat) :
@@ -119,12 +119,12 @@ theorem boundedSize_gt_1024_eq_zero {n : Nat} (h : n ≤ 1024) :
 @[simp] theorem headerPCs0 (i : Nat) (hi : i ≤ 1) :
     CycleSubmission.Artifact.artifact.instructionPC i = [0,2][i]! := by
   interval_cases i <;> decide
-@[simp] theorem headerPCs899 (i : Nat) (hi : 357 ≤ i) (hii : i ≤ 364) :
+@[simp] theorem headerPCs899 (i : Nat) (hi : 355 ≤ i) (hii : i ≤ 362) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([519,520,521,522,524,525,527,528] : List Nat)[i - 357]! := by
+      ([485,486,487,488,490,491,493,494] : List Nat)[i - 355]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 @[simp] theorem jump1196 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true :=
-  CycleSubmission.Global.Binding.jumpDest 357 (by rfl)
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 485 = true :=
+  CycleSubmission.Global.Binding.jumpDest 355 (by rfl)
 end CycleSubmission.Global.Main

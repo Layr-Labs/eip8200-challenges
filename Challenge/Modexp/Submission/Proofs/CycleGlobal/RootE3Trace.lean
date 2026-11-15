@@ -33,30 +33,30 @@ The named Shift states follow MAIN's relocated PC definitions when instantiated 
 structure TraceBindings (s : State) (mem input : ByteArray) (n bsize esize msize : Nat) where
   prologueOrdinary : ¬ Eligible input n bsize esize →
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2534)
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2522)
         s
         ((CycleSubmission.Global.Fast.Shift.m2Of mem input n))
         n bsize esize msize n)
   prologueE3 : Eligible input n bsize esize →
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 10411) s
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 10417) s
         (e3Prepared mem input n) n bsize esize msize (n / 2))
   directSwitch : (n = 4 ∨ n = 8) → ∀ phaseMem : ByteArray,
-    GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 10411) s phaseMem n bsize esize msize)
-      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2527)
+    GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 10417) s phaseMem n bsize esize msize)
+      (CycleSubmission.Global.Fast.Shift.shiftLoopState (UInt256.ofNat 2515)
         s
         (CycleSubmission.Global.DirectCopy.memory phaseMem n) n bsize esize msize (n / 4))
   finalTail : ∀ phaseMem : ByteArray,
     MachineState.readWord phaseMem 2688 = UInt256.ofNat (32 * n) →
-    GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 2534) s phaseMem n bsize esize msize)
+    GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 2522) s phaseMem n bsize esize msize)
       (CycleSubmission.Global.GateRaw.entryState s phaseMem n bsize esize msize)
   e3Tail : ∀ phaseMem : ByteArray,
-    GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 2527) s phaseMem n bsize esize msize)
-      (CycleSubmission.Global.SlimFrames.frameState s phaseMem 2527 n bsize esize msize)
-  validDirect : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 10411).toNat = true
-  validFinal : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2534).toNat = true
-  validE3 : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2527).toNat = true
-/-- Ordinary route: use continuation 2310, execute exactly n inherited reductions, then the R1 tail. -/
+    GasSteps (CycleSubmission.DirectCounterExit.output (UInt256.ofNat 2515) s phaseMem n bsize esize msize)
+      (CycleSubmission.Global.SlimFrames.frameState s phaseMem 2515 n bsize esize msize)
+  validDirect : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 10417).toNat = true
+  validFinal : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2522).toNat = true
+  validE3 : Decode.isValidJumpDest s.executionEnv.code (UInt256.ofNat 2515).toNat = true
+/-- Ordinary route: use continuation 2298, execute exactly n inherited reductions, then the R1 tail. -/
 def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv : Nat)
     (bindings : TraceBindings s mem input n bsize esize msize)
     (hn : 2 ≤ n) (hn8 : n ≤ 8) (hbs : bsize = 32 * n) (e : CycleSubmission.Global.Fast.Shift.Env s)
@@ -73,7 +73,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
   have hbasePrep := hbase0
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
-  have loop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 2534) s
+  have loop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 2522) s
     ((CycleSubmission.Global.Fast.Shift.m2Of mem input n))
     n bsize esize msize mm minv _ n (by omega) (by omega) hn hn8 hbs e hm (Model.fastRepresents_lt hmod)
     htwo invPrep hbasePrep (Nat.mod_lt _ hm) hfast bindings.validFinal
@@ -81,7 +81,7 @@ def ordinaryTrace (s : State) (mem input : ByteArray) (n bsize esize msize mm mi
   exact ((bindings.prologueOrdinary hmiss).trans loop).trans
     (bindings.finalTail _ invFinal.frame.s32)
 /-- E3 route: exactly `2k` reductions with continuation3915, the copy phase change
-(which installs continuation 2298), exactly `k` reductions, then transfer
+(which installs continuation 2286), exactly `k` reductions, then transfer
 to the exponent-three continuation at2298. -/
 def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k : Nat)
     (bindings : TraceBindings s mem input n bsize esize msize)
@@ -92,7 +92,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
     (htop : R1.TopBitSet mem) (htn0 : MachineState.readWord mem 2080 = UInt256.ofNat 0)
     (hhit : Eligible input n bsize esize) :
     GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm k) 2527 n bsize esize msize) := by
+      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm k) 2515 n bsize esize msize) := by
   have hhalf : n / 2 = 2 * k := by omega
   have inv0 := CycleSubmission.Global.Fast.Shift.m2_stepInv mem input n bsize mm minv hn hn8 hm hodd hframe hmod hminvDef
   have hquarter : n / 4 = k := by omega
@@ -100,7 +100,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have hbase0 := m2_base_value mem input n mm hn hn8 hm hodd hmod htop htn0
   have hbasePrep := hbase0
   have htwo := R1.radix_pow_lt_two_mul (by omega) hodd hmod htop
-  have firstLoop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 10411) s (e3Prepared mem input n)
+  have firstLoop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 10417) s (e3Prepared mem input n)
     n bsize esize msize mm minv _ (2 * k) (by omega) (by omega) hn hn8 hbs e hm
     (Model.fastRepresents_lt hmod) htwo invPrep hbasePrep (Nat.mod_lt _ hm) hhit.2.2 bindings.validDirect
   have invFirst := CycleSubmission.Global.Fast.Shift.stepInv_stepMems (by omega) hn8 invPrep (2 * k)
@@ -110,7 +110,7 @@ def e3Trace (s : State) (mem input : ByteArray) (n bsize esize msize mm minv k :
   have invSwitch := CycleSubmission.Global.DirectCopy.invariant _ n bsize mm minv hn8 invFirst
   have hbaseSwitch := CycleSubmission.Global.DirectCopy.preserves _ n 2112 n _ 
     (Or.inl (by omega)) hbaseFirst
-  have secondLoop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 2527) s
+  have secondLoop := CycleSubmission.Global.Fast.Shift.gasSteps_shiftLoop_count (UInt256.ofNat 2515) s
     (CycleSubmission.Global.DirectCopy.memory (LazyTopStep.iter (e3Prepared mem input n) n mm (2 * k)) n)
     n bsize esize msize mm minv _ k (by omega) (by omega) hn hn8 hbs e hm
     (Model.fastRepresents_lt hmod) htwo invSwitch hbaseSwitch (Nat.mod_lt _ hm) hhit.2.2 bindings.validE3

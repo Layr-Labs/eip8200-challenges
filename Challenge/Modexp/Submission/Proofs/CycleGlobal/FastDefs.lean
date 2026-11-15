@@ -51,106 +51,106 @@ private theorem instructionPC_succ
     List.take_add_one,hget,Option.toList_some,assembleBytes_append,
     assembleBytes_cons,assembleBytes_nil,List.append_nil,List.length_append]
 private theorem fastPCAnchor0 :
-    CycleSubmission.Artifact.artifact.instructionPC 391 = 564 := by
+    CycleSubmission.Artifact.artifact.instructionPC 389 = 530 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor1 :
-    CycleSubmission.Artifact.artifact.instructionPC 419 = 602 := by
+    CycleSubmission.Artifact.artifact.instructionPC 417 = 568 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor2 :
-    CycleSubmission.Artifact.artifact.instructionPC 456 = 649 := by
+    CycleSubmission.Artifact.artifact.instructionPC 454 = 615 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor8 :
-    CycleSubmission.Artifact.artifact.instructionPC 637 = 902 := by
+    CycleSubmission.Artifact.artifact.instructionPC 632 = 865 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor9 :
-    CycleSubmission.Artifact.artifact.instructionPC 637 = 902 := by
+    CycleSubmission.Artifact.artifact.instructionPC 632 = 865 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor9b :
-    CycleSubmission.Artifact.artifact.instructionPC 638 = 903 := by
+    CycleSubmission.Artifact.artifact.instructionPC 633 = 866 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor10 :
-    CycleSubmission.Artifact.artifact.instructionPC 648 = 925 := by
+    CycleSubmission.Artifact.artifact.instructionPC 643 = 888 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
 private theorem fastPCAnchor15 :
-    CycleSubmission.Artifact.artifact.instructionPC 649 = 927 := by
+    CycleSubmission.Artifact.artifact.instructionPC 644 = 890 := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   rfl
-@[simp] theorem fastPC0 (i : Nat) (hi : 391 ≤ i) (hii : i ≤ 418) :
+@[simp] theorem fastPC0 (i : Nat) (hi : 389 ≤ i) (hii : i ≤ 416) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([564,565,567,568,570,571,572,574,575,578,579,581,582,583,584,586,587,588,590,591,592,594,595,597,598,599,600,601] : List Nat)[i - 391]! := by
+      ([530,531,533,534,536,537,538,540,541,544,545,547,548,549,550,552,553,554,556,557,558,560,561,563,564,565,566,567] : List Nat)[i - 389]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem fastPC1 (i : Nat) (hi : 419 ≤ i) (hii : i ≤ 455) :
+@[simp] theorem fastPC1 (i : Nat) (hi : 417 ≤ i) (hii : i ≤ 453) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([602,603,604,605,606,608,609,610,611,612,613,614,615,616,617,618,620,621,622,624,625,626,627,629,630,631,633,634,637,638,639,640,641,643,644,645,648] : List Nat)[i - 419]! := by
+      ([568,569,570,571,572,574,575,576,577,578,579,580,581,582,583,584,586,587,588,590,591,592,593,595,596,597,599,600,603,604,605,606,607,609,610,611,614] : List Nat)[i - 417]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem fastPC2 (i : Nat) (hi : 456 ≤ i) (hii : i ≤ 634) :
+@[simp] theorem fastPC2 (i : Nat) (hi : 454 ≤ i) (hii : i ≤ 632) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([649,650,653,654,655,656,657,658,659,660,661,662,663,665,666,667,669,672,673,674,675,678,679,680,683,684,687,690,693,694,696,697,700,701,704,705,707,708,709,710,711,714,715,716,717,719,720,721,722,725,726,727,728,729,732,733,734,735,736,737,738,740,741,742,743,746,747,748,749,750,753,754,755,756,757,758,759,761,762,763,764,767,768,769,770,771,774,775,776,777,778,779,780,782,783,784,785,788,789,790,791,792,795,796,797,798,799,800,801,802,804,805,806,807,810,811,812,813,814,817,818,819,820,821,822,823,825,826,827,828,831,832,833,834,835,838,839,840,841,842,843,844,845,846,847,848,851,852,853,854,855,858,859,860,861,862,863,864,867,868,869,872,873,876,877,878,881,884,885,886,887,888,889,892,895,896,897,898,899] : List Nat)[i - 456]! := by
+      ([615,616,619,620,621,622,623,624,625,626,627,628,629,631,632,633,635,638,639,640,641,644,645,646,649,650,653,656,659,660,662,663,666,667,670,671,673,674,675,676,677,680,681,682,683,685,686,687,688,691,692,693,694,695,698,699,700,701,702,703,704,706,707,708,709,712,713,714,715,716,719,720,721,722,723,724,725,727,728,729,730,733,734,735,736,737,740,741,742,743,744,745,746,748,749,750,751,754,755,756,757,758,761,762,763,764,765,766,767,768,770,771,772,773,776,777,778,779,780,783,784,785,786,787,788,789,791,792,793,794,797,798,799,800,801,804,805,806,807,808,809,810,811,812,813,814,817,818,819,820,821,824,825,826,827,828,829,830,833,834,835,838,839,842,843,844,847,850,851,852,853,854,855,858,861,862,863,864,865] : List Nat)[i - 454]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem fastPC8 (i : Nat) (hi : 637 ≤ i) (hii : i ≤ 637) :
+@[simp] theorem fastPC8 (i : Nat) (hi : 632 ≤ i) (hii : i ≤ 632) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([902] : List Nat)[i - 637]! := by
+      ([865] : List Nat)[i - 632]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i; rfl
-@[simp] theorem fastPC9 (i : Nat) (hi : 637 ≤ i) (hii : i ≤ 637) :
+@[simp] theorem fastPC9 (i : Nat) (hi : 632 ≤ i) (hii : i ≤ 632) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([902] : List Nat)[i - 637]! := by
+      ([865] : List Nat)[i - 632]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i; rfl
-@[simp] theorem fastPC9b (i : Nat) (hi : 638 ≤ i) (hii : i ≤ 648) :
+@[simp] theorem fastPC9b (i : Nat) (hi : 633 ≤ i) (hii : i ≤ 643) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([903,905,906,908,909,910,912,913,914,924,925] : List Nat)[i - 638]! := by
+      ([866,868,869,871,872,873,875,876,877,887,888] : List Nat)[i - 633]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
-@[simp] theorem fastPC10 (i : Nat) (hi : 648 ≤ i) (hii : i ≤ 648) :
+@[simp] theorem fastPC10 (i : Nat) (hi : 643 ≤ i) (hii : i ≤ 643) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([925] : List Nat)[i - 648]! := by
+      ([888] : List Nat)[i - 643]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i; rfl
-@[simp] theorem fastPC15 (i : Nat) (hi : 649 ≤ i) (hii : i ≤ 657) :
+@[simp] theorem fastPC15 (i : Nat) (hi : 644 ≤ i) (hii : i ≤ 654) :
     CycleSubmission.Artifact.artifact.instructionPC i =
-      ([927,928,929,932,933,935,937,938,939] : List Nat)[i - 649]! := by
+      ([890,891,892,895,896,929,930,931,932,933,934] : List Nat)[i - 644]! := by
   rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
   interval_cases i <;> rfl
 theorem jumpDest1196 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 519 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 357
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 485 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 355
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
 theorem jumpDest3412 :
-    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2513 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 1973
+    Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2501 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 1963
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
-theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10316 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 7826
+theorem jumpDest1812 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 10322 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 7806
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
-theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 902 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 637
+theorem jumpDest698 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 865 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 632
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
-theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 888 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 627
+theorem jumpDestCopyResume : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 854 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 625
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h
-theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 877 = true := by
-  have h := CycleSubmission.Global.Binding.jumpDest 620
+theorem jumpDestEarlyCopy : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 843 = true := by
+  have h := CycleSubmission.Global.Binding.jumpDest 618
     (by rw [CycleSubmission.Artifact.instruction_get]; rfl)
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)] at h
   exact h

@@ -28,7 +28,7 @@ result through the compact fallback. -/
 theorem bigHandled (input : ByteArray) (hvalid : ValidInput input)
     (hbig : 32 < modulusSize input)
     (entry : Challenge.EvmProof.GasSteps (initialState CycleSubmission.Artifact.bytecode input 0)
-      (Main.trampolineState input 519)) :
+      (Main.trampolineState input 485)) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
         (initialState CycleSubmission.Artifact.bytecode input 0) final) ∧

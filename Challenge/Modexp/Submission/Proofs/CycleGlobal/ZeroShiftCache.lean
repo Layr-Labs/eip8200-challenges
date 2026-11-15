@@ -39,7 +39,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2534) s mem
+      some (shiftLoopState (UInt256.ofNat 2522) s mem
         n bsize esize msize n) := by
   have hne1 : ¬ (1 = esize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936) := by
@@ -58,7 +58,7 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
           rw [Challenge.EvmProof.Word.word_toNat_ofNat,
             Challenge.EvmProof.Word.word_toNat_ofNat,h])) hesize
     · rw [if_neg h]
-  have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
+  have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1686 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -76,11 +76,11 @@ theorem run_e5 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18724 -
       (UInt256.ofNat 2008 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2660 := by decide
-  have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1698 →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
+  have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1686 →
+      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1686) a =
         MachineState.readWord mem a := by
     intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1686
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hz1 : (if 1 = esize %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 then
@@ -131,9 +131,9 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 10411) s mem
+      some (shiftLoopState (UInt256.ofNat 10417) s mem
         n bsize esize msize (n / 2)) := by
-  have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
+  have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1686 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -184,17 +184,17 @@ theorem run_e5_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18724 -
       (UInt256.ofNat 2008 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2660 := by decide
-  have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1698 →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
+  have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1686 →
+      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1686) a =
         MachineState.readWord mem a := by
     intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1686
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hhi1698 : ∀ (v a : Nat),1698 + 32 ≤ a →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
+  have hhi1698 : ∀ (v a : Nat),1686 + 32 ≤ a →
+      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1686) a =
         MachineState.readWord mem a := by
     intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1686
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hinitial : initialPhase s mem esize = UInt256.ofNat 1 := by
     unfold initialPhase
@@ -237,9 +237,9 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hrun : s.halt = .Running) :
     Challenge.EvmProof.Stepper.runLocatedBlock (cacheBlock mem)
       (cacheSetupState s mem n bsize esize msize) =
-      some (shiftLoopState (UInt256.ofNat 2534) s mem
+      some (shiftLoopState (UInt256.ofNat 2522) s mem
         n bsize esize msize n) := by
-  have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1698 32) =
+  have haw1698 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1686 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
   have haw2816 : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 2656 32) =
       s.activeWords := Exp.activeWords_fix s _ 32 (by decide) (by omega) hact
@@ -306,17 +306,17 @@ theorem run_e5_slowexp (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
   have hw8 : (115792089237316195423570985008687907853269984665640564039457584007913129639936 + 18724 -
       (UInt256.ofNat 2008 * UInt256.ofNat 8).toNat) %
       115792089237316195423570985008687907853269984665640564039457584007913129639936 = 2660 := by decide
-  have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1698 →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
+  have hslot1698 : ∀ (v a : Nat),a + 32 ≤ 1686 →
+      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1686) a =
         MachineState.readWord mem a := by
     intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1686
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
-  have hhi1698 : ∀ (v a : Nat),1698 + 32 ≤ a →
-      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1698) a =
+  have hhi1698 : ∀ (v a : Nat),1686 + 32 ≤ a →
+      MachineState.readWord (MachineState.writeBytes mem (Data.Bytes.natToBytesPadded v 32) 1686) a =
         MachineState.readWord mem a := by
     intro v a ha
-    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1698
+    rw [Challenge.EvmProof.Memory.readWord_writeBytes_disjoint _ _ a 1686
       (by rw [YulEvmCompiler.BytesLemmas.natToBytesPadded_size]; omega)]
   have hinitial : initialPhase s mem esize = UInt256.ofNat 0 := by
     have hb : UInt256.eq (UInt256.ofNat 3)

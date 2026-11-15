@@ -12,7 +12,7 @@ The retained-accumulator entry of `CSUB`: a caller that keeps its canonical
 accumulator at 2112 jumps here with only the return address on the stack.  The
 block compares the leading limbs; a strictly smaller accumulator returns at once
 directly through `SWAP1; JUMPI`, otherwise the return address and the destination 2112 are pushed and
-the existing subtraction entry at 4529 runs in place.
+the existing subtraction entry at 4517 runs in place.
 -/
 namespace CycleSubmission.Global.Fast.RetainedT
 open Challenge.Modexp
@@ -30,23 +30,23 @@ def entryProgram : List Instr :=
    .push 2 2112,
    .op .MLOAD,
    .op .LT,
-   .push 2 2566,
+   .push 2 2554,
    .op .JUMPI]
 /-- The fall-through pushes of the caller's return address (the entry is only called from
-`blk2874`, which returns to 2412) and of the retained destination, ahead of the subtraction
+`blk2874`, which returns to 2400) and of the retained destination, ahead of the subtraction
 entry at 3509. -/
 def pushProgram : List Instr := [
-  .push 2 2566,
+  .push 2 2554,
    .push 2 2112]
-def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 673 entryProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 474 7 673 entryProgram
-    (by change 474+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def entryBlock : Block CycleSubmission.Artifact.artifact .Osaka 639 entryProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 472 7 639 entryProgram
+    (by change 472+7 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 684 pushProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 481 2 684 pushProgram
-    (by change 481+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+def pushBlock : Block CycleSubmission.Artifact.artifact .Osaka 650 pushProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 479 2 650 pushProgram
+    (by change 479+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -63,23 +63,23 @@ theorem skipWord_toNat (mem : ByteArray) :
   · rw [if_pos h,if_pos (show RetainedTNormalizer.Skip mem from h)]
   · rw [if_neg h,if_neg (show ¬ RetainedTNormalizer.Skip mem from h)]
 def entryState (s : State) (mem : ByteArray) (_ret : UInt256) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 673,stack := rest,memory := mem }
+  { s with pc := UInt256.ofNat 639,stack := rest,memory := mem }
 def pushState (s : State) (mem : ByteArray) (rest : List UInt256) : State :=
-  { s with pc := UInt256.ofNat 684,stack := rest,memory := mem }
+  { s with pc := UInt256.ofNat 650,stack := rest,memory := mem }
 def returnedState (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256) : State :=
   { s with pc := ret,stack := rest,memory := mem }
 theorem run_entry (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UInt256)
-    (hret : ret = UInt256.ofNat 2566) (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
+    (hret : ret = UInt256.ofNat 2554) (hcap : rest.length ≤ 1008) (hact : 88 ≤ s.activeWords.toNat)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true) :
     runInstructions entryProgram (entryState s mem ret rest) =
       some (if RetainedTNormalizer.Skip mem then returnedState s mem ret rest
         else pushState s mem rest) := by
   subst ret
-  have hjumpNat : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2566 = true := by
-    simpa only [show (UInt256.ofNat 2566).toNat = 2566 by decide] using hjump
+  have hjumpNat : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode 2554 = true := by
+    simpa only [show (UInt256.ofNat 2554).toNat = 2554 by decide] using hjump
   have hc0 : rest.length < 1024 := by omega
-  have heq2576 : (2566 : UInt256) = UInt256.ofNat 2566 := by decide
+  have heq2576 : (2554 : UInt256) = UInt256.ofNat 2554 := by decide
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
@@ -105,12 +105,12 @@ theorem run_entry (s : State) (mem : ByteArray) (ret : UInt256) (rest : List UIn
 theorem run_push (s : State) (mem : ByteArray) (rest : List UInt256)
     (hcap : rest.length ≤ 1008) :
     runInstructions pushProgram (pushState s mem rest) =
-      some (Csub.subEntryState s mem (UInt256.ofNat 2112) (UInt256.ofNat 2566) rest) := by
+      some (Csub.subEntryState s mem (UInt256.ofNat 2112) (UInt256.ofNat 2554) rest) := by
   have hc1 : rest.length+1 < 1024 := by omega
   have hc2 : rest.length+2 < 1024 := by omega
   have hc3 : rest.length+3 < 1024 := by omega
   have heq2112 : (2112 : UInt256) = UInt256.ofNat 2112 := by decide
-  have heq2412 : (2566 : UInt256) = UInt256.ofNat 2566 := by decide
+  have heq2412 : (2554 : UInt256) = UInt256.ofNat 2554 := by decide
   have hc0 : rest.length < 1024 := by omega
   simp [pushProgram,runInstructions,Challenge.EvmProof.Stepper.runInstr,
     pushState,Csub.subEntryState,hc0,hc1,hc2,hc3,Nat.add_assoc,
@@ -126,7 +126,7 @@ def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hact : 88 ≤ s.activeWords.toNat) (hn : 2 ≤ n) (hn32 : n ≤ 8)
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true)
-    (hret : ret = UInt256.ofNat 2566)
+    (hret : ret = UInt256.ofNat 2554)
     (hml : MachineState.readWord memory 2752 = UInt256.ofNat (32*n-32))
     (htl : MachineState.readWord memory 2784 = UInt256.ofNat (2080+32*n))
     (hs32 : MachineState.readWord (Csub.csStep memory n n).memory 2688 = UInt256.ofNat (32*n))
@@ -146,12 +146,12 @@ def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
       (EarlyCsub.environment (pushState s memory rest) hcode hfork hrun hnp) rfl
       (run_push s memory rest hcap)
     subst hret
-    have hk := Csub.gasSteps_csub_sub s memory n (UInt256.ofNat 2112) (UInt256.ofNat 2566) rest hcap hcode hfork
+    have hk := Csub.gasSteps_csub_sub s memory n (UInt256.ofNat 2112) (UInt256.ofNat 2554) rest hcap hcode hfork
       hrun hnp hact hn hn32 hjump hml htl hs32
       (by rw [show (UInt256.ofNat 2112).toNat = 2112 by decide]; omega) htn hfast
     rw [RetainedTNormalizer.result_of_not_skip memory n hskip]
-    have hend : Csub.subReturnedState s memory n n (UInt256.ofNat 2112) (UInt256.ofNat 2566) rest =
-        returnedState s (Csub.subResultMemory memory n 2112) (UInt256.ofNat 2566) rest := by
+    have hend : Csub.subReturnedState s memory n n (UInt256.ofNat 2112) (UInt256.ofNat 2554) rest =
+        returnedState s (Csub.subResultMemory memory n 2112) (UInt256.ofNat 2554) rest := by
       simp only [Csub.subReturnedState,returnedState,Csub.subResultMemory,
         show (UInt256.ofNat 2112).toNat = 2112 by decide]
     rw [← hend]

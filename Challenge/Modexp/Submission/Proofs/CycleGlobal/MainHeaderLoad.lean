@@ -17,13 +17,13 @@ theorem run_headerLoad (input : ByteArray) :
   have hs1197 := Challenge.EvmProof.Word.succ_ofNat
     (n := 656) (by norm_num : 656 + 1 < 2 ^ 256)
   have hs1198 := Challenge.EvmProof.Word.succ_ofNat
-    (n := 1063) (by norm_num : 1063 + 1 < 2 ^ 256)
+    (n := 1051) (by norm_num : 1051 + 1 < 2 ^ 256)
   have ha1199 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1155) (b := 2) (by norm_num : 1155 + 2 < 2 ^ 256)
+    (a := 1143) (b := 2) (by norm_num : 1143 + 2 < 2 ^ 256)
   have hs1201 := Challenge.EvmProof.Word.succ_ofNat
     (n := 739) (by norm_num : 739 + 1 < 2 ^ 256)
   have ha1202 := Challenge.EvmProof.Word.ofNat_add_ofNat
-    (a := 1106) (b := 2) (by norm_num : 1106 + 2 < 2 ^ 256)
+    (a := 1094) (b := 2) (by norm_num : 1094 + 2 < 2 ^ 256)
   have hs1204 := Challenge.EvmProof.Word.succ_ofNat
     (n := 742) (by norm_num : 742 + 1 < 2 ^ 256)
   have ha1060 := Challenge.EvmProof.Word.ofNat_add_ofNat

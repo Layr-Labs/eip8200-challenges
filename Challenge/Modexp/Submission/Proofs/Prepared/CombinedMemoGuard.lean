@@ -102,15 +102,15 @@ set_option maxHeartbeats 8000000
 def program : List Instr :=
  [.push 1 6,.op .CALLDATALOAD,.push 1 40,.op .CALLDATALOAD,.op .ADD,
   .push 1 68,.op .CALLDATALOAD,.op .ADD,.push 9 36893769759901876096,.op .XOR,
-  .push 1 100,.op .CALLDATALOAD,.op .OR,.push 2 519,.op .JUMPI]
+  .push 1 100,.op .CALLDATALOAD,.op .OR,.push 2 485,.op .JUMPI]
 def result (s : State) (input : ByteArray) : State :=
- {s with pc := UInt256.ofNat (if (guard input).toNat = 0 then 933 else 519),stack := []}
+ {s with pc := UInt256.ofNat (if (guard input).toNat = 0 then 896 else 485),stack := []}
 theorem run (s : State) (input : ByteArray)
  (hdata : s.executionEnv.calldata = input)
- (hjump : Decode.isValidJumpDest s.executionEnv.code 519 = true) :
- runInstructions program {s with pc := UInt256.ofNat 903,stack := []} = some (result s input) := by
+ (hjump : Decode.isValidJumpDest s.executionEnv.code 485 = true) :
+ runInstructions program {s with pc := UInt256.ofNat 866,stack := []} = some (result s input) := by
  have hz : ({val := 0} : UInt256) = UInt256.ofNat 0 := rfl
- have ht : (519 : UInt256).toNat = 519 := rfl
+ have ht : (485 : UInt256).toNat = 485 := rfl
  by_cases hzero : (guard input).toNat = 0
  all_goals
   simp only [guard,packed,packedSum,MemoLogic.widthGuard,MemoLogic.tailConst] at hzero
@@ -122,33 +122,33 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding
 def state (artifact : ProgramArtifact) (input : ByteArray) (pc : Nat) : State :=
  {initialState artifact.code input 0 with pc := UInt256.ofNat pc,stack := []}
 def envEntry (artifact : ProgramArtifact) (input : ByteArray)
- (hsize : artifact.code.size < 2^256) : Environment artifact .Osaka (state artifact input 903) where
+ (hsize : artifact.code.size < 2^256) : Environment artifact .Osaka (state artifact input 866) where
  sizeBound := hsize
  code := rfl
  forkEq := rfl
  running := rfl
  noPrecompile := deployAddress_not_precompile
 noncomputable def traced (artifact : ProgramArtifact)
- (block : Block artifact .Osaka 903 program)
+ (block : Block artifact .Osaka 866 program)
  (hsize : artifact.code.size < 2^256)
- (hjump : Decode.isValidJumpDest artifact.code 519 = true) (input : ByteArray) :
- GasSteps (state artifact input 903) (result (initialState artifact.code input 0) input) :=
+ (hjump : Decode.isValidJumpDest artifact.code 485 = true) (input : ByteArray) :
+ GasSteps (state artifact input 866) (result (initialState artifact.code input 0) input) :=
  block.steps (envEntry artifact input hsize) rfl (run (initialState artifact.code input 0) input rfl hjump)
 noncomputable def hit (artifact : ProgramArtifact)
- (block : Block artifact .Osaka 903 program)
+ (block : Block artifact .Osaka 866 program)
  (hsize : artifact.code.size < 2^256)
- (hjump : Decode.isValidJumpDest artifact.code 519 = true) (input : ByteArray)
+ (hjump : Decode.isValidJumpDest artifact.code 485 = true) (input : ByteArray)
  (hvalid : ValidInput input) (hmatch : MemoLogic.Matches input) :
- GasSteps (state artifact input 903) (state artifact input 933) := by
+ GasSteps (state artifact input 866) (state artifact input 896) := by
  have h := traced artifact block hsize hjump input
  have hz := (guardNat_zero_iff input hvalid).2 hmatch
  simpa only [result,if_pos hz,state] using h
 noncomputable def miss (artifact : ProgramArtifact)
- (block : Block artifact .Osaka 903 program)
+ (block : Block artifact .Osaka 866 program)
  (hsize : artifact.code.size < 2^256)
- (hjump : Decode.isValidJumpDest artifact.code 519 = true) (input : ByteArray)
+ (hjump : Decode.isValidJumpDest artifact.code 485 = true) (input : ByteArray)
  (hvalid : ValidInput input) (hmiss : ¬ MemoLogic.Matches input) :
- GasSteps (state artifact input 903) (state artifact input 519) := by
+ GasSteps (state artifact input 866) (state artifact input 485) := by
  have h := traced artifact block hsize hjump input
  have hn : (guard input).toNat ≠ 0 := fun hz => hmiss ((guardNat_zero_iff input hvalid).1 hz)
  simpa only [result,if_neg hn,state] using h

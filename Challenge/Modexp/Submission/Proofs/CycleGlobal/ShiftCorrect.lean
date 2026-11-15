@@ -289,7 +289,7 @@ theorem gasSteps_handled (input : ByteArray)
     (hpath : CycleSubmission.Global.Fast.Setup.FastPath input) :
     ∃ final : State,
       Nonempty (Challenge.EvmProof.GasSteps
-        (Main.trampolineState input 564) final) ∧
+        (Main.trampolineState input 530) final) ∧
         final.isDone = true ∧
         final.toResult = .returned (Challenge.Modexp.spec input) := by
   have hsize : input.size < 2 ^ 256 := lt_trans hvalid.1 (by norm_num)

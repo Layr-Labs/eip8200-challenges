@@ -38,24 +38,24 @@ theorem lift_cost {pc : Nat} {program : List Instr} (block : BoundBlock pc progr
   unfold lift Block.steps
   rw [runLocatedBlock_sound_cost]
   exact blockCostW block.path work hresult hs.fork hfree hcost hactive
-/-- The single bit body at pc 2454 (instruction indices 1948 to 1966). -/
-def bodyBlock : BoundBlock 10464 (bodyProgram 7) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7937 19 10464 (bodyProgram 7)
-    (by change 7937+19 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+/-- The single bit body at pc 2442 (instruction indices 1936 to 1954). -/
+def bodyBlock : BoundBlock 10469 (bodyProgram 7) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7917 19 10469 (bodyProgram 7)
+    (by change 7917+19 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-/-- The body head `JUMPDEST` at pc 2453 (index 1947), the target of the loop control. -/
-def startBlock : BoundBlock 10463 ([.op .JUMPDEST]) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7936 1 10463 ([.op .JUMPDEST])
-    (by change 7936+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+/-- The body head `JUMPDEST` at pc 2441 (index 1935), the target of the loop control. -/
+def startBlock : BoundBlock 10468 ([.op .JUMPDEST]) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7916 1 10468 ([.op .JUMPDEST])
+    (by change 7916+1 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-/-- The loop control at pc 2476 (indices 1967 to 1974). -/
-def controlBlock : BoundBlock 10486 (controlProgram) :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7956 8 10486 (controlProgram)
-    (by change 7956+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+/-- The loop control at pc 2464 (indices 1955 to 1962). -/
+def controlBlock : BoundBlock 10491 (controlProgram) :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7936 8 10491 (controlProgram)
+    (by change 7936+8 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -63,32 +63,32 @@ variable (s : State) (rest : List UInt256)
   (Bm1 byte offset outerW acc base m : UInt256) (hs : Frame s)
 /-- The body with the loop counter symbolic: it selects bit `7 - counter`. -/
 def body (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 10464 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10486 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m]++rest)) :=
+    GasSteps (stW s 10469 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10491 ([Bm1,counter,byte,offset,outerW,stepValue 7 counter Bm1 byte acc m,base,m]++rest)) :=
   lift bodyBlock s hs _ _ (by
     simpa only [stW,framed,Challenge.EvmProof.Word.literal_eq_ofNat,Challenge.EvmProof.Word.ofNat_add_mod] using
-      run_body s 10464 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
+      run_body s 10469 7 Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 @[simp] theorem body_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (body s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 68 := by
   unfold body
   apply lift_cost _ _ _ _ _ _ 68 (by decide) (by rfl) (by rfl)
 def start (hrest : rest.length < 1000) (counter : UInt256) :
-    GasSteps (stW s 10463 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest))
-      (stW s 10464 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest)) :=
+    GasSteps (stW s 10468 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest))
+      (stW s 10469 ([Bm1,counter,byte,offset,outerW,acc,base,m]++rest)) :=
   lift startBlock s hs _ _ (run_start s Bm1 counter byte offset outerW acc base m rest (Nat.le_of_lt hrest))
 @[simp] theorem start_cost (hrest : rest.length < 1000) (counter : UInt256) :
     (start s rest Bm1 byte offset outerW acc base m hs hrest counter).cost = 1 := by
   unfold start
   apply lift_cost _ _ _ _ _ _ 1 (by decide) (by rfl) (by rfl)
 /-- The loop control with the counter at `c < 8`: back to the body head for
-`c < 7`, otherwise on to the exit at 2413; the counter becomes `c + 1`. -/
+`c < 7`, otherwise on to the exit at 2401; the counter becomes `c + 1`. -/
 def control (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :
-    GasSteps (stW s 10486 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m]++rest))
-      (stW s (if c < 7 then 10463 else 10498)
+    GasSteps (stW s 10491 ([Bm1,UInt256.ofNat c,byte,offset,outerW,acc,base,m]++rest))
+      (stW s (if c < 7 then 10468 else 10503)
         ([Bm1,UInt256.ofNat (c+1),byte,offset,outerW,acc,base,m]++rest)) :=
   lift controlBlock s hs _ _ (by
-    have hj : Decode.isValidJumpDest s.executionEnv.code 10463 = true := by
-      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 7936 (by rfl)
+    have hj : Decode.isValidJumpDest s.executionEnv.code 10468 = true := by
+      rw [hs.code]; exact CycleSubmission.Global.Binding.jumpDest 7916 (by rfl)
     simpa only [stW,framed,apply_ite UInt256.ofNat,Challenge.EvmProof.Word.literal_eq_ofNat] using
       run_control s Bm1 byte offset outerW acc base m rest c hc (Nat.le_of_lt hrest) hj)
 @[simp] theorem control_cost (hrest : rest.length < 1000) (c : Nat) (hc : c < 8) :

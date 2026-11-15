@@ -11,18 +11,39 @@ open Challenge.Modexp
 open Challenge.Modexp.Submission.Proofs
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler
-private def earlyWord_size : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 0 EarlyWordProgram.sizeProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 0 9 0 EarlyWordProgram.sizeProgram
+open Challenge.EvmProof WindowTwentyOneEntry WindowNibbleKernel EarlyWordProgram
+def relocatedSizeBranch : List Instr := [.push 2 530,.op .JUMPI]
+def relocatedSizeProgram : List Instr := EarlyWordProgram.sizeValueProgram++relocatedSizeBranch
+private theorem run_size_branch_relocated (template : State) (value : UInt256)
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 530 = true) :
+    runInstructions relocatedSizeBranch (framed template (UInt256.ofNat 12) [value]) =
+      some (framed template
+        (if value.toNat = 0 then UInt256.ofNat 16 else UInt256.ofNat 530) []) := by
+  by_cases hv : value.toNat = 0 <;>
+    simp [relocatedSizeBranch,runInstructions,framed,Stepper.runInstr,UInt256.isTrue,
+      hv,hjump,Word.literal_eq_ofNat,Word.word_toNat_ofNat,
+      Word.succ_ofNat_mod,Word.ofNat_add_mod]
+private theorem run_size_relocated (template : State) (input : ByteArray)
+    (hdata : template.executionEnv.calldata = input)
+    (hjump : Decode.isValidJumpDest template.executionEnv.code 530 = true) :
+    runInstructions relocatedSizeProgram (framed template (UInt256.ofNat 0) []) =
+      some (framed template
+        (if (sizeDiff input).toNat = 0 then UInt256.ofNat 16 else UInt256.ofNat 530) []) :=
+  runInstructions_append_some _ _ _ _ _ (run_size_value template input hdata)
+    (run_size_branch_relocated template (sizeDiff input) hjump)
+
+private def earlyWord_size : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 0 relocatedSizeProgram :=
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 0 9 0 relocatedSizeProgram
     (by change 0+9 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 structure EarlySizePaths (artifact : Challenge.EvmProof.ProgramArtifact) (fork : Fork) where
-  size : WindowTwentyOneBinding.Block artifact fork 0 EarlyWordProgram.sizeProgram
-  legacyJump : Decode.isValidJumpDest artifact.code 564 = true
+  size : WindowTwentyOneBinding.Block artifact fork 0 relocatedSizeProgram
+  legacyJump : Decode.isValidJumpDest artifact.code 530 = true
 def earlyWordPaths : EarlySizePaths CycleSubmission.Artifact.artifact .Osaka where
   size := earlyWord_size
-  legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 391 (by rfl)
+  legacyJump := by exact CycleSubmission.Global.Binding.jumpDest 389 (by rfl)
 open Challenge.EvmProof
 open WindowTwentyOneEntry WindowTwentyOneBinding EarlyWordProgram
 private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : State}
@@ -31,15 +52,15 @@ private theorem jump_env {artifact : ProgramArtifact} {fork : Fork} {template : 
     Decode.isValidJumpDest template.executionEnv.code pc = true := by
   rw [env.code]
   exact hjump
-/-- An exponent or modulus size other than 32 (both within the EIP-7823 bound) reaches the fixed-vector recogniser's
+/-- An exponent or modulus size other than 32 (both within the EIP-7834 bound) reaches the fixed-vector recogniser's
 entry at 599 with an empty stack. -/
 def steps_size_miss {artifact : ProgramArtifact} {fork : Fork}
     (paths : EarlySizePaths artifact fork) (template : State) (env : Environment artifact fork template)
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (he : exponentSize input ≤ 1024) (hm : modulusSize input ≤ 1024)
     (hmiss : ¬ (exponentSize input = 32 ∧ modulusSize input = 32)) :
-    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 564) []) := by
-  have hs := run_size template input hdata (jump_env env paths.legacyJump)
+    GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 530) []) := by
+  have hs := run_size_relocated template input hdata (jump_env env paths.legacyJump)
   have hn : (sizeDiff input).toNat ≠ 0 := fun hz => hmiss ((sizeDiff_zero_iff input he hm).mp hz)
   rw [if_neg hn] at hs
   exact paths.size.steps (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hs
@@ -49,7 +70,7 @@ def steps_size_hit {artifact : ProgramArtifact} {fork : Fork}
     (input : ByteArray) (hdata : template.executionEnv.calldata = input)
     (hsize : exponentSize input = 32 ∧ modulusSize input = 32) :
     GasSteps (framed template (UInt256.ofNat 0) []) (framed template (UInt256.ofNat 16) []) := by
-  have hs := run_size template input hdata (jump_env env paths.legacyJump)
+  have hs := run_size_relocated template input hdata (jump_env env paths.legacyJump)
   rw [if_pos (sizeDiff_zero_of input hsize)] at hs
   exact paths.size.steps (env.transfer (t := framed template (UInt256.ofNat 0) []) rfl rfl) rfl hs
 end CycleSubmission.Global.Paths

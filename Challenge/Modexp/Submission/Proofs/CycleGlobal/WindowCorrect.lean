@@ -12,7 +12,7 @@ set_option maxHeartbeats 2000000
 The early wrapper handles matching headers first. Every other header restores
 the exact legacy entry at pc 1396. The Montgomery success proof is then reused
 verbatim. If that fast path declines, the unchanged broad Setup fallback reaches
-pc 1326 and the route-aware reference-body proof takes over.
+pc 1314 and the route-aware reference-body proof takes over.
 -/
 namespace CycleSubmission.Global.Fast.WindowCorrect
 open Challenge.Modexp
@@ -25,7 +25,7 @@ open Challenge.Modexp.Submission.Proofs.Bytecode
 abbrev FastHandled (input : ByteArray) : Prop :=
   ∃ final : State,
     Nonempty (Challenge.EvmProof.GasSteps
-      (Main.trampolineState input 564) final) ∧
+      (Main.trampolineState input 530) final) ∧
       final.isDone = true ∧ final.toResult = .returned (spec input)
 private theorem withGas_initialState (code cd : ByteArray) (gas : Nat) :
     Challenge.EvmProof.withGas (initialState code cd 0) gas =
@@ -75,7 +75,7 @@ def handledOf (route : WindowRoute.Route)
         exact ⟨Setup.emptyModulusState (initialState CycleSubmission.Artifact.bytecode input 0),
           ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
           Setup.emptyModulusState_isDone _ rfl,Setup.emptyModulusState_result _ input hzero⟩
-      · -- a zero exponent with a one-word modulus returns `1 mod m` from pc 10983
+      · -- a zero exponent with a one-word modulus returns `1 mod m` from pc 10987
         exact ⟨Setup.zeroExpFinalState (initialState CycleSubmission.Artifact.bytecode input 0) input,
           ⟨(EarlyWordCorrect.legacy input hvalid hsize).trans steps⟩,
           Setup.zeroExpFinalState_isDone _ _ rfl,

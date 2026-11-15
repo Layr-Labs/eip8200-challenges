@@ -49,7 +49,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
       (CycleSubmission.Global.GateRaw.entryState s (ordinaryFinal mem input n mm) n bsize esize msize))
     (e3Trace : Eligible input n bsize esize → Challenge.EvmProof.GasSteps
       (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize)
-      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm (n / 4)) 2527 n bsize esize msize)) :
+      (CycleSubmission.Global.SlimFrames.frameState s (e3Final mem input n mm (n / 4)) 2515 n bsize esize msize)) :
     FixedExponentRoute.Handled input (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize esize msize) := by
   have env : Challenge.Modexp.Submission.Proofs.Bytecode.WindowTwentyOneBinding.Environment CycleSubmission.Artifact.artifact .Osaka s :=
     ⟨by change CycleSubmission.Artifact.bytecode.size < 2^256; rw [CycleSubmission.Artifact.bytecodeSize]; decide,hcode,hfork,hrun,hnp⟩
@@ -76,7 +76,7 @@ theorem handled_of_shift_hit (input : ByteArray) (s : State) (mem : ByteArray)
         Limbs.radix ^ n * Limbs.radix ^ n := by
       conv_rhs => rw [hn4]
       exact RootE3Scale.quarter_scale Limbs.radix k
-    -- The shift cleanup tail lands on `e3go` (2471) with the bare outer frame.
+    -- The shift cleanup tail lands on `e3go` (2459) with the bare outer frame.
     have tr' : Challenge.EvmProof.GasSteps (CycleSubmission.Global.Fast.Shift.dispState s mem n bsize 1 msize)
         (CycleSubmission.Global.GateRaw.e3go s (e3Final mem input n mm k) n bsize 1 msize) := tr
     have finish := CycleSubmission.Global.TailFixed.special input s (e3Final mem input n mm k)
