@@ -93,10 +93,9 @@ def templateA : List Instr := [
 .push ⟨2, by decide⟩ (UInt256.ofNat 224),
 .op .MLOAD,
 .op (.Dup ⟨0, by decide⟩),
-.op .JUMPDEST,
 .push ⟨2, by decide⟩ (UInt256.ofNat 258),
 .op .MLOAD,
-.push ⟨1, by decide⟩ (UInt256.ofNat 232),
+.push ⟨2, by decide⟩ (UInt256.ofNat 232),
 .op .MLOAD,
 .push ⟨1, by decide⟩ (UInt256.ofNat 128)]
 def entryTemplate : List Instr := [

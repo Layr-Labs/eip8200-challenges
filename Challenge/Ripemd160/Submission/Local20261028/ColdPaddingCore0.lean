@@ -69,28 +69,28 @@ open EvmSemantics EvmSemantics.EVM
 @[simp] theorem inherited_pc_149 : Control.Artifact.submissionArtifact.instructionPC 157 = 460 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3368 : Control.Artifact.submissionArtifact.instructionPC 4079 = 6486 := by
+@[simp] theorem inherited_pc_3368 : Control.Artifact.submissionArtifact.instructionPC 4078 = 6486 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3369 : Control.Artifact.submissionArtifact.instructionPC 4080 = 6487 := by
+@[simp] theorem inherited_pc_3369 : Control.Artifact.submissionArtifact.instructionPC 4079 = 6487 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3370 : Control.Artifact.submissionArtifact.instructionPC 4081 = 6488 := by
+@[simp] theorem inherited_pc_3370 : Control.Artifact.submissionArtifact.instructionPC 4080 = 6488 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3371 : Control.Artifact.submissionArtifact.instructionPC 4082 = 6489 := by
+@[simp] theorem inherited_pc_3371 : Control.Artifact.submissionArtifact.instructionPC 4081 = 6489 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3372 : Control.Artifact.submissionArtifact.instructionPC 4083 = 6490 := by
+@[simp] theorem inherited_pc_3372 : Control.Artifact.submissionArtifact.instructionPC 4082 = 6490 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3373 : Control.Artifact.submissionArtifact.instructionPC 4084 = 6492 := by
+@[simp] theorem inherited_pc_3373 : Control.Artifact.submissionArtifact.instructionPC 4083 = 6492 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3374 : Control.Artifact.submissionArtifact.instructionPC 4085 = 6493 := by
+@[simp] theorem inherited_pc_3374 : Control.Artifact.submissionArtifact.instructionPC 4084 = 6493 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] theorem inherited_pc_3375 : Control.Artifact.submissionArtifact.instructionPC 4086 = 6494 := by
+@[simp] theorem inherited_pc_3375 : Control.Artifact.submissionArtifact.instructionPC 4085 = 6494 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem inherited_pc_5411 : Control.Artifact.submissionArtifact.instructionPC 4011 = 6383 := by

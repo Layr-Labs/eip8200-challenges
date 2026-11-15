@@ -1,3 +1,26 @@
+# RIPEMD-160: JUMPDEST pad retired from the 32-byte first-block writer head, window kept by a widened 232 push (614,934 gas)
+
+Parent: promoted commit `6d2369d9` (validated `83e98140`, 614,945 gas).
+
+The 32-byte path's first-block writer head (`First0.templateA`, PC 6442..6481,
+11 runs on the corpus) carried a `JUMPDEST` after `DUP1` at PC 6472, left by
+`79130afb` to keep the instruction total. No jump targets 6472; the head
+leaves through `PUSH2 9983; JUMP` at 6482. The pad is removed and
+`PUSH1 232` becomes `PUSH2 232`, so the head stays 40 bytes and every PC is
+unchanged. `PUSH1` and `PUSH2` both cost 3, so each run saves the 1-gas
+`JUMPDEST`: 614,945 - 11 = **614,934**.
+
+The instruction total drops from 7001 to 7000 (part 21 now 180
+instructions). Every index witness from 4072 on moves down by one:
+`ColdPaddingCore0` (4078..4085), `ColdPaddingCore1` (4086..4092),
+`ColdPaddingCore3` `lengthIterationPath` / `validLengthLoopHead`,
+`ColdArtifact.padExitPath` (4091, 4092), `PadSites` (4093), `FirstCore`
+`tableSite` (6859), `prefixSite` (6930) and `jumpSite` (6998), and the three
+count theorems. Bytes: `CandidateArtifact.bytes21`, `CandidateBytes.chunk101`,
+`bytecode.hex`. `First0.midStack` / `midMemory` are unchanged.
+
+---
+
 # RIPEMD-160: first-block writer pad pair retired, the 720 store widened in place (614,945 gas)
 
 Parent: promoted commit `57041db9` (validated `d18dbe78`, 614,967 gas).

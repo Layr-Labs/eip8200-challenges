@@ -19,7 +19,7 @@ def op (opcode : UInt8) : Instr :=
 abbrev submissionInstructions := CandidateArtifact.instructions
 abbrev submissionArtifact := CandidateArtifact.artifact
 
-theorem referenceInstructions_count : submissionInstructions.length = 7001 :=
+theorem referenceInstructions_count : submissionInstructions.length = 7000 :=
   CandidateArtifact.instruction_count
 
 def instructionPC (index : Nat) : Nat := submissionArtifact.instructionPC index
@@ -88,8 +88,8 @@ def padFooterSetupPath : List
 
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨4092, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
-   ⟨4093, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨4091, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
+   ⟨4092, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨97, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨98, .push ⟨1, by decide⟩ (UInt256.ofNat 222), by rfl, by decide⟩,
    ⟨99, .op (.Swap ⟨15, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
