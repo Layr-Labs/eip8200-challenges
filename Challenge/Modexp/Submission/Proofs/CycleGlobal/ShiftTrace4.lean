@@ -161,7 +161,7 @@ def gasSteps_prologue (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 2522) s
+      (shiftLoopState (UInt256.ofNat 2520) s
         (preMem (negStep mem n n).memory) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -179,7 +179,7 @@ def gasSteps_prologue_slow (s : State) (mem : ByteArray) (n bsize esize msize : 
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 2522) s
+      (shiftLoopState (UInt256.ofNat 2520) s
         (preMem (negStep mem n n).memory) n bsize esize msize n) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -197,7 +197,7 @@ def gasSteps_prologue_e3 (s : State) (mem : ByteArray) (n bsize esize msize : Na
     (hn0odd : (MachineState.readWord mem (32 * n - 32)).toNat % 2 = 1)
     (hdodd : (preDodd (MachineState.readWord mem 0)).toNat % 2 = 1) :
     Challenge.EvmProof.GasSteps (afterCsub0State s mem n bsize esize msize)
-      (shiftLoopState (UInt256.ofNat 10417) s
+      (shiftLoopState (UInt256.ofNat 10663) s
         (preMem (negStep mem n n).memory) n bsize esize msize (n / 2)) :=
   (gasSteps_preE5 s mem n bsize esize msize hn hn32 e hfast hml hn0odd hdodd).trans
     (soundEnv (cacheBlock (preMem (negStep mem n n).memory)) e
@@ -297,7 +297,7 @@ def gasSteps_addRounds (z : UInt256) (s : State) (mem : ByteArray) (n bsize esiz
       rw [show c - 1 + 1 = c from by omega])
 theorem jumpD4692 : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode
     (UInt256.ofNat pcCsubReturn).toNat = true :=
-  by rw [show (UInt256.ofNat pcCsubReturn).toNat = 2554 from by decide]; exact jumpDest4657
+  by rw [show (UInt256.ofNat pcCsubReturn).toNat = 2552 from by decide]; exact jumpDest4657
 def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize k : Nat)
     (hk : 2 ≤ k) (hk32 : k ≤ 32) (_hn : 2 ≤ n) (_hn32 : n ≤ 8) (e : Env s)
     (_hml : MachineState.readWord mem 2752 = UInt256.ofNat (32 * n - 32))
@@ -308,10 +308,10 @@ def gasSteps_csubStep (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     Challenge.EvmProof.GasSteps (csubCallState z s mem n bsize esize msize k)
       (afterCsubState z s mem n bsize esize msize k) :=
     soundEnv blk3253 e (run_csubCall z s mem n bsize esize msize k hk hk32 e.code e.run)
-def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2554
+def canonicalCopyBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 2552
     ShiftProducerSplitRun.copyProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1997 5 2554 ShiftProducerSplitRun.copyProgram
-    (by change 1997+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 1995 5 2552 ShiftProducerSplitRun.copyProgram
+    (by change 1995+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -382,8 +382,8 @@ abbrev stepNeg (mem : ByteArray) (n : Nat) : UInt256 :=
   negOf (stepMac mem n).memory (stepMac mem n).carry (stepQ mem n)
 def coldPrefixBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10995
     CycleSubmission.ColdCounterSplit.coldPrefix :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8286 5 10995 CycleSubmission.ColdCounterSplit.coldPrefix
-    (by change 8286+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8283 5 10995 CycleSubmission.ColdCounterSplit.coldPrefix
+    (by change 8283+5 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -399,24 +399,24 @@ def gasSteps_coldMore (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize
     exact jumpDestLoop mem n
   exact coldPrefixBlock.steps (bindingEnv e) rfl
     (ColdCounterRun.run_more z s mem n bsize esize msize k hk hk32 hd)
-def hotCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 3220
+def hotCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 3466
     CycleSubmission.DirectCounterExit.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2483 3 3220 CycleSubmission.DirectCounterExit.program
-    (by change 2483+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2658 3 3466 CycleSubmission.DirectCounterExit.program
+    (by change 2658+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
-def inlineCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 10944
+def inlineCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 3092
     CycleSubmission.DirectCounterExit.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8250 3 10944 CycleSubmission.DirectCounterExit.program
-    (by change 8250+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 2369 3 3092 CycleSubmission.DirectCounterExit.program
+    (by change 2369+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def coldCounterFinishBlock : WindowTwentyOneBinding.Block CycleSubmission.Artifact.artifact .Osaka 11000
     CycleSubmission.DirectCounterExit.program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8291 3 11000 CycleSubmission.DirectCounterExit.program
-    (by change 8291+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 8288 3 11000 CycleSubmission.DirectCounterExit.program
+    (by change 8288+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount] <;> decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -426,14 +426,14 @@ def gasSteps_finishHot (z : UInt256) (s : State) (mem : ByteArray) (n bsize esiz
       (CycleSubmission.DirectCounterExit.output z s mem n bsize esize msize) :=
   hotCounterFinishBlock.steps (bindingEnv e) rfl (by
     simpa only [CycleSubmission.DirectCounterExit.input,csubExitState,slotKState,pcCsubExit]
-      using CycleSubmission.DirectCounterExit.run z s mem 3220 n bsize esize msize hz)
+      using CycleSubmission.DirectCounterExit.run z s mem 3466 n bsize esize msize hz)
 def gasSteps_finishInline (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (e : Env s) (hz : Decode.isValidJumpDest s.executionEnv.code z.toNat = true) :
     Challenge.EvmProof.GasSteps (csubExit4State z s mem n bsize esize msize)
       (CycleSubmission.DirectCounterExit.output z s mem n bsize esize msize) :=
   inlineCounterFinishBlock.steps (bindingEnv e) rfl (by
     simpa only [CycleSubmission.DirectCounterExit.input,csubExit4State,slotKState]
-      using CycleSubmission.DirectCounterExit.run z s mem 10944 n bsize esize msize hz)
+      using CycleSubmission.DirectCounterExit.run z s mem 3092 n bsize esize msize hz)
 def gasSteps_finishCold (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize msize : Nat)
     (e : Env s) (hz : Decode.isValidJumpDest s.executionEnv.code z.toNat = true) :
     Challenge.EvmProof.GasSteps (ColdCounterRun.exitState z s mem n bsize esize msize)

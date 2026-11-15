@@ -64,13 +64,13 @@ def cellProgram : List Instr :=
 def guardProgram : List Instr :=
   [
   .op (.Dup dA0),
-   .push 2 428,
+   .push 2 426,
    .op .JUMPI]
 /-- Exact U bytes [532,537). -/
 def decideProgram : List Instr :=
   [
   .op .POP,
-   .push 2 480,
+   .push 2 478,
    .op .JUMPI]
 /-- Exact U bytes [537,546). -/
 def retryProgram : List Instr :=
@@ -78,7 +78,7 @@ def retryProgram : List Instr :=
   .op (.Swap sA1),
    .op .POP,
    .push 2 8192,
-   .push 2 422,
+   .push 2 420,
    .op .JUMP]
 /-- Exact U bytes [546,551). -/
 def finishProgram : List Instr :=
@@ -100,16 +100,16 @@ macro_rules
        Challenge.EvmProof.Word.word_toNat_ofNat,Nat.mod_eq_of_lt,$ts,*])
 theorem run_entry (s : State) (ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) :
-    runInstructions entryProgram (st s 418 (ret::src::rest) mem AW) =
-      some (st s 422 (UInt256.ofNat 1024::ret::src::rest) mem AW) := by
+    runInstructions entryProgram (st s 416 (ret::src::rest) mem AW) =
+      some (st s 420 (UInt256.ofNat 1024::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [entryProgram,hc]
 #check run_entry
 theorem run_init (s : State) (ml : Nat) (z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000)
     (hm : MachineState.readWord s.executionEnv.calldata 64 = UInt256.ofNat ml) :
-    runInstructions initProgram (st s 422 (z::ret::src::rest) mem AW) =
-      some (st s 428 (UInt256.ofNat ml::UInt256.ofNat 1::z::ret::src::rest) mem AW) := by
+    runInstructions initProgram (st s 420 (z::ret::src::rest) mem AW) =
+      some (st s 426 (UInt256.ofNat ml::UInt256.ofNat 1::z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [initProgram,hc,hm]
 #check run_init
@@ -122,8 +122,8 @@ theorem run_loadY (s : State) (i src : Nat) (c z ret : UInt256) (rest : List UIn
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : 1 ≤ i) (hi' : i ≤ 1024)
     (hsrc : src ≤ 8192) :
     runInstructions loadYProgram
-      (st s 428 (UInt256.ofNat i::c::z::ret::UInt256.ofNat src::rest) mem AW) =
-      some (st s 438 (byteW mem (src + (i - 1))::UInt256.ofNat (i - 1)::c::z::ret ::
+      (st s 426 (UInt256.ofNat i::c::z::ret::UInt256.ofNat src::rest) mem AW) =
+      some (st s 436 (byteW mem (src + (i - 1))::UInt256.ofNat (i - 1)::c::z::ret ::
         UInt256.ofNat src::rest) mem AW) := by
   have hc := caps _ hcap
   have hdec := dec_ofNat i hi (by omega)
@@ -137,8 +137,8 @@ theorem run_loadY (s : State) (i src : Nat) (c z ret : UInt256) (rest : List UIn
 theorem run_loadX (s : State) (i : Nat) (y c z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) :
     runInstructions loadXProgram
-      (st s 438 (y::UInt256.ofNat i::c::z::ret::src::rest) mem AW) =
-      some (st s 443 ((byteW mem i + y)::UInt256.ofNat i::c::z::ret::src::rest) mem AW) := by
+      (st s 436 (y::UInt256.ofNat i::c::z::ret::src::rest) mem AW) =
+      some (st s 441 ((byteW mem i + y)::UInt256.ofNat i::c::z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   have h1 : i < LIM := by simp only [LIM]; omega
   have haw : MachineState.activeWordsAfter 289 i 32 = 289 := aw_keep _ _ (by omega)
@@ -162,8 +162,8 @@ private theorem byteW_complement (w : UInt256) :
 theorem run_loadZ (s : State) (i z : Nat) (xy c ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) (hz : z ≤ 8192) :
     runInstructions loadZProgram
-      (st s 443 (xy::UInt256.ofNat i::c::UInt256.ofNat z::ret::src::rest) mem AW) =
-      some (st s 450 ((UInt256.ofNat 255 - byteW mem (z + i))::xy ::
+      (st s 441 (xy::UInt256.ofNat i::c::UInt256.ofNat z::ret::src::rest) mem AW) =
+      some (st s 448 ((UInt256.ofNat 255 - byteW mem (z + i))::xy ::
         UInt256.ofNat i::c::UInt256.ofNat z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   have hadd : UInt256.ofNat i + UInt256.ofNat z = UInt256.ofNat (z + i) := by
@@ -174,16 +174,16 @@ theorem run_loadZ (s : State) (i z : Nat) (xy c ret src : UInt256) (rest : List 
 #check run_loadZ
 theorem run_math (s : State) (zb xy i c z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000) :
-    runInstructions mathProgram (st s 450 (zb::xy::i::c::z::ret::src::rest) mem AW) =
-      some (st s 453 ((c + (zb + xy))::i::c::z::ret::src::rest) mem AW) := by
+    runInstructions mathProgram (st s 448 (zb::xy::i::c::z::ret::src::rest) mem AW) =
+      some (st s 451 ((c + (zb + xy))::i::c::z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [mathProgram,cellProgram,hc]
 #check run_math
 theorem run_cell_tail (s : State) (i : Nat) (w c z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000) (hi : i < 1024) :
     runInstructions cellTailProgram
-      (st s 453 (w::UInt256.ofNat i::c::z::ret::src::rest) mem AW) =
-      some (st s 461 (UInt256.ofNat i::nextCarry w::z::ret::src::rest)
+      (st s 451 (w::UInt256.ofNat i::c::z::ret::src::rest) mem AW) =
+      some (st s 459 (UInt256.ofNat i::nextCarry w::z::ret::src::rest)
         (writeByte mem i w) AW) := by
   have hc := caps _ hcap
   have h1 : i < LIM := by simp only [LIM]; omega
@@ -195,8 +195,8 @@ theorem run_cell (s : State) (i src z : Nat) (c ret : UInt256) (rest : List UInt
     (hsrc : src ≤ 8192) (hz : z ≤ 8192) :
     let w := sumWord mem src z (i - 1) c
     runInstructions cellProgram
-      (st s 428 (UInt256.ofNat i::c::UInt256.ofNat z::ret::UInt256.ofNat src::rest) mem AW) =
-      some (st s 461 (UInt256.ofNat (i - 1)::nextCarry w::UInt256.ofNat z::ret ::
+      (st s 426 (UInt256.ofNat i::c::UInt256.ofNat z::ret::UInt256.ofNat src::rest) mem AW) =
+      some (st s 459 (UInt256.ofNat (i - 1)::nextCarry w::UInt256.ofNat z::ret ::
         UInt256.ofNat src::rest) (writeByte mem (i - 1) w) AW) := by
   have hY := run_loadY s i src c (UInt256.ofNat z) ret rest mem hcap hi hi' hsrc
   have hX := run_loadX s (i - 1) (byteW mem (src + (i - 1))) c (UInt256.ofNat z) ret
@@ -217,45 +217,45 @@ theorem run_cell (s : State) (i src z : Nat) (c ret : UInt256) (rest : List UInt
 theorem run_guard_back (s : State) (i : Nat) (c z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000)
     (hi : 1 ≤ i) (hi' : i ≤ 1024)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 428 = true) :
-    runInstructions guardProgram (st s 461 (UInt256.ofNat i::c::z::ret::src::rest) mem AW) =
-      some (st s 428 (UInt256.ofNat i::c::z::ret::src::rest) mem AW) := by
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 426 = true) :
+    runInstructions guardProgram (st s 459 (UInt256.ofNat i::c::z::ret::src::rest) mem AW) =
+      some (st s 426 (UInt256.ofNat i::c::z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   have hi0 : i < LIM := by simp only [LIM]; omega
   have hne : i ≠ 0 := by omega
   unsigned_run [guardProgram,hc,hjump,hi0,hne]
 theorem run_guard_exit (s : State) (c z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000) :
-    runInstructions guardProgram (st s 461 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) =
-      some (st s 466 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) := by
+    runInstructions guardProgram (st s 459 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) =
+      some (st s 464 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [guardProgram,hc]
 theorem run_decide_yes (s : State) (c z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000)
-    (hc0 : c.toNat ≠ 0) (hjump : Decode.isValidJumpDest s.executionEnv.code 480 = true) :
-    runInstructions decideProgram (st s 466 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) =
-      some (st s 480 (z::ret::src::rest) mem AW) := by
+    (hc0 : c.toNat ≠ 0) (hjump : Decode.isValidJumpDest s.executionEnv.code 478 = true) :
+    runInstructions decideProgram (st s 464 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) =
+      some (st s 478 (z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [decideProgram,hc,hc0,hjump]
 theorem run_decide_no (s : State) (c z ret src : UInt256)
     (rest : List UInt256) (mem : ByteArray) (hcap : rest.length < 1000)
     (hc0 : c.toNat = 0) :
-    runInstructions decideProgram (st s 466 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) =
-      some (st s 471 (z::ret::src::rest) mem AW) := by
+    runInstructions decideProgram (st s 464 (UInt256.ofNat 0::c::z::ret::src::rest) mem AW) =
+      some (st s 469 (z::ret::src::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [decideProgram,hc,hc0]
 theorem run_retry (s : State) (ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000)
-    (hjump : Decode.isValidJumpDest s.executionEnv.code 422 = true) :
-    runInstructions retryProgram (st s 471 (UInt256.ofNat 1024::ret::src::rest) mem AW) =
-      some (st s 422 (UInt256.ofNat 8192::ret::UInt256.ofNat 1024::rest) mem AW) := by
+    (hjump : Decode.isValidJumpDest s.executionEnv.code 420 = true) :
+    runInstructions retryProgram (st s 469 (UInt256.ofNat 1024::ret::src::rest) mem AW) =
+      some (st s 420 (UInt256.ofNat 8192::ret::UInt256.ofNat 1024::rest) mem AW) := by
   have hc := caps _ hcap
   unsigned_run [retryProgram,hc,hjump]
 theorem run_finish (s : State) (z ret src : UInt256) (rest : List UInt256)
     (mem : ByteArray) (hcap : rest.length < 1000)
     (hjump : Decode.isValidJumpDest s.executionEnv.code ret.toNat = true) :
-    runInstructions finishProgram (st s 480 (z::ret::src::rest) mem AW) =
-      some { st s 480 rest mem AW with pc := ret } := by
+    runInstructions finishProgram (st s 478 (z::ret::src::rest) mem AW) =
+      some { st s 478 rest mem AW with pc := ret } := by
   have hc := caps _ hcap
   unsigned_run [finishProgram,hc,hjump]
 end CycleSubmission.Global.BigC.Unsigned

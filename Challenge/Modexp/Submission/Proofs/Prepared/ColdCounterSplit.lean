@@ -41,7 +41,7 @@ theorem run_tail (s : State) (k : UInt256) (rest : List UInt256) (hc : rest.leng
   Word.succ_ofNat_mod,Word.ofNat_add_mod,Nat.add_assoc,cap]
 theorem run_repair_done (s : State) (k : UInt256) (rest : List UInt256)
  (hc : rest.length≤1000) (hj : Decode.isValidJumpDest s.executionEnv.code 10995=true) :
- runInstructions repairPrefix (state s 3264 (N 0::k::rest)) =
+ runInstructions repairPrefix (state s 3510 (N 0::k::rest)) =
  some (state s 10995 (Monpro.maxWord::k::rest)) := by
  have cap (j : Nat) (hj : j≤10) : rest.length+j<1024 := by omega
  have hm : UInt256.lnot (N 0)=Monpro.maxWord := by decide
@@ -58,8 +58,8 @@ theorem not_not (v : UInt256) : UInt256.lnot (UInt256.lnot v)=v := by
  rw [hh,Nat.mod_eq_of_lt hv]
 theorem run_repair_go (s : State) (v k : UInt256) (rest : List UInt256)
  (hc : rest.length≤1000) (hv : v.toNat≠0) :
- runInstructions (repairPrefix++[.op .NOT]) (state s 3264 (v::k::rest)) =
- some (state s 3274 (v::k::rest)) := by
+ runInstructions (repairPrefix++[.op .NOT]) (state s 3510 (v::k::rest)) =
+ some (state s 3520 (v::k::rest)) := by
  have cap (j : Nat) (hj : j≤10) : rest.length+j<1024 := by omega
  simp (config := {maxSteps := 2000000}) (disch := omega) [repairPrefix,runInstructions,Stepper.runInstr,state,cap,Nat.add_assoc,
   UInt256.isTrue,UInt256.isZero,hv,not_not,Word.literal_eq_ofNat,Word.word_toNat_ofNat,

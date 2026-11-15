@@ -17,7 +17,7 @@ noncomputable def scan1 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8535,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8781,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 1),stack := frame a n slot0 slot1 rest} := by
   have hl := step16 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -34,7 +34,7 @@ noncomputable def scan2 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8515,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8761,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 2),stack := frame a n slot0 slot1 rest} := by
   have hl := step14 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -51,7 +51,7 @@ noncomputable def scan3 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8501,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8747,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 3),stack := frame a n slot0 slot1 rest} := by
   have hl := step12 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -68,7 +68,7 @@ noncomputable def scan4 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8483,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8729,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 4),stack := frame a n slot0 slot1 rest} := by
   have hl := step10 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -85,7 +85,7 @@ noncomputable def scan5 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8465,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8711,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 5),stack := frame a n slot0 slot1 rest} := by
   have hl := step8 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -102,7 +102,7 @@ noncomputable def scan6 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8447,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8693,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 6),stack := frame a n slot0 slot1 rest} := by
   have hl := step6 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -119,7 +119,7 @@ noncomputable def scan7 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8429,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8675,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 7),stack := frame a n slot0 slot1 rest} := by
   have hl := step4 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -136,7 +136,7 @@ noncomputable def scan8 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8411,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8657,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 8),stack := frame a n slot0 slot1 rest} := by
   have hl := step2 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -153,7 +153,7 @@ noncomputable def scan9 (s : State) (a n : Nat → UInt256) (slot0 slot1 : UInt2
     (env : Environment Artifact.artifact .Osaka s)
     (hm : MemoryInput s.memory a n) (hcap : rest.length ≤ 960)
     (hact : 88 ≤ s.activeWords.toNat) :
-    GasSteps {s with pc := UInt256.ofNat 8397,stack := frame a n slot0 slot1 rest}
+    GasSteps {s with pc := UInt256.ofNat 8643,stack := frame a n slot0 slot1 rest}
       {s with pc := UInt256.ofNat (destination a n 9),stack := frame a n slot0 slot1 rest} := by
   have hl := step0 s a n slot0 slot1 rest env hm hcap hact
   rw [destination]
@@ -172,8 +172,8 @@ noncomputable def gasSteps (s : State) (a n : Nat → UInt256) (slot0 slot1 : UI
     (hact : 88 ≤ s.activeWords.toNat)
     (ha : ∀ i < 8,(a i).toNat < 2^240)
     (hn : ∀ i < 8,(n i).toNat < 2^240) :
-    GasSteps {s with pc := UInt256.ofNat 8397,stack := frame a n slot0 slot1 rest}
-      {s with pc := UInt256.ofNat (if ControlArithmetic.value a < ControlArithmetic.value n then 8568 else 8558),stack := frame a n slot0 slot1 rest} := by
+    GasSteps {s with pc := UInt256.ofNat 8643,stack := frame a n slot0 slot1 rest}
+      {s with pc := UInt256.ofNat (if ControlArithmetic.value a < ControlArithmetic.value n then 8814 else 8804),stack := frame a n slot0 slot1 rest} := by
   have h := scan9 s a n slot0 slot1 rest env hm hcap hact
   rw [final_destination a n ha hn] at h
   exact h
