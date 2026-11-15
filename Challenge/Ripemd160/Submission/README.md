@@ -1,3 +1,35 @@
+# RIPEMD-160: ordinary-writer 228 load replaced by a DUP of the resident 236 word, both 228 stores re-sourced eight bytes up (615,011 gas)
+
+Parent: promoted commit `3988226b` (validated `79130afb`, 615,073 gas).
+
+The ordinary table prologue (`Ordinary0..7`, PC 556..793, 31 runs on the
+corpus) loaded the word at 228 (`PUSH1 228; MLOAD` at PC 577) for two stores,
+`DUP2 PUSH2 540 MSTORE` and the consuming `PUSH2 504 MSTORE`. Both are now
+painted from the word at 236, already on the stack two slots down, at the
+same source-minus-destination offsets: `(548, 236)` and `(512, 236)`. The
+slot that held the 228 word now holds a `DUP2` of the 236 word, so every
+later stack index is unchanged.
+
+`PUSH1 228; MLOAD; PUSH1 224; MLOAD` (12 gas) becomes
+`DUP2; PUSH2 224; MLOAD; JUMPDEST` (10 gas): same 6 bytes, same four
+instructions, no PC or instruction index moves. -2 gas x 31 executions:
+615,073 -> **615,011**.
+
+The new plan paints every lane, barrier, clear and biased byte the rounds
+read exactly as before (`low_sources`, `high_sources`, `barrier_sources`,
+`clear_sources`, `biased_sources` re-decided). Around the moved stores it is no
+longer byte-equal to `result selected` below 662, so `unchanged_sources`
+is narrowed to the window 666..944, which is the only range its one consumer
+(`Ordinary75.read_add`, bytes 918..944) asks for.
+
+Proof: `OrdinaryCertificate.plan` entries 27 and 29, `unchanged_sources`;
+`Ordinary75` call site; `OrdinaryMemory.memory28`, `memory30`, `state1..6`;
+`Ordinary1.template` / `outputs`; `Ordinary6.template` / `memory`;
+`Ordinary7.template` / `memory`; `CandidateArtifact` part 1,
+`CandidateBytes` chunks 9 and 11, `bytecode.hex`.
+
+---
+
 # RIPEMD-160: 228-word load retired from the first-block schedule writer, both of its stores re-sourced from a duplicated 224 word (615,073 gas)
 
 Parent: promoted commit `f049c250` (validated `d91466eb`, 615,095 gas).
