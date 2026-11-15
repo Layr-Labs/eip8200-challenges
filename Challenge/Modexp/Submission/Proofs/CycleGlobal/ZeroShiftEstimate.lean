@@ -9,14 +9,14 @@ open Challenge.Modexp.Submission.Proofs.Fast
 open Challenge.Modexp.Submission.Proofs.Fast.Shift
 open Challenge.Modexp.Submission.Proofs.Bytecode
 open EvmSemantics EvmSemantics.EVM
-@[local simp] private theorem zeroCompactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2934 := by
+@[local simp] private theorem zeroCompactInstructionPC2115 : CycleSubmission.Artifact.artifact.instructionPC 2263 = 2966 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8155 = 10798 := by
+@[local simp] private theorem zeroCompactInstructionPC8267 : CycleSubmission.Artifact.artifact.instructionPC 8152 = 10798 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 private theorem rho_clamp8_program :
-    blkEstimateSuffix8.map Challenge.EvmProof.Stepper.Located.instruction = estimateRawPart5 := by rfl
+    blkEstimateSuffix8.map Challenge.EvmProof.Stepper.Located.instruction = estimateRawPart5Eight := by rfl
 private theorem rho_clamp8_layout :
     WindowTwentyOneLocated.LinearPath (UInt256.ofNat 2932) blkEstimateSuffix8 := by
   dsimp only [blkEstimateSuffix8,opAt,pushAt,wfOp,
