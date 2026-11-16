@@ -28,11 +28,11 @@ def template : Piece → List Instr
 
 def index : Piece → Nat
   | .seed => 21 | .scanner => 3847 | .branch => 4000
-  | .success => 4002 | .miss => 4005 | .cleanup => 3348 | .copy => 134
+  | .success => 4002 | .miss => 4005 | .cleanup => 3360 | .copy => 134
 
 def pc : Piece → Nat
   | .seed => 48 | .scanner => 6144 | .branch => 6369
-  | .success => 6373 | .miss => 6376 | .cleanup => 4651 | .copy => 245
+  | .success => 6373 | .miss => 6376 | .cleanup => 4657 | .copy => 245
 
 theorem actual_slice (p : Piece) :
     (HoistedStoreArtifact.instructions.drop (index p)).take (template p).length = template p := by
@@ -98,10 +98,10 @@ theorem valid_miss : Decode.isValidJumpDest HoistedStoreArtifact.code 6376 = tru
   rw [hp] at h; exact h
 
 #eval IO.println "elaborating valid_cleanup"
-theorem valid_cleanup : Decode.isValidJumpDest HoistedStoreArtifact.code 4651 = true := by
-  have hp : HoistedStoreArtifact.artifact.instructionPC 3348 = 4651 := by
+theorem valid_cleanup : Decode.isValidJumpDest HoistedStoreArtifact.code 4657 = true := by
+  have hp : HoistedStoreArtifact.artifact.instructionPC 3360 = 4657 := by
     rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 3348 (by rfl)
+  have h := HoistedStoreArtifact.artifact.isValidJumpDest_index 3360 (by rfl)
   rw [hp] at h; exact h
 
 #eval IO.println "elaborating valid_generic"
