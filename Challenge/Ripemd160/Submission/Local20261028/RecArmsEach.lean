@@ -38,12 +38,12 @@ theorem valid_chain1 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain1 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5228 [a])
-      {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5228) a [] (by simp) rfl rfl 1 (by decide) valid_fail
   have hend : pcAfter (UInt256.ofNat 5228) (chainTemplate 1) = UInt256.ofNat 5270 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain1Template (atState (prepared input n) 5228 [a]) =
-      some {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 1).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain1Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain1_pc.symm) chain1_form h'
 
@@ -69,12 +69,12 @@ theorem valid_chain2 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain2 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5190 [a])
-      {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5190) a [] (by simp) rfl rfl 2 (by decide) valid_fail
   have hend : pcAfter (UInt256.ofNat 5190) (chainTemplate 2) = UInt256.ofNat 5270 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain2Template (atState (prepared input n) 5190 [a]) =
-      some {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 2).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain2Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain2_pc.symm) chain2_form h'
 
@@ -100,12 +100,12 @@ theorem valid_chain3 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain3 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5151 [a])
-      {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5151) a [] (by simp) rfl rfl 3 (by decide) valid_fail
   have hend : pcAfter (UInt256.ofNat 5151) (chainTemplate 3) = UInt256.ofNat 5270 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain3Template (atState (prepared input n) 5151 [a]) =
-      some {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 3).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain3Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain3_pc.symm) chain3_form h'
 
@@ -131,12 +131,12 @@ theorem valid_chain4 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain4 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 5112 [a])
-      {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 5112) a [] (by simp) rfl rfl 4 (by decide) valid_fail
   have hend : pcAfter (UInt256.ofNat 5112) (chainTemplate 4) = UInt256.ofNat 5270 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain4Template (atState (prepared input n) 5112 [a]) =
-      some {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 4).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain4Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain4_pc.symm) chain4_form h'
 
@@ -162,12 +162,12 @@ theorem valid_chain8 : Decode.isValidJumpDest Control.Artifact.submissionArtifac
 
 def gasSteps_chain8 (input : ByteArray) (n : Nat) (a : UInt256) :
     GasSteps (atState (prepared input n) 4959 [a])
-      {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have h := Scan.run_chain (prepared input n) (UInt256.ofNat 4959) a [] (by simp) rfl rfl 8 (by decide) valid_fail
   have hend : pcAfter (UInt256.ofNat 4959) (chainTemplate 8) = UInt256.ofNat 5270 := by decide
   rw [hend] at h
   have h' : runInstrSeq chain8Template (atState (prepared input n) 4959 [a]) =
-      some {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := h
+      some {prepared input n with pc := if (rev input a 8).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := h
   exact RecognitionLift.gasSteps_of_raw chain8Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using chain8_pc.symm) chain8_form h'
 
@@ -253,7 +253,7 @@ theorem arm1_form : ∀ i ∈ arm1Template.dropLast, RecognitionLift.Advances i 
 
 def gasSteps_arm1 (input : ByteArray) (hsize : input.size = 1) :
     GasSteps (atState (base input) 4717 [])
-      {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4657, stack := []} := by
   have h1 := Scan.run_store input (UInt256.ofNat 4717) 1
   have h2 := run_byte1 (prepared input 1) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 4717))
     [] (by simp) rfl
@@ -267,13 +267,13 @@ def gasSteps_arm1 (input : ByteArray) (hsize : input.size = 1) :
   rw [hend] at hall
   have hres : ZeroTailModel.result input 1 = ZeroTailModel.tailDiff input 1 := by
     simp [ZeroTailModel.result, last, rev]
-  have hif : (if (byte1Value input).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651) =
+  have hif : (if (byte1Value input).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4657) =
       (if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753
-        else UInt256.ofNat 4651) := by
+        else UInt256.ofNat 4657) := by
     rw [hres]
     exact if_congr (byte1_zero_iff input hsize) rfl rfl
   have h' : runInstrSeq arm1Template (atState (base input) 4717 []) =
-      some {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4651, stack := []} := by
+      some {prepared input 1 with pc := if (ZeroTailModel.result input 1).toNat = 0 then UInt256.ofNat 4753 else UInt256.ofNat 4657, stack := []} := by
     rw [← hif]
     simpa only [arm1Template, atState, List.append_assoc] using hall
   exact RecognitionLift.gasSteps_of_raw arm1Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -298,7 +298,7 @@ theorem arm31_form : ∀ i ∈ arm31Template.dropLast, RecognitionLift.Advances 
 
 def gasSteps_arm31 (input : ByteArray) :
     GasSteps (atState (base input) 5273 [])
-      {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5337 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5337 else UInt256.ofNat 4657, stack := []} := by
   have h1 := Scan.run_store input (UInt256.ofNat 5273) 31
   have h2 := Scan.run_prefix (prepared input 31) (UInt256.add (UInt256.ofNat 24) (UInt256.ofNat 5273))
     31 (by decide) [] (by simp) rfl rfl (fun h => absurd h (by decide))
@@ -313,7 +313,7 @@ def gasSteps_arm31 (input : ByteArray) :
   have hres : ZeroTailModel.result input 31 = ZeroTailModel.tailDiff input 31 := by
     simp [ZeroTailModel.result, last, rev]
   have h' : runInstrSeq arm31Template (atState (base input) 5273 []) =
-      some {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5337 else UInt256.ofNat 4651, stack := []} := by
+      some {prepared input 31 with pc := if (ZeroTailModel.result input 31).toNat = 0 then UInt256.ofNat 5337 else UInt256.ofNat 4657, stack := []} := by
     rw [hres]
     simpa only [arm31Template, atState, List.append_assoc] using hall
   exact RecognitionLift.gasSteps_of_raw arm31Site _ _ rfl rfl rfl deployAddress_not_precompile
@@ -360,7 +360,7 @@ theorem value32 (input : ByteArray) :
 
 def gasSteps_arm32 (input : ByteArray) :
     GasSteps (atState (base input) 5340 [])
-      {prepared input 32 with pc := if (ZeroTailModel.result input 32).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 32 with pc := if (ZeroTailModel.result input 32).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm32_entry input).trans (gasSteps_chain1 input 32 (startValue input 32))
   rw [value32] at g
   exact g
@@ -406,7 +406,7 @@ theorem value55 (input : ByteArray) :
 
 def gasSteps_arm55 (input : ByteArray) (hsize : input.size = 55) :
     GasSteps (atState (base input) 5369 [])
-      {prepared input 55 with pc := if (ZeroTailModel.result input 55).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 55 with pc := if (ZeroTailModel.result input 55).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm55_entry input hsize).trans (gasSteps_chain1 input 55 (startValue input 55))
   rw [value55] at g
   exact g
@@ -452,7 +452,7 @@ theorem value56 (input : ByteArray) :
 
 def gasSteps_arm56 (input : ByteArray) (hsize : input.size = 56) :
     GasSteps (atState (base input) 5429 [])
-      {prepared input 56 with pc := if (ZeroTailModel.result input 56).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 56 with pc := if (ZeroTailModel.result input 56).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm56_entry input hsize).trans (gasSteps_chain1 input 56 (startValue input 56))
   rw [value56] at g
   exact g
@@ -498,7 +498,7 @@ theorem value63 (input : ByteArray) :
 
 def gasSteps_arm63 (input : ByteArray) :
     GasSteps (atState (base input) 5488 [])
-      {prepared input 63 with pc := if (ZeroTailModel.result input 63).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 63 with pc := if (ZeroTailModel.result input 63).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm63_entry input).trans (gasSteps_chain1 input 63 (startValue input 63))
   rw [value63] at g
   exact g
@@ -544,7 +544,7 @@ theorem value64 (input : ByteArray) :
 
 def gasSteps_arm64 (input : ByteArray) :
     GasSteps (atState (base input) 5553 [])
-      {prepared input 64 with pc := if (ZeroTailModel.result input 64).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 64 with pc := if (ZeroTailModel.result input 64).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm64_entry input).trans (gasSteps_chain2 input 64 (startValue input 64))
   rw [value64] at g
   exact g
@@ -673,11 +673,11 @@ theorem byte65_rev_iff (input : ByteArray) (hsize : input.size = 65) :
 
 def gasSteps_arm65 (input : ByteArray) (hsize : input.size = 65) :
     GasSteps (atState (base input) 5582 [])
-      {prepared input 65 with pc := if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 65 with pc := if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm65_entry input).trans (gasSteps_chain2 input 65 (byte65Value input))
-  have hif : (if (rev input (byte65Value input) 2).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651) =
+  have hif : (if (rev input (byte65Value input) 2).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657) =
       (if (ZeroTailModel.result input 65).toNat = 0 then UInt256.ofNat 5270
-        else UInt256.ofNat 4651) :=
+        else UInt256.ofNat 4657) :=
     if_congr (byte65_rev_iff input hsize) rfl rfl
   rw [hif] at g
   exact g
@@ -723,7 +723,7 @@ theorem value119 (input : ByteArray) :
 
 def gasSteps_arm119 (input : ByteArray) :
     GasSteps (atState (base input) 5618 [])
-      {prepared input 119 with pc := if (ZeroTailModel.result input 119).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 119 with pc := if (ZeroTailModel.result input 119).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm119_entry input).trans (gasSteps_chain3 input 119 (startValue input 119))
   rw [value119] at g
   exact g
@@ -769,7 +769,7 @@ theorem value120 (input : ByteArray) :
 
 def gasSteps_arm120 (input : ByteArray) :
     GasSteps (atState (base input) 5681 [])
-      {prepared input 120 with pc := if (ZeroTailModel.result input 120).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 120 with pc := if (ZeroTailModel.result input 120).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm120_entry input).trans (gasSteps_chain3 input 120 (startValue input 120))
   rw [value120] at g
   exact g
@@ -815,7 +815,7 @@ theorem value128 (input : ByteArray) :
 
 def gasSteps_arm128 (input : ByteArray) :
     GasSteps (atState (base input) 5746 [])
-      {prepared input 128 with pc := if (ZeroTailModel.result input 128).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 128 with pc := if (ZeroTailModel.result input 128).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm128_entry input).trans (gasSteps_chain4 input 128 (startValue input 128))
   rw [value128] at g
   exact g
@@ -858,7 +858,7 @@ theorem value256 (input : ByteArray) :
 
 def gasSteps_arm256 (input : ByteArray) :
     GasSteps (atState (base input) 4934 [])
-      {prepared input 256 with pc := if (ZeroTailModel.result input 256).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []} := by
+      {prepared input 256 with pc := if (ZeroTailModel.result input 256).toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []} := by
   have g := (gasSteps_arm256_entry input).trans (gasSteps_chain8 input 256 (startValue input 256))
   rw [value256] at g
   exact g

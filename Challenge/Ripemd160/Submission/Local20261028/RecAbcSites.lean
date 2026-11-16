@@ -19,7 +19,7 @@ open Challenge.Ripemd160 Challenge.EvmProof EvmSemantics EvmSemantics.EVM
 open TinyGuardLogic
 abbrev Located := DataStepper.Located Control.Artifact.submissionArtifact .Osaka
 
-@[simp] theorem pc_176 : Control.Artifact.submissionArtifact.instructionPC 3354 = 4658 := by
+@[simp] theorem pc_176 : Control.Artifact.submissionArtifact.instructionPC 3366 = 4664 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_4095 : Control.Artifact.submissionArtifact.instructionPC 3429 = 4840 := by
   exact Control.GuardInstructionWindow.pc 0
@@ -49,19 +49,19 @@ abbrev Located := DataStepper.Located Control.Artifact.submissionArtifact .Osaka
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 @[simp] theorem pc_inlineReturn : Control.Artifact.submissionArtifact.instructionPC 3444 = 4881 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyDest : Control.Artifact.submissionArtifact.instructionPC 3341 = 4624 := by
+@[simp] theorem pc_emptyDest : Control.Artifact.submissionArtifact.instructionPC 3383 = 4690 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyPush : Control.Artifact.submissionArtifact.instructionPC 3342 = 4625 := by
+@[simp] theorem pc_emptyPush : Control.Artifact.submissionArtifact.instructionPC 3384 = 4691 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyZero0 : Control.Artifact.submissionArtifact.instructionPC 3343 = 4646 := by
+@[simp] theorem pc_emptyZero0 : Control.Artifact.submissionArtifact.instructionPC 3385 = 4712 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyStore : Control.Artifact.submissionArtifact.instructionPC 3344 = 4647 := by
+@[simp] theorem pc_emptyStore : Control.Artifact.submissionArtifact.instructionPC 3386 = 4713 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyMsize : Control.Artifact.submissionArtifact.instructionPC 3345 = 4648 := by
+@[simp] theorem pc_emptyMsize : Control.Artifact.submissionArtifact.instructionPC 3387 = 4714 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyZero1 : Control.Artifact.submissionArtifact.instructionPC 3346 = 4649 := by
+@[simp] theorem pc_emptyZero1 : Control.Artifact.submissionArtifact.instructionPC 3388 = 4715 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-@[simp] theorem pc_emptyReturn : Control.Artifact.submissionArtifact.instructionPC 3347 = 4650 := by
+@[simp] theorem pc_emptyReturn : Control.Artifact.submissionArtifact.instructionPC 3389 = 4716 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 def wordMaskNat : Nat :=
@@ -70,7 +70,7 @@ def wordMaskNat : Nat :=
 def wordMask : UInt256 := UInt256.ofNat wordMaskNat
 
 def entryDest : Located :=
-  ⟨3354, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
+  ⟨3366, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩
 
 def wordPath : List Located :=
     [⟨3429, .push ⟨3, by decide⟩ (UInt256.ofNat 6382179), by exact Control.GuardInstructionWindow.get 0, by decide⟩,
@@ -81,7 +81,7 @@ def wordPath : List Located :=
      ⟨3434, .op .CALLDATASIZE, by exact Control.GuardInstructionWindow.get 5, ⟨by decide, trivial, rfl⟩⟩,
      ⟨3435, .op .SAR, by exact Control.GuardInstructionWindow.get 6, ⟨by decide, trivial, rfl⟩⟩,
      ⟨3436, .op .XOR, by exact Control.GuardInstructionWindow.get 7, ⟨by decide, trivial, rfl⟩⟩,
-     ⟨3437, .push ⟨2, by decide⟩ (UInt256.ofNat 4658), by exact Control.GuardInstructionWindow.get 8, by decide⟩,
+     ⟨3437, .push ⟨2, by decide⟩ (UInt256.ofNat 4664), by exact Control.GuardInstructionWindow.get 8, by decide⟩,
      ⟨3438, .op .JUMPI, by exact Control.GuardInstructionWindow.get 9, ⟨by decide, trivial, rfl⟩⟩]
 
 def wordMissPath : List Located := wordPath ++ [entryDest]
@@ -96,14 +96,14 @@ def finishPath : List Located :=
    ⟨3444, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def emptyStorePath : List Located :=
-  [⟨3341, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
-   ⟨3342, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
-   ⟨3343, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3344, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3383, .op .JUMPDEST, by rfl, ⟨by decide, trivial, rfl⟩⟩,
+   ⟨3384, .push ⟨20, by decide⟩ (UInt256.ofNat 890993315260586290631548281360202943075753233713), by rfl, by decide⟩,
+   ⟨3385, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3386, .op .MSTORE, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 def emptyFinishPath : List Located :=
-  [⟨3346, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3347, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
+  [⟨3388, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3389, .op .RETURN, by rfl, ⟨by decide, trivial, rfl⟩⟩]
 
 
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.AbcArm
