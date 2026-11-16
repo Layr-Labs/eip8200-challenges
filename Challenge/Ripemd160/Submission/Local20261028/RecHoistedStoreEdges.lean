@@ -22,7 +22,7 @@ def gasSteps_branch_zero (s : State) (rho : List UInt256) (e : Env s)
 def gasSteps_branch_nonzero (s : State) (c : UInt256) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) (hn : c.toNat ≠ 0) :
     GasSteps {s with pc := UInt256.ofNat 6369, stack := c :: rho}
-      {s with pc := UInt256.ofNat 6376, stack := rho} := by
+      {s with pc := UInt256.ofNat 6453, stack := rho} := by
   apply lift .branch s _ e _
   simpa only [template, pc, if_pos hn] using
     run_terminalBranch s c rho (by omega) e.run (by rw [e.code]; exact valid_miss)
@@ -39,7 +39,7 @@ def gasSteps_return (s : State) (rho : List UInt256) (e : Env s)
 
 def gasSteps_miss_jump (s : State) (rho : List UInt256) (e : Env s)
     (hs : rho.length ≤ 976) :
-    GasSteps {s with pc := UInt256.ofNat 6376, stack := rho}
+    GasSteps {s with pc := UInt256.ofNat 6453, stack := rho}
       {s with pc := UInt256.ofNat 4651, stack := (0 : UInt256) :: rho} :=
   lift .miss s _ e _ (run_miss s rho (by omega) e.run (by rw [e.code]; exact valid_cleanup))
 

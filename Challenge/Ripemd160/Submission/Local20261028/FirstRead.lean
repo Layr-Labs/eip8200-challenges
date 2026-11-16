@@ -16,18 +16,18 @@ def result (s : State) : State :=
 theorem run (s : State) (cont : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
     (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
-    runInstrSeq template {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho} =
-      some {result s with pc := UInt256.ofNat 6442, stack := FirstCore.frame cont rho} := by
+    runInstrSeq template {s with pc := UInt256.ofNat 6376, stack := FirstCore.frame cont rho} =
+      some {result s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho} := by
   have hcap : (FirstCore.frame cont rho).length < 1024 := by
     simp only [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks,
       List.length_append, List.length_cons, List.length_nil]
     omega
-  have hj : runInstrSeq [.op .JUMPDEST] {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho} =
-      some {s with pc := UInt256.ofNat 6410, stack := FirstCore.frame cont rho} := by
+  have hj : runInstrSeq [.op .JUMPDEST] {s with pc := UInt256.ofNat 6376, stack := FirstCore.frame cont rho} =
+      some {s with pc := UInt256.ofNat 6377, stack := FirstCore.frame cont rho} := by
     simp [runInstrSeq, DataStepper.runInstr, hr, hcap]
     rfl
-  have hl : runInstrSeq loadCalldata {s with pc := UInt256.ofNat 6410, stack := FirstCore.frame cont rho} =
-      some {s with pc := UInt256.ofNat 6412, stack := MachineState.readWord s.memory 1056 :: FirstCore.frame cont rho} := by
+  have hl : runInstrSeq loadCalldata {s with pc := UInt256.ofNat 6377, stack := FirstCore.frame cont rho} =
+      some {s with pc := UInt256.ofNat 6379, stack := MachineState.readWord s.memory 1056 :: FirstCore.frame cont rho} := by
     have hcap1 : (FirstCore.frame cont rho).length + 1 < 1024 := by
       simp only [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks,
         List.length_append, List.length_cons, List.length_nil]
@@ -36,23 +36,23 @@ theorem run (s : State) (cont : UInt256) (rho : List UInt256)
     simp [loadCalldata, runInstrSeq, DataStepper.runInstr, hr, hcap, hcap1, UInt256.succ, hzero, hcd]
     rfl
   have hjl := DenseScheduleTrace.runInstrSeq_append_running hj hr hl
-  have hv := CoreEndian.run_reverse s (UInt256.ofNat 6412) (MachineState.readWord s.memory 1056)
+  have hv := CoreEndian.run_reverse s (UInt256.ofNat 6379) (MachineState.readWord s.memory 1056)
     factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3) (fusedCoefficientWord 0 2)
     (Word.ofUInt32 FirstCore.initialHash.h4) (Word.ofUInt32 FirstCore.initialHash.h3) (Word.ofUInt32 FirstCore.initialHash.h2)
     (Word.ofUInt32 FirstCore.initialHash.h1) (Word.ofUInt32 FirstCore.initialHash.h0)
     (UInt256.ofNat 1056) cont rho true (by omega) hr
   have hjlv := DenseScheduleTrace.runInstrSeq_append_running hjl hr hv
-  have ht := CoreEndian.run_lowStoreV2_of_small s (UInt256.ofNat 6439)
+  have ht := CoreEndian.run_lowStoreV2_of_small s (UInt256.ofNat 6406)
     (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) (FirstCore.frame cont rho)
     (by simp only [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks,
           List.length_append, List.length_cons, List.length_nil]; omega) hr ha
   exact DenseScheduleTrace.runInstrSeq_append_running hjlv hr ht
 theorem exact_bytes :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 6409).take 33 = PcEncoding.assembleBytes template := by
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 6376).take 33 = PcEncoding.assembleBytes template := by
   rw [RipemdSubmissionTables20261028.CandidateBytes.exact_list]
-  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (6400+9)).take 33 = _
-  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop100]
+  change (RipemdSubmissionTables20261028.CandidateBytes.bytes.drop (6336+40)).take 33 = _
+  rw [← List.drop_drop, RipemdSubmissionTables20261028.CandidateBytes.drop99]
   decide +kernel
 theorem memory_eq (s : State) (m : ByteArray) (hm : s.memory = writeWord m 162 FirstInitial.highWord) :
     (result s).memory = FirstInitial.memory m := by

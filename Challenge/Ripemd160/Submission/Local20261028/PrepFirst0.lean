@@ -106,10 +106,10 @@ def midStack (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt2
   UInt256.ofNat 128 :: outputs x rho s
 def midMemory (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)
 theorem exact_bytesA :
-    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 6442).take 40 =
+    (Challenge.Ripemd160.Benchmark.bytecode.data.toList.drop 6409).take 40 =
       PcEncoding.assembleBytes templateA := by
   rw [CandidateBytes.exact_list]
-  change (CandidateBytes.bytes.drop (6400+42)).take 40 = _
+  change (CandidateBytes.bytes.drop (6400+9)).take 40 = _
   rw [← List.drop_drop, CandidateBytes.drop100]
   decide +kernel
 theorem exact_bytesB :
@@ -122,8 +122,8 @@ theorem exact_bytesB :
 theorem runA (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
     (hactive : 34 ≤ s.activeWords.toNat) :
-    runInstrSeq templateA {s with pc := (UInt256.ofNat 6442), stack := inputs x rho} =
-      some {s with pc := (UInt256.ofNat 6482), stack := midStack x rho s, memory := midMemory s} := by
+    runInstrSeq templateA {s with pc := (UInt256.ofNat 6409), stack := inputs x rho} =
+      some {s with pc := (UInt256.ofNat 6449), stack := midStack x rho s, memory := midMemory s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hactiveAt (address size : Nat) (ha : address+size ≤ 1088) :

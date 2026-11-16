@@ -64,27 +64,25 @@ def padGuardPath : List
 
 def padSentinelPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨4010, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
-   ⟨4011, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4012, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4013, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4014, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨4061, .push ⟨1, by decide⟩ (UInt256.ofNat 128), by rfl, by decide⟩,
+   ⟨4062, .op (.Dup ⟨12, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4063, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4064, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4065, .op .MSTORE8, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def padFooterSetupPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=
-  [⟨4015, .push ⟨2, by decide⟩ (UInt256.ofNat 6486), by rfl, by decide⟩,
-   ⟨4016, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4017, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
-   ⟨4018, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4019, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4020, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
-   ⟨4021, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4022, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
-   ⟨4023, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4024, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
-   ⟨4025, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4026, .op (.Dup ⟨2, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨4027, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩]
+  [⟨4066, .push ⟨2, by decide⟩ (UInt256.ofNat 6486), by rfl, by decide⟩,
+   ⟨4067, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4068, .push ⟨1, by decide⟩ (UInt256.ofNat 3), by rfl, by decide⟩,
+   ⟨4069, .op .SHL, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4070, .op .CALLDATASIZE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4071, .push ⟨2, by decide⟩ (UInt256.ofNat 968), by rfl, by decide⟩,
+   ⟨4072, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4073, .push ⟨1, by decide⟩ (UInt256.ofNat 63), by rfl, by decide⟩,
+   ⟨4074, .op .OR, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨4075, .push ⟨1, by decide⟩ (UInt256.ofNat 89), by rfl, by decide⟩,
+   ⟨4076, .op .ADD, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def padExitPath : List
     (Challenge.EvmProof.DataStepper.Located submissionArtifact .Osaka) :=

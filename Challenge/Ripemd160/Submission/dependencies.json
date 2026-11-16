@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+    "rationale": "Direct source and proof-tree parent: kaankolcu's validated 614,871-gas frontier (Ordinary2 fall-through JUMPDEST retired, 142 load widened). Retained byte for byte except the 128-byte padding window 6376..6503: the 32-byte first-read block moves to 6376, the recognizer-miss stub to 6453, two dead STOPs fill 6459..6460, and the padding footer setup moves to 6461 and falls through into the unchanged length-loop head at 6486, so its DUP3 JUMP is gone; instruction count, code size and every index/PC outside the window are unchanged.",
+    "evidence": "Based on the Submission tree at da752dc9837f9ae186c376cf9561bf62c97209fe; CandidateArtifact part0/part20/part21, CandidateBytes chunk2/chunk99..chunk101, ColdArtifact padSentinelPath/padFooterSetupPath, ColdPaddingTrace footerB, ColdGuard*, ControlSites, First*, PrepFirst0, RecHoistedStore*, bytecode.hex."
+  },
+  {
+    "submissionId": "b442a062-4866-4dfe-91e9-835a77ca8d4b",
+    "rationale": "Ancestor kept unchanged: fkiene's 614,902-gas frontier (1000-byte patterned recognizer fall-through JUMPDEST retired).",
+    "evidence": "Inherited through 24701213 at da752dc9837f9ae186c376cf9561bf62c97209fe."
+  },
+  {
     "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
     "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
     "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."

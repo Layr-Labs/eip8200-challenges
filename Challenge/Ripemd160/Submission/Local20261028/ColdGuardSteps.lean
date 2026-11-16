@@ -19,20 +19,20 @@ def gasSteps_special (s : State) (e : FirstEntry.Env s) (h : Compression.HashSta
 
 def gasSteps_jump (s : State) (e : FirstEntry.Env s) (frame : List UInt256) (hc : frame.length + 1 < 1024) :
     GasSteps {s with pc := UInt256.ofNat 188, stack := frame}
-      {s with pc := UInt256.ofNat 6382, stack := frame} := by
+      {s with pc := UInt256.ofNat 6461, stack := frame} := by
   apply PadLift.gasSteps_of_raw jumpSite {s with pc := UInt256.ofNat 188, stack := frame}
-    {s with pc := UInt256.ofNat 6382, stack := frame}
+    {s with pc := UInt256.ofNat 6461, stack := frame}
     e.code e.fork e.running e.noPrecompile jump_pc.symm
   · apply PadLift.advancesAll_sound; decide +kernel
-  · have hv : Decode.isValidJumpDest s.executionEnv.code 6382 = true := by rw [e.code]; exact valid9997
+  · have hv : Decode.isValidJumpDest s.executionEnv.code 6461 = true := by rw [e.code]; exact valid9997
     have hb : frame.length < 1024 := by omega
     simp [jumpCode,runInstrSeq,DataStepper.runInstr,e.running,hv,hc,hb]
 
 def gasSteps_join (s : State) (e : FirstEntry.Env s) (frame : List UInt256) (hc : frame.length < 1024) :
-    GasSteps {s with pc := UInt256.ofNat 6382, stack := frame}
-      {s with pc := UInt256.ofNat 6383, stack := frame} := by
-  apply PadLift.gasSteps_of_raw joinSite {s with pc := UInt256.ofNat 6382, stack := frame}
-    {s with pc := UInt256.ofNat 6383, stack := frame}
+    GasSteps {s with pc := UInt256.ofNat 6461, stack := frame}
+      {s with pc := UInt256.ofNat 6462, stack := frame} := by
+  apply PadLift.gasSteps_of_raw joinSite {s with pc := UInt256.ofNat 6461, stack := frame}
+    {s with pc := UInt256.ofNat 6462, stack := frame}
     e.code e.fork e.running e.noPrecompile join_pc.symm
   · apply PadLift.advancesAll_sound; decide +kernel
   · simp [joinCode,runInstrSeq,DataStepper.runInstr,hc]; rfl

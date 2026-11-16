@@ -110,7 +110,7 @@ def padSkip (input : ByteArray) : State :=
 run, which writes its two scratch bytes on the way). -/
 def padGuardMiss (input : ByteArray) : State :=
   { padCopied input with
-    pc := UInt256.ofNat 6383
+    pc := UInt256.ofNat 6462
     stack := padFrame input }
 
 /-- The state the 32-byte block leaves at the sentinel store 166: scratch bytes 165 and 188 are
@@ -122,7 +122,7 @@ def padDirty (input : ByteArray) : State :=
 
 def padSentinel (input : ByteArray) : State :=
   { padDirty input with
-    pc := UInt256.ofNat 6389
+    pc := UInt256.ofNat 6468
     stack := padFrame input
     memory := MachineState.writeBytes (padDirty input).memory
       (ByteArray.mk #[0x80]) (Padding.messageOffset + input.size)
@@ -165,7 +165,7 @@ def padSentinel (input : ByteArray) : State :=
     (padGuardMiss input).halt = .Running := by rfl
 
 @[simp] theorem padGuardMiss_pc (input : ByteArray) :
-    (padGuardMiss input).pc = UInt256.ofNat 6383 := by rfl
+    (padGuardMiss input).pc = UInt256.ofNat 6462 := by rfl
 
 @[simp] theorem padGuardMiss_code (input : ByteArray) :
     (padGuardMiss input).executionEnv.code = submissionBytecode := by rfl
@@ -177,7 +177,7 @@ def padSentinel (input : ByteArray) : State :=
     (padDirty input).halt = .Running := by rfl
 
 @[simp] theorem padDirty_pc (input : ByteArray) :
-    (padDirty input).pc = UInt256.ofNat 6383 := by rfl
+    (padDirty input).pc = UInt256.ofNat 6462 := by rfl
 
 @[simp] theorem padDirty_code (input : ByteArray) :
     (padDirty input).executionEnv.code = submissionBytecode := by rfl
@@ -189,13 +189,13 @@ def padSentinel (input : ByteArray) : State :=
     (padSentinel input).halt = .Running := by rfl
 
 @[simp] theorem padSentinel_pcToNat (input : ByteArray) :
-    (padSentinel input).pc.toNat = 6389 := by rfl
+    (padSentinel input).pc.toNat = 6468 := by rfl
 
 @[simp] theorem padSentinel_pc (input : ByteArray) :
-    (padSentinel input).pc = UInt256.ofNat 6389 := by rfl
+    (padSentinel input).pc = UInt256.ofNat 6468 := by rfl
 
 @[simp] theorem padSentinel_pcSucc (input : ByteArray) :
-    (padSentinel input).pc.succ = UInt256.ofNat 6390 := by
+    (padSentinel input).pc.succ = UInt256.ofNat 6469 := by
   rw [padSentinel_pc, Challenge.EvmProof.Word.succ_ofNat (by norm_num)]
 
 @[simp] theorem padSentinel_stack (input : ByteArray) :
@@ -222,13 +222,13 @@ def lengthSentinelStorePath := lengthSentinelPath.drop 4
 
 def padSentinelAddressReady (input : ByteArray) : State :=
   { padDirty input with
-    pc := UInt256.ofNat 6388
+    pc := UInt256.ofNat 6467
     stack := [UInt256.ofNat Padding.messageOffset + UInt256.ofNat input.size,
       UInt256.ofNat 128] ++ padFrame input }
 
 def padSentinelStored (input : ByteArray) : State :=
   { padSentinelAddressReady input with
-    pc := UInt256.ofNat 6389
+    pc := UInt256.ofNat 6468
     stack := padFrame input
     memory := MachineState.writeBytes (padSentinelAddressReady input).memory
       (ByteArray.mk #[0x80])
@@ -240,7 +240,7 @@ def padSentinelStored (input : ByteArray) : State :=
     (padSentinelAddressReady input).halt = .Running := by rfl
 
 @[simp] theorem padSentinelAddressReady_pc (input : ByteArray) :
-    (padSentinelAddressReady input).pc = UInt256.ofNat 6388 := by rfl
+    (padSentinelAddressReady input).pc = UInt256.ofNat 6467 := by rfl
 
 @[simp] theorem padSentinelAddressReady_stack (input : ByteArray) :
     (padSentinelAddressReady input).stack =

@@ -213,16 +213,16 @@ theorem run_scanner (s : State) (a r : UInt256) (rho : List UInt256)
   simpa only [scannerTemplate, newMismatch, stored] using h2
 
 def terminalBranch : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 6376), .op .JUMPI]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 6453), .op .JUMPI]
 
 /-- The relocated failure edge consumes its condition and targets the cleanup
 trampoline, leaving only the untouched outer stack frame. -/
 theorem run_terminalBranch (s : State) (c : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 6376 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 6453 = true) :
     runInstrSeq terminalBranch
       {s with pc := UInt256.ofNat 6369, stack := c :: rho} =
-      some {s with pc := if c.toNat ≠ 0 then UInt256.ofNat 6376 else UInt256.ofNat 6373, stack := rho} := by
+      some {s with pc := if c.toNat ≠ 0 then UInt256.ofNat 6453 else UInt256.ofNat 6373, stack := rho} := by
   by_cases hz : c.toNat = 0
   all_goals
     simp (discharger := omega) [terminalBranch, runInstrSeq, DataStepper.runInstr,
@@ -242,7 +242,7 @@ def missTemplate : List Instr :=
 theorem run_miss (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 980) (hrun : s.halt = .Running)
     (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
-    runInstrSeq missTemplate {s with pc := UInt256.ofNat 6376, stack := rho} =
+    runInstrSeq missTemplate {s with pc := UInt256.ofNat 6453, stack := rho} =
       some {s with pc := UInt256.ofNat 4651, stack := 0 :: rho} := by
   simp (discharger := omega) [missTemplate, runInstrSeq, DataStepper.runInstr,
     hrun, hv, UInt256.succ, Instr.size,
@@ -303,7 +303,7 @@ theorem run_miss_cleanup (s : State) (rho : List UInt256)
     (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4651 = true)
     (hvGeneric : Decode.isValidJumpDest s.executionEnv.code 245 = true) :
     runInstrSeq (missTemplate ++ RetainedResultEdge112.cleanupTemplate)
-      {s with pc := UInt256.ofNat 6376, stack := rho} =
+      {s with pc := UInt256.ofNat 6453, stack := rho} =
       some (RetainedResultEdge112.cleared s (0 :: rho)) := by
   have hlen : (0 :: rho).length ≤ 980 := by
     simp only [List.length_cons]
@@ -318,7 +318,7 @@ and stack tail. Whole-image located/gas lifting and correctness composition rema
 theorem run_scanner_success (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 6376 = true)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 6453 = true)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata = 0) :
     runInstrSeq ((scannerTemplate ++ terminalBranch) ++ successTemplate)
       {s with pc := UInt256.ofNat 6144, stack := [PcSeedRaw.seed s.executionEnv.calldata,
@@ -344,7 +344,7 @@ then erases the speculative word before the generic hash path. -/
 theorem run_scanner_miss (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 6376 = true)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 6453 = true)
     (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4651 = true)
     (hvGeneric : Decode.isValidJumpDest s.executionEnv.code 245 = true)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata ≠ 0) :
@@ -426,7 +426,7 @@ one-word memory watermark. This reuses the predecessor's cleared-copy proof. -/
 theorem run_scanner_miss_copy (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0) (hm : s.memory.size = 0)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 6376 = true)
+    (hv : Decode.isValidJumpDest s.executionEnv.code 6453 = true)
     (hvCleanup : Decode.isValidJumpDest s.executionEnv.code 4651 = true)
     (hvGeneric : Decode.isValidJumpDest s.executionEnv.code 245 = true)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata ≠ 0)
@@ -459,7 +459,7 @@ theorem run_seed_success_spec (s : State) (rho : List UInt256)
     (hs : rho.length ≤ 976) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 0)
     (hvSeed : Decode.isValidJumpDest s.executionEnv.code 6144 = true)
-    (hvMiss : Decode.isValidJumpDest s.executionEnv.code 6376 = true)
+    (hvMiss : Decode.isValidJumpDest s.executionEnv.code 6453 = true)
     (hsize : s.executionEnv.calldata.size = 1000)
     (hcond : Low64RepeatMath.condition s.executionEnv.calldata = 0)
     (hz : PcSeedRaw.mismatch s.executionEnv.calldata = 0) :

@@ -48,43 +48,32 @@ def padEntry (input : ByteArray) : State :=
 @[simp] theorem initializedPC764 :
     Artifact.instructionPC 135 = 246 := by change Artifact.submissionArtifact.instructionPC 135 = 246; rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-/-! Instruction PCs of the sentinel/footer setup (99..110), the 192-stub jump (114..115), the exit block at 198
-(116..123) and the footer loop tail (3412..3416) in this layout. -/
 
 @[simp] theorem padPc99 :
-    Control.Artifact.submissionArtifact.instructionPC 4015 = 6389 := by
+    Control.Artifact.submissionArtifact.instructionPC 4066 = 6468 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci99 :
-    Control.Artifact.instructionPC 4015 = 6389 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4015 = 6389
+    Control.Artifact.instructionPC 4066 = 6468 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4066 = 6468
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc108 :
-    Control.Artifact.submissionArtifact.instructionPC 4024 = 6404 := by
+    Control.Artifact.submissionArtifact.instructionPC 4075 = 6483 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci108 :
-    Control.Artifact.instructionPC 4024 = 6404 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4024 = 6404
+    Control.Artifact.instructionPC 4075 = 6483 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4075 = 6483
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc109 :
-    Control.Artifact.submissionArtifact.instructionPC 4025 = 6406 := by
+    Control.Artifact.submissionArtifact.instructionPC 4076 = 6485 := by
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPci109 :
-    Control.Artifact.instructionPC 4025 = 6406 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4025 = 6406
-  rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem padPc110 :
-    Control.Artifact.submissionArtifact.instructionPC 4026 = 6407 := by
-  rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-
-@[simp] theorem padPci110 :
-    Control.Artifact.instructionPC 4026 = 6407 := by
-  change Control.Artifact.submissionArtifact.instructionPC 4026 = 6407
+    Control.Artifact.instructionPC 4076 = 6485 := by
+  change Control.Artifact.submissionArtifact.instructionPC 4076 = 6485
   rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 @[simp] theorem padPc114 :

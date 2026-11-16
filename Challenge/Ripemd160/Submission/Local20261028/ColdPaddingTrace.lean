@@ -11,28 +11,28 @@ Continues `Control.PaddingTraceCore` (split for memory: one module peaked above 
 -/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.PaddingTrace
-@[simp] private theorem inherited_tail_pc_5417 : Control.Artifact.submissionArtifact.instructionPC 4016 = 6392 := by
+@[simp] private theorem inherited_tail_pc_5417 : Control.Artifact.submissionArtifact.instructionPC 4067 = 6471 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5418 : Control.Artifact.submissionArtifact.instructionPC 4017 = 6393 := by
+@[simp] private theorem inherited_tail_pc_5418 : Control.Artifact.submissionArtifact.instructionPC 4068 = 6472 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5419 : Control.Artifact.submissionArtifact.instructionPC 4018 = 6395 := by
+@[simp] private theorem inherited_tail_pc_5419 : Control.Artifact.submissionArtifact.instructionPC 4069 = 6474 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5420 : Control.Artifact.submissionArtifact.instructionPC 4019 = 6396 := by
+@[simp] private theorem inherited_tail_pc_5420 : Control.Artifact.submissionArtifact.instructionPC 4070 = 6475 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5421 : Control.Artifact.submissionArtifact.instructionPC 4020 = 6397 := by
+@[simp] private theorem inherited_tail_pc_5421 : Control.Artifact.submissionArtifact.instructionPC 4071 = 6476 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5422 : Control.Artifact.submissionArtifact.instructionPC 4021 = 6400 := by
+@[simp] private theorem inherited_tail_pc_5422 : Control.Artifact.submissionArtifact.instructionPC 4072 = 6479 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5423 : Control.Artifact.submissionArtifact.instructionPC 4022 = 6401 := by
+@[simp] private theorem inherited_tail_pc_5423 : Control.Artifact.submissionArtifact.instructionPC 4073 = 6480 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
-@[simp] private theorem inherited_tail_pc_5424 : Control.Artifact.submissionArtifact.instructionPC 4023 = 6403 := by
+@[simp] private theorem inherited_tail_pc_5424 : Control.Artifact.submissionArtifact.instructionPC 4074 = 6482 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
 
 
@@ -368,8 +368,6 @@ noncomputable def gasSteps_lengthLoop (input : ByteArray) (hfit : CalldataFits i
           subst hj1
           exact hz) hz)
 
-/-- The footer setup (172..191) pushes the loop head 4547, the bit length and the rounded length
-offset; at 187 the offset gets its `+ 89` and `DUP3 JUMP` enters the loop head. -/
 def footerA := lengthFooterSetupPath.take 9
 def footerB := lengthFooterSetupPath.drop 9
 
@@ -378,7 +376,7 @@ theorem lengthFooterSetupPath_split : lengthFooterSetupPath = footerA ++ footerB
 
 def footerRounded (input : ByteArray) : State :=
   { padSentinel input with
-    pc := UInt256.ofNat 6404
+    pc := UInt256.ofNat 6483
     stack := PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) :: bitLengthWord input ::
       UInt256.ofNat 6486 :: padFrame input }
 
@@ -392,8 +390,6 @@ private theorem run_footerA (input : ByteArray) :
     footerRounded, padFrame, StaggerPersistentFrame.frame, bitLengthWord,
     PadLimitArithmetic.coldRounded]
 
-/-- The state at the loop head right after `DUP3 JUMP`, written as an update of the sentinel state
-(same shape as `footerRounded`), so the block run below never unfolds the loop's memory recursion. -/
 def footerEntered (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 6486
@@ -410,56 +406,23 @@ private theorem footerEntered_eq (input : ByteArray) :
   unfold footerEntered lengthLoopState
   rw [hm, ha, haddr, hshift]
 
-/-- `footerB` is `PUSH1 89 ADD DUP3` (189..190) and then the `JUMP` at 191. The jump runs as its own
-located step (as in the earlier layout's `run_footJump`): one `simp` over the whole block does not
-finish inside the memory budget. -/
-def footerPreJump (input : ByteArray) : State :=
-  { padSentinel input with
-    pc := UInt256.ofNat 6408
-    stack := UInt256.ofNat 6486 ::
-      (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
-      bitLengthWord input :: UInt256.ofNat 6486 :: padFrame input }
-
 set_option maxHeartbeats 800000 in
-private theorem run_footerB3 (input : ByteArray) :
-    Challenge.EvmProof.DataStepper.runLocatedBlock (footerB.take 3) (footerRounded input) =
-      some (footerPreJump input) := by
+private theorem run_footerB2 (input : ByteArray) :
+    Challenge.EvmProof.DataStepper.runLocatedBlock footerB (footerRounded input) =
+      some (footerEntered input) := by
   have haddressOrder : UInt256.ofNat 89 + PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) =
       PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89 :=
     Challenge.EvmProof.Word.word_add_comm _ _
   simp [footerB, lengthFooterSetupPath, Control.Artifact.padFooterSetupPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,
     Challenge.EvmProof.DataStepper.runLocated, Challenge.EvmProof.DataStepper.runInstr,
-    footerRounded, footerPreJump, padFrame, StaggerPersistentFrame.frame, haddressOrder]
-
-private theorem run_footJump (input : ByteArray) :
-    Challenge.EvmProof.DataStepper.runLocatedBlock (footerB.drop 3) (footerPreJump input) =
-      some (footerEntered input) := by
-  obtain ⟨loc, hloc, hidx, hins⟩ :
-      ∃ loc, footerB.drop 3 = [loc] ∧ loc.index = 4027 ∧ loc.instruction = .op .JUMP :=
-    ⟨_, rfl, rfl, rfl⟩
-  have hpc : (footerPreJump input).pc.toNat =
-      Control.Artifact.submissionArtifact.instructionPC loc.index := by
-    rw [hidx]
-    change 6408 = Control.Artifact.submissionArtifact.instructionPC 4027
-    rw [Challenge.Ripemd160.Submission.Proofs.Bytecode.ArtifactByteLength.instructionPC_eq_byteLength]; rfl
-  have hj : Challenge.EvmProof.DataStepper.runInstr (.op .JUMP) (footerPreJump input) =
-      some (footerEntered input) := by
-    simp [Challenge.EvmProof.DataStepper.runInstr, footerPreJump, footerEntered, padFrame,
-      StaggerPersistentFrame.frame, validJump4949]
-  have hl : Challenge.EvmProof.DataStepper.runLocated loc (footerPreJump input) =
-      some (footerEntered input) := by
-    unfold Challenge.EvmProof.DataStepper.runLocated
-    rw [if_pos hpc, hins]
-    exact hj
-  rw [hloc, Challenge.EvmProof.DataStepper.runLocatedBlock, hl]
+    footerRounded, footerEntered, padFrame, StaggerPersistentFrame.frame, haddressOrder]
 
 private theorem run_footerB (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock footerB (footerRounded input) =
       some (lengthLoopState input 0) := by
-  rw [← footerEntered_eq input, ← List.take_append_drop 3 footerB]
-  exact Challenge.EvmProof.DataStepper.runLocatedBlock_append _ _ _ _ _
-    (run_footerB3 input) rfl (run_footJump input)
+  rw [← footerEntered_eq input]
+  exact run_footerB2 input
 
 private theorem run_lengthFooterSetup (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock lengthFooterSetupPath
