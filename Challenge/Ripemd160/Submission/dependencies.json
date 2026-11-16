@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "ca27fee0-1661-4c0c-81cc-ad0e04d7f17c",
+    "rationale": "Stacked independent window: the abc-guard miss push at PC 4852 targets the generic entry JUMPDEST at 245 directly instead of the 4658 forwarding trampoline, saving 12 gas on ripemdGenerated(0, 27). Disjoint from the PC 192..244 stay-branch window; neither window moves an instruction index.",
+    "evidence": "Ported verbatim from submission branch commit cd012aebbff9 over da752dc9837f9ae186c376cf9561bf62c97209fe: CandidateArtifact part17 / bytes17, CandidateBytes chunk75, bytecode.hex bytes 4853..4854, RecGuardInstructionWindow tail, RecAbcSites, RecAbcArm, RecPatterned128Entry, RecHoistedStoreCorrect."
+  },
+  {
+    "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+    "rationale": "Direct source and proof-tree parent: the validated 614,871-gas frontier (Ordinary2 fall-through JUMPDEST retired, 142 load widened). Retained unchanged except the generic block-loop trampoline window at PC 192..244: the last-block test moves to a JUMPDEST at 210 (the loop continuation becomes 210 instead of 222), and its stay branch pushes 210 and falls through into the shared swap/drop/advance join, now at 223, instead of hopping to it with PUSH1 210 JUMP. The 192 stub retargets its hop to 223. The window keeps 53 bytes and 40 instructions, so no instruction index and no PC outside 196, 200 and 210..234 moves.",
+    "evidence": "Based on the Submission tree at 384d0505bb00677acceda766be1da238980ccd4b; CandidateArtifact part0 / bytes0, CandidateBytes chunk3, ColdStaggerPersistentLoopSites, ColdStaggerPersistentEntrySites, ColdLoop, ColdArtifact.padExitPath, ColdPaddingCore2.glFrame, RecDirectGuardBase PC lemmas, bytecode.hex."
+  },
+  {
     "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
     "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
     "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."
