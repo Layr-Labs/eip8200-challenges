@@ -23,12 +23,12 @@ def shortTemplate : List Instr := [
  .op .CALLDATASIZE,
  .op .SHL,
  .op .SLT,
- .push ⟨1, by decide⟩ (UInt256.ofNat 63),
- .push ⟨17, by decide⟩ (UInt256.ofNat 35316923234007322291473649857320890401270),
+ .push ⟨1, by decide⟩ (UInt256.ofNat 127),
+ .push ⟨17, by decide⟩ (UInt256.ofNat 19437300982362824809953283025380667556042),
  .op .CALLDATASIZE,
  .op .SHR,
  .op .AND,
- .push ⟨2, by decide⟩ (UInt256.ofNat 4658),
+ .push ⟨2, by decide⟩ (UInt256.ofNat 4616),
  .op .ADD,
  .op .JUMPI]
 def longTemplate (n target : Nat) : List Instr := [
@@ -64,10 +64,10 @@ theorem long376_pc : long376Site.startPC = UInt256.ofNat 4831 := by
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 def sizeBit (input : ByteArray) : UInt256 :=
  UInt256.slt (UInt256.shiftLeft SignedSizeFlag.reversedMask (UInt256.ofNat input.size)) 0
-def shortSelectorConst : Nat := 35316923234007322291473649857320890401270
+def shortSelectorConst : Nat := 19437300982362824809953283025380667556042
 def shortSource (input : ByteArray) : UInt256 :=
- UInt256.add (UInt256.ofNat 4658) (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat input.size))
-   (UInt256.ofNat 63))
+ UInt256.add (UInt256.ofNat 4616) (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat input.size))
+   (UInt256.ofNat 127))
 theorem sizeBit_flag (input : ByteArray) : UInt256.isZero (sizeBit input) = sizeFlag input := by
  unfold sizeBit
  rw [show (0 : UInt256) = UInt256.ofNat 0 from rfl, SignedSizeFlag.flag]
@@ -138,8 +138,8 @@ def gasSteps_short (input : ByteArray)
  exact GasSteps.cast (soundShort input _ (by rw [short_raw,if_pos hc,if_pos hv])) rfl hent
 
 theorem shortSource_eq (input : ByteArray) (n target : Nat) (h : input.size = n)
- (ht : UInt256.add (UInt256.ofNat 4658) (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat n))
-   (UInt256.ofNat 63)) = UInt256.ofNat target) : shortSource input = UInt256.ofNat target := by
+ (ht : UInt256.add (UInt256.ofNat 4616) (UInt256.land (UInt256.shiftRight (UInt256.ofNat shortSelectorConst) (UInt256.ofNat n))
+   (UInt256.ofNat 127)) = UInt256.ofNat target) : shortSource input = UInt256.ofNat target := by
  unfold shortSource
  rw [h, ht]
 

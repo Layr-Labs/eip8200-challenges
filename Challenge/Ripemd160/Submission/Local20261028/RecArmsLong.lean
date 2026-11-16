@@ -346,7 +346,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     (hv : v.toNat = 0 → input = RecognitionAccumulator.reference n)
     (hpre : GasSteps (initialState Control.submissionBytecode input 0)
       {prepared input n with
-        pc := if v.toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4651, stack := []}) :
+        pc := if v.toNat = 0 then UInt256.ofNat 5270 else UInt256.ofNat 4657, stack := []}) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (initialState Control.submissionBytecode input gas) (.returned (spec input)) := by
   have hpos : 0 < input.size := by
@@ -360,7 +360,7 @@ theorem long_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     exact Finish.output_spec input n hn (hv hz)
   · rw [if_neg hz] at hpre
     have gf := Control.EarlySerializeFallback.gasSteps_of_eq input hfit hpos
-      {prepared input n with pc := UInt256.ofNat 4651, stack := []} (digestMemory n)
+      {prepared input n with pc := UInt256.ofNat 4657, stack := []} (digestMemory n)
       (digestMemory_size n) [] (by simp) rfl
     exact Control.GenericFramedCorrect.correct input hfit hpos [] (by simp) (hpre.trans gf)
 
