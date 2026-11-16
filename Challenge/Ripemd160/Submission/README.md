@@ -1,3 +1,99 @@
+# RIPEMD-160: three stacked control-flow retargets — block-loop stay fall-through, direct empty-input arm, direct abc-miss entry (612,284 gas)
+
+Parent: promoted commit `da752dc9` (validated `24701213`, 614,871 gas).
+Three width-preserving retargets in one tree, each in its own bytecode window:
+
+| Item | Window | Saving |
+|---|---|---|
+| Generic block-loop stay branch falls through into the advance join | PC 192..244 | 11 x 233 staying blocks = 2,563 |
+| Empty input selected directly by a re-laid short-size dispatch table | PC 4624..4755 + retargeted pushes | 12 (`empty` vector) |
+| Abc-guard miss jumps straight to the generic entry at 245 (the re-laid stub at 4664 is no longer entered) | PC 4852 immediate | 12 (`ripemdGenerated(0, 27)`) |
+
+614,871 - 2,563 - 12 - 12 = **612,284**. Each section below describes one item
+as originally written against HEAD; in this tree the abc push names 245 rather
+than the re-laid stub at 4664.
+
+---
+
+# RIPEMD-160: generic block-loop stay falls through into the advance join (612,308 gas)
+
+Parent: promoted commit `384d0505` (validated `24701213`, 614,871 gas).
+
+Every block of a non-aligned input runs the generic loop: the core leaves
+through `SWAP13 JUMP` at 4622 into the last-block test, which either exits to
+the output at 4882 or re-enters the schedule writer at 461 through the shared
+join (`JUMPDEST SWAP13 POP SWAP11 PUSH1 64 ADD SWAP11 PUSH2 461 JUMP`). The test
+used to sit at 222 and reach the join at 210 with `PUSH1 222 PUSH1 210 JUMP`.
+
+The test now starts at 210 (`JUMPDEST PUSH1 128 DUP13 ADD MSIZE LT PUSH2 4882
+JUMPI`), its stay branch pushes the continuation `PUSH1 210` and falls straight
+into the join `JUMPDEST` at 223. The 192 stub hops to 223 (`PUSH1 223 JUMP`),
+the first-block continuation at 199 pushes 210, and the frame continuation in
+`ColdLoop`, `ColdPaddingCore2.glFrame` and `ColdArtifact.padExitPath` is 210.
+The 192..244 window keeps 53 bytes and 40 instructions; the dead tail after the
+join's `JUMP` (235..244) keeps its old bytes, so no instruction index moves and
+no PC outside 196, 200 and 210..234 changes.
+
+Gas: the stay branch loses `PUSH1 210` (3) and `JUMP` (8); every other path
+executes the same opcodes. The corpus runs 265 blocks through the generic
+loop, 233 of them stay (32 inputs exit once): -11 x 233 = -2,563,
+614,871 -> **612,308**.
+
+Proof: `glHead`/`glTest`/`glMsize` sites move to instructions 107/112/111
+(PC 210/216/215), `glPush` to 115 (PC 221, value 210), `splitJoin` and
+`joinSwap` to 116 (PC 223); the `glHopJump` hop is gone; `valid_gl` (210) and
+`valid_adv` (223) retarget; `CandidateArtifact` part 0, `CandidateBytes`
+chunk 3 and `bytecode.hex` carry the bytes.
+
+---
+
+# RIPEMD-160: empty-input digest arm selected directly by a re-laid size table (614,859 gas)
+
+Parent: promoted commit `384d0505` (validated `24701213`, 614,871 gas).
+
+The short-size dispatcher at PC 4756 jumps to
+`((K >> CALLDATASIZE) & mask) + base`. With a 6-bit field and base 4658 the
+empty input landed on a `JUMPDEST; PUSH2 4624; JUMP` trampoline at 4712 and
+only then on the empty-digest arm at 4624 (13 gas of dispatch overhead).
+The field is widened to 7 bits (`PUSH1 63` -> `PUSH1 127`, same width), the
+base moves to 4616, and the selector constant `K` is re-solved so that every
+overlapping window (sizes 0/1, 31/32, 55/56, 63/64/65, 119/120, 128) is
+consistent. The 132-byte region 4624..4755 is re-laid: ten size trampolines,
+the generic fallback stub (now 4657) and the abc miss stub (now 4664), the
+empty-digest arm (now 4690, reached directly by size 0) and the one-byte arm
+(unchanged at 4717). The region keeps 64 instructions, so no index outside
+3341..3389 moves; dead filler is `PUSH2 0` at 4639 and `STOP` at 4683/4689.
+Pushes of 4651/4658 at 4749, 4852, 5266, 5333 and 6378 are retargeted in
+place (same width).
+
+Gas: only the `empty` vector changes, by the removed trampoline
+(`JUMPDEST` 1 + `PUSH2` 3 + `JUMP` 8 = 12). 614,871 - 12 = **614,859**.
+
+---
+
+# RIPEMD-160: the abc-guard miss branch jumps straight to the generic entry at PC 245 (614,859 gas)
+
+Parent: promoted commit `da752dc9` (validated `24701213`, 614,871 gas).
+
+The short-input recognizer's `abc` word test (PC 4840..4855) used to send a
+miss to the trampoline `JUMPDEST; PUSH1 245; JUMP` at PC 4658, which only
+forwards to the generic compressor entry at PC 245. The test's push at PC 4852
+now carries 245 itself (`PUSH2 0x00f5`, same width), so a miss lands on the
+generic `JUMPDEST` directly with the same empty stack and untouched memory.
+No byte or instruction index moves. The trampoline stays for the computed
+size-dispatch offset 0. Only `ripemdGenerated(0, 27)` (3 bytes, not `abc`)
+takes this branch; it skips one JUMPDEST, one PUSH1 and one JUMP:
+614,871 - 12 = **614,859**.
+
+Changed: `CandidateArtifact.part17` / `bytes17`, `CandidateBytes.chunk75`,
+`bytecode.hex`, `GuardInstructionWindow.tail`, `AbcArm` sites (`wordPath`,
+`entryDest` now the generic JUMPDEST at index 134, `pc_generic`), the
+`AbcArm` miss trace (`fallbackState` is now PC 246), and the composition in
+`RecHoistedStoreCorrect` (the 4659 forwarding trace in `Patterned128Entry`
+is gone).
+
+---
+
 # RIPEMD-160: fall-through JUMPDEST retired from the 1000-byte recognizer arm, byte returned to the dead JUMP run (614,902 gas)
 
 Parent: promoted commit `83fdda0f` (validated `c46d9598`, 614,903 gas).

@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+    "rationale": "Direct source and proof-tree parent: the validated 614,871-gas frontier (Ordinary2 fall-through JUMPDEST retired). Retained unchanged except three width-preserving control-flow retargets: (1) the generic block-loop last-block test moves to a JUMPDEST at 210 and its stay branch falls through into the advance join at 223 (window 192..244, -11 gas per staying block, 233 blocks); (2) the short-size selector field widens to 7 bits with base 4616 and a re-solved constant so the empty input selects its digest arm at 4690 directly, the 4624..4755 region re-laid with the same 64 instructions (-12 on the empty vector); (3) the abc-guard miss push at PC 4852 names the generic entry 245 directly (-12 on the 3-byte non-abc vector).",
+    "evidence": "Based on the Submission tree at da752dc9837f9ae186c376cf9561bf62c97209fe; CandidateArtifact part0/17/18/20, CandidateBytes chunk3/72..75/82/83/99, ColdStaggerPersistentLoopSites, ColdStaggerPersistentEntrySites, ColdLoop, ColdArtifact.padExitPath, ColdPaddingCore2.glFrame, RecDirectGuardBase, RecPatternedSites, RecDispatch*, RecAbcArm, RecAbcSites, RecGuardInstructionWindow, RecArms*, RecHoistedStore*, RecEarlySerializeFallback, RecPatterned128Entry, bytecode.hex."
+  },
+  {
     "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
     "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
     "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."
