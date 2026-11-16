@@ -1,3 +1,26 @@
+# RIPEMD-160: the abc-guard miss branch jumps straight to the generic entry at PC 245 (614,859 gas)
+
+Parent: promoted commit `da752dc9` (validated `24701213`, 614,871 gas).
+
+The short-input recognizer's `abc` word test (PC 4840..4855) used to send a
+miss to the trampoline `JUMPDEST; PUSH1 245; JUMP` at PC 4658, which only
+forwards to the generic compressor entry at PC 245. The test's push at PC 4852
+now carries 245 itself (`PUSH2 0x00f5`, same width), so a miss lands on the
+generic `JUMPDEST` directly with the same empty stack and untouched memory.
+No byte or instruction index moves. The trampoline stays for the computed
+size-dispatch offset 0. Only `ripemdGenerated(0, 27)` (3 bytes, not `abc`)
+takes this branch; it skips one JUMPDEST, one PUSH1 and one JUMP:
+614,871 - 12 = **614,859**.
+
+Changed: `CandidateArtifact.part17` / `bytes17`, `CandidateBytes.chunk75`,
+`bytecode.hex`, `GuardInstructionWindow.tail`, `AbcArm` sites (`wordPath`,
+`entryDest` now the generic JUMPDEST at index 134, `pc_generic`), the
+`AbcArm` miss trace (`fallbackState` is now PC 246), and the composition in
+`RecHoistedStoreCorrect` (the 4659 forwarding trace in `Patterned128Entry`
+is gone).
+
+---
+
 # RIPEMD-160: fall-through JUMPDEST retired from the 1000-byte recognizer arm, byte returned to the dead JUMP run (614,902 gas)
 
 Parent: promoted commit `83fdda0f` (validated `c46d9598`, 614,903 gas).
