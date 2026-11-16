@@ -355,7 +355,8 @@ def gasSteps_hitCsub (s : State) (mem input : ByteArray) (n bsize esize msize : 
           (UInt256.ofNat pcCsubReturn) (outer n bsize esize msize) hlen e.code e.fork e.run
           e.np e.act296 hn (by omega) jumpD4692 rfl
           (by rw [hhigh 2752 (by omega)]; exact hml)
-          (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn' hfast))
+          (by rw [hhigh 2784 (by omega)]; exact htl) hs32' htn' hfast
+          (by simp [outer,Exp.outer])))
       rfl rfl
   have copy := canonicalCopyBlock.steps (bindingEnv e) rfl
     (ShiftCopyAt.run_copy s (RetainedTNormalizer.resultMemory (hitMem mem input n) n) n
