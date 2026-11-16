@@ -10,10 +10,10 @@ open StaggerPersistentLoopSites
 
 def entry (states : Nat → State) (hashes : Nat → Compression.HashState) (i : Nat)
     (rho : List UInt256) : State :=
-  {states i with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame (hashes i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat 222) rho}
+  {states i with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame (hashes i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat 210) rho}
 def post (states : Nat → State) (hashes : Nat → Compression.HashState) (i : Nat)
     (rho : List UInt256) : State :=
-  {states (i+1) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame (hashes (i+1)) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat 222) rho}
+  {states (i+1) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame (hashes (i+1)) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat 210) rho}
 def result (states : Nat → State) (hashes : Nat → Compression.HashState) (count : Nat)
     (rho : List UInt256) : State :=
   {states count with pc := UInt256.ofNat 4882, stack := StaggerPersistentFrame.frame (hashes count) (UInt256.ofNat (1056+64*(count-1))) (Word.ofUInt32 (hashes (count-1)).h2) rho}
@@ -32,7 +32,7 @@ def run_blocks (states : Nat → State) (hashes : Nat → Compression.HashState)
     have e := env (i+1) (by omega)
     have gb := block i hi
     have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
-      (UInt256.ofNat 222) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running
+      (UInt256.ofNat 210) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running
       (valid_gl _ e.code) e.code e.fork e.noPrecompile
     have gbd := gb.trans gd
     have h0 : I i = entry states hashes i rho := by simp only [I,if_pos hi]
@@ -78,11 +78,11 @@ noncomputable def gasSteps (input : ByteArray) (hfit : CalldataFits input)
     unfold CalldataFits at hfit
     omega
   have g0 := gasSteps_join (Iteration.states input i)
-    (StaggerPersistentFrame.frame (Iteration.hashes input i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat 222) (NormalPrepare.masks rho))
+    (StaggerPersistentFrame.frame (Iteration.hashes input i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat 210) (NormalPrepare.masks rho))
     (by simp [StaggerPersistentFrame.frame,NormalPrepare.masks]; omega)
     (e i).running (e i).code (e i).fork (e i).noPrecompile
   have g1 := NormalIteration.gasSteps_block (Iteration.entry input) 1056 i StackRunBridge.initialHashState
-    (UInt256.ofNat 222) rho (by omega) (e 0).running (by decide) hb (e 0).code (e 0).fork (e 0).noPrecompile
+    (UInt256.ofNat 210) rho (by omega) (e 0).running (by decide) hb (e 0).code (e 0).fork (e 0).noPrecompile
   exact g0.trans g1
 #print axioms run_blocks
 #print axioms gasSteps
