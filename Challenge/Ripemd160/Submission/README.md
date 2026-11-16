@@ -1,3 +1,27 @@
+# RIPEMD-160: empty-input digest arm selected directly by a re-laid size table (614,859 gas)
+
+Parent: promoted commit `384d0505` (validated `24701213`, 614,871 gas).
+
+The short-size dispatcher at PC 4756 jumps to
+`((K >> CALLDATASIZE) & mask) + base`. With a 6-bit field and base 4658 the
+empty input landed on a `JUMPDEST; PUSH2 4624; JUMP` trampoline at 4712 and
+only then on the empty-digest arm at 4624 (13 gas of dispatch overhead).
+The field is widened to 7 bits (`PUSH1 63` -> `PUSH1 127`, same width), the
+base moves to 4616, and the selector constant `K` is re-solved so that every
+overlapping window (sizes 0/1, 31/32, 55/56, 63/64/65, 119/120, 128) is
+consistent. The 132-byte region 4624..4755 is re-laid: ten size trampolines,
+the generic fallback stub (now 4657) and the abc miss stub (now 4664), the
+empty-digest arm (now 4690, reached directly by size 0) and the one-byte arm
+(unchanged at 4717). The region keeps 64 instructions, so no index outside
+3341..3389 moves; dead filler is `PUSH2 0` at 4639 and `STOP` at 4683/4689.
+Pushes of 4651/4658 at 4749, 4852, 5266, 5333 and 6378 are retargeted in
+place (same width).
+
+Gas: only the `empty` vector changes, by the removed trampoline
+(`JUMPDEST` 1 + `PUSH2` 3 + `JUMP` 8 = 12). 614,871 - 12 = **614,859**.
+
+---
+
 # RIPEMD-160: fall-through JUMPDEST retired from the 1000-byte recognizer arm, byte returned to the dead JUMP run (614,902 gas)
 
 Parent: promoted commit `83fdda0f` (validated `c46d9598`, 614,903 gas).

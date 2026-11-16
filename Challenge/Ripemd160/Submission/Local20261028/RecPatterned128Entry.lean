@@ -10,43 +10,43 @@ open StackRoundTrace StackRoundTemplate
 
 private def fallbackTemplate : List Instr := [.push 1 245, .op .JUMP]
 private def genericTemplate : List Instr := [.op .JUMPDEST]
-private theorem fallback_slice : (Control.Artifact.submissionArtifact.instructions.drop 3355).take fallbackTemplate.length = fallbackTemplate := by rfl
+private theorem fallback_slice : (Control.Artifact.submissionArtifact.instructions.drop 3367).take fallbackTemplate.length = fallbackTemplate := by rfl
 private theorem generic_slice : (Control.Artifact.submissionArtifact.instructions.drop 134).take genericTemplate.length = genericTemplate := by rfl
 private def fallbackSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka fallbackTemplate :=
- StackSiteBuilder.ofSlice fallbackTemplate 3355 fallback_slice
-  (by change 3355 + fallbackTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
+ StackSiteBuilder.ofSlice fallbackTemplate 3367 fallback_slice
+  (by change 3367 + fallbackTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := fallbackTemplate) (by decide)) (by decide)
 private def genericSite : GenericRoundSite Control.Artifact.submissionArtifact .Osaka genericTemplate :=
  StackSiteBuilder.ofSlice genericTemplate 134 generic_slice
   (by change 134 + genericTemplate.length ≤ Control.Artifact.submissionInstructions.length; rw [CandidateArtifact.instruction_count]; decide)
   code_bound (Control.StackRoundData.templateWellFormed_mem (instructions := genericTemplate) (by decide)) (by decide)
-private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4659 := by
- change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3355) = _
+private theorem fallback_pc : fallbackSite.startPC = UInt256.ofNat 4665 := by
+ change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3367) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem generic_pc : genericSite.startPC = UInt256.ofNat 245 := by
  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 134) = _
  rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
 private theorem fallback_raw_general (s : State) (hrun : s.halt = .Running)
  (hv : Decode.isValidJumpDest s.executionEnv.code 245 = true) :
- runInstrSeq fallbackTemplate {s with pc := UInt256.ofNat 4659, stack := []} =
+ runInstrSeq fallbackTemplate {s with pc := UInt256.ofNat 4665, stack := []} =
   some {s with pc := UInt256.ofNat 245, stack := []} := by
  simp [fallbackTemplate,runInstrSeq,DataStepper.runInstr,hrun,
   Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat,hv]
 private theorem fallback_raw (input : ByteArray) :
- runInstrSeq fallbackTemplate (PatternedScan.stS input 4659 []) = some (PatternedScan.stS input 245 []) :=
+ runInstrSeq fallbackTemplate (PatternedScan.stS input 4665 []) = some (PatternedScan.stS input 245 []) :=
  fallback_raw_general (initialState submissionBytecode input 0) rfl DirectGuard.generic_dest
 private theorem generic_raw (input : ByteArray) :
  runInstrSeq genericTemplate (PatternedScan.stS input 245 []) = some (PatternedScan.stS input 246 []) := by
   simp [genericTemplate,runInstrSeq,DataStepper.runInstr,PatternedScan.stS,initialState,
    Word.literal_eq_ofNat,Word.succ_ofNat_mod,Word.ofNat_add_mod,Word.word_toNat_ofNat]
-private def fallbackGas (input : ByteArray) : GasSteps (PatternedScan.stS input 4659 []) (PatternedScan.stS input 245 []) :=
+private def fallbackGas (input : ByteArray) : GasSteps (PatternedScan.stS input 4665 []) (PatternedScan.stS input 245 []) :=
  RecognitionLift.gasSteps_of_raw fallbackSite _ _ rfl rfl rfl deployAddress_not_precompile fallback_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) (fallback_raw input)
 private def genericGas (input : ByteArray) : GasSteps (PatternedScan.stS input 245 []) (PatternedScan.stS input 246 []) :=
  RecognitionLift.gasSteps_of_raw genericSite _ _ rfl rfl rfl deployAddress_not_precompile generic_pc.symm
   (RecognitionLift.advancesAll_sound _ (by decide)) (generic_raw input)
 private def gasSteps_fallback (input : ByteArray) :
- GasSteps (PatternedScan.stS input 4659 []) (PatternedScan.stS input 246 []) :=
+ GasSteps (PatternedScan.stS input 4665 []) (PatternedScan.stS input 246 []) :=
  (fallbackGas input).trans (genericGas input)
 
 /-- Tiny misses enter the generic compressor directly. -/
