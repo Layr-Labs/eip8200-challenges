@@ -33,7 +33,7 @@ open StackRoundTrace StackRoundTemplate DirectLiteralRawV4 DirectLiteralModel J2
 
 /-! ## Layout -/
 
-def failPC : Nat := 4651
+def failPC : Nat := 4657
 
 /-- Chain entry JUMPDESTs. -/
 def chainEntry (k : Nat) : Bool := k = 7 ∨ k = 3 ∨ k = 2 ∨ k = 1 ∨ k = 0
@@ -85,10 +85,10 @@ def startTemplate (n : Nat) : List Instr :=
   if n % 32 = 0 then [.push ⟨0, by decide⟩ (UInt256.ofNat 0)] else prefixTemplate n
 
 def resultTemplate : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 4657), .op .JUMPI]
 
 def chainResultTemplate : List Instr :=
-  [.push ⟨2, by decide⟩ (UInt256.ofNat 4651), .op .JUMPI]
+  [.push ⟨2, by decide⟩ (UInt256.ofNat 4657), .op .JUMPI]
 
 def revE : Nat → List Instr
   | 0 => []
@@ -150,10 +150,10 @@ theorem run_revE (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
 
 theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4657 = true) :
     runInstrSeq resultTemplate {s with pc := pc, stack := a :: rho} =
       some {s with
-        pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4651
+        pc := if a.toNat = 0 then pcAfter pc resultTemplate else UInt256.ofNat 4657
         stack := rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   by_cases hz : a.toNat = 0
@@ -164,10 +164,10 @@ theorem run_result (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
 
 theorem run_chainResult (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4657 = true) :
     runInstrSeq chainResultTemplate {s with pc := pc, stack := a :: rho} =
       some {s with
-        pc := if a.toNat = 0 then pcAfter pc chainResultTemplate else UInt256.ofNat 4651
+        pc := if a.toNat = 0 then pcAfter pc chainResultTemplate else UInt256.ofNat 4657
         stack := rho} := by
   have hcap (n : Nat) (hn : n ≤ 20) : rho.length + n < 1024 := by omega
   by_cases hz : a.toNat = 0
@@ -179,11 +179,11 @@ theorem run_chainResult (s : State) (pc : UInt256) (a : UInt256) (rho : List UIn
 theorem run_chain (s : State) (pc : UInt256) (a : UInt256) (rho : List UInt256)
     (hs : rho.length ≤ 990) (hrun : s.halt = .Running)
     (ha : s.activeWords = UInt256.ofNat 1) (k : Nat) (hk : k ≤ 32)
-    (hv : Decode.isValidJumpDest s.executionEnv.code 4651 = true) :
+    (hv : Decode.isValidJumpDest s.executionEnv.code 4657 = true) :
     runInstrSeq (chainTemplate k) {s with pc:=pc,stack:=a::rho} =
       some {s with
         pc := if (rev s.executionEnv.calldata a k).toNat = 0 then pcAfter pc (chainTemplate k)
-          else UInt256.ofNat 4651
+          else UInt256.ofNat 4657
         stack := rho} := by
   have h1 := run_revE s pc a rho hs hrun ha k hk
   have h3 := run_chainResult s (pcAfter pc (revE k)) (rev s.executionEnv.calldata a k) rho hs hrun hv
@@ -288,8 +288,8 @@ theorem valid_at (index pc : Nat) (hj : Control.Artifact.submissionArtifact.inst
   rw [hp] at h
   exact h
 
-theorem valid_fail : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4651 = true :=
-  valid_at 3348 4651 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+theorem valid_fail : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4657 = true :=
+  valid_at 3360 4657 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 
 theorem lor_ofNat_zero (a : UInt256) : UInt256.lor a (UInt256.ofNat 0) = a := DirectLiteralRawV4.lor_zero a
 
