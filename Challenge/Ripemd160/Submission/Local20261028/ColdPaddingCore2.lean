@@ -82,11 +82,9 @@ def padFrame (_input : ByteArray) : List UInt256 :=
 @[simp] theorem padFrame_length (input : ByteArray) : (padFrame input).length = 15 := by
   simp [padFrame, StaggerPersistentFrame.frame]
 
-/-- The frame the padding code leaves at the block-loop head: the generic continuation 48 (the
-last-block test) replaces the output entry in slot 12. -/
 def glFrame : List UInt256 :=
   StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056)
-    (UInt256.ofNat 222) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+    (UInt256.ofNat 210) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 
 @[simp] theorem glFrame_length : glFrame.length = 15 := by
   simp [glFrame, StaggerPersistentFrame.frame]

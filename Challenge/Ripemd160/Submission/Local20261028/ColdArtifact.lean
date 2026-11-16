@@ -91,7 +91,7 @@ def padExitPath : List
   [⟨4090, .push ⟨1, by decide⟩ (UInt256.ofNat 198), by rfl, by decide⟩,
    ⟨4091, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨98, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨99, .push ⟨1, by decide⟩ (UInt256.ofNat 222), by rfl, by decide⟩,
+   ⟨99, .push ⟨1, by decide⟩ (UInt256.ofNat 210), by rfl, by decide⟩,
    ⟨100, .op (.Swap ⟨15, by decide⟩), by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨101, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨102, .op .POP, by rfl, wfOp (by decide) trivial rfl⟩,
