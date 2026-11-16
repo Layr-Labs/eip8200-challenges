@@ -15,13 +15,6 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 16000000
 set_option linter.unusedSimpArgs false
 
-/-!
-# Size dispatch into the compact arms
-
-The short size table selects a three-byte trampoline (or the one-byte arm
-directly); 256 and 376 bytes are matched by equality.  Every allowed size other
-than 1000 reaches its arm and returns RIPEMD-160.
--/
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.Arms.Dispatch
 open Challenge.Ripemd160 EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
@@ -40,10 +33,9 @@ def gasSteps_short1 (input : ByteArray) (h : input.size = 1) :
     (by rw [hn]; exact valid_arm1)
   exact GasSteps.cast g rfl (by rw [hn]; rfl)
 
-/-- The empty input reaches the shared empty-digest arm through its trampoline. -/
 def gasSteps_to_empty (input : ByteArray) (hz : input.size = 0) :
     GasSteps (Control.DirectGuard.guardEntry input) (Control.AbcArm.emptyEntry input) :=
-  (gasSteps_short0 input hz).trans (gasSteps_tramp0 input)
+  gasSteps_short0 input hz
 
 /-- Every allowed size other than 1000 returns the reference digest. -/
 theorem from_entry (input : ByteArray) (hfit : CalldataFits input)

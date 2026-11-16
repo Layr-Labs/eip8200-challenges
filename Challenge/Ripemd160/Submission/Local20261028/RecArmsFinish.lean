@@ -114,7 +114,7 @@ theorem arm_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     (hn : RecognitionAccumulator.Allowed n) (hsize : input.size = n) (rpc : Nat)
     (hpre : GasSteps (initialState Control.submissionBytecode input 0)
       {prepared input n with
-        pc := if (ZeroTailModel.result input n).toNat = 0 then UInt256.ofNat rpc else UInt256.ofNat 4651,
+        pc := if (ZeroTailModel.result input n).toNat = 0 then UInt256.ofNat rpc else UInt256.ofNat 4657,
         stack := []})
     (hfin : ∃ t, Nonempty (GasSteps {prepared input n with pc := UInt256.ofNat rpc, stack := []} t) ∧
       t.halt = .Returned ∧ t.callStack = [] ∧ t.hReturn = MachineState.readPadded (digestMemory n) 0 32) :
@@ -131,7 +131,7 @@ theorem arm_correct (input : ByteArray) (hfit : CalldataFits input) (n : Nat)
     exact output_spec input n hn (result_zero input n hn hsize hz)
   · rw [if_neg hz] at hpre
     have gf := Control.EarlySerializeFallback.gasSteps_of_eq input hfit hpos
-      {prepared input n with pc := UInt256.ofNat 4651, stack := []} (digestMemory n)
+      {prepared input n with pc := UInt256.ofNat 4657, stack := []} (digestMemory n)
       (digestMemory_size n) [] (by simp) rfl
     exact Control.GenericFramedCorrect.correct input hfit hpos [] (by simp) (hpre.trans gf)
 
