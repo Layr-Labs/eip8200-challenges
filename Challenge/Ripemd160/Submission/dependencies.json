@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+    "rationale": "Direct source and proof-tree parent: the validated 614,871-gas frontier (Ordinary2 fall-through JUMPDEST retired, 142 load widened). Retained unchanged except two disjoint control-flow retargets: (1) the generic block-loop last-block test moves to a JUMPDEST at 210 and its stay branch pushes 210 and falls through into the swap/drop/advance join at 223 instead of hopping with PUSH1 210 JUMP (window 192..244 keeps 53 bytes / 40 instructions; -11 gas on each of 233 staying blocks); (2) the PUSH2 at PC 4852 names the generic entry 245 instead of the 4658 forwarding trampoline (-12 gas on the one vector that misses the abc word test).",
+    "evidence": "Based on the Submission tree at da752dc9837f9ae186c376cf9561bf62c97209fe; CandidateArtifact part0 / bytes0 / part17 / bytes17, CandidateBytes chunk3 / chunk75, bytecode.hex, ColdStaggerPersistentLoopSites, ColdStaggerPersistentEntrySites, ColdLoop, ColdArtifact.padExitPath, ColdPaddingCore2.glFrame, RecDirectGuardBase PC lemmas, RecGuardInstructionWindow tail, RecAbcSites pc_generic / entryDest / wordPath, RecAbcArm fallbackState / run_word_miss / run_word_hit, RecPatterned128Entry, RecHoistedStoreCorrect."
+  },
+  {
     "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
     "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
     "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."
