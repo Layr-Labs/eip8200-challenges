@@ -1301,101 +1301,103 @@ theorem prCol3_eq (s : State) (c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp 
     prCol3Model s c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest =
       {s with pc := N 9722,stack := (prCol3_o0 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 n0)::(prCol3_o1 c q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 n0)::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
   simp only [prCol3Model,prCol3_o0,prCol3_o1,h_b0,h_b1,h_b2,h_b3,h_n0]
-/-! ## prCol4: pc 3775..3901, 111 instructions -/
+/-! ## prCol4: pc 9722..9845, 110 instructions; inverse forwarded from the stack -/
 def p4c0P : List Instr :=
   [
-  .op (.Dup dA0),
-   .op (.Dup dA15),
+  .op (.Dup dA15),
+   .op (.Dup dA1),
    .push 1 128,
    .op .MLOAD,
    .op (.Dup dA8),
-   .op .MULMOD,
+   .op .MUL,
    .op .ADD]
 def p4c0M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 128
-  let v1 : W := UInt256.mulMod x5 v0 x14
+  let v1 : W := x5 * v0
   let v2 : W := v1 + x0
-  {s with pc := N 9730,memory := s.memory,stack := v2::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
+  {s with pc := N 9730,memory := s.memory,stack := v2::x15::x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest}
 theorem p4c0_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions p4c0P {s with pc := N 9722,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::rest} =
       some (p4c0M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   have ha128 : (128 : W).toNat = 128 := rfl
   have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
   simp [hz,hzn,p4c0P,p4c0M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha128,hf128]
 def p4c1P : List Instr :=
   [
-  .op (.Dup dA15),
-   .push 1 96,
+  .push 1 96,
    .op .MLOAD,
    .op (.Dup dA9),
-   .op .MULMOD,
+   .op .MUL,
    .op .ADD,
-   .op (.Dup dA15)]
-def p4c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
-  let v0 : W := MachineState.readWord s.memory 96
-  let v1 : W := UInt256.mulMod x7 v0 x15
-  let v2 : W := v1 + x0
-  {s with pc := N 9738,memory := s.memory,stack := x15::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
-theorem p4c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c1P {s with pc := N 9730,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
-      some (p4c1M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha96 : (96 : W).toNat = 96 := rfl
-  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c1P,p4c1M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha96,hf96]
-def p4c2P : List Instr :=
-  [
-  .push 1 64,
+   .push 1 64,
    .op .MLOAD,
-   .op (.Dup dA10),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .push 1 32,
-   .op .MLOAD]
-def p4c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
-  let v0 : W := MachineState.readWord s.memory 64
-  let v1 : W := UInt256.mulMod x9 v0 x0
-  let v2 : W := v1 + x1
-  let v3 : W := MachineState.readWord s.memory 32
-  {s with pc := N 9748,memory := s.memory,stack := v3::x16::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
-theorem p4c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
+   .op (.Dup dA10)]
+def p4c1M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
+  let v0 : W := MachineState.readWord s.memory 96
+  let v1 : W := x8 * v0
+  let v2 : W := v1 + x0
+  let v3 : W := MachineState.readWord s.memory 64
+  {s with pc := N 9740,memory := s.memory,stack := x9::v3::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
+theorem p4c1_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c2P {s with pc := N 9738,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
-      some (p4c2M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
+    runInstructions p4c1P {s with pc := N 9730,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
+      some (p4c1M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   have ha64 : (64 : W).toNat = 64 := rfl
   have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
+  have ha96 : (96 : W).toNat = 96 := rfl
+  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
+  simp [hz,hzn,p4c1P,p4c1M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha64,hf64,ha96,hf96]
+def p4c2P : List Instr :=
+  [
+  .op .MUL,
+   .op .ADD,
+   .push 1 32,
+   .op .MLOAD,
+   .op (.Dup dA11),
+   .op .MUL,
+   .op .ADD]
+def p4c2M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : W) (rest : List W) : State :=
+  let v0 : W := x0 * x1
+  let v1 : W := v0 + x2
+  let v2 : W := MachineState.readWord s.memory 32
+  let v3 : W := x12 * v2
+  let v4 : W := v3 + v1
+  {s with pc := N 9748,memory := s.memory,stack := v4::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::x20::rest}
+theorem p4c2_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 : W) (rest : List W)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions p4c2P {s with pc := N 9740,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::x20::rest} =
+      some (p4c2M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 x20 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
+  have hcr : rest.length < 1024 := by omega
   have ha32 : (32 : W).toNat = 32 := rfl
   have hf32 := activeWords_fix s 32 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c2P,p4c2M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha64,hf64,ha32,hf32]
+  simp [hz,hzn,p4c2P,p4c2M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha32,hf32]
 def p4c3P : List Instr :=
   [
-  .op (.Dup dA11),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .push 0 0,
+  .push 0 0,
    .op .MLOAD,
    .op (.Dup dA12),
-   .op .MULMOD]
-def p4c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
-  let v0 : W := UInt256.mulMod x11 x0 x1
-  let v1 : W := v0 + x2
-  let v2 : W := MachineState.readWord s.memory 0
-  let v3 : W := UInt256.mulMod x12 v2 x17
-  {s with pc := N 9756,memory := s.memory,stack := v3::v1::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
-theorem p4c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
+   .op .MUL,
+   .op .ADD,
+   .op (.Dup dA15),
+   .op (.Dup dA7),
+   .op .MUL]
+def p4c3M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
+  let v0 : W := MachineState.readWord s.memory 0
+  let v1 : W := x11 * v0
+  let v2 : W := v1 + x0
+  let v3 : W := x6 * x15
+  {s with pc := N 9756,memory := s.memory,stack := v3::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
+theorem p4c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c3P {s with pc := N 9748,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
-      some (p4c3M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
+    runInstructions p4c3P {s with pc := N 9748,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
+      some (p4c3M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   have ha0 : (0 : W).toNat = 0 := rfl
   have hf0 := activeWords_fix s 0 32 (by decide) (by norm_num) hact
@@ -1403,220 +1405,215 @@ theorem p4c3_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 
 def p4c4P : List Instr :=
   [
   .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA15),
-   .op (.Dup dA7),
-   .op .MULMOD,
+   .op (.Dup dA14),
+   .op (.Dup dA6),
+   .op .MUL,
    .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA14)]
-def p4c4M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
+   .op (.Dup dA13),
+   .op (.Dup dA5),
+   .op .MUL]
+def p4c4M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
   let v0 : W := x0 + x1
-  let v1 : W := UInt256.mulMod x6 x15 x16
+  let v1 : W := x6 * x15
   let v2 : W := v1 + v0
-  {s with pc := N 9764,memory := s.memory,stack := x14::x16::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
-theorem p4c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
+  let v3 : W := x5 * x14
+  {s with pc := N 9764,memory := s.memory,stack := v3::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
+theorem p4c4_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c4P {s with pc := N 9756,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
-      some (p4c4M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
+    runInstructions p4c4P {s with pc := N 9756,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
+      some (p4c4M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   simp [hz,hzn,p4c4P,p4c4M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
 def p4c5P : List Instr :=
   [
-  .op (.Dup dA6),
-   .op .MULMOD,
+  .op .ADD,
+   .op (.Dup dA12),
+   .op (.Dup dA4),
+   .op .MUL,
    .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA13),
-   .op (.Dup dA5),
-   .op .MULMOD,
-   .op .ADD]
+   .op .MUL,
+   .push 2 16,
+   .op .SHR]
 def p4c5M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
-  let v0 : W := UInt256.mulMod x6 x0 x1
-  let v1 : W := v0 + x2
-  let v2 : W := UInt256.mulMod x5 x14 x17
-  let v3 : W := v2 + v1
-  {s with pc := N 9772,memory := s.memory,stack := v3::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
+  let v0 : W := x0 + x1
+  let v1 : W := x4 * x13
+  let v2 : W := v1 + v0
+  let v3 : W := v2 * x2
+  let v4 : W := UInt256.shiftRight v3 (N 16)
+  {s with pc := N 9774,memory := s.memory,stack := v4::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
 theorem p4c5_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions p4c5P {s with pc := N 9764,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
       some (p4c5M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   simp [hz,hzn,p4c5P,p4c5M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
 def p4c6P : List Instr :=
   [
-  .op (.Dup dA15),
+  .op (.Swap sA4),
+   .op (.Dup dA15),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14)]
+def p4c6M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
+  let v0 : W := UInt256.mulMod x14 x5 x15
+  let v1 : W := v0 + x1
+  {s with pc := N 9781,memory := s.memory,stack := x15::v1::x2::x3::x4::x0::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
+theorem p4c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions p4c6P {s with pc := N 9774,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
+      some (p4c6M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
+  have hcr : rest.length < 1024 := by omega
+  simp [hz,hzn,p4c6P,p4c6M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
+def p4c7P : List Instr :=
+  [
+  .push 1 128,
+   .op .MLOAD,
+   .op (.Dup dA7),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 1 96,
+   .op .MLOAD]
+def p4c7M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
+  let v0 : W := MachineState.readWord s.memory 128
+  let v1 : W := UInt256.mulMod x6 v0 x0
+  let v2 : W := v1 + x1
+  let v3 : W := MachineState.readWord s.memory 96
+  {s with pc := N 9791,memory := s.memory,stack := v3::x15::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
+theorem p4c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions p4c7P {s with pc := N 9781,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
+      some (p4c7M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
+  have hcr : rest.length < 1024 := by omega
+  have ha96 : (96 : W).toNat = 96 := rfl
+  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
+  have ha128 : (128 : W).toNat = 128 := rfl
+  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
+  simp [hz,hzn,p4c7P,p4c7M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha96,hf96,ha128,hf128]
+def p4c8P : List Instr :=
+  [
+  .op (.Dup dA8),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 1 64,
+   .op .MLOAD,
+   .op (.Dup dA9),
+   .op .MULMOD]
+def p4c8M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
+  let v0 : W := UInt256.mulMod x8 x0 x1
+  let v1 : W := v0 + x2
+  let v2 : W := MachineState.readWord s.memory 64
+  let v3 : W := UInt256.mulMod x9 v2 x16
+  {s with pc := N 9800,memory := s.memory,stack := v3::v1::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
+theorem p4c8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions p4c8P {s with pc := N 9791,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
+      some (p4c8M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
+  have hcr : rest.length < 1024 := by omega
+  have ha64 : (64 : W).toNat = 64 := rfl
+  have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
+  simp [hz,hzn,p4c8P,p4c8M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha64,hf64]
+def p4c9P : List Instr :=
+  [
+  .op .ADD,
+   .op (.Dup dA14),
+   .push 1 32,
+   .op .MLOAD,
+   .op (.Dup dA10),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14)]
+def p4c9M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
+  let v0 : W := x0 + x1
+  let v1 : W := MachineState.readWord s.memory 32
+  let v2 : W := UInt256.mulMod x9 v1 x15
+  let v3 : W := v2 + v0
+  {s with pc := N 9809,memory := s.memory,stack := x15::v3::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
+theorem p4c9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions p4c9P {s with pc := N 9800,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
+      some (p4c9M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
+  have hcr : rest.length < 1024 := by omega
+  have ha32 : (32 : W).toNat = 32 := rfl
+  have hf32 := activeWords_fix s 32 32 (by decide) (by norm_num) hact
+  simp [hz,hzn,p4c9P,p4c9M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha32,hf32]
+def p4c10P : List Instr :=
+  [
+  .push 0 0,
+   .op .MLOAD,
+   .op (.Dup dA11),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .op (.Dup dA13),
+   .op (.Dup dA5)]
+def p4c10M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
+  let v0 : W := MachineState.readWord s.memory 0
+  let v1 : W := UInt256.mulMod x10 v0 x0
+  let v2 : W := v1 + x1
+  {s with pc := N 9817,memory := s.memory,stack := x4::x13::x15::v2::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
+theorem p4c10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
+    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
+    runInstructions p4c10P {s with pc := N 9809,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
+      some (p4c10M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
+  have hcr : rest.length < 1024 := by omega
+  have ha0 : (0 : W).toNat = 0 := rfl
+  have hf0 := activeWords_fix s 0 32 (by decide) (by norm_num) hact
+  simp [hz,hzn,p4c10P,p4c10M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha0,hf0]
+def p4c11P : List Instr :=
+  [
+  .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
    .op (.Dup dA12),
    .op (.Dup dA4),
    .op .MULMOD,
    .op .ADD,
-   .op (.Swap sA0),
-   .push 1 128,
-   .op .MLOAD]
-def p4c6M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
-  let v0 : W := UInt256.mulMod x2 x11 x15
-  let v1 : W := v0 + x0
-  let v2 : W := MachineState.readWord s.memory 128
-  {s with pc := N 9781,memory := s.memory,stack := v2::x1::v1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
-theorem p4c6_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c6P {s with pc := N 9772,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
-      some (p4c6M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 34) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha128 : (128 : W).toNat = 128 := rfl
-  have hf128 := activeWords_fix s 128 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c6P,p4c6M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha128,hf128]
-def p4c7P : List Instr :=
-  [
-  .op (.Dup dA7),
-   .op .MUL,
-   .op .ADD,
-   .push 1 96,
-   .op .MLOAD,
-   .op (.Dup dA8),
-   .op .MUL,
-   .op .ADD]
-def p4c7M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
-  let v0 : W := x7 * x0
-  let v1 : W := v0 + x1
-  let v2 : W := MachineState.readWord s.memory 96
-  let v3 : W := x8 * v2
-  let v4 : W := v3 + v1
-  {s with pc := N 9790,memory := s.memory,stack := v4::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
-theorem p4c7_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c7P {s with pc := N 9781,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
-      some (p4c7M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha96 : (96 : W).toNat = 96 := rfl
-  have hf96 := activeWords_fix s 96 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c7P,p4c7M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha96,hf96]
-def p4c8P : List Instr :=
-  [
-  .push 1 64,
-   .op .MLOAD,
-   .op (.Dup dA9),
-   .op .MUL,
-   .op .ADD,
-   .push 1 32,
-   .op .MLOAD,
-   .op (.Dup dA10)]
-def p4c8M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
-  let v0 : W := MachineState.readWord s.memory 64
-  let v1 : W := x8 * v0
-  let v2 : W := v1 + x0
-  let v3 : W := MachineState.readWord s.memory 32
-  {s with pc := N 9800,memory := s.memory,stack := x9::v3::v2::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
-theorem p4c8_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c8P {s with pc := N 9790,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
-      some (p4c8M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha64 : (64 : W).toNat = 64 := rfl
-  have hf64 := activeWords_fix s 64 32 (by decide) (by norm_num) hact
-  have ha32 : (32 : W).toNat = 32 := rfl
-  have hf32 := activeWords_fix s 32 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c8P,p4c8M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha64,hf64,ha32,hf32]
-def p4c9P : List Instr :=
-  [
-  .op .MUL,
-   .op .ADD,
-   .push 0 0,
-   .op .MLOAD,
-   .op (.Dup dA11),
-   .op .MUL,
-   .op .ADD,
    .op (.Dup dA14)]
-def p4c9M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
-  let v0 : W := x0 * x1
-  let v1 : W := v0 + x2
-  let v2 : W := MachineState.readWord s.memory 0
-  let v3 : W := x12 * v2
-  let v4 : W := v3 + v1
-  {s with pc := N 9808,memory := s.memory,stack := x16::v4::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
-theorem p4c9_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c9P {s with pc := N 9800,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
-      some (p4c9M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  have ha0 : (0 : W).toNat = 0 := rfl
-  have hf0 := activeWords_fix s 0 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c9P,p4c9M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha0,hf0]
-def p4c10P : List Instr :=
-  [
-  .op (.Dup dA6),
-   .op .MUL,
-   .op .ADD,
-   .op (.Dup dA13),
-   .op (.Dup dA5),
-   .op .MUL,
-   .op .ADD,
-   .op (.Dup dA12)]
-def p4c10M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
-  let v0 : W := x6 * x0
-  let v1 : W := v0 + x1
-  let v2 : W := x5 * x14
+def p4c11M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W) : State :=
+  let v0 : W := UInt256.mulMod x0 x1 x2
+  let v1 : W := v0 + x3
+  let v2 : W := UInt256.mulMod x5 x14 x17
   let v3 : W := v2 + v1
-  {s with pc := N 9816,memory := s.memory,stack := x13::v3::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
-theorem p4c10_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
+  {s with pc := N 9825,memory := s.memory,stack := x17::v3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest}
+theorem p4c11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c10P {s with pc := N 9808,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
-      some (p4c10M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
-  have hcr : rest.length < 1024 := by omega
-  simp [hz,hzn,p4c10P,p4c10M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
-def p4c11P : List Instr :=
-  [
-  .op (.Dup dA4),
-   .op .MUL,
-   .op .ADD,
-   .op (.Dup dA11),
-   .op (.Dup dA3),
-   .op .MUL,
-   .op .ADD]
-def p4c11M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
-  let v0 : W := x4 * x0
-  let v1 : W := v0 + x1
-  let v2 : W := x3 * x12
-  let v3 : W := v2 + v1
-  {s with pc := N 9823,memory := s.memory,stack := v3::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
-theorem p4c11_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
-    (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c11P {s with pc := N 9816,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
-      some (p4c11M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
+    runInstructions p4c11P {s with pc := N 9817,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::x19::rest} =
+      some (p4c11M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 x19 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   simp [hz,hzn,p4c11P,p4c11M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
 def p4c12P : List Instr :=
   [
-  .push 1 192,
-   .op .MLOAD,
-   .op .MUL,
-   .push 1 16,
-   .op .SHR,
-   .op (.Swap sA4),
-   .op .POP,
+  .op (.Dup dA11),
+   .op (.Dup dA3),
+   .op .MULMOD,
+   .op .ADD,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup dA14)]
 def p4c12M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
-  let v0 : W := MachineState.readWord s.memory 192
-  let v1 : W := v0 * x0
-  let v2 : W := UInt256.shiftRight v1 (N 16)
-  {s with pc := N 9833,memory := s.memory,stack := x15::x1::x2::x3::x4::v2::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
+  let v0 : W := UInt256.mulMod x2 x11 x0
+  let v1 : W := v0 + x1
+  {s with pc := N 9833,memory := s.memory,stack := x15::v1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem p4c12_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c12P {s with pc := N 9823,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
+    runInstructions p4c12P {s with pc := N 9825,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (p4c12M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
-  have ha192 : (192 : W).toNat = 192 := rfl
-  have hf192 := activeWords_fix s 192 32 (by decide) (by norm_num) hact
-  simp [hz,hzn,p4c12P,p4c12M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha192,hf192]
+  simp [hz,hzn,p4c12P,p4c12M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
 def p4c13P : List Instr :=
   [
   .push 1 160,
@@ -1625,112 +1622,66 @@ def p4c13P : List Instr :=
    .op .MULMOD,
    .op .ADD,
    .op (.Dup dA14),
-   .op (.Swap sA0)]
+   .op (.Swap sA0),
+   .push 2 2048]
 def p4c13M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 160
   let v1 : W := UInt256.mulMod x5 v0 x0
   let v2 : W := v1 + x1
-  {s with pc := N 9841,memory := s.memory,stack := v2::x15::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
+  {s with pc := N 9844,memory := s.memory,stack := (N 2048)::v2::x15::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
 theorem p4c13_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions p4c13P {s with pc := N 9833,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
       some (p4c13M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 33) : rest.length + j < 1024 := by omega
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   have ha160 : (160 : W).toNat = 160 := rfl
   have hf160 := activeWords_fix s 160 32 (by decide) (by norm_num) hact
   simp [hz,hzn,p4c13P,p4c13M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr,ha160,hf160]
 def p4c14P : List Instr :=
   [
-  .push 2 2048,
-   .op .MULMOD]
-def p4c14M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W) : State :=
-  let v0 : W := UInt256.mulMod (N 2048) x0 x1
-  {s with pc := N 9845,memory := s.memory,stack := v0::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest}
-theorem p4c14_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 : W) (rest : List W)
+  .op .MULMOD]
+def p4c14M (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W) : State :=
+  let v0 : W := UInt256.mulMod x0 x1 x2
+  {s with pc := N 9845,memory := s.memory,stack := v0::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest}
+theorem p4c14_run (s : State) (x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
-    runInstructions p4c14P {s with pc := N 9841,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::rest} =
-      some (p4c14M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 rest) := by
-  have hc (j : Nat) (hj : j ≤ 32) : rest.length + j < 1024 := by omega
+    runInstructions p4c14P {s with pc := N 9844,stack := x0::x1::x2::x3::x4::x5::x6::x7::x8::x9::x10::x11::x12::x13::x14::x15::x16::x17::x18::rest} =
+      some (p4c14M s x0 x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15 x16 x17 x18 rest) := by
+  have hc (j : Nat) (hj : j ≤ 40) : rest.length + j < 1024 := by omega
   have hcr : rest.length < 1024 := by omega
   simp [hz,hzn,p4c14P,p4c14M,runInstructions,runInstr,List.exchange,succ_ofNat_mod,ofNat_add_mod,ofNat_sub_ofNat,Nat.add_assoc,State.activeWordsAfterUInt256,literal_eq_ofNat,hc,hcr]
 def prCol4Program : List Instr :=
   [
-  .op (.Dup dA0),
-   .op (.Dup dA15),
+  .op (.Dup dA15),
+   .op (.Dup dA1),
    .push 1 128,
    .op .MLOAD,
    .op (.Dup dA8),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .push 1 96,
-   .op .MLOAD,
-   .op (.Dup dA9),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .push 1 64,
-   .op .MLOAD,
-   .op (.Dup dA10),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .push 1 32,
-   .op .MLOAD,
-   .op (.Dup dA11),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .push 0 0,
-   .op .MLOAD,
-   .op (.Dup dA12),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA15),
-   .op (.Dup dA7),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA14),
-   .op (.Dup dA6),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA13),
-   .op (.Dup dA5),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Dup dA15),
-   .op (.Dup dA12),
-   .op (.Dup dA4),
-   .op .MULMOD,
-   .op .ADD,
-   .op (.Swap sA0),
-   .push 1 128,
-   .op .MLOAD,
-   .op (.Dup dA7),
    .op .MUL,
    .op .ADD,
    .push 1 96,
    .op .MLOAD,
-   .op (.Dup dA8),
+   .op (.Dup dA9),
    .op .MUL,
    .op .ADD,
    .push 1 64,
    .op .MLOAD,
-   .op (.Dup dA9),
+   .op (.Dup dA10),
    .op .MUL,
    .op .ADD,
    .push 1 32,
    .op .MLOAD,
-   .op (.Dup dA10),
+   .op (.Dup dA11),
    .op .MUL,
    .op .ADD,
    .push 0 0,
    .op .MLOAD,
-   .op (.Dup dA11),
+   .op (.Dup dA12),
+   .op .MUL,
+   .op .ADD,
+   .op (.Dup dA15),
+   .op (.Dup dA7),
    .op .MUL,
    .op .ADD,
    .op (.Dup dA14),
@@ -1745,17 +1696,63 @@ def prCol4Program : List Instr :=
    .op (.Dup dA4),
    .op .MUL,
    .op .ADD,
-   .op (.Dup dA11),
-   .op (.Dup dA3),
    .op .MUL,
-   .op .ADD,
-   .push 1 192,
-   .op .MLOAD,
-   .op .MUL,
-   .push 1 16,
+   .push 2 16,
    .op .SHR,
    .op (.Swap sA4),
-   .op .POP,
+   .op (.Dup dA15),
+   .op (.Swap sA0),
+   .op (.Dup dA15),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 1 128,
+   .op .MLOAD,
+   .op (.Dup dA7),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 1 96,
+   .op .MLOAD,
+   .op (.Dup dA8),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 1 64,
+   .op .MLOAD,
+   .op (.Dup dA9),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 1 32,
+   .op .MLOAD,
+   .op (.Dup dA10),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .push 0 0,
+   .op .MLOAD,
+   .op (.Dup dA11),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .op (.Dup dA13),
+   .op (.Dup dA5),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .op (.Dup dA12),
+   .op (.Dup dA4),
+   .op .MULMOD,
+   .op .ADD,
+   .op (.Dup dA14),
+   .op (.Dup dA11),
+   .op (.Dup dA3),
+   .op .MULMOD,
+   .op .ADD,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
+   .op .JUMPDEST,
    .op (.Dup dA14),
    .push 1 160,
    .op .MLOAD,
@@ -1768,151 +1765,161 @@ def prCol4Program : List Instr :=
    .op .MULMOD]
 def prCol4Model (s : State) (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : W) (rest : List W) : State :=
   let v0 : W := MachineState.readWord s.memory 128
-  let v1 : W := UInt256.mulMod x0 v0 P
+  let v1 : W := x0 * v0
   let v2 : W := v1 + c
   let v3 : W := MachineState.readWord s.memory 96
-  let v4 : W := UInt256.mulMod x1 v3 P
+  let v4 : W := x1 * v3
   let v5 : W := v4 + v2
   let v6 : W := MachineState.readWord s.memory 64
-  let v7 : W := UInt256.mulMod x2 v6 P
+  let v7 : W := x2 * v6
   let v8 : W := v7 + v5
   let v9 : W := MachineState.readWord s.memory 32
-  let v10 : W := UInt256.mulMod x3 v9 P
+  let v10 : W := x3 * v9
   let v11 : W := v10 + v8
   let v12 : W := MachineState.readWord s.memory 0
-  let v13 : W := UInt256.mulMod x4 v12 P
+  let v13 : W := x4 * v12
   let v14 : W := v13 + v11
-  let v15 : W := UInt256.mulMod q0 n4 P
+  let v15 : W := q0 * n4
   let v16 : W := v15 + v14
-  let v17 : W := UInt256.mulMod q1 n3 P
+  let v17 : W := q1 * n3
   let v18 : W := v17 + v16
-  let v19 : W := UInt256.mulMod q2 n2 P
+  let v19 : W := q2 * n2
   let v20 : W := v19 + v18
-  let v21 : W := UInt256.mulMod q3 n1 P
+  let v21 : W := q3 * n1
   let v22 : W := v21 + v20
-  let v23 : W := MachineState.readWord s.memory 128
-  let v24 : W := x0 * v23
-  let v25 : W := v24 + c
-  let v26 : W := MachineState.readWord s.memory 96
-  let v27 : W := x1 * v26
-  let v28 : W := v27 + v25
-  let v29 : W := MachineState.readWord s.memory 64
-  let v30 : W := x2 * v29
-  let v31 : W := v30 + v28
-  let v32 : W := MachineState.readWord s.memory 32
-  let v33 : W := x3 * v32
-  let v34 : W := v33 + v31
-  let v35 : W := MachineState.readWord s.memory 0
-  let v36 : W := x4 * v35
-  let v37 : W := v36 + v34
-  let v38 : W := q0 * n4
-  let v39 : W := v38 + v37
-  let v40 : W := q1 * n3
-  let v41 : W := v40 + v39
-  let v42 : W := q2 * n2
+  let v23 : W := v22 * inv
+  let v24 : W := UInt256.shiftRight v23 (N 16)
+  let v25 : W := UInt256.mulMod n4 q0 P
+  let v26 : W := v25 + c
+  let v27 : W := MachineState.readWord s.memory 128
+  let v28 : W := UInt256.mulMod x0 v27 P
+  let v29 : W := v28 + v26
+  let v30 : W := MachineState.readWord s.memory 96
+  let v31 : W := UInt256.mulMod x1 v30 P
+  let v32 : W := v31 + v29
+  let v33 : W := MachineState.readWord s.memory 64
+  let v34 : W := UInt256.mulMod x2 v33 P
+  let v35 : W := v34 + v32
+  let v36 : W := MachineState.readWord s.memory 32
+  let v37 : W := UInt256.mulMod x3 v36 P
+  let v38 : W := v37 + v35
+  let v39 : W := MachineState.readWord s.memory 0
+  let v40 : W := UInt256.mulMod x4 v39 P
+  let v41 : W := v40 + v38
+  let v42 : W := UInt256.mulMod q1 n3 P
   let v43 : W := v42 + v41
-  let v44 : W := q3 * n1
+  let v44 : W := UInt256.mulMod q2 n2 P
   let v45 : W := v44 + v43
-  let v46 : W := MachineState.readWord s.memory 192
-  let v47 : W := v46 * v45
-  let v48 : W := UInt256.shiftRight v47 (N 16)
-  let v49 : W := MachineState.readWord s.memory 160
-  let v50 : W := UInt256.mulMod v48 v49 P
-  let v51 : W := v50 + v22
-  let v52 : W := UInt256.mulMod (N 2048) v51 P
-  {s with pc := N 9845,memory := s.memory,stack := v52::q3::q2::q1::v48::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest}
+  let v46 : W := UInt256.mulMod q3 n1 P
+  let v47 : W := v46 + v45
+  let v48 : W := MachineState.readWord s.memory 160
+  let v49 : W := UInt256.mulMod v24 v48 P
+  let v50 : W := v49 + v47
+  let v51 : W := UInt256.mulMod (N 2048) v50 P
+  {s with pc := N 9845,memory := s.memory,stack := v51::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest}
 theorem prCol4_run (s : State) (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp : W) (rest : List W)
     (hcap : rest.length ≤ 960) (hact : 88 ≤ s.activeWords.toNat) :
     runInstructions prCol4Program {s with pc := N 9722,stack := c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} =
       some (prCol4Model s c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest) := by
   let v0 : W := MachineState.readWord s.memory 128
-  let v1 : W := UInt256.mulMod x0 v0 P
+  let v1 : W := x0 * v0
   let v2 : W := v1 + c
   let v3 : W := MachineState.readWord s.memory 96
-  let v4 : W := UInt256.mulMod x1 v3 P
+  let v4 : W := x1 * v3
   let v5 : W := v4 + v2
   let v6 : W := MachineState.readWord s.memory 64
-  let v7 : W := UInt256.mulMod x2 v6 P
+  let v7 : W := x2 * v6
   let v8 : W := v7 + v5
   let v9 : W := MachineState.readWord s.memory 32
-  let v10 : W := UInt256.mulMod x3 v9 P
+  let v10 : W := x3 * v9
   let v11 : W := v10 + v8
   let v12 : W := MachineState.readWord s.memory 0
-  let v13 : W := UInt256.mulMod x4 v12 P
+  let v13 : W := x4 * v12
   let v14 : W := v13 + v11
-  let v15 : W := UInt256.mulMod q0 n4 P
+  let v15 : W := q0 * n4
   let v16 : W := v15 + v14
-  let v17 : W := UInt256.mulMod q1 n3 P
+  let v17 : W := q1 * n3
   let v18 : W := v17 + v16
-  let v19 : W := UInt256.mulMod q2 n2 P
+  let v19 : W := q2 * n2
   let v20 : W := v19 + v18
-  let v21 : W := UInt256.mulMod q3 n1 P
+  let v21 : W := q3 * n1
   let v22 : W := v21 + v20
-  let v23 : W := MachineState.readWord s.memory 128
-  let v24 : W := x0 * v23
-  let v25 : W := v24 + c
-  let v26 : W := MachineState.readWord s.memory 96
-  let v27 : W := x1 * v26
-  let v28 : W := v27 + v25
-  let v29 : W := MachineState.readWord s.memory 64
-  let v30 : W := x2 * v29
-  let v31 : W := v30 + v28
-  let v32 : W := MachineState.readWord s.memory 32
-  let v33 : W := x3 * v32
-  let v34 : W := v33 + v31
-  let v35 : W := MachineState.readWord s.memory 0
-  let v36 : W := x4 * v35
-  let v37 : W := v36 + v34
-  let v38 : W := q0 * n4
-  let v39 : W := v38 + v37
-  let v40 : W := q1 * n3
-  let v41 : W := v40 + v39
-  let v42 : W := q2 * n2
+  let v23 : W := v22 * inv
+  let v24 : W := UInt256.shiftRight v23 (N 16)
+  let v25 : W := UInt256.mulMod n4 q0 P
+  let v26 : W := v25 + c
+  let v27 : W := MachineState.readWord s.memory 128
+  let v28 : W := UInt256.mulMod x0 v27 P
+  let v29 : W := v28 + v26
+  let v30 : W := MachineState.readWord s.memory 96
+  let v31 : W := UInt256.mulMod x1 v30 P
+  let v32 : W := v31 + v29
+  let v33 : W := MachineState.readWord s.memory 64
+  let v34 : W := UInt256.mulMod x2 v33 P
+  let v35 : W := v34 + v32
+  let v36 : W := MachineState.readWord s.memory 32
+  let v37 : W := UInt256.mulMod x3 v36 P
+  let v38 : W := v37 + v35
+  let v39 : W := MachineState.readWord s.memory 0
+  let v40 : W := UInt256.mulMod x4 v39 P
+  let v41 : W := v40 + v38
+  let v42 : W := UInt256.mulMod q1 n3 P
   let v43 : W := v42 + v41
-  let v44 : W := q3 * n1
+  let v44 : W := UInt256.mulMod q2 n2 P
   let v45 : W := v44 + v43
-  let v46 : W := MachineState.readWord s.memory 192
-  let v47 : W := v46 * v45
-  let v48 : W := UInt256.shiftRight v47 (N 16)
-  let v49 : W := MachineState.readWord s.memory 160
-  let v50 : W := UInt256.mulMod v48 v49 P
-  let v51 : W := v50 + v22
-  let v52 : W := UInt256.mulMod (N 2048) v51 P
-  have h0 : runInstructions p4c0P {s with pc := N 9722,memory := s.memory,stack := c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9730,memory := s.memory,stack := v2::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c0M,v0,v1,v2] using p4c0_run (s) c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h1 : runInstructions p4c1P {s with pc := N 9730,memory := s.memory,stack := v2::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9738,memory := s.memory,stack := P::v5::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c1M,v3,v4,v5] using p4c1_run (s) v2 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h2 : runInstructions p4c2P {s with pc := N 9738,memory := s.memory,stack := P::v5::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9748,memory := s.memory,stack := v9::P::v8::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c2M,v6,v7,v8,v9] using p4c2_run (s) P v5 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h3 : runInstructions p4c3P {s with pc := N 9748,memory := s.memory,stack := v9::P::v8::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9756,memory := s.memory,stack := v13::v11::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c3M,v10,v11,v12,v13] using p4c3_run (s) v9 P v8 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h4 : runInstructions p4c4P {s with pc := N 9756,memory := s.memory,stack := v13::v11::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9764,memory := s.memory,stack := n3::P::v16::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c4M,v14,v15,v16] using p4c4_run (s) v13 v11 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h5 : runInstructions p4c5P {s with pc := N 9764,memory := s.memory,stack := n3::P::v16::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9772,memory := s.memory,stack := v20::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c5M,v17,v18,v19,v20] using p4c5_run (s) n3 P v16 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h6 : runInstructions p4c6P {s with pc := N 9772,memory := s.memory,stack := v20::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9781,memory := s.memory,stack := v23::c::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c6M,v21,v22,v23] using p4c6_run (s) v20 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h7 : runInstructions p4c7P {s with pc := N 9781,memory := s.memory,stack := v23::c::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9790,memory := s.memory,stack := v28::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c7M,v24,v25,v26,v27,v28] using p4c7_run (s) v23 c v22 q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h8 : runInstructions p4c8P {s with pc := N 9790,memory := s.memory,stack := v28::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9800,memory := s.memory,stack := x3::v32::v31::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c8M,v29,v30,v31,v32] using p4c8_run (s) v28 v22 q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h9 : runInstructions p4c9P {s with pc := N 9800,memory := s.memory,stack := x3::v32::v31::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9808,memory := s.memory,stack := n4::v37::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c9M,v33,v34,v35,v36,v37] using p4c9_run (s) x3 v32 v31 v22 q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h10 : runInstructions p4c10P {s with pc := N 9808,memory := s.memory,stack := n4::v37::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9816,memory := s.memory,stack := n2::v41::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c10M,v38,v39,v40,v41] using p4c10_run (s) n4 v37 v22 q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h11 : runInstructions p4c11P {s with pc := N 9816,memory := s.memory,stack := n2::v41::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9823,memory := s.memory,stack := v45::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c11M,v42,v43,v44,v45] using p4c11_run (s) n2 v41 v22 q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h12 : runInstructions p4c12P {s with pc := N 9823,memory := s.memory,stack := v45::v22::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9833,memory := s.memory,stack := P::v22::q3::q2::q1::v48::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c12M,v46,v47,v48] using p4c12_run (s) v45 v22 q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h13 : runInstructions p4c13P {s with pc := N 9833,memory := s.memory,stack := P::v22::q3::q2::q1::v48::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9841,memory := s.memory,stack := v51::P::q3::q2::q1::v48::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c13M,v49,v50,v51] using p4c13_run (s) P v22 q3 q2 q1 v48 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
-  have h14 : runInstructions p4c14P {s with pc := N 9841,memory := s.memory,stack := v51::P::q3::q2::q1::v48::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9845,memory := s.memory,stack := v52::q3::q2::q1::v48::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
-    simpa only [p4c14M,v52] using p4c14_run (s) v51 P q3 q2 q1 v48 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  let v46 : W := UInt256.mulMod q3 n1 P
+  let v47 : W := v46 + v45
+  let v48 : W := MachineState.readWord s.memory 160
+  let v49 : W := UInt256.mulMod v24 v48 P
+  let v50 : W := v49 + v47
+  let v51 : W := UInt256.mulMod (N 2048) v50 P
+  have h0 : runInstructions p4c0P {s with pc := N 9722,memory := s.memory,stack := c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9730,memory := s.memory,stack := v2::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c0M,v0,v1,v2] using p4c0_run ({s with memory := s.memory}) c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h1 : runInstructions p4c1P {s with pc := N 9730,memory := s.memory,stack := v2::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9740,memory := s.memory,stack := x2::v6::v5::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c1M,v3,v4,v5,v6] using p4c1_run ({s with memory := s.memory}) v2 inv c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h2 : runInstructions p4c2P {s with pc := N 9740,memory := s.memory,stack := x2::v6::v5::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9748,memory := s.memory,stack := v11::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c2M,v7,v8,v9,v10,v11] using p4c2_run ({s with memory := s.memory}) x2 v6 v5 inv c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h3 : runInstructions p4c3P {s with pc := N 9748,memory := s.memory,stack := v11::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9756,memory := s.memory,stack := v15::v14::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c3M,v12,v13,v14,v15] using p4c3_run ({s with memory := s.memory}) v11 inv c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h4 : runInstructions p4c4P {s with pc := N 9756,memory := s.memory,stack := v15::v14::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9764,memory := s.memory,stack := v19::v18::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c4M,v16,v17,v18,v19] using p4c4_run ({s with memory := s.memory}) v15 v14 inv c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h5 : runInstructions p4c5P {s with pc := N 9764,memory := s.memory,stack := v19::v18::inv::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9774,memory := s.memory,stack := v24::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c5M,v20,v21,v22,v23,v24] using p4c5_run ({s with memory := s.memory}) v19 v18 inv c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h6 : runInstructions p4c6P {s with pc := N 9774,memory := s.memory,stack := v24::c::q3::q2::q1::q0::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9781,memory := s.memory,stack := P::v26::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c6M,v25,v26] using p4c6_run ({s with memory := s.memory}) v24 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h7 : runInstructions p4c7P {s with pc := N 9781,memory := s.memory,stack := P::v26::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9791,memory := s.memory,stack := v30::P::v29::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c7M,v27,v28,v29,v30] using p4c7_run ({s with memory := s.memory}) P v26 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h8 : runInstructions p4c8P {s with pc := N 9791,memory := s.memory,stack := v30::P::v29::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9800,memory := s.memory,stack := v34::v32::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c8M,v31,v32,v33,v34] using p4c8_run ({s with memory := s.memory}) v30 P v29 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h9 : runInstructions p4c9P {s with pc := N 9800,memory := s.memory,stack := v34::v32::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9809,memory := s.memory,stack := P::v38::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c9M,v35,v36,v37,v38] using p4c9_run ({s with memory := s.memory}) v34 v32 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h10 : runInstructions p4c10P {s with pc := N 9809,memory := s.memory,stack := P::v38::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9817,memory := s.memory,stack := q1::n3::P::v41::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c10M,v39,v40,v41] using p4c10_run ({s with memory := s.memory}) P v38 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h11 : runInstructions p4c11P {s with pc := N 9817,memory := s.memory,stack := q1::n3::P::v41::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9825,memory := s.memory,stack := P::v45::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c11M,v42,v43,v44,v45] using p4c11_run ({s with memory := s.memory}) q1 n3 P v41 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h12 : runInstructions p4c12P {s with pc := N 9825,memory := s.memory,stack := P::v45::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9833,memory := s.memory,stack := P::v47::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c12M,v46,v47] using p4c12_run ({s with memory := s.memory}) P v45 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h13 : runInstructions p4c13P {s with pc := N 9833,memory := s.memory,stack := P::v47::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9844,memory := s.memory,stack := (N 2048)::v50::P::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c13M,v48,v49,v50] using p4c13_run ({s with memory := s.memory}) P v47 q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
+  have h14 : runInstructions p4c14P {s with pc := N 9844,memory := s.memory,stack := (N 2048)::v50::P::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} = some {s with pc := N 9845,memory := s.memory,stack := v51::q3::q2::q1::v24::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
+    simpa only [p4c14M,v51] using p4c14_run ({s with memory := s.memory}) (N 2048) v50 P q3 q2 q1 v24 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest hcap hact
   exact (runInstructions_append_some _ _ _ _ _ h0 (runInstructions_append_some _ _ _ _ _ h1 (runInstructions_append_some _ _ _ _ _ h2 (runInstructions_append_some _ _ _ _ _ h3 (runInstructions_append_some _ _ _ _ _ h4 (runInstructions_append_some _ _ _ _ _ h5 (runInstructions_append_some _ _ _ _ _ h6 (runInstructions_append_some _ _ _ _ _ h7 (runInstructions_append_some _ _ _ _ _ h8 (runInstructions_append_some _ _ _ _ _ h9 (runInstructions_append_some _ _ _ _ _ h10 (runInstructions_append_some _ _ _ _ _ h11 (runInstructions_append_some _ _ _ _ _ h12 (runInstructions_append_some _ _ _ _ _ h13 h14))))))))))))))
 def prCol4_o0 (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 : W) : W :=
   (UInt256.mulMod (N 2048) ((UInt256.mulMod (UInt256.shiftRight (inv * ((q3 * n1) + ((q2 * n2) + ((q1 * n3) + ((q0 * n4) + ((x4 * b0) + ((x3 * b1) + ((x2 * b2) + ((x1 * b3) + ((x0 * b4) + c)))))))))) (N 16)) n0 P) + ((UInt256.mulMod q3 n1 P) + ((UInt256.mulMod q2 n2 P) + ((UInt256.mulMod q1 n3 P) + ((UInt256.mulMod q0 n4 P) + ((UInt256.mulMod x4 b0 P) + ((UInt256.mulMod x3 b1 P) + ((UInt256.mulMod x2 b2 P) + ((UInt256.mulMod x1 b3 P) + ((UInt256.mulMod x0 b4 P) + c)))))))))) P)
 def prCol4_o4 (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 : W) : W :=
   (UInt256.shiftRight (inv * ((q3 * n1) + ((q2 * n2) + ((q1 * n3) + ((q0 * n4) + ((x4 * b0) + ((x3 * b1) + ((x2 * b2) + ((x1 * b3) + ((x0 * b4) + c)))))))))) (N 16))
+private theorem p4_add_assoc (a b c : W) : (a+b)+c = a+(b+c) := by
+  apply Challenge.EvmProof.Word.word_ext
+  change ((a.val+b.val)+c.val).val = (a.val+(b.val+c.val)).val
+  simp only [Fin.val_add, Nat.mod_add_mod, Nat.add_mod_mod, Nat.add_assoc]
+private theorem p4_add_left_comm (a b c : W) : a+(b+c) = b+(a+c) := by
+  rw [← p4_add_assoc, Challenge.EvmProof.Word.word_add_comm a b, p4_add_assoc]
+private theorem p4_mul_comm (a b : W) : a*b = b*a := by
+  apply Challenge.EvmProof.Word.word_ext
+  change (a.val*b.val).val = (b.val*a.val).val
+  rw [Fin.mul_comm]
+private theorem p4_mm_comm (a b p : W) : UInt256.mulMod a b p = UInt256.mulMod b a p := by
+  simp only [UInt256.mulMod, Nat.mul_comm]
 theorem prCol4_eq (s : State) (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0 : W) (rest : List W)
     (h_b0 : MachineState.readWord s.memory 0 = b0)
     (h_b1 : MachineState.readWord s.memory 32 = b1)
@@ -1924,6 +1931,7 @@ theorem prCol4_eq (s : State) (c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cn
     prCol4Model s c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp rest =
       {s with pc := N 9845,stack := (prCol4_o0 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0)::q3::q2::q1::(prCol4_o4 c q3 q2 q1 q0 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b0 b1 b2 b3 b4 n0)::x0::x1::x2::x3::x4::n1::n2::n3::n4::P::inv::cntp::rest} := by
   simp only [prCol4Model,prCol4_o0,prCol4_o4,h_b0,h_b1,h_b2,h_b3,h_b4,h_n0,h_inv]
+  simp only [p4_add_assoc,Challenge.EvmProof.Word.word_add_comm,p4_add_left_comm,p4_mul_comm,p4_mm_comm]
 def prCol5_o0 (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b1 b2 b3 b4 M : W) : W :=
   (UInt256.mulMod (P + (((UInt256.mulMod q4 n1 P) + ((UInt256.mulMod q3 n2 P) + ((UInt256.mulMod q2 n3 P) + ((UInt256.mulMod q1 n4 P) + ((UInt256.mulMod x4 b1 P) + ((UInt256.mulMod x3 b2 P) + ((UInt256.mulMod x2 b3 P) + ((UInt256.mulMod x1 b4 P) + c)))))))) - (UInt256.land M ((q4 * n1) + ((q3 * n2) + ((q2 * n3) + ((q1 * n4) + ((x4 * b1) + ((x3 * b2) + ((x2 * b3) + ((x1 * b4) + c))))))))))) (N 2048) P)
 def prCol5_o5 (c q3 q2 q1 q4 x0 x1 x2 x3 x4 n1 n2 n3 n4 P inv cntp b1 b2 b3 b4 M : W) : W :=
