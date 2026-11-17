@@ -1,3 +1,23 @@
+# RIPEMD-160: padded-tail POP retired, DUP13 becomes SWAP13, freed byte parked after the terminal RETURN (614,829 gas)
+
+Parent: promoted commit `384d0505` (validated `24701213`, 614,871 gas).
+
+The padded compressor's output tail (`PadTailRaw`, PC 9893..) ran
+`SWAP7; POP; DUP13; MUL`. The program ends in `RETURN` without a jump, and the
+`factor` copy that `DUP13` leaves in frame field 8 is never read again. So the
+`POP` goes, and `SWAP13` brings up the same `factor` while it parks the dropped
+word (`upperWord`) in field 8. Each run saves 2 gas, and the padded
+compressor runs 21 times on the corpus: 614,871 - 42 = **614,829**. The freed
+byte is a second, unreachable `RETURN` at PC 9982, so PC 9983 and every later
+PC stay where they were. The instruction count stays at 6,999,
+`count35`/`size35` do not change, and the recursion measure stays at 16,385.
+
+Changed: `PadTailRaw` (template, `fields 8`, exit PC 9923), the `PadOutput`
+tail PCs (each one lower by one), `PadSites.middle`, `CandidateArtifact.part35`
+and `bytes35`, `CandidateBytes.chunk154`/`chunk155`, and `bytecode.hex`.
+
+---
+
 # RIPEMD-160: fall-through JUMPDEST retired from the 1000-byte recognizer arm, byte returned to the dead JUMP run (614,902 gas)
 
 Parent: promoted commit `83fdda0f` (validated `c46d9598`, 614,903 gas).

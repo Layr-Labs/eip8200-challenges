@@ -1,5 +1,15 @@
 [
   {
+    "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+    "rationale": "Direct source and proof-tree parent: the validated 614,871-gas frontier (Ordinary2 fall-through JUMPDEST retired, 142 load widened). Retained byte for byte except the padded-block output tail PC 9899..9982: the dead-after-RETURN POP at 9899 is removed by turning the following DUP13 into SWAP13 (frame field 8 becomes the dead upperWord word), and the freed byte is re-added as an unreachable RETURN at 9982 so PC 9983 and every later PC, the instruction count (6999), part35 count/size and the recursion measure (16385) are unchanged.",
+    "evidence": "Based on the Submission tree at 384d0505bb00677acceda766be1da238980ccd4b; PadTailRaw template / fields 8 / exit PC 9923, PadOutput tail PCs 9923/9954/9957/9975/9981, PadSites middle slice, CandidateArtifact part35 / bytes35, CandidateBytes chunk154 / chunk155, bytecode.hex. Local interpreter: 614,871 -> 614,829 on the 49 vectors (2 gas x 21 padded compressions)."
+  },
+  {
+    "submissionId": "b442a062-4866-4dfe-91e9-835a77ca8d4b",
+    "rationale": "Grandparent: the validated 614,902-gas frontier (1000-byte recognizer JUMPDEST at PC 5862 retired), inherited unchanged through 24701213.",
+    "evidence": "RecArmsLong head1000, CandidateArtifact part19, CandidateBytes chunks 91..95 retained unchanged from commit 9497db097cf726828e98835efd3b967cffd22dca."
+  },
+  {
     "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
     "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
     "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."
