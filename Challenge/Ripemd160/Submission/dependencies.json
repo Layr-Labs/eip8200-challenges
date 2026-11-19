@@ -1,5 +1,10 @@
 [
   {
+    "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+    "rationale": "Direct source and proof-tree parent: the validated 614,871-gas frontier. Retained unchanged except the calldata buffer base: the input is copied to 1024 instead of 1056 (PUSH2 0x420 -> 0x400 at PCs 311 and 316) and the padding footer's length-field offset constant is lowered by the same 32 bytes (PUSH1 0x59 -> 0x39 at PC 6404). The bytecode length and every PC and instruction index are unchanged.",
+    "evidence": "Based on the Submission tree at da752dc9 (identical Ripemd160 paths to 384d0505); bytecode.hex, CandidateBytes chunks, CandidateArtifact bytes/part listing, ColdArtifact, Padding.messageOffset, PadLimitArithmetic.footer_addr, GeneralCertificate.clearAddresses, NormalIteration.hash_spec, First*/Cold* base lemmas, and the activeWords 34->33 bound across the round windows."
+  },
+  {
     "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
     "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
     "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."

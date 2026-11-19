@@ -81,16 +81,16 @@ theorem writeBytes_absorb_zero32 (bytes : ByteArray) (start : Nat)
 
 /-- In particular, the generic calldata copy absorbs the cleared answer. -/
 theorem calldata_absorb_zero32 (input : ByteArray) (hpos : 0 < input.size) :
-    MachineState.writeBytes zero32 (MachineState.readPadded input 0 input.size) 1056 =
+    MachineState.writeBytes zero32 (MachineState.readPadded input 0 input.size) 1024 =
       MachineState.writeBytes ByteArray.empty
-        (MachineState.readPadded input 0 input.size) 1056 := by
+        (MachineState.readPadded input 0 input.size) 1024 := by
   apply writeBytes_absorb_zero32 _ _ (by decide)
   simpa only [Memory.readPadded_size] using hpos
 
 private theorem activeWords_absorb (n : Nat) (hpos : 0 < n) :
-    MachineState.activeWordsAfter 1 1056 n = MachineState.activeWordsAfter 0 1056 n := by
+    MachineState.activeWordsAfter 1 1024 n = MachineState.activeWordsAfter 0 1024 n := by
   simp only [MachineState.activeWordsAfter, if_neg (by omega : n ≠ 0)]
-  have h : 1 ≤ (1056 + n - 1) / 32 + 1 := by omega
+  have h : 1 ≤ (1024 + n - 1) / 32 + 1 := by omega
   change max 1 _ = max 0 _
   rw [Nat.max_eq_right h, Nat.max_eq_right (Nat.zero_le _)]
 

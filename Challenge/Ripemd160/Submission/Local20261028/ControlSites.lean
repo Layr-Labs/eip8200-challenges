@@ -5,7 +5,7 @@ set_option maxRecDepth 100000
 set_option maxHeartbeats 8000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.ControlSites
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof StackRoundTemplate
-def copyTemplate : List Instr := [.op .JUMPDEST, .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255), .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), .op .CALLDATASIZE, .push ⟨0, by decide⟩ (UInt256.ofNat 0), .push ⟨2, by decide⟩ (UInt256.ofNat 1056), .op .CALLDATACOPY]
+def copyTemplate : List Instr := [.op .JUMPDEST, .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255), .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455), .op .CALLDATASIZE, .push ⟨0, by decide⟩ (UInt256.ofNat 0), .push ⟨2, by decide⟩ (UInt256.ofNat 1024), .op .CALLDATACOPY]
 def copySite : GenericRoundSite CandidateArtifact.artifact .Osaka copyTemplate :=
   StackSiteBuilder.ofSlice copyTemplate 134 (by rfl)
     (by change 134 + copyTemplate.length ≤ CandidateArtifact.instructions.length
@@ -16,7 +16,7 @@ theorem copy_pc : copySite.startPC = UInt256.ofNat 245 := by
   change UInt256.ofNat (CandidateArtifact.artifact.instructionPC 134) = UInt256.ofNat 245
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
-def frameTemplate : List Instr := [.op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 1056), .push ⟨4, by decide⟩ (UInt256.ofNat 1732584193), .push ⟨4, by decide⟩ (UInt256.ofNat 4023233417), .push ⟨4, by decide⟩ (UInt256.ofNat 2562383102), .push ⟨4, by decide⟩ (UInt256.ofNat 271733878), .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520), .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009), .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625), .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498)]
+def frameTemplate : List Instr := [.op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 1024), .push ⟨4, by decide⟩ (UInt256.ofNat 1732584193), .push ⟨4, by decide⟩ (UInt256.ofNat 4023233417), .push ⟨4, by decide⟩ (UInt256.ofNat 2562383102), .push ⟨4, by decide⟩ (UInt256.ofNat 271733878), .push ⟨4, by decide⟩ (UInt256.ofNat 3285377520), .push ⟨13, by decide⟩ (UInt256.ofNat 475368975196266490007815979009), .push ⟨13, by decide⟩ (UInt256.ofNat 1109194275457955143345843994625), .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021099785336477205875632903651089438293180284928), .push ⟨27, by decide⟩ (UInt256.ofNat 822752278660603021055183846080144629349832214544141570168324096), .push ⟨4, by decide⟩ (UInt256.ofNat 4294967295), .push ⟨13, by decide⟩ (UInt256.ofNat 158456325065422163343096938498)]
 def frameSite : GenericRoundSite CandidateArtifact.artifact .Osaka frameTemplate :=
   StackSiteBuilder.ofSlice frameTemplate 141 (by rfl)
     (by change 141 + frameTemplate.length ≤ CandidateArtifact.instructions.length

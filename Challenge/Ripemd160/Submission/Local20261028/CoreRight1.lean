@@ -31,7 +31,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   all_goals first | rfl | trivial
 #print axioms output_eq
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (halias : rho[2]? = some q.c) (haliasE : rho[0]? = some q.e) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (halias : rho[2]? = some q.c) (haliasE : rho[0]? = some q.e) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
  :
     StackRoundTrace.runInstrSeq RawRight1.template {s with pc := UInt256.ofNat 835, stack := stack s.memory h4 [ .b ] q right (UInt256.ofNat 1352829926) (UInt256.shiftRight (UInt256.mul factorPlusWord q.c) (UInt256.ofNat 23) :: stack s.memory h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho)} =
       some {s with pc := UInt256.ofNat 871, stack := stack s.memory h4 [ .a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right1 s.memory q) (right) (UInt256.ofNat 1352829926) rho} := by

@@ -43,10 +43,10 @@ private theorem modulusMinusFromPlus :
 
 theorem run_initial (s : State) (pc limit : UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 1000) (hrun : s.halt = .Running) :
-    runInstrSeq initialTemplate {s with pc := pc, stack := UInt256.ofNat 1056 :: limit :: rho} =
+    runInstrSeq initialTemplate {s with pc := pc, stack := UInt256.ofNat 1024 :: limit :: rho} =
       some {s with
         pc := pcAfter pc initialTemplate
-        stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056) limit rho} := by
+        stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1024) limit rho} := by
   have hcap (n : Nat) (hn : n ≤ 15) : rho.length + n < 1024 := by omega
   simp [initialTemplate, StaggerPersistentFrame.frame, StackRunBridge.initialHashState,
     Crypto.Ripemd160.H0, Word.ofUInt32, runInstrSeq, DataStepper.runInstr, pcAfter,
@@ -79,9 +79,9 @@ def gasSteps_push (s : State) (limit : UInt256) (rho : List UInt256)
     (hcode : s.executionEnv.code = Control.Artifact.submissionArtifact.code) (hfork : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
-    GasSteps {s with pc := UInt256.ofNat 319, stack := UInt256.ofNat 1056 :: limit :: rho}
-      {s with pc := UInt256.ofNat 447, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056) limit rho} := by
-  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 319, stack := UInt256.ofNat 1056 :: limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
+    GasSteps {s with pc := UInt256.ofNat 319, stack := UInt256.ofNat 1024 :: limit :: rho}
+      {s with pc := UInt256.ofNat 447, stack := StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1024) limit rho} := by
+  apply PadLift.gasSteps_of_raw initialSite {s with pc := UInt256.ofNat 319, stack := UInt256.ofNat 1024 :: limit :: rho} _ hcode hfork hrun hnp initial_pc.symm
   · apply PadLift.advancesAll_sound; decide
   · have hr := run_initial s (UInt256.ofNat 319) limit rho (by omega) hrun
     have hp : pcAfter (UInt256.ofNat 319) initialTemplate = UInt256.ofNat 447 := by decide

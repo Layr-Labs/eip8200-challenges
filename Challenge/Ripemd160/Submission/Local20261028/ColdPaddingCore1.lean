@@ -297,7 +297,7 @@ def gasSteps_enterPad (input : ByteArray) :
   · exact deployAddress_not_precompile
 
 /-- Before the calldata copy (`CALLDATASIZE PUSH0 PUSH2 0x420 CALLDATACOPY CALLDATASIZE PUSH2 0x420`):
-afterwards the input sits at memory 1056 with the zero offset 1056 and the calldata size (the
+afterwards the input sits at memory 1024 with the zero offset 1024 and the calldata size (the
 fast-entry continuation) on the stack. -/
 def padLengthReady (input : ByteArray) : State :=
   { padEntry input with pc := UInt256.ofNat 309 }
@@ -306,7 +306,7 @@ def padLengthReady (input : ByteArray) : State :=
 def padCopyDone (input : ByteArray) : State :=
   { padLengthReady input with
     pc := UInt256.ofNat 319
-    stack := [UInt256.ofNat 1056, UInt256.ofNat input.size, DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+    stack := [UInt256.ofNat 1024, UInt256.ofNat input.size, DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
     memory := MachineState.writeBytes (padLengthReady input).memory
       (MachineState.readPadded input 0 input.size) Padding.messageOffset
     activeWords := (padLengthReady input).activeWordsAfterUInt256

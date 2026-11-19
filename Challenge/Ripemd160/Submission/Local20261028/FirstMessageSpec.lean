@@ -9,8 +9,8 @@ open PairedScheduleMemory GeneralMessageReady
 
 theorem entry_lower (m : ByteArray) (i : Nat) (hi : i < 8) :
     (entryWords (FirstInitial.memory m) i).toNat =
-      (PairedScheduleData.extractedWord m 1056 i).toNat := by
-  have he := DecodedMemory.entry_eq_extracted m 1056 i (by omega)
+      (PairedScheduleData.extractedWord m 1024 i).toNat := by
+  have he := DecodedMemory.entry_eq_extracted m 1024 i (by omega)
   rw [DecodedMemory.entry_eq_pool _ _ _ _ (by omega),
     StaggerScratch.poolWord_eq _ _ _ _ (by omega), if_pos hi] at he
   change (entryWords (DecodedMemory.scratch m _ FirstInitial.highWord) i).toNat = _
@@ -38,10 +38,10 @@ theorem entry_spec (input : ByteArray) (h32 : input.size = 32) (i : Nat) (hi : i
   · rw [FirstSpec.scalars, if_neg hl]
     exact entry_upper _ i (by omega) hi
 
-theorem copied_zero (input : ByteArray) (a : Nat) (ha : a < 1056) :
+theorem copied_zero (input : ByteArray) (a : Nat) (ha : a < 1024) :
     (FirstSpec.copiedMemory input)[a]?.getD 0 = 0 := by
   simp [FirstSpec.copiedMemory, MachineState.writeBytes_getElem?_getD,
-    show ¬1056 ≤ a by omega]
+    show ¬1024 ≤ a by omega]
 
 theorem ready_spec (s : State) (input : ByteArray) (h32 : input.size = 32)
     (hm : s.memory = writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord)

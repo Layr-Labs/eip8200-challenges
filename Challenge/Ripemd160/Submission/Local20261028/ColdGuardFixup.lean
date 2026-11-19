@@ -12,7 +12,7 @@ def gasSteps_high (s : State) (h : Compression.HashState) (off limit : UInt256)
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hsize : s.executionEnv.calldata.size < 2^256)
     (hne : s.executionEnv.calldata.size ≠ 32)
-    (hactive : 34 ≤ s.activeWords.toNat)
+    (hactive : 33 ≤ s.activeWords.toNat)
     (hlim : limit = UInt256.ofNat s.executionEnv.calldata.size) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho}
       {FirstEntry.high s with pc := UInt256.ofNat 6383, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by

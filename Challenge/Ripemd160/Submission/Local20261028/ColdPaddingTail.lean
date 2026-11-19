@@ -49,7 +49,7 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     by_contra h
     exact hnz ⟨by omega, by omega⟩
   have gp := Control.ColdGuardFixup.gasSteps_partial (padGuardMiss input)
-    StackRunBridge.initialHashState (UInt256.ofNat 1056) (copiedLimit input)
+    StackRunBridge.initialHashState (UInt256.ofNat 1024) (copiedLimit input)
     ([DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho)
     (by simp only [List.length_append, List.length_cons, List.length_nil]; omega)
     rfl rfl rfl deployAddress_not_precompile

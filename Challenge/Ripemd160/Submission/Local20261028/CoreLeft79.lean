@@ -36,7 +36,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
   all_goals first | rfl | trivial
 #print axioms output_eq
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.d = q.a)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
  :
     StackRoundTrace.runInstrSeq RawLeft79.template {s with pc := UInt256.ofNat 4544, stack := stack s.memory h4 [ .d, .b, .c, .e, .a, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .cachedMessage 180, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] q right (UInt256.ofNat 2840853838) (h4 :: rho)} =
       some {s with pc := UInt256.ofNat 4567, stack := stack s.memory h4 [ .b, .c, .d, .a, .dr, .ar, .cachedMessage 360, .pair, .upper, .er, .cr, .literal 23, .e, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (left79Raw s.memory q) (right) (UInt256.ofNat 2840853838) rho} := by

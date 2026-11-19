@@ -71,7 +71,7 @@ theorem message_block (s : State) (p n q : Nat) (bs : ByteArray) (off : Nat)
 /-- Repeated ordinary blocks preserve every future message block and implement
     the specification's complete fold for any finite number of blocks. -/
 theorem hash_spec (s : State) (p off count : Nat) (bs : ByteArray) (h : Compression.HashState)
-    (hp : 1056 ≤ p) (hb : p+64*count < 2^256) (hz : Clear s.memory)
+    (hp : 1024 ≤ p) (hb : p+64*count < 2^256) (hz : Clear s.memory)
     (hm : ∀ i, i < count → ScheduleCorrect.MessageBlockAt s.memory (UInt256.ofNat (p+64*i)) bs (off+64*i)) :
     CompressionCorrect.hashArray (hashes s p h count) =
       SpecBridge.absorbBlocks (CompressionCorrect.hashArray h) bs off count := by
@@ -79,16 +79,21 @@ theorem hash_spec (s : State) (p off count : Nat) (bs : ByteArray) (h : Compress
   | zero => rfl
   | succ count ih =>
     have hbound : p+64*count+64 < 2^256 := by omega
+    -- Block 0 may sit below 1040 (base 1024); it is read before any table write, so it is
+    -- only needed at `states s p 0 = s`. Later blocks start at 1088 or above.
+    have hmb : ScheduleCorrect.MessageBlockAt (states s p count).memory (UInt256.ofNat (p+64*count)) bs (off+64*count) := by
+      rcases Nat.eq_zero_or_pos count with h0 | hpos
+      · subst h0; exact hm 0 (by omega)
+      · exact message_block s p count (p+64*count) bs (off+64*count) (by omega) hbound (hm count (by omega))
     have he := NormalMessage.result_compressBlock (states s p count) (p+64*count) bs (off+64*count)
-      (hashes s p h count) hbound (clear s p count hz)
-      (message_block s p count (p+64*count) bs (off+64*count) (by omega) hbound (hm count (by omega)))
+      (hashes s p h count) hbound (clear s p count hz) hmb
     change CompressionCorrect.hashArray (CoreFunctional.result (scheduled (states s p count) (p+64*count)).memory (hashes s p h count)) = _
     rw [he, ih (by omega) (fun i hi => hm i (by omega)), SpecBridge.absorbBlocks_succ]
     congr 1
     omega
 
 def gasSteps_block (s : State) (p i : Nat) (h : Compression.HashState) (limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1056 ≤ p) (hb : p+64*i+64 < 2^256)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1024 ≤ p) (hb : p+64*i+64 < 2^256)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps

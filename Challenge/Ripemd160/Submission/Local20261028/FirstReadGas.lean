@@ -21,9 +21,9 @@ theorem site_pc : site.startPC = UInt256.ofNat 6409 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 theorem run (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode)
-    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
+    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1024) :
     runInstrSeq template {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho} =
       some (FirstCore.midState (FirstRead.result s) cont rho) := by
   have h1 := FirstRead.run s cont rho hs hr ha hcd
@@ -44,10 +44,10 @@ theorem run (s : State) (cont : UInt256) (rho : List UInt256)
       exact FirstCore.valid9983)
   exact DenseScheduleTrace.runInstrSeq_append_running h12 hr h3
 def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
+    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1024) :
     GasSteps {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho}
       (FirstCore.midState (FirstRead.result s) cont rho) := by
   apply RecognitionLift.gasSteps_of_raw site {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho}
@@ -57,17 +57,17 @@ def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)
     decide +kernel
   · exact run s cont rho hs hr ha hc hcd
 def complete (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false)
-    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
+    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1024) :
     GasSteps {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho}
-      {FirstCore.prepared (FirstRead.result s) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 FirstCore.initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (FirstCore.prepared (FirstRead.result s)).memory FirstCore.initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} :=
+      {FirstCore.prepared (FirstRead.result s) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 FirstCore.initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (FirstCore.prepared (FirstRead.result s)).memory FirstCore.initialHash) (UInt256.ofNat 1024) cont (NormalPrepare.masks rho)} :=
   (gasSteps s cont rho hs hr ha hc hf hnp hcd).trans
     (FirstCore.gasSteps (FirstRead.result s) cont rho hs hr ha hc hf hnp)
 theorem ready (s : State) (m : ByteArray)
     (hm : s.memory = PairedScheduleMemory.writeWord m 162 FirstInitial.highWord)
-    (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0)
+    (hz : ∀ a, a < 1024 → m[a]?.getD 0 = 0)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) :
     CoreMessage.Ready (FirstCore.prepared (FirstRead.result s)).memory
       (GeneralMessageReady.entryWords (FirstRead.result s).memory) := by

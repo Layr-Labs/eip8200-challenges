@@ -28,7 +28,7 @@ theorem tail_eq (s : State) (h : Compression.HashState) (q : WordLane)
   rw [initial_eq]
   rfl
 theorem run (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template
       {s with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h off limit rho} =
       some {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 h.h2 :: StaggerPersistentFrame.frame (result s.memory h) off limit rho} := by
@@ -59,7 +59,7 @@ theorem exact_bytes :
 #print axioms exact_bytes
 theorem run_spec (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
     (bs : ByteArray) (blockOff : Nat)
-    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hm : CoreMessage.Ready s.memory (fun i => (CompressionCorrect.schedule bs blockOff)[i]!)) :
     ∃ h' : Compression.HashState,
       runInstrSeq template

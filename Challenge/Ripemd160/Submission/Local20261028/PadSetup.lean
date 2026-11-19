@@ -22,7 +22,7 @@ theorem read (s : State) (len : UInt256) :
   Memory.readWord_writeWord _ _ _
 
 theorem run (s : State) (len : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 1000) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 1000) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = len) :
     runInstrSeq template {s with pc := UInt256.ofNat 64, stack := rho} =
       some {prepared s len with pc := UInt256.ofNat 89, stack := rho} := by

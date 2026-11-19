@@ -20,7 +20,7 @@ theorem site_pc : site.startPC = UInt256.ofNat 462 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def prepare (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1056 ≤ p) (hb : p+64 < 2^256)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1024 ≤ p) (hb : p+64 < 2^256)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -35,7 +35,7 @@ def prepare (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) 
     decide +kernel
   · exact NormalPrepare.run s h p limit rho hs hr hp hb
 def gasSteps (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1056 ≤ p) (hb : p+64 < 2^256)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1024 ≤ p) (hb : p+64 < 2^256)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :
@@ -51,7 +51,7 @@ def gasSteps (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256)
 
 theorem correct_block (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) (rho : List UInt256)
     (bs : ByteArray) (off : Nat)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1056 ≤ p) (hb : p+64 < 2^256)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1024 ≤ p) (hb : p+64 < 2^256)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)

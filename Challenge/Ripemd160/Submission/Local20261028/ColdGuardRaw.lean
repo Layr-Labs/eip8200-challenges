@@ -54,7 +54,7 @@ theorem wMemory_getD (m : ByteArray) (b c : UInt8) (a : Nat) (h165 : a ≠ 165) 
 
 theorem run_special (s : State) (h : Compression.HashState) (off limit : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 860) (hr : s.halt = .Running)
-    (ha : 34 ≤ s.activeWords.toNat) (he : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0) :
+    (ha : 33 ≤ s.activeWords.toNat) (he : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0) :
     runInstrSeq ControlSites.specialTemplate
       {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho} =
       some {FirstEntry.high s with pc := UInt256.ofNat 188, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by

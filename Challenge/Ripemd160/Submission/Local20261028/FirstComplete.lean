@@ -14,33 +14,33 @@ def prepared (s : State) (input : ByteArray) : State :=
 def resultHash (s : State) (input : ByteArray) : Compression.HashState :=
   CoreFunctional.result (prepared s input).memory FirstCore.initialHash
 def result (s : State) (input : ByteArray) (rho : List UInt256) : State :=
-  Return32Serialize.result (prepared s input) (resultHash s input) (UInt256.ofNat 1056)
+  Return32Serialize.result (prepared s input) (resultHash s input) (UInt256.ofNat 1024)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho)
 
 theorem load_eq (input : ByteArray) (h32 : input.size = 32) :
     MachineState.readWord input 0 =
       MachineState.readWord (PairedScheduleMemory.writeWord (FirstSpec.copiedMemory input) 162
-        FirstInitial.highWord) 1056 := by
-  rw [PairedScheduleMemory.read_writeWord_disjoint _ _ _ _ (Or.inr (by decide : 162+32 ≤ 1056))]
+        FirstInitial.highWord) 1024 := by
+  rw [PairedScheduleMemory.read_writeWord_disjoint _ _ _ _ (Or.inr (by decide : 162+32 ≤ 1024))]
   unfold MachineState.readWord FirstSpec.copiedMemory
   rw [← h32, Memory.readPadded_zero_size, Memory.readPadded_writeBytes_same]
 
 def gasSteps (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
     (hs : rho.length ≤ 880) (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hm : MachineState.writeBytes s.memory input 1056 = FirstSpec.copiedMemory input)
-    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1056 32) = UInt256.ofNat 34) :
+    (hm : MachineState.writeBytes s.memory input 1024 = FirstSpec.copiedMemory input)
+    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = UInt256.ofNat 33) :
     GasSteps {s with pc := UInt256.ofNat 245, stack := rho} (result s input rho) := by
   have ge := FirstCopy.entry s e input rho hs hcal h32 hm ha
   have gc := FirstReadGas.complete (high (FirstCopy.copied s input)) (UInt256.ofNat 4882) rho
-    (by omega) e.running (by change (34 : Nat) ≤ 34; decide) e.code e.fork e.noPrecompile
+    (by omega) e.running (by change (33 : Nat) ≤ 33; decide) e.code e.fork e.noPrecompile
     (by change MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord
-          (PairedScheduleMemory.writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord) 1056
+          (PairedScheduleMemory.writeWord (FirstSpec.copiedMemory input) 162 FirstInitial.highWord) 1024
         rw [hcal]; exact load_eq input h32)
   have ep : Env (prepared s input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
-  have gd := dispatch (prepared s input) ep (resultHash s input) (UInt256.ofNat 1056)
+  have gd := dispatch (prepared s input) ep (resultHash s input) (UInt256.ofNat 1024)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho)
     (by simp [NormalPrepare.masks]; omega)
-  have go := Return32Serialize.gasSteps (prepared s input) (UInt256.ofNat 1056)
+  have go := Return32Serialize.gasSteps (prepared s input) (UInt256.ofNat 1024)
     (Word.ofUInt32 FirstCore.initialHash.h2) (resultHash s input) rho (by omega)
     e.running e.code e.fork e.noPrecompile (by change s.executionEnv.calldata.size = 32; rw [hcal,h32])
   exact ge.trans (gc.trans (gd.trans go))

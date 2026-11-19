@@ -33,7 +33,7 @@ theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List 
   all_goals first | rfl | trivial
 #print axioms output_eq
 theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt256) (hsame : right.e = q.a) (hsame2 : right.d = q.e) (hsame3 : right.b = q.c)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
  :
     StackRoundTrace.runInstrSeq PadRawLeft78.template {s with pc := UInt256.ofNat 9850, stack := stack n h4 [ .b, .d, .e, .ar, .literal 1109194275457955143375908765704, .pair, .upper, .er, .cr, .literal 23, .k, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 2840853838) rho} =
       some {s with pc := UInt256.ofNat 9874, stack := stack n h4 [ .d, .b, .c, .e, .a, .ar, .literal 1109194275457955143375908765704, .pair, .upper, .er, .cr, .literal 23, .k, .br, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190 ] (PadModel.left78 n q) (right) (UInt256.ofNat 2840853838) (h4 :: rho)} := by

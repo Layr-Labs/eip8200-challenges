@@ -79,9 +79,9 @@ theorem writeBytes_absorb_zero32 (bytes : ByteArray) (start : Nat)
 
 /-- In particular, the generic calldata copy absorbs the cleared answer. -/
 theorem calldata_absorb_zero32 (input : ByteArray) (hpos : 0 < input.size) :
-    MachineState.writeBytes zero32 (MachineState.readPadded input 0 input.size) 1056 =
+    MachineState.writeBytes zero32 (MachineState.readPadded input 0 input.size) 1024 =
       MachineState.writeBytes ByteArray.empty
-        (MachineState.readPadded input 0 input.size) 1056 := by
+        (MachineState.readPadded input 0 input.size) 1024 := by
   apply writeBytes_absorb_zero32 _ _ (by decide)
   simpa only [Memory.readPadded_size] using hpos
 

@@ -7,7 +7,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RoundComp
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open Paired144WordRound StackRoundTrace
 theorem boundary53 (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat) :
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq (templates 53) (state s h4 right rho 53 q) =
       some (state s h4 right rho 54 (StaggerModeSeven.step 53 (CoreModel.message s.memory 53) q)) := by
   have he : StaggerModeSeven.step 53 (CoreModel.message s.memory 53) q = CorePaired53.eval s.memory q := by

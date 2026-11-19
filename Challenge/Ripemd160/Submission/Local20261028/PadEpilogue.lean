@@ -14,7 +14,7 @@ def template := ((PadRawUnpack.template ++ PadRawLeft77.template) ++ PadRawLeft7
 def result (s : State) (len h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat 9893, stack := stack len h4 [.b,.c,.d,.a,.dr,.ar,.literal 1109194275457955143375908765704,.pair,.upper,.er,.cr,.literal 23,.e,.br,.factor,.lower,.cache 140,.cache 350,.cache 310,.cache 190,.cache 500] (PadCoreLeft79.epilogueRaw len q) q (UInt256.ofNat 2840853838) rho}
 theorem run (s : State) (len h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template (PadComposition.state s len h4 right rho 77 q) =
       some (result s len h4 q rho) := by
   have h0 := PadCoreUnpack.run s len h4 q right rho hs hr ha

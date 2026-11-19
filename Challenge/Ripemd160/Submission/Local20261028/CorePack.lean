@@ -55,7 +55,7 @@ theorem output_eq (memory : ByteArray) (h q : WordLane) (off limit : UInt256)
 #print axioms input_eq
 #print axioms output_eq
 theorem run (s : State) (h q : WordLane) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPack.template
       {s with pc := UInt256.ofNat 871, stack := stack s.memory h.e [.a, .k, .b, .c, .d, .e, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] q h (UInt256.ofNat 1352829926) (suffix h off limit rho)} =
       some {s with pc := UInt256.ofNat 977, stack := stack s.memory h.e [.pair, .upper, .e, .b, .a, .d, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500] (CoreModel.pair h (CoreModel.right2 s.memory q)) h (StaggerAlgorithm.physicalKey 0) (suffix h off limit rho)} := by

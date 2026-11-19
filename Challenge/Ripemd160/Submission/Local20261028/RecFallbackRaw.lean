@@ -20,25 +20,25 @@ def copyTemplate : List Instr :=
    .push ⟨30, by decide⟩ (UInt256.ofNat 1766820105243087041267848467410591083712559083657179364930612997358944255),
    .push ⟨31, by decide⟩ (UInt256.ofNat 450552876409790643671482431940419874915447411150352389258589821042463539455),
    .op .CALLDATASIZE, .push ⟨0, by decide⟩ 0,
-   .push ⟨2, by decide⟩ (UInt256.ofNat 1056), .op .CALLDATACOPY,
-   .op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 1056)]
+   .push ⟨2, by decide⟩ (UInt256.ofNat 1024), .op .CALLDATACOPY,
+   .op .CALLDATASIZE, .push ⟨2, by decide⟩ (UInt256.ofNat 1024)]
 
 /-- The ordinary nonempty calldata copy state, with the candidate environment
 and arbitrary untouched persistent fields. Stack head is shown first. -/
 def copied (s : State) (rho : List UInt256) : State :=
   { s with
     pc := UInt256.ofNat 319
-    stack := [UInt256.ofNat 1056, UInt256.ofNat s.executionEnv.calldata.size,
+    stack := [UInt256.ofNat 1024, UInt256.ofNat s.executionEnv.calldata.size,
       DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] ++ rho
     memory := MachineState.writeBytes ByteArray.empty
-      (MachineState.readPadded s.executionEnv.calldata 0 s.executionEnv.calldata.size) 1056
+      (MachineState.readPadded s.executionEnv.calldata 0 s.executionEnv.calldata.size) 1024
     activeWords := State.activeWordsAfterUInt256
-      {s with activeWords := UInt256.ofNat 0} 1056 s.executionEnv.calldata.size }
+      {s with activeWords := UInt256.ofNat 0} 1024 s.executionEnv.calldata.size }
 
 private theorem active_absorb (n : Nat) (hpos : 0 < n) :
-    MachineState.activeWordsAfter 1 1056 n = MachineState.activeWordsAfter 0 1056 n := by
+    MachineState.activeWordsAfter 1 1024 n = MachineState.activeWordsAfter 0 1024 n := by
   simp only [MachineState.activeWordsAfter, if_neg (by omega : n ≠ 0)]
-  have h : 1 ≤ (1056 + n - 1) / 32 + 1 := by omega
+  have h : 1 ≤ (1024 + n - 1) / 32 + 1 := by omega
   change max 1 _ = max 0 _
   rw [Nat.max_eq_right h, Nat.max_eq_right (Nat.zero_le _)]
 

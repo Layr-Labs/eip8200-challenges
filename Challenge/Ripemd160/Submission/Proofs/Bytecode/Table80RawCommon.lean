@@ -19,7 +19,7 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
   [x.v0, x.v1, x.v2, x.v3, x.v4, x.v5, x.v6, x.v7, x.v8, x.v9] ++ (cache ++ rho)
 @[simp] theorem cache_length : cache.length = 5 := rfl
 theorem active_preserved (current : UInt256) (address : Nat)
-    (hcurrent : 34 ≤ current.toNat) (haddress : address ≤ 1056) :
+    (hcurrent : 33 ≤ current.toNat) (haddress : address ≤ 1024) :
     UInt256.ofNat (MachineState.activeWordsAfter current.toNat address 32) = current := by
   have hwords : (address + 32 - 1) / 32 + 1 ≤ current.toNat := by omega
   simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0)]

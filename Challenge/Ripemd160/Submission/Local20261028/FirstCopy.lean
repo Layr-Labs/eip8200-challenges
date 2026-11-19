@@ -9,13 +9,13 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate ControlSites FirstEntry
 
 def copied (s : State) (input : ByteArray) : State :=
-  {s with memory := FirstSpec.copiedMemory input, activeWords := UInt256.ofNat 34}
+  {s with memory := FirstSpec.copiedMemory input, activeWords := UInt256.ofNat 33}
 
 theorem run_copy (s : State) (input : ByteArray) (rho : List UInt256)
     (hs : rho.length ≤ 880) (hr : s.halt = .Running)
     (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hm : MachineState.writeBytes s.memory input 1056 = FirstSpec.copiedMemory input)
-    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1056 32) = UInt256.ofNat 34) :
+    (hm : MachineState.writeBytes s.memory input 1024 = FirstSpec.copiedMemory input)
+    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = UInt256.ofNat 33) :
     runInstrSeq copyTemplate {s with pc := UInt256.ofNat 245, stack := rho} =
       some {copied s input with pc := UInt256.ofNat 315, stack := NormalPrepare.masks rho} := by
   have hcap (n : Nat) (hn : n ≤ 24) : rho.length+n < 1024 := by omega
@@ -30,8 +30,8 @@ theorem run_copy (s : State) (input : ByteArray) (rho : List UInt256)
 
 def copy (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
     (hs : rho.length ≤ 880) (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hm : MachineState.writeBytes s.memory input 1056 = FirstSpec.copiedMemory input)
-    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1056 32) = UInt256.ofNat 34) :
+    (hm : MachineState.writeBytes s.memory input 1024 = FirstSpec.copiedMemory input)
+    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = UInt256.ofNat 33) :
     GasSteps {s with pc := UInt256.ofNat 245, stack := rho}
       {copied s input with pc := UInt256.ofNat 315, stack := NormalPrepare.masks rho} := by
   apply PadLift.gasSteps_of_raw copySite {s with pc := UInt256.ofNat 245, stack := rho}
@@ -62,8 +62,8 @@ def frame (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 880)
 
 def entry (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
     (hs : rho.length ≤ 880) (hcal : s.executionEnv.calldata = input) (h32 : input.size = 32)
-    (hm : MachineState.writeBytes s.memory input 1056 = FirstSpec.copiedMemory input)
-    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1056 32) = UInt256.ofNat 34) :
+    (hm : MachineState.writeBytes s.memory input 1024 = FirstSpec.copiedMemory input)
+    (ha : UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat 1024 32) = UInt256.ofNat 33) :
     GasSteps {s with pc := UInt256.ofNat 245, stack := rho}
       {high (copied s input) with pc := UInt256.ofNat 6409, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
   have ec : Env (copied s input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
@@ -72,7 +72,7 @@ def entry (s : State) (e : Env s) (input : ByteArray) (rho : List UInt256)
   have ha' := align (copied s input) ec (FirstCore.frame (UInt256.ofNat 32) rho)
     (by simp [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks]; omega) hs32
   exact (copy s e input rho hs hcal h32 hm ha).trans
-    (hf.trans (ha'.trans (special (copied s input) ec rho hs (by change (34 : Nat) ≤ 34; decide))))
+    (hf.trans (ha'.trans (special (copied s input) ec rho hs (by change (33 : Nat) ≤ 33; decide))))
 #print axioms run_copy
 #print axioms run_frame
 #print axioms entry

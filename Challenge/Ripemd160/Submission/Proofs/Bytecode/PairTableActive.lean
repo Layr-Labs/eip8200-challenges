@@ -89,7 +89,7 @@ theorem loaded_active_ge34 (s : State) (p : Nat)
 
 /-- All static word reads/writes through byte1087 preserve the active-word mark. -/
 theorem word_active_preserved (current : UInt256) (address : Nat)
-    (hc : 34 ≤ current.toNat) (ha : address ≤ 1056) :
+    (hc : 33 ≤ current.toNat) (ha : address ≤ 1024) :
     UInt256.ofNat (MachineState.activeWordsAfter current.toNat address 32) = current := by
   have h : MachineState.activeWordsAfter current.toNat address 32 = current.toNat := by
     simp only [MachineState.activeWordsAfter, if_neg (by decide : (32 : Nat) ≠ 0)]

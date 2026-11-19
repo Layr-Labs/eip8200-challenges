@@ -83,7 +83,7 @@ namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.RoundComp
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open PairedLaneUInt256Bridge Paired144WordRound StackRoundTrace CoreCommon
 theorem step (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) (hactive : 33 ≤ s.activeWords.toNat)
     (i : Fin 77) :
     runInstrSeq (templates i.val) (state s h4 right rho i.val q) =
       some (state s h4 right rho (i.val+1) (StaggerModeSeven.step i.val (CoreModel.message s.memory i.val) q)) := by
@@ -171,7 +171,7 @@ def block : Nat → List Instr
   | n+1 => block n ++ (templates n)
 
 theorem run_block (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) (hactive : 34 ≤ s.activeWords.toNat)
+    (hstack : rho.length ≤ 900) (hrun : s.halt = .Running) (hactive : 33 ≤ s.activeWords.toNat)
     (n : Nat) (hn : n ≤ 77) :
     runInstrSeq (block n) (state s h4 right rho 0 q) =
       some (state s h4 right rho n (StaggerModeSeven.fold (CoreModel.message s.memory) n q)) := by

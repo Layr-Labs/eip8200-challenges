@@ -36,13 +36,13 @@ def inputStack (x : Input) (rho : List UInt256) : List UInt256 :=
 def outputStack (_memory : ByteArray) (x : Input) (rho : List UInt256) : List UInt256 := inputStack x rho
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 1024) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Table80Raw.active_preserved s.activeWords address hactive haddress
   simp (discharger := omega) [template, inputStack, outputStack,

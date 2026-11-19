@@ -61,28 +61,21 @@ theorem sparse_eq_writeWord (memory : ByteArray) (hsize : 194 ≤ memory.size)
     · rw [if_neg (by omega), if_neg (by omega), if_neg (by omega)]
 
 def copiedMemory (input : ByteArray) : ByteArray :=
-  MachineState.writeBytes ByteArray.empty input 1056
+  MachineState.writeBytes ByteArray.empty input 1024
 
 theorem copiedMemory_size (input : ByteArray) (hn : 0 < input.size) :
-    (copiedMemory input).size = 1056 + input.size := by
+    (copiedMemory input).size = 1024 + input.size := by
   have hne : input ≠ ByteArray.empty := by intro h; subst input; exact Nat.not_lt_zero _ hn
   simp [copiedMemory, MachineState.writeBytes_size, hne]
 
-theorem copiedMemory_zero (input : ByteArray) (a : Nat) (ha : a < 1056) :
+theorem copiedMemory_zero (input : ByteArray) (a : Nat) (ha : a < 1024) :
     (copiedMemory input)[a]?.getD 0 = 0 := by
-  simp [copiedMemory, MachineState.writeBytes_getElem?_getD, show ¬1056 ≤ a by omega]
+  simp [copiedMemory, MachineState.writeBytes_getElem?_getD, show ¬1024 ≤ a by omega]
 
 theorem copiedMemory_sparse (input : ByteArray) (hn : 0 < input.size) :
     sparseMemory (copiedMemory input) = writeWord (copiedMemory input) 162 highWord :=
   sparse_eq_writeWord _ (by rw [copiedMemory_size input hn]; omega)
     (fun a _ h => copiedMemory_zero input a (by omega))
-
-theorem copiedMemory_gapClear (input : ByteArray) :
-    PairStoreGap.GapClear (copiedMemory input) := by
-  intro j hj k hk0 hk1
-  have hb := PairStoreGap.lowerPairSlots_bounds j hj
-  exact copiedMemory_zero input _ (by omega)
-
 
 #print axioms sparse_eq_writeWord
 end Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.Control.Shared32Scratch
