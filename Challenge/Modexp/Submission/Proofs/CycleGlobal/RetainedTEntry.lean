@@ -131,7 +131,8 @@ def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
     (htl : MachineState.readWord memory 2784 = UInt256.ofNat (2080+32*n))
     (hs32 : MachineState.readWord (Csub.csStep memory n n).memory 2688 = UInt256.ofNat (32*n))
     (htn : (MachineState.readWord (Csub.csStep memory n n).memory 2080).toNat ≤ 1)
-    (hfast : n = 4 ∨ n = 8) :
+    (hfast : n = 4 ∨ n = 8)
+    (hhead : rest[0]? = some (UInt256.ofNat (32*n))) :
     Challenge.EvmProof.GasSteps (entryState s memory ret rest)
       (returnedState s (RetainedTNormalizer.resultMemory memory n) ret rest) := by
   have he := entryBlock.steps
@@ -148,7 +149,7 @@ def gasSteps_retained (s : State) (memory : ByteArray) (n : Nat)
     subst hret
     have hk := Csub.gasSteps_csub_sub s memory n (UInt256.ofNat 2112) (UInt256.ofNat 2554) rest hcap hcode hfork
       hrun hnp hact hn hn32 hjump hml htl hs32
-      (by rw [show (UInt256.ofNat 2112).toNat = 2112 by decide]; omega) htn hfast
+      (by rw [show (UInt256.ofNat 2112).toNat = 2112 by decide]; omega) htn hfast hhead
     rw [RetainedTNormalizer.result_of_not_skip memory n hskip]
     have hend : Csub.subReturnedState s memory n n (UInt256.ofNat 2112) (UInt256.ofNat 2554) rest =
         returnedState s (Csub.subResultMemory memory n 2112) (UInt256.ofNat 2554) rest := by

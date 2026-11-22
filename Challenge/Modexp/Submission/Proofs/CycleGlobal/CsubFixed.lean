@@ -25,18 +25,18 @@ private theorem instructionPC_succ
     List.take_add_one,hget,Option.toList_some,assembleBytes_append,
     assembleBytes_cons,assembleBytes_nil,List.append_nil,List.length_append]
 def csFixedEntry8 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [pushAt 481 2 2688,
-   opAt 482 .MLOAD,
-   pushAt 483 1 128,
-   opAt 484 .EQ,
-   pushAt 485 2 10508,
+  [opAt 481 (.Dup ⟨2,by decide⟩),
+   pushAt 482 1 128,
+   opAt 483 .EQ,
+   opAt 484 .JUMPDEST,
+   pushAt 485 4 10508,
    opAt 486 .JUMPI]
 def csFixedEntry4 : List (Challenge.EvmProof.Stepper.Located runtimeArtifact .Osaka) :=
-  [pushAt 481 2 2688,
-   opAt 482 .MLOAD,
-   pushAt 483 1 128,
-   opAt 484 .EQ,
-   pushAt 485 2 10508,
+  [opAt 481 (.Dup ⟨2,by decide⟩),
+   pushAt 482 1 128,
+   opAt 483 .EQ,
+   opAt 484 .JUMPDEST,
+   pushAt 485 4 10508,
    opAt 486 .JUMPI,
    opAt 7947 .JUMPDEST]
 /-- rarej: the eight-limb subtraction starts at the `s8` `JUMPDEST` (pc 4362), the target of the
@@ -350,7 +350,7 @@ no pc certificates, so the block could not step. -/
 @[simp] theorem fixedPC3118 : runtimeArtifact.instructionPC 481 = 656 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC3119 : runtimeArtifact.instructionPC 482 = 659 := by
+@[simp] theorem fixedPC3119 : runtimeArtifact.instructionPC 482 = 657 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 /-- The four-limb landing of the rewritten conditional-subtraction dispatch. The old claim here named
@@ -364,13 +364,13 @@ rather than an honest error. -/
     rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]
     rfl
   simpa only [h] using CycleSubmission.Global.Binding.jumpDest 7947 (by rfl)
-@[simp] theorem fixedPC3805 : runtimeArtifact.instructionPC 483 = 660 := by
+@[simp] theorem fixedPC3805 : runtimeArtifact.instructionPC 483 = 659 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC3806 : runtimeArtifact.instructionPC 484 = 662 := by
+@[simp] theorem fixedPC3806 : runtimeArtifact.instructionPC 484 = 660 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem fixedPC3807 : runtimeArtifact.instructionPC 485 = 663 := by
+@[simp] theorem fixedPC3807 : runtimeArtifact.instructionPC 485 = 661 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem fixedPC3808 : runtimeArtifact.instructionPC 486 = 666 := by

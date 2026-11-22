@@ -157,7 +157,7 @@ private theorem instructionsPart2_wf :
   all_goals decide
 
 private def instructionsPart3 : List Instr :=
-  [i24,i25,i12,.push 1 98,i44,i20,i39,i31,.push 1 33,i5,i29,.push 1 223,i52,.push 2 10322,i34,i35,i31,i23,i31,.push 1 31,i7,i3,.push 1 5,i43,i0,.push 1 5,i53,i37,i7,i3,i19,i3,i0,i31,i23,.op .SGT,i85,i35,i27,i7,i3,i29,i31,i76,i0,i23,i29,i26,.push 1 2,i46,i27,.push 1 127,i26,i59,i59,.push 1 174,i34,i7,i37,i3,.push 2 2656,i18,i5,i50,i18,i35,i14,i29,.push 2 2752,i18,i5,i54,i3,i50,i18,i11,i16,i23,i77,i0,i7,.op .XOR,.push 1 174,i34,i0,i37,i45,i77,i23,i2,i45,i2,i52,.push 2 2554,i34,.push 2 2554,i45,.push 2 2688,i2,i36,.op .EQ,.push 2 10508,i34,.push 2 2336,i2,i41,i2,i0,i14,i29,i72,i18,i46,i0,i42,i2,i3,i0,.push 2 2304,i2,i5,i5,i29,i71,i18,i52,i15,i46]
+  [i24,i25,i12,.push 1 98,i44,i20,i39,i31,.push 1 33,i5,i29,.push 1 223,i52,.push 2 10322,i34,i35,i31,i23,i31,.push 1 31,i7,i3,.push 1 5,i43,i0,.push 1 5,i53,i37,i7,i3,i19,i3,i0,i31,i23,.op .SGT,i85,i35,i27,i7,i3,i29,i31,i76,i0,i23,i29,i26,.push 1 2,i46,i27,.push 1 127,i26,i59,i59,.push 1 174,i34,i7,i37,i3,.push 2 2656,i18,i5,i50,i18,i35,i14,i29,.push 2 2752,i18,i5,i54,i3,i50,i18,i11,i16,i23,i77,i0,i7,.op .XOR,.push 1 174,i34,i0,i37,i45,i77,i23,i2,i45,i2,i52,.push 2 2554,i34,.push 2 2554,i45,i14,i36,.op .EQ,i20,.push 4 10508,i34,.push 2 2336,i2,i41,i2,i0,i14,i29,i72,i18,i46,i0,i42,i2,i3,i0,.push 2 2304,i2,i5,i5,i29,i71,i18,i52,i15,i46]
 
 private theorem instructionsPart3_wf :
     instructionsPart3.all (fun instruction => decide (WellFormed .Osaka instruction)) = true := by

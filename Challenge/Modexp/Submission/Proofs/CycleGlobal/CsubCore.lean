@@ -65,10 +65,15 @@ theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 8)) :
+    (hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 8))
+    (hhead : rest[0]? = some (UInt256.ofNat (32 * 8))) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry8
       (subEntryState s memory pdst ret rest) =
       some (csFixedState s memory 8 0 667 pdst ret rest) := by
+  have hhead' : rest.head? = some (UInt256.ofNat (32 * 8)) := by
+    cases rest with
+    | nil => simp at hhead
+    | cons a t => simpa using hhead
   have hactS := activeWords_fix s 2688 32 (by decide) (by decide) hact
   have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
   have hword9344 : (2688 : UInt256).toNat = 2688 := by decide
@@ -87,7 +92,7 @@ theorem run_csFixedEntry8 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     [csFixedEntry8,subEntryState,csFixedState,csStep,
       fixedPC3777,fixedPC3114,fixedPC3115,fixedPC3116,
       fixedPC3117,fixedPC3118,fixedPC3119,fixedPC3805,
-      hrun,hcode,hs32,hactS,capacity,Nat.add_assoc,
+      hrun,hcode,hs32,hhead,hhead',hactS,capacity,Nat.add_assoc,
       UInt256.eq,UInt256.isTrue,opAt,pushAt,wfOp,Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
       State.activeWordsAfterUInt256,Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -710,6 +715,7 @@ def gasSteps_csFixed8 (s : State) (memory : ByteArray) (pdst ret : UInt256) (res
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hs : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 8))
+    (hhead : rest[0]? = some (UInt256.ofNat (32 * 8)))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 8 8).memory 2688 = UInt256.ofNat (32 * 8))
     (hdstFit : pdst.toNat + 32 * 8 ≤ 2816)
@@ -720,7 +726,7 @@ def gasSteps_csFixed8 (s : State) (memory : ByteArray) (pdst ret : UInt256) (res
     CycleSubmission.Artifact.artifact .Osaka csFixedEntry8
     (by simpa [subEntryState,CycleSubmission.Artifact.artifact] using hcode)
     (by simpa [subEntryState,State.fork] using hfork)
-    (run_csFixedEntry8 s memory pdst ret rest hcap hrun hcode hact hs)
+    (run_csFixedEntry8 s memory pdst ret rest hcap hrun hcode hact hs hhead)
     (by simpa [subEntryState] using hrun)
     (by simpa [subEntryState,State.fork] using hnp)
   exact hEntry8.trans (gasSteps_csFixedFrom8 s memory pdst ret rest hcap hrun hcode hact hfork hnp
@@ -730,10 +736,15 @@ theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     (hcap : rest.length ≤ 1008) (hrun : s.halt = .Running)
     (hcode : s.executionEnv.code = CycleSubmission.Artifact.bytecode)
     (hact : 88 ≤ s.activeWords.toNat)
-    (hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 4)) :
+    (_hs32 : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 4))
+    (hhead : rest[0]? = some (UInt256.ofNat (32 * 4))) :
     Challenge.EvmProof.Stepper.runLocatedBlock csFixedEntry4
       (subEntryState s memory pdst ret rest) =
       some (csFixedState s memory 4 0 10509 pdst ret rest) := by
+  have hhead' : rest.head? = some (UInt256.ofNat (32 * 4)) := by
+    cases rest with
+    | nil => simp at hhead
+    | cons a t => simpa using hhead
   have hactS := activeWords_fix s 2688 32 (by decide) (by decide) hact
   have capacity (j : Nat) (hj : j ≤ 5) : rest.length + j < 1024 := by omega
   have hword9344 : (2688 : UInt256).toNat = 2688 := by decide
@@ -752,7 +763,7 @@ theorem run_csFixedEntry4 (s : State) (memory : ByteArray) (pdst ret : UInt256) 
     [csFixedEntry4,subEntryState,csFixedState,csStep,
       fixedPC3777,fixedPC3114,fixedPC3115,fixedPC3116,
       fixedPC3117,fixedPC3118,fixedPC3119,fixedPC3805,
-      hrun,hcode,hs32,hactS,capacity,Nat.add_assoc,
+      hrun,hcode,hs32,hhead,hhead',hactS,capacity,Nat.add_assoc,
       UInt256.eq,UInt256.isTrue,opAt,pushAt,wfOp,Challenge.EvmProof.Stepper.runLocatedBlock,
       Challenge.EvmProof.Stepper.runLocated,Challenge.EvmProof.Stepper.runInstr,
       State.activeWordsAfterUInt256,Challenge.EvmProof.Word.succ_ofNat_mod,
@@ -1036,6 +1047,7 @@ def gasSteps_csFixed4 (s : State) (memory : ByteArray) (pdst ret : UInt256) (res
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hs : MachineState.readWord memory 2688 = UInt256.ofNat (32 * 4))
+    (hhead : rest[0]? = some (UInt256.ofNat (32 * 4)))
     (hjump : Decode.isValidJumpDest CycleSubmission.Artifact.bytecode ret.toNat = true)
     (hs32 : MachineState.readWord (csStep memory 4 4).memory 2688 = UInt256.ofNat (32 * 4))
     (hdstFit : pdst.toNat + 32 * 4 ≤ 2816)
@@ -1046,7 +1058,7 @@ def gasSteps_csFixed4 (s : State) (memory : ByteArray) (pdst ret : UInt256) (res
     CycleSubmission.Artifact.artifact .Osaka csFixedEntry4
     (by simpa [subEntryState,CycleSubmission.Artifact.artifact] using hcode)
     (by simpa [subEntryState,State.fork] using hfork)
-    (run_csFixedEntry4 s memory pdst ret rest hcap hrun hcode hact hs)
+    (run_csFixedEntry4 s memory pdst ret rest hcap hrun hcode hact hs hhead)
     (by simpa [subEntryState] using hrun)
     (by simpa [subEntryState,State.fork] using hnp)
   have hStep4_0 := Challenge.EvmProof.Stepper.runLocatedBlock_sound
@@ -1099,7 +1111,8 @@ def gasSteps_csub_sub (s : State) (memory : ByteArray) (n : Nat)
     (htn : (MachineState.readWord (csStep memory n n).memory 2080).toNat ≤ 1)
     -- the rewritten dispatcher admits only four or eight limbs, so the general-width
     -- conditional subtraction below it is unreachable
-    (hfast : n = 4 ∨ n = 8) :
+    (hfast : n = 4 ∨ n = 8)
+    (hhead : rest[0]? = some (UInt256.ofNat (32 * n))) :
     Challenge.EvmProof.GasSteps (subEntryState s memory pdst ret rest)
       (subReturnedState s memory n n pdst ret rest) := by
   have hnn : n - 1 + 1 = n := by omega
@@ -1108,9 +1121,9 @@ def gasSteps_csub_sub (s : State) (memory : ByteArray) (n : Nat)
     exact hs32
   by_cases hn8 : n = 8
   · subst n
-    exact gasSteps_csFixed8 s memory pdst ret rest hcap hrun hcode hact hfork hnp hs hjump hs32 hdstFit htn
+    exact gasSteps_csFixed8 s memory pdst ret rest hcap hrun hcode hact hfork hnp hs hhead hjump hs32 hdstFit htn
   by_cases hn4 : n = 4
   · subst n
-    exact gasSteps_csFixed4 s memory pdst ret rest hcap hrun hcode hact hfork hnp hs hjump hs32 hdstFit htn
+    exact gasSteps_csFixed4 s memory pdst ret rest hcap hrun hcode hact hfork hnp hs hhead hjump hs32 hdstFit htn
   exact absurd hfast (fun h => h.elim hn4 hn8)
 end CycleSubmission.Global.Fast.Csub
