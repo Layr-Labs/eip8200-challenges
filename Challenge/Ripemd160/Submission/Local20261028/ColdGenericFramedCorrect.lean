@@ -45,7 +45,7 @@ private theorem correct_cold (input : ByteArray) (hfit : CalldataFits input)
   have gb := Loop.gasSteps input hfit hcold rho (by omega)
   have e := env input count
   have go := StaggerPersistentSerialize.gasSteps (Iteration.states input count)
-    (UInt256.ofNat (1056+64*(count-1))) (Word.ofUInt32 (Iteration.hashes input (count-1)).h2)
+    (UInt256.ofNat (1024+64*(count-1))) (Word.ofUInt32 (Iteration.hashes input (count-1)).h2)
     (Iteration.hashes input count) rho (by omega) e.running e.code e.fork e.noPrecompile
   have trace := prefixTrace.trans ((gp.cast rfl ge).trans (gb.trans go))
   apply FirstComplete.eval_of_returned_trace _ _ _ trace rfl
@@ -80,11 +80,11 @@ private theorem correct_aligned (input : ByteArray) (hfit : CalldataFits input) 
   have ha : 34 ≤ (Iteration.states input (n.val+1)).activeWords.toNat := by
     rw [Iteration.active input hfit _ hc hnp]
     have hactive := PadSkipEntry.entryState_active input hfit (by omega)
-    change 35 ≤ (Iteration.entry input).activeWords.toNat at hactive
+    change 34 ≤ (Iteration.entry input).activeWords.toNat at hactive
     omega
   have gc := PadGas.gasSteps (Iteration.states input (n.val+1)) (PadMemory.length n)
-    (Iteration.hashes input (n.val+1)) (UInt256.ofNat (1056+64*n.val))
-    (Word.ofUInt32 (Iteration.hashes input n.val).h2) rho (by omega) e.running ha
+    (Iteration.hashes input (n.val+1)) (UInt256.ofNat (1024+64*n.val))
+    (Word.ofUInt32 (Iteration.hashes input n.val).h2) rho (by omega) e.running (by omega)
     (by rw [NormalIteration.executionEnv,PadSkipEntry.entryState_calldata,hsize]; rfl)
     e.code e.fork e.noPrecompile
   have trace := prefixTrace.trans ((gp.cast rfl ge).trans (gb.trans gc))

@@ -9,13 +9,13 @@ open StaggerPersistentLoopSites
 
 def entry (states : Nat → State) (hashes : Nat → Compression.HashState) (count i : Nat)
     (rho : List UInt256) : State :=
-  {states i with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame (hashes i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat (64*(count-i))) rho}
+  {states i with pc := UInt256.ofNat 461, stack := StaggerPersistentFrame.frame (hashes i) (UInt256.ofNat (1024+64*i)) (UInt256.ofNat (64*(count-i))) rho}
 def post (states : Nat → State) (hashes : Nat → Compression.HashState) (count i : Nat)
     (rho : List UInt256) : State :=
-  {states (i+1) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame (hashes (i+1)) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat (64*(count-i))) rho}
+  {states (i+1) with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 (hashes i).h2 :: StaggerPersistentFrame.frame (hashes (i+1)) (UInt256.ofNat (1024+64*i)) (UInt256.ofNat (64*(count-i))) rho}
 def padEntry (states : Nat → State) (hashes : Nat → Compression.HashState) (count : Nat)
     (rho : List UInt256) : State :=
-  {states count with pc := UInt256.ofNat 64, stack := StaggerPersistentFrame.frame (hashes count) (UInt256.ofNat (1056+64*(count-1))) (Word.ofUInt32 (hashes (count-1)).h2) rho}
+  {states count with pc := UInt256.ofNat 64, stack := StaggerPersistentFrame.frame (hashes count) (UInt256.ofNat (1024+64*(count-1))) (Word.ofUInt32 (hashes (count-1)).h2) rho}
 
 def run_data (states : Nat → State) (hashes : Nat → Compression.HashState)
     (count : Nat) (hc : 0 < count) (hb : count ≤ 3) (rho : List UInt256) (hs : rho.length ≤ 880)
@@ -27,17 +27,17 @@ def run_data (states : Nat → State) (hashes : Nat → Compression.HashState)
     intro i hi
     have e := env (i+1) (by omega)
     have gb := block i hi
-    have hoff : LoopRaw.nextOffset (UInt256.ofNat (1056+64*i)) = UInt256.ofNat (1056+64*(i+1)) := by
+    have hoff : LoopRaw.nextOffset (UInt256.ofNat (1024+64*i)) = UInt256.ofNat (1024+64*(i+1)) := by
       unfold LoopRaw.nextOffset; rw [Word.ofNat_add_mod]; congr 1
     rw [show I i = entry states hashes count i rho by simp only [I,if_pos hi]]
     by_cases h3 : count-i=3
     · have hn : i+1 < count := by omega
       have cont : 64*(count-i)=192 := by omega
       have next : 64*(count-(i+1))=128 := by omega
-      have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
+      have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1024+64*i))
         (UInt256.ofNat 192) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running
         (StaggerPersistentEntrySites.valid_stub192 _ e.code) e.code e.fork e.noPrecompile
-      have gs := gasSteps_stub192 (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
+      have gs := gasSteps_stub192 (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1024+64*i))
         (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running e.code e.fork e.noPrecompile
       rw [hoff] at gs
       simp only [post,cont] at gb
@@ -46,19 +46,19 @@ def run_data (states : Nat → State) (hashes : Nat → Compression.HashState)
     · have hn : i+1 < count := by omega
       have cont : 64*(count-i)=128 := by omega
       have next : 64*(count-(i+1))=64 := by omega
-      have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
+      have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1024+64*i))
         (UInt256.ofNat 128) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running
         (StaggerPersistentEntrySites.valid_stub128 _ e.code) e.code e.fork e.noPrecompile
-      have gs := gasSteps_stub128 (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
+      have gs := gasSteps_stub128 (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1024+64*i))
         (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running e.code e.fork e.noPrecompile
-      have ga := gasSteps_advance (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
+      have ga := gasSteps_advance (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1024+64*i))
         (UInt256.ofNat 64) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running e.code e.fork e.noPrecompile
       rw [hoff] at ga
       simp only [post,cont] at gb
       exact (gb.trans (gd.trans (gs.trans ga))).cast rfl (by simp only [I,if_pos hn,entry,next])
     · have hn : ¬ i+1 < count := by omega
       have cont : 64*(count-i)=64 := by omega
-      have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1056+64*i))
+      have gd := gasSteps_dispatch (states (i+1)) (hashes (i+1)) (UInt256.ofNat (1024+64*i))
         (UInt256.ofNat 64) (Word.ofUInt32 (hashes i).h2) rho (by omega) e.running
         (StaggerPersistentEntrySites.valid_pad _ e.code) e.code e.fork e.noPrecompile
       simp only [post,cont] at gb
@@ -79,12 +79,12 @@ noncomputable def gasSteps_data (input : ByteArray) (n : Fin 3)
     · rw [NormalIteration.executionEnv]; exact PadSkipEntry.entryState_noPrecompile input
   apply run_data _ _ _ (by omega) (by have := n.isLt; omega) _ (by simp [NormalPrepare.masks]; omega) (fun i _ => e i)
   intro i hi
-  have hb : 1056+64*i+64 < 2^256 := by have := n.isLt; omega
+  have hb : 1024+64*i+64 < 2^256 := by have := n.isLt; omega
   have g0 := gasSteps_join (Iteration.states input i)
-    (StaggerPersistentFrame.frame (Iteration.hashes input i) (UInt256.ofNat (1056+64*i)) (UInt256.ofNat (64*((n.val+1)-i))) (NormalPrepare.masks rho))
+    (StaggerPersistentFrame.frame (Iteration.hashes input i) (UInt256.ofNat (1024+64*i)) (UInt256.ofNat (64*((n.val+1)-i))) (NormalPrepare.masks rho))
     (by simp [StaggerPersistentFrame.frame,NormalPrepare.masks]; omega)
     (e i).running (e i).code (e i).fork (e i).noPrecompile
-  have g1 := NormalIteration.gasSteps_block (Iteration.entry input) 1056 i StackRunBridge.initialHashState
+  have g1 := NormalIteration.gasSteps_block (Iteration.entry input) 1024 i StackRunBridge.initialHashState
     (UInt256.ofNat (64*((n.val+1)-i))) rho (by omega) (e 0).running (by decide) hb (e 0).code (e 0).fork (e 0).noPrecompile
   exact g0.trans g1
 #print axioms run_data

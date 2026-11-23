@@ -369,7 +369,7 @@ noncomputable def gasSteps_lengthLoop (input : ByteArray) (hfit : CalldataFits i
           exact hz) hz)
 
 /-- The footer setup (172..191) pushes the loop head 4547, the bit length and the rounded length
-offset; at 187 the offset gets its `+ 89` and `DUP3 JUMP` enters the loop head. -/
+offset; at 187 the offset gets its `+ 57` and `DUP3 JUMP` enters the loop head. -/
 def footerA := lengthFooterSetupPath.take 9
 def footerB := lengthFooterSetupPath.drop 9
 
@@ -397,7 +397,7 @@ private theorem run_footerA (input : ByteArray) :
 def footerEntered (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 6486
-    stack := (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
+    stack := (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 57) ::
       bitLengthWord input :: UInt256.ofNat 6486 :: padFrame input }
 
 private theorem footerEntered_eq (input : ByteArray) :
@@ -405,7 +405,7 @@ private theorem footerEntered_eq (input : ByteArray) :
   have hm : lengthLoopMemory input 0 = (padSentinel input).memory := rfl
   have ha : lengthLoopActiveWords input 0 = (padSentinel input).activeWords := rfl
   have haddr : lengthAddr input 0 =
-      PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89 := rfl
+      PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 57 := rfl
   have hshift : lengthShift input 0 = bitLengthWord input := rfl
   unfold footerEntered lengthLoopState
   rw [hm, ha, haddr, hshift]
@@ -417,15 +417,15 @@ def footerPreJump (input : ByteArray) : State :=
   { padSentinel input with
     pc := UInt256.ofNat 6408
     stack := UInt256.ofNat 6486 ::
-      (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89) ::
+      (PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 57) ::
       bitLengthWord input :: UInt256.ofNat 6486 :: padFrame input }
 
 set_option maxHeartbeats 800000 in
 private theorem run_footerB3 (input : ByteArray) :
     Challenge.EvmProof.DataStepper.runLocatedBlock (footerB.take 3) (footerRounded input) =
       some (footerPreJump input) := by
-  have haddressOrder : UInt256.ofNat 89 + PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) =
-      PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89 :=
+  have haddressOrder : UInt256.ofNat 57 + PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) =
+      PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 57 :=
     Challenge.EvmProof.Word.word_add_comm _ _
   simp [footerB, lengthFooterSetupPath, Control.Artifact.padFooterSetupPath,
     Challenge.EvmProof.DataStepper.runLocatedBlock,
@@ -688,7 +688,7 @@ theorem entryState_active_le (input : ByteArray) (hfit : CalldataFits input) :
 /-- On the fast entry the active size ends exactly at the copied input. -/
 theorem entryState_msize_aligned (input : ByteArray) (hfit : CalldataFits input)
     (hz : input.size % 64 = 0 ∧ input.size < 256) (hpos : 0 < input.size) :
-    UInt256.ofNat (32 * (entryState input).activeWords.toNat) = UInt256.ofNat (1056 + input.size) := by
+    UInt256.ofNat (32 * (entryState input).activeWords.toNat) = UInt256.ofNat (1024 + input.size) := by
   rw [entryState_skip input hz]
   exact copiedMsize_aligned input hfit (by omega) hpos
 

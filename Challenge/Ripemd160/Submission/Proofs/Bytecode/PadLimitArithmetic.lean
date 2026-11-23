@@ -114,13 +114,13 @@ theorem coldRounded_input (input : ByteArray) (hfit : input.size < 2^64) :
   coldRounded_eq input.size hfit
 
 theorem footer_addr (input : ByteArray) (hfit : input.size < 2^64) :
-    UInt256.ofNat (959 + Padding.paddedLength input.size) + UInt256.ofNat 89 =
-      Padding.paddedWord input + UInt256.ofNat 1048 := by
+    UInt256.ofNat (959 + Padding.paddedLength input.size) + UInt256.ofNat 57 =
+      Padding.paddedWord input + UInt256.ofNat 1016 := by
   have hp := Padding.paddedLength_lt input.size
-  have hs1 : 959 + Padding.paddedLength input.size + 89 < 2^256 := by
+  have hs1 : 959 + Padding.paddedLength input.size + 57 < 2^256 := by
     have : (2:Nat)^64 + 2000 < 2^256 := by norm_num
     omega
-  have hs2 : Padding.paddedLength input.size + 1048 < 2^256 := by
+  have hs2 : Padding.paddedLength input.size + 1016 < 2^256 := by
     have : (2:Nat)^64 + 2000 < 2^256 := by norm_num
     omega
   rw [Padding.paddedWord_eq input hfit, Word.ofNat_add_ofNat hs1, Word.ofNat_add_ofNat hs2]

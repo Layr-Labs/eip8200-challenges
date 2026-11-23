@@ -636,7 +636,7 @@ theorem padReturned_paddedBlockAt (input : ByteArray)
     (Control.PaddingTrace.padLengthReady input).memory input
   · intro a hlo ha
     exact Control.PaddingTrace.padReturned_getD_window input hfit a (by omega)
-      (by have hm : messageOffset = 1056 := rfl; exact ⟨by omega, by omega⟩)
+      (by have hm : messageOffset = 1024 := rfl; exact ⟨by omega, by omega⟩)
   · exact padBase_size input
   · rfl
   · exact hfit

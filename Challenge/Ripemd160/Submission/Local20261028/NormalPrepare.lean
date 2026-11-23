@@ -23,11 +23,11 @@ def scheduled (s : State) (p : Nat) : State :=
 def template := CoreEndian.candidateTemplate ++ OrdinaryTable.template
 
 theorem run (s : State) (h : Compression.HashState) (p : Nat) (limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1056 ≤ p) (hb : p+64 < 2^256) :
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (hp : 1024 ≤ p) (hb : p+64 < 2^256) :
     runInstrSeq template
       {s with pc := UInt256.ofNat 462, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)} =
       some {scheduled s p with pc := UInt256.ofNat 794, stack := StaggerPersistentFrame.frame h (UInt256.ofNat p) limit (masks rho)} := by
-  have ha : 35 ≤ (decoded s p).activeWords.toNat := Stagger144Active.loaded_active_ge35 s p hp hb
+  have ha : 34 ≤ (decoded s p).activeWords.toNat := Stagger144Active.loaded_active_ge35 s p hp hb
   have he := CoreEndian.run_candidate s (UInt256.ofNat 462) factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3) (fusedCoefficientWord 0 2)
     (Word.ofUInt32 h.h4) (Word.ofUInt32 h.h3) (Word.ofUInt32 h.h2) (Word.ofUInt32 h.h1) (Word.ofUInt32 h.h0)

@@ -10,7 +10,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
 open PairedLaneUInt256Bridge PairedScheduleMemory RipemdMemoryBridge20261028
 def highWord : UInt256 := UInt256.ofNat (2^231+2^40)
 def memory (m : ByteArray) : ByteArray :=
-  writeWord (writeWord m 162 highWord) 252 (PairedScheduleData.reversedWord (MachineState.readWord m 1056))
+  writeWord (writeWord m 162 highWord) 252 (PairedScheduleData.reversedWord (MachineState.readWord m 1024))
 theorem reversed_byte (w : UInt256) (i : Nat) (hi : i < 32) :
     PoolByte.byte (PairedScheduleData.reversedWord w) i = PoolByte.byte w (4*(i/4)+3-i%4) := by
   rw [PairedScheduleData.reversedWord_eq_packed]
@@ -30,7 +30,7 @@ theorem outside (m : ByteArray) (a : Nat) (ha : 284 ≤ a) :
 theorem high_bytes (m : ByteArray) (i : Nat) (hi : i < 32) :
     PoolByte.byte highWord i = RipemdSubmission20261101.FirstLayout.value m RipemdSubmission20261101.FirstLayout.fixedHigh[i]! := by
   interval_cases i <;> rfl
-theorem matches_initial (m : ByteArray) (hz : ∀ a, a < 1056 → m[a]?.getD 0 = 0) :
+theorem matches_initial (m : ByteArray) (hz : ∀ a, a < 1024 → m[a]?.getD 0 = 0) :
     Matches (memory m) RipemdSubmission20261101.FirstLayout.initial (RipemdSubmission20261101.FirstLayout.value (memory m)) := by
   intro a
   by_cases hh : 162 ≤ a ∧ a < 194
@@ -46,19 +46,19 @@ theorem matches_initial (m : ByteArray) (hz : ∀ a, a < 1056 → m[a]?.getD 0 =
     simp only [RipemdSubmission20261101.FirstLayout.value, if_neg (by omega : ¬ 1+((a-252)/4)*4+3-(a-252)%4 = 0),
       if_neg (by omega : ¬ 1+((a-252)/4)*4+3-(a-252)%4 = 33),
       if_neg (by omega : ¬ 1+((a-252)/4)*4+3-(a-252)%4 = 34), if_pos hsym.2]
-    change m[1056 + (4*((a-252)/4)+3-(a-252)%4)]?.getD 0 =
-      (memory m)[1056 + (1+(a-252)/4*4+3-(a-252)%4)-1]?.getD 0
+    change m[1024 + (4*((a-252)/4)+3-(a-252)%4)]?.getD 0 =
+      (memory m)[1024 + (1+(a-252)/4*4+3-(a-252)%4)-1]?.getD 0
     rw [outside _ _ (by omega)]
     congr 2
     omega
-  by_cases hd : 1056 ≤ a ∧ a < 1088
-  · have hsym : 1 ≤ 1+a-1056 ∧ 1+a-1056 ≤ 32 := by omega
+  by_cases hd : 1024 ≤ a ∧ a < 1056
+  · have hsym : 1 ≤ 1+a-1024 ∧ 1+a-1024 ≤ 32 := by omega
     rw [RipemdSubmission20261101.FirstLayout.initial, if_neg hh, if_neg hl, if_pos hd]
-    simp only [RipemdSubmission20261101.FirstLayout.value, if_neg (by omega : ¬ 1+a-1056 = 0),
-      if_neg (by omega : ¬ 1+a-1056 = 33), if_neg (by omega : ¬ 1+a-1056 = 34), if_pos hsym.2]
+    simp only [RipemdSubmission20261101.FirstLayout.value, if_neg (by omega : ¬ 1+a-1024 = 0),
+      if_neg (by omega : ¬ 1+a-1024 = 33), if_neg (by omega : ¬ 1+a-1024 = 34), if_pos hsym.2]
     congr 2
     omega
-  by_cases ha : a < 1088
+  by_cases ha : a < 1056
   · rw [RipemdSubmission20261101.FirstLayout.initial, if_neg hh, if_neg hl, if_neg hd, if_pos ha]
     change (memory m)[a]?.getD 0 = 0
     simp only [memory, write_getD, if_neg (by omega : ¬ (252 ≤ a ∧ a < 252+32)),

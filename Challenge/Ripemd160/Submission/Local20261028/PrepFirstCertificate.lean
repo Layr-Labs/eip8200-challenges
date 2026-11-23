@@ -13,14 +13,14 @@ def fixedHigh : Array Nat := #[0,0,0,34,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 def initial (a : Nat) : Nat :=
   if 162 ≤ a ∧ a < 194 then fixedHigh[a-162]!
   else if 252 ≤ a ∧ a < 284 then 1+((a-252)/4)*4+3-(a-252)%4
-  else if 1056 ≤ a ∧ a < 1088 then 1+a-1056
-  else if a < 1088 then 0 else 1000+a
+  else if 1024 ≤ a ∧ a < 1056 then 1+a-1024
+  else if a < 1056 then 0 else 1000+a
 
 def value (m : ByteArray) (symbol : Nat) : UInt8 :=
   if symbol = 0 then 0
   else if symbol = 33 then 1
   else if symbol = 34 then 128
-  else if symbol ≤ 32 then m[1056+symbol-1]?.getD 0
+  else if symbol ≤ 32 then m[1024+symbol-1]?.getD 0
   else if 1000 ≤ symbol then m[symbol-1000]?.getD 0
   else UInt8.ofNat (symbol-256)
 

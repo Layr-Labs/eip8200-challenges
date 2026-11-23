@@ -36,7 +36,7 @@ theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List 
 theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (halias : rho[2]? = some q.b) (haliasC : rho[1]? = some q.c)
     (haliasD : rho[0]? = some q.d) (haliasA : rho[3]? = some q.a) (hh4 : h4 = q.e)
-    (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :

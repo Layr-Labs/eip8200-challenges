@@ -34,7 +34,7 @@ theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List 
   all_goals first | rfl | trivial
 #print axioms output_eq
 theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
  :
     StackRoundTrace.runInstrSeq PadRawUnpack.template {s with pc := UInt256.ofNat 9824, stack := stack n h4 [ .d, .a, .literal 1109194275457955143375908765704, .pair, .upper, .e, .c, .literal 23, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 76) rho} =
       some {s with pc := UInt256.ofNat 9825, stack := stack n h4 [ .factor, .dr, .ar, .literal 1109194275457955143375908765704, .pair, .upper, .er, .cr, .literal 23, .k, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (PadModel.left q) (q) (UInt256.ofNat 2840853838) rho} := by

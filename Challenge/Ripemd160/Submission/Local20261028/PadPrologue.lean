@@ -11,7 +11,7 @@ open EvmSemantics EvmSemantics.EVM Challenge.EvmProof Paired144WordRound
 open StackRoundTrace PadCommon
 def template := (PadRawRight0.template ++ PadRawRight1.template) ++ PadRawPack.template
 theorem run (s : State) (len : UInt256) (h : WordLane) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = len)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load len 162)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :

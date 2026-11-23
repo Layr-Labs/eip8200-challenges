@@ -32,7 +32,7 @@ theorem output_eq (n : UInt256) (h4 : UInt256) (q right : WordLane) (rho : List 
   all_goals first | rfl | trivial
 #print axioms output_eq
 theorem run (s : State) (n h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (halias : rho[2]? = some q.c) (haliasE : rho[0]? = some q.e) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (halias : rho[2]? = some q.c) (haliasE : rho[0]? = some q.e) (hh4 : h4 = q.a) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
     StackRoundTrace.runInstrSeq PadRawRight1.template {s with pc := UInt256.ofNat 6507, stack := stack n h4 [ .b ] q right (UInt256.ofNat 1352829926) (UInt256.shiftRight (UInt256.mul factorPlusWord q.c) (UInt256.ofNat 23) :: stack n h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (UInt256.ofNat 1352829926) rho)} =

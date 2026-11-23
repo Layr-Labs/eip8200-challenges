@@ -7,7 +7,7 @@ open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate Local20261028
 
 def gasSteps_special (s : State) (e : FirstEntry.Env s) (h : Compression.HashState) (off limit : UInt256)
-    (rho : List UInt256) (hs : rho.length ≤ 860) (ha : 34 ≤ s.activeWords.toNat)
+    (rho : List UInt256) (hs : rho.length ≤ 860) (ha : 33 ≤ s.activeWords.toNat)
     (he : UInt256.eq (UInt256.ofNat 32) limit = UInt256.ofNat 0) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := StaggerPersistentFrame.frame h off limit rho}
       {FirstEntry.high s with pc := UInt256.ofNat 188, stack := StaggerPersistentFrame.frame h off (UInt256.ofNat 4882) rho} := by

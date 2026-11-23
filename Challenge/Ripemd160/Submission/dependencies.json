@@ -1,217 +1,247 @@
 [
-  {
-    "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
-    "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
-    "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."
-  },
-  {
-    "submissionId": "55693485-b4a2-4a01-b0cc-941f195f8df8",
-    "rationale": "Direct source and proof-tree parent: the validated 614,934-gas frontier (First0.templateA pad at PC 6472 retired). Retained unchanged except the count-keeping JUMPDEST at PC 582 in the ordinary schedule writer (Ordinary1); this candidate removes it and widens PUSH1 180 to PUSH2 180, keeping the 556..622 window at 67 bytes, and restores the instruction total by decoding the dead PUSH1 0 at PC 56 as two STOPs, so only artifact indices 28..237 move up by one (including the hoisted-store .copy piece index).",
-    "evidence": "Based on the Submission tree at 0c57f37ab978c4b6dd2abf961bbf1cf72a502f64; PrepOrdinary1 template, CandidateArtifact parts 0/1 and counts, CandidateBytes chunks 0 and 9, bytecode.hex, and the index witnesses in ColdArtifact, ColdGuardSites, ColdMain, ColdPaddingCore0/1/3, ColdStaggerPersistentEntrySites/LoopSites/Start, ControlSites, NormalGas, PadSites, RecDirectGuardBase/Size, RecEarlySerializeFallback, RecEntryPrefilter, RecHoistedStoreSites (index table and jump-destination facts), RecPatterned128Entry."
-  },
-  {
-    "submissionId": "83e98140-5811-4d63-b6be-e84e5347c4ad",
-    "rationale": "Direct source and proof-tree parent: the validated 614,945-gas frontier (First4 pad pair retired, 720 store widened in place). Retained unchanged; this candidate retires the remaining JUMPDEST pad at PC 6472 in the 32-byte path's first-block writer head (PrepFirst0.templateA) and keeps the 40-byte window by widening PUSH1 232 to PUSH2 232, so no PC moves and the instruction total drops 7001 -> 7000.",
-    "evidence": "Based on the Submission tree at 6d2369d9d39900731622c5d86aaa446a345d82cc; PrepFirst0 templateA, CandidateArtifact part21 / count21 / instruction_count, CandidateBytes chunk101, ColdArtifact count / padExitPath, RecArtifact count, ColdPaddingCore0/1/3, PadSites middleSite / valid4601, FirstCore tableSite / valid9983 / prefixSite / jumpSite, bytecode.hex."
-  },
-  {
-    "submissionId": "d18dbe78-37ec-4e97-8de4-5c101e2abfba",
-    "rationale": "Direct source and proof-tree parent: the validated 614,967-gas frontier (first-block 816 store). Retained unchanged except the two JUMPDEST pads it placed in First4 after the consuming 720 store; this candidate removes them and widens PUSH22 720 to PUSH24 720, keeping the window at 45 bytes and every later PC fixed, while the instruction total drops 7003 -> 7001.",
-    "evidence": "Based on the Submission tree at 57041db9f0fec57efda1712baa4721c32391ed76; PrepFirst4 template, FirstCore prefixSite/jumpSite indices 6931/6999, CandidateArtifact part 36 and instruction_count, ColdArtifact and RecArtifact counts, CandidateBytes chunk 158, bytecode.hex."
-  },
-  {
-    "submissionId": "340e677c-31a4-4b16-ad4e-a71895b1cf76",
-    "rationale": "Direct source and proof-tree parent: the validated 615,277-gas frontier (consuming low-64 screen for the 1000-byte entries). Retained unchanged; this candidate moves the padded-block output tail to 9907 so the padded compressor falls through into it (no PUSH2/JUMP/JUMPDEST on the 21 generated 64/128-byte vectors), and hoists the first 72 bytes of the 32-byte special path into the vacated 6409..6485 slot with a jump to a new JUMPDEST at 9983, keeping every PC from 9984 on fixed.",
-    "evidence": "Based on the Submission tree at 66eec9be6c7a144c8fe501cc91169f67cacd0b1e; PadSites middle / template_eq, PadTailRaw, PadOutput, PadBody, PadGas, PrepFirst0 templateA / entryTemplate / runA / runB, PrepFirstComposition FirstTable, FirstCore midState / tableSite / valid9983, FirstRead, FirstReadGas, ControlSites, FirstEntry, FirstCopy, ColdArtifact, ColdPaddingCore0/1/3; CandidateArtifact parts 0/20/21/35, CandidateBytes chunks 2/100/101/154/155, bytecode.hex."
-  },
-  {
-    "submissionId": "27d78a01-bc9f-4ed4-94e7-07f903bc30c0",
-    "rationale": "Direct source and proof-tree parent: the validated 615,279-gas frontier (re-anchored 1000-byte window cover). Retained unchanged; this candidate makes the PC-21 low-64 screen consume the loaded W 0 (no DUP2), so the patterned 1000-byte arm enters with an empty frame and its POP becomes a JUMPDEST, while the a-path reloads W 0 with PUSH0; CALLDATALOAD at PC 46 so the PC-48 seed is unchanged. The dead pad 56..63 absorbs the extra instruction, so no PC or index outside 21..63 / 11..33 moves.",
-    "evidence": "Based on the Submission tree at edf8f2d88e299ab21dc38f8dbf8cd7e04c68ab5f; RecHoistedStoreAnchorRaw anchorPrefix / run_anchor_taken / run_anchor_low_fall / reloadTemplate / run_reload, RecHoistedStoreEntry reload piece, RecHoistedStoreSites seed index, RecHoistedStoreAnchor.taken, RecArmsLong head1000 / run_head1000 / gasSteps_a1000_entry / correct1000, RecDirectGuardBase / RecDirectGuardSize located indices and PC witnesses; CandidateArtifact parts 0/19, CandidateBytes chunks 0/91, bytecode.hex."
-  },
-  {
-    "submissionId": "e9be2c95-c917-4621-8acc-36f302c1f7e6",
-    "rationale": "Direct source and proof-tree parent: the validated 615,288-gas frontier (fall-through 256-byte arm). Retained unchanged; this candidate re-plans the 1000-byte arm's calldata window cover: the literal anchor moves from offset 369 to 384, which lets windows (416,15) and (448,47) replace (401,0), (433,32) and (465,64); the entry word W 0 is popped and the (256,111) difference starts the accumulator without an OR. The unreachable JUMP pad after the arm absorbs the 4-byte / 3-instruction shrink, so no PC or instruction index outside 5862..6143 / 3674..3847 moves.",
-    "evidence": "Based on the Submission tree at f3649929002b9ec64b41bd2d68801a7eb53f3d86; RecArmsWindowCover plan1000 / anchors1000 (Cover by decide), RecArmsLong items1000 / head1000 / run_head1000 / val1000 / plan1000_mem / result1000; CandidateArtifact part 19, CandidateBytes chunks 91-95, bytecode.hex."
-  },
-  {
-    "submissionId": "956f3fe4-5d51-47e5-bbdf-e69da319890f",
-    "rationale": "Direct source and proof-tree parent: the validated 615,299-gas frontier (calldata-size shift operand for the 55-byte arm). Retained unchanged; this candidate moves the 256-byte arm's store/start prefix to sit directly before the eight-word chain entry so it falls through instead of executing PUSH2 chain; JUMP, with a dead PUSH2 before the arm and a dead STOP before the 64-byte arm, so the instruction count is unchanged and only PCs 4931..5774 / indices 3482..3640 move.",
-    "evidence": "Based on the Submission tree at dc46627edb41c562d6b35632fe4475d9d40d5e7d; RecArmsEach arm256Template / gasSteps_arm256_entry (fall-through, no run_jump) and every chain/arm PC and slice index, RecArmsScan, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecDispatch31/32/55/56/63/64/65/119/120/128, RecPatternedSites; CandidateArtifact parts 17/18/19, CandidateBytes chunks 72/73/75/77-91/95."
-  },
-  {
-    "submissionId": "76c2f807-4e4f-4241-b390-59dfaff1f526",
-    "rationale": "Direct source and proof-tree parent: the validated 615,300-gas frontier (memory-size shift operand for the 119-byte arm). Retained unchanged; this candidate re-bases the 55-byte arm's literal as PUSH26 (X << 17); CALLDATASIZE; SHL (the arm is reached only with CALLDATASIZE = 55), funded by narrowing the shared chain result PUSH3 4651 and the 65-byte arm's PUSH2 0x47 to minimal width, so instruction indices are unchanged and only PCs 5239..5588 move.",
-    "evidence": "Based on the Submission tree at bc4f945d45b13ca52a8de1edde53cb488cba5af2; PrepRecognizerLiterals template 55 / value55 / run (disjunctive calldata-size hypothesis), RecArmsScan armPC/returnPC/chainResultTemplate/run_prefix/run_start, RecArmsEach gasSteps_arm55(_entry)/byte65Template and arm PCs, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecDispatch31/32/55/56/63/64/65; CandidateArtifact parts 17/18, CandidateBytes chunks 72/73/81-87."
-  },
-  {
-    "submissionId": "83c2b330-02d9-4d23-90f3-a614d46dd0ef",
-    "rationale": "Direct source and proof-tree parent: the validated 615,301-gas frontier (dead-pad-funded full-word literal for the 120-byte arm). Retained unchanged; this candidate re-bases the 119-byte arm's literal as PUSH28 (X << 40); MSIZE; SHL (MSIZE = 32 after the digest store), funded by narrowing two width-pad pushes in the 1000-byte arm and the last PUSH2 of the dead pad before JUMPDEST 6144, so instruction indices are unchanged and only PCs 5652..6115 move.",
-    "evidence": "Based on the Submission tree at 23abf6ae7c160daf685de249cb753c67d24ca290; PrepRecognizerLiterals template 119 / value119 / msize1 / run (new activeWords hypothesis), RecArmsScan run_prefix, RecArmsLong items1000, arm PCs in RecArmsScan/RecArmsEach/RecDispatch120/RecDispatch128/RecArmsDispatch/RecArmsLong/RecPatternedSites/RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/72/73/75/87-95."
-  },
-  {
-    "submissionId": "21326e0a-289c-4299-ab5b-dc0417976a56",
-    "rationale": "Direct source and proof-tree parent: the validated 615,307-gas frontier (BYTE-0 last-word check for the 65-byte chained recognizer arm). Retained unchanged; this candidate replaces the 120-byte patterned arm's shifted literal PUSH24 X; PUSH1 65; SHL with PUSH32 (X << 65) and absorbs the +5 bytes / -2 instructions in the unreachable pad before JUMPDEST 6144, retargeting the 128, 256, 376 and 1000-byte arms.",
-    "evidence": "Based on the Submission tree at 808280c56da746e2c959a5e8fa3220fb7eda99d8 (crown 77232a01); RecognizerLiteral.template generic case for 120, RecArmsScan armIndex/armPC, RecArmsEach arm128/arm256, RecDispatch128, RecArmsDispatch, RecArmsLong a376/a1000, RecPatternedSites long256/long376, RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor 5834; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/73/75/88-95; bytes 5672..6143."
-  },
-  {
-    "submissionId": "f4bb164c-455b-4e44-b26e-2d391db2d2ad",
-    "rationale": "Direct source and proof-tree parent: the validated 615,308-gas frontier (BYTE-0 tail check for the one-byte patterned recognizer arm, which also admitted BYTE into RecognitionLift). Retained unchanged; this candidate applies a chained-arm variant to the 65-byte patterned arm at PC 5576..5584: PUSH1 0x47; PUSH1 248; SHL; PUSH1 64; CALLDATALOAD; XOR becomes PUSH1 64; CALLDATALOAD; PUSH0; BYTE; PUSH2 0x47; XOR. Valid because the arm is reached only when CALLDATASIZE = 65 and the two-word chain at 5162 consumes the start value only through its OR-accumulated zero test.",
-    "evidence": "Based on the Submission tree at 93106912051107d6f1126db0564cc7c0314201d2; RecArmsEach byte65Template/run_byte65/tail_past_size/readWord_64/byte65_key/byte65_zero_iff/byte65_rev_iff/gasSteps_arm65_entry/gasSteps_arm65 (arm slice at instruction 3593), RecArmsDispatch arm65, CandidateArtifact part 18, CandidateBytes chunk 87; bytes 5577..5583."
-  },
-  {
-    "submissionId": "37a224de-93c9-4aac-957c-1b894179ad6f",
-    "rationale": "Direct source and proof-tree parent: the validated 615,309-gas frontier (ordinary pack-window JUMPDEST pad retired by a widened message-load push). Retained unchanged; this candidate rewrites only the one-byte patterned arm's tail check at PC 4741..4748: PUSH1 7; PUSH1 248; SHL; PUSH0; CALLDATALOAD; XOR becomes PUSH0; CALLDATALOAD; PUSH0; BYTE; PUSH2 7; XOR, valid because the arm is reached only when CALLDATASIZE = 1.",
-    "evidence": "Based on the Submission tree at 90c494731a326b339ad43b953648ae806bec2570; RecArmsEach byte1Template/run_byte1/byte1_zero_iff/gasSteps_arm1 (arm slice at instruction 3391), RecArmsDispatch arm1, RecognitionLift BYTE advance, CandidateArtifact part 17, CandidateBytes chunk 74; bytes 4741..4748."
-  },
-  {
-    "submissionId": "ba93b2cc-7d23-4a45-9db2-644de6ecc28f",
-    "rationale": "Direct source and proof-tree parent: the validated 615,340-gas frontier (calldata-size shift operand for the 56-byte recognizer literal). Retained unchanged; this candidate retires the width-pad JUMPDEST at PC 929 in the ordinary right-lane pack window (871..977) by widening the round-2 message load PUSH2 728 to PUSH3 728, so 930 and every later PC stay fixed while every artifact instruction index from 458 on moves down by one.",
-    "evidence": "Based on the Submission tree at 8f97a8ed2fd30d97e56ae0ab1ce90739a4b2f145 (crown cfd609c6); RawPack/PrefixBefore/FirstPrologue.before templates, CandidateArtifact part 2 and instruction_count 7003, CandidateBytes chunks 13-14, bytes 878..929; instruction-index retarget of every site at index >= 458."
-  },
-  {
-    "submissionId": "e48295cc-2ee3-4d76-9663-e588fff87c02",
-    "rationale": "Direct source and proof-tree parent: the validated 615,341-gas frontier (early right-lane C-rotation in the padding-block prologue). Retained unchanged; this candidate rewrites only the 56-byte patterned recognizer literal at PC 5424..5450: PUSH24 X; PUSH1 65; SHL becomes PUSH25 (X << 9); CALLDATASIZE; SHL, valid because the arm is reached only when CALLDATASIZE = 56.",
-    "evidence": "Based on the Submission tree at 2783859ae4656567b97410a91dd730dbf7dc549f; RecognizerLiteral template 56/value56/run hsz, RecArmsScan run_prefix/run_start hsz, RecArmsEach arm entries, RecArmsDispatch arm56, CandidateArtifact part 18, CandidateBytes chunks 84-85; bytes 5424..5450."
-  },
-  {
-    "submissionId": "92a9a66d-8512-450b-855d-7bf74d12228c",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,404-gas frontier (PC-sourced 594 store via a hoisted message-word load in the ordinary prologue, bytes 556..759). Retained unchanged; this candidate applies the early right-lane C-rotation to the padding-block prologue (front 89..127, middle 6504..6641), retiring its SWAP4, and re-tiles the 128 stub with a one-byte continuation push.",
-    "evidence": "Based on the Submission tree at 3c52899ad820b420e769e81d7d3b82787ac3d4e9; PadRawRight0/PadRawRight1/PadRawPack templates, PadCoreRight0/PadCoreRight1/PadCorePack/PadPrologue shapes, PadSites front/middle, ColdLoopRaw.setContTemplate, stub-128 loop/entry sites, CandidateArtifact parts 0 and 21, CandidateBytes chunks 1, 2, 101, 102; bytes 95..142 and 6505..6541."
-  },
-  {
-    "submissionId": "6928cadd-c409-4794-98ad-4d5553245060",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,435-gas frontier (early right-lane C-rotation, SWAP4 retired from the right-lane prologue at PC 794..977). Retained unchanged; this candidate reorders the Ordinary1 loads so the word stored at 594 is resident before byte 594 and a PC opcode supplies the 594 offset, computing the biased 134 word last and retiring it at 936 before the 846 store.",
-    "evidence": "Based on the Submission tree at 0c4cd6f41; PrepOrdinary1..6, PrepOrdinaryMemory memory chain/state1..6, PrepOrdinaryCertificate plan, PrepOrdinaryComposition window PCs 623/648, CandidateArtifact part 1, CandidateBytes chunks 8-11; bytes 556..759."
-  },
-  {
-    "submissionId": "343b16c8-579a-49c0-9f4d-09dee953afa3",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,497-gas frontier (PC-sourced 0x80 padding byte hosted by a shifted 482 store in the first-block prologue). Retained unchanged; this candidate rewrites only the ordinary right-lane prologue rounds at PC 794..977 (early right-lane C-rotation, SWAP4 retired, one JUMPDEST width pad).",
-    "evidence": "Based on the Submission tree at bb6842e984289335c832248e088cce27580b6a43; RawRight0/RawRight1/RawPack templates, CoreRight0/CoreRight1/CorePack/CorePrologue shapes, PrefixBefore.template, FirstPrologue.before, CandidateArtifact parts 1-2, CandidateBytes chunks 12-14; bytes 800..929."
-  },
-  {
-    "submissionId": "784a8fe6-2e65-47d8-a561-be10a9b2e2ff",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,508-gas frontier (shifted 814 store replaces the NOT-masked 828 store in the first-block prologue). Retained unchanged; this candidate moves the first-block 0x80 padding byte at 787 into a PC-sourced MSTORE8 hosted by the bytes freed when the 468 masked store becomes a 112-bit left shift stored at 482.",
-    "evidence": "Based on the Submission tree at 62e7205698a1e134a231e98fdef30c59515a88a2; PrepFirst1, PrepFirst3, PrepFirstMemory memory6/memory17, PrepFirstCertificate symbols6/symbols17/shl112_byte, CandidateArtifact part 35, CandidateBytes chunks 156-158; bytes 9987..10118."
-  },
-  {
-    "submissionId": "de1b04d7-b024-4f30-8d42-6acb805cce79",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,541-gas frontier (PC-sourced 792 store via a two-slot load swap in the ordinary message prologue). Retained unchanged; this candidate replaces the NOT-masked 828 store of the first-block prologue with a 112-bit right shift stored at 814.",
-    "evidence": "Based on the Submission tree at 7dd4ace6974cbfc34d02ea4b08cae071d41f2bd9; PrepFirst4, PrepFirstMemory memory25, PrepFirstCertificate symbols25/matches25, PrepFirst608, FirstCore site indices, CandidateArtifact part 36, CandidateBytes chunk 158; bytes 10155..10175."
-  },
-  {
-    "submissionId": "baf91c0b-c911-47a7-8322-9ec8af9f342f",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,572-gas frontier (single-swap bottom-up restack of the first-block PrefixAfter frame). Retained unchanged; this candidate swaps the load slots of the 138 and 180 message words in the ordinary prologue so the disjoint 792 store becomes the last bare consumer and takes its offset from PC.",
-    "evidence": "Based on the Submission tree at b14a45e665327ed9a9e8878d10296610d450c33b; PrepOrdinary1/3/4/5/6/7, PrepOrdinaryMemory memory13/25/36 and state1-6, PrepOrdinaryCertificate plan, CandidateArtifact part 1, CandidateBytes chunks 8-12; bytes 557..793."
-  },
-  {
-    "submissionId": "bf0fdb3b-237b-4c46-b8a6-b2e361c73c2c",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,671-gas frontier (PC-sourced 720 store offset in the ordinary message prologue). Retained unchanged; this candidate restacks only the first-block PrefixAfter window (single SWAP4 frame build), whose earlier literal folds come from 54dea2f0 and b1d795c1.",
-    "evidence": "Based on the Submission tree at 59b3f5497e051aad0ec1998b956fd1f7950f50bf; PrepPrefixAfter template, FirstPrologue.after, CandidateArtifact part 36, CandidateBytes chunks 159-162; bytes 10199..10421."
-  },
-  {
-    "submissionId": "f300667a-f224-4ac4-a082-366f685d279c",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,702-gas frontier (block-minimal window tiling of the 1,000-byte recognizer). Retained unchanged; this candidate reorders three disjoint stores in the ordinary message prologue so a PC opcode supplies the 720 offset.",
-    "evidence": "Based on the Submission tree at 5bbac375d4af7e35d6a90026a586133a4ce07f77; PrepOrdinary5, PrepOrdinaryMemory memory17-19, PrepOrdinaryCertificate plan, CandidateArtifact part 1, CandidateBytes chunk 11; bytes 707..734."
-  },
-  {
-    "submissionId": "ce39edff-5133-4074-b975-6951d367f11a",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,735-gas frontier (redundant 1,000-byte window checks retired to dead tail). This candidate re-tiles the same arm's window cover to the block-minimal 23 compare windows and keeps the dead-tail layout.",
-    "evidence": "Based on the Submission tree at 72653d83268d91be733f21540c10584e55d37850; RecArmsLong items1000, RecArmsWindowCover plan1000, CandidateArtifact parts 19-20, CandidateBytes chunks 92-95; bytes 5924..6136."
-  },
-  {
-    "submissionId": "65de591d-e494-4d9a-a778-e190b9c8f4d0",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,771-gas frontier (MSIZE offsets in the 1,000-byte arm, diversity-neutral pads). This candidate drops the redundant (364,219) and (509,219) compare items of the same arm and parks the freed bytes as dead code after its final JUMP.",
-    "evidence": "Based on the Submission tree at d81adc4177a63152d13c4c40a8d18085eb47b1fb; RecArmsLong items1000, RecArmsWindowCover plan1000, CandidateArtifact parts 19-20, CandidateBytes chunks 94-95; bytes 6056..6143."
-  },
-  {
-    "submissionId": "b1d795c1-584b-4d98-a3f6-a38eaaaf6651",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,773-gas frontier (complement-XOR addend folded into SUB in the 32-byte PrefixAfter window). Retained unchanged.",
-    "evidence": "Based on the Submission tree at 7579fa5ab5ccbdc65831107dc01b3be2ce85d8e8; PrefixAfter bytes 10224..10253 untouched."
-  },
-  {
-    "submissionId": "02dd6793-d6ee-4682-a807-e18cd1a07cb5",
-    "rationale": "Ported mechanism (kaankolcu): MSIZE replaces PUSH1 0x20 at the offset-433 and offset-578 compare items of the 1,000-byte arm. Its Item.eqM proof form is reused; the width pads moved to the eq 288 143 / eq 320 175 items to keep the diversity budget at 15,066.",
-    "evidence": "RecArmsLong items1000, CandidateArtifact part19, CandidateBytes chunks 91-92; PCs 5829..5951."
-  },
-  {
-    "submissionId": "54dea2f0-37f9-44b1-aadf-66913e4d29e9",
-    "rationale": "Direct source and proof-tree parent: the promoted 615,806-gas frontier (subtract-form round-1 constant in the 32-byte path). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
-    "evidence": "This candidate changes two compare items of the 1,000-byte patterned arm (RecArmsLong items1000) at PCs 5894..5902 and 5929..5937 and regenerates CandidateBytes/CandidateArtifact for the same-length bytes, based on the Submission tree at 784547f9 (promoted 54dea2f0)."
-  },
-  {
-    "submissionId": "67d0cd03-1b67-4b70-a5cf-297fa630aea6",
-    "rationale": "Grandparent: the promoted 615,839-gas frontier (rematerialized shift literal in the 32-byte path). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
-    "evidence": "This candidate changes two compare items of the 1,000-byte patterned arm (RecArmsLong items1000) at PCs 5894..5902 and 5929..5937, regenerates CandidateBytes/CandidateArtifact for the same-length bytes, based on the Submission tree at 52603a0807b7f398daffcbd56bc897587f7c6bb8."
-  },
-  {
-    "submissionId": "6bbb6d6d-9acb-418f-94f1-97d29a3e476e",
-    "rationale": "Earlier frontier (615,971, round-49 filler removal) inherited through the direct parent.",
-    "evidence": "Its RawPaired49 template and index rebasing are retained unchanged."
-  },
-  {
-    "submissionId": "5f01fde9-3006-4434-9b32-3d338c121fef",
-    "rationale": "Direct source and proof-tree parent: the promoted 616,013-gas frontier (Pad49 + A1 filler removals). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
-    "evidence": "This candidate applies the same same-length filler-removal technique as that submission's A1 change, to round 49 of the normal compressor (RawPaired49, bytes 3288..3293), and rebases the decoded-instruction indices after it by one, based on the Submission tree at bfa4840ca8db4910ddd64ecc6cd60e20553373c5."
-  },
-  {
-    "submissionId": "354bc894-43bd-4043-bdbc-c3c94a430b78",
-    "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and correctness infrastructure is retained.",
-    "evidence": "This candidate changes three padding-block round templates (constant message word folded into the round key), the templates of paired rounds 15, 16, 48 and 49 in both compressors (one stack shuffle removed in each pair), four gas-neutral commutative operand orders, and the byte/PC bindings and schedules of the rounds that move, based on the Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
-  },
-  {
-    "submissionId": "82ed8662-84e0-4554-81a7-0cefa3e3ac7c",
-    "rationale": "Our own earlier candidate with the round-73 padding fold alone (616,664). This candidate keeps that fold and its PadRaw73 proof.",
-    "evidence": "PadRaw73.fold_message_key and the folded round-73 key literal are the same as in 82ed8662; this candidate restores the parent's PUSH1 0x14 in that round, adds the round-0 and round-65 folds and the round 15/16 and 48/49 shuffle removals."
-  },
-  {
-    "submissionId": "e25fb40f-37d3-4050-8203-54d6b6cb8f03",
-    "rationale": "Our own accepted candidate with the round-0 and round-73 padding folds (616,538), the record when this candidate was submitted. This candidate keeps both folds and their proofs.",
-    "evidence": "PadRaw0.fold_message_key and PadRaw73.fold_message_key are the same as in e25fb40f; its PUSH13->PUSH14 widening in round 43 is dropped because the added round-65 fold and round 73's two-byte shrink already balance the routine's length."
-  },
-  {
-    "submissionId": "3b458b01-80a9-45c7-86bc-caa2e1a60bfd",
-    "rationale": "Direct source and proof-tree parent at the current 616801-gas frontier. All compression, table, dispatch and universal correctness infrastructure is retained.",
-    "evidence": "This candidate modifies only the two-byte first-word read plus its local byte/proof bindings, based on the promoted Submission tree at 97f6c711f9cd7a9675c51441dcd704e2c610253b."
-  },
-  {
-    "submissionId": "083515e7-2ccd-462b-8c38-59f0e4ecf57d",
-    "rationale": "Reuses the direct calldata-load optimization and its local proof/equality technique, ported to current program counters and updated table proof.",
-    "evidence": "FirstRead.loadCalldata and run; FirstComplete.load_eq; equality discharged in FirstComplete.gasSteps and ColdFramed32.gasSteps. Original published candidate a5a1910a88192b1e5c91b09c71eccad0fbf3f2cf had a rejected score; this candidate applies its technique to the newer 616801 parent."
-  },
-  {
-    "submissionId": "0cb260a1-c264-48ca-8817-bc4705d73aba",
-    "rationale": "Current public proof-tree base and benchmark comparison. Its masked overlapping writes informed the joint table-producer/consumer integration.",
-    "evidence": "Pinned source 7246c880f7b9d96dbf11b1eb533663ae578a3595. The candidate reuses the proof graph under Challenge/Ripemd160/Submission, with changed artifact and execution bindings."
-  },
-  {
-    "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
-    "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
-    "evidence": "The Local20261028 table/reader contracts, ordinary and padding compressor modules, and control-flow proof graph descend from this submission. The new preparation replaces the selected execution bindings and integrates the selected retained operands and message-table layout."
-  },
-  {
-    "submissionId": "3a5055d3-b39f-4223-b9b8-0977b65ee5ec",
-    "rationale": "Executable foundation of the retained local lineage: compact checked-input recognizers and a full specialized padding compressor.",
-    "evidence": "Source ancestor 0f910f3fe47b35ed9226b825d4d184c1aa091ee9, also declared by the parent author's prior submission 5b5782e2. The selected candidate retains the recognizer/fallback and padding-compressor architecture."
-  },
-  {
-    "submissionId": "1ab7033a-a3c3-4770-9d2f-9993f553161f",
-    "rationale": "Reused formal models and proofs for scalar stages, paired lanes, input readers, metered execution, and output serialization.",
-    "evidence": "Source ancestor 0bc05710006a860e6ebb218c395aa03074d43302. Relevant retained files include Proofs/Bytecode/StaggerAlgorithm.lean, StackRoundTrace.lean, PersistentStaggerFunctional.lean and PadOnlyContract.lean."
-  },
-  {
-    "submissionId": "00c62922-d938-4573-a9e7-9f518a163c6b",
-    "rationale": "Public direct-final-store refinement retained in the local lineage.",
-    "evidence": "The final padding-output logic and its inherited PadOutput and PadSites contracts originate in this refinement; later relocation and representation changes require rebinding those contracts."
-  },
-  {
-    "submissionId": "f66f7ebb-ebd6-473e-b5a8-91c2eaa39948",
-    "rationale": "Public unused-constant-store removal from the specialized 32-byte table builder.",
-    "evidence": "This removed-store variant was incorporated into the producer/consumer lineage before the current code-copy table selection; its public note and source supplied the comparison."
-  },
-  {
-    "submissionId": "64ee24d7-1e41-474c-88c9-e0e2091d539e",
-    "rationale": "Public removal of fall-through jump destinations in the endian block and arm chain.",
-    "evidence": "The retained source frontier incorporated these reductions before the new joint arm-order/selector packing. Its implementation also arrives through the current public proof-tree base."
-  }
+ {
+  "submissionId": "24701213-60b6-4ad9-b92b-9e31b46bdd30",
+  "rationale": "Base tree: the promoted 614,871-gas frontier (kaankolcu). Every byte and proof outside the three stacked windows below is kept unchanged.",
+  "evidence": "Submission tree at da752dc9 / 384d0505; bytecode.hex differs from it only at PCs 196-234, 313, 318, 4625-4854 (jump-table and guard windows), 5268, 5335, 6380, 6405 and 9899-9982."
+ },
+ {
+  "submissionId": "daf694c5-3ff0-4960-aff3-973a13db8ff6",
+  "rationale": "Uses its calldata-buffer move from 1056 to 1024 (PUSH2 0x0420 -> 0x0400 at PCs 311/316, padding-footer constant 0x59 -> 0x39 at 6404) and its whole proof refactor (1056 -> 1024 bounds, 34 -> 33 active words, clearAddresses, FirstLayout, Padding.messageOffset). Worth -96 gas.",
+  "evidence": "Applied the full diff of its tree (commit 7acafd8a) to the base; 569 files. ColdLoop and ColdPaddingCore2 conflicts resolved as 1024-based pointers combined with the 210 continuation from 7ba8eca0."
+ },
+ {
+  "submissionId": "f38a4de8-792b-43fe-a585-1365e8237816",
+  "rationale": "Uses its padded-block output tail edit: SWAP7; POP; DUP13 -> SWAP7; SWAP13 at PC 9898-9900 with the freed byte as a dead RETURN at 9982, and its PadTailRaw/PadOutput/PadSites proofs. Worth -42 gas.",
+  "evidence": "Applied the diff of its tree (commit 2eb4289e); PC window 9899-9982, CandidateArtifact/CandidateBytes regenerated over the stacked bytecode."
+ },
+ {
+  "submissionId": "7ba8eca0-1b73-4971-9542-84b451ca341c",
+  "rationale": "Uses its control-flow re-lays: the generic block-loop stay fall-through at PC 192-244 (continuation 222 -> 210), the empty-input dispatch straight to its arm and the abc-guard miss straight to PC 245, with the RecDispatch*, RecAbc*, RecArms*, ColdLoop, ColdPaddingCore2 and ColdArtifact proofs. Worth -12 gas on the official corpus (its note's -2,563 figure assumes generated lengths the scorer does not use; Scorer.generatedVectors_sizes fixes them at 32/64/128).",
+  "evidence": "Applied the diff of its tree (commit c7befa57) excluding bytecode.hex/dependencies.json; conflicts in ColdLoop/ColdPaddingCore2 merged with daf694c5's 1024 base."
+ },
+ {
+  "submissionId": "b315daf6-b3a7-47d7-ac84-39242a4d2e93",
+  "rationale": "Original source of the empty-input short-size dispatch re-lay that 7ba8eca0 ports and this candidate carries.",
+  "evidence": "RecDispatch0..RecDispatch128 retargets as carried by 7ba8eca0's tree."
+ },
+ {
+  "submissionId": "ca27fee0-1661-4c0c-81cc-ad0e04d7f17c",
+  "rationale": "Original source of the abc-guard miss going straight to the generic entry, which 7ba8eca0 adapts and this candidate carries.",
+  "evidence": "RecAbcArm / RecPatterned128Entry changes as carried by 7ba8eca0's tree."
+ },
+ {
+  "submissionId": "c46d9598-e3c0-44b1-907b-fe7566d0bfdb",
+  "rationale": "Direct source and proof-tree parent: the validated 614,903-gas frontier (ordinary-writer PC 582 pad retired). Retained unchanged except the 1000-byte patterned recognizer arm: its fall-through JUMPDEST at PC 5862 (head1000) is retired and the byte is returned as one extra dead JUMP in the unreachable 0x56 run after the arm's PUSH2 4959 JUMP, so part19 keeps 192 instructions / 332 bytes, no instruction index moves, and every PC from 6135 on is unchanged.",
+  "evidence": "Based on the Submission tree at 83fdda0f119c67d4fc04fcf076b936fcafe1c6e5; RecArmsLong head1000, CandidateArtifact part19 / bytes19, CandidateBytes chunk91..chunk95, bytecode.hex."
+ },
+ {
+  "submissionId": "55693485-b4a2-4a01-b0cc-941f195f8df8",
+  "rationale": "Direct source and proof-tree parent: the validated 614,934-gas frontier (First0.templateA pad at PC 6472 retired). Retained unchanged except the count-keeping JUMPDEST at PC 582 in the ordinary schedule writer (Ordinary1); this candidate removes it and widens PUSH1 180 to PUSH2 180, keeping the 556..622 window at 67 bytes, and restores the instruction total by decoding the dead PUSH1 0 at PC 56 as two STOPs, so only artifact indices 28..237 move up by one (including the hoisted-store .copy piece index).",
+  "evidence": "Based on the Submission tree at 0c57f37ab978c4b6dd2abf961bbf1cf72a502f64; PrepOrdinary1 template, CandidateArtifact parts 0/1 and counts, CandidateBytes chunks 0 and 9, bytecode.hex, and the index witnesses in ColdArtifact, ColdGuardSites, ColdMain, ColdPaddingCore0/1/3, ColdStaggerPersistentEntrySites/LoopSites/Start, ControlSites, NormalGas, PadSites, RecDirectGuardBase/Size, RecEarlySerializeFallback, RecEntryPrefilter, RecHoistedStoreSites (index table and jump-destination facts), RecPatterned128Entry."
+ },
+ {
+  "submissionId": "83e98140-5811-4d63-b6be-e84e5347c4ad",
+  "rationale": "Direct source and proof-tree parent: the validated 614,945-gas frontier (First4 pad pair retired, 720 store widened in place). Retained unchanged; this candidate retires the remaining JUMPDEST pad at PC 6472 in the 32-byte path's first-block writer head (PrepFirst0.templateA) and keeps the 40-byte window by widening PUSH1 232 to PUSH2 232, so no PC moves and the instruction total drops 7001 -> 7000.",
+  "evidence": "Based on the Submission tree at 6d2369d9d39900731622c5d86aaa446a345d82cc; PrepFirst0 templateA, CandidateArtifact part21 / count21 / instruction_count, CandidateBytes chunk101, ColdArtifact count / padExitPath, RecArtifact count, ColdPaddingCore0/1/3, PadSites middleSite / valid4601, FirstCore tableSite / valid9983 / prefixSite / jumpSite, bytecode.hex."
+ },
+ {
+  "submissionId": "d18dbe78-37ec-4e97-8de4-5c101e2abfba",
+  "rationale": "Direct source and proof-tree parent: the validated 614,967-gas frontier (first-block 816 store). Retained unchanged except the two JUMPDEST pads it placed in First4 after the consuming 720 store; this candidate removes them and widens PUSH22 720 to PUSH24 720, keeping the window at 45 bytes and every later PC fixed, while the instruction total drops 7003 -> 7001.",
+  "evidence": "Based on the Submission tree at 57041db9f0fec57efda1712baa4721c32391ed76; PrepFirst4 template, FirstCore prefixSite/jumpSite indices 6931/6999, CandidateArtifact part 36 and instruction_count, ColdArtifact and RecArtifact counts, CandidateBytes chunk 158, bytecode.hex."
+ },
+ {
+  "submissionId": "340e677c-31a4-4b16-ad4e-a71895b1cf76",
+  "rationale": "Direct source and proof-tree parent: the validated 615,277-gas frontier (consuming low-64 screen for the 1000-byte entries). Retained unchanged; this candidate moves the padded-block output tail to 9907 so the padded compressor falls through into it (no PUSH2/JUMP/JUMPDEST on the 21 generated 64/128-byte vectors), and hoists the first 72 bytes of the 32-byte special path into the vacated 6409..6485 slot with a jump to a new JUMPDEST at 9983, keeping every PC from 9984 on fixed.",
+  "evidence": "Based on the Submission tree at 66eec9be6c7a144c8fe501cc91169f67cacd0b1e; PadSites middle / template_eq, PadTailRaw, PadOutput, PadBody, PadGas, PrepFirst0 templateA / entryTemplate / runA / runB, PrepFirstComposition FirstTable, FirstCore midState / tableSite / valid9983, FirstRead, FirstReadGas, ControlSites, FirstEntry, FirstCopy, ColdArtifact, ColdPaddingCore0/1/3; CandidateArtifact parts 0/20/21/35, CandidateBytes chunks 2/100/101/154/155, bytecode.hex."
+ },
+ {
+  "submissionId": "27d78a01-bc9f-4ed4-94e7-07f903bc30c0",
+  "rationale": "Direct source and proof-tree parent: the validated 615,279-gas frontier (re-anchored 1000-byte window cover). Retained unchanged; this candidate makes the PC-21 low-64 screen consume the loaded W 0 (no DUP2), so the patterned 1000-byte arm enters with an empty frame and its POP becomes a JUMPDEST, while the a-path reloads W 0 with PUSH0; CALLDATALOAD at PC 46 so the PC-48 seed is unchanged. The dead pad 56..63 absorbs the extra instruction, so no PC or index outside 21..63 / 11..33 moves.",
+  "evidence": "Based on the Submission tree at edf8f2d88e299ab21dc38f8dbf8cd7e04c68ab5f; RecHoistedStoreAnchorRaw anchorPrefix / run_anchor_taken / run_anchor_low_fall / reloadTemplate / run_reload, RecHoistedStoreEntry reload piece, RecHoistedStoreSites seed index, RecHoistedStoreAnchor.taken, RecArmsLong head1000 / run_head1000 / gasSteps_a1000_entry / correct1000, RecDirectGuardBase / RecDirectGuardSize located indices and PC witnesses; CandidateArtifact parts 0/19, CandidateBytes chunks 0/91, bytecode.hex."
+ },
+ {
+  "submissionId": "e9be2c95-c917-4621-8acc-36f302c1f7e6",
+  "rationale": "Direct source and proof-tree parent: the validated 615,288-gas frontier (fall-through 256-byte arm). Retained unchanged; this candidate re-plans the 1000-byte arm's calldata window cover: the literal anchor moves from offset 369 to 384, which lets windows (416,15) and (448,47) replace (401,0), (433,32) and (465,64); the entry word W 0 is popped and the (256,111) difference starts the accumulator without an OR. The unreachable JUMP pad after the arm absorbs the 4-byte / 3-instruction shrink, so no PC or instruction index outside 5862..6143 / 3674..3847 moves.",
+  "evidence": "Based on the Submission tree at f3649929002b9ec64b41bd2d68801a7eb53f3d86; RecArmsWindowCover plan1000 / anchors1000 (Cover by decide), RecArmsLong items1000 / head1000 / run_head1000 / val1000 / plan1000_mem / result1000; CandidateArtifact part 19, CandidateBytes chunks 91-95, bytecode.hex."
+ },
+ {
+  "submissionId": "956f3fe4-5d51-47e5-bbdf-e69da319890f",
+  "rationale": "Direct source and proof-tree parent: the validated 615,299-gas frontier (calldata-size shift operand for the 55-byte arm). Retained unchanged; this candidate moves the 256-byte arm's store/start prefix to sit directly before the eight-word chain entry so it falls through instead of executing PUSH2 chain; JUMP, with a dead PUSH2 before the arm and a dead STOP before the 64-byte arm, so the instruction count is unchanged and only PCs 4931..5774 / indices 3482..3640 move.",
+  "evidence": "Based on the Submission tree at dc46627edb41c562d6b35632fe4475d9d40d5e7d; RecArmsEach arm256Template / gasSteps_arm256_entry (fall-through, no run_jump) and every chain/arm PC and slice index, RecArmsScan, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecDispatch31/32/55/56/63/64/65/119/120/128, RecPatternedSites; CandidateArtifact parts 17/18/19, CandidateBytes chunks 72/73/75/77-91/95."
+ },
+ {
+  "submissionId": "76c2f807-4e4f-4241-b390-59dfaff1f526",
+  "rationale": "Direct source and proof-tree parent: the validated 615,300-gas frontier (memory-size shift operand for the 119-byte arm). Retained unchanged; this candidate re-bases the 55-byte arm's literal as PUSH26 (X << 17); CALLDATASIZE; SHL (the arm is reached only with CALLDATASIZE = 55), funded by narrowing the shared chain result PUSH3 4651 and the 65-byte arm's PUSH2 0x47 to minimal width, so instruction indices are unchanged and only PCs 5239..5588 move.",
+  "evidence": "Based on the Submission tree at bc4f945d45b13ca52a8de1edde53cb488cba5af2; PrepRecognizerLiterals template 55 / value55 / run (disjunctive calldata-size hypothesis), RecArmsScan armPC/returnPC/chainResultTemplate/run_prefix/run_start, RecArmsEach gasSteps_arm55(_entry)/byte65Template and arm PCs, RecArmsDispatch, RecArmsFinish, RecArmsLong, RecDispatch31/32/55/56/63/64/65; CandidateArtifact parts 17/18, CandidateBytes chunks 72/73/81-87."
+ },
+ {
+  "submissionId": "83c2b330-02d9-4d23-90f3-a614d46dd0ef",
+  "rationale": "Direct source and proof-tree parent: the validated 615,301-gas frontier (dead-pad-funded full-word literal for the 120-byte arm). Retained unchanged; this candidate re-bases the 119-byte arm's literal as PUSH28 (X << 40); MSIZE; SHL (MSIZE = 32 after the digest store), funded by narrowing two width-pad pushes in the 1000-byte arm and the last PUSH2 of the dead pad before JUMPDEST 6144, so instruction indices are unchanged and only PCs 5652..6115 move.",
+  "evidence": "Based on the Submission tree at 23abf6ae7c160daf685de249cb753c67d24ca290; PrepRecognizerLiterals template 119 / value119 / msize1 / run (new activeWords hypothesis), RecArmsScan run_prefix, RecArmsLong items1000, arm PCs in RecArmsScan/RecArmsEach/RecDispatch120/RecDispatch128/RecArmsDispatch/RecArmsLong/RecPatternedSites/RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/72/73/75/87-95."
+ },
+ {
+  "submissionId": "21326e0a-289c-4299-ab5b-dc0417976a56",
+  "rationale": "Direct source and proof-tree parent: the validated 615,307-gas frontier (BYTE-0 last-word check for the 65-byte chained recognizer arm). Retained unchanged; this candidate replaces the 120-byte patterned arm's shifted literal PUSH24 X; PUSH1 65; SHL with PUSH32 (X << 65) and absorbs the +5 bytes / -2 instructions in the unreachable pad before JUMPDEST 6144, retargeting the 128, 256, 376 and 1000-byte arms.",
+  "evidence": "Based on the Submission tree at 808280c56da746e2c959a5e8fa3220fb7eda99d8 (crown 77232a01); RecognizerLiteral.template generic case for 120, RecArmsScan armIndex/armPC, RecArmsEach arm128/arm256, RecDispatch128, RecArmsDispatch, RecArmsLong a376/a1000, RecPatternedSites long256/long376, RecDirectGuardBase/RecOriginalAnchor/RecHoistedStoreAnchorRaw/RecHoistedStoreAnchor 5834; CandidateArtifact parts 0/17/18/19, CandidateBytes chunks 0/73/75/88-95; bytes 5672..6143."
+ },
+ {
+  "submissionId": "f4bb164c-455b-4e44-b26e-2d391db2d2ad",
+  "rationale": "Direct source and proof-tree parent: the validated 615,308-gas frontier (BYTE-0 tail check for the one-byte patterned recognizer arm, which also admitted BYTE into RecognitionLift). Retained unchanged; this candidate applies a chained-arm variant to the 65-byte patterned arm at PC 5576..5584: PUSH1 0x47; PUSH1 248; SHL; PUSH1 64; CALLDATALOAD; XOR becomes PUSH1 64; CALLDATALOAD; PUSH0; BYTE; PUSH2 0x47; XOR. Valid because the arm is reached only when CALLDATASIZE = 65 and the two-word chain at 5162 consumes the start value only through its OR-accumulated zero test.",
+  "evidence": "Based on the Submission tree at 93106912051107d6f1126db0564cc7c0314201d2; RecArmsEach byte65Template/run_byte65/tail_past_size/readWord_64/byte65_key/byte65_zero_iff/byte65_rev_iff/gasSteps_arm65_entry/gasSteps_arm65 (arm slice at instruction 3593), RecArmsDispatch arm65, CandidateArtifact part 18, CandidateBytes chunk 87; bytes 5577..5583."
+ },
+ {
+  "submissionId": "37a224de-93c9-4aac-957c-1b894179ad6f",
+  "rationale": "Direct source and proof-tree parent: the validated 615,309-gas frontier (ordinary pack-window JUMPDEST pad retired by a widened message-load push). Retained unchanged; this candidate rewrites only the one-byte patterned arm's tail check at PC 4741..4748: PUSH1 7; PUSH1 248; SHL; PUSH0; CALLDATALOAD; XOR becomes PUSH0; CALLDATALOAD; PUSH0; BYTE; PUSH2 7; XOR, valid because the arm is reached only when CALLDATASIZE = 1.",
+  "evidence": "Based on the Submission tree at 90c494731a326b339ad43b953648ae806bec2570; RecArmsEach byte1Template/run_byte1/byte1_zero_iff/gasSteps_arm1 (arm slice at instruction 3391), RecArmsDispatch arm1, RecognitionLift BYTE advance, CandidateArtifact part 17, CandidateBytes chunk 74; bytes 4741..4748."
+ },
+ {
+  "submissionId": "ba93b2cc-7d23-4a45-9db2-644de6ecc28f",
+  "rationale": "Direct source and proof-tree parent: the validated 615,340-gas frontier (calldata-size shift operand for the 56-byte recognizer literal). Retained unchanged; this candidate retires the width-pad JUMPDEST at PC 929 in the ordinary right-lane pack window (871..977) by widening the round-2 message load PUSH2 728 to PUSH3 728, so 930 and every later PC stay fixed while every artifact instruction index from 458 on moves down by one.",
+  "evidence": "Based on the Submission tree at 8f97a8ed2fd30d97e56ae0ab1ce90739a4b2f145 (crown cfd609c6); RawPack/PrefixBefore/FirstPrologue.before templates, CandidateArtifact part 2 and instruction_count 7003, CandidateBytes chunks 13-14, bytes 878..929; instruction-index retarget of every site at index >= 458."
+ },
+ {
+  "submissionId": "e48295cc-2ee3-4d76-9663-e588fff87c02",
+  "rationale": "Direct source and proof-tree parent: the validated 615,341-gas frontier (early right-lane C-rotation in the padding-block prologue). Retained unchanged; this candidate rewrites only the 56-byte patterned recognizer literal at PC 5424..5450: PUSH24 X; PUSH1 65; SHL becomes PUSH25 (X << 9); CALLDATASIZE; SHL, valid because the arm is reached only when CALLDATASIZE = 56.",
+  "evidence": "Based on the Submission tree at 2783859ae4656567b97410a91dd730dbf7dc549f; RecognizerLiteral template 56/value56/run hsz, RecArmsScan run_prefix/run_start hsz, RecArmsEach arm entries, RecArmsDispatch arm56, CandidateArtifact part 18, CandidateBytes chunks 84-85; bytes 5424..5450."
+ },
+ {
+  "submissionId": "92a9a66d-8512-450b-855d-7bf74d12228c",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,404-gas frontier (PC-sourced 594 store via a hoisted message-word load in the ordinary prologue, bytes 556..759). Retained unchanged; this candidate applies the early right-lane C-rotation to the padding-block prologue (front 89..127, middle 6504..6641), retiring its SWAP4, and re-tiles the 128 stub with a one-byte continuation push.",
+  "evidence": "Based on the Submission tree at 3c52899ad820b420e769e81d7d3b82787ac3d4e9; PadRawRight0/PadRawRight1/PadRawPack templates, PadCoreRight0/PadCoreRight1/PadCorePack/PadPrologue shapes, PadSites front/middle, ColdLoopRaw.setContTemplate, stub-128 loop/entry sites, CandidateArtifact parts 0 and 21, CandidateBytes chunks 1, 2, 101, 102; bytes 95..142 and 6505..6541."
+ },
+ {
+  "submissionId": "6928cadd-c409-4794-98ad-4d5553245060",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,435-gas frontier (early right-lane C-rotation, SWAP4 retired from the right-lane prologue at PC 794..977). Retained unchanged; this candidate reorders the Ordinary1 loads so the word stored at 594 is resident before byte 594 and a PC opcode supplies the 594 offset, computing the biased 134 word last and retiring it at 936 before the 846 store.",
+  "evidence": "Based on the Submission tree at 0c4cd6f41; PrepOrdinary1..6, PrepOrdinaryMemory memory chain/state1..6, PrepOrdinaryCertificate plan, PrepOrdinaryComposition window PCs 623/648, CandidateArtifact part 1, CandidateBytes chunks 8-11; bytes 556..759."
+ },
+ {
+  "submissionId": "343b16c8-579a-49c0-9f4d-09dee953afa3",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,497-gas frontier (PC-sourced 0x80 padding byte hosted by a shifted 482 store in the first-block prologue). Retained unchanged; this candidate rewrites only the ordinary right-lane prologue rounds at PC 794..977 (early right-lane C-rotation, SWAP4 retired, one JUMPDEST width pad).",
+  "evidence": "Based on the Submission tree at bb6842e984289335c832248e088cce27580b6a43; RawRight0/RawRight1/RawPack templates, CoreRight0/CoreRight1/CorePack/CorePrologue shapes, PrefixBefore.template, FirstPrologue.before, CandidateArtifact parts 1-2, CandidateBytes chunks 12-14; bytes 800..929."
+ },
+ {
+  "submissionId": "784a8fe6-2e65-47d8-a561-be10a9b2e2ff",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,508-gas frontier (shifted 814 store replaces the NOT-masked 828 store in the first-block prologue). Retained unchanged; this candidate moves the first-block 0x80 padding byte at 787 into a PC-sourced MSTORE8 hosted by the bytes freed when the 468 masked store becomes a 112-bit left shift stored at 482.",
+  "evidence": "Based on the Submission tree at 62e7205698a1e134a231e98fdef30c59515a88a2; PrepFirst1, PrepFirst3, PrepFirstMemory memory6/memory17, PrepFirstCertificate symbols6/symbols17/shl112_byte, CandidateArtifact part 35, CandidateBytes chunks 156-158; bytes 9987..10118."
+ },
+ {
+  "submissionId": "de1b04d7-b024-4f30-8d42-6acb805cce79",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,541-gas frontier (PC-sourced 792 store via a two-slot load swap in the ordinary message prologue). Retained unchanged; this candidate replaces the NOT-masked 828 store of the first-block prologue with a 112-bit right shift stored at 814.",
+  "evidence": "Based on the Submission tree at 7dd4ace6974cbfc34d02ea4b08cae071d41f2bd9; PrepFirst4, PrepFirstMemory memory25, PrepFirstCertificate symbols25/matches25, PrepFirst608, FirstCore site indices, CandidateArtifact part 36, CandidateBytes chunk 158; bytes 10155..10175."
+ },
+ {
+  "submissionId": "baf91c0b-c911-47a7-8322-9ec8af9f342f",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,572-gas frontier (single-swap bottom-up restack of the first-block PrefixAfter frame). Retained unchanged; this candidate swaps the load slots of the 138 and 180 message words in the ordinary prologue so the disjoint 792 store becomes the last bare consumer and takes its offset from PC.",
+  "evidence": "Based on the Submission tree at b14a45e665327ed9a9e8878d10296610d450c33b; PrepOrdinary1/3/4/5/6/7, PrepOrdinaryMemory memory13/25/36 and state1-6, PrepOrdinaryCertificate plan, CandidateArtifact part 1, CandidateBytes chunks 8-12; bytes 557..793."
+ },
+ {
+  "submissionId": "bf0fdb3b-237b-4c46-b8a6-b2e361c73c2c",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,671-gas frontier (PC-sourced 720 store offset in the ordinary message prologue). Retained unchanged; this candidate restacks only the first-block PrefixAfter window (single SWAP4 frame build), whose earlier literal folds come from 54dea2f0 and b1d795c1.",
+  "evidence": "Based on the Submission tree at 59b3f5497e051aad0ec1998b956fd1f7950f50bf; PrepPrefixAfter template, FirstPrologue.after, CandidateArtifact part 36, CandidateBytes chunks 159-162; bytes 10199..10421."
+ },
+ {
+  "submissionId": "f300667a-f224-4ac4-a082-366f685d279c",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,702-gas frontier (block-minimal window tiling of the 1,000-byte recognizer). Retained unchanged; this candidate reorders three disjoint stores in the ordinary message prologue so a PC opcode supplies the 720 offset.",
+  "evidence": "Based on the Submission tree at 5bbac375d4af7e35d6a90026a586133a4ce07f77; PrepOrdinary5, PrepOrdinaryMemory memory17-19, PrepOrdinaryCertificate plan, CandidateArtifact part 1, CandidateBytes chunk 11; bytes 707..734."
+ },
+ {
+  "submissionId": "ce39edff-5133-4074-b975-6951d367f11a",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,735-gas frontier (redundant 1,000-byte window checks retired to dead tail). This candidate re-tiles the same arm's window cover to the block-minimal 23 compare windows and keeps the dead-tail layout.",
+  "evidence": "Based on the Submission tree at 72653d83268d91be733f21540c10584e55d37850; RecArmsLong items1000, RecArmsWindowCover plan1000, CandidateArtifact parts 19-20, CandidateBytes chunks 92-95; bytes 5924..6136."
+ },
+ {
+  "submissionId": "65de591d-e494-4d9a-a778-e190b9c8f4d0",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,771-gas frontier (MSIZE offsets in the 1,000-byte arm, diversity-neutral pads). This candidate drops the redundant (364,219) and (509,219) compare items of the same arm and parks the freed bytes as dead code after its final JUMP.",
+  "evidence": "Based on the Submission tree at d81adc4177a63152d13c4c40a8d18085eb47b1fb; RecArmsLong items1000, RecArmsWindowCover plan1000, CandidateArtifact parts 19-20, CandidateBytes chunks 94-95; bytes 6056..6143."
+ },
+ {
+  "submissionId": "b1d795c1-584b-4d98-a3f6-a38eaaaf6651",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,773-gas frontier (complement-XOR addend folded into SUB in the 32-byte PrefixAfter window). Retained unchanged.",
+  "evidence": "Based on the Submission tree at 7579fa5ab5ccbdc65831107dc01b3be2ce85d8e8; PrefixAfter bytes 10224..10253 untouched."
+ },
+ {
+  "submissionId": "02dd6793-d6ee-4682-a807-e18cd1a07cb5",
+  "rationale": "Ported mechanism (kaankolcu): MSIZE replaces PUSH1 0x20 at the offset-433 and offset-578 compare items of the 1,000-byte arm. Its Item.eqM proof form is reused; the width pads moved to the eq 288 143 / eq 320 175 items to keep the diversity budget at 15,066.",
+  "evidence": "RecArmsLong items1000, CandidateArtifact part19, CandidateBytes chunks 91-92; PCs 5829..5951."
+ },
+ {
+  "submissionId": "54dea2f0-37f9-44b1-aadf-66913e4d29e9",
+  "rationale": "Direct source and proof-tree parent: the promoted 615,806-gas frontier (subtract-form round-1 constant in the 32-byte path). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
+  "evidence": "This candidate changes two compare items of the 1,000-byte patterned arm (RecArmsLong items1000) at PCs 5894..5902 and 5929..5937 and regenerates CandidateBytes/CandidateArtifact for the same-length bytes, based on the Submission tree at 784547f9 (promoted 54dea2f0)."
+ },
+ {
+  "submissionId": "67d0cd03-1b67-4b70-a5cf-297fa630aea6",
+  "rationale": "Grandparent: the promoted 615,839-gas frontier (rematerialized shift literal in the 32-byte path). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
+  "evidence": "This candidate changes two compare items of the 1,000-byte patterned arm (RecArmsLong items1000) at PCs 5894..5902 and 5929..5937, regenerates CandidateBytes/CandidateArtifact for the same-length bytes, based on the Submission tree at 52603a0807b7f398daffcbd56bc897587f7c6bb8."
+ },
+ {
+  "submissionId": "6bbb6d6d-9acb-418f-94f1-97d29a3e476e",
+  "rationale": "Earlier frontier (615,971, round-49 filler removal) inherited through the direct parent.",
+  "evidence": "Its RawPaired49 template and index rebasing are retained unchanged."
+ },
+ {
+  "submissionId": "5f01fde9-3006-4434-9b32-3d338c121fef",
+  "rationale": "Direct source and proof-tree parent: the promoted 616,013-gas frontier (Pad49 + A1 filler removals). Every compressor, table, dispatch, recognizer, padding and correctness module is retained.",
+  "evidence": "This candidate applies the same same-length filler-removal technique as that submission's A1 change, to round 49 of the normal compressor (RawPaired49, bytes 3288..3293), and rebases the decoded-instruction indices after it by one, based on the Submission tree at bfa4840ca8db4910ddd64ecc6cd60e20553373c5."
+ },
+ {
+  "submissionId": "354bc894-43bd-4043-bdbc-c3c94a430b78",
+  "rationale": "Direct source and proof-tree parent at the 616790-gas frontier. All compression, table, dispatch, recognizer and correctness infrastructure is retained.",
+  "evidence": "This candidate changes three padding-block round templates (constant message word folded into the round key), the templates of paired rounds 15, 16, 48 and 49 in both compressors (one stack shuffle removed in each pair), four gas-neutral commutative operand orders, and the byte/PC bindings and schedules of the rounds that move, based on the Submission tree at 4d1e2de5ad7069b0f4abc0b53a9c62c727910fda."
+ },
+ {
+  "submissionId": "82ed8662-84e0-4554-81a7-0cefa3e3ac7c",
+  "rationale": "Our own earlier candidate with the round-73 padding fold alone (616,664). This candidate keeps that fold and its PadRaw73 proof.",
+  "evidence": "PadRaw73.fold_message_key and the folded round-73 key literal are the same as in 82ed8662; this candidate restores the parent's PUSH1 0x14 in that round, adds the round-0 and round-65 folds and the round 15/16 and 48/49 shuffle removals."
+ },
+ {
+  "submissionId": "e25fb40f-37d3-4050-8203-54d6b6cb8f03",
+  "rationale": "Our own accepted candidate with the round-0 and round-73 padding folds (616,538), the record when this candidate was submitted. This candidate keeps both folds and their proofs.",
+  "evidence": "PadRaw0.fold_message_key and PadRaw73.fold_message_key are the same as in e25fb40f; its PUSH13->PUSH14 widening in round 43 is dropped because the added round-65 fold and round 73's two-byte shrink already balance the routine's length."
+ },
+ {
+  "submissionId": "3b458b01-80a9-45c7-86bc-caa2e1a60bfd",
+  "rationale": "Direct source and proof-tree parent at the current 616801-gas frontier. All compression, table, dispatch and universal correctness infrastructure is retained.",
+  "evidence": "This candidate modifies only the two-byte first-word read plus its local byte/proof bindings, based on the promoted Submission tree at 97f6c711f9cd7a9675c51441dcd704e2c610253b."
+ },
+ {
+  "submissionId": "083515e7-2ccd-462b-8c38-59f0e4ecf57d",
+  "rationale": "Reuses the direct calldata-load optimization and its local proof/equality technique, ported to current program counters and updated table proof.",
+  "evidence": "FirstRead.loadCalldata and run; FirstComplete.load_eq; equality discharged in FirstComplete.gasSteps and ColdFramed32.gasSteps. Original published candidate a5a1910a88192b1e5c91b09c71eccad0fbf3f2cf had a rejected score; this candidate applies its technique to the newer 616801 parent."
+ },
+ {
+  "submissionId": "0cb260a1-c264-48ca-8817-bc4705d73aba",
+  "rationale": "Current public proof-tree base and benchmark comparison. Its masked overlapping writes informed the joint table-producer/consumer integration.",
+  "evidence": "Pinned source 7246c880f7b9d96dbf11b1eb533663ae578a3595. The candidate reuses the proof graph under Challenge/Ripemd160/Submission, with changed artifact and execution bindings."
+ },
+ {
+  "submissionId": "5b5782e2-cba0-468c-9d36-d2f48d929b01",
+  "rationale": "Inherited earlier accepted overlapping message-table implementation, specialized padding path, and full proof architecture.",
+  "evidence": "The Local20261028 table/reader contracts, ordinary and padding compressor modules, and control-flow proof graph descend from this submission. The new preparation replaces the selected execution bindings and integrates the selected retained operands and message-table layout."
+ },
+ {
+  "submissionId": "3a5055d3-b39f-4223-b9b8-0977b65ee5ec",
+  "rationale": "Executable foundation of the retained local lineage: compact checked-input recognizers and a full specialized padding compressor.",
+  "evidence": "Source ancestor 0f910f3fe47b35ed9226b825d4d184c1aa091ee9, also declared by the parent author's prior submission 5b5782e2. The selected candidate retains the recognizer/fallback and padding-compressor architecture."
+ },
+ {
+  "submissionId": "1ab7033a-a3c3-4770-9d2f-9993f553161f",
+  "rationale": "Reused formal models and proofs for scalar stages, paired lanes, input readers, metered execution, and output serialization.",
+  "evidence": "Source ancestor 0bc05710006a860e6ebb218c395aa03074d43302. Relevant retained files include Proofs/Bytecode/StaggerAlgorithm.lean, StackRoundTrace.lean, PersistentStaggerFunctional.lean and PadOnlyContract.lean."
+ },
+ {
+  "submissionId": "00c62922-d938-4573-a9e7-9f518a163c6b",
+  "rationale": "Public direct-final-store refinement retained in the local lineage.",
+  "evidence": "The final padding-output logic and its inherited PadOutput and PadSites contracts originate in this refinement; later relocation and representation changes require rebinding those contracts."
+ },
+ {
+  "submissionId": "f66f7ebb-ebd6-473e-b5a8-91c2eaa39948",
+  "rationale": "Public unused-constant-store removal from the specialized 32-byte table builder.",
+  "evidence": "This removed-store variant was incorporated into the producer/consumer lineage before the current code-copy table selection; its public note and source supplied the comparison."
+ },
+ {
+  "submissionId": "64ee24d7-1e41-474c-88c9-e0e2091d539e",
+  "rationale": "Public removal of fall-through jump destinations in the endian block and arm chain.",
+  "evidence": "The retained source frontier incorporated these reductions before the new joint arm-order/selector packing. Its implementation also arrives through the current public proof-tree base."
+ }
 ]

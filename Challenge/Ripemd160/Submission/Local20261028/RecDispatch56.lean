@@ -20,26 +20,26 @@ open StackRoundTrace StackRoundTemplate J2Moves ReverseLiteralRaw
 open Arms.Scan
 
 def tramp56Site : GenericRoundSite Control.Artifact.submissionArtifact .Osaka (trampTemplate 5429) :=
-  StackSiteBuilder.ofSlice (trampTemplate 5429) 3363 (by rfl)
-    (by change 3363 + (trampTemplate 5429).length ≤ Control.Artifact.submissionInstructions.length
+  StackSiteBuilder.ofSlice (trampTemplate 5429) 3347 (by rfl)
+    (by change 3347 + (trampTemplate 5429).length ≤ Control.Artifact.submissionInstructions.length
         rw [CandidateArtifact.instruction_count]; decide)
     (by rw [CandidateArtifact.code_size]; decide)
     (Control.StackRoundData.templateWellFormed_mem (instructions := trampTemplate 5429) (by decide)) (by decide)
-theorem tramp56_pc : tramp56Site.startPC = UInt256.ofNat 4672 := by
-  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3363) = _
+theorem tramp56_pc : tramp56Site.startPC = UInt256.ofNat 4634 := by
+  change UInt256.ofNat (Control.Artifact.submissionArtifact.instructionPC 3347) = _
   rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide
-theorem valid_tramp56 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4672 = true :=
-  valid_at 3363 4672 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
+theorem valid_tramp56 : Decode.isValidJumpDest Control.Artifact.submissionArtifact.code 4634 = true :=
+  valid_at 3347 4634 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)
 def gasSteps_tramp56 (input : ByteArray) :
-    GasSteps (atState (base input) 4672 []) (atState (base input) 5429 []) :=
+    GasSteps (atState (base input) 4634 []) (atState (base input) 5429 []) :=
   RecognitionLift.gasSteps_of_raw tramp56Site _ _ rfl rfl rfl deployAddress_not_precompile
     (by simpa [atState] using tramp56_pc.symm) (RecognitionLift.advancesAll_sound _ (by decide))
-    (run_tramp input 4672 5429 (by decide)
+    (run_tramp input 4634 5429 (by decide)
       (valid_at 3569 5429 (by rfl) (by rw [ArtifactByteLength.instructionPC_eq_byteLength]; decide)))
 def gasSteps_short56 (input : ByteArray) (h : input.size = 56) :
-    GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 4672 []) := by
-  have hs := Control.Patterned128Entry.shortSource_eq input 56 4672 h (by decide)
-  have hn : (Control.Patterned128Entry.shortSource input).toNat = 4672 := by rw [hs]; rfl
+    GasSteps (Control.DirectGuard.guardEntry input) (atState (base input) 4634 []) := by
+  have hs := Control.Patterned128Entry.shortSource_eq input 56 4634 h (by decide)
+  have hn : (Control.Patterned128Entry.shortSource input).toNat = 4634 := by rw [hs]; rfl
   have g := Control.Patterned128Entry.gasSteps_short input (by omega)
     (by rw [hn]; exact valid_tramp56)
   exact GasSteps.cast g rfl (by rw [hn]; rfl)

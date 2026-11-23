@@ -81,7 +81,7 @@ private theorem actualOutput_eq (n : UInt256) (x : Input) (rho : List UInt256) :
     actualOutput n x rho = outputStack n x rho := by rfl
 private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (halias : rho[2]? = some x.v2) (haliasC : rho[1]? = some x.v3) (haliasD : rho[0]? = some x.v4) (haliasA : rho[3]? = some x.v1) (hkey : x.v0 = UInt256.ofNat 1352829926) (haliasE : x.v12 = x.v5) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat)
+    (hactive : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :
@@ -90,7 +90,7 @@ private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : Li
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 1024) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
   simp (discharger := omega) [template, inputStack, actualOutput, hcal, hmem, hvalid, PadValues.load,
@@ -103,7 +103,7 @@ private theorem run_generated (s : State) (pc n : UInt256) (x : Input) (rho : Li
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc n : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (halias : rho[2]? = some x.v2) (haliasC : rho[1]? = some x.v3) (haliasD : rho[0]? = some x.v4) (haliasA : rho[3]? = some x.v1) (hkey : x.v0 = UInt256.ofNat 1352829926) (haliasE : x.v12 = x.v5) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat)
+    (hactive : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 6504 = true) :

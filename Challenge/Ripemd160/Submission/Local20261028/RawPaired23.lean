@@ -119,13 +119,13 @@ private theorem actualOutput_eq (memory : ByteArray) (x : Input) (rho : List UIn
     actualOutput memory x rho = outputStack memory x rho := by rfl
 private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack s.memory x rho} =
       some {s with pc := pcAfter pc template, stack := actualOutput s.memory x rho} := by
   have hbase : rho.length < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
   have hcap (n : Nat) (hn : n ≤ 48) : rho.length + n < 1024 := by omega
-  have hactiveAt (address : Nat) (haddress : address ≤ 1056) :
+  have hactiveAt (address : Nat) (haddress : address ≤ 1024) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address 32) = s.activeWords :=
     Stagger144Active.word_active_preserved_of_small s.activeWords address hactive haddress
   simp (discharger := omega) [template, inputStack, actualOutput,
@@ -136,7 +136,7 @@ private theorem run_generated (s : State) (pc : UInt256) (x : Input) (rho : List
   all_goals repeat first | apply And.intro | exact True.intro | rfl
 theorem run_actual (s : State) (pc : UInt256) (x : Input) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := pc, stack := inputStack s.memory x rho} =
       some {s with pc := pcAfter pc template, stack := outputStack s.memory x rho} := by
   simpa only [actualOutput_eq] using run_generated s pc x rho hstack hrun hactive

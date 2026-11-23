@@ -35,7 +35,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hs : rho.length ≤ 900) (halias : rho[2]? = some q.b) (haliasC : rho[1]? = some q.c)
     (haliasD : rho[0]? = some q.d) (haliasA : rho[3]? = some q.a) (hh4 : h4 = q.e)
-    (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
  :
     StackRoundTrace.runInstrSeq RawRight0.template {s with pc := UInt256.ofNat 794, stack := stack s.memory h4 [ .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .e ] q right (UInt256.ofNat 1352829926) rho} =
       some {s with pc := UInt256.ofNat 835, stack := stack s.memory h4 [ .b ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) (UInt256.shiftRight (UInt256.mul factorPlusWord (CoreModel.right0 s.memory q).c) (UInt256.ofNat 23) :: stack s.memory h4 [ .d, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (CoreModel.right0 s.memory q) (right) (UInt256.ofNat 1352829926) rho)} := by

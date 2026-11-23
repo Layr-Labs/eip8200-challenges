@@ -34,7 +34,7 @@ theorem correct_from_padding (s : State) (e : FirstEntry.Env s) (input : ByteArr
     (hsize : input.size = 64*(n.val+1)) (h : Compression.HashState)
     (hh : CompressionCorrect.hashArray h = CompressionSeamBridge.hashAfter input (n.val+1))
     (off limit : UInt256) (rho : List UInt256) (hs : rho.length ≤ 892)
-    (hcal : s.executionEnv.calldata = input) (ha : 34 ≤ s.activeWords.toNat)
+    (hcal : s.executionEnv.calldata = input) (ha : 33 ≤ s.activeWords.toNat)
     (hcall : s.callStack = []) :
     ∃ g₀ : Nat, ∀ gas : Nat, g₀ ≤ gas →
       Eval (withGas {s with pc := UInt256.ofNat 64, stack := StaggerPersistentFrame.frame h off limit (DenseScheduleTemplate.mask8::DenseScheduleTemplate.mask16::rho)} gas)

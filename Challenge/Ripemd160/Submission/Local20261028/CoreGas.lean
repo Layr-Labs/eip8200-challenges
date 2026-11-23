@@ -42,7 +42,7 @@ theorem site_pc : site.startPC = UInt256.ofNat 794 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def gasSteps (s : State) (h : Compression.HashState) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 894) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig
       s.executionEnv.fork s.executionEnv.codeAddr = false) :

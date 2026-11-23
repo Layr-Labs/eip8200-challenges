@@ -54,12 +54,12 @@ def outputs (x : Nat → UInt256) (rho : List UInt256) (s : State) : List UInt25
 def memory (x : Nat → UInt256) (s : State) : ByteArray := (MachineState.writeBytes ((MachineState.writeBytes ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) (Data.Bytes.natToBytesPadded ((MachineState.readWord ((MachineState.writeBytes (s.memory) (Data.Bytes.natToBytesPadded ((MachineState.readWord (s.memory) 236)).toNat 32) 218)) 268)).toNat 32) 286)) (ByteArray.mk #[UInt8.ofNat (((UInt256.ofNat 128)).toNat % 256)]) 147)
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := (UInt256.ofNat 9944), stack := inputs x rho} =
       some {s with pc := (UInt256.ofNat 9987), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hactiveAt (address size : Nat) (ha : address+size ≤ 1088) :
+  have hactiveAt (address size : Nat) (ha : address+size ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address size) = s.activeWords := by
     have heq : MachineState.activeWordsAfter s.activeWords.toNat address size = s.activeWords.toNat := by
       unfold MachineState.activeWordsAfter
@@ -121,12 +121,12 @@ theorem exact_bytesB :
   decide +kernel
 theorem runA (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq templateA {s with pc := (UInt256.ofNat 6442), stack := inputs x rho} =
       some {s with pc := (UInt256.ofNat 6482), stack := midStack x rho s, memory := midMemory s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hactiveAt (address size : Nat) (ha : address+size ≤ 1088) :
+  have hactiveAt (address size : Nat) (ha : address+size ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address size) = s.activeWords := by
     have heq : MachineState.activeWordsAfter s.activeWords.toNat address size = s.activeWords.toNat := by
       unfold MachineState.activeWordsAfter
@@ -144,12 +144,12 @@ theorem runA (s : State) (x : Nat → UInt256) (rho : List UInt256)
   all_goals rfl
 theorem runB (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq entryTemplate {s with pc := (UInt256.ofNat 9983), stack := midStack x rho s, memory := midMemory s} =
       some {s with pc := (UInt256.ofNat 9987), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hactiveAt (address size : Nat) (ha : address+size ≤ 1088) :
+  have hactiveAt (address size : Nat) (ha : address+size ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address size) = s.activeWords := by
     have heq : MachineState.activeWordsAfter s.activeWords.toNat address size = s.activeWords.toNat := by
       unfold MachineState.activeWordsAfter

@@ -16,7 +16,7 @@ def fields (q : ScheduledTailRaw.Input) (m8 m16 : UInt256) (i : Fin 23) : UInt25
   | 5 => UInt256.shiftRight q.rb (UInt256.ofNat 144)
   | 6 => q.le
   | 7 => UInt256.shiftRight q.ra (UInt256.ofNat 144)
-  | 8 => q.factor
+  | 8 => upperWord
   | 9 => q.lower
   | 10 => q.cache140
   | 11 => q.cache350
@@ -37,8 +37,7 @@ def template : List Instr :=
     .op .SHR,
     .op .ADD,
     .op (.Swap ⟨6, by decide⟩),
-    .op .POP,
-    .op (.Dup ⟨12, by decide⟩),
+    .op (.Swap ⟨12, by decide⟩),
     .op .MUL,
     .op (.Swap ⟨3, by decide⟩),
     .op .POP,
@@ -62,7 +61,7 @@ theorem run (s : State) (q : ScheduledTailRaw.Input) (m8 m16 : UInt256)
     (rho : List UInt256) (hs : rho.length ≤ 970) (hr : s.halt = .Running)
     (hlower : q.lower = UInt256.ofNat 4294967295) :
     runInstrSeq template {s with pc := UInt256.ofNat 9893, stack := ScheduledTailRaw.stack0 q (m8::m16::rho)} =
-      some {s with pc := UInt256.ofNat 9924, stack := RipemdTerminalMaskWindows20261027.frame (fields q m8 m16) rho} := by
+      some {s with pc := UInt256.ofNat 9923, stack := RipemdTerminalMaskWindows20261027.frame (fields q m8 m16) rho} := by
   have hcap (n : Nat) (hn : n ≤ 50) : rho.length+n < 1024 := by omega
   simp (discharger := omega) [template, fields, ScheduledTailRaw.stack0,
     RipemdTerminalMaskWindows20261027.frame, runInstrSeq, DataStepper.runInstr,

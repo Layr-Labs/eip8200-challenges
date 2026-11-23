@@ -52,12 +52,12 @@ theorem exact_bytes :
   decide +kernel
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := (UInt256.ofNat 530), stack := inputs x rho} =
       some {s with pc := (UInt256.ofNat 556), stack := outputs x rho s, memory := memory x s} := by
   have hcap (n : Nat) (hn : n ≤ 100) : rho.length + n < 1024 := by omega
   have hzero : ({val := 0} : UInt256).toNat = 0 := rfl
-  have hactiveAt (address size : Nat) (ha : address+size ≤ 1088) :
+  have hactiveAt (address size : Nat) (ha : address+size ≤ 1056) :
       UInt256.ofNat (MachineState.activeWordsAfter s.activeWords.toNat address size) = s.activeWords := by
     have heq : MachineState.activeWordsAfter s.activeWords.toNat address size = s.activeWords.toNat := by
       unfold MachineState.activeWordsAfter

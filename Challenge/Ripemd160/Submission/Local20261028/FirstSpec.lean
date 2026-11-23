@@ -8,9 +8,9 @@ set_option linter.unusedSimpArgs false
 
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.FirstSpec
 open EvmSemantics EvmSemantics.EVM Challenge.EvmProof
-def copiedMemory (input : ByteArray) : ByteArray := MachineState.writeBytes ByteArray.empty input 1056
+def copiedMemory (input : ByteArray) : ByteArray := MachineState.writeBytes ByteArray.empty input 1024
 def highScalar (k : Nat) : Nat := if k = 8 then 128 else if k = 14 then 256 else 0
-def scalars (m : ByteArray) (k : Nat) : UInt32 := if k < 8 then UInt32.ofNat (PairedScheduleData.extractedWord m 1056 k).toNat else UInt32.ofNat (highScalar k)
+def scalars (m : ByteArray) (k : Nat) : UInt32 := if k < 8 then UInt32.ofNat (PairedScheduleData.extractedWord m 1024 k).toNat else UInt32.ofNat (highScalar k)
 
 theorem readLE32_congr (a b : ByteArray) (x y : Nat)
     (h : ∀ i, i < 4 → a[x + i]?.getD 0 = b[y + i]?.getD 0) :
@@ -49,7 +49,7 @@ theorem padded_upper (input : ByteArray) (h32 : input.size = 32)
 
 theorem copied_lower_read (input : ByteArray) (h32 : input.size = 32)
     (k : Nat) (hk : k < 8) :
-    Crypto.Ripemd160.readLE32 (copiedMemory input) (1056 + 4 * k) =
+    Crypto.Ripemd160.readLE32 (copiedMemory input) (1024 + 4 * k) =
       Crypto.Ripemd160.readLE32 (Padding.paddedMessage input) (4 * k) := by
   apply readLE32_congr
   intro i hi
@@ -60,15 +60,15 @@ theorem copied_lower_read (input : ByteArray) (h32 : input.size = 32)
   omega
 
 theorem extracted_readLE32 (memory : ByteArray) (k : Nat) (hk : k < 16) :
-    PairedScheduleData.extractedWord memory 1056 k =
-      Word.ofUInt32 (Crypto.Ripemd160.readLE32 memory (1056 + 4 * k)) := by
+    PairedScheduleData.extractedWord memory 1024 k =
+      Word.ofUInt32 (Crypto.Ripemd160.readLE32 memory (1024 + 4 * k)) := by
   rw [PairedScheduleData.extractedWord_eq_expectedWord _ _ _ hk (by omega)]
-  have hp : Schedule.loadOffsetWord (UInt256.ofNat 1056) k =
-      UInt256.ofNat (1056 + 4 * k) := by
+  have hp : Schedule.loadOffsetWord (UInt256.ofNat 1024) k =
+      UInt256.ofNat (1024 + 4 * k) := by
     apply Word.word_ext
     rw [PairedScheduleData.loadOffsetWord_toNat _ _ hk (by omega),
       Word.word_toNat_ofNat, Nat.mod_eq_of_lt (by omega)]
-  change Word.mask32 (Schedule.readLEWord memory (Schedule.loadOffsetWord (UInt256.ofNat 1056) k)) = _
+  change Word.mask32 (Schedule.readLEWord memory (Schedule.loadOffsetWord (UInt256.ofNat 1024) k)) = _
   rw [hp]
   exact WordReader.mask32_readLEWord_eq_readLE32 _ _ (by omega)
 

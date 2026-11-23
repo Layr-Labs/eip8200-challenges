@@ -55,7 +55,7 @@ theorem output_eq (n : UInt256) (h q : WordLane) (off limit : UInt256)
 #print axioms input_eq
 #print axioms output_eq
 theorem run (s : State) (n : UInt256) (h q : WordLane) (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = n)
     (hmem : MachineState.readWord s.memory 0 = PadValues.load n 162) :
     StackRoundTrace.runInstrSeq PadRawPack.template

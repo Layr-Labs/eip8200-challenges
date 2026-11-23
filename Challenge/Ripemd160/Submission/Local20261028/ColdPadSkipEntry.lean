@@ -81,7 +81,7 @@ private theorem skip_active_toNat (input : ByteArray) (hfit : CalldataFits input
     omega
 
 theorem entryState_active (input : ByteArray) (hfit : CalldataFits input)
-    (hpos : 0 < input.size) : 35 ≤ (entryState input).activeWords.toNat := by
+    (hpos : 0 < input.size) : 34 ≤ (entryState input).activeWords.toNat := by
   unfold entryState Control.PaddingTrace.entryState
   split
   · next hz =>
@@ -225,30 +225,6 @@ theorem entryState_zero_below (input : ByteArray) (hfit : CalldataFits input)
     rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]
     simp
 
-theorem entryState_gapClear (input : ByteArray) (hfit : CalldataFits input) :
-    GapClear (Control.PadSkipEntry.entryState input).memory := by
-  intro j hj k hk0 hk1
-  have hjb := lowerPairSlots_bounds j hj
-  have ha : 18 * j + k < Padding.messageOffset := by
-    unfold Padding.messageOffset
-    omega
-  have hbase : (Control.PaddingTrace.padLengthReady input).memory = ByteArray.empty := rfl
-  have hp : 64 ≤ Padding.paddedLength input.size := by
-    unfold Padding.paddedLength
-    omega
-  unfold Control.PadSkipEntry.entryState Control.PaddingTrace.entryState
-  split
-  · change (MachineState.writeBytes (Control.PaddingTrace.padLengthReady input).memory
-      (MachineState.readPadded input 0 input.size) Padding.messageOffset)[18 * j + k]?.getD 0 = 0
-    rw [MachineState.writeBytes_getElem?_getD, if_neg (by omega), hbase]
-    simp
-  · rw [Control.PaddingTrace.padReturned_getD_window input hfit _ (by omega) ⟨by omega, by omega⟩]
-    simp only [Padding.paddedMemory, Padding.sentinelMemory, Padding.copiedMemory,
-      MachineState.writeBytes_getElem?_getD]
-    rw [if_neg (by omega), if_neg (by omega), if_neg (by omega), hbase]
-    simp
-
-#print axioms entryState_gapClear
 #print axioms entryState_lowClear
 #print axioms entryState_active
 #print axioms entryState_allocated

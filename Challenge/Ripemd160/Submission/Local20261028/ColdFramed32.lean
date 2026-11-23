@@ -17,34 +17,55 @@ theorem copied_memory (input : ByteArray) :
   rfl
 
 theorem copied_active (input : ByteArray) (h32 : input.size = 32) :
-    (padCopied input).activeWords = UInt256.ofNat 34 := by
-  change UInt256.ofNat (MachineState.activeWordsAfter 0 1056 input.size) = _
+    (padCopied input).activeWords = UInt256.ofNat 33 := by
+  change UInt256.ofNat (MachineState.activeWordsAfter 0 1024 input.size) = _
   rw [h32]
   rfl
 
 def prepared (input : ByteArray) : State := FirstCore.prepared (FirstRead.result (high (padCopied input)))
 def resultHash (input : ByteArray) := CoreFunctional.result (prepared input).memory FirstCore.initialHash
 def result (input : ByteArray) (rho : List UInt256) :=
-  Return32Serialize.result (prepared input) (resultHash input) (UInt256.ofNat 1056)
+  Return32Serialize.result (prepared input) (resultHash input) (UInt256.ofNat 1024)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho)
+
+theorem env_prepared (t : State) : (FirstCore.prepared t).executionEnv = t.executionEnv := rfl
+theorem env_read (t : State) : (FirstRead.result t).executionEnv = t.executionEnv := rfl
+theorem env_high (t : State) : (FirstEntry.high t).executionEnv = t.executionEnv := rfl
+theorem fork_prepared (t : State) : (FirstCore.prepared t).fork = t.fork := rfl
+theorem fork_read (t : State) : (FirstRead.result t).fork = t.fork := rfl
+theorem fork_high (t : State) : (FirstEntry.high t).fork = t.fork := rfl
+theorem halt_prepared (t : State) : (FirstCore.prepared t).halt = t.halt := rfl
+theorem halt_read (t : State) : (FirstRead.result t).halt = t.halt := rfl
+theorem halt_high (t : State) : (FirstEntry.high t).halt = t.halt := rfl
 
 def gasSteps (input : ByteArray) (h32 : input.size = 32) (rho : List UInt256) (hs : rho.length ≤ 20) :
     GasSteps (StackTail.append (padFramed input) rho) (result input rho) := by
   let s := padCopied input
   have e : Env s := ⟨rfl,rfl,rfl,deployAddress_not_precompile⟩
-  have ha : 34 ≤ s.activeWords.toNat := by rw [copied_active input h32]; decide
+  have ha : 33 ≤ s.activeWords.toNat := by rw [copied_active input h32]; decide
   have ga := align s e (FirstCore.frame (UInt256.ofNat 32) rho)
     (by simp [FirstCore.frame,StaggerPersistentFrame.frame,NormalPrepare.masks]; omega) h32
   have gp := special s e rho (by omega) ha
   have gc := FirstReadGas.complete (high s) (UInt256.ofNat 4882) rho (by omega)
     e.running ha e.code e.fork e.noPrecompile
     (by change MachineState.readWord input 0 = MachineState.readWord
-          (PairedScheduleMemory.writeWord (padCopied input).memory 162 FirstInitial.highWord) 1056
+          (PairedScheduleMemory.writeWord (padCopied input).memory 162 FirstInitial.highWord) 1024
         rw [copied_memory]; exact FirstComplete.load_eq input h32)
-  have ep : Env (prepared input) := ⟨e.code,e.fork,e.running,e.noPrecompile⟩
-  have gd := dispatch (prepared input) ep (resultHash input) (UInt256.ofNat 1056)
+  have hx : (prepared input).executionEnv = (padCopied input).executionEnv :=
+    (env_prepared _).trans ((env_read _).trans (env_high _))
+  have hf : (prepared input).fork = (padCopied input).fork :=
+    (fork_prepared _).trans ((fork_read _).trans (fork_high _))
+  have hh : (prepared input).halt = (padCopied input).halt :=
+    (halt_prepared _).trans ((halt_read _).trans (halt_high _))
+  have ep : Env (prepared input) := by
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · rw [hx]; exact e.code
+    · rw [hf]; exact e.fork
+    · rw [hh]; exact e.running
+    · rw [hx]; exact e.noPrecompile
+  have gd := dispatch (prepared input) ep (resultHash input) (UInt256.ofNat 1024)
     (Word.ofUInt32 FirstCore.initialHash.h2) (NormalPrepare.masks rho) (by simp [NormalPrepare.masks]; omega)
-  have go := Return32Serialize.gasSteps (prepared input) (UInt256.ofNat 1056)
+  have go := Return32Serialize.gasSteps (prepared input) (UInt256.ofNat 1024)
     (Word.ofUInt32 FirstCore.initialHash.h2) (resultHash input) rho (by omega)
     e.running e.code e.fork e.noPrecompile h32
   have g := ga.trans (gp.trans (gc.trans (gd.trans go)))

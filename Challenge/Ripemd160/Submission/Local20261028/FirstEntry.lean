@@ -19,7 +19,7 @@ def high (s : State) : State :=
   {s with memory := PairedScheduleMemory.writeWord s.memory 162 FirstInitial.highWord}
 
 theorem run_special (s : State) (rho : List UInt256) (hs : rho.length ≤ 880)
-    (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hv : Decode.isValidJumpDest s.executionEnv.code 6409 = true) :
     runInstrSeq specialTemplate {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho} =
       some {high s with pc := UInt256.ofNat 6409, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
@@ -34,7 +34,7 @@ theorem run_special (s : State) (rho : List UInt256) (hs : rho.length ≤ 880)
     List.exchange, List.getElem?_cons_zero, hr, hcap, Nat.add_assoc, hactive, hv, heq, State.activeWordsAfterUInt256, hat]
 
 def special (s : State) (e : Env s) (rho : List UInt256) (hs : rho.length ≤ 880)
-    (ha : 34 ≤ s.activeWords.toNat) :
+    (ha : 33 ≤ s.activeWords.toNat) :
     GasSteps {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}
       {high s with pc := UInt256.ofNat 6409, stack := FirstCore.frame (UInt256.ofNat 4882) rho} := by
   apply PadLift.gasSteps_of_raw specialSite {s with pc := UInt256.ofNat 143, stack := FirstCore.frame (UInt256.ofNat 32) rho}

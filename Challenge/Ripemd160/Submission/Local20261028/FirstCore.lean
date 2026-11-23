@@ -15,7 +15,7 @@ open StackRoundTrace StackRoundTemplate RipemdSubmissionTables20261028 RipemdMem
 def initialHash : Compression.HashState :=
   ⟨1732584193, 4023233417, 2562383102, 271733878, 3285377520⟩
 def frame (continuation : UInt256) (rho : List UInt256) :=
-  StaggerPersistentFrame.frame initialHash (UInt256.ofNat 1056) continuation (NormalPrepare.masks rho)
+  StaggerPersistentFrame.frame initialHash (UInt256.ofNat 1024) continuation (NormalPrepare.masks rho)
 open RipemdSubmission20261101
 abbrev prefixArgs := FirstPrologue.args
 def prepared (s : State) : State := {s with memory := RipemdSubmission20261101.FirstMemory.memory27 s}
@@ -27,7 +27,7 @@ theorem frame_eq (cont : UInt256) (rho : List UInt256) :
 def midState (s : State) (cont : UInt256) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat 9983, stack := First0.midStack (prefixArgs cont) rho s, memory := First0.midMemory s}
 theorem table_run (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat) :
     runInstrSeq FirstTable.template (midState s cont rho) =
       some {prepared s with pc := UInt256.ofNat 10185, stack := frame cont rho} := by
   have h := FirstTable.run s (prefixArgs cont) rho (by omega) hr ha
@@ -44,7 +44,7 @@ theorem tableSite_pc : tableSite.startPC = UInt256.ofNat 9983 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def table_gas (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (midState s cont rho)
@@ -70,11 +70,11 @@ theorem split_template : CoreBody.template = PrefixBefore.template ++ rest := by
   rfl
 
 theorem rest_run (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat) :
     runInstrSeq rest {prefixState s cont rho with pc := UInt256.ofNat 930} =
       some {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 ::
-        StaggerPersistentFrame.frame (CoreFunctional.result s.memory initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} := by
-  have hw := CoreBody.run s initialHash (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)
+        StaggerPersistentFrame.frame (CoreFunctional.result s.memory initialHash) (UInt256.ofNat 1024) cont (NormalPrepare.masks rho)} := by
+  have hw := CoreBody.run s initialHash (UInt256.ofNat 1024) cont (NormalPrepare.masks rho)
     (by simp only [NormalPrepare.masks, List.length_cons]; omega) hr ha
   rw [split_template] at hw
   obtain ⟨u,hu,_,ht⟩ := PadTrace.split (s := {s with pc := UInt256.ofNat 794, stack := frame cont rho}) (by decide : rest ≠ []) hr hw
@@ -96,7 +96,7 @@ theorem prefixSite_pc : prefixSite.startPC = UInt256.ofNat 10185 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def prefix_gas (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hm608 : MachineState.readWord s.memory 608 = UInt256.ofNat 5708990770823839524233143877797980545530986752) :
@@ -149,23 +149,23 @@ theorem restSite_pc : restSite.startPC = UInt256.ofNat 930 := by
   rw [ArtifactByteLength.instructionPC_eq_byteLength]
   decide +kernel
 def rest_gas (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps {prefixState s cont rho with pc := UInt256.ofNat 930}
       {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 ::
-        StaggerPersistentFrame.frame (CoreFunctional.result s.memory initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} := by
+        StaggerPersistentFrame.frame (CoreFunctional.result s.memory initialHash) (UInt256.ofNat 1024) cont (NormalPrepare.masks rho)} := by
   apply ModFoldLift.gasSteps_of_raw restSite {prefixState s cont rho with pc := UInt256.ofNat 930}
-    {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result s.memory initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} hc hf hr hnp restSite_pc.symm
+    {s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result s.memory initialHash) (UInt256.ofNat 1024) cont (NormalPrepare.masks rho)} hc hf hr hnp restSite_pc.symm
   · apply ModFoldLift.advancesAll_sound; decide +kernel
   · exact rest_run s cont rho hs hr ha
 
 def gasSteps (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig s.executionEnv.fork s.executionEnv.codeAddr = false) :
     GasSteps (midState s cont rho)
-      {prepared s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (prepared s).memory initialHash) (UInt256.ofNat 1056) cont (NormalPrepare.masks rho)} := by
+      {prepared s with pc := UInt256.ofNat 4622, stack := Word.ofUInt32 initialHash.h2 :: StaggerPersistentFrame.frame (CoreFunctional.result (prepared s).memory initialHash) (UInt256.ofNat 1024) cont (NormalPrepare.masks rho)} := by
   have hm608 := First608.read s (prefixArgs cont) rho hc
   rw [RipemdSubmission20261101.FirstMemory.actual_memory] at hm608
   have hlen : (PrefixBefore.outputs (prefixArgs cont) rho (prepared s)).length ≤ 990 := by

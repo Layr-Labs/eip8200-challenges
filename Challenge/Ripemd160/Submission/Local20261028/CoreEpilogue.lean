@@ -14,7 +14,7 @@ def template := ((RawUnpack.template ++ RawLeft77.template) ++ RawLeft78.templat
 def result (s : State) (h4 : UInt256) (q : WordLane) (rho : List UInt256) : State :=
   {s with pc := UInt256.ofNat 4567, stack := stack s.memory h4 [.b,.c,.d,.a,.dr,.ar,.cachedMessage 360,.pair,.upper,.er,.cr,.literal 23,.e,.br,.factor,.lower,.cache 140,.cache 350,.cache 310,.cache 190,.cache 500] (CoreLeft79.epilogueRaw s.memory q) q (UInt256.ofNat 2840853838) rho}
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
-    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat) :
+    (hs : rho.length ≤ 900) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template (RoundComposition.state s h4 right rho 77 q) =
       some (result s h4 q rho) := by
   have h0 := CoreUnpack.run s h4 q right rho hs hr ha

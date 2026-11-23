@@ -42,7 +42,7 @@ theorem output_eq (memory : ByteArray) (h4 : UInt256) (q right : WordLane) (rho 
 
 theorem run (s : State) (h4 : UInt256) (q right : WordLane) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     StackRoundTrace.runInstrSeq RawPaired40.template
       {s with pc := UInt256.ofNat 2829, stack := stack s.memory h4 [ .d, .a, .cachedMessage 360, .pair, .upper, .k, .b, .cachedMessage 180, .e, .c, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] q right (StaggerAlgorithm.physicalKey 39) rho} =
       some {s with pc := UInt256.ofNat 2862, stack := stack s.memory h4 [ .d, .cache 140, .e, .e, .cachedMessage 360, .pair, .upper, .k, .c, .cachedMessage 180, .a, .b, .factor, .lower, .cache 140, .cache 350, .cache 310, .cache 190, .cache 500 ] (eval s.memory q) right (StaggerAlgorithm.physicalKey 40) rho} := by

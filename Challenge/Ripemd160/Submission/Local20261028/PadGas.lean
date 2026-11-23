@@ -34,7 +34,7 @@ def result (s : State) (len : UInt256) (h : Compression.HashState)
 
 noncomputable def gasSteps (s : State) (len : UInt256) (h : Compression.HashState)
     (off limit : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 892) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
+    (hs : rho.length ≤ 892) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
     (hcal : UInt256.ofNat s.executionEnv.calldata.size = len)
     (hc : s.executionEnv.code = Challenge.Ripemd160.Benchmark.bytecode) (hf : s.fork = .Osaka)
     (hnp : Precompile.isPrecompileWithConfig s.executionEnv.precompileConfig

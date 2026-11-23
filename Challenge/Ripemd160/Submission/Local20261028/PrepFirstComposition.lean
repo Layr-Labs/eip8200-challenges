@@ -18,7 +18,7 @@ def result0 (s : State) (x : Nat → UInt256) (rho : List UInt256) : State :=
   {s with pc := (UInt256.ofNat 9987), stack := First0.outputs x rho s, memory := First0.memory x s}
 theorem step0 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq First0.entryTemplate {s with pc := (UInt256.ofNat 9983), stack := First0.midStack x rho s, memory := First0.midMemory s} = some (result0 s x rho) :=
   First0.runB s x rho hstack hrun hactive
 def args1 (s : State) (x : Nat → UInt256) (rho : List UInt256) (j : Nat) : UInt256 :=
@@ -30,7 +30,7 @@ theorem entry1 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
   simp [args1, result0, First0.outputs, First1.inputs]
 theorem step1 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq First1.template (result0 s x rho) = some (result1 s x rho) := by
   have h := First1.run (result0 s x rho) (args1 s x rho) rho hstack hrun hactive
   rw [entry1] at h
@@ -44,7 +44,7 @@ theorem entry2 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
   simp [args2, result1, First1.outputs, First2.inputs]
 theorem step2 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq First2.template (result1 s x rho) = some (result2 s x rho) := by
   have h := First2.run (result1 s x rho) (args2 s x rho) rho hstack hrun hactive
   rw [entry2] at h
@@ -58,7 +58,7 @@ theorem entry3 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
   simp [args3, result2, First2.outputs, First3.inputs]
 theorem step3 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq First3.template (result2 s x rho) = some (result3 s x rho) := by
   have h := First3.run (result2 s x rho) (args3 s x rho) rho hstack hrun hactive
   rw [entry3] at h
@@ -72,7 +72,7 @@ theorem entry4 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
   simp [args4, result3, First3.outputs, First4.inputs]
 theorem step4 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq First4.template (result3 s x rho) = some (result4 s x rho) := by
   have h := First4.run (result3 s x rho) (args4 s x rho) rho hstack hrun hactive
   rw [entry4] at h
@@ -86,7 +86,7 @@ theorem entry5 (s : State) (x : Nat → UInt256) (rho : List UInt256) :
   simp [args5, result4, First4.outputs, First5.inputs]
 theorem step5 (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq First5.template (result4 s x rho) = some (result5 s x rho) := by
   have h := First5.run (result4 s x rho) (args5 s x rho) rho hstack hrun hactive
   rw [entry5] at h
@@ -101,7 +101,7 @@ theorem exact_bytes :
   decide +kernel
 theorem run (s : State) (x : Nat → UInt256) (rho : List UInt256)
     (hstack : rho.length ≤ 900) (hrun : s.halt = .Running)
-    (hactive : 34 ≤ s.activeWords.toNat) :
+    (hactive : 33 ≤ s.activeWords.toNat) :
     runInstrSeq template {s with pc := (UInt256.ofNat 9983), stack := First0.midStack x rho s, memory := First0.midMemory s} =
       some {s with pc := (UInt256.ofNat 10185), stack := First0.inputs x rho, memory := (result5 s x rho).memory} := by
   have g0 := step0 s x rho hstack hrun hactive

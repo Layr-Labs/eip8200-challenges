@@ -81,16 +81,16 @@ theorem writeBytes_absorb_zero32 (bytes : ByteArray) (start : Nat)
 
 /-- In particular, the generic calldata copy absorbs the cleared answer. -/
 theorem calldata_absorb_zero32 (input : ByteArray) (hpos : 0 < input.size) :
-    MachineState.writeBytes zero32 (MachineState.readPadded input 0 input.size) 1056 =
+    MachineState.writeBytes zero32 (MachineState.readPadded input 0 input.size) 1024 =
       MachineState.writeBytes ByteArray.empty
-        (MachineState.readPadded input 0 input.size) 1056 := by
+        (MachineState.readPadded input 0 input.size) 1024 := by
   apply writeBytes_absorb_zero32 _ _ (by decide)
   simpa only [Memory.readPadded_size] using hpos
 
 private theorem activeWords_absorb (n : Nat) (hpos : 0 < n) :
-    MachineState.activeWordsAfter 1 1056 n = MachineState.activeWordsAfter 0 1056 n := by
+    MachineState.activeWordsAfter 1 1024 n = MachineState.activeWordsAfter 0 1024 n := by
   simp only [MachineState.activeWordsAfter, if_neg (by omega : n ≠ 0)]
-  have h : 1 ≤ (1056 + n - 1) / 32 + 1 := by omega
+  have h : 1 ≤ (1024 + n - 1) / 32 + 1 := by omega
   change max 1 _ = max 0 _
   rw [Nat.max_eq_right h, Nat.max_eq_right (Nat.zero_le _)]
 
@@ -109,12 +109,12 @@ private def wfOp {op : Operation}
 
 /-- Include the destination JUMPDEST, so the result is precisely PC 246. -/
 private def cleanupPath : List (DataStepper.Located Control.Artifact.submissionArtifact .Osaka) :=
-  [⟨3348, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3349, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3350, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
-   ⟨3351, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
-   ⟨3352, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
-   ⟨3353, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
+  [⟨3360, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3361, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3362, .push ⟨0, by decide⟩ (UInt256.ofNat 0), by rfl, by decide⟩,
+   ⟨3363, .op .MSTORE, by rfl, wfOp (by decide) trivial rfl⟩,
+   ⟨3364, .push ⟨1, by decide⟩ (UInt256.ofNat 245), by rfl, by decide⟩,
+   ⟨3365, .op .JUMP, by rfl, wfOp (by decide) trivial rfl⟩,
    ⟨134, .op .JUMPDEST, by rfl, wfOp (by decide) trivial rfl⟩]
 
 def cleared (input : ByteArray) : State :=
@@ -126,15 +126,15 @@ from the original initial state. -/
 def incoming (input : ByteArray) (m : ByteArray) (rho : List UInt256) : State :=
   { initialState submissionBytecode input 0 with
     memory := m, activeWords := UInt256.ofNat 1,
-    pc := UInt256.ofNat 4651, stack := rho }
+    pc := UInt256.ofNat 4657, stack := rho }
 
 private theorem cleanup_pcs :
-    Control.Artifact.submissionArtifact.instructionPC 3348 = 4651 ∧
-    Control.Artifact.submissionArtifact.instructionPC 3349 = 4652 ∧
-    Control.Artifact.submissionArtifact.instructionPC 3350 = 4653 ∧
-    Control.Artifact.submissionArtifact.instructionPC 3351 = 4654 ∧
-    Control.Artifact.submissionArtifact.instructionPC 3352 = 4655 ∧
-    Control.Artifact.submissionArtifact.instructionPC 3353 = 4657 ∧
+    Control.Artifact.submissionArtifact.instructionPC 3360 = 4657 ∧
+    Control.Artifact.submissionArtifact.instructionPC 3361 = 4658 ∧
+    Control.Artifact.submissionArtifact.instructionPC 3362 = 4659 ∧
+    Control.Artifact.submissionArtifact.instructionPC 3363 = 4660 ∧
+    Control.Artifact.submissionArtifact.instructionPC 3364 = 4661 ∧
+    Control.Artifact.submissionArtifact.instructionPC 3365 = 4663 ∧
     Control.Artifact.submissionArtifact.instructionPC 134 = 245 := by
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   all_goals rw [ArtifactByteLength.instructionPC_eq_byteLength]; rfl
@@ -165,7 +165,7 @@ private theorem run_cleanup_state (s : State) (m : ByteArray) (hm : m.size = 32)
     DataStepper.runLocatedBlock cleanupPath
       {s with
         memory := m, activeWords := UInt256.ofNat 1,
-        pc := UInt256.ofNat 4651, stack := []} =
+        pc := UInt256.ofNat 4657, stack := []} =
       some {s with
         memory := zero32, activeWords := UInt256.ofNat 1,
         pc := UInt256.ofNat 246, stack := []} := by
@@ -282,7 +282,7 @@ def gasSteps_of_eq (input : ByteArray) (hfit : CalldataFits input)
     (rho : List UInt256) (hcap : rho.length ≤ 20)
     (hs : s = { initialState submissionBytecode input 0 with
       memory := m, activeWords := UInt256.ofNat 1,
-      pc := UInt256.ofNat 4651, stack := rho }) :
+      pc := UInt256.ofNat 4657, stack := rho }) :
     GasSteps s (StackTail.append (Control.PaddingTrace.padFramed input) rho) := by
   subst s
   exact gasSteps input hfit hpos m hm rho hcap

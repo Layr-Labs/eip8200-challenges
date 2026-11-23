@@ -30,15 +30,15 @@ open EvmSemantics EvmSemantics.EVM
 the next phase (64 pad-only block, 128 and 192 stubs) for the fast-entry lengths. -/
 def copiedLimit (input : ByteArray) : UInt256 := UInt256.ofNat input.size
 
-/-- The active size right after the copy: `1056 + ceil32 size`. -/
+/-- The active size right after the copy: `1024 + ceil32 size`. -/
 def copiedMsize (input : ByteArray) : UInt256 :=
   UInt256.ofNat (32 * (padCopyDone input).activeWords.toNat)
 
 theorem copiedMsize_aligned (input : ByteArray) (hfit : CalldataFits input)
     (hz : input.size % 32 = 0) (hpos : 0 < input.size) :
-    copiedMsize input = UInt256.ofNat (1056 + input.size) := by
+    copiedMsize input = UInt256.ofNat (1024 + input.size) := by
   have hsize : input.size < 2 ^ 64 := hfit
-  have haw : (padCopyDone input).activeWords.toNat = 33 + input.size / 32 := by
+  have haw : (padCopyDone input).activeWords.toNat = 32 + input.size / 32 := by
     change (UInt256.ofNat (MachineState.activeWordsAfter
       (padLengthReady input).activeWords.toNat Padding.messageOffset input.size)).toNat = _
     have h0 : (padLengthReady input).activeWords.toNat = 0 := by rfl
@@ -47,8 +47,8 @@ theorem copiedMsize_aligned (input : ByteArray) (hfit : CalldataFits input)
     rw [if_neg (by omega)]
     dsimp only
     unfold Padding.messageOffset
-    have hv : Nat.max 0 ((1056 + input.size - 1) / 32 + 1) = 33 + input.size / 32 := by
-      change max 0 ((1056 + input.size - 1) / 32 + 1) = _
+    have hv : Nat.max 0 ((1024 + input.size - 1) / 32 + 1) = 32 + input.size / 32 := by
+      change max 0 ((1024 + input.size - 1) / 32 + 1) = _
       rw [Nat.max_eq_right (Nat.zero_le _)]
       omega
     rw [hv, Challenge.EvmProof.Word.word_toNat_ofNat]
@@ -63,12 +63,12 @@ def bitLengthWord (input : ByteArray) : UInt256 :=
   UInt256.shiftLeft (UInt256.ofNat input.size) (UInt256.ofNat 3)
 
 def lengthOffsetWord (input : ByteArray) : UInt256 :=
-  PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 89
+  PadLimitArithmetic.coldRounded (UInt256.ofNat input.size) + UInt256.ofNat 57
 
 /-- The persistent block-loop frame at hash entry: the initial chaining words and the six
 resident round constants above the zero offset and the padded limit. -/
 def initialFrame (input : ByteArray) : List UInt256 :=
-  StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056)
+  StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1024)
     (copiedLimit input) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 
 @[simp] theorem initialFrame_length (input : ByteArray) : (initialFrame input).length = 15 := by
@@ -76,17 +76,15 @@ def initialFrame (input : ByteArray) : List UInt256 :=
 
 /-- The frame of the cold padding code: the cold block installed the output entry 4882 in slot 12. -/
 def padFrame (_input : ByteArray) : List UInt256 :=
-  StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056)
+  StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1024)
     (UInt256.ofNat 4882) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 
 @[simp] theorem padFrame_length (input : ByteArray) : (padFrame input).length = 15 := by
   simp [padFrame, StaggerPersistentFrame.frame]
 
-/-- The frame the padding code leaves at the block-loop head: the generic continuation 48 (the
-last-block test) replaces the output entry in slot 12. -/
 def glFrame : List UInt256 :=
-  StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1056)
-    (UInt256.ofNat 222) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
+  StaggerPersistentFrame.frame StackRunBridge.initialHashState (UInt256.ofNat 1024)
+    (UInt256.ofNat 210) [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
 
 @[simp] theorem glFrame_length : glFrame.length = 15 := by
   simp [glFrame, StaggerPersistentFrame.frame]
@@ -140,7 +138,7 @@ def padSentinel (input : ByteArray) : State :=
 
 @[simp] theorem padCopied_stack (input : ByteArray) :
     (padCopied input).stack =
-      [UInt256.ofNat 1056, copiedLimit input, DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] := by
+      [UInt256.ofNat 1024, copiedLimit input, DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16] := by
   rfl
 
 @[simp] theorem padCopied_calldata (input : ByteArray) :
@@ -331,14 +329,14 @@ def padGuardTaken (input : ByteArray) : State :=
 theorem padGuardMiss_memory (input : ByteArray) :
     (padGuardMiss input).memory = Control.Shared32Scratch.copiedMemory input := by
   change MachineState.writeBytes ByteArray.empty
-    (MachineState.readPadded input 0 input.size) 1056 = Control.Shared32Scratch.copiedMemory input
+    (MachineState.readPadded input 0 input.size) 1024 = Control.Shared32Scratch.copiedMemory input
   rw [Challenge.EvmProof.Memory.readPadded_zero_size]
   rfl
 
 theorem padGuardMiss_active (input : ByteArray) (hfit : CalldataFits input)
-    (hpos : 0 < input.size) : 34 ≤ (padGuardMiss input).activeWords.toNat := by
+    (hpos : 0 < input.size) : 33 ≤ (padGuardMiss input).activeWords.toNat := by
   have hsize : input.size < 2 ^ 64 := hfit
-  change 34 ≤ (UInt256.ofNat (MachineState.activeWordsAfter
+  change 33 ≤ (UInt256.ofNat (MachineState.activeWordsAfter
     (padLengthReady input).activeWords.toNat Padding.messageOffset input.size)).toNat
   have h0 : (padLengthReady input).activeWords.toNat = 0 := by rfl
   rw [h0]
@@ -346,12 +344,12 @@ theorem padGuardMiss_active (input : ByteArray) (hfit : CalldataFits input)
   rw [if_neg (by omega)]
   dsimp only
   unfold Padding.messageOffset
-  have hv : Nat.max 0 ((1056 + input.size - 1) / 32 + 1) = (1055 + input.size) / 32 + 1 := by
-    change max 0 ((1056 + input.size - 1) / 32 + 1) = _
+  have hv : Nat.max 0 ((1024 + input.size - 1) / 32 + 1) = (1023 + input.size) / 32 + 1 := by
+    change max 0 ((1024 + input.size - 1) / 32 + 1) = _
     rw [Nat.max_eq_right (Nat.zero_le _)]
     omega
-  have hlt : (1055 + input.size) / 32 + 1 < 2 ^ 256 :=
-    Nat.lt_trans (by omega : (1055 + input.size) / 32 + 1 < 2 ^ 64) (by norm_num)
+  have hlt : (1023 + input.size) / 32 + 1 < 2 ^ 256 :=
+    Nat.lt_trans (by omega : (1023 + input.size) / 32 + 1 < 2 ^ 64) (by norm_num)
   rw [hv, Challenge.EvmProof.Word.word_toNat_ofNat, Nat.mod_eq_of_lt hlt]
   omega
 
@@ -406,7 +404,7 @@ def gasSteps_guardMiss (input : ByteArray) (hfit : CalldataFits input)
     by_contra h
     exact hnz ⟨by omega, by omega⟩
   have gp := Control.ColdGuardFixup.gasSteps_partial (padGuardMiss input)
-    StackRunBridge.initialHashState (UInt256.ofNat 1056) (copiedLimit input)
+    StackRunBridge.initialHashState (UInt256.ofNat 1024) (copiedLimit input)
     [DenseScheduleTemplate.mask8, DenseScheduleTemplate.mask16]
     (by decide) rfl rfl rfl deployAddress_not_precompile
     (by exact Nat.lt_trans hfit (by norm_num)) hn32

@@ -7,15 +7,15 @@ set_option maxHeartbeats 8000000
 namespace Challenge.Ripemd160.Submission.Proofs.Bytecode.Local20261028.FirstRead
 open EvmSemantics EvmSemantics.EVM YulEvmCompiler Challenge.EvmProof
 open StackRoundTrace StackRoundTemplate Paired144WordRound PairedScheduleMemory
-/-- The first input word is read from calldata; it equals the copied word at 1056. -/
+/-- The first input word is read from calldata; it equals the copied word at 1024. -/
 def loadCalldata : List Instr := [.push ⟨0, by decide⟩ (UInt256.ofNat 0), .op .CALLDATALOAD]
 def template := (([Instr.op .JUMPDEST] ++ loadCalldata) ++
   (CoreEndian.stage8 true ++ CoreEndian.stage16 true)) ++ CoreEndian.lowStoreV2
 def result (s : State) : State :=
-  {s with memory := writeWord s.memory 252 (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056))}
+  {s with memory := writeWord s.memory 252 (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1024))}
 theorem run (s : State) (cont : UInt256) (rho : List UInt256)
-    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 34 ≤ s.activeWords.toNat)
-    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1056) :
+    (hs : rho.length ≤ 890) (hr : s.halt = .Running) (ha : 33 ≤ s.activeWords.toNat)
+    (hcd : MachineState.readWord s.executionEnv.calldata 0 = MachineState.readWord s.memory 1024) :
     runInstrSeq template {s with pc := UInt256.ofNat 6409, stack := FirstCore.frame cont rho} =
       some {result s with pc := UInt256.ofNat 6442, stack := FirstCore.frame cont rho} := by
   have hcap : (FirstCore.frame cont rho).length < 1024 := by
@@ -27,7 +27,7 @@ theorem run (s : State) (cont : UInt256) (rho : List UInt256)
     simp [runInstrSeq, DataStepper.runInstr, hr, hcap]
     rfl
   have hl : runInstrSeq loadCalldata {s with pc := UInt256.ofNat 6410, stack := FirstCore.frame cont rho} =
-      some {s with pc := UInt256.ofNat 6412, stack := MachineState.readWord s.memory 1056 :: FirstCore.frame cont rho} := by
+      some {s with pc := UInt256.ofNat 6412, stack := MachineState.readWord s.memory 1024 :: FirstCore.frame cont rho} := by
     have hcap1 : (FirstCore.frame cont rho).length + 1 < 1024 := by
       simp only [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks,
         List.length_append, List.length_cons, List.length_nil]
@@ -36,15 +36,15 @@ theorem run (s : State) (cont : UInt256) (rho : List UInt256)
     simp [loadCalldata, runInstrSeq, DataStepper.runInstr, hr, hcap, hcap1, UInt256.succ, hzero, hcd]
     rfl
   have hjl := DenseScheduleTrace.runInstrSeq_append_running hj hr hl
-  have hv := CoreEndian.run_reverse s (UInt256.ofNat 6412) (MachineState.readWord s.memory 1056)
+  have hv := CoreEndian.run_reverse s (UInt256.ofNat 6412) (MachineState.readWord s.memory 1024)
     factorPlusWord (UInt256.ofNat 4294967295)
     (fusedModulusWord 5 7) (fusedModulusWord 8 5) (fusedCoefficientWord 0 3) (fusedCoefficientWord 0 2)
     (Word.ofUInt32 FirstCore.initialHash.h4) (Word.ofUInt32 FirstCore.initialHash.h3) (Word.ofUInt32 FirstCore.initialHash.h2)
     (Word.ofUInt32 FirstCore.initialHash.h1) (Word.ofUInt32 FirstCore.initialHash.h0)
-    (UInt256.ofNat 1056) cont rho true (by omega) hr
+    (UInt256.ofNat 1024) cont rho true (by omega) hr
   have hjlv := DenseScheduleTrace.runInstrSeq_append_running hjl hr hv
   have ht := CoreEndian.run_lowStoreV2_of_small s (UInt256.ofNat 6439)
-    (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1056)) (FirstCore.frame cont rho)
+    (PairedScheduleData.reversedWord (MachineState.readWord s.memory 1024)) (FirstCore.frame cont rho)
     (by simp only [FirstCore.frame, StaggerPersistentFrame.frame, NormalPrepare.masks,
           List.length_append, List.length_cons, List.length_nil]; omega) hr ha
   exact DenseScheduleTrace.runInstrSeq_append_running hjlv hr ht
@@ -57,7 +57,7 @@ theorem exact_bytes :
 theorem memory_eq (s : State) (m : ByteArray) (hm : s.memory = writeWord m 162 FirstInitial.highWord) :
     (result s).memory = FirstInitial.memory m := by
   simp only [result, hm, FirstInitial.memory]
-  rw [read_writeWord_disjoint _ _ _ _ (Or.inr (by decide : 162+32 ≤ 1056))]
+  rw [read_writeWord_disjoint _ _ _ _ (Or.inr (by decide : 162+32 ≤ 1024))]
 #print axioms run
 #print axioms exact_bytes
 #print axioms memory_eq

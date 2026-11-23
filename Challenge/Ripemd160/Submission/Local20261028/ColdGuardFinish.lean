@@ -21,7 +21,7 @@ def gasSteps_partial (s : State) (h : Compression.HashState) (off limit : UInt25
       s.executionEnv.fork s.executionEnv.codeAddr = false)
     (hsize : s.executionEnv.calldata.size < 2^256)
     (hne : s.executionEnv.calldata.size ≠ 32)
-    (hactive : 34 ≤ s.activeWords.toNat)
+    (hactive : 33 ≤ s.activeWords.toNat)
     (hmemsize : 194 ≤ s.memory.size)
     (hzero : ∀ a, 162 ≤ a → a < 194 → s.memory[a]?.getD 0 = 0)
     (hlim : limit = UInt256.ofNat s.executionEnv.calldata.size) :
