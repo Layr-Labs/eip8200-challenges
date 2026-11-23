@@ -22,32 +22,32 @@ open Challenge.Modexp.Submission.Proofs.Bytecode.WindowNibbleKernel
 open WindowTwentyOneBinding WindowTwentyOneSlice
 open CycleSubmission
 def squareBlock : Block Artifact.artifact .Osaka 8852 SquareRun.sqProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6613 471 8852 SquareRun.sqProgram
-    (by change 6613+471 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 6613 470 8852 SquareRun.sqProgram
+    (by change 6613+470 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def productSeg0Block : Block Artifact.artifact .Osaka 9475 ProductRun.prSeg0Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7086 67 9475 ProductRun.prSeg0Program
-    (by change 7086+67 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7085 67 9475 ProductRun.prSeg0Program
+    (by change 7085+67 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def productSeg1Block : Block Artifact.artifact .Osaka 9550 ProductRun.prSeg1Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7153 154 9550 ProductRun.prSeg1Program
-    (by change 7153+154 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7152 154 9550 ProductRun.prSeg1Program
+    (by change 7152+154 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def productSeg2Block : Block Artifact.artifact .Osaka 9722 ProductRun.prSeg2Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7307 110 9722 ProductRun.prSeg2Program
-    (by change 7307+110 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7306 110 9722 ProductRun.prSeg2Program
+    (by change 7306+110 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def productSeg3Block : Block Artifact.artifact .Osaka 9845 ProductRun.prSeg3Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7417 267 9845 ProductRun.prSeg3Program
-    (by change 7417+267 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7416 267 9845 ProductRun.prSeg3Program
+    (by change 7416+267 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -61,38 +61,38 @@ def ctl4712Program : List Instr := [
   .push 2 8852,
    .op .JUMPI]
 def ctl4712Block : Block Artifact.artifact .Osaka 9471 ctl4712Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7084 2 9471 ctl4712Program
-    (by change 7084+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7083 2 9471 ctl4712Program
+    (by change 7083+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def ctl4800Program : List Instr := [
   ]
 def ctl4800Block : Block Artifact.artifact .Osaka 9550 ctl4800Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7153 0 9550 ctl4800Program
-    (by change 7153+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7152 0 9550 ctl4800Program
+    (by change 7152+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def ctl3433Program : List Instr := [
   ]
 def ctl3433Block : Block Artifact.artifact .Osaka 9722 ctl3433Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7307 0 9722 ctl3433Program
-    (by change 7307+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7306 0 9722 ctl3433Program
+    (by change 7306+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def ctl3901Program : List Instr := [
   ]
 def ctl3901Block : Block Artifact.artifact .Osaka 9845 ctl3901Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7417 0 9845 ctl3901Program
-    (by change 7417+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7416 0 9845 ctl3901Program
+    (by change 7416+0 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def normBlock : Block Artifact.artifact .Osaka 10172 ExecNorm.normProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7684 4 10172 ExecNorm.normProgram
-    (by change 7684+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7683 4 10172 ExecNorm.normProgram
+    (by change 7683+4 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -100,14 +100,14 @@ def ctl5188Program : List Instr := [
   .push 2 10260,
    .op .JUMPI]
 def ctl5188Block : Block Artifact.artifact .Osaka 10176 ctl5188Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7688 2 10176 ctl5188Program
-    (by change 7688+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7687 2 10176 ctl5188Program
+    (by change 7687+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def blk5192Block : Block Artifact.artifact .Osaka 10180 ExecNorm.blk5192Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7690 51 10180 ExecNorm.blk5192Program
-    (by change 7690+51 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7689 51 10180 ExecNorm.blk5192Program
+    (by change 7689+51 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -115,14 +115,14 @@ def ctl5261Program : List Instr := [
   .push 2 10254,
    .op .JUMPI]
 def ctl5261Block : Block Artifact.artifact .Osaka 10236 ctl5261Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7741 2 10236 ctl5261Program
-    (by change 7741+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7740 2 10236 ctl5261Program
+    (by change 7740+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def blk5265Block : Block Artifact.artifact .Osaka 10240 ExecNorm.blk5265Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7743 10 10240 ExecNorm.blk5265Program
-    (by change 7743+10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7742 10 10240 ExecNorm.blk5265Program
+    (by change 7742+10 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -130,27 +130,27 @@ def ctl5275Program : List Instr := [
   .push 2 10172,
    .op .JUMP]
 def ctl5275Block : Block Artifact.artifact .Osaka 10250 ctl5275Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7753 2 10250 ctl5275Program
-    (by change 7753+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7752 2 10250 ctl5275Program
+    (by change 7752+2 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def negBlock : Block Artifact.artifact .Osaka 10254 ExecNorm.negProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7755 6 10254 ExecNorm.negProgram
-    (by change 7755+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7754 6 10254 ExecNorm.negProgram
+    (by change 7754+6 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def doneBlock : Block Artifact.artifact .Osaka 10260 ExecNorm.doneProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7761 11 10260 ExecNorm.doneProgram
-    (by change 7761+11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7760 11 10260 ExecNorm.doneProgram
+    (by change 7760+11 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
 def ctl5330Program : List Instr := OverlapFinalReturn.program5
 def ctl5330Block : Block Artifact.artifact .Osaka 10275 ctl5330Program :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7772 3 10275 ctl5330Program
-    (by change 7772+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7771 3 10275 ctl5330Program
+    (by change 7771+3 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
@@ -182,11 +182,11 @@ theorem jumpDest219 : Decode.isValidJumpDest Artifact.bytecode 174 = true :=
 theorem jumpDest4037 : Decode.isValidJumpDest Artifact.bytecode 8852 = true :=
   CycleSubmission.Global.Binding.jumpDest 6613 (by rfl)
 theorem jumpDest5184 : Decode.isValidJumpDest Artifact.bytecode 10172 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7684 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 7683 (by rfl)
 theorem jumpDest5279 : Decode.isValidJumpDest Artifact.bytecode 10254 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7755 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 7754 (by rfl)
 theorem jumpDest5285 : Decode.isValidJumpDest Artifact.bytecode 10260 = true :=
-  CycleSubmission.Global.Binding.jumpDest 7761 (by rfl)
+  CycleSubmission.Global.Binding.jumpDest 7760 (by rfl)
 theorem ctl4712_run (s : State) (c : UInt256) (rest : List UInt256) (hcap : rest.length < 1000)
     (hvalid : Decode.isValidJumpDest s.executionEnv.code 8852 = true) :
     runInstructions ctl4712Program {s with pc := UInt256.ofNat 9471,stack := c::rest} =

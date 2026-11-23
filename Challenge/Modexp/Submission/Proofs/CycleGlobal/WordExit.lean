@@ -43,8 +43,8 @@ def expFinishTailProgram : List Instr :=
    .push 0 0,
    .op .RETURN]
 def expFinishTailBlock : Block CycleSubmission.Artifact.artifact .Osaka 10447 expFinishTailProgram :=
-  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7898 14 10447 expFinishTailProgram
-    (by change 7898+14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
+  WindowTwentyOneSlice.block CycleSubmission.Artifact.wellFormed 7897 14 10447 expFinishTailProgram
+    (by change 7897+14 ≤ CycleSubmission.Artifact.instructions.length; rw [CycleSubmission.Artifact.instructionCount]; decide)
     (by rw [Challenge.Modexp.Submission.Proofs.Bytecode.PCFast.instructionPC_eq_byteLength]; rfl)
     (by rw [Challenge.Modexp.Submission.Proofs.Fast.CRTSliceFast.locations_map]; rfl)
     (by decide)
