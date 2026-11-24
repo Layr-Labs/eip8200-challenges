@@ -59,9 +59,9 @@ theorem isTrue_lor_of (a b : UInt256) (h : a.toNat ≠ 0 ∨ b.toNat ≠ 0) :
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem rhoRestoredPC2370 : CycleSubmission.Artifact.artifact.instructionPC 2477 = 3212 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8244 = 10936 := by
+@[simp] theorem rhoRestoredPC8433 : CycleSubmission.Artifact.artifact.instructionPC 8243 = 10936 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
-@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8244 = 10936 := by
+@[simp] theorem rhoRestoredPC8434 : CycleSubmission.Artifact.artifact.instructionPC 8243 = 10936 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
 @[simp] theorem rhoConsumedMaxDupPC : CycleSubmission.Artifact.artifact.instructionPC 2487 = 3224 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]; rfl
@@ -641,67 +641,67 @@ theorem run_csubExit (z : UInt256) (s : State) (mem : ByteArray) (n bsize esize 
       Challenge.EvmProof.Word.succ_ofNat_mod,
       Challenge.EvmProof.Word.ofNat_add_mod]
 @[simp] private theorem pcFact4392 :
-    CycleSubmission.Artifact.artifact.instructionPC 7871 = 10409 := by
+    CycleSubmission.Artifact.artifact.instructionPC 7870 = 10409 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem pc2706 : CycleSubmission.Artifact.artifact.instructionPC 2548 = 3306 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 7877 = 10417 := by
+@[simp] theorem pc4393 : CycleSubmission.Artifact.artifact.instructionPC 7876 = 10417 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 7878 = 10418 := by
+@[simp] theorem pc4394 : CycleSubmission.Artifact.artifact.instructionPC 7877 = 10418 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4395 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4396 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4397 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4398 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4399 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4400 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 7884 = 10429 := by
+@[simp] theorem pc4403 : CycleSubmission.Artifact.artifact.instructionPC 7883 = 10429 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 7884 = 10429 := by
+@[simp] theorem pc4402 : CycleSubmission.Artifact.artifact.instructionPC 7883 = 10429 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 7881 = 10425 := by
+@[simp] theorem pc4401 : CycleSubmission.Artifact.artifact.instructionPC 7880 = 10425 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 7884 = 10429 := by
+@[simp] theorem pc4404 : CycleSubmission.Artifact.artifact.instructionPC 7883 = 10429 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 7886 = 10433 := by
+@[simp] theorem pc4405 : CycleSubmission.Artifact.artifact.instructionPC 7885 = 10433 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 7886 = 10433 := by
+@[simp] theorem pc4406 : CycleSubmission.Artifact.artifact.instructionPC 7885 = 10433 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 7886 = 10433 := by
+@[simp] theorem pc4407 : CycleSubmission.Artifact.artifact.instructionPC 7885 = 10433 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 7886 = 10433 := by
+@[simp] theorem pc4408 : CycleSubmission.Artifact.artifact.instructionPC 7885 = 10433 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 7886 = 10433 := by
+@[simp] theorem pc4409 : CycleSubmission.Artifact.artifact.instructionPC 7885 = 10433 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 7888 = 10435 := by
+@[simp] theorem pc4410 : CycleSubmission.Artifact.artifact.instructionPC 7887 = 10435 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 7889 = 10436 := by
+@[simp] theorem pc4411 : CycleSubmission.Artifact.artifact.instructionPC 7888 = 10436 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 /- The old sixteen-POP cleanup theorem is not part of the selected route.

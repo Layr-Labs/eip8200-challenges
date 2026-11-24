@@ -42,13 +42,13 @@ def csFixedState (s : State) (memory : ByteArray) (n j pc : Nat)
   { s with pc := UInt256.ofNat pc
            stack := (if j = 0 then [] else [(csStep memory n j).flag])++[pdst,ret]++rest
            memory := (csStep memory n j).memory }
-@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 7957 = 10523 := by
+@[simp] theorem preparedPC2675 : CycleSubmission.Artifact.artifact.instructionPC 7956 = 10523 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 7958 = 10524 := by
+@[simp] theorem preparedPC2676 : CycleSubmission.Artifact.artifact.instructionPC 7957 = 10524 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
-@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 7959 = 10527 := by
+@[simp] theorem preparedPC2677 : CycleSubmission.Artifact.artifact.instructionPC 7958 = 10527 := by
   rw [CycleSubmission.PCCertificate.selectedPC _ (by decide)]
   rfl
 @[simp] theorem preparedPC2858 : CycleSubmission.Artifact.artifact.instructionPC 630 = 863 := by
